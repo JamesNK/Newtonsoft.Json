@@ -173,11 +173,12 @@ namespace Newtonsoft.Json.Linq
 
             JToken token = value as JToken;
             if (token == null)
+            {
                 throw new ArgumentException("Source value must be a JToken.");
+            }
 
             return token.Convert<JToken, U>();
         }
-
 
         internal static IEnumerable<U> Values<T, U>(this IEnumerable<T> source, object key) where T : JToken
         {
@@ -203,7 +204,9 @@ namespace Newtonsoft.Json.Linq
                 {
                     JToken value = token[key];
                     if (value != null)
+                    {
                         yield return value.Convert<JToken, U>();
+                    }
                 }
             }
 
@@ -251,7 +254,9 @@ namespace Newtonsoft.Json.Linq
         internal static U Convert<T, U>(this T token) where T : JToken
         {
             if (token == null)
+            {
                 return default(U);
+            }
 
             if (token is U
                 // don't want to cast JValue to its interfaces, want to get the internal value
@@ -264,17 +269,23 @@ namespace Newtonsoft.Json.Linq
             {
                 JValue value = token as JValue;
                 if (value == null)
+                {
                     throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, token.GetType(), typeof(T)));
+                }
 
                 if (value.Value is U)
+                {
                     return (U)value.Value;
+                }
 
                 Type targetType = typeof(U);
 
                 if (ReflectionUtils.IsNullableType(targetType))
                 {
                     if (value.Value == null)
+                    {
                         return default(U);
+                    }
 
                     targetType = Nullable.GetUnderlyingType(targetType);
                 }
@@ -305,11 +316,17 @@ namespace Newtonsoft.Json.Linq
         public static IJEnumerable<T> AsJEnumerable<T>(this IEnumerable<T> source) where T : JToken
         {
             if (source == null)
+            {
                 return null;
+            }
             else if (source is IJEnumerable<T>)
+            {
                 return (IJEnumerable<T>)source;
+            }
             else
+            {
                 return new JEnumerable<T>(source);
+            }
         }
     }
 }

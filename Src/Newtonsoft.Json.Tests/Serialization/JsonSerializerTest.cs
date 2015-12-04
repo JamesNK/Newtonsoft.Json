@@ -88,6 +88,7 @@ using System.Linq;
 #endif
 #if !(NETFX_CORE || DNXCORE50)
 using System.Drawing;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -101,11 +102,13 @@ namespace Newtonsoft.Json.Tests.Serialization
             string Name { get; set; }
             bool P1 { get; }
         }
+
         public interface ISubclass : ISubclassBase
         {
             new bool P1 { get; set; }
             int P2 { get; set; }
         }
+
         public interface IMainClass
         {
             int ID { get; set; }
@@ -120,6 +123,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             public bool P1 { get; set; }
             public int P2 { get; set; }
         }
+
         public class MainClass : IMainClass
         {
             public int ID { get; set; }
@@ -139,6 +143,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                     P2 = 44
                 };
             }
+
             public static IMainClass InstantiateManiClass()
             {
                 return new MainClass
@@ -243,19 +248,13 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void CoercedEmptyStringWithRequired()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
-            {
-                JsonConvert.DeserializeObject<Binding>("{requiredProperty:''}");
-            }, "Required property 'RequiredProperty' expects a value but got null. Path '', line 1, position 21.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Binding>("{requiredProperty:''}"); }, "Required property 'RequiredProperty' expects a value but got null. Path '', line 1, position 21.");
         }
 
         [Test]
         public void CoercedEmptyStringWithRequired_DisallowNull()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
-            {
-                JsonConvert.DeserializeObject<Binding_DisallowNull>("{requiredProperty:''}");
-            }, "Required property 'RequiredProperty' expects a non-null value. Path '', line 1, position 21.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Binding_DisallowNull>("{requiredProperty:''}"); }, "Required property 'RequiredProperty' expects a non-null value. Path '', line 1, position 21.");
         }
 
         [Test]
@@ -268,10 +267,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void CoercedEmptyStringWithRequiredConstructor()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
-            {
-                JsonConvert.DeserializeObject<FooRequired>("{Bars:''}");
-            }, "Required property 'Bars' expects a value but got null. Path '', line 1, position 9.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<FooRequired>("{Bars:''}"); }, "Required property 'Bars' expects a value but got null. Path '', line 1, position 9.");
         }
 
         public class IgnoredProperty
@@ -279,6 +275,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             [JsonIgnore]
             [JsonProperty(Required = Required.Always)]
             public string StringProp1 { get; set; }
+
             [JsonIgnore]
             public string StringProp2 { get; set; }
         }
@@ -306,10 +303,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void Serialize_Required_DisallowedNull()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
-            {
-                JsonConvert.SerializeObject(new Binding_DisallowNull());
-            }, "Cannot write a null value for property 'RequiredProperty'. Property requires a non-null value. Path ''.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.SerializeObject(new Binding_DisallowNull()); }, "Cannot write a null value for property 'RequiredProperty'. Property requires a non-null value. Path ''.");
         }
 
         [Test]
@@ -331,10 +325,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void Serialize_ItemRequired_DisallowedNull()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
-            {
-                JsonConvert.SerializeObject(new DictionaryWithNoNull());
-            }, "Cannot write a null value for property 'Name'. Property requires a non-null value. Path ''.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.SerializeObject(new DictionaryWithNoNull()); }, "Cannot write a null value for property 'Name'. Property requires a non-null value. Path ''.");
         }
 
         public class DictionaryKeyContractResolver : DefaultContractResolver
@@ -510,10 +501,13 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             [JsonIgnore]
             public Version IgnoredProperty { get; set; }
+
             [JsonIgnore]
             public List<Version> IgnoredList { get; set; }
+
             [JsonIgnore]
             public Dictionary<string, Version> IgnoredDictionary { get; set; }
+
             [JsonProperty(Required = Required.Always)]
             public string Name { get; set; }
         }
@@ -523,7 +517,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             public override JsonContract ResolveContract(Type type)
             {
                 if (type == typeof(Version))
+                {
                     throw new Exception("Error!");
+                }
 
                 return base.ResolveContract(type);
             }
@@ -868,7 +864,6 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             protected SimpleResponse()
             {
-
             }
 
             protected SimpleResponse(string message)
@@ -966,10 +961,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = "['1.2.3.4444444444444444444444']";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
-            {
-                JsonConvert.DeserializeObject<List<Version>>(json);
-            }, @"Error converting value ""1.2.3.4444444444444444444444"" to type 'System.Version'. Path '[0]', line 1, position 31.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<List<Version>>(json); }, @"Error converting value ""1.2.3.4444444444444444444444"" to type 'System.Version'. Path '[0]', line 1, position 31.");
         }
 
         [Test]
@@ -1365,7 +1357,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             private void OnDeserializedMethod(StreamingContext context)
             {
                 if (_serializationInfo == null)
+                {
                     return;
+                }
 
                 _stringValue = _serializationInfo.GetString("stringValue");
                 _intValue = _serializationInfo.GetInt32("intValue");
@@ -2786,7 +2780,6 @@ keyword such as type of business.""
             Assert.AreEqual("LastNameValue", personRaw.LastName);
         }
 
-
         [Test]
         public void DeserializeNullableMember()
         {
@@ -4157,7 +4150,6 @@ Path '', line 1, position 1.");
             string Value { get; set; }
         }
 
-
         public class KeyValueId : IKeyValueId
         {
             public int Id { get; set; }
@@ -4190,9 +4182,13 @@ Path '', line 1, position 1.");
                     var item = this[id];
 
                     if (item == null)
+                    {
                         Add(value);
+                    }
                     else
+                    {
                         _dict1[item.Key] = value;
+                    }
                 }
             }
 
@@ -4207,7 +4203,9 @@ Path '', line 1, position 1.");
                 set
                 {
                     foreach (var item in value)
+                    {
                         Add(item);
+                    }
                 }
             }
         }
@@ -5227,9 +5225,13 @@ Path '', line 1, position 1.");
                 Pos p = (Pos)value;
 
                 if (p != null)
+                {
                     writer.WriteRawValue(String.Format("new Pos({0},{1})", p.X, p.Y));
+                }
                 else
+                {
                     writer.WriteNull();
+                }
             }
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -5250,9 +5252,13 @@ Path '', line 1, position 1.");
                 PosDouble p = (PosDouble)value;
 
                 if (p != null)
+                {
                     writer.WriteRawValue(String.Format(CultureInfo.InvariantCulture, "new PosD({0},{1})", p.X, p.Y));
+                }
                 else
+                {
                     writer.WriteNull();
+                }
             }
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
@@ -5370,8 +5376,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual(typeof(decimal), dic["value"].GetType());
             Assert.AreEqual(9.9m, dic["value"]);
         }
-
-
 
         public class DictionaryKey
         {
@@ -5575,7 +5579,7 @@ Path '', line 1, position 1.");
 
             JsonTextReader reader = new JsonTextReader(new StringReader(serializeObject));
             reader.DateParseHandling = DateParseHandling.None;
-            
+
             JsonSerializer serializer = new JsonSerializer();
 
             var deserializeObject = serializer.Deserialize<TimeZoneOffsetObject>(reader);
@@ -5884,7 +5888,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual(deserialized.Foo1.Name, "foo 1");
             Assert.AreEqual(deserialized.Foo2, null);
         }
-
 
         private static NullableStructPropertyClass deserialize(string serStr)
         {
@@ -7143,7 +7146,8 @@ Path '', line 1, position 1.");
         {
             ExceptionAssert.Throws<ArgumentNullException>(
                 () => { JsonConvert.DeserializeObject<double>(null); },
-                new [] { 
+                new[]
+                {
                     "Value cannot be null." + Environment.NewLine + "Parameter name: value",
                     "Argument cannot be null." + Environment.NewLine + "Parameter name: value" // mono
                 });
@@ -7154,7 +7158,8 @@ Path '', line 1, position 1.");
         {
             ExceptionAssert.Throws<ArgumentNullException>(
                 () => { JsonConvert.DeserializeObject(null); },
-                new [] { 
+                new[]
+                {
                     "Value cannot be null." + Environment.NewLine + "Parameter name: value",
                     "Argument cannot be null." + Environment.NewLine + "Parameter name: value" // mono
                 });
@@ -7339,7 +7344,9 @@ Path '', line 1, position 1.");
             while (true)
             {
                 if (!reader.Read())
+                {
                     break;
+                }
 
                 JsonSerializer serializer = new JsonSerializer();
                 MultipleItemsClass foo = serializer.Deserialize<MultipleItemsClass>(reader);
@@ -8526,7 +8533,9 @@ Path '', line 1, position 1.");
             public FooConstructor(string bar)
             {
                 if (bar == null)
+                {
                     throw new ArgumentNullException("bar");
+                }
 
                 Bar = bar;
             }
@@ -9212,7 +9221,6 @@ Path '', line 1, position 1.");
             public string DerivedProperty { get; private set; }
         }
 
-
         public class BaseConstructorType
         {
             [JsonProperty]
@@ -9293,11 +9301,7 @@ Path '', line 1, position 1.");
 
         public class NullableLongTestClass
         {
-            public ulong? Value
-            {
-                get;
-                set;
-            }
+            public ulong? Value { get; set; }
         }
 #endif
 
@@ -9346,13 +9350,13 @@ Path '', line 1, position 1.");
 }";
 
             ExceptionAssert.Throws<JsonSerializationException>(() =>
-                {
-                    JsonConvert.DeserializeObject<System.Net.Mail.MailMessage>(
-                        JsonMessage,
-                        new MailAddressReadConverter(),
-                        new AttachmentReadConverter(),
-                        new EncodingReadConverter());
-                },
+            {
+                JsonConvert.DeserializeObject<System.Net.Mail.MailMessage>(
+                    JsonMessage,
+                    new MailAddressReadConverter(),
+                    new AttachmentReadConverter(),
+                    new EncodingReadConverter());
+            },
                 "Cannot populate list type System.Net.Mime.HeaderCollection. Path 'Headers', line 26, position 14.");
         }
 
@@ -9436,7 +9440,9 @@ Path '', line 1, position 1.");
             {
                 var encodingName = serializer.Deserialize<string>(reader);
                 if (encodingName == null)
+                {
                     return null;
+                }
 
                 return Encoding.GetEncoding(encodingName);
             }
@@ -9454,7 +9460,6 @@ Path '', line 1, position 1.");
         [JsonProperty]
         public string DerivedProperty { get; private set; }
     }
-
 
     public class BaseWithPrivate
     {

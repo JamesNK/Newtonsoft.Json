@@ -286,7 +286,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value <= 0)
+                {
                     throw new ArgumentException("Value must be positive.", "value");
+                }
 
                 _maxDepth = value;
                 _maxDepthSet = true;

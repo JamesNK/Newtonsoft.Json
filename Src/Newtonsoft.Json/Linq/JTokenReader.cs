@@ -126,13 +126,19 @@ namespace Newtonsoft.Json.Linq
             if (CurrentState != State.Start)
             {
                 if (_current == null)
+                {
                     return false;
+                }
 
                 JContainer container = _current as JContainer;
                 if (container != null && _parent != container)
+                {
                     return ReadInto(container);
+                }
                 else
+                {
                     return ReadOver(_current);
+                }
             }
 
             _current = _root;
@@ -156,13 +162,17 @@ namespace Newtonsoft.Json.Linq
         private bool ReadOver(JToken t)
         {
             if (t == _root)
+            {
                 return ReadToEnd();
+            }
 
             JToken next = t.Next;
             if ((next == null || next == t) || t == t.Parent.Last)
             {
                 if (t.Parent == null)
+                {
                     return ReadToEnd();
+                }
 
                 return SetEnd(t.Parent);
             }
@@ -298,7 +308,9 @@ namespace Newtonsoft.Json.Linq
         bool IJsonLineInfo.HasLineInfo()
         {
             if (CurrentState == State.Start)
+            {
                 return false;
+            }
 
             IJsonLineInfo info = _current;
             return (info != null && info.HasLineInfo());
@@ -309,11 +321,15 @@ namespace Newtonsoft.Json.Linq
             get
             {
                 if (CurrentState == State.Start)
+                {
                     return 0;
+                }
 
                 IJsonLineInfo info = _current;
                 if (info != null)
+                {
                     return info.LineNumber;
+                }
 
                 return 0;
             }
@@ -324,11 +340,15 @@ namespace Newtonsoft.Json.Linq
             get
             {
                 if (CurrentState == State.Start)
+                {
                     return 0;
+                }
 
                 IJsonLineInfo info = _current;
                 if (info != null)
+                {
                     return info.LinePosition;
+                }
 
                 return 0;
             }
@@ -346,12 +366,18 @@ namespace Newtonsoft.Json.Linq
                 if (!string.IsNullOrEmpty(_initialPath))
                 {
                     if (string.IsNullOrEmpty(path))
+                    {
                         return _initialPath;
+                    }
 
                     if (path.StartsWith('['))
+                    {
                         path = _initialPath + path;
+                    }
                     else
+                    {
                         path = _initialPath + "." + path;
+                    }
                 }
 
                 return path;

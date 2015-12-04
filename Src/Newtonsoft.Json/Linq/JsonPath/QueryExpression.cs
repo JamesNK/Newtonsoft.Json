@@ -44,14 +44,18 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     foreach (QueryExpression e in Expressions)
                     {
                         if (!e.IsMatch(t))
+                        {
                             return false;
+                        }
                     }
                     return true;
                 case QueryOperator.Or:
                     foreach (QueryExpression e in Expressions)
                     {
                         if (e.IsMatch(t))
+                        {
                             return true;
+                        }
                     }
                     return false;
                 default:
@@ -76,27 +80,39 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 {
                     case QueryOperator.Equals:
                         if (v != null && EqualsWithStringCoercion(v, Value))
+                        {
                             return true;
+                        }
                         break;
                     case QueryOperator.NotEquals:
                         if (v != null && !EqualsWithStringCoercion(v, Value))
+                        {
                             return true;
+                        }
                         break;
                     case QueryOperator.GreaterThan:
                         if (v != null && v.CompareTo(Value) > 0)
+                        {
                             return true;
+                        }
                         break;
                     case QueryOperator.GreaterThanOrEquals:
                         if (v != null && v.CompareTo(Value) >= 0)
+                        {
                             return true;
+                        }
                         break;
                     case QueryOperator.LessThan:
                         if (v != null && v.CompareTo(Value) < 0)
+                        {
                             return true;
+                        }
                         break;
                     case QueryOperator.LessThanOrEquals:
                         if (v != null && v.CompareTo(Value) <= 0)
+                        {
                             return true;
+                        }
                         break;
                     case QueryOperator.Exists:
                         return true;

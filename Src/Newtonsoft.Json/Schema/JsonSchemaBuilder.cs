@@ -101,7 +101,9 @@ namespace Newtonsoft.Json.Schema
 
                 bool locationReference = (reference.StartsWith("#", StringComparison.Ordinal));
                 if (locationReference)
+                {
                     reference = UnescapeReference(reference);
+                }
 
                 JsonSchema resolvedSchema = _resolver.GetSchema(reference);
 
@@ -123,28 +125,40 @@ namespace Newtonsoft.Json.Schema
                             {
                                 int index;
                                 if (int.TryParse(part, out index) && index >= 0 && index < currentToken.Count())
+                                {
                                     currentToken = currentToken[index];
+                                }
                                 else
+                                {
                                     currentToken = null;
+                                }
                             }
 
                             if (currentToken == null)
+                            {
                                 break;
+                            }
                         }
 
                         if (currentToken != null)
+                        {
                             resolvedSchema = BuildSchema(currentToken);
+                        }
                     }
 
                     if (resolvedSchema == null)
+                    {
                         throw new JsonException("Could not resolve schema reference '{0}'.".FormatWith(CultureInfo.InvariantCulture, schema.DeferredReference));
+                    }
                 }
 
                 schema = resolvedSchema;
             }
 
             if (schema.ReferencesResolved)
+            {
                 return schema;
+            }
 
             schema.ReferencesResolved = true;
 
@@ -165,7 +179,9 @@ namespace Newtonsoft.Json.Schema
             }
 
             if (schema.AdditionalItems != null)
+            {
                 schema.AdditionalItems = ResolveReferences(schema.AdditionalItems);
+            }
 
             if (schema.PatternProperties != null)
             {
@@ -184,7 +200,9 @@ namespace Newtonsoft.Json.Schema
             }
 
             if (schema.AdditionalProperties != null)
+            {
                 schema.AdditionalProperties = ResolveReferences(schema.AdditionalProperties);
+            }
 
             return schema;
         }
@@ -193,7 +211,9 @@ namespace Newtonsoft.Json.Schema
         {
             JObject schemaObject = token as JObject;
             if (schemaObject == null)
+            {
                 throw JsonException.Create(token, token.Path, "Expected object while parsing schema object, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+            }
 
             JToken referenceToken;
             if (schemaObject.TryGetValue(JsonTypeReflector.RefPropertyName, out referenceToken))
@@ -206,12 +226,16 @@ namespace Newtonsoft.Json.Schema
 
             string location = token.Path.Replace(".", "/").Replace("[", "/").Replace("]", string.Empty);
             if (!string.IsNullOrEmpty(location))
+            {
                 location = "/" + location;
+            }
             location = "#" + location;
 
             JsonSchema existingSchema;
             if (_documentSchemas.TryGetValue(location, out existingSchema))
+            {
                 return existingSchema;
+            }
 
             Push(new JsonSchema { Location = location });
 
@@ -332,17 +356,23 @@ namespace Newtonsoft.Json.Schema
             {
                 JsonSchema schema = BuildSchema(token);
                 if (schema != null)
+                {
                     schemas.Add(schema);
+                }
             }
 
             if (schemas.Count > 0)
+            {
                 CurrentSchema.Extends = schemas;
+            }
         }
 
         private void ProcessEnum(JToken token)
         {
             if (token.Type != JTokenType.Array)
+            {
                 throw JsonException.Create(token, token.Path, "Expected Array token while parsing enum values, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+            }
 
             CurrentSchema.Enum = new List<JToken>();
 
@@ -355,17 +385,25 @@ namespace Newtonsoft.Json.Schema
         private void ProcessAdditionalProperties(JToken token)
         {
             if (token.Type == JTokenType.Boolean)
+            {
                 CurrentSchema.AllowAdditionalProperties = (bool)token;
+            }
             else
+            {
                 CurrentSchema.AdditionalProperties = BuildSchema(token);
+            }
         }
 
         private void ProcessAdditionalItems(JToken token)
         {
             if (token.Type == JTokenType.Boolean)
+            {
                 CurrentSchema.AllowAdditionalItems = (bool)token;
+            }
             else
+            {
                 CurrentSchema.AdditionalItems = BuildSchema(token);
+            }
         }
 
         private IDictionary<string, JsonSchema> ProcessProperties(JToken token)
@@ -373,12 +411,16 @@ namespace Newtonsoft.Json.Schema
             IDictionary<string, JsonSchema> properties = new Dictionary<string, JsonSchema>();
 
             if (token.Type != JTokenType.Object)
+            {
                 throw JsonException.Create(token, token.Path, "Expected Object token while parsing schema properties, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+            }
 
             foreach (JProperty propertyToken in token)
             {
                 if (properties.ContainsKey(propertyToken.Name))
+                {
                     throw new JsonException("Property {0} has already been defined in schema.".FormatWith(CultureInfo.InvariantCulture, propertyToken.Name));
+                }
 
                 properties.Add(propertyToken.Name, BuildSchema(propertyToken.Value));
             }
@@ -419,7 +461,9 @@ namespace Newtonsoft.Json.Schema
                     foreach (JToken typeToken in token)
                     {
                         if (typeToken.Type != JTokenType.String)
+                        {
                             throw JsonException.Create(typeToken, typeToken.Path, "Exception JSON schema type string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+                        }
 
                         type = type | MapType((string)typeToken);
                     }
@@ -436,7 +480,9 @@ namespace Newtonsoft.Json.Schema
         {
             JsonSchemaType mappedType;
             if (!JsonSchemaConstants.JsonSchemaTypeMapping.TryGetValue(type, out mappedType))
+            {
                 throw new JsonException("Invalid JSON schema type: {0}".FormatWith(CultureInfo.InvariantCulture, type));
+            }
 
             return mappedType;
         }

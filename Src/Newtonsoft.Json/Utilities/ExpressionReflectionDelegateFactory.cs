@@ -137,26 +137,30 @@ namespace Newtonsoft.Json.Utilities
             Expression callExpression;
             if (method.IsConstructor)
             {
-                callExpression = Expression.New((ConstructorInfo) method, argsExpression);
+                callExpression = Expression.New((ConstructorInfo)method, argsExpression);
             }
             else if (method.IsStatic)
             {
-                callExpression = Expression.Call((MethodInfo) method, argsExpression);
+                callExpression = Expression.Call((MethodInfo)method, argsExpression);
             }
             else
             {
                 Expression readParameter = EnsureCastExpression(targetParameterExpression, method.DeclaringType);
 
-                callExpression = Expression.Call(readParameter, (MethodInfo) method, argsExpression);
+                callExpression = Expression.Call(readParameter, (MethodInfo)method, argsExpression);
             }
 
             if (method is MethodInfo)
             {
-                MethodInfo m = (MethodInfo) method;
-                if (m.ReturnType != typeof (void))
+                MethodInfo m = (MethodInfo)method;
+                if (m.ReturnType != typeof(void))
+                {
                     callExpression = EnsureCastExpression(callExpression, type);
+                }
                 else
+                {
                     callExpression = Expression.Block(callExpression, Expression.Constant(null));
+                }
             }
             else
             {
@@ -170,7 +174,9 @@ namespace Newtonsoft.Json.Utilities
                 foreach (ByRefParameter p in refParameterMap)
                 {
                     if (!p.IsOut)
+                    {
                         bodyExpressions.Add(Expression.Assign(p.Variable, p.Value));
+                    }
 
                     variableExpressions.Add(p.Variable);
                 }
@@ -189,7 +195,9 @@ namespace Newtonsoft.Json.Utilities
 
             // avoid error from expressions compiler because of abstract class
             if (type.IsAbstract())
+            {
                 return () => (T)Activator.CreateInstance(type);
+            }
 
             try
             {
@@ -274,7 +282,9 @@ namespace Newtonsoft.Json.Utilities
             // use reflection for structs
             // expression doesn't correctly set value
             if (fieldInfo.DeclaringType.IsValueType() || fieldInfo.IsInitOnly)
+            {
                 return LateBoundReflectionDelegateFactory.Instance.CreateSet<T>(fieldInfo);
+            }
 
             ParameterExpression sourceParameterExpression = Expression.Parameter(typeof(T), "source");
             ParameterExpression valueParameterExpression = Expression.Parameter(typeof(object), "value");
@@ -308,7 +318,9 @@ namespace Newtonsoft.Json.Utilities
             // use reflection for structs
             // expression doesn't correctly set value
             if (propertyInfo.DeclaringType.IsValueType())
+            {
                 return LateBoundReflectionDelegateFactory.Instance.CreateSet<T>(propertyInfo);
+            }
 
             Type instanceType = typeof(T);
             Type valueType = typeof(object);
@@ -344,7 +356,9 @@ namespace Newtonsoft.Json.Utilities
 
             // check if a cast or conversion is required
             if (expressionType == targetType || (!expressionType.IsValueType() && targetType.IsAssignableFrom(expressionType)))
+            {
                 return expression;
+            }
 
             return Expression.Convert(expression, targetType);
         }

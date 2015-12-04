@@ -35,6 +35,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Schema
@@ -123,4 +124,5 @@ namespace Newtonsoft.Json.Tests.Schema
         }
     }
 }
+
 #pragma warning restore 618

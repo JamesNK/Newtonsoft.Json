@@ -65,10 +65,14 @@ namespace Newtonsoft.Json.Utilities
         public static void AddRange<T>(this IList<T> initial, IEnumerable<T> collection)
         {
             if (initial == null)
+            {
                 throw new ArgumentNullException("initial");
+            }
 
             if (collection == null)
+            {
                 return;
+            }
 
             foreach (T value in collection)
             {
@@ -91,12 +95,18 @@ namespace Newtonsoft.Json.Utilities
             ValidationUtils.ArgumentNotNull(type, "type");
 
             if (typeof(IDictionary).IsAssignableFrom(type))
+            {
                 return true;
+            }
             if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IDictionary<,>)))
+            {
                 return true;
+            }
 #if !(NET40 || NET35 || NET20 || PORTABLE40)
             if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IReadOnlyDictionary<,>)))
+            {
                 return true;
+            }
 #endif
 
             return false;
@@ -142,7 +152,9 @@ namespace Newtonsoft.Json.Utilities
         public static bool AddDistinct<T>(this IList<T> list, T value, IEqualityComparer<T> comparer)
         {
             if (list.ContainsValue(value, comparer))
+            {
                 return false;
+            }
 
             list.Add(value);
             return true;
@@ -152,15 +164,21 @@ namespace Newtonsoft.Json.Utilities
         public static bool ContainsValue<TSource>(this IEnumerable<TSource> source, TSource value, IEqualityComparer<TSource> comparer)
         {
             if (comparer == null)
+            {
                 comparer = EqualityComparer<TSource>.Default;
+            }
 
             if (source == null)
+            {
                 throw new ArgumentNullException("source");
+            }
 
             foreach (TSource local in source)
             {
                 if (comparer.Equals(local, value))
+                {
                     return true;
+                }
             }
 
             return false;
@@ -172,7 +190,9 @@ namespace Newtonsoft.Json.Utilities
             foreach (T value in values)
             {
                 if (!list.AddDistinct(value, comparer))
+                {
                     allAdded = false;
+                }
             }
 
             return allAdded;
@@ -184,7 +204,9 @@ namespace Newtonsoft.Json.Utilities
             foreach (T value in collection)
             {
                 if (predicate(value))
+                {
                     return index;
+                }
 
                 index++;
             }
@@ -237,16 +259,24 @@ namespace Newtonsoft.Json.Utilities
 
                 // don't keep calculating dimensions for arrays inside the value array
                 if (dimensions.Count == dimensionsCount)
+                {
                     break;
+                }
 
                 if (currentArray.Count == 0)
+                {
                     break;
+                }
 
                 object v = currentArray[0];
                 if (v is IList)
+                {
                     currentArray = (IList)v;
+                }
                 else
+                {
                     break;
+                }
             }
 
             return dimensions;
@@ -265,7 +295,9 @@ namespace Newtonsoft.Json.Utilities
             IList list = (IList)JaggedArrayGetValue(values, indices);
             int currentValuesLength = list.Count;
             if (currentValuesLength != dimensionLength)
+            {
                 throw new Exception("Cannot deserialize non-cubical array as multidimensional array.");
+            }
 
             int[] newIndices = new int[dimension + 1];
             for (int i = 0; i < dimension; i++)
@@ -287,9 +319,13 @@ namespace Newtonsoft.Json.Utilities
             {
                 int index = indices[i];
                 if (i == indices.Length - 1)
+                {
                     return currentList[index];
+                }
                 else
+                {
                     currentList = (IList)currentList[index];
+                }
             }
             return currentList;
         }

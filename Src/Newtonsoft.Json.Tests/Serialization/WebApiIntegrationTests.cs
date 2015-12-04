@@ -147,7 +147,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 #else
         [JsonIgnore]
 #endif
-        public string nonSerializedField;
+            public string nonSerializedField;
 
         public bool Equals(SerializableType other)
         {

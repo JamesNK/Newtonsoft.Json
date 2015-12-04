@@ -177,7 +177,9 @@ namespace Newtonsoft.Json.Bson
             base.Close();
 
             if (CloseOutput && _writer != null)
+            {
                 _writer.Close();
+            }
         }
 
         private void AddParent(BsonToken container)
@@ -213,7 +215,9 @@ namespace Newtonsoft.Json.Bson
             else
             {
                 if (token.Type != BsonType.Object && token.Type != BsonType.Array)
+                {
                     throw JsonWriterException.Create(this, "Error writing {0} value. BSON must start with an Object or Array.".FormatWith(CultureInfo.InvariantCulture, token.Type), null);
+                }
 
                 _parent = token;
                 _root = token;
@@ -267,9 +271,13 @@ namespace Newtonsoft.Json.Bson
         {
             base.WriteValue(value);
             if (value == null)
+            {
                 AddValue(null, BsonType.Null);
+            }
             else
+            {
                 AddToken(new BsonString(value, true));
+            }
         }
 
         /// <summary>
@@ -290,7 +298,9 @@ namespace Newtonsoft.Json.Bson
         public override void WriteValue(uint value)
         {
             if (value > int.MaxValue)
+            {
                 throw JsonWriterException.Create(this, "Value is too large to fit in a signed 32 bit integer. BSON does not support unsigned values.", null);
+            }
 
             base.WriteValue(value);
             AddValue(value, BsonType.Integer);
@@ -314,7 +324,9 @@ namespace Newtonsoft.Json.Bson
         public override void WriteValue(ulong value)
         {
             if (value > long.MaxValue)
+            {
                 throw JsonWriterException.Create(this, "Value is too large to fit in a signed 64 bit integer. BSON does not support unsigned values.", null);
+            }
 
             base.WriteValue(value);
             AddValue(value, BsonType.Long);
@@ -491,7 +503,9 @@ namespace Newtonsoft.Json.Bson
             ValidationUtils.ArgumentNotNull(value, "value");
 
             if (value.Length != 12)
+            {
                 throw JsonWriterException.Create(this, "An object id must be 12 bytes", null);
+            }
 
             // hack to update the writer state
             UpdateScopeWithFinishedValue();

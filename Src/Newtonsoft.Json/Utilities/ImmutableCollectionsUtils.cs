@@ -145,8 +145,8 @@ namespace Newtonsoft.Json.Utilities
                 if (definition != null)
                 {
                     Type createdTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.CreatedTypeName);
-                    Type builderTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.BuilderTypeName); 
-                    
+                    Type builderTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.BuilderTypeName);
+
                     if (createdTypeDefinition != null && builderTypeDefinition != null)
                     {
                         MethodInfo mb = builderTypeDefinition.GetMethods().FirstOrDefault(m =>
@@ -172,4 +172,5 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 }
+
 #endif

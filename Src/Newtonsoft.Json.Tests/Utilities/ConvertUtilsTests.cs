@@ -161,26 +161,11 @@ namespace Newtonsoft.Json.Tests.Utilities
         [Test]
         public void HexParseError()
         {
-            ExceptionAssert.Throws<FormatException>(() =>
-            {
-                ConvertUtils.HexTextToInt("-100".ToCharArray(), 0, 4);
-            }, "Invalid hex character: -");
-            ExceptionAssert.Throws<FormatException>(() =>
-            {
-                ConvertUtils.HexTextToInt("000g".ToCharArray(), 0, 4);
-            }, "Invalid hex character: g");
-            ExceptionAssert.Throws<FormatException>(() =>
-            {
-                ConvertUtils.HexTextToInt(" ssd".ToCharArray(), 0, 4);
-            }, "Invalid hex character:  ");
-            ExceptionAssert.Throws<FormatException>(() =>
-            {
-                ConvertUtils.HexTextToInt("000:".ToCharArray(), 0, 4);
-            }, "Invalid hex character: :");
-            ExceptionAssert.Throws<FormatException>(() =>
-            {
-                ConvertUtils.HexTextToInt("000G".ToCharArray(), 0, 4);
-            }, "Invalid hex character: G");
+            ExceptionAssert.Throws<FormatException>(() => { ConvertUtils.HexTextToInt("-100".ToCharArray(), 0, 4); }, "Invalid hex character: -");
+            ExceptionAssert.Throws<FormatException>(() => { ConvertUtils.HexTextToInt("000g".ToCharArray(), 0, 4); }, "Invalid hex character: g");
+            ExceptionAssert.Throws<FormatException>(() => { ConvertUtils.HexTextToInt(" ssd".ToCharArray(), 0, 4); }, "Invalid hex character:  ");
+            ExceptionAssert.Throws<FormatException>(() => { ConvertUtils.HexTextToInt("000:".ToCharArray(), 0, 4); }, "Invalid hex character: :");
+            ExceptionAssert.Throws<FormatException>(() => { ConvertUtils.HexTextToInt("000G".ToCharArray(), 0, 4); }, "Invalid hex character: G");
         }
 
         private void HexParseSame(string text)

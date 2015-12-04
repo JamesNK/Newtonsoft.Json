@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Serialization
         public const string ShouldSerializePrefix = "ShouldSerialize";
         public const string SpecifiedPostfix = "Specified";
 
-        private static readonly ThreadSafeStore<Type, Func<object[], JsonConverter>> JsonConverterCreatorCache = 
+        private static readonly ThreadSafeStore<Type, Func<object[], JsonConverter>> JsonConverterCreatorCache =
             new ThreadSafeStore<Type, Func<object[], JsonConverter>>(GetJsonConverterCreator);
 
 #if !(NET20 || DOTNET)
@@ -79,7 +79,9 @@ namespace Newtonsoft.Json.Serialization
             {
                 DataContractAttribute result = CachedAttributeGetter<DataContractAttribute>.GetAttribute(currentType);
                 if (result != null)
+                {
                     return result;
+                }
 
                 currentType = currentType.BaseType();
             }
@@ -93,7 +95,9 @@ namespace Newtonsoft.Json.Serialization
 
             // can't override a field
             if (memberInfo.MemberType() == MemberTypes.Field)
+            {
                 return CachedAttributeGetter<DataMemberAttribute>.GetAttribute(memberInfo);
+            }
 
             // search property and then search base properties if nothing is returned and the property is virtual
             PropertyInfo propertyInfo = (PropertyInfo)memberInfo;
@@ -108,7 +112,9 @@ namespace Newtonsoft.Json.Serialization
                     {
                         PropertyInfo baseProperty = (PropertyInfo)ReflectionUtils.GetMemberInfoFromType(currentType, propertyInfo);
                         if (baseProperty != null && baseProperty.IsVirtual())
+                        {
                             result = CachedAttributeGetter<DataMemberAttribute>.GetAttribute(baseProperty);
+                        }
 
                         currentType = currentType.BaseType();
                     }
@@ -123,12 +129,16 @@ namespace Newtonsoft.Json.Serialization
         {
             JsonObjectAttribute objectAttribute = GetCachedAttribute<JsonObjectAttribute>(objectType);
             if (objectAttribute != null)
+            {
                 return objectAttribute.MemberSerialization;
+            }
 
 #if !NET20
             DataContractAttribute dataContractAttribute = GetDataContractAttribute(objectType);
             if (dataContractAttribute != null)
+            {
                 return MemberSerialization.OptIn;
+            }
 #endif
 
 #if !(DOTNET || PORTABLE40 || PORTABLE)
@@ -136,7 +146,9 @@ namespace Newtonsoft.Json.Serialization
             {
                 SerializableAttribute serializableAttribute = GetCachedAttribute<SerializableAttribute>(objectType);
                 if (serializableAttribute != null)
+                {
                     return MemberSerialization.Fields;
+                }
             }
 #endif
 
@@ -152,7 +164,9 @@ namespace Newtonsoft.Json.Serialization
             {
                 Func<object[], JsonConverter> creator = JsonConverterCreatorCache.Get(converterAttribute.ConverterType);
                 if (creator != null)
+                {
                     return creator(converterAttribute.ConverterParameters);
+                }
             }
 
             return null;
@@ -196,14 +210,16 @@ namespace Newtonsoft.Json.Serialization
                             parameterizedConstructor = ReflectionDelegateFactory.CreateParameterizedConstructor(parameterizedConstructorInfo);
                             return (JsonConverter)parameterizedConstructor(parameters);
                         }
-                        else 
+                        else
                         {
                             throw new JsonException("No matching parameterized constructor found for '{0}'.".FormatWith(CultureInfo.InvariantCulture, converterType));
-                        }                        
+                        }
                     }
 
                     if (defaultConstructor == null)
+                    {
                         throw new JsonException("No parameterless constructor defined for '{0}'.".FormatWith(CultureInfo.InvariantCulture, converterType));
+                    }
 
                     return (JsonConverter)defaultConstructor();
                 }
@@ -242,7 +258,9 @@ namespace Newtonsoft.Json.Serialization
                     const string metadataClassTypeName = "MetadataClassType";
 
                     if (_metadataTypeAttributeReflectionObject == null)
+                    {
                         _metadataTypeAttributeReflectionObject = ReflectionObject.Create(attributeType, metadataClassTypeName);
+                    }
 
                     return (Type)_metadataTypeAttributeReflectionObject.GetValue(attribute, metadataClassTypeName);
                 }
@@ -262,19 +280,25 @@ namespace Newtonsoft.Json.Serialization
             {
                 attribute = ReflectionUtils.GetAttribute<T>(metadataType, true);
                 if (attribute != null)
+                {
                     return attribute;
+                }
             }
 #endif
 
             attribute = ReflectionUtils.GetAttribute<T>(type, true);
             if (attribute != null)
+            {
                 return attribute;
+            }
 
             foreach (Type typeInterface in type.GetInterfaces())
             {
                 attribute = ReflectionUtils.GetAttribute<T>(typeInterface, true);
                 if (attribute != null)
+                {
                     return attribute;
+                }
             }
 
             return null;
@@ -294,14 +318,18 @@ namespace Newtonsoft.Json.Serialization
                 {
                     attribute = ReflectionUtils.GetAttribute<T>(metadataTypeMemberInfo, true);
                     if (attribute != null)
+                    {
                         return attribute;
+                    }
                 }
             }
 #endif
 
             attribute = ReflectionUtils.GetAttribute<T>(memberInfo, true);
             if (attribute != null)
+            {
                 return attribute;
+            }
 
             if (memberInfo.DeclaringType != null)
             {
@@ -313,7 +341,9 @@ namespace Newtonsoft.Json.Serialization
                     {
                         attribute = ReflectionUtils.GetAttribute<T>(interfaceTypeMemberInfo, true);
                         if (attribute != null)
+                        {
                             return attribute;
+                        }
                     }
                 }
             }
@@ -325,11 +355,15 @@ namespace Newtonsoft.Json.Serialization
         {
             Type type = provider as Type;
             if (type != null)
+            {
                 return GetAttribute<T>(type);
+            }
 
             MemberInfo memberInfo = provider as MemberInfo;
             if (memberInfo != null)
+            {
                 return GetAttribute<T>(memberInfo);
+            }
 
             return ReflectionUtils.GetAttribute<T>(provider, true);
         }
@@ -413,7 +447,9 @@ namespace Newtonsoft.Json.Serialization
             {
 #if !(PORTABLE40 || PORTABLE || DOTNET)
                 if (DynamicCodeGeneration)
+                {
                     return DynamicReflectionDelegateFactory.Instance;
+                }
 
                 return LateBoundReflectionDelegateFactory.Instance;
 #else

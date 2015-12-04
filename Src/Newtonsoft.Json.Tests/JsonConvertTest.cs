@@ -53,6 +53,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests
@@ -1201,7 +1202,6 @@ namespace Newtonsoft.Json.Tests
             writer.Flush();
         }
 
-
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
         [Test]
         public void IntegerLengthOverflows()
@@ -1292,7 +1292,7 @@ namespace Newtonsoft.Json.Tests
             }
 
             public ClobberingJsonConverter(string clobberValueString)
-            : this(clobberValueString, 1337)
+                : this(clobberValueString, 1337)
             {
             }
 
@@ -1341,7 +1341,6 @@ namespace Newtonsoft.Json.Tests
             };
 
             string json = JsonConvert.SerializeObject(measurements);
-
 
             Assert.AreEqual("{\"Positions\":[57.72,60.44,63.44,66.81,70.45],\"Loads\":[23284.0,23225.0,23062.0,22846.0,22594.0],\"Gain\":12345.679}", json);
         }
@@ -1393,7 +1392,7 @@ namespace Newtonsoft.Json.Tests
             {
                 throw new NotImplementedException();
             }
-            
+
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
                 writer.WriteValue(Math.Round((double)value, _precision, _rounding));
@@ -1403,12 +1402,22 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void GenericBaseClassSerialization()
         {
-            string json = JsonConvert.SerializeObject (new NonGenericChildClass ());
-            Assert.AreEqual ("{\"Data\":null}", json);
+            string json = JsonConvert.SerializeObject(new NonGenericChildClass());
+            Assert.AreEqual("{\"Data\":null}", json);
         }
 
-        public class GenericBaseClass<O, T> { public virtual T Data { get; set; } }
-        public class GenericIntermediateClass<O> : GenericBaseClass<O, string> { public override string Data { get; set; } }
-        public class NonGenericChildClass : GenericIntermediateClass<int> { }
+        public class GenericBaseClass<O, T>
+        {
+            public virtual T Data { get; set; }
+        }
+
+        public class GenericIntermediateClass<O> : GenericBaseClass<O, string>
+        {
+            public override string Data { get; set; }
+        }
+
+        public class NonGenericChildClass : GenericIntermediateClass<int>
+        {
+        }
     }
 }

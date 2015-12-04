@@ -118,10 +118,14 @@ namespace Newtonsoft.Json.Utilities
         public static bool[] GetCharEscapeFlags(StringEscapeHandling stringEscapeHandling, char quoteChar)
         {
             if (stringEscapeHandling == StringEscapeHandling.EscapeHtml)
+            {
                 return HtmlCharEscapeFlags;
+            }
 
             if (quoteChar == '"')
+            {
                 return DoubleQuoteCharEscapeFlags;
+            }
 
             return SingleQuoteCharEscapeFlags;
         }
@@ -129,12 +133,16 @@ namespace Newtonsoft.Json.Utilities
         public static bool ShouldEscapeJavaScriptString(string s, bool[] charEscapeFlags)
         {
             if (s == null)
+            {
                 return false;
+            }
 
             foreach (char c in s)
             {
                 if (c >= charEscapeFlags.Length || charEscapeFlags[c])
+                {
                     return true;
+                }
             }
 
             return false;
@@ -145,7 +153,9 @@ namespace Newtonsoft.Json.Utilities
         {
             // leading delimiter
             if (appendDelimiters)
+            {
                 writer.Write(delimiter);
+            }
 
             if (s != null)
             {
@@ -156,7 +166,9 @@ namespace Newtonsoft.Json.Utilities
                     var c = s[i];
 
                     if (c < charEscapeFlags.Length && !charEscapeFlags[c])
+                    {
                         continue;
+                    }
 
                     string escapedValue;
 
@@ -221,7 +233,9 @@ namespace Newtonsoft.Json.Utilities
                     }
 
                     if (escapedValue == null)
+                    {
                         continue;
+                    }
 
                     bool isEscapedUnicodeText = string.Equals(escapedValue, EscapedUnicodeText);
 
@@ -254,9 +268,13 @@ namespace Newtonsoft.Json.Utilities
 
                     lastWritePosition = i + 1;
                     if (!isEscapedUnicodeText)
+                    {
                         writer.Write(escapedValue);
+                    }
                     else
+                    {
                         writer.Write(writeBuffer, 0, UnicodeTextLength);
+                    }
                 }
 
                 if (lastWritePosition == 0)
@@ -269,7 +287,9 @@ namespace Newtonsoft.Json.Utilities
                     int length = s.Length - lastWritePosition;
 
                     if (writeBuffer == null || writeBuffer.Length < length)
+                    {
                         writeBuffer = new char[length];
+                    }
 
                     s.CopyTo(lastWritePosition, writeBuffer, 0, length);
 
@@ -280,7 +300,9 @@ namespace Newtonsoft.Json.Utilities
 
             // trailing delimiter
             if (appendDelimiters)
+            {
                 writer.Write(delimiter);
+            }
         }
 
         public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters)

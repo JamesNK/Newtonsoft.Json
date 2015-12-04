@@ -78,11 +78,15 @@ namespace Newtonsoft.Json.Serialization
 #endif
 
                 if (assembly == null)
+                {
                     throw new JsonSerializationException("Could not load assembly '{0}'.".FormatWith(CultureInfo.InvariantCulture, assemblyName));
+                }
 
                 Type type = assembly.GetType(typeName);
                 if (type == null)
+                {
                     throw new JsonSerializationException("Could not find type '{0}' in assembly '{1}'.".FormatWith(CultureInfo.InvariantCulture, typeName, assembly.FullName));
+                }
 
                 return type;
             }
@@ -106,13 +110,15 @@ namespace Newtonsoft.Json.Serialization
             public override int GetHashCode()
             {
                 return ((AssemblyName != null) ? AssemblyName.GetHashCode() : 0)
-                    ^ ((TypeName != null) ? TypeName.GetHashCode() : 0);
+                       ^ ((TypeName != null) ? TypeName.GetHashCode() : 0);
             }
 
             public override bool Equals(object obj)
             {
                 if (!(obj is TypeNameKey))
+                {
                     return false;
+                }
 
                 return Equals((TypeNameKey)obj);
             }

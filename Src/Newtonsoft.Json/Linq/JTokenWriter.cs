@@ -60,7 +60,9 @@ namespace Newtonsoft.Json.Linq
             get
             {
                 if (_token != null)
+                {
                     return _token;
+                }
 
                 return _value;
             }
@@ -113,9 +115,13 @@ namespace Newtonsoft.Json.Linq
         private void AddParent(JContainer container)
         {
             if (_parent == null)
+            {
                 _token = container;
+            }
             else
+            {
                 _parent.AddAndSkipParentCheck(container);
+            }
 
             _parent = container;
             _current = container;
@@ -127,7 +133,9 @@ namespace Newtonsoft.Json.Linq
             _parent = _parent.Parent;
 
             if (_parent != null && _parent.Type == JTokenType.Property)
+            {
                 _parent = _parent.Parent;
+            }
         }
 
         /// <summary>
@@ -194,7 +202,9 @@ namespace Newtonsoft.Json.Linq
                 _current = _parent.Last;
 
                 if (_parent.Type == JTokenType.Property)
+                {
                     _parent = _parent.Parent;
+                }
             }
             else
             {

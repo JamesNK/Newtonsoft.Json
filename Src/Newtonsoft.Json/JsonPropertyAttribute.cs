@@ -62,7 +62,7 @@ namespace Newtonsoft.Json
         /// <example>
         /// [JsonProperty(ItemConverterType = typeof(MyContainerConverter), ItemConverterParameters = new object[] { 123, "Four" })]
         /// </example>
-        public object[] ItemConverterParameters { get; set; } 
+        public object[] ItemConverterParameters { get; set; }
 
         /// <summary>
         /// Gets or sets the null value handling used when serializing this property.

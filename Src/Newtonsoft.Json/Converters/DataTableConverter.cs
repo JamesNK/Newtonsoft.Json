@@ -59,7 +59,9 @@ namespace Newtonsoft.Json.Converters
                     object columnValue = row[column];
 
                     if (serializer.NullValueHandling == NullValueHandling.Ignore && (columnValue == null || columnValue == DBNull.Value))
+                    {
                         continue;
+                    }
 
                     writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(column.ColumnName) : column.ColumnName);
                     serializer.Serialize(writer, columnValue);
@@ -215,7 +217,7 @@ namespace Newtonsoft.Json.Converters
                     CheckedRead(reader);
                     if (reader.TokenType == JsonToken.StartObject)
                     {
-                        return typeof (DataTable); // nested datatable
+                        return typeof(DataTable); // nested datatable
                     }
 
                     Type arrayType = GetColumnDataType(reader);
@@ -246,4 +248,5 @@ namespace Newtonsoft.Json.Converters
         }
     }
 }
+
 #endif

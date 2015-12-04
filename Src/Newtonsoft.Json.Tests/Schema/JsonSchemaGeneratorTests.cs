@@ -52,6 +52,7 @@ using Extensions = Newtonsoft.Json.Schema.Extensions;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Schema
@@ -353,7 +354,9 @@ namespace Newtonsoft.Json.Tests.Schema
             protected override JsonContract CreateContract(Type objectType)
             {
                 if (objectType == typeof(DirectoryInfo))
+                {
                     return base.CreateObjectContract(objectType);
+                }
 
                 return base.CreateContract(objectType);
             }
@@ -849,4 +852,5 @@ namespace Newtonsoft.Json.Tests.Schema
     {
     }
 }
+
 #pragma warning restore 618

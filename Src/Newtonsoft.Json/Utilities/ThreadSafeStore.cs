@@ -42,7 +42,9 @@ namespace Newtonsoft.Json.Utilities
         public ThreadSafeStore(Func<TKey, TValue> creator)
         {
             if (creator == null)
+            {
                 throw new ArgumentNullException("creator");
+            }
 
             _creator = creator;
             _store = new Dictionary<TKey, TValue>();
@@ -52,7 +54,9 @@ namespace Newtonsoft.Json.Utilities
         {
             TValue value;
             if (!_store.TryGetValue(key, out value))
+            {
                 return AddValue(key);
+            }
 
             return value;
         }
@@ -73,7 +77,9 @@ namespace Newtonsoft.Json.Utilities
                     // double check locking
                     TValue checkValue;
                     if (_store.TryGetValue(key, out checkValue))
+                    {
                         return checkValue;
+                    }
 
                     Dictionary<TKey, TValue> newStore = new Dictionary<TKey, TValue>(_store);
                     newStore[key] = value;

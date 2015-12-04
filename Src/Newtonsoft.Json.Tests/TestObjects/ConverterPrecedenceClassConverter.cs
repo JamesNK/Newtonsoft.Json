@@ -49,7 +49,9 @@ namespace Newtonsoft.Json.Tests.TestObjects
 
             string converter = (string)j[0];
             if (converter != ConverterType)
+            {
                 throw new Exception(StringUtils.FormatWith("Serialize converter {0} and deserialize converter {1} do not match.", CultureInfo.InvariantCulture, converter, ConverterType));
+            }
 
             string testValue = (string)j[1];
             return new ConverterPrecedenceClass(testValue);

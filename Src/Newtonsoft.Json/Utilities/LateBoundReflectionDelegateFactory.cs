@@ -67,7 +67,9 @@ namespace Newtonsoft.Json.Utilities
 
             ConstructorInfo c = method as ConstructorInfo;
             if (c != null)
+            {
                 return (o, a) => c.Invoke(a);
+            }
 
             return (o, a) => method.Invoke(o, a);
         }
@@ -77,7 +79,9 @@ namespace Newtonsoft.Json.Utilities
             ValidationUtils.ArgumentNotNull(type, "type");
 
             if (type.IsValueType())
+            {
                 return () => (T)Activator.CreateInstance(type);
+            }
 
             ConstructorInfo constructorInfo = ReflectionUtils.GetDefaultConstructor(type, true);
 

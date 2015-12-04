@@ -53,6 +53,7 @@ using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
 #if !NET20
 using System.Xml.Linq;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Converters
@@ -103,7 +104,9 @@ namespace Newtonsoft.Json.Tests.Converters
             reader.Read();
             XmlNodeConverter converter = new XmlNodeConverter();
             if (deserializeRootElementName != null)
+            {
                 converter.DeserializeRootElementName = deserializeRootElementName;
+            }
 
             XmlNode node = (XmlNode)converter.ReadJson(reader, typeof(XmlDocument), null, new JsonSerializer());
 
@@ -116,7 +119,9 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string linqXmlText = d.ToString(SaveOptions.DisableFormatting);
             if (d.Declaration != null)
+            {
                 linqXmlText = d.Declaration + linqXmlText;
+            }
 
             Assert.AreEqual(xmlText, linqXmlText);
 #endif
@@ -238,7 +243,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             var result = xmlDocument.FirstChild.ChildNodes.Cast<XmlNode>().ToArray();
 
-            var json = JsonConvert.SerializeObject(result, Formatting.Indented);  // <--- fails here with the cast message
+            var json = JsonConvert.SerializeObject(result, Formatting.Indented); // <--- fails here with the cast message
 
             StringAssert.AreEqual(@"[
   {
@@ -275,7 +280,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             var result = xmlDocument.Root.Nodes().ToArray();
 
-            var json = JsonConvert.SerializeObject(result, Formatting.Indented);  // <--- fails here with the cast message
+            var json = JsonConvert.SerializeObject(result, Formatting.Indented); // <--- fails here with the cast message
 
             StringAssert.AreEqual(@"[
   {
@@ -446,10 +451,7 @@ namespace Newtonsoft.Json.Tests.Converters
     }
 }";
             ExceptionAssert.Throws<JsonSerializationException>(
-                () =>
-                {
-                    JsonConvert.DeserializeXmlNode(json);
-                },
+                () => { JsonConvert.DeserializeXmlNode(json); },
                 "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName. Path 'Email', line 3, position 13.");
         }
 
@@ -553,14 +555,12 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual(@"{""?xml-stylesheet"":""href=\""classic.xsl\"" type=\""text/xml\""""}", jsonText);
 
-
             // XmlProcessingInstruction
             XmlCDataSection cDataSection = doc.CreateCDataSection("<Kiwi>true</Kiwi>");
 
             jsonText = JsonConvert.SerializeXmlNode(cDataSection);
 
             Assert.AreEqual(@"{""#cdata-section"":""<Kiwi>true</Kiwi>""}", jsonText);
-
 
             // XmlElement
             XmlElement element = doc.CreateElement("xs", "Choice", "http://www.w3.org/2001/XMLSchema");
@@ -711,7 +711,10 @@ namespace Newtonsoft.Json.Tests.Converters
 
         public class Utf8StringWriter : StringWriter
         {
-            public override Encoding Encoding { get { return Encoding.UTF8; } }
+            public override Encoding Encoding
+            {
+                get { return Encoding.UTF8; }
+            }
 
             public Utf8StringWriter(StringBuilder sb) : base(sb)
             {
@@ -1303,7 +1306,7 @@ namespace Newtonsoft.Json.Tests.Converters
             StringAssert.AreEqual(expected, jsonText);
 
             XmlDocument newDoc = (XmlDocument)DeserializeXmlNode(jsonText);
-			Assert.AreEqual(@"<span class=""vevent""><a class=""url"" href=""http://www.web2con.com/""><!-- Hi --><span>Text</span></a><!-- Hi! --></span>", newDoc.InnerXml);
+            Assert.AreEqual(@"<span class=""vevent""><a class=""url"" href=""http://www.web2con.com/""><!-- Hi --><span>Text</span></a><!-- Hi! --></span>", newDoc.InnerXml);
         }
 
         [Test]
@@ -1948,7 +1951,9 @@ namespace Newtonsoft.Json.Tests.Converters
             {
                 XmlDocument doc = (XmlDocument)serializer.Deserialize(reader, typeof(XmlDocument));
                 if (reader.Read() && reader.TokenType != JsonToken.Comment)
+                {
                     throw new JsonSerializationException("Additional text found in JSON string after finishing deserializing object.");
+                }
                 using (XmlWriter writer = XmlWriter.Create(xml))
                 {
                     doc.Save(writer);
@@ -2583,4 +2588,5 @@ namespace Newtonsoft.Json.Tests.Converters
 #endif
     }
 }
+
 #endif

@@ -43,7 +43,9 @@ namespace Newtonsoft.Json.Tests.TestObjects
         {
             string s = (string)reader.Value;
             if (s == null)
+            {
                 return null;
+            }
 
 #if !(NETFX_CORE || DNXCORE50)
             return s.ToLower(CultureInfo.InvariantCulture).Trim(new[] { ':' });

@@ -132,7 +132,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             Dictionary<string, object> dic = new Dictionary<string, object>
             {
-                { "movie", new Movie { Name = "Die Hard"}}
+                { "movie", new Movie { Name = "Die Hard" } }
             };
 
             string json = JsonConvert.SerializeObject(dic, Formatting.Indented, new JsonSerializerSettings
@@ -158,7 +158,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             IList<KeyValuePair<string, object>> dic = new List<KeyValuePair<string, object>>
             {
-                new KeyValuePair<string, object>("movie", new Movie { Name = "Die Hard"})
+                new KeyValuePair<string, object>("movie", new Movie { Name = "Die Hard" })
             };
 
             string json = JsonConvert.SerializeObject(dic, Formatting.Indented, new JsonSerializerSettings
@@ -760,7 +760,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             //  }
             //]
 
-
             StringAssert.AreEqual(@"[
   {
     ""$type"": ""Customer"",
@@ -920,7 +919,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             public string Url { get; set; }
         }
 
-
         [Test]
         public void GenericDictionaryObject()
         {
@@ -990,7 +988,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(2, statues.Count);
         }
 
-
         [Test]
         public void SerializingIEnumerableOfTShouldRetainGenericTypeInfo()
         {
@@ -1033,14 +1030,18 @@ namespace Newtonsoft.Json.Tests.Serialization
             public IEnumerator<T> GetEnumerator()
             {
                 if (count == 0) // last node
+                {
                     yield break;
+                }
                 yield return value;
 
                 var nextInLine = next;
                 while (nextInLine != null)
                 {
                     if (nextInLine.count != 0)
+                    {
                         yield return nextInLine.value;
+                    }
                     nextInLine = nextInLine.next;
                 }
             }
@@ -1795,11 +1796,11 @@ namespace Newtonsoft.Json.Tests.Serialization
             string serialized = JsonConvert.SerializeObject(input,
                 Newtonsoft.Json.Formatting.Indented,
                 new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, TypeNameAssemblyFormat = FormatterAssemblyStyle.Full } // TypeNameHandling.Auto will work
-            );
+                );
 
             var output = JsonConvert.DeserializeObject<List<Stack<string>>>(serialized,
                 new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }
-            );
+                );
 
             List<string> strings = output.SelectMany(s => s).ToList();
 
@@ -1874,7 +1875,6 @@ namespace Newtonsoft.Json.Tests.Serialization
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto, TypeNameHandling = TypeNameHandling.Auto)]
         public Dictionary<string, IEnumerable<IMyInterfaceType>> Rows { get; private set; }
     }
-
 
     public interface IMyInterfaceType
     {
@@ -1964,7 +1964,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             SerializableWrapper w = obj as SerializableWrapper;
 
             if (w == null)
+            {
                 return false;
+            }
 
             return Equals(w.Content, Content);
         }
@@ -1972,7 +1974,9 @@ namespace Newtonsoft.Json.Tests.Serialization
         public override int GetHashCode()
         {
             if (Content == null)
+            {
                 return 0;
+            }
 
             return Content.GetHashCode();
         }
@@ -2007,8 +2011,14 @@ namespace Newtonsoft.Json.Tests.Serialization
 
         public override bool Equals(object obj)
         {
-            if (obj == null) return false;
-            if (ReferenceEquals(this, obj)) return true;
+            if (obj == null)
+            {
+                return false;
+            }
+            if (ReferenceEquals(this, obj))
+            {
+                return true;
+            }
             if (obj is IExample)
             {
                 return Name.Equals(((IExample)obj).Name);
@@ -2022,7 +2032,9 @@ namespace Newtonsoft.Json.Tests.Serialization
         public override int GetHashCode()
         {
             if (Name == null)
+            {
                 return 0;
+            }
 
             return Name.GetHashCode();
         }
@@ -2104,6 +2116,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
         [DataMember]
         public int ID { get; set; }
+
         [DataMember]
         public string Name { get; set; }
     }
@@ -2122,4 +2135,5 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 #endif
 }
+
 #endif

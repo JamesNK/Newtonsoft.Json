@@ -68,7 +68,9 @@ namespace Newtonsoft.Json.Linq
         public IEnumerator<T> GetEnumerator()
         {
             if (_enumerable == null)
+            {
                 return Empty.GetEnumerator();
+            }
 
             return _enumerable.GetEnumerator();
         }
@@ -93,7 +95,9 @@ namespace Newtonsoft.Json.Linq
             get
             {
                 if (_enumerable == null)
+                {
                     return JEnumerable<JToken>.Empty;
+                }
 
                 return new JEnumerable<JToken>(_enumerable.Values<T, JToken>(key));
             }
@@ -121,7 +125,9 @@ namespace Newtonsoft.Json.Linq
         public override bool Equals(object obj)
         {
             if (obj is JEnumerable<T>)
+            {
                 return Equals((JEnumerable<T>)obj);
+            }
 
             return false;
         }
@@ -135,7 +141,9 @@ namespace Newtonsoft.Json.Linq
         public override int GetHashCode()
         {
             if (_enumerable == null)
+            {
                 return 0;
+            }
 
             return _enumerable.GetHashCode();
         }

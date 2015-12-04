@@ -59,7 +59,9 @@ namespace Newtonsoft.Json
         public JsonConverterAttribute(Type converterType)
         {
             if (converterType == null)
+            {
                 throw new ArgumentNullException("converterType");
+            }
 
             _converterType = converterType;
         }
@@ -70,7 +72,7 @@ namespace Newtonsoft.Json
         /// <param name="converterType">Type of the converter.</param>
         /// <param name="converterParameters">Parameter list to use when constructing the JsonConverter. Can be null.</param>
         public JsonConverterAttribute(Type converterType, params object[] converterParameters)
-        : this(converterType)
+            : this(converterType)
         {
             ConverterParameters = converterParameters;
         }

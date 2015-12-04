@@ -42,6 +42,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -60,9 +61,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             public int TestField;
 
             public ReflectionTestObject(
-                [DefaultValue("1")]
-                [JsonProperty]
-                int testParameter)
+                [DefaultValue("1")] [JsonProperty] int testParameter)
             {
                 TestProperty = testParameter;
                 TestField = testParameter;

@@ -157,7 +157,9 @@ namespace Newtonsoft.Json.Serialization
             get
             {
                 if (!_hasExplicitDefaultValue)
+                {
                     return null;
+                }
 
                 return _defaultValue;
             }
@@ -171,7 +173,9 @@ namespace Newtonsoft.Json.Serialization
         internal object GetResolvedDefaultValue()
         {
             if (_propertyType == null)
+            {
                 return null;
+            }
 
             if (!_hasExplicitDefaultValue && !_hasGeneratedDefaultValue)
             {
@@ -292,9 +296,13 @@ namespace Newtonsoft.Json.Serialization
         internal void WritePropertyName(JsonWriter writer)
         {
             if (_skipPropertyNameEscape)
+            {
                 writer.WritePropertyName(PropertyName, false);
+            }
             else
+            {
                 writer.WritePropertyName(PropertyName);
+            }
         }
     }
 }

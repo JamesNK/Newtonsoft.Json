@@ -38,7 +38,9 @@ namespace Newtonsoft.Json.Tests.TestObjects
             get
             {
                 if (_throwError != null)
+                {
                     return _throwError;
+                }
 
                 throw new Exception("ListErrorObject.ThrowError get error!");
             }

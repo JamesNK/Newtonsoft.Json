@@ -33,6 +33,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 #if !(DNXCORE50 || NET20)
@@ -45,7 +46,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Xml
         [Test]
         public void Example()
         {
-#region Usage
+            #region Usage
             string xml = @"<?xml version='1.0' standalone='no'?>
             <root>
               <person id='1'>
@@ -84,7 +85,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Xml
             //     ]
             //   }
             // }
-#endregion
+            #endregion
 
             Assert.AreEqual(@"{""?xml"":{""@version"":""1.0"",""@standalone"":""no""},""root"":{""person"":[{""@id"":""1"",""name"":""Alan"",""url"":""http://www.google.com""},{""@id"":""2"",""name"":""Louis"",""url"":""http://www.yahoo.com""}]}}", json);
         }

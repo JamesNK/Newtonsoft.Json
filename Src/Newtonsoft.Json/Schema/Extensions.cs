@@ -124,7 +124,9 @@ namespace Newtonsoft.Json.Schema
             {
                 reader.Schema = schema;
                 if (validationEventHandler != null)
+                {
                     reader.ValidationEventHandler += validationEventHandler;
+                }
 
                 while (reader.Read())
                 {

@@ -142,9 +142,13 @@ namespace Newtonsoft.Json.Bson
                     {
                         DateTime dateTime = (DateTime)value.Value;
                         if (DateTimeKindHandling == DateTimeKind.Utc)
+                        {
                             dateTime = dateTime.ToUniversalTime();
+                        }
                         else if (DateTimeKindHandling == DateTimeKind.Local)
+                        {
                             dateTime = dateTime.ToLocalTime();
+                        }
 
                         ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(dateTime, false);
                     }
@@ -193,7 +197,9 @@ namespace Newtonsoft.Json.Bson
         private void WriteString(string s, int byteCount, int? calculatedlengthPrefix)
         {
             if (calculatedlengthPrefix != null)
+            {
                 _writer.Write(calculatedlengthPrefix.Value);
+            }
 
             WriteUtf8Bytes(s, byteCount);
 

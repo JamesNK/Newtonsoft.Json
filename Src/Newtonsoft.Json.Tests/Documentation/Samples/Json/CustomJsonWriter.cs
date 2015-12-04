@@ -36,13 +36,15 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 #if !(DNXCORE50 || NET20)
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 {
-#region Types
+
+    #region Types
     public class XmlJsonWriter : JsonWriter
     {
         private readonly XmlWriter _writer;
@@ -234,9 +236,13 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             base.WriteStartArray();
 
             if (isStart)
+            {
                 WriteValueElement("Root", JTokenType.Array);
+            }
             else
+            {
                 WriteValueElement(JTokenType.Array);
+            }
         }
 
         public override void WriteStartObject()
@@ -246,9 +252,13 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             base.WriteStartObject();
 
             if (isStart)
+            {
                 WriteValueElement("Root", JTokenType.Object);
+            }
             else
+            {
                 WriteValueElement(JTokenType.Object);
+            }
         }
 
         public override void WriteStartConstructor(string name)
@@ -258,9 +268,13 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             base.WriteStartConstructor(name);
 
             if (isStart)
+            {
                 WriteValueElement("Root", JTokenType.Constructor);
+            }
             else
+            {
                 WriteValueElement(JTokenType.Constructor);
+            }
 
             _writer.WriteAttributeString("name", name);
         }
@@ -306,7 +320,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             }
         }
     }
-#endregion
+    #endregion
 
     [TestFixture]
     public class CustomJsonWriter : TestFixtureBase
@@ -314,17 +328,17 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
         [Test]
         public void Example()
         {
-#region Usage
+            #region Usage
             var user = new
             {
                 Name = "James",
                 Age = 30,
                 Enabled = true,
                 Roles = new[]
-                    {
-                        "Publisher",
-                        "Administrator"
-                    }
+                {
+                    "Publisher",
+                    "Administrator"
+                }
             };
 
             StringWriter sw = new StringWriter();
@@ -348,7 +362,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             //    <Item type="String">Administrator</Item>
             //  </Roles>
             //</Root>
-#endregion
+            #endregion
 
             sw = new StringWriter();
 

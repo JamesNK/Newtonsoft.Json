@@ -40,6 +40,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -140,7 +141,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(c2.ListA[0], c2.ListB[0]);
             Assert.AreEqual(true, c2.ListA[0].B.SomeValue);
         }
-
 
         public class Parent
         {

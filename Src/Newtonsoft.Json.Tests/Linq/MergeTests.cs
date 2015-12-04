@@ -42,6 +42,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Linq
@@ -103,10 +104,10 @@ namespace Newtonsoft.Json.Tests.Linq
                 Property1 = new { SubProperty1 = 1 }
             });
             var right = (JArray)JToken.FromObject(new object[]
-                {
-                    new { Property1 = 1 },
-                    new { Property1 = 1 }
-                });
+            {
+                new { Property1 = 1 },
+                new { Property1 = 1 }
+            });
 
             left.Merge(right);
 
@@ -182,7 +183,6 @@ namespace Newtonsoft.Json.Tests.Linq
                             Property2 = 3,
                             Property3 = new
                             {
-
                             },
                             Property5 = (object)null
                         }
@@ -282,25 +282,25 @@ namespace Newtonsoft.Json.Tests.Linq
         public void MergeMismatchingTypesInArray()
         {
             var left = (JArray)JToken.FromObject(new object[]
-                {
-                    true,
-                    null,
-                    new { Property1 = 1 },
-                    new object[] { 1 },
-                    new { Property1 = 1 },
-                    1,
-                    new object[] { 1 }
-                });
+            {
+                true,
+                null,
+                new { Property1 = 1 },
+                new object[] { 1 },
+                new { Property1 = 1 },
+                1,
+                new object[] { 1 }
+            });
             var right = (JArray)JToken.FromObject(new object[]
-                {
-                    1,
-                    5,
-                    new object[] { 1 },
-                    new { Property1 = 1 },
-                    true,
-                    new { Property1 = 1 },
-                    null
-                });
+            {
+                1,
+                5,
+                new object[] { 1 },
+                new { Property1 = 1 },
+                true,
+                new { Property1 = 1 },
+                null
+            });
 
             left.Merge(right, new JsonMergeSettings
             {

@@ -102,7 +102,9 @@ namespace Newtonsoft.Json.Tests.Serialization
         protected override JsonContract CreateContract(Type objectType)
         {
             if (objectType == typeof(Employee))
+            {
                 objectType = typeof(IPerson);
+            }
 
             return base.CreateContract(objectType);
         }
@@ -129,7 +131,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             p.PropertyType = typeof(int);
 
-            Assert.AreEqual(0 , p.GetResolvedDefaultValue());
+            Assert.AreEqual(0, p.GetResolvedDefaultValue());
             Assert.AreEqual(null, p.DefaultValue);
 
             p.PropertyType = typeof(DateTime);
@@ -223,7 +225,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         public class CustomList<T> : List<T>
-        {   
+        {
         }
 
         [Test]
@@ -487,7 +489,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             contract.OverrideCreator = args =>
             {
                 ensureCustomCreatorCalled = true;
-                return new MultipleParamatrizedConstructorsJsonConstructor((string) args[0], (int) args[1]);
+                return new MultipleParamatrizedConstructorsJsonConstructor((string)args[0], (int)args[1]);
             };
 #pragma warning disable 618
             Assert.IsNull(contract.OverrideConstructor);

@@ -90,7 +90,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value == null)
+                {
                     throw new ArgumentNullException("value", "Reference resolver cannot be null.");
+                }
 
                 _referenceResolver = value;
             }
@@ -105,7 +107,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value == null)
+                {
                     throw new ArgumentNullException("value", "Serialization binder cannot be null.");
+                }
 
                 _binder = value;
             }
@@ -140,7 +144,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value < TypeNameHandling.None || value > TypeNameHandling.Auto)
+                {
                     throw new ArgumentOutOfRangeException("value");
+                }
 
                 _typeNameHandling = value;
             }
@@ -156,7 +162,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value < FormatterAssemblyStyle.Simple || value > FormatterAssemblyStyle.Full)
+                {
                     throw new ArgumentOutOfRangeException("value");
+                }
 
                 _typeNameAssemblyFormat = value;
             }
@@ -171,7 +179,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value < PreserveReferencesHandling.None || value > PreserveReferencesHandling.All)
+                {
                     throw new ArgumentOutOfRangeException("value");
+                }
 
                 _preserveReferencesHandling = value;
             }
@@ -186,7 +196,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value < ReferenceLoopHandling.Error || value > ReferenceLoopHandling.Serialize)
+                {
                     throw new ArgumentOutOfRangeException("value");
+                }
 
                 _referenceLoopHandling = value;
             }
@@ -201,7 +213,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value < MissingMemberHandling.Ignore || value > MissingMemberHandling.Error)
+                {
                     throw new ArgumentOutOfRangeException("value");
+                }
 
                 _missingMemberHandling = value;
             }
@@ -216,7 +230,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value < NullValueHandling.Include || value > NullValueHandling.Ignore)
+                {
                     throw new ArgumentOutOfRangeException("value");
+                }
 
                 _nullValueHandling = value;
             }
@@ -231,7 +247,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value < DefaultValueHandling.Include || value > DefaultValueHandling.IgnoreAndPopulate)
+                {
                     throw new ArgumentOutOfRangeException("value");
+                }
 
                 _defaultValueHandling = value;
             }
@@ -247,7 +265,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value < ObjectCreationHandling.Auto || value > ObjectCreationHandling.Replace)
+                {
                     throw new ArgumentOutOfRangeException("value");
+                }
 
                 _objectCreationHandling = value;
             }
@@ -263,7 +283,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value < ConstructorHandling.Default || value > ConstructorHandling.AllowNonPublicDefaultConstructor)
+                {
                     throw new ArgumentOutOfRangeException("value");
+                }
 
                 _constructorHandling = value;
             }
@@ -279,7 +301,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value < MetadataPropertyHandling.Default || value > MetadataPropertyHandling.Ignore)
+                {
                     throw new ArgumentOutOfRangeException("value");
+                }
 
                 _metadataPropertyHandling = value;
             }
@@ -294,7 +318,9 @@ namespace Newtonsoft.Json
             get
             {
                 if (_converters == null)
+                {
                     _converters = new JsonConverterCollection();
+                }
 
                 return _converters;
             }
@@ -416,7 +442,9 @@ namespace Newtonsoft.Json
             set
             {
                 if (value <= 0)
+                {
                     throw new ArgumentException("Value must be positive.", "value");
+                }
 
                 _maxDepth = value;
                 _maxDepthSet = true;
@@ -492,7 +520,9 @@ namespace Newtonsoft.Json
             JsonSerializer serializer = Create();
 
             if (settings != null)
+            {
                 ApplySerializerSettings(serializer, settings);
+            }
 
             return serializer;
         }
@@ -531,7 +561,9 @@ namespace Newtonsoft.Json
         {
             JsonSerializer serializer = CreateDefault();
             if (settings != null)
+            {
                 ApplySerializerSettings(serializer, settings);
+            }
 
             return serializer;
         }
@@ -550,67 +582,119 @@ namespace Newtonsoft.Json
 
             // serializer specific
             if (settings._typeNameHandling != null)
+            {
                 serializer.TypeNameHandling = settings.TypeNameHandling;
+            }
             if (settings._metadataPropertyHandling != null)
+            {
                 serializer.MetadataPropertyHandling = settings.MetadataPropertyHandling;
+            }
             if (settings._typeNameAssemblyFormat != null)
+            {
                 serializer.TypeNameAssemblyFormat = settings.TypeNameAssemblyFormat;
+            }
             if (settings._preserveReferencesHandling != null)
+            {
                 serializer.PreserveReferencesHandling = settings.PreserveReferencesHandling;
+            }
             if (settings._referenceLoopHandling != null)
+            {
                 serializer.ReferenceLoopHandling = settings.ReferenceLoopHandling;
+            }
             if (settings._missingMemberHandling != null)
+            {
                 serializer.MissingMemberHandling = settings.MissingMemberHandling;
+            }
             if (settings._objectCreationHandling != null)
+            {
                 serializer.ObjectCreationHandling = settings.ObjectCreationHandling;
+            }
             if (settings._nullValueHandling != null)
+            {
                 serializer.NullValueHandling = settings.NullValueHandling;
+            }
             if (settings._defaultValueHandling != null)
+            {
                 serializer.DefaultValueHandling = settings.DefaultValueHandling;
+            }
             if (settings._constructorHandling != null)
+            {
                 serializer.ConstructorHandling = settings.ConstructorHandling;
+            }
             if (settings._context != null)
+            {
                 serializer.Context = settings.Context;
+            }
             if (settings._checkAdditionalContent != null)
+            {
                 serializer._checkAdditionalContent = settings._checkAdditionalContent;
+            }
 
             if (settings.Error != null)
+            {
                 serializer.Error += settings.Error;
+            }
 
             if (settings.ContractResolver != null)
+            {
                 serializer.ContractResolver = settings.ContractResolver;
+            }
             if (settings.ReferenceResolverProvider != null)
+            {
                 serializer.ReferenceResolver = settings.ReferenceResolverProvider();
+            }
             if (settings.TraceWriter != null)
+            {
                 serializer.TraceWriter = settings.TraceWriter;
+            }
             if (settings.EqualityComparer != null)
+            {
                 serializer.EqualityComparer = settings.EqualityComparer;
+            }
             if (settings.Binder != null)
+            {
                 serializer.Binder = settings.Binder;
+            }
 
             // reader/writer specific
             // unset values won't override reader/writer set values
             if (settings._formatting != null)
+            {
                 serializer._formatting = settings._formatting;
+            }
             if (settings._dateFormatHandling != null)
+            {
                 serializer._dateFormatHandling = settings._dateFormatHandling;
+            }
             if (settings._dateTimeZoneHandling != null)
+            {
                 serializer._dateTimeZoneHandling = settings._dateTimeZoneHandling;
+            }
             if (settings._dateParseHandling != null)
+            {
                 serializer._dateParseHandling = settings._dateParseHandling;
+            }
             if (settings._dateFormatStringSet)
             {
                 serializer._dateFormatString = settings._dateFormatString;
                 serializer._dateFormatStringSet = settings._dateFormatStringSet;
             }
             if (settings._floatFormatHandling != null)
+            {
                 serializer._floatFormatHandling = settings._floatFormatHandling;
+            }
             if (settings._floatParseHandling != null)
+            {
                 serializer._floatParseHandling = settings._floatParseHandling;
+            }
             if (settings._stringEscapeHandling != null)
+            {
                 serializer._stringEscapeHandling = settings._stringEscapeHandling;
+            }
             if (settings._culture != null)
+            {
                 serializer._culture = settings._culture;
+            }
             if (settings._maxDepthSet)
             {
                 serializer._maxDepth = settings._maxDepth;
@@ -660,7 +744,9 @@ namespace Newtonsoft.Json
             serializerReader.Populate(traceJsonReader ?? reader, target);
 
             if (traceJsonReader != null)
+            {
                 TraceWriter.Trace(TraceLevel.Verbose, traceJsonReader.GetDeserializedJsonMessage(), null);
+            }
 
             ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString);
         }
@@ -732,7 +818,9 @@ namespace Newtonsoft.Json
             object value = serializerReader.Deserialize(traceJsonReader ?? reader, objectType, CheckAdditionalContent);
 
             if (traceJsonReader != null)
+            {
                 TraceWriter.Trace(TraceLevel.Verbose, traceJsonReader.GetDeserializedJsonMessage(), null);
+            }
 
             ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString);
 
@@ -806,7 +894,9 @@ namespace Newtonsoft.Json
             {
                 DefaultContractResolver resolver = _contractResolver as DefaultContractResolver;
                 if (resolver != null)
+                {
                     textReader.NameTable = resolver.GetState().NameTable;
+                }
             }
         }
 
@@ -814,21 +904,35 @@ namespace Newtonsoft.Json
         {
             // reset reader back to previous options
             if (previousCulture != null)
+            {
                 reader.Culture = previousCulture;
+            }
             if (previousDateTimeZoneHandling != null)
+            {
                 reader.DateTimeZoneHandling = previousDateTimeZoneHandling.Value;
+            }
             if (previousDateParseHandling != null)
+            {
                 reader.DateParseHandling = previousDateParseHandling.Value;
+            }
             if (previousFloatParseHandling != null)
+            {
                 reader.FloatParseHandling = previousFloatParseHandling.Value;
+            }
             if (_maxDepthSet)
+            {
                 reader.MaxDepth = previousMaxDepth;
+            }
             if (_dateFormatStringSet)
+            {
                 reader.DateFormatString = previousDateFormatString;
+            }
 
             JsonTextReader textReader = reader as JsonTextReader;
             if (textReader != null)
+            {
                 textReader.NameTable = null;
+            }
         }
 
         /// <summary>
@@ -947,29 +1051,47 @@ namespace Newtonsoft.Json
             serializerWriter.Serialize(traceJsonWriter ?? jsonWriter, value, objectType);
 
             if (traceJsonWriter != null)
+            {
                 TraceWriter.Trace(TraceLevel.Verbose, traceJsonWriter.GetSerializedJsonMessage(), null);
+            }
 
             // reset writer back to previous options
             if (previousFormatting != null)
+            {
                 jsonWriter.Formatting = previousFormatting.Value;
+            }
             if (previousDateFormatHandling != null)
+            {
                 jsonWriter.DateFormatHandling = previousDateFormatHandling.Value;
+            }
             if (previousDateTimeZoneHandling != null)
+            {
                 jsonWriter.DateTimeZoneHandling = previousDateTimeZoneHandling.Value;
+            }
             if (previousFloatFormatHandling != null)
+            {
                 jsonWriter.FloatFormatHandling = previousFloatFormatHandling.Value;
+            }
             if (previousStringEscapeHandling != null)
+            {
                 jsonWriter.StringEscapeHandling = previousStringEscapeHandling.Value;
+            }
             if (_dateFormatStringSet)
+            {
                 jsonWriter.DateFormatString = previousDateFormatString;
+            }
             if (previousCulture != null)
+            {
                 jsonWriter.Culture = previousCulture;
+            }
         }
 
         internal IReferenceResolver GetReferenceResolver()
         {
             if (_referenceResolver == null)
+            {
                 _referenceResolver = new DefaultReferenceResolver();
+            }
 
             return _referenceResolver;
         }
@@ -992,7 +1114,9 @@ namespace Newtonsoft.Json
                     JsonConverter converter = converters[i];
 
                     if (converter.CanConvert(objectType))
+                    {
                         return converter;
+                    }
                 }
             }
 
@@ -1003,7 +1127,9 @@ namespace Newtonsoft.Json
         {
             EventHandler<ErrorEventArgs> error = Error;
             if (error != null)
+            {
                 error(this, e);
+            }
         }
     }
 }

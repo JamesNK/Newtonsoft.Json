@@ -42,6 +42,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Linq.JsonPath
@@ -479,8 +480,8 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         {
             JPath path = new JPath("Blah[0]..Two.Three[1].Four");
             Assert.AreEqual(6, path.Filters.Count);
-            Assert.AreEqual("Blah", ((FieldFilter) path.Filters[0]).Name);
-            Assert.AreEqual(0, ((ArrayIndexFilter) path.Filters[1]).Index);
+            Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
+            Assert.AreEqual(0, ((ArrayIndexFilter)path.Filters[1]).Index);
             Assert.AreEqual("Two", ((ScanFilter)path.Filters[2]).Name);
             Assert.AreEqual("Three", ((FieldFilter)path.Filters[3]).Name);
             Assert.AreEqual(1, ((ArrayIndexFilter)path.Filters[4]).Index);

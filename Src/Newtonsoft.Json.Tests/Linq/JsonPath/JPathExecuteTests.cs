@@ -765,9 +765,9 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                 new JProperty("prop",
                     new JArray(
                         values.Select(v => new JObject(new JProperty("childProp", v)))
+                        )
                     )
-                )
-            );
+                );
 
             IList<JToken> t = o.SelectTokens("$.prop[?(@.childProp =='ff2dc672-6e15-4aa2-afb0-18f4f69596ad')]").ToList();
             Assert.AreEqual(2, t.Count);

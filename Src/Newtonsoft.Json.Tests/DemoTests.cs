@@ -40,6 +40,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests
@@ -113,8 +114,8 @@ namespace Newtonsoft.Json.Tests
                 // create hex string from value
                 HtmlColor color = (HtmlColor)value;
                 string hexString = color.Red.ToString("X2")
-                    + color.Green.ToString("X2")
-                    + color.Blue.ToString("X2");
+                                   + color.Green.ToString("X2")
+                                   + color.Blue.ToString("X2");
 
                 // write value to json
                 writer.WriteValue("#" + hexString);
@@ -450,10 +451,13 @@ namespace Newtonsoft.Json.Tests
         public class House1
         {
             public string StreetAddress { get; set; }
+
             [JsonIgnore]
             public int Bedrooms { get; set; }
+
             [JsonIgnore]
             public decimal FloorArea { get; set; }
+
             [JsonIgnore]
             public DateTime BuildDate { get; set; }
         }
@@ -463,6 +467,7 @@ namespace Newtonsoft.Json.Tests
         {
             [JsonProperty]
             public string StreetAddress { get; set; }
+
             public int Bedrooms { get; set; }
             public decimal FloorArea { get; set; }
             public DateTime BuildDate { get; set; }
@@ -473,6 +478,7 @@ namespace Newtonsoft.Json.Tests
         {
             [JsonProperty("address")]
             public string StreetAddress { get; set; }
+
             public int Bedrooms { get; set; }
             public decimal FloorArea { get; set; }
             public DateTime BuildDate { get; set; }
@@ -483,8 +489,10 @@ namespace Newtonsoft.Json.Tests
         {
             [JsonProperty("address", Order = 2)]
             public string StreetAddress { get; set; }
+
             public int Bedrooms { get; set; }
             public decimal FloorArea { get; set; }
+
             [JsonProperty("buildDate", Order = 1)]
             public DateTime BuildDate { get; set; }
         }
@@ -494,8 +502,10 @@ namespace Newtonsoft.Json.Tests
         {
             [JsonProperty("address", Order = 2)]
             public string StreetAddress { get; set; }
+
             public int Bedrooms { get; set; }
             public decimal FloorArea { get; set; }
+
             [JsonProperty("buildDate", Order = 1)]
             [JsonConverter(typeof(JavaScriptDateTimeConverter))]
             public DateTime BuildDate { get; set; }

@@ -39,6 +39,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Schema
@@ -152,7 +153,6 @@ namespace Newtonsoft.Json.Tests.Schema
   }
 }", newJson);
 
-
             json = @"{
   ""type"":""object"",
   ""extends"":[{""type"":""string""}],
@@ -176,7 +176,6 @@ namespace Newtonsoft.Json.Tests.Schema
     ""type"": ""string""
   }
 }", newJson);
-
 
             json = @"{
   ""type"":""object"",
@@ -586,4 +585,5 @@ namespace Newtonsoft.Json.Tests.Schema
         }
     }
 }
+
 #pragma warning restore 618

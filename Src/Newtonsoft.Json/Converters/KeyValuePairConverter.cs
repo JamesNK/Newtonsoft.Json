@@ -91,7 +91,9 @@ namespace Newtonsoft.Json.Converters
             if (reader.TokenType == JsonToken.Null)
             {
                 if (!isNullable)
+                {
                     throw JsonSerializationException.Create(reader, "Cannot convert null value to KeyValuePair.");
+                }
 
                 return null;
             }
@@ -139,7 +141,9 @@ namespace Newtonsoft.Json.Converters
                 : objectType;
 
             if (t.IsValueType() && t.IsGenericType())
+            {
                 return (t.GetGenericTypeDefinition() == typeof(KeyValuePair<,>));
+            }
 
             return false;
         }
@@ -147,7 +151,9 @@ namespace Newtonsoft.Json.Converters
         private static void ReadAndAssert(JsonReader reader)
         {
             if (!reader.Read())
+            {
                 throw JsonSerializationException.Create(reader, "Unexpected end when reading KeyValuePair.");
+            }
         }
     }
 }

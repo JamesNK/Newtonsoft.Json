@@ -14,7 +14,9 @@ namespace Newtonsoft.Json.Linq.JsonPath
         public override IEnumerable<JToken> ExecuteFilter(IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             if (Step == 0)
+            {
                 throw new JsonException("Step cannot be zero.");
+            }
 
             foreach (JToken t in current)
             {
@@ -27,10 +29,16 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     int stopIndex = End ?? ((stepCount > 0) ? a.Count : -1);
 
                     // start from the end of the list if start is negitive
-                    if (Start < 0) startIndex = a.Count + startIndex;
+                    if (Start < 0)
+                    {
+                        startIndex = a.Count + startIndex;
+                    }
 
                     // end from the start of the list if stop is negitive
-                    if (End < 0) stopIndex = a.Count + stopIndex;
+                    if (End < 0)
+                    {
+                        stopIndex = a.Count + stopIndex;
+                    }
 
                     // ensure indexes keep within collection bounds
                     startIndex = Math.Max(startIndex, (stepCount > 0) ? 0 : int.MinValue);
@@ -50,15 +58,19 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     else
                     {
                         if (errorWhenNoMatch)
+                        {
                             throw new JsonException("Array slice of {0} to {1} returned no results.".FormatWith(CultureInfo.InvariantCulture,
                                 Start != null ? Start.Value.ToString(CultureInfo.InvariantCulture) : "*",
                                 End != null ? End.Value.ToString(CultureInfo.InvariantCulture) : "*"));
+                        }
                     }
                 }
                 else
                 {
                     if (errorWhenNoMatch)
+                    {
                         throw new JsonException("Array slice is not valid on {0}.".FormatWith(CultureInfo.InvariantCulture, t.GetType().Name));
+                    }
                 }
             }
         }
@@ -66,7 +78,9 @@ namespace Newtonsoft.Json.Linq.JsonPath
         private bool IsValid(int index, int stopIndex, bool positiveStep)
         {
             if (positiveStep)
+            {
                 return (index < stopIndex);
+            }
 
             return (index > stopIndex);
         }

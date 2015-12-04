@@ -54,6 +54,7 @@ using System.Collections;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+
 #endif
 
 namespace Newtonsoft.Json.Tests
@@ -225,7 +226,9 @@ namespace Newtonsoft.Json.Tests
         {
             string hex = BitConverter.ToString(bytes);
             if (removeDashes)
+            {
                 hex = hex.Replace("-", "");
+            }
 
             return hex;
         }
@@ -247,13 +250,19 @@ namespace Newtonsoft.Json.Tests
                 // the % 32 handles lower case characters
                 int b = (c - '0') % 32;
                 // correction for a-f
-                if (b > 9) b -= 7;
+                if (b > 9)
+                {
+                    b -= 7;
+                }
                 // store nibble (4 bits) in byte array
                 bytes[offset] |= (byte)(b << shift);
                 // toggle the shift variable between 0 and 4
                 shift ^= 4;
                 // move to next byte
-                if (shift != 0) offset++;
+                if (shift != 0)
+                {
+                    offset++;
+                }
             }
             return bytes;
         }
@@ -348,7 +357,9 @@ namespace Newtonsoft.Json.Tests
         public static string Normalize(string s)
         {
             if (s != null)
+            {
                 s = Regex.Replace(s, "\r\n");
+            }
 
             return s;
         }
@@ -380,7 +391,9 @@ namespace Newtonsoft.Json.Tests
                     }
 
                     if (!match)
+                    {
                         throw new Exception("Unexpected exception message." + Environment.NewLine + "Expected one of: " + string.Join(Environment.NewLine, possibleMessages) + Environment.NewLine + "Got: " + ex.Message + Environment.NewLine + Environment.NewLine + ex);
+                    }
                 }
             }
             catch (Exception ex)

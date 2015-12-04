@@ -77,10 +77,16 @@ namespace Newtonsoft.Json.Tests.TestObjects
             _summary = summary;
             _time = DateTime.Now;
 
-            if (_userId == 0) _userId = GetCurrentUserId();
+            if (_userId == 0)
+            {
+                _userId = GetCurrentUserId();
+            }
             //This call only works at top level for now.
             //If _stackTrace = Nothing Then _stackTrace = Environment.StackTrace
-            if (_sublocation == null) _sublocation = GetCurrentSubLocation();
+            if (_sublocation == null)
+            {
+                _sublocation = GetCurrentSubLocation();
+            }
         }
 
         public Event(string sublocation, int userId, EventType type, string summary, string details, string stackTrace, string tag)
@@ -94,9 +100,15 @@ namespace Newtonsoft.Json.Tests.TestObjects
             _tag = tag;
             _time = DateTime.Now;
 
-            if (_userId == 0) _userId = GetCurrentUserId();
+            if (_userId == 0)
+            {
+                _userId = GetCurrentUserId();
+            }
             //If _stackTrace = Nothing Then _stackTrace = Environment.StackTrace
-            if (_sublocation == null) _sublocation = GetCurrentSubLocation();
+            if (_sublocation == null)
+            {
+                _sublocation = GetCurrentSubLocation();
+            }
         }
 
         public override string ToString()

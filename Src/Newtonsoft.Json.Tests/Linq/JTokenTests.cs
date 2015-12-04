@@ -729,14 +729,14 @@ namespace Newtonsoft.Json.Tests.Linq
 
             JObject o = new JObject
             {
-                {"prop1", "value1"}
+                { "prop1", "value1" }
             };
 
             JToken t1 = a[1][0];
             JToken t2 = o["prop1"];
 
-            List<JToken> source = new List<JToken> {t1, t2};
-            
+            List<JToken> source = new List<JToken> { t1, t2 };
+
             List<JToken> ancestors = source.AncestorsAndSelf().ToList();
             Assert.AreEqual(6, ancestors.Count());
             Assert.AreEqual(t1, ancestors[0]);
@@ -760,7 +760,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             JObject o = new JObject
             {
-                {"prop1", "value1"}
+                { "prop1", "value1" }
             };
 
             JToken t1 = a[1][0];
@@ -809,7 +809,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             JObject o = new JObject
             {
-                {"prop1", "value1"}
+                { "prop1", "value1" }
             };
 
             List<JContainer> source = new List<JContainer> { a, o };
@@ -859,7 +859,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             JObject o = new JObject
             {
-                {"prop1", "value1"}
+                { "prop1", "value1" }
             };
 
             List<JContainer> source = new List<JContainer> { a, o };

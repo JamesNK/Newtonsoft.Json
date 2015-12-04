@@ -35,7 +35,6 @@ using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Xml;
-
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
@@ -47,8 +46,6 @@ using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
 #endif
-
-
 using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Converters;
@@ -893,15 +890,9 @@ namespace Newtonsoft.Json.Tests
             {
                 jsonWriter.WriteToken(JsonToken.StartArray);
 
-                ExceptionAssert.Throws<FormatException>(() =>
-                {
-                    jsonWriter.WriteToken(JsonToken.Integer, "three");
-                }, "Input string was not in a correct format.");
+                ExceptionAssert.Throws<FormatException>(() => { jsonWriter.WriteToken(JsonToken.Integer, "three"); }, "Input string was not in a correct format.");
 
-                ExceptionAssert.Throws<ArgumentNullException>(() =>
-                {
-                    jsonWriter.WriteToken(JsonToken.Integer);
-                }, @"Value cannot be null.
+                ExceptionAssert.Throws<ArgumentNullException>(() => { jsonWriter.WriteToken(JsonToken.Integer); }, @"Value cannot be null.
 Parameter name: value");
             }
         }
@@ -1324,7 +1315,9 @@ _____'propertyName': NaN,
                 string oldText = swOld.ToString();
 
                 if (newText != oldText)
+                {
                     throw new Exception("Difference for char '{0}' (value {1}). Old text: {2}, New text: {3}".FormatWith(CultureInfo.InvariantCulture, c, (int)c, oldText, newText));
+                }
 
                 c++;
             } while (c != char.MaxValue);
@@ -1336,7 +1329,9 @@ _____'propertyName': NaN,
         {
             // leading delimiter
             if (appendDelimiters)
+            {
                 writer.Write(delimiter);
+            }
 
             if (s != null)
             {
@@ -1350,7 +1345,9 @@ _____'propertyName': NaN,
 
                     // don't escape standard text/numbers except '\' and the text delimiter
                     if (c >= ' ' && c < 128 && c != '\\' && c != delimiter)
+                    {
                         continue;
+                    }
 
                     string escapedValue;
 
@@ -1395,7 +1392,9 @@ _____'propertyName': NaN,
                             if (c <= '\u001f')
                             {
                                 if (unicodeBuffer == null)
+                                {
                                     unicodeBuffer = new char[6];
+                                }
 
                                 StringUtils.ToCharAsUnicode(c, unicodeBuffer);
 
@@ -1410,12 +1409,16 @@ _____'propertyName': NaN,
                     }
 
                     if (escapedValue == null)
+                    {
                         continue;
+                    }
 
                     if (i > lastWritePosition)
                     {
                         if (chars == null)
+                        {
                             chars = s.ToCharArray();
+                        }
 
                         // write unchanged chars before writing escaped text
                         writer.Write(chars, lastWritePosition, i - lastWritePosition);
@@ -1423,9 +1426,13 @@ _____'propertyName': NaN,
 
                     lastWritePosition = i + 1;
                     if (!string.Equals(escapedValue, EscapedUnicodeText))
+                    {
                         writer.Write(escapedValue);
+                    }
                     else
+                    {
                         writer.Write(unicodeBuffer);
+                    }
                 }
 
                 if (lastWritePosition == 0)
@@ -1436,7 +1443,9 @@ _____'propertyName': NaN,
                 else
                 {
                     if (chars == null)
+                    {
                         chars = s.ToCharArray();
+                    }
 
                     // write remaining text
                     writer.Write(chars, lastWritePosition, s.Length - lastWritePosition);
@@ -1445,7 +1454,9 @@ _____'propertyName': NaN,
 
             // trailing delimiter
             if (appendDelimiters)
+            {
                 writer.Write(delimiter);
+            }
         }
 
         [Test]
@@ -1505,7 +1516,7 @@ true//comment after true" + StringUtils.CarriageReturn + @"
 ""ExpiryDate""://comment" + StringUtils.LineFeed + @"
 new
 " + StringUtils.LineFeed +
-                  @"Constructor
+                          @"Constructor
 (//comment
 null//comment
 ),
@@ -1562,12 +1573,16 @@ null//comment
             SetWriteState(JsonToken.PropertyName, name);
 
             if (QuoteName)
+            {
                 _writer.Write(QuoteChar);
+            }
 
             _writer.Write(new string(name.ToCharArray().Reverse().ToArray()));
 
             if (QuoteName)
+            {
                 _writer.Write(QuoteChar);
+            }
 
             _writer.Write(':');
         }
@@ -1594,9 +1609,13 @@ null//comment
         protected override void WriteEnd(JsonToken token)
         {
             if (token == JsonToken.EndObject)
+            {
                 _writer.Write("}}}");
+            }
             else
+            {
                 base.WriteEnd(token);
+            }
         }
     }
 
@@ -1678,7 +1697,9 @@ null//comment
         public object ToType(Type conversionType, IFormatProvider provider)
         {
             if (conversionType == typeof(int))
+            {
                 return _value;
+            }
 
             throw new Exception("Type not supported: " + conversionType.FullName);
         }

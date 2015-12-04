@@ -38,6 +38,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -829,10 +830,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public void SerializeExtensionData_NoGetter()
         {
             ExceptionAssert.Throws<JsonException>(
-                () =>
-                {
-                    JsonConvert.SerializeObject(new DocNoGetter());
-                },
+                () => { JsonConvert.SerializeObject(new DocNoGetter()); },
                 "Invalid extension data attribute on 'Newtonsoft.Json.Tests.Serialization.ExtensionDataTests+DocNoGetter'. Member 'Content' must have a getter.");
         }
     }

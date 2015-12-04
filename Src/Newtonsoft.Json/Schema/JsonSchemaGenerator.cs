@@ -66,7 +66,9 @@ namespace Newtonsoft.Json.Schema
             get
             {
                 if (_contractResolver == null)
+                {
                     return DefaultContractResolver.Instance;
+                }
 
                 return _contractResolver;
             }
@@ -175,7 +177,9 @@ namespace Newtonsoft.Json.Schema
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
             if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Title))
+            {
                 return containerAttribute.Title;
+            }
 
             return null;
         }
@@ -185,12 +189,16 @@ namespace Newtonsoft.Json.Schema
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
             if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Description))
+            {
                 return containerAttribute.Description;
+            }
 
 #if !(DOTNET || PORTABLE40 || PORTABLE)
             DescriptionAttribute descriptionAttribute = ReflectionUtils.GetAttribute<DescriptionAttribute>(type);
             if (descriptionAttribute != null)
+            {
                 return descriptionAttribute.Description;
+            }
 #endif
 
             return null;
@@ -201,10 +209,14 @@ namespace Newtonsoft.Json.Schema
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
             if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Id))
+            {
                 return containerAttribute.Id;
+            }
 
             if (explicitOnly)
+            {
                 return null;
+            }
 
             switch (UndefinedSchemaIdHandling)
             {
@@ -232,9 +244,13 @@ namespace Newtonsoft.Json.Schema
                     // resolved schema is not null but referencing member allows nulls
                     // change resolved schema to allow nulls. hacky but what are ya gonna do?
                     if (valueRequired != Required.Always && !HasFlag(resolvedSchema.Type, JsonSchemaType.Null))
+                    {
                         resolvedSchema.Type |= JsonSchemaType.Null;
+                    }
                     if (required && resolvedSchema.Required != true)
+                    {
                         resolvedSchema.Required = true;
+                    }
 
                     return resolvedSchema;
                 }
@@ -252,16 +268,22 @@ namespace Newtonsoft.Json.Schema
             {
                 JsonSchema converterSchema = converter.GetSchema();
                 if (converterSchema != null)
+                {
                     return converterSchema;
+                }
             }
 
             Push(new TypeSchema(type, new JsonSchema()));
 
             if (explicitId != null)
+            {
                 CurrentSchema.Id = explicitId;
+            }
 
             if (required)
+            {
                 CurrentSchema.Required = true;
+            }
             CurrentSchema.Title = GetTitle(type);
             CurrentSchema.Description = GetDescription(type);
 
@@ -359,7 +381,9 @@ namespace Newtonsoft.Json.Schema
         private JsonSchemaType AddNullType(JsonSchemaType type, Required valueRequired)
         {
             if (valueRequired != Required.Always)
+            {
                 return type | JsonSchemaType.Null;
+            }
 
             return type;
         }
@@ -384,14 +408,18 @@ namespace Newtonsoft.Json.Schema
                     JsonSchema propertySchema = GenerateInternal(property.PropertyType, property.Required, !optional);
 
                     if (property.DefaultValue != null)
+                    {
                         propertySchema.Default = JToken.FromObject(property.DefaultValue);
+                    }
 
                     CurrentSchema.Properties.Add(property.PropertyName, propertySchema);
                 }
             }
 
             if (type.IsSealed())
+            {
                 CurrentSchema.AllowAdditionalProperties = false;
+            }
         }
 
 #if !(DOTNET || PORTABLE || PORTABLE40)
@@ -405,15 +433,21 @@ namespace Newtonsoft.Json.Schema
         {
             // default value is Any
             if (value == null)
+            {
                 return true;
+            }
 
             bool match = ((value & flag) == flag);
             if (match)
+            {
                 return true;
+            }
 
             // integer is a subset of float
             if (flag == JsonSchemaType.Integer && (value & JsonSchemaType.Float) == JsonSchemaType.Float)
+            {
                 return true;
+            }
 
             return false;
         }
@@ -425,7 +459,9 @@ namespace Newtonsoft.Json.Schema
             {
                 schemaType = JsonSchemaType.Null;
                 if (ReflectionUtils.IsNullableType(type))
+                {
                     type = Nullable.GetUnderlyingType(type);
+                }
             }
 
             PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(type);
@@ -459,7 +495,7 @@ namespace Newtonsoft.Json.Schema
                 case PrimitiveTypeCode.Double:
                 case PrimitiveTypeCode.Decimal:
                     return schemaType | JsonSchemaType.Float;
-                    // convert to string?
+                // convert to string?
                 case PrimitiveTypeCode.DateTime:
 #if !NET20
                 case PrimitiveTypeCode.DateTimeOffset:

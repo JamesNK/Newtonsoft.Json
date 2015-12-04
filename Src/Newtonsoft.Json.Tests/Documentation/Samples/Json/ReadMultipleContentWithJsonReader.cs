@@ -33,6 +33,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
@@ -61,7 +62,9 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             while (true)
             {
                 if (!reader.Read())
+                {
                     break;
+                }
 
                 JsonSerializer serializer = new JsonSerializer();
                 Role role = serializer.Deserialize<Role>(reader);

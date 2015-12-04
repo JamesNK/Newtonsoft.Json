@@ -722,7 +722,7 @@ keyword such as type of business.""
             Post p = new Post
             {
                 Title = "How to use FromObject",
-                Categories = new [] { "LINQ to JSON" }
+                Categories = new[] { "LINQ to JSON" }
             };
 
             // serialize Post to JSON then parse JSON – SLOW!
@@ -1110,8 +1110,8 @@ keyword such as type of business.""
       }
     ]
   }
-}", o.ToString()); 
-            
+}", o.ToString());
+
             CustomAssert.IsInstanceOfType(typeof(JObject), o);
             CustomAssert.IsInstanceOfType(typeof(JObject), o["channel"]);
             Assert.AreEqual("James Newton-King", (string)o["channel"]["title"]);

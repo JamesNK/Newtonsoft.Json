@@ -125,7 +125,7 @@ namespace Newtonsoft.Json.Tests.Linq
                 foreach (dynamic friend in o.friends)
                 {
                     UpdateValueCount(counts, friend.id);
-                    UpdateValueCount(counts, ((string) friend.name).Split(' ')[0]);
+                    UpdateValueCount(counts, ((string)friend.name).Split(' ')[0]);
                 }
 
                 count++;
@@ -862,7 +862,6 @@ namespace Newtonsoft.Json.Tests.Linq
 
             string oldRole = (string)oldAndBusted["Roles"][0];
             // Admin
-
 
             dynamic newHotness = new JObject();
             newHotness.Name = "Arnie Admin";

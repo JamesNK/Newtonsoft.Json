@@ -39,9 +39,13 @@ namespace Newtonsoft.Json.Tests.TestObjects
             NameContainer nameContainer = value as NameContainer;
 
             if (nameContainer != null)
+            {
                 writer.WriteValue(nameContainer.Value);
+            }
             else
+            {
                 writer.WriteNull();
+            }
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

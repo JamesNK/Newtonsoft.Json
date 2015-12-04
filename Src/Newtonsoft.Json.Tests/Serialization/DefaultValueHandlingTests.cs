@@ -56,6 +56,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             public MyEnum Status { get; set; }
 
             private string _data;
+
             public string Data
             {
                 get { return _data; }
@@ -82,7 +83,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = "{\"Data\":\"Other with some more text\"}";
 
             MyClass result = JsonConvert.DeserializeObject<MyClass>(json, new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate });
-            
+
             Assert.AreEqual(MyEnum.Other, result.Status);
         }
 

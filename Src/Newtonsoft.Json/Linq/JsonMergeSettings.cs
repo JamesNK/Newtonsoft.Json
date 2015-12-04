@@ -19,8 +19,10 @@ namespace Newtonsoft.Json.Linq
             set
             {
                 if (value < MergeArrayHandling.Concat || value > MergeArrayHandling.Merge)
+                {
                     throw new ArgumentOutOfRangeException("value");
-                
+                }
+
                 _mergeArrayHandling = value;
             }
         }

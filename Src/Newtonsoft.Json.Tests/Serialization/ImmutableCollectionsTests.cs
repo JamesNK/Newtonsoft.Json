@@ -108,11 +108,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         public void SerializeArray()
         {
             ImmutableArray<string> l = ImmutableArray.CreateRange(new List<string>
-                {
-                  "One",
-                  "II",
-                  "3"
-                });
+            {
+                "One",
+                "II",
+                "3"
+            });
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
             StringAssert.AreEqual(@"[
@@ -440,4 +440,5 @@ namespace Newtonsoft.Json.Tests.Serialization
         #endregion
     }
 }
+
 #endif

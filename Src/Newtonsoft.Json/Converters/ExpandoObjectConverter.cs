@@ -69,7 +69,9 @@ namespace Newtonsoft.Json.Converters
             while (reader.TokenType == JsonToken.Comment)
             {
                 if (!reader.Read())
+                {
                     throw JsonSerializationException.Create(reader, "Unexpected end when reading ExpandoObject.");
+                }
             }
 
             switch (reader.TokenType)
@@ -80,7 +82,9 @@ namespace Newtonsoft.Json.Converters
                     return ReadList(reader);
                 default:
                     if (JsonTokenUtils.IsPrimitiveToken(reader.TokenType))
+                    {
                         return reader.Value;
+                    }
 
                     throw JsonSerializationException.Create(reader, "Unexpected token when converting ExpandoObject: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
@@ -121,7 +125,9 @@ namespace Newtonsoft.Json.Converters
                         string propertyName = reader.Value.ToString();
 
                         if (!reader.Read())
+                        {
                             throw JsonSerializationException.Create(reader, "Unexpected end when reading ExpandoObject.");
+                        }
 
                         object v = ReadValue(reader);
 

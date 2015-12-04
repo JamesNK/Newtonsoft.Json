@@ -113,11 +113,13 @@ namespace Newtonsoft.Json.Tests.Utilities
         public void DefaultConstructor_Abstract()
         {
             ExceptionAssert.Throws<Exception>(
-                () => {
+                () =>
+                {
                     Func<object> create = ExpressionReflectionDelegateFactory.Instance.CreateDefaultConstructor<object>(typeof(Type));
 
                     create();
-                }, new [] { 
+                }, new[]
+                {
                     "Cannot create an abstract class.",
                     "Cannot create an abstract class 'System.Type'." // mono
                 });
@@ -285,7 +287,8 @@ namespace Newtonsoft.Json.Tests.Utilities
         public void CreateGetWithBadObjectTarget()
         {
             ExceptionAssert.Throws<InvalidCastException>(
-                () => {
+                () =>
+                {
                     Person p = new Person();
                     p.Name = "Hi";
 
@@ -293,7 +296,8 @@ namespace Newtonsoft.Json.Tests.Utilities
 
                     setter(p);
                 },
-                new [] {
+                new[]
+                {
                     "Unable to cast object of type 'Newtonsoft.Json.Tests.TestObjects.Person' to type 'Newtonsoft.Json.Tests.TestObjects.Movie'.",
                     "Cannot cast from source type to destination type." // mono
                 });
@@ -303,7 +307,8 @@ namespace Newtonsoft.Json.Tests.Utilities
         public void CreateSetWithBadObjectTarget()
         {
             ExceptionAssert.Throws<InvalidCastException>(
-                () => {
+                () =>
+                {
                     Person p = new Person();
                     Movie m = new Movie();
 
@@ -317,7 +322,8 @@ namespace Newtonsoft.Json.Tests.Utilities
 
                     Assert.AreEqual(p.Name, "Hi");
                 },
-                new [] {
+                new[]
+                {
                     "Unable to cast object of type 'Newtonsoft.Json.Tests.TestObjects.Person' to type 'Newtonsoft.Json.Tests.TestObjects.Movie'.",
                     "Cannot cast from source type to destination type." // mono
                 });
@@ -327,13 +333,15 @@ namespace Newtonsoft.Json.Tests.Utilities
         public void CreateSetWithBadObjectValue()
         {
             ExceptionAssert.Throws<InvalidCastException>(
-                () => {
+                () =>
+                {
                     Movie m = new Movie();
 
                     Action<object, object> setter = ExpressionReflectionDelegateFactory.Instance.CreateSet<object>(TestReflectionUtils.GetProperty(typeof(Movie), "Name"));
 
                     setter(m, new Version("1.1.1.1"));
-                }, new [] { 
+                }, new[]
+                {
                     "Unable to cast object of type 'System.Version' to type 'System.String'.",
                     "Cannot cast from source type to destination type." //mono
                 });
@@ -356,4 +364,5 @@ namespace Newtonsoft.Json.Tests.Utilities
         }
     }
 }
+
 #endif

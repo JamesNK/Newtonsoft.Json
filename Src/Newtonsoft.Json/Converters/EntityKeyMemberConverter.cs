@@ -73,9 +73,13 @@ namespace Newtonsoft.Json.Converters
             {
                 string valueJson;
                 if (JsonSerializerInternalWriter.TryConvertToString(keyValue, keyValueType, out valueJson))
+                {
                     writer.WriteValue(valueJson);
+                }
                 else
+                {
                     writer.WriteValue(keyValue);
+                }
             }
             else
             {
@@ -90,13 +94,17 @@ namespace Newtonsoft.Json.Converters
             ReadAndAssert(reader);
 
             if (reader.TokenType != JsonToken.PropertyName || !string.Equals(reader.Value.ToString(), propertyName, StringComparison.OrdinalIgnoreCase))
+            {
                 throw new JsonSerializationException("Expected JSON property '{0}'.".FormatWith(CultureInfo.InvariantCulture, propertyName));
+            }
         }
 
         private static void ReadAndAssert(JsonReader reader)
         {
             if (!reader.Read())
+            {
                 throw new JsonSerializationException("Unexpected end.");
+            }
         }
 
         /// <summary>
@@ -135,7 +143,9 @@ namespace Newtonsoft.Json.Converters
         private static void EnsureReflectionObject(Type objectType)
         {
             if (_reflectionObject == null)
+            {
                 _reflectionObject = ReflectionObject.Create(objectType, KeyPropertyName, ValuePropertyName);
+            }
         }
 
         /// <summary>
@@ -151,4 +161,5 @@ namespace Newtonsoft.Json.Converters
         }
     }
 }
+
 #endif

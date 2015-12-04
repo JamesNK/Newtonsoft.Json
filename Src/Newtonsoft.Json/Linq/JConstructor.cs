@@ -52,10 +52,14 @@ namespace Newtonsoft.Json.Linq
         {
             JConstructor c = content as JConstructor;
             if (c == null)
+            {
                 return;
+            }
 
             if (c.Name != null)
+            {
                 Name = c.Name;
+            }
             MergeEnumerableContent(this, c, settings);
         }
 
@@ -166,7 +170,9 @@ namespace Newtonsoft.Json.Linq
                 ValidationUtils.ArgumentNotNull(key, "o");
 
                 if (!(key is int))
+                {
                     throw new ArgumentException("Accessed JConstructor values with invalid key value: {0}. Argument position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                }
 
                 return GetItem((int)key);
             }
@@ -175,7 +181,9 @@ namespace Newtonsoft.Json.Linq
                 ValidationUtils.ArgumentNotNull(key, "o");
 
                 if (!(key is int))
+                {
                     throw new ArgumentException("Set JConstructor values with invalid key value: {0}. Argument position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                }
 
                 SetItem((int)key, value);
             }
@@ -208,7 +216,9 @@ namespace Newtonsoft.Json.Linq
             if (reader.TokenType == JsonToken.None)
             {
                 if (!reader.Read())
+                {
                     throw JsonReaderException.Create(reader, "Error reading JConstructor from JsonReader.");
+                }
             }
 
             while (reader.TokenType == JsonToken.Comment)
@@ -217,7 +227,9 @@ namespace Newtonsoft.Json.Linq
             }
 
             if (reader.TokenType != JsonToken.StartConstructor)
+            {
                 throw JsonReaderException.Create(reader, "Error reading JConstructor from JsonReader. Current JsonReader item is not a constructor: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+            }
 
             JConstructor c = new JConstructor((string)reader.Value);
             c.SetLineInfo(reader as IJsonLineInfo, settings);

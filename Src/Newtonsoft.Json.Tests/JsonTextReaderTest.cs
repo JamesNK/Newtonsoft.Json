@@ -134,6 +134,7 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(4, jsonTextReader.LineNumber);
             Assert.AreEqual(1, jsonTextReader.LinePosition);
         }
+
         [Test]
         public void ReadCommentInsideArray()
         {
@@ -923,9 +924,10 @@ third line", jsonTextReader.Value);
         [Test]
         public void NullTextReader()
         {
-            ExceptionAssert.Throws<ArgumentNullException> (
-                () => { new JsonTextReader (null); },
-                new string[] { 
+            ExceptionAssert.Throws<ArgumentNullException>(
+                () => { new JsonTextReader(null); },
+                new string[]
+                {
                     "Value cannot be null." + Environment.NewLine + "Parameter name: reader",
                     "Argument cannot be null." + Environment.NewLine + "Parameter name: reader" // Mono
                 });
@@ -2837,10 +2839,10 @@ third line", jsonTextReader.Value);
 {//comment
 Name://comment
 true//comment after true" + StringUtils.CarriageReturn +
-@",//comment after comma" + StringUtils.CarriageReturnLineFeed + 
-@"""ExpiryDate""://comment"  + StringUtils.LineFeed + 
-@"new " + StringUtils.LineFeed +
-@"Date
+                          @",//comment after comma" + StringUtils.CarriageReturnLineFeed +
+                          @"""ExpiryDate""://comment" + StringUtils.LineFeed +
+                          @"new " + StringUtils.LineFeed +
+                          @"Date
 (//comment
 null//comment
 ),
@@ -3089,7 +3091,6 @@ null//comment
 
             reader.Read();
 
-
             reader = new JsonTextReader(new StringReader(json));
 
             reader.Read();
@@ -3296,7 +3297,6 @@ null//comment
             Assert.AreEqual(typeof(DateTimeOffset), reader.ValueType);
             Assert.IsTrue(reader.Read());
 
-
             reader = new JsonTextReader(new StringReader(json));
             reader.DateParseHandling = Json.DateParseHandling.DateTimeOffset;
 
@@ -3468,7 +3468,9 @@ null//comment
         public override int Read(char[] buffer, int index, int count)
         {
             if (Error)
+            {
                 throw new Exception("Read error");
+            }
 
             return _inner.Read(buffer, index, 1);
         }

@@ -41,6 +41,7 @@ using System.Globalization;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+
 #endif
 
 namespace Newtonsoft.Json.Linq
@@ -120,7 +121,9 @@ namespace Newtonsoft.Json.Linq
         {
             JObject t = node as JObject;
             if (t == null)
+            {
                 return false;
+            }
 
             return _properties.Compare(t._properties);
         }
@@ -129,7 +132,9 @@ namespace Newtonsoft.Json.Linq
         {
             // don't add comments to JObject, no name to reference comment by
             if (item != null && item.Type == JTokenType.Comment)
+            {
                 return;
+            }
 
             base.InsertItem(index, item, skipParentCheck);
         }
@@ -139,7 +144,9 @@ namespace Newtonsoft.Json.Linq
             ValidationUtils.ArgumentNotNull(o, "o");
 
             if (o.Type != JTokenType.Property)
+            {
                 throw new ArgumentException("Can not add {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, o.GetType(), GetType()));
+            }
 
             JProperty newProperty = (JProperty)o;
 
@@ -148,18 +155,24 @@ namespace Newtonsoft.Json.Linq
                 JProperty existingProperty = (JProperty)existing;
 
                 if (newProperty.Name == existingProperty.Name)
+                {
                     return;
+                }
             }
 
             if (_properties.TryGetValue(newProperty.Name, out existing))
+            {
                 throw new ArgumentException("Can not add property {0} to {1}. Property with the same name already exists on object.".FormatWith(CultureInfo.InvariantCulture, newProperty.Name, GetType()));
+            }
         }
 
         internal override void MergeItem(object content, JsonMergeSettings settings)
         {
             JObject o = content as JObject;
             if (o == null)
+            {
                 return;
+            }
 
             foreach (KeyValuePair<string, JToken> contentItem in o)
             {
@@ -175,7 +188,9 @@ namespace Newtonsoft.Json.Linq
                     if (existingContainer == null)
                     {
                         if (contentItem.Value.Type != JTokenType.Null)
+                        {
                             existingProperty.Value = contentItem.Value;
+                        }
                     }
                     else if (existingContainer.Type != contentItem.Value.Type)
                     {
@@ -194,11 +209,15 @@ namespace Newtonsoft.Json.Linq
             OnPropertyChanged(childProperty.Name);
 #if !(DOTNET || PORTABLE40 || PORTABLE)
             if (_listChanged != null)
+            {
                 OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, IndexOfItem(childProperty)));
+            }
 #endif
 #if !(NET20 || NET35 || PORTABLE40)
             if (_collectionChanged != null)
+            {
                 OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, childProperty, childProperty, IndexOfItem(childProperty)));
+            }
 #endif
         }
 
@@ -240,7 +259,9 @@ namespace Newtonsoft.Json.Linq
         public JProperty Property(string name)
         {
             if (name == null)
+            {
                 return null;
+            }
 
             JToken property;
             _properties.TryGetValue(name, out property);
@@ -268,7 +289,9 @@ namespace Newtonsoft.Json.Linq
 
                 string propertyName = key as string;
                 if (propertyName == null)
+                {
                     throw new ArgumentException("Accessed JObject values with invalid key value: {0}. Object property name expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                }
 
                 return this[propertyName];
             }
@@ -278,7 +301,9 @@ namespace Newtonsoft.Json.Linq
 
                 string propertyName = key as string;
                 if (propertyName == null)
+                {
                     throw new ArgumentException("Set JObject values with invalid key value: {0}. Object property name expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                }
 
                 this[propertyName] = value;
             }
@@ -340,7 +365,9 @@ namespace Newtonsoft.Json.Linq
             if (reader.TokenType == JsonToken.None)
             {
                 if (!reader.Read())
+                {
                     throw JsonReaderException.Create(reader, "Error reading JObject from JsonReader.");
+                }
             }
 
             while (reader.TokenType == JsonToken.Comment)
@@ -391,7 +418,9 @@ namespace Newtonsoft.Json.Linq
                 JObject o = Load(reader, settings);
 
                 if (reader.Read() && reader.TokenType != JsonToken.Comment)
+                {
                     throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
+                }
 
                 return o;
             }
@@ -418,7 +447,9 @@ namespace Newtonsoft.Json.Linq
             JToken token = FromObjectInternal(o, jsonSerializer);
 
             if (token != null && token.Type != JTokenType.Object)
+            {
                 throw new ArgumentException("Object serialized to {0}. JObject instance expected.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+            }
 
             return (JObject)token;
         }
@@ -461,12 +492,16 @@ namespace Newtonsoft.Json.Linq
         public JToken GetValue(string propertyName, StringComparison comparison)
         {
             if (propertyName == null)
+            {
                 return null;
+            }
 
             // attempt to get value via dictionary first for performance
             JProperty property = Property(propertyName);
             if (property != null)
+            {
                 return property.Value;
+            }
 
             // test above already uses this comparison so no need to repeat
             if (comparison != StringComparison.Ordinal)
@@ -474,7 +509,9 @@ namespace Newtonsoft.Json.Linq
                 foreach (JProperty p in _properties)
                 {
                     if (string.Equals(p.Name, propertyName, comparison))
+                    {
                         return p.Value;
+                    }
                 }
             }
 
@@ -527,7 +564,9 @@ namespace Newtonsoft.Json.Linq
         {
             JProperty property = Property(propertyName);
             if (property == null)
+            {
                 return false;
+            }
 
             property.Remove();
             return true;
@@ -577,7 +616,9 @@ namespace Newtonsoft.Json.Linq
         {
             JProperty property = Property(item.Key);
             if (property == null)
+            {
                 return false;
+            }
 
             return (property.Value == item.Value);
         }
@@ -585,13 +626,21 @@ namespace Newtonsoft.Json.Linq
         void ICollection<KeyValuePair<string, JToken>>.CopyTo(KeyValuePair<string, JToken>[] array, int arrayIndex)
         {
             if (array == null)
+            {
                 throw new ArgumentNullException("array");
+            }
             if (arrayIndex < 0)
+            {
                 throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex is less than 0.");
+            }
             if (arrayIndex >= array.Length && arrayIndex != 0)
+            {
                 throw new ArgumentException("arrayIndex is equal to or greater than the length of array.");
+            }
             if (Count > array.Length - arrayIndex)
+            {
                 throw new ArgumentException("The number of elements in the source JObject is greater than the available space from arrayIndex to the end of the destination array.");
+            }
 
             int index = 0;
             foreach (JProperty property in _properties)
@@ -609,7 +658,9 @@ namespace Newtonsoft.Json.Linq
         bool ICollection<KeyValuePair<string, JToken>>.Remove(KeyValuePair<string, JToken> item)
         {
             if (!((ICollection<KeyValuePair<string, JToken>>)this).Contains(item))
+            {
                 return false;
+            }
 
             ((IDictionary<string, JToken>)this).Remove(item.Key);
             return true;
@@ -642,7 +693,9 @@ namespace Newtonsoft.Json.Linq
         protected virtual void OnPropertyChanged(string propertyName)
         {
             if (PropertyChanged != null)
+            {
                 PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
+            }
         }
 
 #if !(PORTABLE40 || PORTABLE || NET20)
@@ -653,7 +706,9 @@ namespace Newtonsoft.Json.Linq
         protected virtual void OnPropertyChanging(string propertyName)
         {
             if (PropertyChanging != null)
+            {
                 PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
+            }
         }
 #endif
 
@@ -835,7 +890,9 @@ namespace Newtonsoft.Json.Linq
 
                 // this can throw an error if value isn't a valid for a JValue
                 if (v == null)
+                {
                     v = new JValue(value);
+                }
 
                 instance[binder.Name] = v;
                 return true;

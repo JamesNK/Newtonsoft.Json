@@ -66,7 +66,7 @@ namespace Newtonsoft.Json
         /// <example>
         /// [JsonContainer(ItemConverterType = typeof(MyContainerConverter), ItemConverterParameters = new object[] { 123, "Four" })]
         /// </example>
-        public object[] ItemConverterParameters { get; set; } 
+        public object[] ItemConverterParameters { get; set; }
 
         // yuck. can't set nullable properties on an attribute in C#
         // have to use this approach to get an unset default state

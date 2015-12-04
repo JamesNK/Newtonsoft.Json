@@ -920,7 +920,9 @@ namespace Newtonsoft.Json.Tests.Bson
             for (int i = 0; i < 100; i++)
             {
                 if (i > 0)
+                {
                     largeStringBuilder.Append("-");
+                }
 
                 largeStringBuilder.Append(i.ToString(CultureInfo.InvariantCulture));
             }
@@ -1606,6 +1608,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
 #if !(NET20 || NET35)
             public bool BindToNameCalled { get; set; }
+
             public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
             {
                 BindToNameCalled = true;
@@ -1677,7 +1680,7 @@ namespace Newtonsoft.Json.Tests.Bson
             BsonReader reader = new BsonReader(new MemoryStream(bytes));
             Assert.IsTrue(reader.Read());
             Assert.IsTrue(reader.Read());
-            
+
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
             Assert.AreEqual(typeof(Guid), reader.ValueType);

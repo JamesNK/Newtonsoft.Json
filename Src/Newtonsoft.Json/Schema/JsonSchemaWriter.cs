@@ -70,7 +70,9 @@ namespace Newtonsoft.Json.Schema
             ValidationUtils.ArgumentNotNull(schema, "schema");
 
             if (!_resolver.LoadedSchemas.Contains(schema))
+            {
                 _resolver.LoadedSchemas.Add(schema);
+            }
 
             _writer.WriteStartObject();
             WritePropertyIfNotNull(_writer, JsonSchemaConstants.IdPropertyName, schema.Id);
@@ -81,7 +83,9 @@ namespace Newtonsoft.Json.Schema
             WritePropertyIfNotNull(_writer, JsonSchemaConstants.HiddenPropertyName, schema.Hidden);
             WritePropertyIfNotNull(_writer, JsonSchemaConstants.TransientPropertyName, schema.Transient);
             if (schema.Type != null)
+            {
                 WriteType(JsonSchemaConstants.TypePropertyName, _writer, schema.Type.Value);
+            }
             if (!schema.AllowAdditionalProperties)
             {
                 _writer.WritePropertyName(JsonSchemaConstants.AdditionalPropertiesPropertyName);
@@ -138,7 +142,9 @@ namespace Newtonsoft.Json.Schema
                 schema.Default.WriteTo(_writer);
             }
             if (schema.Disallow != null)
+            {
                 WriteType(JsonSchemaConstants.DisallowPropertyName, _writer, schema.Disallow.Value);
+            }
             if (schema.Extends != null && schema.Extends.Count > 0)
             {
                 _writer.WritePropertyName(JsonSchemaConstants.ExtendsPropertyName);
@@ -177,7 +183,9 @@ namespace Newtonsoft.Json.Schema
         private void WriteItems(JsonSchema schema)
         {
             if (schema.Items == null && !schema.PositionalItemsValidation)
+            {
                 return;
+            }
 
             _writer.WritePropertyName(JsonSchemaConstants.ItemsPropertyName);
 
@@ -210,12 +218,18 @@ namespace Newtonsoft.Json.Schema
         {
             IList<JsonSchemaType> types;
             if (System.Enum.IsDefined(typeof(JsonSchemaType), type))
+            {
                 types = new List<JsonSchemaType> { type };
+            }
             else
+            {
                 types = EnumUtils.GetFlagsValues(type).Where(v => v != JsonSchemaType.None).ToList();
+            }
 
             if (types.Count == 0)
+            {
                 return;
+            }
 
             writer.WritePropertyName(propertyName);
 

@@ -59,7 +59,6 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             o["age"] = 59;
             o["employer"] = "Bill & Melinda Gates Foundation";
 
-
             HashSet<string> changedProperties = o.Annotation<HashSet<string>>();
             // age
             // employer
