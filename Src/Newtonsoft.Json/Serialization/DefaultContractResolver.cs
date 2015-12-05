@@ -509,7 +509,6 @@ namespace Newtonsoft.Json.Serialization
 
             Type keyType = dictionaryType.GetGenericArguments()[0];
             Type valueType = dictionaryType.GetGenericArguments()[1];
-            bool isJTokenValueType = typeof(JToken).IsAssignableFrom(valueType);
 
             Type createdType;
 
@@ -524,61 +523,57 @@ namespace Newtonsoft.Json.Serialization
             }
 
             Func<object, object> getExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(member);
-            Action<object, object> setExtensionDataDictionary = (ReflectionUtils.CanSetMemberValue(member, true, false))
-                ? JsonTypeReflector.ReflectionDelegateFactory.CreateSet<object>(member)
-                : null;
-            Func<object> createExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(createdType);
-            MethodInfo addMethod = t.GetMethod("Add", new[] { keyType, valueType });
-            MethodCall<object, object> setExtensionDataDictionaryValue = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(addMethod);
-
-            ExtensionDataSetter extensionDataSetter = (o, key, value) =>
-            {
-                object dictionary = getExtensionDataDictionary(o);
-                if (dictionary == null)
-                {
-                    if (setExtensionDataDictionary == null)
-                    {
-                        throw new JsonSerializationException("Cannot set value onto extension data member '{0}'. The extension data collection is null and it cannot be set.".FormatWith(CultureInfo.InvariantCulture, member.Name));
-                    }
-
-                    dictionary = createExtensionDataDictionary();
-                    setExtensionDataDictionary(o, dictionary);
-                }
-
-                // convert object value to JToken so it is compatible with dictionary
-                // could happen because of primitive types, type name handling and references
-                if (isJTokenValueType && !(value is JToken))
-                {
-                    value = (value != null) ? JToken.FromObject(value) : JValue.CreateNull();
-                }
-
-                setExtensionDataDictionaryValue(dictionary, key, value);
-            };
-
-            Type enumerableWrapper = typeof(DictionaryEnumerator<,>).MakeGenericType(keyType, valueType);
-            ConstructorInfo constructors = enumerableWrapper.GetConstructors().First();
-            ObjectConstructor<object> createEnumerableWrapper = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(constructors);
-
-            ExtensionDataGetter extensionDataGetter = o =>
-            {
-                object dictionary = getExtensionDataDictionary(o);
-                if (dictionary == null)
-                {
-                    return null;
-                }
-
-                return (IEnumerable<KeyValuePair<object, object>>)createEnumerableWrapper(dictionary);
-            };
 
             if (extensionDataAttribute.ReadData)
             {
+                Action<object, object> setExtensionDataDictionary = (ReflectionUtils.CanSetMemberValue(member, true, false))
+                 ? JsonTypeReflector.ReflectionDelegateFactory.CreateSet<object>(member)
+                 : null;
+                Func<object> createExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(createdType);
+                MethodInfo addMethod = t.GetMethod("Add", new[] { keyType, valueType });
+                MethodCall<object, object> setExtensionDataDictionaryValue = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(addMethod);
+
+                ExtensionDataSetter extensionDataSetter = (o, key, value) =>
+                {
+                    object dictionary = getExtensionDataDictionary(o);
+                    if (dictionary == null)
+                    {
+                        if (setExtensionDataDictionary == null)
+                        {
+                            throw new JsonSerializationException("Cannot set value onto extension data member '{0}'. The extension data collection is null and it cannot be set.".FormatWith(CultureInfo.InvariantCulture, member.Name));
+                        }
+
+                        dictionary = createExtensionDataDictionary();
+                        setExtensionDataDictionary(o, dictionary);
+                    }
+
+                    setExtensionDataDictionaryValue(dictionary, key, value);
+                };
+
                 contract.ExtensionDataSetter = extensionDataSetter;
             }
 
             if (extensionDataAttribute.WriteData)
             {
+                Type enumerableWrapper = typeof(DictionaryEnumerator<,>).MakeGenericType(keyType, valueType);
+                ConstructorInfo constructors = enumerableWrapper.GetConstructors().First();
+                ObjectConstructor<object> createEnumerableWrapper = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(constructors);
+
+                ExtensionDataGetter extensionDataGetter = o =>
+                {
+                    object dictionary = getExtensionDataDictionary(o);
+                    if (dictionary == null)
+                    {
+                        return null;
+                    }
+
+                    return (IEnumerable<KeyValuePair<object, object>>)createEnumerableWrapper(dictionary);
+                };
+
                 contract.ExtensionDataGetter = extensionDataGetter;
             }
+
+            contract.ExtensionDataValueType = valueType;
         }
 
         internal struct DictionaryEnumerator<TEnumeratorKey, TEnumeratorValue> : IEnumerable<KeyValuePair<object, object>>, IEnumerator<KeyValuePair<object, object>>

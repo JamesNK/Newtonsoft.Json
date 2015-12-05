@@ -2154,7 +2154,7 @@ namespace Newtonsoft.Json.Serialization
 
                         if (extensionData != null)
                         {
-                            object value = CreateValueInternal(reader, null, null, null, contract, containerProperty, null);
+                            object value = ReadExtensionDataValue(contract, containerProperty, reader);
                             extensionData[memberName] = value;
                         }
                         else
@@ -2433,7 +2433,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 try
                 {
-                    object value = CreateValueInternal(reader, null, null, null, contract, member, null);
+                    object value = ReadExtensionDataValue(contract, member, reader);
 
                     contract.ExtensionDataSetter(o, memberName, value);
                 }
@@ -2446,6 +2446,20 @@ namespace Newtonsoft.Json.Serialization
             {
                 reader.Skip();
             }
+        }
+
+        private object ReadExtensionDataValue(JsonObjectContract contract, JsonProperty member, JsonReader reader)
+        {
+            object value;
+            if (contract.ExtensionDataIsJToken)
+            {
+                value = JToken.ReadFrom(reader);
+            }
+            else
+            {
+                value = CreateValueInternal(reader, null, null, null, contract, member, null);
+            }
+            return value;
         }
 
         private void EndObject(object newObject, JsonReader reader, JsonObjectContract contract, int initialDepth, Dictionary<JsonProperty, PropertyPresence> propertiesPresence)
