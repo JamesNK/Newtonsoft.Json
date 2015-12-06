@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Converters
 
         public IXmlElement CreateElement(string elementName)
         {
-            return new XmlElementWrapper(_document.CreateElement(elementName));
+            return new XmlElementWrapper(_document.CreateElement(XmlConvert.EncodeName(elementName)));
         }
 
         public IXmlElement CreateElement(string qualifiedName, string namespaceUri)
@@ -1032,11 +1032,11 @@ namespace Newtonsoft.Json.Converters
 
             if (!string.IsNullOrEmpty(prefix))
             {
-                return prefix + ":" + node.LocalName;
+                return prefix + ":" + XmlConvert.DecodeName(node.LocalName);
             }
             else
             {
-                return node.LocalName;
+                return XmlConvert.DecodeName(node.LocalName);
             }
         }
 

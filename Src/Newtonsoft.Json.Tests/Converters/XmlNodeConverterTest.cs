@@ -2559,6 +2559,19 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(@"{""DocumentId"":""13779965364495889899""}", json2);
         }
 #endif
+        [Test]
+        public void DeserializeXmlIncompatibleCharsInPropertyName()
+        {
+            var json = "{\"%name\":\"value\"}";
+
+            XmlDocument node = JsonConvert.DeserializeXmlNode(json);
+
+            Assert.AreEqual("<_x0025_name>value</_x0025_name>", node.OuterXml);
+
+            string json2 = JsonConvert.SerializeXmlNode(node);
+
+            Assert.AreEqual(json, json2);
+        }
 
         [Test]
         public void SerializeEmptyNodeAndOmitRoot()
