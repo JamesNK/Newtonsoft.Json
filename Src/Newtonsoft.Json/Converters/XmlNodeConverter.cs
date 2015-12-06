@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Converters
 
         public IXmlElement CreateElement(string elementName)
         {
-            return new XmlElementWrapper(_document.CreateElement(XmlConvert.EncodeName(elementName)));
+            return new XmlElementWrapper(_document.CreateElement(elementName));
         }
 
         public IXmlElement CreateElement(string qualifiedName, string namespaceUri)
@@ -1175,7 +1175,7 @@ namespace Newtonsoft.Json.Converters
                             if (attribute.NamespaceUri == "http://www.w3.org/2000/xmlns/")
                             {
                                 string namespacePrefix = (attribute.LocalName != "xmlns")
-                                    ? attribute.LocalName
+                                    ? XmlConvert.DecodeName(attribute.LocalName)
                                     : string.Empty;
                                 string namespaceUri = attribute.Value;
 
@@ -1490,11 +1490,12 @@ namespace Newtonsoft.Json.Converters
             // add attributes to newly created element
             foreach (KeyValuePair<string, string> nameValue in attributeNameValues)
             {
+                string encodedName = XmlConvert.EncodeName(nameValue.Key);
                 string attributePrefix = MiscellaneousUtils.GetPrefix(nameValue.Key);
 
                 IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix))
-                    ? document.CreateAttribute(nameValue.Key, manager.LookupNamespace(attributePrefix) ?? string.Empty, nameValue.Value)
-                    : document.CreateAttribute(nameValue.Key, nameValue.Value);
+                    ? document.CreateAttribute(encodedName, manager.LookupNamespace(attributePrefix) ?? string.Empty, nameValue.Value)
+                    : document.CreateAttribute(encodedName, nameValue.Value);
 
                 element.SetAttributeNode(attribute);
             }
@@ -1531,11 +1532,12 @@ namespace Newtonsoft.Json.Converters
 
         private static void AddAttribute(JsonReader reader, IXmlDocument document, IXmlNode currentNode, string attributeName, XmlNamespaceManager manager, string attributePrefix)
         {
+            string encodedName = XmlConvert.EncodeName(attributeName);
             string attributeValue = reader.Value.ToString();
 
             IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix))
-                ? document.CreateAttribute(attributeName, manager.LookupNamespace(attributePrefix), attributeValue)
-                : document.CreateAttribute(attributeName, attributeValue);
+                ? document.CreateAttribute(encodedName, manager.LookupNamespace(attributePrefix), attributeValue)
+                : document.CreateAttribute(encodedName, attributeValue);
 
             ((IXmlElement)currentNode).SetAttributeNode(attribute);
         }
@@ -1822,9 +1824,10 @@ namespace Newtonsoft.Json.Converters
 
         private IXmlElement CreateElement(string elementName, IXmlDocument document, string elementPrefix, XmlNamespaceManager manager)
         {
+            string encodeName = XmlConvert.EncodeName(elementName);
             string ns = string.IsNullOrEmpty(elementPrefix) ? manager.DefaultNamespace : manager.LookupNamespace(elementPrefix);
 
-            IXmlElement element = (!string.IsNullOrEmpty(ns)) ? document.CreateElement(elementName, ns) : document.CreateElement(elementName);
+            IXmlElement element = (!string.IsNullOrEmpty(ns)) ? document.CreateElement(encodeName, ns) : document.CreateElement(encodeName);
 
             return element;
         }

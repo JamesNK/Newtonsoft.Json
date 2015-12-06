@@ -593,6 +593,34 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void SerializeNodeTypes_Encoding()
+        {
+            XmlNode node = DeserializeXmlNode(@"{
+  ""xs!:Choice!"": {
+    ""@msdata:IsDataSet!"": """",
+    ""@xmlns:xs!"": ""http://www.w3.org/2001/XMLSchema"",
+    ""@xmlns:msdata"": ""urn:schemas-microsoft-com:xml-msdata"",
+    ""?xml-stylesheet"": ""href=\""classic.xsl\"" type=\""text/xml\"""",
+    ""#cdata-section"": ""<Kiwi>true</Kiwi>""
+  }
+}");
+
+            Assert.AreEqual(@"<xs_x0021_:Choice_x0021_ msdata:IsDataSet_x0021_="""" xmlns:xs_x0021_=""http://www.w3.org/2001/XMLSchema"" xmlns:msdata=""urn:schemas-microsoft-com:xml-msdata""><?xml-stylesheet href=""classic.xsl"" type=""text/xml""?><![CDATA[<Kiwi>true</Kiwi>]]></xs_x0021_:Choice_x0021_>", node.InnerXml);
+
+            string json = SerializeXmlNode(node);
+
+            StringAssert.AreEqual(@"{
+  ""xs!:Choice!"": {
+    ""@msdata:IsDataSet!"": """",
+    ""@xmlns:xs!"": ""http://www.w3.org/2001/XMLSchema"",
+    ""@xmlns:msdata"": ""urn:schemas-microsoft-com:xml-msdata"",
+    ""?xml-stylesheet"": ""href=\""classic.xsl\"" type=\""text/xml\"""",
+    ""#cdata-section"": ""<Kiwi>true</Kiwi>""
+  }
+}", json);
+        }
+
+        [Test]
         public void DocumentFragmentSerialize()
         {
             XmlDocument doc = new XmlDocument();
@@ -1416,6 +1444,50 @@ namespace Newtonsoft.Json.Tests.Converters
             // </root>
 
             StringAssert.AreEqual(@"<?xml version=""1.0"" standalone=""no""?><root><person id=""1""><name>Alan</name><url>http://www.google.com</url></person><person id=""2""><name>Louis</name><url>http://www.yahoo.com</url></person></root>", doc.InnerXml);
+        }
+
+        [Test]
+        public void EscapingNames()
+        {
+            string json = @"{
+              ""root!"": {
+                ""person!"": [
+                  {
+                    ""@id!"": ""1"",
+                    ""name!"": ""Alan"",
+                    ""url!"": ""http://www.google.com""
+                  },
+                  {
+                    ""@id!"": ""2"",
+                    ""name!"": ""Louis"",
+                    ""url!"": ""http://www.yahoo.com""
+                  }
+                ]
+              }
+            }";
+
+            XmlDocument doc = (XmlDocument)DeserializeXmlNode(json);
+
+            Assert.AreEqual(@"<root_x0021_><person_x0021_ id_x0021_=""1""><name_x0021_>Alan</name_x0021_><url_x0021_>http://www.google.com</url_x0021_></person_x0021_><person_x0021_ id_x0021_=""2""><name_x0021_>Louis</name_x0021_><url_x0021_>http://www.yahoo.com</url_x0021_></person_x0021_></root_x0021_>", doc.InnerXml);
+
+            string json2 = SerializeXmlNode(doc);
+
+            StringAssert.AreEqual(@"{
+  ""root!"": {
+    ""person!"": [
+      {
+        ""@id!"": ""1"",
+        ""name!"": ""Alan"",
+        ""url!"": ""http://www.google.com""
+      },
+      {
+        ""@id!"": ""2"",
+        ""name!"": ""Louis"",
+        ""url!"": ""http://www.yahoo.com""
+      }
+    ]
+  }
+}", json2);
         }
 
         [Test]
