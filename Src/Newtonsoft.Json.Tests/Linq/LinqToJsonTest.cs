@@ -48,6 +48,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 using System.Linq;
 #endif
 using System.IO;
+using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
@@ -1326,6 +1327,57 @@ keyword such as type of business.""
 
                 Assert.AreEqual(users["name2"], "Matthew Doig");
             }, "The best overloaded method match for 'System.Collections.Generic.IDictionary<string,string>.Add(string, string)' has some invalid arguments");
+        }
+#endif
+
+#if !(NET20)
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum FooBar
+        {
+            [EnumMember(Value = "SOME_VALUE")]
+            SomeValue,
+
+            [EnumMember(Value = "SOME_OTHER_VALUE")]
+            SomeOtherValue
+        }
+
+        public class MyObject
+        {
+            public FooBar FooBar { get; set; }
+        }
+
+        [Test]
+        public void ToObject_Enum_Converter()
+        {
+            JObject o = JObject.Parse("{'FooBar':'SOME_OTHER_VALUE'}");
+
+            FooBar e = o["FooBar"].ToObject<FooBar>();
+            Assert.AreEqual(FooBar.SomeOtherValue, e);
+        }
+
+        public enum FooBarNoEnum
+        {
+            [EnumMember(Value = "SOME_VALUE")]
+            SomeValue,
+
+            [EnumMember(Value = "SOME_OTHER_VALUE")]
+            SomeOtherValue
+        }
+
+        public class MyObjectNoEnum
+        {
+            public FooBarNoEnum FooBarNoEnum { get; set; }
+        }
+
+        [Test]
+        public void ToObject_Enum_NoConverter()
+        {
+            JObject o = JObject.Parse("{'FooBarNoEnum':'SOME_OTHER_VALUE'}");
+
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                o["FooBarNoEnum"].ToObject<FooBarNoEnum>();
+            }, "Could not convert 'SOME_OTHER_VALUE' to FooBarNoEnum.");
         }
 #endif
 

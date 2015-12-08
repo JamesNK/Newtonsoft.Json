@@ -133,7 +133,7 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeNullRoot()
         {
-            string json = JsonConvert.SerializeObject(null, typeof(DataSet), new JsonSerializerSettings
+            string json = JsonConvert.SerializeObject<DataSet>(null, new JsonSerializerSettings
             {
                 Formatting = Formatting.Indented
             });

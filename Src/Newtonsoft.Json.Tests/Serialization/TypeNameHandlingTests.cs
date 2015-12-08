@@ -245,6 +245,34 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
         }
 
+        [Test]
+        public void SerializeRootTypeNameAutoWithJsonConvert_Generic()
+        {
+            string json = JsonConvert.SerializeObject<object>(new WagePerson(), Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
+
+            StringAssert.AreEqual(@"{
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
+  ""HourlyWage"": 0.0,
+  ""Name"": null,
+  ""BirthDate"": ""0001-01-01T00:00:00"",
+  ""LastModified"": ""0001-01-01T00:00:00""
+}", json);
+        }
+
+        [Test]
+        public void SerializeRootTypeNameAutoWithJsonConvert_Generic2()
+        {
+            string json = JsonConvert.SerializeObject<object>(new WagePerson(), new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            });
+
+            StringAssert.AreEqual(@"{""$type"":""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",""HourlyWage"":0.0,""Name"":null,""BirthDate"":""0001-01-01T00:00:00"",""LastModified"":""0001-01-01T00:00:00""}", json);
+        }
+
         public class Wrapper
         {
             public IList<EmployeeReference> Array { get; set; }

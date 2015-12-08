@@ -48,7 +48,7 @@ namespace Newtonsoft.Json.Serialization
 {
     internal class JsonSerializerInternalWriter : JsonSerializerInternalBase
     {
-        private JsonContract _rootContract;
+        private Type _rootType;
         private int _rootLevel;
         private readonly List<object> _serializeStack = new List<object>();
 
@@ -64,7 +64,7 @@ namespace Newtonsoft.Json.Serialization
                 throw new ArgumentNullException("jsonWriter");
             }
 
-            _rootContract = (objectType != null) ? Serializer._contractResolver.ResolveContract(objectType) : null;
+            _rootType = objectType;
             _rootLevel = _serializeStack.Count + 1;
 
             JsonContract contract = GetContractSafe(value);
@@ -99,7 +99,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 // clear root contract to ensure that if level was > 1 then it won't
                 // accidently be used for non root values
-                _rootContract = null;
+                _rootType = null;
             }
         }
 
@@ -1014,9 +1014,11 @@ namespace Newtonsoft.Json.Serialization
                         return true;
                     }
                 }
-                else if (_rootContract != null && _serializeStack.Count == _rootLevel)
+                else if (_rootType != null && _serializeStack.Count == _rootLevel)
                 {
-                    if (contract.UnderlyingType != _rootContract.CreatedType)
+                    JsonContract rootContract = Serializer._contractResolver.ResolveContract(_rootType);
+
+                    if (contract.UnderlyingType != rootContract.CreatedType)
                     {
                         return true;
                     }

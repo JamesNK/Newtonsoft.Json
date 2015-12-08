@@ -1948,13 +1948,14 @@ namespace Newtonsoft.Json.Linq
                 {
                     if (Type == JTokenType.String)
                     {
-                        Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType);
                         try
                         {
-                            return Enum.Parse(enumType, (string)this, true);
+                            // use serializer so JsonConverter(typeof(StringEnumConverter)) + EnumMemberAttributes are respected
+                            return ToObject(objectType, JsonSerializer.CreateDefault());
                         }
                         catch (Exception ex)
                         {
+                            Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType);
                             throw new ArgumentException("Could not convert '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, (string)this, enumType.Name), ex);
                         }
                     }

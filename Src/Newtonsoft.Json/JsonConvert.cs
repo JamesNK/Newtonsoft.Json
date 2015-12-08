@@ -531,6 +531,17 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Serializes the specified object to a JSON string.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to serialize.</typeparam>
+        /// <param name="value">The object to serialize.</param>
+        /// <returns>A JSON string representation of the object.</returns>
+        public static string SerializeObject<T>(object value)
+        {
+            return SerializeObject(value, typeof(T), (JsonSerializerSettings)null);
+        }
+
+        /// <summary>
         /// Serializes the specified object to a JSON string using formatting.
         /// </summary>
         /// <param name="value">The object to serialize.</param>
@@ -541,6 +552,20 @@ namespace Newtonsoft.Json
         public static string SerializeObject(object value, Formatting formatting)
         {
             return SerializeObject(value, formatting, (JsonSerializerSettings)null);
+        }
+
+        /// <summary>
+        /// Serializes the specified object to a JSON string using formatting.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to serialize.</typeparam>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="formatting">Indicates how the output is formatted.</param>
+        /// <returns>
+        /// A JSON string representation of the object.
+        /// </returns>
+        public static string SerializeObject<T>(object value, Formatting formatting)
+        {
+            return SerializeObject(value, typeof(T), (JsonSerializerSettings)null);
         }
 
         /// <summary>
@@ -589,6 +614,21 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Serializes the specified object to a JSON string using <see cref="JsonSerializerSettings"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to serialize.</typeparam>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
+        /// If this is null, default serialization settings will be used.</param>
+        /// <returns>
+        /// A JSON string representation of the object.
+        /// </returns>
+        public static string SerializeObject<T>(T value, JsonSerializerSettings settings)
+        {
+            return SerializeObject(value, typeof(T), settings);
+        }
+
+        /// <summary>
         /// Serializes the specified object to a JSON string using a type, formatting and <see cref="JsonSerializerSettings"/>.
         /// </summary>
         /// <param name="value">The object to serialize.</param>
@@ -622,6 +662,22 @@ namespace Newtonsoft.Json
         public static string SerializeObject(object value, Formatting formatting, JsonSerializerSettings settings)
         {
             return SerializeObject(value, null, formatting, settings);
+        }
+
+        /// <summary>
+        /// Serializes the specified object to a JSON string using formatting and <see cref="JsonSerializerSettings"/>.
+        /// </summary>
+        /// <typeparam name="T">The type of the object to serialize.</typeparam>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="formatting">Indicates how the output is formatted.</param>
+        /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
+        /// If this is null, default serialization settings will be used.</param>
+        /// <returns>
+        /// A JSON string representation of the object.
+        /// </returns>
+        public static string SerializeObject<T>(T value, Formatting formatting, JsonSerializerSettings settings)
+        {
+            return SerializeObject(value, typeof(T), formatting, settings);
         }
 
         /// <summary>
@@ -934,6 +990,7 @@ namespace Newtonsoft.Json
 #endif
         #endregion
 
+        #region Populate
         /// <summary>
         /// Populates the object with values from the JSON string.
         /// </summary>
@@ -987,7 +1044,9 @@ namespace Newtonsoft.Json
             return Task.Factory.StartNew(() => PopulateObject(value, target, settings));
         }
 #endif
+        #endregion
 
+        #region Xml
 #if !(PORTABLE40 || PORTABLE || DOTNET)
         /// <summary>
         /// Serializes the XML node to a JSON string.
@@ -1145,5 +1204,6 @@ namespace Newtonsoft.Json
             return (XDocument)DeserializeObject(value, typeof(XDocument), converter);
         }
 #endif
+        #endregion
     }
 }
