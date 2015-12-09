@@ -536,7 +536,7 @@ namespace Newtonsoft.Json
         /// <typeparam name="T">The type of the object to serialize.</typeparam>
         /// <param name="value">The object to serialize.</param>
         /// <returns>A JSON string representation of the object.</returns>
-        public static string SerializeObject<T>(object value)
+        public static string SerializeObject<T>(T value)
         {
             return SerializeObject(value, typeof(T), (JsonSerializerSettings)null);
         }
@@ -563,9 +563,9 @@ namespace Newtonsoft.Json
         /// <returns>
         /// A JSON string representation of the object.
         /// </returns>
-        public static string SerializeObject<T>(object value, Formatting formatting)
+        public static string SerializeObject<T>(T value, Formatting formatting)
         {
-            return SerializeObject(value, typeof(T), (JsonSerializerSettings)null);
+            return SerializeObject(value, typeof(T), formatting, (JsonSerializerSettings)null);
         }
 
         /// <summary>
