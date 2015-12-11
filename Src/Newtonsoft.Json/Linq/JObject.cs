@@ -152,7 +152,10 @@ namespace Newtonsoft.Json.Linq
             }
 
             if (_properties.TryGetValue(newProperty.Name, out existing))
-                throw new ArgumentException("Can not add property {0} to {1}. Property with the same name already exists on object.".FormatWith(CultureInfo.InvariantCulture, newProperty.Name, GetType()));
+            {
+                // BM : If a property with the same name aready exists, remove it so we can add the incoming one.
+                _properties.Remove(newProperty.Name);
+            }
         }
 
         internal override void MergeItem(object content, JsonMergeSettings settings)
