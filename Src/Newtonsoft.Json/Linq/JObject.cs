@@ -154,7 +154,7 @@ namespace Newtonsoft.Json.Linq
             if (_properties.TryGetValue(newProperty.Name, out existing))
             {
                 // BM : If a property with the same name aready exists, remove it so we can add the incoming one.
-                Console.WriteLine("Overwriting old duplicate property name detected: {0}", newProperty.Name);
+                Console.WriteLine("[Json.NET] Overwriting old duplicate property name detected: {0}", newProperty.Name);
                 _properties.Remove(newProperty.Name);
             }
         }
