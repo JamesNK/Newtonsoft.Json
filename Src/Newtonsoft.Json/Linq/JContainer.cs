@@ -372,6 +372,10 @@ namespace Newtonsoft.Json.Linq
             JToken next = (index == children.Count) ? null : children[index];
 
             ValidateToken(item, null);
+            // BM : ValidateToken may have removed an already existing duplicate key
+            //      Check index is not off the end.
+            if (index > ChildrenTokens.Count)
+                index = ChildrenTokens.Count;
 
             item.Parent = this;
 
@@ -467,6 +471,10 @@ namespace Newtonsoft.Json.Linq
             item = EnsureParentToken(item, false);
 
             ValidateToken(item, existing);
+            // BM : ValidateToken may have removed an already existing duplicate key
+            //      Check index is not off the end.
+            if (index > ChildrenTokens.Count)
+                index = ChildrenTokens.Count;
 
             JToken previous = (index == 0) ? null : children[index - 1];
             JToken next = (index == children.Count - 1) ? null : children[index + 1];
