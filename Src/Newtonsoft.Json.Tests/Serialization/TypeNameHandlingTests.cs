@@ -248,7 +248,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void SerializeRootTypeNameAutoWithJsonConvert_Generic()
         {
-            string json = JsonConvert.SerializeObject<object>(new WagePerson(), Formatting.Indented, new JsonSerializerSettings
+            string json = JsonConvert.SerializeObject(new WagePerson(), typeof(object), Formatting.Indented, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto
             });
@@ -265,7 +265,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void SerializeRootTypeNameAutoWithJsonConvert_Generic2()
         {
-            string json = JsonConvert.SerializeObject<object>(new WagePerson(), new JsonSerializerSettings
+            string json = JsonConvert.SerializeObject(new WagePerson(), typeof(object), new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto
             });
