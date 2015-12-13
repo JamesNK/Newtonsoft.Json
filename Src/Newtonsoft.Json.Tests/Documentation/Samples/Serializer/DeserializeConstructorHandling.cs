@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             {
                 if (website == null)
                 {
-                    throw new ArgumentNullException("website");
+                    throw new ArgumentNullException(nameof(website));
                 }
 
                 Url = website.Url;

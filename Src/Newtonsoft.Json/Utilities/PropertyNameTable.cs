@@ -78,7 +78,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (key == null)
             {
-                throw new ArgumentNullException("key");
+                throw new ArgumentNullException(nameof(key));
             }
 
             int length = key.Length;

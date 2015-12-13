@@ -1179,39 +1179,37 @@ third line", jsonTextReader.Value);
             Assert.AreEqual("type", reader.Value);
         }
 
-        public class FakeBufferPool : IJsonBufferPool<char>
+        public class FakeArrayPool : IArrayPool<char>
         {
-            public readonly List<char[]> FreeBuffers = new List<char[]>();
-            public readonly List<char[]> UsedBuffers = new List<char[]>();
+            public readonly List<char[]> FreeArrays = new List<char[]>();
+            public readonly List<char[]> UsedArrays = new List<char[]>();
 
-            public char[] RentBuffer(int minSize)
+            public char[] Rent(int minimumLength)
             {
-                char[] buffer = FreeBuffers.FirstOrDefault(b => b.Length >= minSize);
-                if (buffer != null)
+                char[] a = FreeArrays.FirstOrDefault(b => b.Length >= minimumLength);
+                if (a != null)
                 {
-                    FreeBuffers.Remove(buffer);
-                    UsedBuffers.Add(buffer);
+                    FreeArrays.Remove(a);
+                    UsedArrays.Add(a);
 
-                    return buffer;
+                    return a;
                 }
 
-                buffer = new char[minSize];
-                UsedBuffers.Add(buffer);
+                a = new char[minimumLength];
+                UsedArrays.Add(a);
 
-                return buffer;
+                return a;
             }
 
-            public void ReturnBuffer(ref char[] buffer)
+            public void Return(char[] array)
             {
-                if (UsedBuffers.Remove(buffer))
+                if (UsedArrays.Remove(array))
                 {
-                    FreeBuffers.Add(buffer);
+                    FreeArrays.Add(array);
 
-                    // smallest first so the first buffer large enough is rented
-                    FreeBuffers.Sort((b1, b2) => Comparer<int>.Default.Compare(b1.Length, b2.Length));
+                    // smallest first so the first array large enough is rented
+                    FreeArrays.Sort((b1, b2) => Comparer<int>.Default.Compare(b1.Length, b2.Length));
                 }
-
-                buffer = null;
             }
         }
 
@@ -1228,13 +1226,13 @@ third line", jsonTextReader.Value);
               ]
             }";
 
-            FakeBufferPool bufferPool = new FakeBufferPool();
+            FakeArrayPool arrayPool = new FakeArrayPool();
 
             for (int i = 0; i < 1000; i++)
             {
                 using (JsonTextReader reader = new JsonTextReader(new StringReader(json)))
                 {
-                    reader.BufferPool = bufferPool;
+                    reader.ArrayPool = arrayPool;
 
                     while (reader.Read())
                     {
@@ -1243,12 +1241,12 @@ third line", jsonTextReader.Value);
 
                 if ((i + 1) % 100 == 0)
                 {
-                    Console.WriteLine("Allocated buffers: " + bufferPool.FreeBuffers.Count);
+                    Console.WriteLine("Allocated buffers: " + arrayPool.FreeArrays.Count);
                 }
             }
 
-            Assert.AreEqual(0, bufferPool.UsedBuffers.Count);
-            Assert.AreEqual(6, bufferPool.FreeBuffers.Count);
+            Assert.AreEqual(0, arrayPool.UsedArrays.Count);
+            Assert.AreEqual(6, arrayPool.FreeArrays.Count);
         }
 
         [Test]

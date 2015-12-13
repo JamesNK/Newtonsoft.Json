@@ -64,7 +64,7 @@ namespace Newtonsoft.Json
         private bool _isEndOfFile;
         private StringBuffer _stringBuffer;
         private StringReference _stringReference;
-        private IJsonBufferPool<char> _bufferPool;
+        private IArrayPool<char> _arrayPool;
         internal PropertyNameTable NameTable;
 
         /// <summary>
@@ -75,7 +75,7 @@ namespace Newtonsoft.Json
         {
             if (reader == null)
             {
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             }
 
             _reader = reader;
@@ -92,17 +92,17 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets or sets the reader's character buffer pool.
         /// </summary>
-        public IJsonBufferPool<char> BufferPool
+        public IArrayPool<char> ArrayPool
         {
-            get { return _bufferPool; }
+            get { return _arrayPool; }
             set
             {
                 if (value == null)
                 {
-                    throw new ArgumentNullException("value");
+                    throw new ArgumentNullException(nameof(value));
                 }
 
-                _bufferPool = value;
+                _arrayPool = value;
             }
         }
 
@@ -110,7 +110,7 @@ namespace Newtonsoft.Json
         {
             if (_stringBuffer.IsEmpty)
             {
-                _stringBuffer = new StringBuffer(_bufferPool, 1024);
+                _stringBuffer = new StringBuffer(_arrayPool, 1024);
             }
         }
 
@@ -249,11 +249,11 @@ namespace Newtonsoft.Json
                     int newArrayLength = Math.Max(_chars.Length * 2, _charsUsed + charsRequired + 1);
 
                     // increase the size of the buffer
-                    char[] dst = BufferUtils.RentBuffer(_bufferPool, newArrayLength);
+                    char[] dst = BufferUtils.RentBuffer(_arrayPool, newArrayLength);
 
                     BlockCopyChars(_chars, 0, dst, 0, _chars.Length);
 
-                    BufferUtils.ReturnBuffer(_bufferPool, ref _chars);
+                    BufferUtils.ReturnBuffer(_arrayPool, _chars);
 
                     _chars = dst;
                 }
@@ -264,14 +264,14 @@ namespace Newtonsoft.Json
                     if (remainingCharCount + charsRequired + 1 >= _chars.Length)
                     {
                         // the remaining count plus the required is bigger than the current buffer size
-                        char[] dst = BufferUtils.RentBuffer(_bufferPool, remainingCharCount + charsRequired + 1);
+                        char[] dst = BufferUtils.RentBuffer(_arrayPool, remainingCharCount + charsRequired + 1);
 
                         if (remainingCharCount > 0)
                         {
                             BlockCopyChars(_chars, _charPos, dst, 0, remainingCharCount);
                         }
 
-                        BufferUtils.ReturnBuffer(_bufferPool, ref _chars);
+                        BufferUtils.ReturnBuffer(_arrayPool, _chars);
 
                         _chars = dst;
                     }
@@ -429,7 +429,7 @@ namespace Newtonsoft.Json
         {
             if (_chars == null)
             {
-                _chars = BufferUtils.RentBuffer(_bufferPool, 1024);
+                _chars = BufferUtils.RentBuffer(_arrayPool, 1024);
                 _chars[0] = '\0';
             }
 
@@ -644,7 +644,7 @@ namespace Newtonsoft.Json
 
                                 if (charPos > lastWritePosition)
                                 {
-                                    _stringBuffer.Append(_bufferPool, _chars, lastWritePosition, charPos - lastWritePosition);
+                                    _stringBuffer.Append(_arrayPool, _chars, lastWritePosition, charPos - lastWritePosition);
                                 }
 
                                 _stringReference = new StringReference(_stringBuffer.InternalBuffer, 0, _stringBuffer.Position);
@@ -663,10 +663,10 @@ namespace Newtonsoft.Json
         {
             if (writeToPosition > lastWritePosition)
             {
-                _stringBuffer.Append(_bufferPool, _chars, lastWritePosition, writeToPosition - lastWritePosition);
+                _stringBuffer.Append(_arrayPool, _chars, lastWritePosition, writeToPosition - lastWritePosition);
             }
 
-            _stringBuffer.Append(_bufferPool, writeChar);
+            _stringBuffer.Append(_arrayPool, writeChar);
         }
 
         private char ParseUnicode()
@@ -1759,7 +1759,8 @@ namespace Newtonsoft.Json
 
             if (_chars != null)
             {
-                BufferUtils.ReturnBuffer(_bufferPool, ref _chars);
+                BufferUtils.ReturnBuffer(_arrayPool, _chars);
+                _chars = null;
             }
 
             if (CloseInput && _reader != null)
@@ -1771,7 +1772,7 @@ namespace Newtonsoft.Json
 #endif
             }
 
-            _stringBuffer.Clear(_bufferPool);
+            _stringBuffer.Clear(_arrayPool);
         }
 
         /// <summary>

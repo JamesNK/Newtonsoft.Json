@@ -407,7 +407,7 @@ namespace Newtonsoft.Json.Utilities
                 case ConvertResult.CannotConvertNull:
                     throw new Exception("Can not convert null {0} into non-nullable {1}.".FormatWith(CultureInfo.InvariantCulture, initialValue.GetType(), targetType));
                 case ConvertResult.NotInstantiableType:
-                    throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
+                    throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), nameof(targetType));
                 case ConvertResult.NoValidConversion:
                     throw new InvalidOperationException("Can not convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialValue.GetType(), targetType));
                 default:
@@ -438,7 +438,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (initialValue == null)
             {
-                throw new ArgumentNullException("initialValue");
+                throw new ArgumentNullException(nameof(initialValue));
             }
 
             if (ReflectionUtils.IsNullableType(targetType))

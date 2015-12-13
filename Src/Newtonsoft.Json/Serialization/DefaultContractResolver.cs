@@ -236,7 +236,7 @@ namespace Newtonsoft.Json.Serialization
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
             DefaultContractResolverState state = GetState();

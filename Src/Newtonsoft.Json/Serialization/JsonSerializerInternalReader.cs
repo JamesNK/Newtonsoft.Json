@@ -140,7 +140,7 @@ namespace Newtonsoft.Json.Serialization
         {
             if (reader == null)
             {
-                throw new ArgumentNullException("reader");
+                throw new ArgumentNullException(nameof(reader));
             }
 
             JsonContract contract = GetContractSafe(objectType);

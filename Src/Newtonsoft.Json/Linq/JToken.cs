@@ -456,7 +456,7 @@ namespace Newtonsoft.Json.Linq
         {
             if (value == null)
             {
-                throw new ArgumentNullException("value");
+                throw new ArgumentNullException(nameof(value));
             }
 
             if (value is JProperty)
@@ -2411,7 +2411,7 @@ namespace Newtonsoft.Json.Linq
         {
             if (annotation == null)
             {
-                throw new ArgumentNullException("annotation");
+                throw new ArgumentNullException(nameof(annotation));
             }
 
             if (_annotations == null)
@@ -2484,7 +2484,7 @@ namespace Newtonsoft.Json.Linq
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
             if (_annotations != null)
@@ -2568,7 +2568,7 @@ namespace Newtonsoft.Json.Linq
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
             if (_annotations == null)
@@ -2662,7 +2662,7 @@ namespace Newtonsoft.Json.Linq
         {
             if (type == null)
             {
-                throw new ArgumentNullException("type");
+                throw new ArgumentNullException(nameof(type));
             }
 
             if (_annotations != null)

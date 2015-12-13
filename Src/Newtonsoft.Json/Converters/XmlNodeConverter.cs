@@ -985,7 +985,7 @@ namespace Newtonsoft.Json.Converters
             }
 #endif
 
-            throw new ArgumentException("Value must be an XML object.", "value");
+            throw new ArgumentException("Value must be an XML object.", nameof(value));
         }
 
         private void PushParentNamespaces(IXmlNode node, XmlNamespaceManager manager)

@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Serialization
             JToken token = value as JToken;
             if (token == null)
             {
-                throw new ArgumentException("Value is not a JToken.", "value");
+                throw new ArgumentException("Value is not a JToken.", nameof(value));
             }
 
             return _reader.CreateISerializableItem(token, type, _contract, _member);

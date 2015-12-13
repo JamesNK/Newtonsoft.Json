@@ -287,7 +287,7 @@ namespace Newtonsoft.Json
             {
                 if (value <= 0)
                 {
-                    throw new ArgumentException("Value must be positive.", "value");
+                    throw new ArgumentException("Value must be positive.", nameof(value));
                 }
 
                 _maxDepth = value;

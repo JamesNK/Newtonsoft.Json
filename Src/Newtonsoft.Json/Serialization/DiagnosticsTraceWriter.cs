@@ -33,7 +33,7 @@ namespace Newtonsoft.Json.Serialization
                 case TraceLevel.Verbose:
                     return TraceEventType.Verbose;
                 default:
-                    throw new ArgumentOutOfRangeException("level");
+                    throw new ArgumentOutOfRangeException(nameof(level));
             }
         }
 

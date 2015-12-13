@@ -60,7 +60,7 @@ namespace Newtonsoft.Json
         {
             if (converterType == null)
             {
-                throw new ArgumentNullException("converterType");
+                throw new ArgumentNullException(nameof(converterType));
             }
 
             _converterType = converterType;

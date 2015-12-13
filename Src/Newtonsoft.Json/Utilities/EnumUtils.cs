@@ -121,7 +121,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (enumType == null)
             {
-                throw new ArgumentNullException("enumType");
+                throw new ArgumentNullException(nameof(enumType));
             }
 
             ValidationUtils.ArgumentTypeIsEnum(enumType, "enumType");

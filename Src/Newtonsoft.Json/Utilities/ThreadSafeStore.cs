@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (creator == null)
             {
-                throw new ArgumentNullException("creator");
+                throw new ArgumentNullException(nameof(creator));
             }
 
             _creator = creator;

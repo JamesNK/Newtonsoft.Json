@@ -623,7 +623,7 @@ namespace Newtonsoft.Json.Bson
                     SetToken(JsonToken.Integer, ReadInt64());
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("type", "Unexpected BsonType value: " + type);
+                    throw new ArgumentOutOfRangeException(nameof(type), "Unexpected BsonType value: " + type);
             }
         }
 

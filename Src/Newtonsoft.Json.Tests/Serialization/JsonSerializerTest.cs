@@ -4514,7 +4514,7 @@ Path '', line 1, position 1.");
             {
                 if (dictionary == null)
                 {
-                    throw new ArgumentNullException("dictionary");
+                    throw new ArgumentNullException(nameof(dictionary));
                 }
 
                 foreach (var entry in dictionary)
@@ -8534,7 +8534,7 @@ Path '', line 1, position 1.");
             {
                 if (bar == null)
                 {
-                    throw new ArgumentNullException("bar");
+                    throw new ArgumentNullException(nameof(bar));
                 }
 
                 Bar = bar;

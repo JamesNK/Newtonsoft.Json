@@ -784,7 +784,7 @@ If attributes are not mentioned, default values are used in each case.
                     json = SerializeBinaryFormatter(value);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("method");
+                    throw new ArgumentOutOfRangeException(nameof(method));
             }
 
             return json;
@@ -991,7 +991,7 @@ If attributes are not mentioned, default values are used in each case.
                 case SerializeMethod.DataContractJsonSerializer:
                     return DeserializeDataContractJson<T>((string)json);
                 default:
-                    throw new ArgumentOutOfRangeException("method");
+                    throw new ArgumentOutOfRangeException(nameof(method));
             }
         }
 

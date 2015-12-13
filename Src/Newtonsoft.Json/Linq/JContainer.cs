@@ -382,7 +382,7 @@ namespace Newtonsoft.Json.Linq
 
             if (index > children.Count)
             {
-                throw new ArgumentOutOfRangeException("index", "Index must be within the bounds of the List.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Index must be within the bounds of the List.");
             }
 
             CheckReentrancy();
@@ -431,11 +431,11 @@ namespace Newtonsoft.Json.Linq
 
             if (index < 0)
             {
-                throw new ArgumentOutOfRangeException("index", "Index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Index is less than 0.");
             }
             if (index >= children.Count)
             {
-                throw new ArgumentOutOfRangeException("index", "Index is equal to or greater than Count.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Index is equal to or greater than Count.");
             }
 
             CheckReentrancy();
@@ -496,11 +496,11 @@ namespace Newtonsoft.Json.Linq
 
             if (index < 0)
             {
-                throw new ArgumentOutOfRangeException("index", "Index is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Index is less than 0.");
             }
             if (index >= children.Count)
             {
-                throw new ArgumentOutOfRangeException("index", "Index is equal to or greater than Count.");
+                throw new ArgumentOutOfRangeException(nameof(index), "Index is equal to or greater than Count.");
             }
 
             JToken existing = children[index];
@@ -602,11 +602,11 @@ namespace Newtonsoft.Json.Linq
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "arrayIndex is less than 0.");
             }
             if (arrayIndex >= array.Length && arrayIndex != 0)
             {
@@ -1249,7 +1249,7 @@ namespace Newtonsoft.Json.Linq
                     }
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("settings", "Unexpected merge array handling when merging JSON.");
+                    throw new ArgumentOutOfRangeException(nameof(settings), "Unexpected merge array handling when merging JSON.");
             }
         }
     }

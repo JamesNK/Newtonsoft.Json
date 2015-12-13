@@ -230,7 +230,7 @@ namespace Newtonsoft.Json
             {
                 if (value < Formatting.None || value > Formatting.Indented)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _formatting = value;
@@ -247,7 +247,7 @@ namespace Newtonsoft.Json
             {
                 if (value < DateFormatHandling.IsoDateFormat || value > DateFormatHandling.MicrosoftDateFormat)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _dateFormatHandling = value;
@@ -264,7 +264,7 @@ namespace Newtonsoft.Json
             {
                 if (value < DateTimeZoneHandling.Local || value > DateTimeZoneHandling.RoundtripKind)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _dateTimeZoneHandling = value;
@@ -281,7 +281,7 @@ namespace Newtonsoft.Json
             {
                 if (value < StringEscapeHandling.Default || value > StringEscapeHandling.EscapeHtml)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _stringEscapeHandling = value;
@@ -306,7 +306,7 @@ namespace Newtonsoft.Json
             {
                 if (value < FloatFormatHandling.String || value > FloatFormatHandling.DefaultValue)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _floatFormatHandling = value;
@@ -1632,7 +1632,7 @@ namespace Newtonsoft.Json
                 case JsonToken.PropertyName:
                     if (!(value is string))
                     {
-                        throw new ArgumentException("A name is required when setting property name state.", "value");
+                        throw new ArgumentException("A name is required when setting property name state.", nameof(value));
                     }
 
                     InternalWritePropertyName((string)value);
@@ -1663,7 +1663,7 @@ namespace Newtonsoft.Json
                     InternalWriteEnd(JsonContainerType.Constructor);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("token");
+                    throw new ArgumentOutOfRangeException(nameof(token));
             }
         }
 

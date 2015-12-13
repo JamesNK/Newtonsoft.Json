@@ -66,7 +66,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (initial == null)
             {
-                throw new ArgumentNullException("initial");
+                throw new ArgumentNullException(nameof(initial));
             }
 
             if (collection == null)
@@ -170,7 +170,7 @@ namespace Newtonsoft.Json.Utilities
 
             if (source == null)
             {
-                throw new ArgumentNullException("source");
+                throw new ArgumentNullException(nameof(source));
             }
 
             foreach (TSource local in source)

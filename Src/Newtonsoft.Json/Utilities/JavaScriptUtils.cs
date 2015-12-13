@@ -41,42 +41,40 @@ namespace Newtonsoft.Json.Utilities
 {
     internal static class BufferUtils
     {
-        public static char[] RentBuffer(IJsonBufferPool<char> bufferPool, int minSize)
+        public static char[] RentBuffer(IArrayPool<char> bufferPool, int minSize)
         {
             if (bufferPool == null)
             {
                 return new char[minSize];
             }
 
-            char[] buffer = bufferPool.RentBuffer(minSize);
+            char[] buffer = bufferPool.Rent(minSize);
             return buffer;
         }
 
-        public static void ReturnBuffer(IJsonBufferPool<char> bufferPool, ref char[] buffer)
+        public static void ReturnBuffer(IArrayPool<char> bufferPool, char[] buffer)
         {
             if (bufferPool == null)
             {
-                buffer = null;
                 return;
             }
 
-            bufferPool.ReturnBuffer(ref buffer);
+            bufferPool.Return(buffer);
         }
 
-        public static void EnsureBufferSize(IJsonBufferPool<char> bufferPool, int size, ref char[] buffer)
+        public static char[] EnsureBufferSize(IArrayPool<char> bufferPool, int size, char[] buffer)
         {
             if (bufferPool == null)
             {
-                buffer = new char[size];
-                return;
+                return new char[size];
             }
 
             if (buffer != null)
             {
-                bufferPool.ReturnBuffer(ref buffer);
+                bufferPool.Return(buffer);
             }
 
-            buffer = bufferPool.RentBuffer(size);
+            return bufferPool.Rent(size);
         }
     }
 
@@ -149,7 +147,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
         public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters,
-            bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, IJsonBufferPool<char> bufferPool, ref char[] writeBuffer)
+            bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, IArrayPool<char> bufferPool, ref char[] writeBuffer)
         {
             // leading delimiter
             if (appendDelimiters)
@@ -216,7 +214,7 @@ namespace Newtonsoft.Json.Utilities
                                 {
                                     if (writeBuffer == null || writeBuffer.Length < UnicodeTextLength)
                                     {
-                                        BufferUtils.EnsureBufferSize(bufferPool, UnicodeTextLength, ref writeBuffer);
+                                        writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, UnicodeTextLength, writeBuffer);
                                     }
 
                                     StringUtils.ToCharAsUnicode(c, writeBuffer);
@@ -255,7 +253,7 @@ namespace Newtonsoft.Json.Utilities
                                 Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
                             }
 
-                            BufferUtils.ReturnBuffer(bufferPool, ref writeBuffer);
+                            BufferUtils.ReturnBuffer(bufferPool, writeBuffer);
 
                             writeBuffer = newBuffer;
                         }

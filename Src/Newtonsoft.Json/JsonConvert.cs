@@ -444,7 +444,7 @@ namespace Newtonsoft.Json
         {
             if (delimiter != '"' && delimiter != '\'')
             {
-                throw new ArgumentException("Delimiter must be a single or double quote.", "delimiter");
+                throw new ArgumentException("Delimiter must be a single or double quote.", nameof(delimiter));
             }
 
             return JavaScriptUtils.ToEscapedJavaScriptString(value, delimiter, true, stringEscapeHandling);

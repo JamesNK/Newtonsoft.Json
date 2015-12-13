@@ -177,7 +177,7 @@ namespace Newtonsoft.Json
             {
                 if (value < DateTimeZoneHandling.Local || value > DateTimeZoneHandling.RoundtripKind)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _dateTimeZoneHandling = value;
@@ -200,7 +200,7 @@ namespace Newtonsoft.Json
 #endif
                     )
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _dateParseHandling = value;
@@ -217,7 +217,7 @@ namespace Newtonsoft.Json
             {
                 if (value < FloatParseHandling.Double || value > FloatParseHandling.Decimal)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _floatParseHandling = value;
@@ -243,7 +243,7 @@ namespace Newtonsoft.Json
             {
                 if (value <= 0)
                 {
-                    throw new ArgumentException("Value must be positive.", "value");
+                    throw new ArgumentException("Value must be positive.", nameof(value));
                 }
 
                 _maxDepth = value;

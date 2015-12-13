@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void BufferTest()
         {
-            JsonTextReaderTest.FakeBufferPool bufferPool = new JsonTextReaderTest.FakeBufferPool();
+            JsonTextReaderTest.FakeArrayPool arrayPool = new JsonTextReaderTest.FakeArrayPool();
 
             string longString = new string('A', 2000);
             string longEscapedString = "Hello!" + new string('!', 50) + new string('\n', 1000) + "Good bye!";
@@ -71,7 +71,7 @@ namespace Newtonsoft.Json.Tests
 
                 using (JsonTextWriter writer = new JsonTextWriter(sw))
                 {
-                    writer.BufferPool = bufferPool;
+                    writer.ArrayPool = arrayPool;
 
                     writer.WriteStartObject();
 
@@ -92,12 +92,12 @@ namespace Newtonsoft.Json.Tests
 
                 if ((i + 1) % 100 == 0)
                 {
-                    Console.WriteLine("Allocated buffers: " + bufferPool.FreeBuffers.Count);
+                    Console.WriteLine("Allocated buffers: " + arrayPool.FreeArrays.Count);
                 }
             }
 
-            Assert.AreEqual(0, bufferPool.UsedBuffers.Count);
-            Assert.AreEqual(3, bufferPool.FreeBuffers.Count);
+            Assert.AreEqual(0, arrayPool.UsedArrays.Count);
+            Assert.AreEqual(3, arrayPool.FreeArrays.Count);
         }
 
         [Test]

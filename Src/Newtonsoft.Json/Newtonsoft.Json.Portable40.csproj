@@ -82,7 +82,7 @@
     <Compile Include="FloatParseHandling.cs" />
     <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="Formatting.cs" />
-    <Compile Include="IJsonBufferPool.cs" />
+    <Compile Include="IArrayPool.cs" />
     <Compile Include="IJsonLineInfo.cs" />
     <Compile Include="JsonArrayAttribute.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />

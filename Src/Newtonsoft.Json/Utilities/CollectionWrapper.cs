@@ -316,7 +316,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (!IsCompatibleObject(value))
             {
-                throw new ArgumentException("The value '{0}' is not of type '{1}' and cannot be used in this generic collection.".FormatWith(CultureInfo.InvariantCulture, value, typeof(T)), "value");
+                throw new ArgumentException("The value '{0}' is not of type '{1}' and cannot be used in this generic collection.".FormatWith(CultureInfo.InvariantCulture, value, typeof(T)), nameof(value));
             }
         }
 

@@ -627,11 +627,11 @@ namespace Newtonsoft.Json.Linq
         {
             if (array == null)
             {
-                throw new ArgumentNullException("array");
+                throw new ArgumentNullException(nameof(array));
             }
             if (arrayIndex < 0)
             {
-                throw new ArgumentOutOfRangeException("arrayIndex", "arrayIndex is less than 0.");
+                throw new ArgumentOutOfRangeException(nameof(arrayIndex), "arrayIndex is less than 0.");
             }
             if (arrayIndex >= array.Length && arrayIndex != 0)
             {
