@@ -909,6 +909,57 @@ namespace Newtonsoft.Json.Tests.Linq
   ""StockValue"": 22050.00
 }", json);
         }
+
+        [Test]
+        public void DynamicAccess_ToJToken_ShouldNotFail()
+        {
+            Guid g = Guid.NewGuid();
+            dynamic json = JObject.FromObject(new { uid = g });
+            JToken token = json.uid;
+
+            Assert.AreEqual(g, ((JValue)token).Value);
+        }
+
+        [Test]
+        public void DynamicAccess_ToJTokenExplicit_ShouldNotFail()
+        {
+            Guid g = Guid.NewGuid();
+            dynamic json = JObject.FromObject(new { uid = g });
+            JToken token = (JToken)json.uid;
+
+            Assert.AreEqual(g, ((JValue)token).Value);
+        }
+
+        [Test]
+        public void DynamicAccess_ToJTokenSafeCast_ShouldNotFail()
+        {
+            Guid g = Guid.NewGuid();
+            dynamic json = JObject.FromObject(new { uid = g });
+            JToken token = json.uid as JToken;
+
+            Assert.AreEqual(g, ((JValue)token).Value);
+        }
+
+        [Test]
+        public void IndexAccess_ToJToken_ShouldNotFail()
+        {
+            Guid g = Guid.NewGuid();
+            JObject json = JObject.FromObject(new { uid = g });
+            JToken token = json["uid"];
+
+            Assert.AreEqual(g, ((JValue)token).Value);
+        }
+
+        [Test]
+        public void DynamicAccess_ToJToken_ShouldFail()
+        {
+            Guid g = Guid.NewGuid();
+            dynamic json = JObject.FromObject(new { uid = g });
+
+            ExceptionAssert.Throws<InvalidOperationException>(
+                () => { JObject token = json.uid; },
+                "Can not convert from System.Guid to Newtonsoft.Json.Linq.JObject.");
+        }
     }
 
     public class DynamicDictionary : DynamicObject

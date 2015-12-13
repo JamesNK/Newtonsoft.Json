@@ -931,7 +931,9 @@ namespace Newtonsoft.Json.Utilities
             // GUID has to have format 00000000-0000-0000-0000-000000000000
 #if NET20 || NET35
             if (s == null)
+            {
                 throw new ArgumentNullException("s");
+            }
 
             Regex format = new Regex("^[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}$");
             Match match = format.Match(s);
