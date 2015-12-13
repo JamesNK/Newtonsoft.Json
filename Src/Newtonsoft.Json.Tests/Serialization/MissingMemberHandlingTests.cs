@@ -126,6 +126,16 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void CaseInsensitive()
+        {
+            string json = @"{""height"":1}";
+
+            DoubleClass c = JsonConvert.DeserializeObject<DoubleClass>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+
+            Assert.AreEqual(1d, c.Height);
+        }
+
+        [Test]
         public void MissingMemeber()
         {
             string json = @"{""Missing"":1}";

@@ -180,16 +180,25 @@ or a property's object properties or collection items using
 <section>
  <title>TypeNameHandling</title>
  <content>
+ <alert class="caution">
+  <para>
+ <codeEntityReference>T:Newtonsoft.Json.TypeNameHandling</codeEntityReference> should be used with caution when your application deserializes JSON from an external source.
+  </para>
+  <para>
+    Incoming types should be validated with a custom <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference> when deserializing with a value other than <c>TypeNameHandling.None</c>.
+  </para>
+ </alert>
+ 
  <para>
    <codeEntityReference>T:Newtonsoft.Json.TypeNameHandling</codeEntityReference> controls whether Json.NET includes .NET type names
    during serialization with a $type property and reads .NET type names from that property to determine what type to create during
    deserialization.
  </para>
  <para>
-   The value of the $type property can be customized by creating your own 
+   The value of the $type property can be customized and validated by creating your own 
    <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference>.
  </para>
- 
+
 <table>
   <tableHeader>
     <row>

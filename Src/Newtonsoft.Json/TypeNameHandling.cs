@@ -24,12 +24,18 @@
 #endregion
 
 using System;
+using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json
 {
     /// <summary>
     /// Specifies type name handling options for the <see cref="JsonSerializer"/>.
     /// </summary>
+    /// <remarks>
+    /// <see cref="TypeNameHandling"/> should be used with caution when your application deserializes JSON from an external source.
+    /// Incoming types should be validated with a custom <see cref="T:System.Runtime.Serialization.SerializationBinder"/>
+    /// when deserializing with a value other than <c>TypeNameHandling.None</c>.
+    /// </remarks>
     [Flags]
     public enum TypeNameHandling
     {
