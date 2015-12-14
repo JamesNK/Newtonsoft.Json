@@ -346,6 +346,9 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JObject"/>.</param>
         /// <returns>A <see cref="JObject"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
+        /// <exception cref="JsonReaderException">
+        ///     <paramref name="reader"/> is not valid JSON.
+        /// </exception>
         public new static JObject Load(JsonReader reader)
         {
             return Load(reader, null);
@@ -358,6 +361,9 @@ namespace Newtonsoft.Json.Linq
         /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
         /// If this is null, default load settings will be used.</param>
         /// <returns>A <see cref="JObject"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
+        /// <exception cref="JsonReaderException">
+        ///     <paramref name="reader"/> is not valid JSON.
+        /// </exception>
         public new static JObject Load(JsonReader reader, JsonLoadSettings settings)
         {
             ValidationUtils.ArgumentNotNull(reader, "reader");
@@ -393,6 +399,9 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="json">A <see cref="String"/> that contains JSON.</param>
         /// <returns>A <see cref="JObject"/> populated from the string that contains JSON.</returns>
+        /// <exception cref="JsonReaderException">
+        ///     <paramref name="json"/> is not valid JSON.
+        /// </exception>
         /// <example>
         ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
         /// </example>
@@ -408,6 +417,9 @@ namespace Newtonsoft.Json.Linq
         /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
         /// If this is null, default load settings will be used.</param>
         /// <returns>A <see cref="JObject"/> populated from the string that contains JSON.</returns>
+        /// <exception cref="JsonReaderException">
+        ///     <paramref name="json"/> is not valid JSON.
+        /// </exception>
         /// <example>
         ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
         /// </example>
