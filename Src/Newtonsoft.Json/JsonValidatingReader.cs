@@ -361,7 +361,7 @@ namespace Newtonsoft.Json
             JsonSchemaType? currentNodeType = GetCurrentNodeSchemaType();
             if (currentNodeType != null)
             {
-                if (JsonSchemaGenerator.HasFlag(schema.Disallow, currentNodeType.Value))
+                if (JsonSchemaGenerator.HasFlag(schema.Disallow, currentNodeType.GetValueOrDefault()))
                 {
                     RaiseError("Type {0} is disallowed.".FormatWith(CultureInfo.InvariantCulture, currentNodeType), schema);
                 }
@@ -835,7 +835,7 @@ namespace Newtonsoft.Json
                 else
 #endif
                 {
-                    notDivisible = !IsZero(Convert.ToInt64(value, CultureInfo.InvariantCulture) % schema.DivisibleBy.Value);
+                    notDivisible = !IsZero(Convert.ToInt64(value, CultureInfo.InvariantCulture) % schema.DivisibleBy.GetValueOrDefault());
                 }
 
                 if (notDivisible)
@@ -907,7 +907,7 @@ namespace Newtonsoft.Json
 
             if (schema.DivisibleBy != null)
             {
-                double remainder = FloatingPointRemainder(value, schema.DivisibleBy.Value);
+                double remainder = FloatingPointRemainder(value, schema.DivisibleBy.GetValueOrDefault());
 
                 if (!IsZero(remainder))
                 {

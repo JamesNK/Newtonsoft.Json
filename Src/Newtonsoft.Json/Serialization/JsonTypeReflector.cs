@@ -408,7 +408,7 @@ namespace Newtonsoft.Json.Serialization
 #endif
                 }
 
-                return _dynamicCodeGeneration.Value;
+                return _dynamicCodeGeneration.GetValueOrDefault();
             }
         }
 
@@ -437,7 +437,7 @@ namespace Newtonsoft.Json.Serialization
 #endif
                 }
 
-                return _fullyTrusted.Value;
+                return _fullyTrusted.GetValueOrDefault();
             }
         }
 

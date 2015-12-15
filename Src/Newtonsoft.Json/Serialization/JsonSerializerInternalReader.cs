@@ -2096,7 +2096,7 @@ namespace Newtonsoft.Json.Serialization
                         contract,
                         reader.Depth,
                         context.Property,
-                        context.Presence.Value,
+                        context.Presence.GetValueOrDefault(),
                         !context.Used);
                 }
             }

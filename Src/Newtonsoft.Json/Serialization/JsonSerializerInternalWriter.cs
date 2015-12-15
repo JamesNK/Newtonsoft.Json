@@ -262,7 +262,7 @@ namespace Newtonsoft.Json.Serialization
                 }
             }
 
-            if (!isReference.Value)
+            if (!isReference.GetValueOrDefault())
             {
                 return false;
             }

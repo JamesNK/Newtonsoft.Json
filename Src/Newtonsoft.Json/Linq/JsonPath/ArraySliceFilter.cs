@@ -60,8 +60,8 @@ namespace Newtonsoft.Json.Linq.JsonPath
                         if (errorWhenNoMatch)
                         {
                             throw new JsonException("Array slice of {0} to {1} returned no results.".FormatWith(CultureInfo.InvariantCulture,
-                                Start != null ? Start.Value.ToString(CultureInfo.InvariantCulture) : "*",
-                                End != null ? End.Value.ToString(CultureInfo.InvariantCulture) : "*"));
+                                Start != null ? Start.GetValueOrDefault().ToString(CultureInfo.InvariantCulture) : "*",
+                                End != null ? End.GetValueOrDefault().ToString(CultureInfo.InvariantCulture) : "*"));
                         }
                     }
                 }

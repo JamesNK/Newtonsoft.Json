@@ -198,7 +198,7 @@ namespace Newtonsoft.Json.Bson
         {
             if (calculatedlengthPrefix != null)
             {
-                _writer.Write(calculatedlengthPrefix.Value);
+                _writer.Write(calculatedlengthPrefix.GetValueOrDefault());
             }
 
             WriteUtf8Bytes(s, byteCount);

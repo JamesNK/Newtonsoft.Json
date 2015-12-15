@@ -84,7 +84,7 @@ namespace Newtonsoft.Json.Schema
             WritePropertyIfNotNull(_writer, JsonSchemaConstants.TransientPropertyName, schema.Transient);
             if (schema.Type != null)
             {
-                WriteType(JsonSchemaConstants.TypePropertyName, _writer, schema.Type.Value);
+                WriteType(JsonSchemaConstants.TypePropertyName, _writer, schema.Type.GetValueOrDefault());
             }
             if (!schema.AllowAdditionalProperties)
             {
@@ -143,7 +143,7 @@ namespace Newtonsoft.Json.Schema
             }
             if (schema.Disallow != null)
             {
-                WriteType(JsonSchemaConstants.DisallowPropertyName, _writer, schema.Disallow.Value);
+                WriteType(JsonSchemaConstants.DisallowPropertyName, _writer, schema.Disallow.GetValueOrDefault());
             }
             if (schema.Extends != null && schema.Extends.Count > 0)
             {
