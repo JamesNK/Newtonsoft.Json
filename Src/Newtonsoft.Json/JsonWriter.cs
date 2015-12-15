@@ -1091,7 +1091,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1108,7 +1108,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1124,7 +1124,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1141,7 +1141,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1157,7 +1157,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1173,7 +1173,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1189,7 +1189,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1205,7 +1205,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1222,7 +1222,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1238,7 +1238,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1254,7 +1254,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1271,7 +1271,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1287,7 +1287,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1303,7 +1303,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1320,7 +1320,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 #endif
@@ -1337,7 +1337,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 
@@ -1353,7 +1353,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                WriteValue(value.Value);
+                WriteValue(value.GetValueOrDefault());
             }
         }
 

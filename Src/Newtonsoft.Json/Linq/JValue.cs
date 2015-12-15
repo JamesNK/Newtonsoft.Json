@@ -683,12 +683,12 @@ namespace Newtonsoft.Json.Linq
                 return JTokenType.String;
             }
 
-            switch (current.Value)
+            switch (current.GetValueOrDefault())
             {
                 case JTokenType.Comment:
                 case JTokenType.String:
                 case JTokenType.Raw:
-                    return current.Value;
+                    return current.GetValueOrDefault();
                 default:
                     return JTokenType.String;
             }

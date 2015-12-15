@@ -138,7 +138,7 @@ namespace Newtonsoft.Json.Utilities
                 return val1;
             }
 
-            return Math.Min(val1.Value, val2.Value);
+            return Math.Min(val1.GetValueOrDefault(), val2.GetValueOrDefault());
         }
 
         public static int? Max(int? val1, int? val2)
@@ -152,7 +152,7 @@ namespace Newtonsoft.Json.Utilities
                 return val1;
             }
 
-            return Math.Max(val1.Value, val2.Value);
+            return Math.Max(val1.GetValueOrDefault(), val2.GetValueOrDefault());
         }
 
         public static double? Max(double? val1, double? val2)
@@ -166,7 +166,7 @@ namespace Newtonsoft.Json.Utilities
                 return val1;
             }
 
-            return Math.Max(val1.Value, val2.Value);
+            return Math.Max(val1.GetValueOrDefault(), val2.GetValueOrDefault());
         }
 
         public static bool ApproxEquals(double d1, double d2)

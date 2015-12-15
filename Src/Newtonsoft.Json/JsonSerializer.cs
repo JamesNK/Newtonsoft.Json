@@ -847,7 +847,7 @@ namespace Newtonsoft.Json
             if (_dateTimeZoneHandling != null && reader.DateTimeZoneHandling != _dateTimeZoneHandling)
             {
                 previousDateTimeZoneHandling = reader.DateTimeZoneHandling;
-                reader.DateTimeZoneHandling = _dateTimeZoneHandling.Value;
+                reader.DateTimeZoneHandling = _dateTimeZoneHandling.GetValueOrDefault();
             }
             else
             {
@@ -857,7 +857,7 @@ namespace Newtonsoft.Json
             if (_dateParseHandling != null && reader.DateParseHandling != _dateParseHandling)
             {
                 previousDateParseHandling = reader.DateParseHandling;
-                reader.DateParseHandling = _dateParseHandling.Value;
+                reader.DateParseHandling = _dateParseHandling.GetValueOrDefault();
             }
             else
             {
@@ -867,7 +867,7 @@ namespace Newtonsoft.Json
             if (_floatParseHandling != null && reader.FloatParseHandling != _floatParseHandling)
             {
                 previousFloatParseHandling = reader.FloatParseHandling;
-                reader.FloatParseHandling = _floatParseHandling.Value;
+                reader.FloatParseHandling = _floatParseHandling.GetValueOrDefault();
             }
             else
             {
@@ -914,15 +914,15 @@ namespace Newtonsoft.Json
             }
             if (previousDateTimeZoneHandling != null)
             {
-                reader.DateTimeZoneHandling = previousDateTimeZoneHandling.Value;
+                reader.DateTimeZoneHandling = previousDateTimeZoneHandling.GetValueOrDefault();
             }
             if (previousDateParseHandling != null)
             {
-                reader.DateParseHandling = previousDateParseHandling.Value;
+                reader.DateParseHandling = previousDateParseHandling.GetValueOrDefault();
             }
             if (previousFloatParseHandling != null)
             {
-                reader.FloatParseHandling = previousFloatParseHandling.Value;
+                reader.FloatParseHandling = previousFloatParseHandling.GetValueOrDefault();
             }
             if (_maxDepthSet)
             {
@@ -1003,35 +1003,35 @@ namespace Newtonsoft.Json
             if (_formatting != null && jsonWriter.Formatting != _formatting)
             {
                 previousFormatting = jsonWriter.Formatting;
-                jsonWriter.Formatting = _formatting.Value;
+                jsonWriter.Formatting = _formatting.GetValueOrDefault();
             }
 
             DateFormatHandling? previousDateFormatHandling = null;
             if (_dateFormatHandling != null && jsonWriter.DateFormatHandling != _dateFormatHandling)
             {
                 previousDateFormatHandling = jsonWriter.DateFormatHandling;
-                jsonWriter.DateFormatHandling = _dateFormatHandling.Value;
+                jsonWriter.DateFormatHandling = _dateFormatHandling.GetValueOrDefault();
             }
 
             DateTimeZoneHandling? previousDateTimeZoneHandling = null;
             if (_dateTimeZoneHandling != null && jsonWriter.DateTimeZoneHandling != _dateTimeZoneHandling)
             {
                 previousDateTimeZoneHandling = jsonWriter.DateTimeZoneHandling;
-                jsonWriter.DateTimeZoneHandling = _dateTimeZoneHandling.Value;
+                jsonWriter.DateTimeZoneHandling = _dateTimeZoneHandling.GetValueOrDefault();
             }
 
             FloatFormatHandling? previousFloatFormatHandling = null;
             if (_floatFormatHandling != null && jsonWriter.FloatFormatHandling != _floatFormatHandling)
             {
                 previousFloatFormatHandling = jsonWriter.FloatFormatHandling;
-                jsonWriter.FloatFormatHandling = _floatFormatHandling.Value;
+                jsonWriter.FloatFormatHandling = _floatFormatHandling.GetValueOrDefault();
             }
 
             StringEscapeHandling? previousStringEscapeHandling = null;
             if (_stringEscapeHandling != null && jsonWriter.StringEscapeHandling != _stringEscapeHandling)
             {
                 previousStringEscapeHandling = jsonWriter.StringEscapeHandling;
-                jsonWriter.StringEscapeHandling = _stringEscapeHandling.Value;
+                jsonWriter.StringEscapeHandling = _stringEscapeHandling.GetValueOrDefault();
             }
 
             CultureInfo previousCulture = null;
@@ -1063,23 +1063,23 @@ namespace Newtonsoft.Json
             // reset writer back to previous options
             if (previousFormatting != null)
             {
-                jsonWriter.Formatting = previousFormatting.Value;
+                jsonWriter.Formatting = previousFormatting.GetValueOrDefault();
             }
             if (previousDateFormatHandling != null)
             {
-                jsonWriter.DateFormatHandling = previousDateFormatHandling.Value;
+                jsonWriter.DateFormatHandling = previousDateFormatHandling.GetValueOrDefault();
             }
             if (previousDateTimeZoneHandling != null)
             {
-                jsonWriter.DateTimeZoneHandling = previousDateTimeZoneHandling.Value;
+                jsonWriter.DateTimeZoneHandling = previousDateTimeZoneHandling.GetValueOrDefault();
             }
             if (previousFloatFormatHandling != null)
             {
-                jsonWriter.FloatFormatHandling = previousFloatFormatHandling.Value;
+                jsonWriter.FloatFormatHandling = previousFloatFormatHandling.GetValueOrDefault();
             }
             if (previousStringEscapeHandling != null)
             {
-                jsonWriter.StringEscapeHandling = previousStringEscapeHandling.Value;
+                jsonWriter.StringEscapeHandling = previousStringEscapeHandling.GetValueOrDefault();
             }
             if (_dateFormatStringSet)
             {

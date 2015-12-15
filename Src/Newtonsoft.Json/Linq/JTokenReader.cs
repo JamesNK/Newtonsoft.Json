@@ -229,7 +229,7 @@ namespace Newtonsoft.Json.Linq
             JsonToken? endToken = GetEndToken(c);
             if (endToken != null)
             {
-                SetToken(endToken.Value);
+                SetToken(endToken.GetValueOrDefault());
                 _current = c;
                 _parent = c;
                 return true;

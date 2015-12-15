@@ -192,7 +192,7 @@ namespace Newtonsoft.Json.Serialization
                     }
                 }
 
-                return _hasRequiredOrDefaultValueProperties.Value;
+                return _hasRequiredOrDefaultValueProperties.GetValueOrDefault();
             }
         }
 

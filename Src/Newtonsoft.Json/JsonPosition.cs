@@ -118,7 +118,7 @@ namespace Newtonsoft.Json
             }
             if (currentPosition != null)
             {
-                capacity += currentPosition.Value.CalculateLength();
+                capacity += currentPosition.GetValueOrDefault().CalculateLength();
             }
 
             StringBuilder sb = new StringBuilder(capacity);
@@ -131,7 +131,7 @@ namespace Newtonsoft.Json
             }
             if (currentPosition != null)
             {
-                currentPosition.Value.WriteTo(sb);
+                currentPosition.GetValueOrDefault().WriteTo(sb);
             }
 
             return sb.ToString();
