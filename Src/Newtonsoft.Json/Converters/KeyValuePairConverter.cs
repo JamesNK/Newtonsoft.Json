@@ -80,17 +80,9 @@ namespace Newtonsoft.Json.Converters
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            bool isNullable = ReflectionUtils.IsNullableType(objectType);
-
-            Type t = (isNullable)
-                ? Nullable.GetUnderlyingType(objectType)
-                : objectType;
-
-            ReflectionObject reflectionObject = ReflectionObjectPerType.Get(t);
-
             if (reader.TokenType == JsonToken.Null)
             {
-                if (!isNullable)
+                if (!ReflectionUtils.IsNullableType(objectType))
                 {
                     throw JsonSerializationException.Create(reader, "Cannot convert null value to KeyValuePair.");
                 }
@@ -102,6 +94,12 @@ namespace Newtonsoft.Json.Converters
             object value = null;
 
             ReadAndAssert(reader);
+
+            Type t = ReflectionUtils.IsNullableType(objectType)
+                ? Nullable.GetUnderlyingType(objectType)
+                : objectType;
+
+            ReflectionObject reflectionObject = ReflectionObjectPerType.Get(t);
 
             while (reader.TokenType == JsonToken.PropertyName)
             {

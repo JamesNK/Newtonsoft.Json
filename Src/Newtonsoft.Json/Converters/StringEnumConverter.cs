@@ -106,9 +106,6 @@ namespace Newtonsoft.Json.Converters
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            bool isNullable = ReflectionUtils.IsNullableType(objectType);
-            Type t = isNullable ? Nullable.GetUnderlyingType(objectType) : objectType;
-
             if (reader.TokenType == JsonToken.Null)
             {
                 if (!ReflectionUtils.IsNullableType(objectType))
@@ -118,6 +115,9 @@ namespace Newtonsoft.Json.Converters
 
                 return null;
             }
+
+            bool isNullable = ReflectionUtils.IsNullableType(objectType);
+            Type t = isNullable ? Nullable.GetUnderlyingType(objectType) : objectType;
 
             try
             {
