@@ -1085,6 +1085,7 @@ namespace Newtonsoft.Json
         void IDisposable.Dispose()
         {
             Dispose(true);
+            GC.SuppressFinalize(this);
         }
 
         /// <summary>
