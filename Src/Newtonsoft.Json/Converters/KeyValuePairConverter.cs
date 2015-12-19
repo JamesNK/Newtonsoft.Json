@@ -93,7 +93,7 @@ namespace Newtonsoft.Json.Converters
             object key = null;
             object value = null;
 
-            ReadAndAssert(reader);
+            reader.ReadAndAssert();
 
             Type t = ReflectionUtils.IsNullableType(objectType)
                 ? Nullable.GetUnderlyingType(objectType)
@@ -106,12 +106,12 @@ namespace Newtonsoft.Json.Converters
                 string propertyName = reader.Value.ToString();
                 if (string.Equals(propertyName, KeyName, StringComparison.OrdinalIgnoreCase))
                 {
-                    ReadAndAssert(reader);
+                    reader.ReadAndAssert();
                     key = serializer.Deserialize(reader, reflectionObject.GetType(KeyName));
                 }
                 else if (string.Equals(propertyName, ValueName, StringComparison.OrdinalIgnoreCase))
                 {
-                    ReadAndAssert(reader);
+                    reader.ReadAndAssert();
                     value = serializer.Deserialize(reader, reflectionObject.GetType(ValueName));
                 }
                 else
@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Converters
                     reader.Skip();
                 }
 
-                ReadAndAssert(reader);
+                reader.ReadAndAssert();
             }
 
             return reflectionObject.Creator(key, value);
@@ -144,14 +144,6 @@ namespace Newtonsoft.Json.Converters
             }
 
             return false;
-        }
-
-        private static void ReadAndAssert(JsonReader reader)
-        {
-            if (!reader.Read())
-            {
-                throw JsonSerializationException.Create(reader, "Unexpected end when reading KeyValuePair.");
-            }
         }
     }
 }

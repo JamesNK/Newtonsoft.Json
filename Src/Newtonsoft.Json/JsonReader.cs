@@ -457,67 +457,46 @@ namespace Newtonsoft.Json
         {
             _readType = ReadType.ReadAsDateTimeOffset;
 
-            JsonToken t;
+            JsonToken t = ReadToContentInternal();
 
-            do
+            switch (t)
             {
-                if (!ReadInternal())
-                {
-                    SetToken(JsonToken.None);
+                case JsonToken.None:
+                case JsonToken.Null:
+                case JsonToken.EndArray:
                     return null;
-                }
-                else
-                {
-                    t = TokenType;
-                }
-            } while (t == JsonToken.Comment);
+                case JsonToken.Date:
+                    if (Value is DateTime)
+                    {
+                        SetToken(JsonToken.Date, new DateTimeOffset((DateTime)Value), false);
+                    }
 
-            if (t == JsonToken.Date)
-            {
-                if (Value is DateTime)
-                {
-                    SetToken(JsonToken.Date, new DateTimeOffset((DateTime)Value), false);
-                }
+                    return (DateTimeOffset)Value;
+                case JsonToken.String:
+                    string s = (string)Value;
+                    if (string.IsNullOrEmpty(s))
+                    {
+                        SetToken(JsonToken.Null);
+                        return null;
+                    }
 
-                return (DateTimeOffset)Value;
+                    DateTimeOffset dt;
+                    if (DateTimeUtils.TryParseDateTimeOffset(s, _dateFormatString, Culture, out dt))
+                    {
+                        SetToken(JsonToken.Date, dt, false);
+                        return dt;
+                    }
+
+                    if (DateTimeOffset.TryParse(s, Culture, DateTimeStyles.RoundtripKind, out dt))
+                    {
+                        SetToken(JsonToken.Date, dt, false);
+                        return dt;
+                    }
+
+                    throw JsonReaderException.Create(this, "Could not convert string to DateTimeOffset: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+                default:
+                    throw JsonReaderException.Create(this, "Error reading date. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
             }
-
-            if (t == JsonToken.Null)
-            {
-                return null;
-            }
-
-            if (t == JsonToken.String)
-            {
-                string s = (string)Value;
-                if (string.IsNullOrEmpty(s))
-                {
-                    SetToken(JsonToken.Null);
-                    return null;
-                }
-
-                DateTimeOffset dt;
-                if (DateTimeUtils.TryParseDateTimeOffset(s, _dateFormatString, Culture, out dt))
-                {
-                    SetToken(JsonToken.Date, dt, false);
-                    return dt;
-                }
-
-                if (DateTimeOffset.TryParse(s, Culture, DateTimeStyles.RoundtripKind, out dt))
-                {
-                    SetToken(JsonToken.Date, dt, false);
-                    return dt;
-                }
-
-                throw JsonReaderException.Create(this, "Could not convert string to DateTimeOffset: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
-            }
-
-            if (t == JsonToken.EndArray)
-            {
-                return null;
-            }
-
-            throw JsonReaderException.Create(this, "Error reading date. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
         }
 #endif
 
@@ -525,20 +504,12 @@ namespace Newtonsoft.Json
         {
             _readType = ReadType.ReadAsBytes;
 
-            JsonToken t;
+            JsonToken t = ReadToContentInternal();
 
-            do
+            if (t == JsonToken.None)
             {
-                if (!ReadInternal())
-                {
-                    SetToken(JsonToken.None);
-                    return null;
-                }
-                else
-                {
-                    t = TokenType;
-                }
-            } while (t == JsonToken.Comment);
+                return null;
+            }
 
             if (IsWrappedInTypeObject())
             {
@@ -548,81 +519,66 @@ namespace Newtonsoft.Json
                 return data;
             }
 
-            // attempt to convert possible base 64 or GUID string to bytes
-            // GUID has to have format 00000000-0000-0000-0000-000000000000
-            if (t == JsonToken.String)
+            switch (t)
             {
-                string s = (string)Value;
-
-                byte[] data;
-
-                Guid g;
-                if (s.Length == 0)
-                {
-                    data = new byte[0];
-                }
-                else if (ConvertUtils.TryConvertGuid(s, out g))
-                {
-                    data = g.ToByteArray();
-                }
-                else
-                {
-                    data = Convert.FromBase64String(s);
-                }
-
-                SetToken(JsonToken.Bytes, data, false);
-                return data;
-            }
-
-            if (t == JsonToken.Null)
-            {
-                return null;
-            }
-
-            if (t == JsonToken.Bytes)
-            {
-                if (ValueType == typeof(Guid))
-                {
-                    byte[] data = ((Guid)Value).ToByteArray();
-                    SetToken(JsonToken.Bytes, data, false);
-                    return data;
-                }
-
-                return (byte[])Value;
-            }
-
-            if (t == JsonToken.StartArray)
-            {
-                List<byte> data = new List<byte>();
-
-                while (ReadInternal())
-                {
-                    t = TokenType;
-                    switch (t)
+                case JsonToken.String:
                     {
-                        case JsonToken.Integer:
-                            data.Add(Convert.ToByte(Value, CultureInfo.InvariantCulture));
-                            break;
-                        case JsonToken.EndArray:
-                            byte[] d = data.ToArray();
-                            SetToken(JsonToken.Bytes, d, false);
-                            return d;
-                        case JsonToken.Comment:
-                            // skip
-                            break;
-                        default:
-                            throw JsonReaderException.Create(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
+                        // attempt to convert possible base 64 or GUID string to bytes
+                        // GUID has to have format 00000000-0000-0000-0000-000000000000
+                        string s = (string)Value;
+
+                        byte[] data;
+
+                        Guid g;
+                        if (s.Length == 0)
+                        {
+                            data = new byte[0];
+                        }
+                        else if (ConvertUtils.TryConvertGuid(s, out g))
+                        {
+                            data = g.ToByteArray();
+                        }
+                        else
+                        {
+                            data = Convert.FromBase64String(s);
+                        }
+
+                        SetToken(JsonToken.Bytes, data, false);
+                        return data;
                     }
-                }
+                case JsonToken.Null:
+                case JsonToken.EndArray:
+                    return null;
+                case JsonToken.Bytes:
+                    if (ValueType == typeof(Guid))
+                    {
+                        byte[] data = ((Guid)Value).ToByteArray();
+                        SetToken(JsonToken.Bytes, data, false);
+                        return data;
+                    }
 
-                throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
+                    return (byte[])Value;
+                case JsonToken.StartArray:
+                    List<byte> buffer = new List<byte>();
+
+                    while (true)
+                    {
+                        switch (t = ReadToContentInternal())
+                        {
+                            case JsonToken.None:
+                                throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
+                            case JsonToken.Integer:
+                                buffer.Add(Convert.ToByte(Value, CultureInfo.InvariantCulture));
+                                break;
+                            case JsonToken.EndArray:
+                                byte[] d = buffer.ToArray();
+                                SetToken(JsonToken.Bytes, d, false);
+                                return d;
+                            default:
+                                throw JsonReaderException.Create(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
+                        }
+                    }
             }
-
-            if (t == JsonToken.EndArray)
-            {
-                return null;
-            }
-
             throw JsonReaderException.Create(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
         }
 
@@ -630,62 +586,41 @@ namespace Newtonsoft.Json
         {
             _readType = ReadType.ReadAsDecimal;
 
-            JsonToken t;
+            JsonToken t = ReadToContentInternal();
 
-            do
+            switch (t)
             {
-                if (!ReadInternal())
-                {
-                    SetToken(JsonToken.None);
+                case JsonToken.None:
+                case JsonToken.Null:
+                case JsonToken.EndArray:
                     return null;
-                }
-                else
-                {
-                    t = TokenType;
-                }
-            } while (t == JsonToken.Comment);
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                    if (!(Value is decimal))
+                    {
+                        SetToken(JsonToken.Float, Convert.ToDecimal(Value, CultureInfo.InvariantCulture), false);
+                    }
 
-            if (t == JsonToken.Integer || t == JsonToken.Float)
-            {
-                if (!(Value is decimal))
-                {
-                    SetToken(JsonToken.Float, Convert.ToDecimal(Value, CultureInfo.InvariantCulture), false);
-                }
+                    return (decimal)Value;
+                case JsonToken.String:
+                    string s = (string)Value;
+                    if (string.IsNullOrEmpty(s))
+                    {
+                        SetToken(JsonToken.Null);
+                        return null;
+                    }
 
-                return (decimal)Value;
+                    decimal d;
+                    if (decimal.TryParse(s, NumberStyles.Number, Culture, out d))
+                    {
+                        SetToken(JsonToken.Float, d, false);
+                        return d;
+                    }
+                    else
+                    {
+                        throw JsonReaderException.Create(this, "Could not convert string to decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+                    }
             }
-
-            if (t == JsonToken.Null)
-            {
-                return null;
-            }
-
-            if (t == JsonToken.String)
-            {
-                string s = (string)Value;
-                if (string.IsNullOrEmpty(s))
-                {
-                    SetToken(JsonToken.Null);
-                    return null;
-                }
-
-                decimal d;
-                if (decimal.TryParse(s, NumberStyles.Number, Culture, out d))
-                {
-                    SetToken(JsonToken.Float, d, false);
-                    return d;
-                }
-                else
-                {
-                    throw JsonReaderException.Create(this, "Could not convert string to decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
-                }
-            }
-
-            if (t == JsonToken.EndArray)
-            {
-                return null;
-            }
-
             throw JsonReaderException.Create(this, "Error reading decimal. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
         }
 
@@ -693,62 +628,39 @@ namespace Newtonsoft.Json
         {
             _readType = ReadType.ReadAsInt32;
 
-            JsonToken t;
-
-            do
+            switch (ReadToContentInternal())
             {
-                if (!ReadInternal())
-                {
-                    SetToken(JsonToken.None);
+                case JsonToken.None:
+                case JsonToken.Null:
+                case JsonToken.EndArray:
                     return null;
-                }
-                else
-                {
-                    t = TokenType;
-                }
-            } while (t == JsonToken.Comment);
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                    if (!(Value is int))
+                    {
+                        SetToken(JsonToken.Integer, Convert.ToInt32(Value, CultureInfo.InvariantCulture), false);
+                    }
 
-            if (t == JsonToken.Integer || t == JsonToken.Float)
-            {
-                if (!(Value is int))
-                {
-                    SetToken(JsonToken.Integer, Convert.ToInt32(Value, CultureInfo.InvariantCulture), false);
-                }
+                    return (int)Value;
+                case JsonToken.String:
+                    string s = (string)Value;
+                    if (string.IsNullOrEmpty(s))
+                    {
+                        SetToken(JsonToken.Null);
+                        return null;
+                    }
 
-                return (int)Value;
+                    int i;
+                    if (int.TryParse(s, NumberStyles.Integer, Culture, out i))
+                    {
+                        SetToken(JsonToken.Integer, i, false);
+                        return i;
+                    }
+                    else
+                    {
+                        throw JsonReaderException.Create(this, "Could not convert string to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
+                    }
             }
-
-            if (t == JsonToken.Null)
-            {
-                return null;
-            }
-
-            int i;
-            if (t == JsonToken.String)
-            {
-                string s = (string)Value;
-                if (string.IsNullOrEmpty(s))
-                {
-                    SetToken(JsonToken.Null);
-                    return null;
-                }
-
-                if (int.TryParse(s, NumberStyles.Integer, Culture, out i))
-                {
-                    SetToken(JsonToken.Integer, i, false);
-                    return i;
-                }
-                else
-                {
-                    throw JsonReaderException.Create(this, "Could not convert string to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
-                }
-            }
-
-            if (t == JsonToken.EndArray)
-            {
-                return null;
-            }
-
             throw JsonReaderException.Create(this, "Error reading integer. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
         }
 
@@ -756,29 +668,16 @@ namespace Newtonsoft.Json
         {
             _readType = ReadType.ReadAsString;
 
-            JsonToken t;
+            JsonToken t = ReadToContentInternal();
 
-            do
+            switch (t)
             {
-                if (!ReadInternal())
-                {
-                    SetToken(JsonToken.None);
+                case JsonToken.None:
+                case JsonToken.Null:
+                case JsonToken.EndArray:
                     return null;
-                }
-                else
-                {
-                    t = TokenType;
-                }
-            } while (t == JsonToken.Comment);
-
-            if (t == JsonToken.String)
-            {
-                return (string)Value;
-            }
-
-            if (t == JsonToken.Null)
-            {
-                return null;
+                case JsonToken.String:
+                    return (string)Value;
             }
 
             if (JsonTokenUtils.IsPrimitiveToken(t))
@@ -800,11 +699,6 @@ namespace Newtonsoft.Json
                 }
             }
 
-            if (t == JsonToken.EndArray)
-            {
-                return null;
-            }
-
             throw JsonReaderException.Create(this, "Error reading string. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
         }
 
@@ -812,55 +706,39 @@ namespace Newtonsoft.Json
         {
             _readType = ReadType.ReadAsDateTime;
 
-            do
+            switch (ReadToContentInternal())
             {
-                if (!ReadInternal())
-                {
-                    SetToken(JsonToken.None);
+                case JsonToken.None:
+                case JsonToken.Null:
+                case JsonToken.EndArray:
                     return null;
-                }
-            } while (TokenType == JsonToken.Comment);
+                case JsonToken.Date:
+                    return (DateTime)Value;
+                case JsonToken.String:
+                    string s = (string)Value;
+                    if (string.IsNullOrEmpty(s))
+                    {
+                        SetToken(JsonToken.Null);
+                        return null;
+                    }
 
-            if (TokenType == JsonToken.Date)
-            {
-                return (DateTime)Value;
-            }
+                    DateTime dt;
+                    if (DateTimeUtils.TryParseDateTime(s, DateTimeZoneHandling, _dateFormatString, Culture, out dt))
+                    {
+                        dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
+                        SetToken(JsonToken.Date, dt, false);
+                        return dt;
+                    }
 
-            if (TokenType == JsonToken.Null)
-            {
-                return null;
-            }
+                    if (DateTime.TryParse(s, Culture, DateTimeStyles.RoundtripKind, out dt))
+                    {
+                        dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
+                        SetToken(JsonToken.Date, dt, false);
+                        return dt;
+                    }
 
-            if (TokenType == JsonToken.String)
-            {
-                string s = (string)Value;
-                if (string.IsNullOrEmpty(s))
-                {
-                    SetToken(JsonToken.Null);
-                    return null;
-                }
+                    throw JsonReaderException.Create(this, "Could not convert string to DateTime: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
 
-                DateTime dt;
-                if (DateTimeUtils.TryParseDateTime(s, DateTimeZoneHandling, _dateFormatString, Culture, out dt))
-                {
-                    dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
-                    SetToken(JsonToken.Date, dt, false);
-                    return dt;
-                }
-
-                if (DateTime.TryParse(s, Culture, DateTimeStyles.RoundtripKind, out dt))
-                {
-                    dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
-                    SetToken(JsonToken.Date, dt, false);
-                    return dt;
-                }
-
-                throw JsonReaderException.Create(this, "Could not convert string to DateTime: {0}.".FormatWith(CultureInfo.InvariantCulture, Value));
-            }
-
-            if (TokenType == JsonToken.EndArray)
-            {
-                return null;
             }
 
             throw JsonReaderException.Create(this, "Error reading date. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
@@ -1108,6 +986,70 @@ namespace Newtonsoft.Json
             _currentState = State.Closed;
             _tokenType = JsonToken.None;
             _value = null;
+        }
+
+        internal void ReadAndAssert()
+        {
+            if (!Read())
+            {
+                throw JsonSerializationException.Create(this, "Unexpected end when reading JSON.");
+            }
+        }
+
+        /// <summary>
+        /// Reads the next non-comment JSON token from the stream.
+        /// </summary>
+        /// <returns>true if the next non-comment token was read successfully; false if there are no more tokens to read.</returns>
+        public bool ReadToContent()
+        {
+            return Read() && MoveToContentUnsafe();
+        }
+
+        /// <summary>
+        /// Checks whether the current JSON token is a content (non-comment) token, reading past comments if necessary.
+        /// </summary>
+        /// <returns>true if the current token was not a comment, or the reader successfully read to a non-comment token; false if there are no more tokens to read.</returns>
+        public bool MoveToContent()
+        {
+            if (TokenType == JsonToken.None && !Read())
+            {
+                return false;
+            }
+
+            return MoveToContentUnsafe();
+        }
+
+        // MoveToContent() but assumes stream was already read into.
+        internal bool MoveToContentUnsafe()
+        {
+            while (TokenType == JsonToken.Comment)
+            {
+                if (!Read())
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        private JsonToken ReadToContentInternal()
+        {
+            JsonToken t;
+            do
+            {
+                if (!ReadInternal())
+                {
+                    SetToken(JsonToken.None);
+                    return JsonToken.None;
+                }
+                else
+                {
+                    t = TokenType;
+                }
+            } while (t == JsonToken.Comment);
+
+            return t;
         }
     }
 }

@@ -91,19 +91,11 @@ namespace Newtonsoft.Json.Converters
 
         private static void ReadAndAssertProperty(JsonReader reader, string propertyName)
         {
-            ReadAndAssert(reader);
+            reader.ReadAndAssert();
 
             if (reader.TokenType != JsonToken.PropertyName || !string.Equals(reader.Value.ToString(), propertyName, StringComparison.OrdinalIgnoreCase))
             {
                 throw new JsonSerializationException("Expected JSON property '{0}'.".FormatWith(CultureInfo.InvariantCulture, propertyName));
-            }
-        }
-
-        private static void ReadAndAssert(JsonReader reader)
-        {
-            if (!reader.Read())
-            {
-                throw new JsonSerializationException("Unexpected end.");
             }
         }
 
@@ -122,20 +114,20 @@ namespace Newtonsoft.Json.Converters
             object entityKeyMember = _reflectionObject.Creator();
 
             ReadAndAssertProperty(reader, KeyPropertyName);
-            ReadAndAssert(reader);
+            reader.ReadAndAssert();
             _reflectionObject.SetValue(entityKeyMember, KeyPropertyName, reader.Value.ToString());
 
             ReadAndAssertProperty(reader, TypePropertyName);
-            ReadAndAssert(reader);
+            reader.ReadAndAssert();
             string type = reader.Value.ToString();
 
             Type t = Type.GetType(type);
 
             ReadAndAssertProperty(reader, ValuePropertyName);
-            ReadAndAssert(reader);
+            reader.ReadAndAssert();
             _reflectionObject.SetValue(entityKeyMember, ValuePropertyName, serializer.Deserialize(reader, t));
 
-            ReadAndAssert(reader);
+            reader.ReadAndAssert();
 
             return entityKeyMember;
         }

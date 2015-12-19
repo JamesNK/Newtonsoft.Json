@@ -158,7 +158,7 @@ namespace Newtonsoft.Json.Tests.Converters
             ExceptionAssert.Throws<JsonException>(() =>
             {
                 converter.ReadJson(writer, typeof (JsonValue), null, null);
-            }, "Unexpected end. Path '', line 1, position 1.");
+            }, "Unexpected end when reading JSON. Path '', line 1, position 1.");
         }
 
         [Test]
@@ -173,7 +173,7 @@ namespace Newtonsoft.Json.Tests.Converters
             ExceptionAssert.Throws<JsonException>(() =>
             {
                 converter.ReadJson(writer, typeof (JsonValue), null, null);
-            }, "Unexpected end. Path '', line 1, position 13.");
+            }, "Unexpected end when reading JSON. Path '', line 1, position 13.");
         }
 
         [Test]
@@ -188,7 +188,7 @@ namespace Newtonsoft.Json.Tests.Converters
             ExceptionAssert.Throws<JsonException>(() =>
             {
                 converter.ReadJson(writer, typeof (JsonValue), null, null);
-            }, "Unexpected end. Path 'hi', line 1, position 6.");
+            }, "Unexpected end when reading JSON. Path 'hi', line 1, position 6.");
         }
 
         [Test]
