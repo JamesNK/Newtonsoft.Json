@@ -1552,6 +1552,46 @@ null//comment
   ]/*comment*/
 }/*comment *//*comment 1 */", sw.ToString());
         }
+
+        [Test]
+        public void DisposeSupressesFinalization()
+        {
+            UnmanagedResourceFakingJsonWriter.CreateAndDispose();
+            GC.Collect();
+            GC.WaitForPendingFinalizers();
+            Assert.AreEqual(1, UnmanagedResourceFakingJsonWriter.DisposalCalls);
+        }
+    }
+
+    public class UnmanagedResourceFakingJsonWriter : JsonWriter
+    {
+        public static int DisposalCalls;
+
+        public static void CreateAndDispose()
+        {
+            ((IDisposable)new UnmanagedResourceFakingJsonWriter()).Dispose();
+        }
+
+        public UnmanagedResourceFakingJsonWriter()
+        {
+            DisposalCalls = 0;
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            base.Dispose(disposing);
+            ++DisposalCalls;
+        }
+
+        ~UnmanagedResourceFakingJsonWriter()
+        {
+            Dispose(false);
+        }
+
+        public override void Flush()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class CustomJsonTextWriter : JsonTextWriter
