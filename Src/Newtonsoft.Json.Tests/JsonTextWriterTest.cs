@@ -898,6 +898,19 @@ Parameter name: value");
         }
 
         [Test]
+        public void TokenTypeOutOfRange()
+        {
+            using (JsonWriter jsonWriter = new JsonTextWriter(new StringWriter()))
+            {
+                ArgumentOutOfRangeException ex = ExceptionAssert.Throws<ArgumentOutOfRangeException>(() => jsonWriter.WriteToken((JsonToken)int.MinValue));
+                Assert.AreEqual("token", ex.ParamName);
+
+                ex = ExceptionAssert.Throws<ArgumentOutOfRangeException>(() => jsonWriter.WriteToken((JsonToken)int.MinValue, "test"));
+                Assert.AreEqual("token", ex.ParamName);
+            }
+        }
+
+        [Test]
         public void BadWriteEndArray()
         {
             ExceptionAssert.Throws<JsonWriterException>(() =>
