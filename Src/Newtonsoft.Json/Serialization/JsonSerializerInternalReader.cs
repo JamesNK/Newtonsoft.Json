@@ -2195,7 +2195,7 @@ namespace Newtonsoft.Json.Serialization
             // the value might be a string which will then get converted which will error if read as date for example
             if (hasConverter)
             {
-                return reader.ReadAndMoveToContent();
+                return reader.Read();
             }
 
             ReadType t = (contract != null) ? contract.InternalReadType : ReadType.Read;
