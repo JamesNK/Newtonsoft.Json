@@ -246,7 +246,7 @@ namespace Newtonsoft.Json.Serialization
                     if (reader.TokenType == JsonToken.PropertyName)
                     {
                         string propertyName = (string)reader.Value;
-                        if (!reader.ReadToContent())
+                        if (!reader.ReadAndMoveToContent())
                         {
                             break;
                         }
@@ -2195,7 +2195,7 @@ namespace Newtonsoft.Json.Serialization
             // the value might be a string which will then get converted which will error if read as date for example
             if (hasConverter)
             {
-                return reader.ReadToContent();
+                return reader.ReadAndMoveToContent();
             }
 
             ReadType t = (contract != null) ? contract.InternalReadType : ReadType.Read;
@@ -2203,7 +2203,7 @@ namespace Newtonsoft.Json.Serialization
             switch (t)
             {
                 case ReadType.Read:
-                    return reader.ReadToContent();
+                    return reader.ReadAndMoveToContent();
                 case ReadType.ReadAsInt32:
                     reader.ReadAsInt32();
                     break;

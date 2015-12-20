@@ -2113,7 +2113,11 @@ namespace Newtonsoft.Json.Linq
 
             if (reader.TokenType == JsonToken.None)
             {
-                if (!(settings != null && settings.CommentHandling == CommentHandling.Ignore ? reader.ReadToContent() : reader.Read()))
+                bool hasContent = (settings != null && settings.CommentHandling == CommentHandling.Ignore)
+                    ? reader.ReadAndMoveToContent()
+                    : reader.Read();
+
+                if (!hasContent)
                 {
                     throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader.");
                 }

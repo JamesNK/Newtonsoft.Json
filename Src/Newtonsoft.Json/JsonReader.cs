@@ -457,7 +457,7 @@ namespace Newtonsoft.Json
         {
             _readType = ReadType.ReadAsDateTimeOffset;
 
-            JsonToken t = ReadToContentInternal();
+            JsonToken t = GetContentTokenInternal();
 
             switch (t)
             {
@@ -504,7 +504,7 @@ namespace Newtonsoft.Json
         {
             _readType = ReadType.ReadAsBytes;
 
-            JsonToken t = ReadToContentInternal();
+            JsonToken t = GetContentTokenInternal();
 
             if (t == JsonToken.None)
             {
@@ -563,7 +563,7 @@ namespace Newtonsoft.Json
 
                     while (true)
                     {
-                        switch (t = ReadToContentInternal())
+                        switch (t = GetContentTokenInternal())
                         {
                             case JsonToken.None:
                                 throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
@@ -586,7 +586,7 @@ namespace Newtonsoft.Json
         {
             _readType = ReadType.ReadAsDecimal;
 
-            JsonToken t = ReadToContentInternal();
+            JsonToken t = GetContentTokenInternal();
 
             switch (t)
             {
@@ -628,7 +628,7 @@ namespace Newtonsoft.Json
         {
             _readType = ReadType.ReadAsInt32;
 
-            switch (ReadToContentInternal())
+            switch (GetContentTokenInternal())
             {
                 case JsonToken.None:
                 case JsonToken.Null:
@@ -668,7 +668,7 @@ namespace Newtonsoft.Json
         {
             _readType = ReadType.ReadAsString;
 
-            JsonToken t = ReadToContentInternal();
+            JsonToken t = GetContentTokenInternal();
 
             switch (t)
             {
@@ -706,7 +706,7 @@ namespace Newtonsoft.Json
         {
             _readType = ReadType.ReadAsDateTime;
 
-            switch (ReadToContentInternal())
+            switch (GetContentTokenInternal())
             {
                 case JsonToken.None:
                 case JsonToken.Null:
@@ -996,44 +996,28 @@ namespace Newtonsoft.Json
             }
         }
 
-        /// <summary>
-        /// Reads the next non-comment JSON token from the stream.
-        /// </summary>
-        /// <returns>true if the next non-comment token was read successfully; false if there are no more tokens to read.</returns>
-        public bool ReadToContent()
+        internal bool ReadAndMoveToContent()
         {
-            return Read() && MoveToContentUnsafe();
+            return Read() && MoveToContent();
         }
 
-        /// <summary>
-        /// Checks whether the current JSON token is a content (non-comment) token, reading past comments if necessary.
-        /// </summary>
-        /// <returns>true if the current token was not a comment, or the reader successfully read to a non-comment token; false if there are no more tokens to read.</returns>
-        public bool MoveToContent()
+        internal bool MoveToContent()
         {
-            if (TokenType == JsonToken.None && !Read())
-            {
-                return false;
-            }
-
-            return MoveToContentUnsafe();
-        }
-
-        // MoveToContent() but assumes stream was already read into.
-        internal bool MoveToContentUnsafe()
-        {
-            while (TokenType == JsonToken.Comment)
+            JsonToken t = TokenType;
+            while (t == JsonToken.None || t == JsonToken.Comment)
             {
                 if (!Read())
                 {
                     return false;
                 }
+
+                t = TokenType;
             }
 
             return true;
         }
 
-        private JsonToken ReadToContentInternal()
+        private JsonToken GetContentTokenInternal()
         {
             JsonToken t;
             do

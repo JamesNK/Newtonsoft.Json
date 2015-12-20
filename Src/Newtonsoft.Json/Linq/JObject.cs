@@ -370,7 +370,7 @@ namespace Newtonsoft.Json.Linq
                 }
             }
 
-            reader.MoveToContentUnsafe();
+            reader.MoveToContent();
 
             if (reader.TokenType != JsonToken.StartObject)
             {

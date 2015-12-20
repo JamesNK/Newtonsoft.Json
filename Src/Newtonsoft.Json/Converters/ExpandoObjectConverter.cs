@@ -66,7 +66,7 @@ namespace Newtonsoft.Json.Converters
 
         private object ReadValue(JsonReader reader)
         {
-            if (!reader.MoveToContentUnsafe())
+            if (!reader.MoveToContent())
             {
                 throw JsonSerializationException.Create(reader, "Unexpected end when reading ExpandoObject.");
             }
