@@ -898,6 +898,18 @@ Parameter name: value");
         }
 
         [Test]
+        public void WriteTokenNullCheck()
+        {
+            using (JsonWriter jsonWriter = new JsonTextWriter(new StringWriter()))
+            {
+                ExceptionAssert.Throws<ArgumentNullException>(() => { jsonWriter.WriteToken(null); });
+                ExceptionAssert.Throws<ArgumentNullException>(() => { jsonWriter.WriteToken(null, true); });
+                ExceptionAssert.Throws<ArgumentNullException>(() => { jsonWriter.WriteToken(null, true, true, true); });
+                ExceptionAssert.Throws<ArgumentNullException>(() => { jsonWriter.WriteToken(null, 2, true, true, true); });
+            }
+        }
+
+        [Test]
         public void BadWriteEndArray()
         {
             ExceptionAssert.Throws<JsonWriterException>(() =>

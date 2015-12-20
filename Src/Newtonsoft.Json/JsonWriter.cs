@@ -493,8 +493,6 @@ namespace Newtonsoft.Json
         /// <param name="writeChildren">A flag indicating whether the current token's children should be written.</param>
         public void WriteToken(JsonReader reader, bool writeChildren)
         {
-            ValidationUtils.ArgumentNotNull(reader, "reader");
-
             WriteToken(reader, writeChildren, true, true);
         }
 
@@ -522,6 +520,8 @@ namespace Newtonsoft.Json
 
         internal void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
         {
+            ValidationUtils.ArgumentNotNull(reader, "reader");
+
             int initialDepth;
 
             if (reader.TokenType == JsonToken.None)
@@ -542,6 +542,8 @@ namespace Newtonsoft.Json
 
         internal void WriteToken(JsonReader reader, int initialDepth, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
         {
+            ValidationUtils.ArgumentNotNull(reader, "reader");
+
             do
             {
                 // write a JValue date when the constructor is for a date
