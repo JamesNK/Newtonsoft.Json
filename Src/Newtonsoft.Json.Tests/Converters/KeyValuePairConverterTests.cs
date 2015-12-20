@@ -60,7 +60,7 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void DeserializeUnexpectedEnd()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<KeyValuePair<string, int>>(@"{""Key"": ""123"","), "Unexpected end when reading KeyValuePair. Path 'Key', line 1, position 14.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<KeyValuePair<string, int>>(@"{""Key"": ""123"","), "Unexpected end when reading JSON. Path 'Key', line 1, position 14.");
         }
     }
 }

@@ -1039,7 +1039,7 @@ namespace Newtonsoft.Json
                         }
                         else
                         {
-                            throw JsonReaderException.Create(this, "Unexpected end.");
+                            throw JsonReaderException.Create(this, "Unexpected end when reading JSON.");
                         }
                         return true;
                     case 'N':

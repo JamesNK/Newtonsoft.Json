@@ -382,10 +382,7 @@ namespace Newtonsoft.Json.Linq
                 }
             }
 
-            while (reader.TokenType == JsonToken.Comment)
-            {
-                reader.Read();
-            }
+            reader.MoveToContentUnsafe();
 
             if (reader.TokenType != JsonToken.PropertyName)
             {

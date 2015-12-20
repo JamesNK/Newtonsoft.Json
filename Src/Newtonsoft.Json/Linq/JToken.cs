@@ -2113,60 +2113,47 @@ namespace Newtonsoft.Json.Linq
 
             if (reader.TokenType == JsonToken.None)
             {
-                if (!reader.Read())
+                if (!(settings != null && settings.CommentHandling == CommentHandling.Ignore ? reader.ReadToContent() : reader.Read()))
                 {
                     throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader.");
                 }
             }
 
-            while (true)
+            IJsonLineInfo lineInfo = reader as IJsonLineInfo;
+
+            switch (reader.TokenType)
             {
-                IJsonLineInfo lineInfo = reader as IJsonLineInfo;
-
-                switch (reader.TokenType)
-                {
-                    case JsonToken.StartObject:
-                        return JObject.Load(reader, settings);
-                    case JsonToken.StartArray:
-                        return JArray.Load(reader, settings);
-                    case JsonToken.StartConstructor:
-                        return JConstructor.Load(reader, settings);
-                    case JsonToken.PropertyName:
-                        return JProperty.Load(reader, settings);
-                    case JsonToken.String:
-                    case JsonToken.Integer:
-                    case JsonToken.Float:
-                    case JsonToken.Date:
-                    case JsonToken.Boolean:
-                    case JsonToken.Bytes:
-                        JValue v = new JValue(reader.Value);
-                        v.SetLineInfo(lineInfo, settings);
-                        return v;
-                    case JsonToken.Comment:
-                        if (settings != null && settings.CommentHandling == CommentHandling.Ignore)
-                        {
-                            if (!reader.Read())
-                            {
-                                throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader.");
-                            }
-
-                            continue;
-                        }
-
-                        v = JValue.CreateComment(reader.Value.ToString());
-                        v.SetLineInfo(lineInfo, settings);
-                        return v;
-                    case JsonToken.Null:
-                        v = JValue.CreateNull();
-                        v.SetLineInfo(lineInfo, settings);
-                        return v;
-                    case JsonToken.Undefined:
-                        v = JValue.CreateUndefined();
-                        v.SetLineInfo(lineInfo, settings);
-                        return v;
-                    default:
-                        throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
-                }
+                case JsonToken.StartObject:
+                    return JObject.Load(reader, settings);
+                case JsonToken.StartArray:
+                    return JArray.Load(reader, settings);
+                case JsonToken.StartConstructor:
+                    return JConstructor.Load(reader, settings);
+                case JsonToken.PropertyName:
+                    return JProperty.Load(reader, settings);
+                case JsonToken.String:
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                case JsonToken.Date:
+                case JsonToken.Boolean:
+                case JsonToken.Bytes:
+                    JValue v = new JValue(reader.Value);
+                    v.SetLineInfo(lineInfo, settings);
+                    return v;
+                case JsonToken.Comment:
+                    v = JValue.CreateComment(reader.Value.ToString());
+                    v.SetLineInfo(lineInfo, settings);
+                    return v;
+                case JsonToken.Null:
+                    v = JValue.CreateNull();
+                    v.SetLineInfo(lineInfo, settings);
+                    return v;
+                case JsonToken.Undefined:
+                    v = JValue.CreateUndefined();
+                    v.SetLineInfo(lineInfo, settings);
+                    return v;
+                default:
+                    throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
         }
 

@@ -479,7 +479,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                         PreserveReferencesHandling = PreserveReferencesHandling.All,
                         MetadataPropertyHandling = MetadataPropertyHandling.Default
                     });
-            }, @"Unexpected end when deserializing object. Path '$id', line 2, position 8.");
+            }, @"Unexpected end when reading JSON. Path '$id', line 2, position 8.");
         }
 
         public class CircularReferenceClassConverter : JsonConverter
