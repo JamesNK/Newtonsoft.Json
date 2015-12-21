@@ -505,7 +505,6 @@ namespace Newtonsoft.Json
                         _charPos = charPos;
                         if (!EnsureChars(0, true))
                         {
-                            _charPos = charPos;
                             throw JsonReaderException.Create(this, "Unterminated string. Expected delimiter: {0}.".FormatWith(CultureInfo.InvariantCulture, quote));
                         }
 
@@ -513,43 +512,36 @@ namespace Newtonsoft.Json
                         int escapeStartPos = charPos - 1;
 
                         char currentChar = _chars[charPos];
+                        charPos++;
 
                         char writeChar;
 
                         switch (currentChar)
                         {
                             case 'b':
-                                charPos++;
                                 writeChar = '\b';
                                 break;
                             case 't':
-                                charPos++;
                                 writeChar = '\t';
                                 break;
                             case 'n':
-                                charPos++;
                                 writeChar = '\n';
                                 break;
                             case 'f':
-                                charPos++;
                                 writeChar = '\f';
                                 break;
                             case 'r':
-                                charPos++;
                                 writeChar = '\r';
                                 break;
                             case '\\':
-                                charPos++;
                                 writeChar = '\\';
                                 break;
                             case '"':
                             case '\'':
                             case '/':
                                 writeChar = currentChar;
-                                charPos++;
                                 break;
                             case 'u':
-                                charPos++;
                                 _charPos = charPos;
                                 writeChar = ParseUnicode();
 
@@ -608,7 +600,6 @@ namespace Newtonsoft.Json
                                 charPos = _charPos;
                                 break;
                             default:
-                                charPos++;
                                 _charPos = charPos;
                                 throw JsonReaderException.Create(this, "Bad JSON escape sequence: {0}.".FormatWith(CultureInfo.InvariantCulture, @"\" + currentChar));
                         }
