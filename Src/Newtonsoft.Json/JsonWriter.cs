@@ -483,7 +483,7 @@ namespace Newtonsoft.Json
         /// <param name="reader">The <see cref="JsonReader"/> to read the token from.</param>
         public void WriteToken(JsonReader reader)
         {
-            WriteToken(reader, true, true, true);
+            WriteToken(reader, true);
         }
 
         /// <summary>
