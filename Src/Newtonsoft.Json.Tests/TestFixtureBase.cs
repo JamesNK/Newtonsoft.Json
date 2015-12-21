@@ -367,7 +367,7 @@ namespace Newtonsoft.Json.Tests
 
     public static class ExceptionAssert
     {
-        public static void Throws<TException>(Action action, params string[] possibleMessages)
+        public static TException Throws<TException>(Action action, params string[] possibleMessages)
             where TException : Exception
         {
             try
@@ -375,26 +375,23 @@ namespace Newtonsoft.Json.Tests
                 action();
 
                 Assert.Fail("Exception of type {0} expected. No exception thrown.", typeof(TException).Name);
+                return null;
             }
             catch (TException ex)
             {
-                if (possibleMessages != null && possibleMessages.Length > 0)
+                if (possibleMessages == null || possibleMessages.Length == 0)
                 {
-                    bool match = false;
-                    foreach (string possibleMessage in possibleMessages)
+                    return ex;
+                }
+                foreach (string possibleMessage in possibleMessages)
+                {
+                    if (StringAssert.Equals(possibleMessage, ex.Message))
                     {
-                        if (StringAssert.Equals(possibleMessage, ex.Message))
-                        {
-                            match = true;
-                            break;
-                        }
-                    }
-
-                    if (!match)
-                    {
-                        throw new Exception("Unexpected exception message." + Environment.NewLine + "Expected one of: " + string.Join(Environment.NewLine, possibleMessages) + Environment.NewLine + "Got: " + ex.Message + Environment.NewLine + Environment.NewLine + ex);
+                        return ex;
                     }
                 }
+
+                throw new Exception("Unexpected exception message." + Environment.NewLine + "Expected one of: " + string.Join(Environment.NewLine, possibleMessages) + Environment.NewLine + "Got: " + ex.Message + Environment.NewLine + Environment.NewLine + ex);
             }
             catch (Exception ex)
             {

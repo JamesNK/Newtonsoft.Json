@@ -508,64 +508,7 @@ namespace Newtonsoft.Json
         /// A null value can be passed to the method for token's that don't have a value, e.g. <see cref="JsonToken.StartObject"/>.</param>
         public void WriteToken(JsonToken token, object value)
         {
-            WriteTokenInternal(token, value);
-        }
-
-        /// <summary>
-        /// Writes the <see cref="JsonToken"/> token.
-        /// </summary>
-        /// <param name="token">The <see cref="JsonToken"/> to write.</param>
-        public void WriteToken(JsonToken token)
-        {
-            WriteTokenInternal(token, null);
-        }
-
-        internal void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
-        {
-            int initialDepth;
-
-            if (reader.TokenType == JsonToken.None)
-            {
-                initialDepth = -1;
-            }
-            else if (!JsonTokenUtils.IsStartToken(reader.TokenType))
-            {
-                initialDepth = reader.Depth + 1;
-            }
-            else
-            {
-                initialDepth = reader.Depth;
-            }
-
-            WriteToken(reader, initialDepth, writeChildren, writeDateConstructorAsDate, writeComments);
-        }
-
-        internal void WriteToken(JsonReader reader, int initialDepth, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
-        {
-            do
-            {
-                // write a JValue date when the constructor is for a date
-                if (writeDateConstructorAsDate && reader.TokenType == JsonToken.StartConstructor && string.Equals(reader.Value.ToString(), "Date", StringComparison.Ordinal))
-                {
-                    WriteConstructorDate(reader);
-                }
-                else
-                {
-                    if (reader.TokenType != JsonToken.Comment || writeComments)
-                    {
-                        WriteTokenInternal(reader.TokenType, reader.Value);
-                    }
-                }
-            } while (
-                // stop if we have reached the end of the token being read
-                initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)
-                && writeChildren
-                && reader.Read());
-        }
-
-        private void WriteTokenInternal(JsonToken tokenType, object value)
-        {
-            switch (tokenType)
+            switch (token)
             {
                 case JsonToken.None:
                     // read to next
@@ -670,8 +613,60 @@ namespace Newtonsoft.Json
                     }
                     break;
                 default:
-                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", tokenType, "Unexpected token type.");
+                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException(nameof(token), token, "Unexpected token type.");
             }
+        }
+
+        /// <summary>
+        /// Writes the <see cref="JsonToken"/> token.
+        /// </summary>
+        /// <param name="token">The <see cref="JsonToken"/> to write.</param>
+        public void WriteToken(JsonToken token)
+        {
+            WriteToken(token, null);
+        }
+
+        internal void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
+        {
+            int initialDepth;
+
+            if (reader.TokenType == JsonToken.None)
+            {
+                initialDepth = -1;
+            }
+            else if (!JsonTokenUtils.IsStartToken(reader.TokenType))
+            {
+                initialDepth = reader.Depth + 1;
+            }
+            else
+            {
+                initialDepth = reader.Depth;
+            }
+
+            WriteToken(reader, initialDepth, writeChildren, writeDateConstructorAsDate, writeComments);
+        }
+
+        internal void WriteToken(JsonReader reader, int initialDepth, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
+        {
+            do
+            {
+                // write a JValue date when the constructor is for a date
+                if (writeDateConstructorAsDate && reader.TokenType == JsonToken.StartConstructor && string.Equals(reader.Value.ToString(), "Date", StringComparison.Ordinal))
+                {
+                    WriteConstructorDate(reader);
+                }
+                else
+                {
+                    if (reader.TokenType != JsonToken.Comment || writeComments)
+                    {
+                        WriteToken(reader.TokenType, reader.Value);
+                    }
+                }
+            } while (
+                // stop if we have reached the end of the token being read
+                initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)
+                && writeChildren
+                && reader.Read());
         }
 
         private void WriteConstructorDate(JsonReader reader)
