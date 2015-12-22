@@ -1250,6 +1250,37 @@ third line", jsonTextReader.Value);
         }
 
         [Test]
+        public void BufferTest_WithError()
+        {
+            string json = @"{
+              ""CPU"": ""Intel?\nYes"",
+              ""Description"": ""Amazin";
+
+            FakeArrayPool arrayPool = new FakeArrayPool();
+
+            try
+            {
+                // dispose will free used buffers
+                using (JsonTextReader reader = new JsonTextReader(new StringReader(json)))
+                {
+                    reader.ArrayPool = arrayPool;
+
+                    while (reader.Read())
+                    {
+                    }
+                }
+
+                Assert.Fail();
+            }
+            catch
+            {
+            }
+
+            Assert.AreEqual(0, arrayPool.UsedArrays.Count);
+            Assert.AreEqual(2, arrayPool.FreeArrays.Count);
+        }
+
+        [Test]
         public void ReadNullTerminatorStrings()
         {
             JsonReader reader = new JsonTextReader(new StringReader("'h\0i'"));

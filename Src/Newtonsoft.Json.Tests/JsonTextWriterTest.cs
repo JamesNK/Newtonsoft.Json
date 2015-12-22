@@ -101,6 +101,42 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
+        public void BufferTest_WithError()
+        {
+            JsonTextReaderTest.FakeArrayPool arrayPool = new JsonTextReaderTest.FakeArrayPool();
+
+            StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+
+            try
+            {
+                // dispose will free used buffers
+                using (JsonTextWriter writer = new JsonTextWriter(sw))
+                {
+                    writer.ArrayPool = arrayPool;
+
+                    writer.WriteStartObject();
+
+                    writer.WritePropertyName("Prop1");
+                    writer.WriteValue(new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc));
+
+                    writer.WritePropertyName("Prop2");
+                    writer.WriteValue("This is an escaped \n string!");
+
+                    writer.WriteValue("Error!");
+                }
+
+
+                Assert.Fail();
+            }
+            catch
+            {
+            }
+
+            Assert.AreEqual(0, arrayPool.UsedArrays.Count);
+            Assert.AreEqual(1, arrayPool.FreeArrays.Count);
+        }
+
+        [Test]
         public void NewLine()
         {
             MemoryStream ms = new MemoryStream();
