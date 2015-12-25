@@ -210,7 +210,7 @@ namespace Newtonsoft.Json
         {
             const int charByteCount = 2;
 
-            Buffer.BlockCopy(src, srcOffset*charByteCount, dst, dstOffset*charByteCount, count*charByteCount);
+            Buffer.BlockCopy(src, srcOffset * charByteCount, dst, dstOffset * charByteCount, count * charByteCount);
         }
 
         private void ShiftBufferIfNeeded()
@@ -218,7 +218,7 @@ namespace Newtonsoft.Json
             // once in the last 10% of the buffer shift the remaining content to the start to avoid
             // unnessesarly increasing the buffer size when reading numbers/strings
             int length = _chars.Length;
-            if (length - _charPos <= length*0.1)
+            if (length - _charPos <= length * 0.1)
             {
                 int count = _charsUsed - _charPos;
                 if (count > 0)
@@ -251,7 +251,7 @@ namespace Newtonsoft.Json
                 if (append)
                 {
                     // copy to new array either double the size of the current or big enough to fit required content
-                    int newArrayLength = Math.Max(_chars.Length*2, _charsUsed + charsRequired + 1);
+                    int newArrayLength = Math.Max(_chars.Length * 2, _charsUsed + charsRequired + 1);
 
                     // increase the size of the buffer
                     char[] dst = BufferUtils.RentBuffer(_arrayPool, newArrayLength);
@@ -416,7 +416,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Nullable{Int32}"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override int? ReadAsInt32()
         {
-            return (int?) ReadNumberValue(ReadType.ReadAsInt32);
+            return (int?)ReadNumberValue(ReadType.ReadAsInt32);
         }
 
         /// <summary>
@@ -425,7 +425,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Nullable{DateTime}"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override DateTime? ReadAsDateTime()
         {
-            return (DateTime?) ReadStringValue(ReadType.ReadAsDateTime);
+            return (DateTime?)ReadStringValue(ReadType.ReadAsDateTime);
         }
 
         /// <summary>
@@ -434,7 +434,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="String"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override string ReadAsString()
         {
-            return (string) ReadStringValue(ReadType.ReadAsString);
+            return (string)ReadStringValue(ReadType.ReadAsString);
         }
 
         private object ReadStringValue(ReadType readType)
@@ -475,16 +475,16 @@ namespace Newtonsoft.Json
                                     case ReadType.ReadAsDateTime:
                                         if (Value is DateTime)
                                         {
-                                            return (DateTime) Value;
+                                            return (DateTime)Value;
                                         }
-                                        return ReadDateTimeString((string) Value);
+                                        return ReadDateTimeString((string)Value);
 #if !NET20
                                     case ReadType.ReadAsDateTimeOffset:
                                         if (Value is DateTimeOffset)
                                         {
-                                            return (DateTimeOffset) Value;
+                                            return (DateTimeOffset)Value;
                                         }
-                                        return ReadDateTimeOffsetString((string) Value);
+                                        return ReadDateTimeOffsetString((string)Value);
 #endif
                                     default:
                                         throw new ArgumentOutOfRangeException(nameof(readType));
@@ -506,7 +506,7 @@ namespace Newtonsoft.Json
                                     throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                                 }
                                 ParseNumber(ReadType.Read);
-                                string s = ((IFormattable) Value).ToString(null, CultureInfo.InvariantCulture);
+                                string s = ((IFormattable)Value).ToString(null, CultureInfo.InvariantCulture);
                                 SetToken(JsonToken.String, s);
                                 return s;
                             case 'n':
@@ -571,7 +571,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Nullable{DateTimeOffset}"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override DateTimeOffset? ReadAsDateTimeOffset()
         {
-            return (DateTimeOffset?) ReadStringValue(ReadType.ReadAsDateTimeOffset);
+            return (DateTimeOffset?)ReadStringValue(ReadType.ReadAsDateTimeOffset);
         }
 #endif
 
@@ -581,7 +581,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Nullable{Decimal}"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override decimal? ReadAsDecimal()
         {
-            return (decimal?) ReadNumberValue(ReadType.ReadAsDecimal);
+            return (decimal?)ReadNumberValue(ReadType.ReadAsDecimal);
         }
 
         private object ReadNumberValue(ReadType readType)
@@ -1593,7 +1593,7 @@ namespace Newtonsoft.Json
                 if (singleDigit)
                 {
                     // digit char values start at 48
-                    numberValue = (decimal) firstChar - 48;
+                    numberValue = (decimal)firstChar - 48;
                 }
                 else if (nonBase10)
                 {
@@ -1633,7 +1633,7 @@ namespace Newtonsoft.Json
                 if (singleDigit)
                 {
                     // digit char values start at 48
-                    numberValue = (long) firstChar - 48;
+                    numberValue = (long)firstChar - 48;
                     numberType = JsonToken.Integer;
                 }
                 else if (nonBase10)
