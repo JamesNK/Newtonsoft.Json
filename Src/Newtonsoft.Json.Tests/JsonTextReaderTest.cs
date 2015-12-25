@@ -305,7 +305,7 @@ third line", jsonTextReader.Value);
 
             ExceptionAssert.Throws<JsonReaderException>(() => jsonTextReader.ReadAsInt32(), "Input string '3.3' is not a valid integer. Path '[1]', line 3, position 5.");
 
-            ExceptionAssert.Throws<JsonReaderException>(() => jsonTextReader.ReadAsInt32(), "Unexpected character encountered while parsing value: ,. Path '[2]', line 4, position 2.");
+            ExceptionAssert.Throws<JsonReaderException>(() => jsonTextReader.ReadAsInt32(), "Unexpected character encountered while parsing value: ,. Path '[2]', line 4, position 3.");
 
             ExceptionAssert.Throws<JsonReaderException>(() => jsonTextReader.ReadAsInt32(), "Input string '0f' is not a valid integer. Path '[3]', line 5, position 4.");
 
@@ -2806,6 +2806,163 @@ new Date()"));
             Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
 
             Assert.IsFalse(reader.Read());
+        }
+
+        [Test]
+        public void ReadNumberValue_CommaErrors()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("[,1]"));
+            reader.Read();
+
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                reader.ReadAsInt32();
+            }, "Unexpected character encountered while parsing value: ,. Path '[0]', line 1, position 2.");
+
+            Assert.AreEqual(1, reader.ReadAsInt32());
+            Assert.IsTrue(reader.Read());
+        }
+
+        [Test]
+        public void ReadNumberValue_InvalidEndArray()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("]"));
+
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                reader.ReadAsInt32();
+            }, "Unexpected character encountered while parsing value: ]. Path '', line 1, position 1.");
+        }
+
+        [Test]
+        public void ReadStringValue_InvalidEndArray()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("]"));
+
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                reader.ReadAsDateTime();
+            }, "Unexpected character encountered while parsing value: ]. Path '', line 1, position 1.");
+        }
+
+        [Test]
+        public void ReadNumberValue_CommaErrors_Multiple()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("[1,,1]"));
+            reader.Read();
+            reader.ReadAsInt32();
+
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                reader.ReadAsInt32();
+            }, "Unexpected character encountered while parsing value: ,. Path '[1]', line 1, position 4.");
+
+            Assert.AreEqual(1, reader.ReadAsInt32());
+            Assert.IsTrue(reader.Read());
+        }
+
+        [Test]
+        public void ReadStringValue_CommaErrors()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("[,'']"));
+            reader.Read();
+
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                reader.ReadAsString();
+            }, "Unexpected character encountered while parsing value: ,. Path '[0]', line 1, position 2.");
+
+            Assert.AreEqual(string.Empty, reader.ReadAsString());
+            Assert.IsTrue(reader.Read());
+        }
+
+        [Test]
+        public void ReadStringValue_CommaErrors_Multiple()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("['',,'']"));
+            reader.Read();
+            reader.ReadAsInt32();
+
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                reader.ReadAsString();
+            }, "Unexpected character encountered while parsing value: ,. Path '[1]', line 1, position 5.");
+
+            Assert.AreEqual(string.Empty, reader.ReadAsString());
+            Assert.IsTrue(reader.Read());
+        }
+
+        [Test]
+        public void ReadValue_EmptyString_Position()
+        {
+            string json = @"['','','','','']";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            reader.Read();
+            reader.ReadAsInt32();
+            Assert.AreEqual("[0]", reader.Path);
+            reader.ReadAsDecimal();
+            Assert.AreEqual("[1]", reader.Path);
+            reader.ReadAsDateTime();
+            Assert.AreEqual("[2]", reader.Path);
+            reader.ReadAsDateTimeOffset();
+            Assert.AreEqual("[3]", reader.Path);
+            reader.ReadAsString();
+            Assert.AreEqual("[4]", reader.Path);
+
+            Assert.IsNull(reader.ReadAsString());
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+            Assert.IsNull(reader.ReadAsString());
+            Assert.AreEqual(JsonToken.None, reader.TokenType);
+        }
+
+        [Test]
+        public void ReadValueComments()
+        {
+            string json = @"/*comment*/[/*comment*/1/*comment*/,2,/*comment*//*comment*/""three""/*comment*/,""four""/*comment*/,null,/*comment*/null,3.99,1.1/*comment*/]/*comment*/";
+
+            JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+            Assert.AreEqual(1, reader.ReadAsInt32());
+            Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+            Assert.AreEqual(2, reader.ReadAsInt32());
+            Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+            Assert.AreEqual("three", reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+            Assert.AreEqual("four", reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+            Assert.AreEqual(null, reader.ReadAsString());
+            Assert.AreEqual(JsonToken.Null, reader.TokenType);
+
+            Assert.AreEqual(null, reader.ReadAsInt32());
+            Assert.AreEqual(JsonToken.Null, reader.TokenType);
+
+            Assert.AreEqual(3.99m, reader.ReadAsDecimal());
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+
+            Assert.AreEqual(1.1m, reader.ReadAsDecimal());
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+            Assert.AreEqual(null, reader.ReadAsInt32());
+            Assert.AreEqual(JsonToken.None, reader.TokenType);
         }
 
         [Test]

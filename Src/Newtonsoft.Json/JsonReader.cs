@@ -440,7 +440,7 @@ namespace Newtonsoft.Json
         {
             if (string.IsNullOrEmpty(s))
             {
-                SetToken(JsonToken.Null);
+                SetToken(JsonToken.Null, null, false);
                 return null;
             }
 
@@ -615,7 +615,7 @@ namespace Newtonsoft.Json
         {
             if (string.IsNullOrEmpty(s))
             {
-                SetToken(JsonToken.Null);
+                SetToken(JsonToken.Null, null, false);
                 return null;
             }
 
@@ -658,7 +658,7 @@ namespace Newtonsoft.Json
         {
             if (string.IsNullOrEmpty(s))
             {
-                SetToken(JsonToken.Null);
+                SetToken(JsonToken.Null, null, false);
                 return null;
             }
 
@@ -714,7 +714,7 @@ namespace Newtonsoft.Json
         {
             if (string.IsNullOrEmpty(s))
             {
-                SetToken(JsonToken.Null);
+                SetToken(JsonToken.Null, null, false);
                 return null;
             }
 

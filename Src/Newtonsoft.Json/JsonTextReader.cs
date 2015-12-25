@@ -516,23 +516,24 @@ namespace Newtonsoft.Json
                                 ParseComment(false);
                                 break;
                             case ',':
+                                _charPos++;
+
                                 if (_currentState != State.PostValue)
                                 {
                                     SetToken(JsonToken.Undefined);
                                     throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                                 }
 
-                                _charPos++;
                                 SetStateBasedOnCurrent();
                                 break;
-                            case '}':
-                                _charPos++;
-                                SetToken(JsonToken.EndObject);
-                                return null;
                             case ']':
                                 _charPos++;
-                                SetToken(JsonToken.EndArray);
-                                return null;
+                                if (_currentState == State.Array || _currentState == State.ArrayStart || _currentState == State.PostValue)
+                                {
+                                    SetToken(JsonToken.EndArray);
+                                    return null;
+                                }
+                                throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                             case StringUtils.CarriageReturn:
                                 ProcessCarriageReturn(false);
                                 break;
@@ -562,26 +563,6 @@ namespace Newtonsoft.Json
                 default:
                     throw JsonReaderException.Create(this, "Unexpected state: {0}.".FormatWith(CultureInfo.InvariantCulture, CurrentState));
             }
-        }
-
-#if !NET20
-        /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
-        /// </summary>
-        /// <returns>A <see cref="Nullable{DateTimeOffset}"/>. This method will return <c>null</c> at the end of an array.</returns>
-        public override DateTimeOffset? ReadAsDateTimeOffset()
-        {
-            return (DateTimeOffset?)ReadStringValue(ReadType.ReadAsDateTimeOffset);
-        }
-#endif
-
-        /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
-        /// </summary>
-        /// <returns>A <see cref="Nullable{Decimal}"/>. This method will return <c>null</c> at the end of an array.</returns>
-        public override decimal? ReadAsDecimal()
-        {
-            return (decimal?)ReadNumberValue(ReadType.ReadAsDecimal);
         }
 
         private object ReadNumberValue(ReadType readType)
@@ -643,23 +624,24 @@ namespace Newtonsoft.Json
                                 ParseComment(false);
                                 break;
                             case ',':
+                                _charPos++;
+
                                 if (_currentState != State.PostValue)
                                 {
                                     SetToken(JsonToken.Undefined);
                                     throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                                 }
 
-                                _charPos++;
                                 SetStateBasedOnCurrent();
                                 break;
-                            case '}':
-                                _charPos++;
-                                SetToken(JsonToken.EndObject);
-                                return null;
                             case ']':
                                 _charPos++;
-                                SetToken(JsonToken.EndArray);
-                                return null;
+                                if (_currentState == State.Array || _currentState == State.ArrayStart || _currentState == State.PostValue)
+                                {
+                                    SetToken(JsonToken.EndArray);
+                                    return null;
+                                }
+                                throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                             case StringUtils.CarriageReturn:
                                 ProcessCarriageReturn(false);
                                 break;
@@ -689,6 +671,26 @@ namespace Newtonsoft.Json
                 default:
                     throw JsonReaderException.Create(this, "Unexpected state: {0}.".FormatWith(CultureInfo.InvariantCulture, CurrentState));
             }
+        }
+
+#if !NET20
+        /// <summary>
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
+        /// </summary>
+        /// <returns>A <see cref="Nullable{DateTimeOffset}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        public override DateTimeOffset? ReadAsDateTimeOffset()
+        {
+            return (DateTimeOffset?)ReadStringValue(ReadType.ReadAsDateTimeOffset);
+        }
+#endif
+
+        /// <summary>
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
+        /// </summary>
+        /// <returns>A <see cref="Nullable{Decimal}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        public override decimal? ReadAsDecimal()
+        {
+            return (decimal?)ReadNumberValue(ReadType.ReadAsDecimal);
         }
 
         private void HandleNull()
