@@ -221,8 +221,8 @@ namespace Newtonsoft.Json.Tests.Linq
 
             IJsonLineInfo lineInfo = v;
             Assert.AreEqual(true, lineInfo.HasLineInfo());
-            Assert.AreEqual(3, lineInfo.LineNumber);
-            Assert.AreEqual(0, lineInfo.LinePosition);
+            Assert.AreEqual(2, lineInfo.LineNumber);
+            Assert.AreEqual(5, lineInfo.LinePosition);
         }
 
         [Test]

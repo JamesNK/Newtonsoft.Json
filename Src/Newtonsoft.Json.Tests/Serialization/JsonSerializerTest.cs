@@ -378,6 +378,10 @@ namespace Newtonsoft.Json.Tests.Serialization
         public void IncompleteContainers()
         {
             ExceptionAssert.Throws<JsonSerializationException>(
+                 () => JsonConvert.DeserializeObject<IList<object>>("[1,"),
+                 "Unexpected end when deserializing array. Path '[0]', line 1, position 3.");
+
+            ExceptionAssert.Throws<JsonSerializationException>(
                 () => JsonConvert.DeserializeObject<IList<int>>("[1,"),
                 "Unexpected end when deserializing array. Path '[0]', line 1, position 3.");
 
@@ -6960,7 +6964,7 @@ Path '', line 1, position 1.");
 }";
 
                 JsonConvert.DeserializeObject<TestObjects.MyClass>(json);
-            }, "Error reading integer. Unexpected token: Boolean. Path 'PreProperty', line 2, position 21.");
+            }, "Unexpected character encountered while parsing value: t. Path 'PreProperty', line 2, position 17.");
         }
 
         [Test]
