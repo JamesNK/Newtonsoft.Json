@@ -43,8 +43,9 @@ namespace Newtonsoft.Json
         ReadAsDecimal,
         ReadAsDateTime,
 #if !NET20
-        ReadAsDateTimeOffset
+        ReadAsDateTimeOffset,
 #endif
+        ReadAsDouble
     }
 
     /// <summary>
@@ -702,6 +703,8 @@ namespace Newtonsoft.Json
                                         return ReadInt32String(_stringReference.ToString());
                                     case ReadType.ReadAsDecimal:
                                         return ReadDecimalString(_stringReference.ToString());
+                                    case ReadType.ReadAsDouble:
+                                        return ReadDoubleString(_stringReference.ToString());
                                     default:
                                         throw new ArgumentOutOfRangeException(nameof(readType));
                                 }
@@ -765,8 +768,8 @@ namespace Newtonsoft.Json
 
                                 // eat
                                 break;
+                        }
                     }
-                }
                 case State.Finished:
                     ReadFinished();
                     SetToken(JsonToken.None);
@@ -794,6 +797,15 @@ namespace Newtonsoft.Json
         public override decimal? ReadAsDecimal()
         {
             return (decimal?)ReadNumberValue(ReadType.ReadAsDecimal);
+        }
+
+        /// <summary>
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{Double}"/>.
+        /// </summary>
+        /// <returns>A <see cref="Nullable{Double}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        public override double? ReadAsDouble()
+        {
+            return (double?)ReadNumberValue(ReadType.ReadAsDouble);
         }
 
         private void HandleNull()
@@ -1728,6 +1740,46 @@ namespace Newtonsoft.Json
                     else
                     {
                         throw JsonReaderException.Create(this, "Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                    }
+                }
+
+                numberType = JsonToken.Float;
+            }
+            else if (readType == ReadType.ReadAsDouble)
+            {
+                if (singleDigit)
+                {
+                    // digit char values start at 48
+                    numberValue = (double)firstChar - 48;
+                }
+                else if (nonBase10)
+                {
+                    string number = _stringReference.ToString();
+
+                    try
+                    {
+                        // double.Parse doesn't support parsing hexadecimal values
+                        long integer = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? Convert.ToInt64(number, 16) : Convert.ToInt64(number, 8);
+
+                        numberValue = Convert.ToDouble(integer);
+                    }
+                    catch (Exception ex)
+                    {
+                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid double.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+                    }
+                }
+                else
+                {
+                    string number = _stringReference.ToString();
+
+                    double value;
+                    if (double.TryParse(number, NumberStyles.Float, CultureInfo.InvariantCulture, out value))
+                    {
+                        numberValue = value;
+                    }
+                    else
+                    {
+                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid double.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                     }
                 }
 

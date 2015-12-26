@@ -64,6 +64,13 @@ namespace Newtonsoft.Json.Serialization
             return value;
         }
 
+        public override double? ReadAsDouble()
+        {
+            var value = _innerReader.ReadAsDouble();
+            _textWriter.WriteToken(_innerReader, false, false, true);
+            return value;
+        }
+
         public override DateTime? ReadAsDateTime()
         {
             var value = _innerReader.ReadAsDateTime();

@@ -2772,6 +2772,35 @@ new Date()"));
         }
 
         [Test]
+        public void ReadAsDouble_Null()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("null"));
+            Assert.AreEqual(null, reader.ReadAsDouble());
+        }
+
+        [Test]
+        public void ReadAsDouble_Success()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("'12.34'"));
+            Assert.AreEqual(12.34d, reader.ReadAsDouble());
+        }
+
+        [Test]
+        public void ReadAsDouble_Failure()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("['Trump',1]"));
+
+            Assert.IsTrue(reader.Read());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => { reader.ReadAsDouble(); },
+                "Could not convert string to double: Trump. Path '[0]', line 1, position 8.");
+
+            Assert.AreEqual(1d, reader.ReadAsDouble());
+            Assert.IsTrue(reader.Read());
+        }
+
+        [Test]
         public void ParseConstructorWithBadCharacter()
         {
             string json = "new Date,()";
@@ -2905,7 +2934,7 @@ new Date()"));
             ExceptionAssert.Throws<JsonReaderException>(() =>
             {
                 reader.ReadAsBytes();
-            }, "Unexpected character encountered while parsing value: ,. Path '[1]', line 1, position 4.");
+            }, "Unexpected character encountered while parsing value: ,. Path '[1]', line 1, position 5.");
 
             CollectionAssert.AreEquivalent(new byte[0], reader.ReadAsBytes());
             Assert.IsTrue(reader.Read());
@@ -2967,10 +2996,11 @@ new Date()"));
             Assert.IsTrue(reader.Read());
         }
 
+#if !NET20
         [Test]
         public void ReadValue_EmptyString_Position()
         {
-            string json = @"['','','','','','']";
+            string json = @"['','','','','','','']";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
@@ -2987,6 +3017,8 @@ new Date()"));
             Assert.AreEqual("[4]", reader.Path);
             reader.ReadAsBytes();
             Assert.AreEqual("[5]", reader.Path);
+            reader.ReadAsDouble();
+            Assert.AreEqual("[6]", reader.Path);
 
             Assert.IsNull(reader.ReadAsString());
             Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -2997,6 +3029,7 @@ new Date()"));
             Assert.IsNull(reader.ReadAsBytes());
             Assert.AreEqual(JsonToken.None, reader.TokenType);
         }
+#endif
 
         [Test]
         public void ReadValueComments()
@@ -3783,7 +3816,6 @@ null//comment
             var serverStartedEvent = new ManualResetEvent(false);
             var clientReceivedEvent = new ManualResetEvent(false);
 
-        #region server
             ThreadPool.QueueUserWorkItem(work =>
             {
                 var server = new TcpListener(IPAddress.Parse("0.0.0.0"), port);
@@ -3802,7 +3834,6 @@ null//comment
                 clientReceivedEvent.WaitOne();
 
             });
-        #endregion
 
             serverStartedEvent.WaitOne();
 
@@ -3838,6 +3869,7 @@ null//comment
             Console.WriteLine("Done");
         }
 #endif
+
         [Test]
         public void DisposeSupressesFinalization()
         {

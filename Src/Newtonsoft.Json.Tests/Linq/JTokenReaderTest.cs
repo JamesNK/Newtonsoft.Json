@@ -726,5 +726,201 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.IsFalse(reader.Read());
             Assert.AreEqual("[0]", reader.Path);
         }
+
+        [Test]
+        public void ReadAsDouble_InvalidToken()
+        {
+            JArray a = new JArray
+            {
+                1, 2
+            };
+
+            JTokenReader reader = new JTokenReader(a);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => { reader.ReadAsDouble(); },
+                "Error reading double. Unexpected token: StartArray. Path ''.");
+        }
+
+        [Test]
+        public void ReadAsDateTime_InvalidToken()
+        {
+            JArray a = new JArray
+            {
+                1, 2
+            };
+
+            JTokenReader reader = new JTokenReader(a);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => { reader.ReadAsDateTime(); },
+                "Error reading date. Unexpected token: StartArray. Path ''.");
+        }
+
+#if !NET20
+        [Test]
+        public void ReadAsDateTimeOffset_InvalidToken()
+        {
+            JArray a = new JArray
+            {
+                1, 2
+            };
+
+            JTokenReader reader = new JTokenReader(a);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => { reader.ReadAsDateTimeOffset(); },
+                "Error reading date. Unexpected token: StartArray. Path ''.");
+        }
+
+        [Test]
+        public void ReadAsDateTimeOffset_DateTime()
+        {
+            JValue v = new JValue(new DateTime(2001, 12, 12, 12, 12, 12, DateTimeKind.Utc));
+
+            JTokenReader reader = new JTokenReader(v);
+
+            Assert.AreEqual(new DateTimeOffset(2001, 12, 12, 12, 12, 12, TimeSpan.Zero), reader.ReadAsDateTimeOffset());
+        }
+
+        [Test]
+        public void ReadAsDateTimeOffset_String()
+        {
+            JValue v = new JValue("2012-01-24T03:50Z");
+
+            JTokenReader reader = new JTokenReader(v);
+
+            Assert.AreEqual(new DateTimeOffset(2012, 1, 24, 3, 50, 0, TimeSpan.Zero), reader.ReadAsDateTimeOffset());
+        }
+
+        [Test]
+        public void ReadAsDateTime_DateTimeOffset()
+        {
+            JValue v = new JValue(new DateTimeOffset(2012, 1, 24, 3, 50, 0, TimeSpan.Zero));
+
+            JTokenReader reader = new JTokenReader(v);
+
+            Assert.AreEqual(new DateTime(2012, 1, 24, 3, 50, 0, DateTimeKind.Utc), reader.ReadAsDateTime());
+        }
+#endif
+
+        [Test]
+        public void ReadAsDateTime_String()
+        {
+            JValue v = new JValue("2012-01-24T03:50Z");
+
+            JTokenReader reader = new JTokenReader(v);
+
+            Assert.AreEqual(new DateTime(2012, 1, 24, 3, 50, 0, DateTimeKind.Utc), reader.ReadAsDateTime());
+        }
+
+        [Test]
+        public void ReadAsDouble_String_Success()
+        {
+            JValue s = JValue.CreateString("123.4");
+
+            JTokenReader reader = new JTokenReader(s);
+
+            Assert.AreEqual(123.4d, reader.ReadAsDouble());
+        }
+
+        [Test]
+        public void ReadAsDouble_Null_Success()
+        {
+            JValue n = JValue.CreateNull();
+
+            JTokenReader reader = new JTokenReader(n);
+
+            Assert.AreEqual(null, reader.ReadAsDouble());
+        }
+
+        [Test]
+        public void ReadAsDouble_Integer_Success()
+        {
+            JValue n = new JValue(1);
+
+            JTokenReader reader = new JTokenReader(n);
+
+            Assert.AreEqual(1d, reader.ReadAsDouble());
+        }
+
+        [Test]
+        public void ReadAsDateTime_Null_Success()
+        {
+            JValue n = JValue.CreateNull();
+
+            JTokenReader reader = new JTokenReader(n);
+
+            Assert.AreEqual(null, reader.ReadAsDateTime());
+        }
+
+#if !NET20
+        [Test]
+        public void ReadAsDateTimeOffset_Null_Success()
+        {
+            JValue n = JValue.CreateNull();
+
+            JTokenReader reader = new JTokenReader(n);
+
+            Assert.AreEqual(null, reader.ReadAsDateTimeOffset());
+        }
+#endif
+
+        [Test]
+        public void ReadAsString_Integer_Success()
+        {
+            JValue n = new JValue(1);
+
+            JTokenReader reader = new JTokenReader(n);
+
+            Assert.AreEqual("1", reader.ReadAsString());
+        }
+
+        [Test]
+        public void ReadAsString_Guid_Success()
+        {
+            JValue n = new JValue(new Uri("http://www.test.com"));
+
+            JTokenReader reader = new JTokenReader(n);
+
+            Assert.AreEqual("http://www.test.com", reader.ReadAsString());
+        }
+
+        [Test]
+        public void ReadAsBytes_Integer_Success()
+        {
+            JValue n = JValue.CreateNull();
+
+            JTokenReader reader = new JTokenReader(n);
+
+            Assert.AreEqual(null, reader.ReadAsBytes());
+        }
+
+        [Test]
+        public void ReadAsBytes_Array()
+        {
+            JArray a = new JArray
+            {
+                1, 2
+            };
+
+            JTokenReader reader = new JTokenReader(a);
+
+            byte[] bytes = reader.ReadAsBytes();
+
+            Assert.AreEqual(2, bytes.Length);
+            Assert.AreEqual(1, bytes[0]);
+            Assert.AreEqual(2, bytes[1]);
+        }
+
+        [Test]
+        public void ReadAsBytes_Null()
+        {
+            JValue n = JValue.CreateNull();
+
+            JTokenReader reader = new JTokenReader(n);
+
+            Assert.AreEqual(null, reader.ReadAsBytes());
+        }
     }
 }

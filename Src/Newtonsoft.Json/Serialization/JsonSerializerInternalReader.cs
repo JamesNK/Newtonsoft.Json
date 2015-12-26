@@ -2210,6 +2210,9 @@ namespace Newtonsoft.Json.Serialization
                 case ReadType.ReadAsDecimal:
                     reader.ReadAsDecimal();
                     break;
+                case ReadType.ReadAsDouble:
+                    reader.ReadAsDouble();
+                    break;
                 case ReadType.ReadAsBytes:
                     reader.ReadAsBytes();
                     break;

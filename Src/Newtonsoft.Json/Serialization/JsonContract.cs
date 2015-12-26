@@ -347,6 +347,10 @@ namespace Newtonsoft.Json.Serialization
                 InternalReadType = ReadType.ReadAsDateTimeOffset;
             }
 #endif
+            else if (NonNullableUnderlyingType == typeof(double))
+            {
+                InternalReadType = ReadType.ReadAsDouble;
+            }
             else
             {
                 InternalReadType = ReadType.Read;

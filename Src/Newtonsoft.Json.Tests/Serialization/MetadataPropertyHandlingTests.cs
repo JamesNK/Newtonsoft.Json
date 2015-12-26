@@ -532,7 +532,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
         public class ItemWithTypedPayload
         {
-            public double Payload { get; set; }
+            public float Payload { get; set; }
         }
 
         [Test]
@@ -540,19 +540,19 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             ItemWithTypedPayload actual = JsonConvert.DeserializeObject<ItemWithTypedPayload>(@"{
   ""Payload"": {
-    ""$type"": ""System.Double, mscorlib"",
+    ""$type"": ""System.Single, mscorlib"",
     ""$value"": ""5""
   }
 }",
                 new JsonSerializerSettings());
 
-            Assert.AreEqual(5d, actual.Payload);
+            Assert.AreEqual(5f, actual.Payload);
 
             ExceptionAssert.Throws<JsonSerializationException>(() =>
             {
                 JsonConvert.DeserializeObject<ItemWithTypedPayload>(@"{
   ""Payload"": {
-    ""$type"": ""System.Double, mscorlib"",
+    ""$type"": ""System.Single, mscorlib"",
     ""$value"": ""5""
   }
 }",
@@ -560,7 +560,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                     {
                         MetadataPropertyHandling = MetadataPropertyHandling.Ignore
                     });
-            }, @"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Double' because the type requires a JSON primitive value (e.g. string, number, boolean, null) to deserialize correctly.
+            }, @"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Single' because the type requires a JSON primitive value (e.g. string, number, boolean, null) to deserialize correctly.
 To fix this error either change the JSON to a JSON primitive value (e.g. string, number, boolean, null) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
 Path 'Payload.$type', line 3, position 12.");
         }

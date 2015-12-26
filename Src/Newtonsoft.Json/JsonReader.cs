@@ -484,6 +484,10 @@ namespace Newtonsoft.Json
                     {
                         s = ((IFormattable)Value).ToString(null, Culture);
                     }
+                    else if (Value is Uri)
+                    {
+                        s = ((Uri)Value).OriginalString;
+                    }
                     else
                     {
                         s = Value.ToString();
@@ -594,6 +598,56 @@ namespace Newtonsoft.Json
         /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
         /// </summary>
         /// <returns>A <see cref="Nullable{Decimal}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        public virtual double? ReadAsDouble()
+        {
+            JsonToken t = GetContentToken();
+
+            switch (t)
+            {
+                case JsonToken.None:
+                case JsonToken.Null:
+                case JsonToken.EndArray:
+                    return null;
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                    if (!(Value is double))
+                    {
+                        SetToken(JsonToken.Float, Convert.ToDouble(Value, CultureInfo.InvariantCulture), false);
+                    }
+
+                    return (double) Value;
+                case JsonToken.String:
+                    return ReadDoubleString((string) Value);
+            }
+
+            throw JsonReaderException.Create(this, "Error reading double. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
+        }
+
+        internal double? ReadDoubleString(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                SetToken(JsonToken.Null, null, false);
+                return null;
+            }
+
+            double d;
+            if (double.TryParse(s, NumberStyles.Float, Culture, out d))
+            {
+                SetToken(JsonToken.Float, d, false);
+                return d;
+            }
+            else
+            {
+                SetToken(JsonToken.String, s, false);
+                throw JsonReaderException.Create(this, "Could not convert string to double: {0}.".FormatWith(CultureInfo.InvariantCulture, s));
+            }
+        }
+
+        /// <summary>
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
+        /// </summary>
+        /// <returns>A <see cref="Nullable{Decimal}"/>. This method will return <c>null</c> at the end of an array.</returns>
         public virtual decimal? ReadAsDecimal()
         {
             JsonToken t = GetContentToken();
@@ -653,6 +707,13 @@ namespace Newtonsoft.Json
                 case JsonToken.EndArray:
                     return null;
                 case JsonToken.Date:
+#if !NET20
+                    if (Value is DateTimeOffset)
+                    {
+                        SetToken(JsonToken.Date, ((DateTimeOffset)Value).DateTime, false);
+                    }
+#endif
+
                     return (DateTime)Value;
                 case JsonToken.String:
                     string s = (string)Value;

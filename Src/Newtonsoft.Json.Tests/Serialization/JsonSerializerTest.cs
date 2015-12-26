@@ -3716,9 +3716,9 @@ Path '', line 1, position 1.");
         {
             string json = @"[]";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<double>(json); }, @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'System.Double' because the type requires a JSON primitive value (e.g. string, number, boolean, null) to deserialize correctly.
-To fix this error either change the JSON to a JSON primitive value (e.g. string, number, boolean, null) or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
-Path '', line 1, position 1.");
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => { JsonConvert.DeserializeObject<double>(json); },
+                @"Unexpected character encountered while parsing value: [. Path '', line 1, position 1.");
         }
 
 #if !(NET35 || NET20 || PORTABLE40)
