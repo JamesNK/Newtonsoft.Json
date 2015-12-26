@@ -6692,20 +6692,20 @@ Path '', line 1, position 1.");
             serializer.TypeNameHandling = TypeNameHandling.All;
 
             byte[] objectBytes;
-            using (MemoryStream bsonStream = new MemoryStream())
-            using (JsonWriter bsonWriter = new JsonTextWriter(new StreamWriter(bsonStream)))
+            using (MemoryStream stream = new MemoryStream())
+            using (JsonWriter jsonWriter = new JsonTextWriter(new StreamWriter(stream)))
             {
-                serializer.Serialize(bsonWriter, test);
-                bsonWriter.Flush();
+                serializer.Serialize(jsonWriter, test);
+                jsonWriter.Flush();
 
-                objectBytes = bsonStream.ToArray();
+                objectBytes = stream.ToArray();
             }
 
-            using (MemoryStream bsonStream = new MemoryStream(objectBytes))
-            using (JsonReader bsonReader = new JsonTextReader(new StreamReader(bsonStream)))
+            using (MemoryStream stream = new MemoryStream(objectBytes))
+            using (JsonReader jsonReader = new JsonTextReader(new StreamReader(stream)))
             {
                 // Get exception here
-                TestObject newObject = (TestObject)serializer.Deserialize(bsonReader);
+                TestObject newObject = (TestObject)serializer.Deserialize(jsonReader);
 
                 Assert.AreEqual("Test", newObject.Name);
                 CollectionAssert.AreEquivalent(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
@@ -6964,7 +6964,7 @@ Path '', line 1, position 1.");
 }";
 
                 JsonConvert.DeserializeObject<TestObjects.MyClass>(json);
-            }, "Unexpected character encountered while parsing value: t. Path 'PreProperty', line 2, position 17.");
+            }, "Unexpected character encountered while parsing value: t. Path 'PreProperty', line 2, position 18.");
         }
 
         [Test]

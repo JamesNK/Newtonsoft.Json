@@ -510,8 +510,10 @@ namespace Newtonsoft.Json
                 return null;
             }
 
-            if (IsWrappedInTypeObject())
+            if (TokenType == JsonToken.StartObject)
             {
+                ReadIntoWrappedTypeObject();
+
                 byte[] data = ReadAsBytes();
                 Read();
                 SetToken(JsonToken.Bytes, data, false);
@@ -558,28 +560,34 @@ namespace Newtonsoft.Json
 
                     return (byte[])Value;
                 case JsonToken.StartArray:
-                    List<byte> buffer = new List<byte>();
-
-                    while (true)
-                    {
-                        switch (t = GetContentToken())
-                        {
-                            case JsonToken.None:
-                                throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
-                            case JsonToken.Integer:
-                                buffer.Add(Convert.ToByte(Value, CultureInfo.InvariantCulture));
-                                break;
-                            case JsonToken.EndArray:
-                                byte[] d = buffer.ToArray();
-                                SetToken(JsonToken.Bytes, d, false);
-                                return d;
-                            default:
-                                throw JsonReaderException.Create(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
-                        }
-                    }
+                    return ReadArrayIntoByteArray();
             }
 
             throw JsonReaderException.Create(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
+        }
+
+        internal byte[] ReadArrayIntoByteArray()
+        {
+            List<byte> buffer = new List<byte>();
+
+            while (true)
+            {
+                JsonToken t = GetContentToken();
+                switch (t)
+                {
+                    case JsonToken.None:
+                        throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
+                    case JsonToken.Integer:
+                        buffer.Add(Convert.ToByte(Value, CultureInfo.InvariantCulture));
+                        break;
+                    case JsonToken.EndArray:
+                        byte[] d = buffer.ToArray();
+                        SetToken(JsonToken.Bytes, d, false);
+                        return d;
+                    default:
+                        throw JsonReaderException.Create(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
+                }
+            }
         }
 
         /// <summary>
@@ -736,32 +744,31 @@ namespace Newtonsoft.Json
         }
 #endif
 
-        private bool IsWrappedInTypeObject()
+        internal void ReaderReadAndAssert()
         {
-            if (TokenType == JsonToken.StartObject)
+            if (!Read())
             {
-                if (!Read())
-                {
-                    throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
-                }
+                throw JsonReaderException.Create(this, "Unexpected end when reading JSON.");
+            }
+        }
 
-                if (Value.ToString() == JsonTypeReflector.TypePropertyName)
+        internal void ReadIntoWrappedTypeObject()
+        {
+            ReaderReadAndAssert();
+            if (Value.ToString() == JsonTypeReflector.TypePropertyName)
+            {
+                ReaderReadAndAssert();
+                if (Value != null && Value.ToString().StartsWith("System.Byte[]", StringComparison.Ordinal))
                 {
-                    Read();
-                    if (Value != null && Value.ToString().StartsWith("System.Byte[]", StringComparison.Ordinal))
+                    ReaderReadAndAssert();
+                    if (Value.ToString() == JsonTypeReflector.ValuePropertyName)
                     {
-                        Read();
-                        if (Value.ToString() == JsonTypeReflector.ValuePropertyName)
-                        {
-                            return true;
-                        }
+                        return;
                     }
                 }
-
-                throw JsonReaderException.Create(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.StartObject));
             }
 
-            return false;
+            throw JsonReaderException.Create(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, JsonToken.StartObject));
         }
 
         /// <summary>

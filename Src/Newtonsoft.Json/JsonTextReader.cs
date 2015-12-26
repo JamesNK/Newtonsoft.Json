@@ -437,6 +437,106 @@ namespace Newtonsoft.Json
             return (string)ReadStringValue(ReadType.ReadAsString);
         }
 
+        /// <summary>
+        /// Reads the next JSON token from the stream as a <see cref="Byte"/>[].
+        /// </summary>
+        /// <returns>A <see cref="Byte"/>[] or a null reference if the next JSON token is null. This method will return <c>null</c> at the end of an array.</returns>
+        public override byte[] ReadAsBytes()
+        {
+            EnsureBuffer();
+
+            switch (_currentState)
+            {
+                case State.Start:
+                case State.Property:
+                case State.Array:
+                case State.ArrayStart:
+                case State.Constructor:
+                case State.ConstructorStart:
+                case State.PostValue:
+                    while (true)
+                    {
+                        char currentChar = _chars[_charPos];
+
+                        switch (currentChar)
+                        {
+                            case '\0':
+                                if (ReadNullChar())
+                                {
+                                    SetToken(JsonToken.None, null, false);
+                                    return null;
+                                }
+                                break;
+                            case '"':
+                            case '\'':
+                                ParseString(currentChar, ReadType.ReadAsBytes);
+                                return (byte[])Value;
+                            case '{':
+                                _charPos++;
+                                SetToken(JsonToken.StartObject);
+                                ReadIntoWrappedTypeObject();
+                                break;
+                            case '[':
+                                _charPos++;
+                                SetToken(JsonToken.StartArray);
+                                return ReadArrayIntoByteArray();
+                            case 'n':
+                                HandleNull();
+                                return null;
+                            case '/':
+                                ParseComment(false);
+                                break;
+                            case ',':
+                                _charPos++;
+
+                                if (_currentState != State.PostValue)
+                                {
+                                    SetToken(JsonToken.Undefined);
+                                    throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
+                                }
+
+                                SetStateBasedOnCurrent();
+                                break;
+                            case ']':
+                                _charPos++;
+                                if (_currentState == State.Array || _currentState == State.ArrayStart || _currentState == State.PostValue)
+                                {
+                                    SetToken(JsonToken.EndArray);
+                                    return null;
+                                }
+                                throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
+                            case StringUtils.CarriageReturn:
+                                ProcessCarriageReturn(false);
+                                break;
+                            case StringUtils.LineFeed:
+                                ProcessLineFeed();
+                                break;
+                            case ' ':
+                            case StringUtils.Tab:
+                                // eat
+                                _charPos++;
+                                break;
+                            default:
+                                _charPos++;
+
+                                if (!char.IsWhiteSpace(currentChar))
+                                {
+                                    throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
+                                }
+
+                                // eat
+                                break;
+                        }
+                    }
+                case State.Finished:
+                    ReadFinished();
+                    SetToken(JsonToken.None);
+                    return null;
+                default:
+                    throw JsonReaderException.Create(this, "Unexpected state: {0}.".FormatWith(CultureInfo.InvariantCulture, CurrentState));
+            }
+        }
+
         private object ReadStringValue(ReadType readType)
         {
             EnsureBuffer();
@@ -503,6 +603,7 @@ namespace Newtonsoft.Json
                             case '9':
                                 if (readType != ReadType.ReadAsString)
                                 {
+                                    _charPos++;
                                     throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                                 }
                                 ParseNumber(ReadType.Read);
@@ -546,14 +647,15 @@ namespace Newtonsoft.Json
                                 _charPos++;
                                 break;
                             default:
-                                if (char.IsWhiteSpace(currentChar))
+                                _charPos++;
+
+                                if (!char.IsWhiteSpace(currentChar))
                                 {
-                                    // eat
-                                    _charPos++;
-                                    break;
+                                    throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                                 }
 
-                                throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
+                                // eat
+                                break;
                         }
                     }
                 case State.Finished:
@@ -654,16 +756,17 @@ namespace Newtonsoft.Json
                                 _charPos++;
                                 break;
                             default:
-                                if (char.IsWhiteSpace(currentChar))
+                                _charPos++;
+
+                                if (!char.IsWhiteSpace(currentChar))
                                 {
-                                    // eat
-                                    _charPos++;
-                                    break;
+                                    throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                                 }
 
-                                throw JsonReaderException.Create(this, "Unexpected character encountered while parsing value: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
-                        }
+                                // eat
+                                break;
                     }
+                }
                 case State.Finished:
                     ReadFinished();
                     SetToken(JsonToken.None);
