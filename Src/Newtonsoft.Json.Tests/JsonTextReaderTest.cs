@@ -3396,6 +3396,20 @@ null//comment
         }
 
         [Test]
+        public void ReadAsBytes()
+        {
+            byte[] data = Encoding.UTF8.GetBytes("Hello world");
+
+            string json = @"""" + Convert.ToBase64String(data) + @"""";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            byte[] result = reader.ReadAsBytes();
+
+            CollectionAssert.AreEquivalent(data, result);
+        }
+
+        [Test]
         public void UnexpectedEndTokenWhenParsingOddEndToken()
         {
             JsonReader reader = new JsonTextReader(new StringReader(@"{}}"));

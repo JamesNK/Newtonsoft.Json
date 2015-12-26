@@ -47,6 +47,7 @@ using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 using NUnit.Framework;
 #endif
 using System.IO;
+using Newtonsoft.Json.Linq;
 using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -542,6 +543,32 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(1, errors.Count);
             Assert.AreEqual("Unexpected character encountered while parsing value: x. Path '[0]', line 1, position 4.", errors[0]);
+
+            Assert.AreEqual(1, ((int[])o).Length);
+            Assert.AreEqual(0, ((int[])o)[0]);
+        }
+
+        [Test]
+        public void ArrayHandling_JTokenReader()
+        {
+            IList<string> errors = new List<string>();
+
+            JTokenReader reader = new JTokenReader(new JArray(0, true));
+
+            JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings
+            {
+                Error = (sender, arg) =>
+                {
+                    errors.Add(arg.ErrorContext.Error.Message);
+                    arg.ErrorContext.Handled = true;
+                }
+            });
+            object o = serializer.Deserialize(reader, typeof(int[]));
+
+            Assert.IsNotNull(o);
+
+            Assert.AreEqual(1, errors.Count);
+            Assert.AreEqual("Error reading integer. Unexpected token: Boolean. Path '[1]'.", errors[0]);
 
             Assert.AreEqual(1, ((int[])o).Length);
             Assert.AreEqual(0, ((int[])o)[0]);
