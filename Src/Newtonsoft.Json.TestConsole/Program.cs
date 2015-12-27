@@ -51,18 +51,18 @@ namespace Newtonsoft.Json.TestConsole
             //PerformanceTests t = new PerformanceTests();
             //t.DeserializeLargeJson();
 
-            PerformanceTests t = new PerformanceTests();
-            t.Iterations = 10000;
-            t.BenchmarkDeserializeMethod<TestClass>(PerformanceTests.SerializeMethod.JsonNet, PerformanceTests.JsonText);
+            //PerformanceTests t = new PerformanceTests();
+            //t.Iterations = 50000;
+            //t.BenchmarkDeserializeMethod<TestClass>(PerformanceTests.SerializeMethod.JsonNet, PerformanceTests.JsonText);
 
-            Console.WriteLine("Wait to do stuff again");
-            Console.ReadKey();
+            //Console.WriteLine("Wait to do stuff again");
+            //Console.ReadKey();
 
-            t.BenchmarkDeserializeMethod<TestClass>(PerformanceTests.SerializeMethod.JsonNet, PerformanceTests.JsonText);
+            //t.BenchmarkDeserializeMethod<TestClass>(PerformanceTests.SerializeMethod.JsonNet, PerformanceTests.JsonText);
 
             //ReadLargeJson();
             //WriteLargeJson();
-            //DeserializeJson();
+            DeserializeJson();
             //ReadLargeJson();
             //ReadLargeJsonJavaScriptSerializer();
 

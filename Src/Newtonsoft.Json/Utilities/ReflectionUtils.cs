@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsVirtual(this PropertyInfo propertyInfo)
         {
-            ValidationUtils.ArgumentNotNull(propertyInfo, "propertyInfo");
+            ValidationUtils.ArgumentNotNull(propertyInfo, nameof(propertyInfo));
 
             MethodInfo m = propertyInfo.GetGetMethod();
             if (m != null && m.IsVirtual)
@@ -115,7 +115,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static MethodInfo GetBaseDefinition(this PropertyInfo propertyInfo)
         {
-            ValidationUtils.ArgumentNotNull(propertyInfo, "propertyInfo");
+            ValidationUtils.ArgumentNotNull(propertyInfo, nameof(propertyInfo));
 
             MethodInfo m = propertyInfo.GetGetMethod();
             if (m != null)
@@ -227,7 +227,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool HasDefaultConstructor(Type t, bool nonPublic)
         {
-            ValidationUtils.ArgumentNotNull(t, "t");
+            ValidationUtils.ArgumentNotNull(t, nameof(t));
 
             if (t.IsValueType())
             {
@@ -255,7 +255,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsNullable(Type t)
         {
-            ValidationUtils.ArgumentNotNull(t, "t");
+            ValidationUtils.ArgumentNotNull(t, nameof(t));
 
             if (t.IsValueType())
             {
@@ -267,7 +267,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsNullableType(Type t)
         {
-            ValidationUtils.ArgumentNotNull(t, "t");
+            ValidationUtils.ArgumentNotNull(t, nameof(t));
 
             return (t.IsGenericType() && t.GetGenericTypeDefinition() == typeof(Nullable<>));
         }
@@ -298,8 +298,8 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool ImplementsGenericDefinition(Type type, Type genericInterfaceDefinition, out Type implementingType)
         {
-            ValidationUtils.ArgumentNotNull(type, "type");
-            ValidationUtils.ArgumentNotNull(genericInterfaceDefinition, "genericInterfaceDefinition");
+            ValidationUtils.ArgumentNotNull(type, nameof(type));
+            ValidationUtils.ArgumentNotNull(genericInterfaceDefinition, nameof(genericInterfaceDefinition));
 
             if (!genericInterfaceDefinition.IsInterface() || !genericInterfaceDefinition.IsGenericTypeDefinition())
             {
@@ -346,8 +346,8 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool InheritsGenericDefinition(Type type, Type genericClassDefinition, out Type implementingType)
         {
-            ValidationUtils.ArgumentNotNull(type, "type");
-            ValidationUtils.ArgumentNotNull(genericClassDefinition, "genericClassDefinition");
+            ValidationUtils.ArgumentNotNull(type, nameof(type));
+            ValidationUtils.ArgumentNotNull(genericClassDefinition, nameof(genericClassDefinition));
 
             if (!genericClassDefinition.IsClass() || !genericClassDefinition.IsGenericTypeDefinition())
             {
@@ -386,7 +386,7 @@ namespace Newtonsoft.Json.Utilities
         /// <returns>The type of the typed collection's items.</returns>
         public static Type GetCollectionItemType(Type type)
         {
-            ValidationUtils.ArgumentNotNull(type, "type");
+            ValidationUtils.ArgumentNotNull(type, nameof(type));
             Type genericListType;
 
             if (type.IsArray)
@@ -412,7 +412,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static void GetDictionaryKeyValueTypes(Type dictionaryType, out Type keyType, out Type valueType)
         {
-            ValidationUtils.ArgumentNotNull(dictionaryType, "type");
+            ValidationUtils.ArgumentNotNull(dictionaryType, nameof(dictionaryType));
 
             Type genericDictionaryType;
             if (ImplementsGenericDefinition(dictionaryType, typeof(IDictionary<,>), out genericDictionaryType))
@@ -445,7 +445,7 @@ namespace Newtonsoft.Json.Utilities
         /// <returns>The underlying type of the member.</returns>
         public static Type GetMemberUnderlyingType(MemberInfo member)
         {
-            ValidationUtils.ArgumentNotNull(member, "member");
+            ValidationUtils.ArgumentNotNull(member, nameof(member));
 
             switch (member.MemberType())
             {
@@ -471,7 +471,7 @@ namespace Newtonsoft.Json.Utilities
         /// </returns>
         public static bool IsIndexedProperty(MemberInfo member)
         {
-            ValidationUtils.ArgumentNotNull(member, "member");
+            ValidationUtils.ArgumentNotNull(member, nameof(member));
 
             PropertyInfo propertyInfo = member as PropertyInfo;
 
@@ -494,7 +494,7 @@ namespace Newtonsoft.Json.Utilities
         /// </returns>
         public static bool IsIndexedProperty(PropertyInfo property)
         {
-            ValidationUtils.ArgumentNotNull(property, "property");
+            ValidationUtils.ArgumentNotNull(property, nameof(property));
 
             return (property.GetIndexParameters().Length > 0);
         }
@@ -507,8 +507,8 @@ namespace Newtonsoft.Json.Utilities
         /// <returns>The member's value on the object.</returns>
         public static object GetMemberValue(MemberInfo member, object target)
         {
-            ValidationUtils.ArgumentNotNull(member, "member");
-            ValidationUtils.ArgumentNotNull(target, "target");
+            ValidationUtils.ArgumentNotNull(member, nameof(member));
+            ValidationUtils.ArgumentNotNull(target, nameof(target));
 
             switch (member.MemberType())
             {
@@ -536,8 +536,8 @@ namespace Newtonsoft.Json.Utilities
         /// <param name="value">The value.</param>
         public static void SetMemberValue(MemberInfo member, object target, object value)
         {
-            ValidationUtils.ArgumentNotNull(member, "member");
-            ValidationUtils.ArgumentNotNull(target, "target");
+            ValidationUtils.ArgumentNotNull(member, nameof(member));
+            ValidationUtils.ArgumentNotNull(target, nameof(target));
 
             switch (member.MemberType())
             {
@@ -755,7 +755,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static Attribute[] GetAttributes(object attributeProvider, Type attributeType, bool inherit)
         {
-            ValidationUtils.ArgumentNotNull(attributeProvider, "attributeProvider");
+            ValidationUtils.ArgumentNotNull(attributeProvider, nameof(attributeProvider));
 
             object provider = attributeProvider;
 
@@ -919,7 +919,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static IEnumerable<FieldInfo> GetFields(Type targetType, BindingFlags bindingAttr)
         {
-            ValidationUtils.ArgumentNotNull(targetType, "targetType");
+            ValidationUtils.ArgumentNotNull(targetType, nameof(targetType));
 
             List<MemberInfo> fieldInfos = new List<MemberInfo>(targetType.GetFields(bindingAttr));
 #if !PORTABLE
@@ -955,7 +955,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static IEnumerable<PropertyInfo> GetProperties(Type targetType, BindingFlags bindingAttr)
         {
-            ValidationUtils.ArgumentNotNull(targetType, "targetType");
+            ValidationUtils.ArgumentNotNull(targetType, nameof(targetType));
 
             List<PropertyInfo> propertyInfos = new List<PropertyInfo>(targetType.GetProperties(bindingAttr));
 

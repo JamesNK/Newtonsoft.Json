@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="stream">The stream.</param>
         public BsonWriter(Stream stream)
         {
-            ValidationUtils.ArgumentNotNull(stream, "stream");
+            ValidationUtils.ArgumentNotNull(stream, nameof(stream));
             _writer = new BsonBinaryWriter(new BinaryWriter(stream));
         }
 
@@ -75,7 +75,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="writer">The writer.</param>
         public BsonWriter(BinaryWriter writer)
         {
-            ValidationUtils.ArgumentNotNull(writer, "writer");
+            ValidationUtils.ArgumentNotNull(writer, nameof(writer));
             _writer = new BsonBinaryWriter(writer);
         }
 
@@ -500,7 +500,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="value">The Object ID value to write.</param>
         public void WriteObjectId(byte[] value)
         {
-            ValidationUtils.ArgumentNotNull(value, "value");
+            ValidationUtils.ArgumentNotNull(value, nameof(value));
 
             if (value.Length != 12)
             {
@@ -520,7 +520,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="options">The regex options.</param>
         public void WriteRegex(string pattern, string options)
         {
-            ValidationUtils.ArgumentNotNull(pattern, "pattern");
+            ValidationUtils.ArgumentNotNull(pattern, nameof(pattern));
 
             // hack to update the writer state
             UpdateScopeWithFinishedValue();

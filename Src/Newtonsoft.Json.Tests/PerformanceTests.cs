@@ -849,7 +849,7 @@ If attributes are not mentioned, default values are used in each case.
 
             using (JsonTextReader reader = new JsonTextReader(new StringReader(json)))
             {
-                reader.ArrayPool = JsonArrayPool.Instance;
+                //reader.ArrayPool = JsonArrayPool.Instance;
 
                 var value = (T)serializer.Deserialize(reader, type);
                 return value;

@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Serialization
 
         public void Populate(JsonReader reader, object target)
         {
-            ValidationUtils.ArgumentNotNull(target, "target");
+            ValidationUtils.ArgumentNotNull(target, nameof(target));
 
             Type objectType = target.GetType();
 
@@ -207,7 +207,7 @@ namespace Newtonsoft.Json.Serialization
 
         private JToken CreateJToken(JsonReader reader, JsonContract contract)
         {
-            ValidationUtils.ArgumentNotNull(reader, "reader");
+            ValidationUtils.ArgumentNotNull(reader, nameof(reader));
 
             if (contract != null)
             {
@@ -234,7 +234,7 @@ namespace Newtonsoft.Json.Serialization
 
         private JToken CreateJObject(JsonReader reader)
         {
-            ValidationUtils.ArgumentNotNull(reader, "reader");
+            ValidationUtils.ArgumentNotNull(reader, nameof(reader));
 
             // this is needed because we've already read inside the object, looking for metadata properties
             using (JTokenWriter writer = new JTokenWriter())
@@ -1884,7 +1884,7 @@ namespace Newtonsoft.Json.Serialization
 
         private object CreateObjectUsingCreatorWithParameters(JsonReader reader, JsonObjectContract contract, JsonProperty containerProperty, ObjectConstructor<object> creator, string id)
         {
-            ValidationUtils.ArgumentNotNull(creator, "creator");
+            ValidationUtils.ArgumentNotNull(creator, nameof(creator));
 
             // only need to keep a track of properies presence if they are required or a value should be defaulted if missing
             bool trackPresence = (contract.HasRequiredOrDefaultValueProperties || HasFlag(Serializer._defaultValueHandling, DefaultValueHandling.Populate));

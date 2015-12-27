@@ -145,7 +145,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="dateTimeKindHandling">The <see cref="DateTimeKind" /> used when reading <see cref="DateTime"/> values from BSON.</param>
         public BsonReader(Stream stream, bool readRootValueAsArray, DateTimeKind dateTimeKindHandling)
         {
-            ValidationUtils.ArgumentNotNull(stream, "stream");
+            ValidationUtils.ArgumentNotNull(stream, nameof(stream));
             _reader = new BinaryReader(stream);
             _stack = new List<ContainerContext>();
             _readRootValueAsArray = readRootValueAsArray;
@@ -160,7 +160,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="dateTimeKindHandling">The <see cref="DateTimeKind" /> used when reading <see cref="DateTime"/> values from BSON.</param>
         public BsonReader(BinaryReader reader, bool readRootValueAsArray, DateTimeKind dateTimeKindHandling)
         {
-            ValidationUtils.ArgumentNotNull(reader, "reader");
+            ValidationUtils.ArgumentNotNull(reader, nameof(reader));
             _reader = reader;
             _stack = new List<ContainerContext>();
             _readRootValueAsArray = readRootValueAsArray;
@@ -586,7 +586,7 @@ namespace Newtonsoft.Json.Bson
             int totalBytesRead = 0;
             // used in case of left over multibyte characters in the buffer
             int offset = 0;
-            do
+            while (true)
             {
                 int count = offset;
                 byte b;
@@ -638,7 +638,7 @@ namespace Newtonsoft.Json.Bson
                         offset = 0;
                     }
                 }
-            } while (true);
+            }
         }
 
         private string ReadLengthString()

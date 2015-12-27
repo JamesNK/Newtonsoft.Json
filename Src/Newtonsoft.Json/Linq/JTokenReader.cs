@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="token">The token to read from.</param>
         public JTokenReader(JToken token)
         {
-            ValidationUtils.ArgumentNotNull(token, "token");
+            ValidationUtils.ArgumentNotNull(token, nameof(token));
 
             _root = token;
         }

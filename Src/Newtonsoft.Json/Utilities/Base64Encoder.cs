@@ -41,7 +41,7 @@ namespace Newtonsoft.Json.Utilities
 
         public Base64Encoder(TextWriter writer)
         {
-            ValidationUtils.ArgumentNotNull(writer, "writer");
+            ValidationUtils.ArgumentNotNull(writer, nameof(writer));
             _writer = writer;
         }
 

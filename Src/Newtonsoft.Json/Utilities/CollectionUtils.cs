@@ -83,7 +83,7 @@ namespace Newtonsoft.Json.Utilities
 #if (NET20 || NET35 || PORTABLE40)
         public static void AddRange<T>(this IList<T> initial, IEnumerable collection)
         {
-            ValidationUtils.ArgumentNotNull(initial, "initial");
+            ValidationUtils.ArgumentNotNull(initial, nameof(initial));
 
             // because earlier versions of .NET didn't support covariant generics
             initial.AddRange(collection.Cast<T>());
@@ -92,7 +92,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsDictionaryType(Type type)
         {
-            ValidationUtils.ArgumentNotNull(type, "type");
+            ValidationUtils.ArgumentNotNull(type, nameof(type));
 
             if (typeof(IDictionary).IsAssignableFrom(type))
             {

@@ -729,8 +729,8 @@ namespace Newtonsoft.Json
 
         internal virtual void PopulateInternal(JsonReader reader, object target)
         {
-            ValidationUtils.ArgumentNotNull(reader, "reader");
-            ValidationUtils.ArgumentNotNull(target, "target");
+            ValidationUtils.ArgumentNotNull(reader, nameof(reader));
+            ValidationUtils.ArgumentNotNull(target, nameof(target));
 
             // set serialization options onto reader
             CultureInfo previousCulture;
@@ -804,7 +804,7 @@ namespace Newtonsoft.Json
 
         internal virtual object DeserializeInternal(JsonReader reader, Type objectType)
         {
-            ValidationUtils.ArgumentNotNull(reader, "reader");
+            ValidationUtils.ArgumentNotNull(reader, nameof(reader));
 
             // set serialization options onto reader
             CultureInfo previousCulture;
@@ -996,7 +996,7 @@ namespace Newtonsoft.Json
 
         internal virtual void SerializeInternal(JsonWriter jsonWriter, object value, Type objectType)
         {
-            ValidationUtils.ArgumentNotNull(jsonWriter, "jsonWriter");
+            ValidationUtils.ArgumentNotNull(jsonWriter, nameof(jsonWriter));
 
             // set serialization options onto writer
             Formatting? previousFormatting = null;
@@ -1109,7 +1109,7 @@ namespace Newtonsoft.Json
         internal static JsonConverter GetMatchingConverter(IList<JsonConverter> converters, Type objectType)
         {
 #if DEBUG
-            ValidationUtils.ArgumentNotNull(objectType, "objectType");
+            ValidationUtils.ArgumentNotNull(objectType, nameof(objectType));
 #endif
 
             if (converters != null)

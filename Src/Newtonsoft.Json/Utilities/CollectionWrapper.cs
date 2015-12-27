@@ -50,7 +50,7 @@ namespace Newtonsoft.Json.Utilities
 
         public CollectionWrapper(IList list)
         {
-            ValidationUtils.ArgumentNotNull(list, "list");
+            ValidationUtils.ArgumentNotNull(list, nameof(list));
 
             if (list is ICollection<T>)
             {
@@ -64,7 +64,7 @@ namespace Newtonsoft.Json.Utilities
 
         public CollectionWrapper(ICollection<T> list)
         {
-            ValidationUtils.ArgumentNotNull(list, "list");
+            ValidationUtils.ArgumentNotNull(list, nameof(list));
 
             _genericCollection = list;
         }

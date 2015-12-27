@@ -69,7 +69,7 @@ namespace Newtonsoft.Json.Utilities
         {
             // leave this a private to force code to use an explicit overload
             // avoids stack memory being reserved for the object array
-            ValidationUtils.ArgumentNotNull(format, "format");
+            ValidationUtils.ArgumentNotNull(format, nameof(format));
 
             return string.Format(provider, format, args);
         }

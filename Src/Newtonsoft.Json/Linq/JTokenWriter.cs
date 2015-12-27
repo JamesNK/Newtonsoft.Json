@@ -74,7 +74,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="container">The container being written to.</param>
         public JTokenWriter(JContainer container)
         {
-            ValidationUtils.ArgumentNotNull(container, "container");
+            ValidationUtils.ArgumentNotNull(container, nameof(container));
 
             _token = container;
             _parent = container;

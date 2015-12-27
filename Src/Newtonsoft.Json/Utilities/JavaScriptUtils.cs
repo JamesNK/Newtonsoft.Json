@@ -303,11 +303,6 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters)
-        {
-            return ToEscapedJavaScriptString(value, delimiter, appendDelimiters, StringEscapeHandling.Default);
-        }
-
         public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters, StringEscapeHandling stringEscapeHandling)
         {
             bool[] charEscapeFlags = GetCharEscapeFlags(stringEscapeHandling, delimiter);

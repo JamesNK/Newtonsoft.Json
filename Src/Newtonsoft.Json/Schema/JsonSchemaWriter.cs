@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Schema
 
         public JsonSchemaWriter(JsonWriter writer, JsonSchemaResolver resolver)
         {
-            ValidationUtils.ArgumentNotNull(writer, "writer");
+            ValidationUtils.ArgumentNotNull(writer, nameof(writer));
             _writer = writer;
             _resolver = resolver;
         }
@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Schema
 
         public void WriteSchema(JsonSchema schema)
         {
-            ValidationUtils.ArgumentNotNull(schema, "schema");
+            ValidationUtils.ArgumentNotNull(schema, nameof(schema));
 
             if (!_resolver.LoadedSchemas.Contains(schema))
             {

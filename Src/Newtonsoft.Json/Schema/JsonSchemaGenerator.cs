@@ -82,8 +82,8 @@ namespace Newtonsoft.Json.Schema
 
             public TypeSchema(Type type, JsonSchema schema)
             {
-                ValidationUtils.ArgumentNotNull(type, "type");
-                ValidationUtils.ArgumentNotNull(schema, "schema");
+                ValidationUtils.ArgumentNotNull(type, nameof(type));
+                ValidationUtils.ArgumentNotNull(schema, nameof(schema));
 
                 Type = type;
                 Schema = schema;
@@ -164,8 +164,8 @@ namespace Newtonsoft.Json.Schema
         /// <returns>A <see cref="JsonSchema"/> generated from the specified type.</returns>
         public JsonSchema Generate(Type type, JsonSchemaResolver resolver, bool rootSchemaNullable)
         {
-            ValidationUtils.ArgumentNotNull(type, "type");
-            ValidationUtils.ArgumentNotNull(resolver, "resolver");
+            ValidationUtils.ArgumentNotNull(type, nameof(type));
+            ValidationUtils.ArgumentNotNull(resolver, nameof(resolver));
 
             _resolver = resolver;
 
@@ -231,7 +231,7 @@ namespace Newtonsoft.Json.Schema
 
         private JsonSchema GenerateInternal(Type type, Required valueRequired, bool required)
         {
-            ValidationUtils.ArgumentNotNull(type, "type");
+            ValidationUtils.ArgumentNotNull(type, nameof(type));
 
             string resolvedId = GetTypeId(type, false);
             string explicitId = GetTypeId(type, true);

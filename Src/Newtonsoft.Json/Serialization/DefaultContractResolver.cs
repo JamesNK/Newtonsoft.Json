@@ -582,7 +582,7 @@ namespace Newtonsoft.Json.Serialization
 
             public DictionaryEnumerator(IEnumerable<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> e)
             {
-                ValidationUtils.ArgumentNotNull(e, "e");
+                ValidationUtils.ArgumentNotNull(e, nameof(e));
                 _e = e.GetEnumerator();
             }
 

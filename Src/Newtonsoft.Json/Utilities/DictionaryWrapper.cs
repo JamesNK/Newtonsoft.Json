@@ -53,14 +53,14 @@ namespace Newtonsoft.Json.Utilities
 
         public DictionaryWrapper(IDictionary dictionary)
         {
-            ValidationUtils.ArgumentNotNull(dictionary, "dictionary");
+            ValidationUtils.ArgumentNotNull(dictionary, nameof(dictionary));
 
             _dictionary = dictionary;
         }
 
         public DictionaryWrapper(IDictionary<TKey, TValue> dictionary)
         {
-            ValidationUtils.ArgumentNotNull(dictionary, "dictionary");
+            ValidationUtils.ArgumentNotNull(dictionary, nameof(dictionary));
 
             _genericDictionary = dictionary;
         }
@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Utilities
 #if !(NET40 || NET35 || NET20 || PORTABLE40)
         public DictionaryWrapper(IReadOnlyDictionary<TKey, TValue> dictionary)
         {
-            ValidationUtils.ArgumentNotNull(dictionary, "dictionary");
+            ValidationUtils.ArgumentNotNull(dictionary, nameof(dictionary));
 
             _readOnlyDictionary = dictionary;
         }
@@ -478,7 +478,7 @@ namespace Newtonsoft.Json.Utilities
 
             public DictionaryEnumerator(IEnumerator<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> e)
             {
-                ValidationUtils.ArgumentNotNull(e, "e");
+                ValidationUtils.ArgumentNotNull(e, nameof(e));
                 _e = e;
             }
 

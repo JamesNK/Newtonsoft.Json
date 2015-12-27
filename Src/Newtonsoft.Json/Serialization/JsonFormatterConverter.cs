@@ -40,8 +40,8 @@ namespace Newtonsoft.Json.Serialization
 
         public JsonFormatterConverter(JsonSerializerInternalReader reader, JsonISerializableContract contract, JsonProperty member)
         {
-            ValidationUtils.ArgumentNotNull(reader, "serializer");
-            ValidationUtils.ArgumentNotNull(contract, "contract");
+            ValidationUtils.ArgumentNotNull(reader, nameof(reader));
+            ValidationUtils.ArgumentNotNull(contract, nameof(contract));
 
             _reader = reader;
             _contract = contract;
@@ -50,7 +50,7 @@ namespace Newtonsoft.Json.Serialization
 
         private T GetTokenValue<T>(object value)
         {
-            ValidationUtils.ArgumentNotNull(value, "value");
+            ValidationUtils.ArgumentNotNull(value, nameof(value));
 
             JValue v = (JValue)value;
             return (T)System.Convert.ChangeType(v.Value, typeof(T), CultureInfo.InvariantCulture);
@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Serialization
 
         public object Convert(object value, Type type)
         {
-            ValidationUtils.ArgumentNotNull(value, "value");
+            ValidationUtils.ArgumentNotNull(value, nameof(value));
 
             JToken token = value as JToken;
             if (token == null)
@@ -71,7 +71,7 @@ namespace Newtonsoft.Json.Serialization
 
         public object Convert(object value, TypeCode typeCode)
         {
-            ValidationUtils.ArgumentNotNull(value, "value");
+            ValidationUtils.ArgumentNotNull(value, nameof(value));
 
             if (value is JValue)
             {

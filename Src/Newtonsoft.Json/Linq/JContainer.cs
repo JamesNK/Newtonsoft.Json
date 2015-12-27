@@ -107,7 +107,7 @@ namespace Newtonsoft.Json.Linq
         internal JContainer(JContainer other)
             : this()
         {
-            ValidationUtils.ArgumentNotNull(other, "c");
+            ValidationUtils.ArgumentNotNull(other, nameof(other));
 
             int i = 0;
             foreach (JToken child in other)
@@ -644,7 +644,7 @@ namespace Newtonsoft.Json.Linq
 
         internal virtual void ValidateToken(JToken o, JToken existing)
         {
-            ValidationUtils.ArgumentNotNull(o, "o");
+            ValidationUtils.ArgumentNotNull(o, nameof(o));
 
             if (o.Type == JTokenType.Property)
             {
@@ -775,7 +775,7 @@ namespace Newtonsoft.Json.Linq
 
         internal void ReadContentFrom(JsonReader r, JsonLoadSettings settings)
         {
-            ValidationUtils.ArgumentNotNull(r, "r");
+            ValidationUtils.ArgumentNotNull(r, nameof(r));
             IJsonLineInfo lineInfo = r as IJsonLineInfo;
 
             JContainer parent = this;

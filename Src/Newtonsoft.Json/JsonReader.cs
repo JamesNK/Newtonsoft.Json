@@ -414,7 +414,9 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Nullable{Int32}"/>. This method will return <c>null</c> at the end of an array.</returns>
         public virtual int? ReadAsInt32()
         {
-            switch (GetContentToken())
+            JsonToken t = GetContentToken();
+
+            switch (t)
             {
                 case JsonToken.None:
                 case JsonToken.Null:
@@ -433,7 +435,7 @@ namespace Newtonsoft.Json
                     return ReadInt32String(s);
             }
 
-            throw JsonReaderException.Create(this, "Error reading integer. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+            throw JsonReaderException.Create(this, "Error reading integer. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
         }
 
         internal int? ReadInt32String(string s)
@@ -632,7 +634,7 @@ namespace Newtonsoft.Json
             }
 
             double d;
-            if (double.TryParse(s, NumberStyles.Float, Culture, out d))
+            if (double.TryParse(s, NumberStyles.Float | NumberStyles.AllowThousands, Culture, out d))
             {
                 SetToken(JsonToken.Float, d, false);
                 return d;

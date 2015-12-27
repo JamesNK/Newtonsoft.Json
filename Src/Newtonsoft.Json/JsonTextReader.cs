@@ -528,7 +528,7 @@ namespace Newtonsoft.Json
                                 // eat
                                 break;
                         }
-                    }
+                    };
                 case State.Finished:
                     ReadFinished();
                     SetToken(JsonToken.None);

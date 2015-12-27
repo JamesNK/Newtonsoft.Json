@@ -2786,6 +2786,13 @@ new Date()"));
         }
 
         [Test]
+        public void ReadAsDouble_AllowThousands()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("'1,112.34'"));
+            Assert.AreEqual(1112.34d, reader.ReadAsDouble());
+        }
+
+        [Test]
         public void ReadAsDouble_Failure()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader("['Trump',1]"));

@@ -126,7 +126,15 @@ namespace Newtonsoft.Json.Linq
         /// <param name="name">The constructor name.</param>
         public JConstructor(string name)
         {
-            ValidationUtils.ArgumentNotNullOrEmpty(name, "name");
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (name.Length == 0)
+            {
+                throw new ArgumentException("Constructor name cannot be empty.", nameof(name));
+            }
 
             _name = name;
         }
@@ -167,7 +175,7 @@ namespace Newtonsoft.Json.Linq
         {
             get
             {
-                ValidationUtils.ArgumentNotNull(key, "o");
+                ValidationUtils.ArgumentNotNull(key, nameof(key));
 
                 if (!(key is int))
                 {
@@ -178,7 +186,7 @@ namespace Newtonsoft.Json.Linq
             }
             set
             {
-                ValidationUtils.ArgumentNotNull(key, "o");
+                ValidationUtils.ArgumentNotNull(key, nameof(key));
 
                 if (!(key is int))
                 {

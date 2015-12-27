@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Utilities
 
         public override ObjectConstructor<object> CreateParameterizedConstructor(MethodBase method)
         {
-            ValidationUtils.ArgumentNotNull(method, "method");
+            ValidationUtils.ArgumentNotNull(method, nameof(method));
 
             Type type = typeof(object);
 
@@ -61,7 +61,7 @@ namespace Newtonsoft.Json.Utilities
 
         public override MethodCall<T, object> CreateMethodCall<T>(MethodBase method)
         {
-            ValidationUtils.ArgumentNotNull(method, "method");
+            ValidationUtils.ArgumentNotNull(method, nameof(method));
 
             Type type = typeof(object);
 
@@ -222,7 +222,7 @@ namespace Newtonsoft.Json.Utilities
 
         public override Func<T, object> CreateGet<T>(PropertyInfo propertyInfo)
         {
-            ValidationUtils.ArgumentNotNull(propertyInfo, "propertyInfo");
+            ValidationUtils.ArgumentNotNull(propertyInfo, nameof(propertyInfo));
 
             Type instanceType = typeof(T);
             Type resultType = typeof(object);
@@ -253,7 +253,7 @@ namespace Newtonsoft.Json.Utilities
 
         public override Func<T, object> CreateGet<T>(FieldInfo fieldInfo)
         {
-            ValidationUtils.ArgumentNotNull(fieldInfo, "fieldInfo");
+            ValidationUtils.ArgumentNotNull(fieldInfo, nameof(fieldInfo));
 
             ParameterExpression sourceParameter = Expression.Parameter(typeof(T), "source");
 
@@ -277,7 +277,7 @@ namespace Newtonsoft.Json.Utilities
 
         public override Action<T, object> CreateSet<T>(FieldInfo fieldInfo)
         {
-            ValidationUtils.ArgumentNotNull(fieldInfo, "fieldInfo");
+            ValidationUtils.ArgumentNotNull(fieldInfo, nameof(fieldInfo));
 
             // use reflection for structs
             // expression doesn't correctly set value
@@ -313,7 +313,7 @@ namespace Newtonsoft.Json.Utilities
 
         public override Action<T, object> CreateSet<T>(PropertyInfo propertyInfo)
         {
-            ValidationUtils.ArgumentNotNull(propertyInfo, "propertyInfo");
+            ValidationUtils.ArgumentNotNull(propertyInfo, nameof(propertyInfo));
 
             // use reflection for structs
             // expression doesn't correctly set value
