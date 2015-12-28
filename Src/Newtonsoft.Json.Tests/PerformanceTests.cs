@@ -856,21 +856,6 @@ If attributes are not mentioned, default values are used in each case.
             }
         }
 
-        public class JsonArrayPool : IArrayPool<char>
-        {
-            public static readonly JsonArrayPool Instance = new JsonArrayPool();
-
-            public char[] Rent(int minimumLength)
-            {
-                return ArrayPool<char>.Shared.Rent(minimumLength);
-            }
-
-            public void Return(char[] array)
-            {
-                ArrayPool<char>.Shared.Return(array);
-            }
-        }
-
         public TestClass DeserializeJsonNetManual(string json)
         {
             TestClass c = new TestClass();

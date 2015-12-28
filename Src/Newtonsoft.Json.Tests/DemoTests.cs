@@ -24,7 +24,11 @@
 #endregion
 
 using System;
+#if !(NET20 || NET35 || NET40 || NETFX_CORE || PORTABLE || PORTABLE40 || DNXCORE50)
+using System.Buffers;
+#endif
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -588,5 +592,40 @@ namespace Newtonsoft.Json.Tests
   ]
 }", json);
         }
+
+#if !(NET20 || NET35 || NET40 || NETFX_CORE || PORTABLE || PORTABLE40 || DNXCORE50)
+        [Test]
+        public void ArrayPooling()
+        {
+            IList<int> value;
+
+            JsonSerializer serializer = new JsonSerializer();
+            using (JsonTextReader reader = new JsonTextReader(new StringReader(@"[1,2,3,4]")))
+            {
+                reader.ArrayPool = JsonArrayPool.Instance;
+
+                value = serializer.Deserialize<IList<int>>(reader);
+            }
+
+            Assert.AreEqual(4, value.Count);
+        }
+
+        public class JsonArrayPool : IArrayPool<char>
+        {
+            public static readonly JsonArrayPool Instance = new JsonArrayPool();
+
+            public char[] Rent(int minimumLength)
+            {
+                // use System.Buffers shared pool
+                return ArrayPool<char>.Shared.Rent(minimumLength);
+            }
+
+            public void Return(char[] array)
+            {
+                // use System.Buffers shared pool
+                ArrayPool<char>.Shared.Return(array);
+            }
+        }
+#endif
     }
 }
