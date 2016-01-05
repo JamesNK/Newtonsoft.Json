@@ -216,6 +216,114 @@ namespace Newtonsoft.Json.Tests.Serialization
 #endif
 
         [Test]
+        public void DeserializeBoolean_Null()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IList<bool>>(@"[null]"),
+                "Error converting value {null} to type 'System.Boolean'. Path '[0]', line 1, position 5.");
+        }
+
+        [Test]
+        public void DeserializeBoolean_DateTime()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JsonConvert.DeserializeObject<IList<bool>>(@"['2000-12-20T10:55:55Z']"),
+                "Could not convert string to boolean: 2000-12-20T10:55:55Z. Path '[0]', line 1, position 23.");
+        }
+
+        [Test]
+        public void DeserializeBoolean_BadString()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JsonConvert.DeserializeObject<IList<bool>>(@"['pie']"),
+                @"Could not convert string to boolean: pie. Path '[0]', line 1, position 6.");
+        }
+
+        [Test]
+        public void DeserializeBoolean_EmptyString()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<IList<bool>>(@"['']"),
+                @"Error converting value {null} to type 'System.Boolean'. Path '[0]', line 1, position 3.");
+        }
+
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+        [Test]
+        public void DeserializeBooleans()
+        {
+            IList<bool> l = JsonConvert.DeserializeObject<IList<bool>>(@"[
+  1,
+  0,
+  1.1,
+  0.0,
+  0.000000000001,
+  9999999999,
+  -9999999999,
+  9999999999999999999999999999999999999999999999999999999999999999999999,
+  -9999999999999999999999999999999999999999999999999999999999999999999999,
+  'true',
+  'TRUE',
+  'false',
+  'FALSE'
+]");
+
+            int i = 0;
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(false, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(false, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(false, l[i++]);
+            Assert.AreEqual(false, l[i++]);
+        }
+
+        [Test]
+        public void DeserializeNullableBooleans()
+        {
+            IList<bool?> l = JsonConvert.DeserializeObject<IList<bool?>>(@"[
+  1,
+  0,
+  1.1,
+  0.0,
+  0.000000000001,
+  9999999999,
+  -9999999999,
+  9999999999999999999999999999999999999999999999999999999999999999999999,
+  -9999999999999999999999999999999999999999999999999999999999999999999999,
+  'true',
+  'TRUE',
+  'false',
+  'FALSE',
+  '',
+  null
+]");
+
+            int i = 0;
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(false, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(false, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(true, l[i++]);
+            Assert.AreEqual(false, l[i++]);
+            Assert.AreEqual(false, l[i++]);
+            Assert.AreEqual(null, l[i++]);
+            Assert.AreEqual(null, l[i++]);
+        }
+#endif
+
+        [Test]
         public void CaseInsensitiveRequiredPropertyConstructorCreation()
         {
             FooRequired foo1 = new FooRequired(new[] { "A", "B", "C" });

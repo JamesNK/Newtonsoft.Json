@@ -442,6 +442,18 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{Boolean}"/>.
+        /// </summary>
+        /// <returns>A <see cref="Nullable{Boolean}"/>.</returns>
+        public override bool? ReadAsBoolean()
+        {
+            bool? b = _reader.ReadAsBoolean();
+
+            ValidateCurrentToken();
+            return b;
+        }
+
+        /// <summary>
         /// Reads the next JSON token from the stream as a <see cref="String"/>.
         /// </summary>
         /// <returns>A <see cref="String"/>. This method will return <c>null</c> at the end of an array.</returns>

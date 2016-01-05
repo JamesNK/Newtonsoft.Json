@@ -67,8 +67,12 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public class PerformanceTests : TestFixtureBase
     {
+#if DEBUG
+        public int Iterations = 1;
+#else
         public int Iterations = 100;
         //public int Iterations = 10000;
+#endif
 
         #region Data
         private const string BsonHex =

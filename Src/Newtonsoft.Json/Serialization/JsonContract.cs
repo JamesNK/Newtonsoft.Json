@@ -333,6 +333,10 @@ namespace Newtonsoft.Json.Serialization
             {
                 InternalReadType = ReadType.ReadAsDecimal;
             }
+            else if (NonNullableUnderlyingType == typeof(bool))
+            {
+                InternalReadType = ReadType.ReadAsBoolean;
+            }
             else if (NonNullableUnderlyingType == typeof(string))
             {
                 InternalReadType = ReadType.ReadAsString;

@@ -2216,6 +2216,9 @@ namespace Newtonsoft.Json.Serialization
                 case ReadType.ReadAsBytes:
                     reader.ReadAsBytes();
                     break;
+                case ReadType.ReadAsBoolean:
+                    reader.ReadAsBoolean();
+                    break;
                 case ReadType.ReadAsString:
                     reader.ReadAsString();
                     break;

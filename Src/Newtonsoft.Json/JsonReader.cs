@@ -27,13 +27,15 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+using System.Numerics;
+#endif
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
-
 #endif
 
 namespace Newtonsoft.Json
@@ -643,6 +645,67 @@ namespace Newtonsoft.Json
             {
                 SetToken(JsonToken.String, s, false);
                 throw JsonReaderException.Create(this, "Could not convert string to double: {0}.".FormatWith(CultureInfo.InvariantCulture, s));
+            }
+        }
+
+        /// <summary>
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{Boolean}"/>.
+        /// </summary>
+        /// <returns>A <see cref="Nullable{Boolean}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        public virtual bool? ReadAsBoolean()
+        {
+            JsonToken t = GetContentToken();
+
+            switch (t)
+            {
+                case JsonToken.None:
+                case JsonToken.Null:
+                case JsonToken.EndArray:
+                    return null;
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                    bool b;
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+                    if (Value is BigInteger)
+                    {
+                        b = (BigInteger)Value != 0;
+                    }
+                    else
+#endif
+                    {
+                        b = Convert.ToBoolean(Value, CultureInfo.InvariantCulture);
+                    }
+
+                    SetToken(JsonToken.Boolean, b, false);
+
+                    return b;
+                case JsonToken.String:
+                    return ReadBooleanString((string)Value);
+                case JsonToken.Boolean:
+                    return (bool)Value;
+            }
+
+            throw JsonReaderException.Create(this, "Error reading boolean. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
+        }
+
+        internal bool? ReadBooleanString(string s)
+        {
+            if (string.IsNullOrEmpty(s))
+            {
+                SetToken(JsonToken.Null, null, false);
+                return null;
+            }
+
+            bool b;
+            if (bool.TryParse(s, out b))
+            {
+                SetToken(JsonToken.Boolean, b, false);
+                return b;
+            }
+            else
+            {
+                SetToken(JsonToken.String, s, false);
+                throw JsonReaderException.Create(this, "Could not convert string to boolean: {0}.".FormatWith(CultureInfo.InvariantCulture, s));
             }
         }
 

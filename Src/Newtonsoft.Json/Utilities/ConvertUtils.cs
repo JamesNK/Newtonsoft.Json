@@ -376,6 +376,10 @@ namespace Newtonsoft.Json.Utilities
             {
                 return (ulong)i;
             }
+            if (targetType == typeof(bool))
+            {
+                return i != 0;
+            }
 
             try
             {

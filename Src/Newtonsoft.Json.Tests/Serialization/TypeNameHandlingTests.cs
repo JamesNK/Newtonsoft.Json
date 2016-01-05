@@ -196,7 +196,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 var reader = new JsonTextReader(new StringReader(sb.ToString()));
                 var ser = new JsonSerializer();
                 ser.MetadataPropertyHandling = MetadataPropertyHandling.Default;
-                ser.Deserialize<bool>(reader);
+                ser.Deserialize<float>(reader);
             }, "Unexpected token when deserializing primitive value: StartObject. Path '$value', line 1, position 11.");
         }
 

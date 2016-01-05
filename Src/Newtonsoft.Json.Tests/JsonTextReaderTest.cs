@@ -2808,6 +2808,55 @@ new Date()"));
         }
 
         [Test]
+        public void ReadAsString_Boolean()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("{\"Test1\":false}"));
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+
+            string s = reader.ReadAsString();
+            Assert.AreEqual("false", s);
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsFalse(reader.Read());
+        }
+
+        [Test]
+        public void Read_Boolean_Failure()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("{\"Test1\":false1}"));
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => { reader.Read(); },
+                "Error parsing boolean value. Path 'Test1', line 1, position 14.");
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+            Assert.IsFalse(reader.Read());
+        }
+
+        [Test]
+        public void ReadAsString_Boolean_Failure()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("{\"Test1\":false1}"));
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => { reader.ReadAsString(); },
+                "Unexpected character encountered while parsing value: 1. Path 'Test1', line 1, position 14.");
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+            Assert.IsFalse(reader.Read());
+        }
+
+        [Test]
         public void ParseConstructorWithBadCharacter()
         {
             string json = "new Date,()";
@@ -3401,6 +3450,86 @@ null//comment
             reader.Read();
             Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
         }
+
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+        [Test]
+        public void ReadAsBoolean()
+        {
+            string json = @"[
+  1,
+  0,
+  1.1,
+  0.0,
+  0.000000000001,
+  9999999999,
+  -9999999999,
+  9999999999999999999999999999999999999999999999999999999999999999999999,
+  -9999999999999999999999999999999999999999999999999999999999999999999999,
+  'true',
+  'TRUE',
+  'false',
+  'FALSE',
+  '',
+  null
+]";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("", reader.Path);
+
+            Assert.AreEqual(true, reader.ReadAsBoolean());
+            Assert.AreEqual("[0]", reader.Path);
+
+            Assert.AreEqual(false, reader.ReadAsBoolean());
+            Assert.AreEqual("[1]", reader.Path);
+
+            Assert.AreEqual(true, reader.ReadAsBoolean());
+            Assert.AreEqual("[2]", reader.Path);
+
+            Assert.AreEqual(false, reader.ReadAsBoolean());
+            Assert.AreEqual("[3]", reader.Path);
+
+            Assert.AreEqual(true, reader.ReadAsBoolean());
+            Assert.AreEqual("[4]", reader.Path);
+
+            Assert.AreEqual(true, reader.ReadAsBoolean());
+            Assert.AreEqual("[5]", reader.Path);
+
+            Assert.AreEqual(true, reader.ReadAsBoolean());
+            Assert.AreEqual("[6]", reader.Path);
+
+            Assert.AreEqual(true, reader.ReadAsBoolean());
+            Assert.AreEqual("[7]", reader.Path);
+
+            Assert.AreEqual(true, reader.ReadAsBoolean());
+            Assert.AreEqual("[8]", reader.Path);
+
+            Assert.AreEqual(true, reader.ReadAsBoolean());
+            Assert.AreEqual("[9]", reader.Path);
+
+            Assert.AreEqual(true, reader.ReadAsBoolean());
+            Assert.AreEqual("[10]", reader.Path);
+
+            Assert.AreEqual(false, reader.ReadAsBoolean());
+            Assert.AreEqual("[11]", reader.Path);
+
+            Assert.AreEqual(false, reader.ReadAsBoolean());
+            Assert.AreEqual("[12]", reader.Path);
+
+            Assert.AreEqual(null, reader.ReadAsBoolean());
+            Assert.AreEqual("[13]", reader.Path);
+
+            Assert.AreEqual(null, reader.ReadAsBoolean());
+            Assert.AreEqual("[14]", reader.Path);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("", reader.Path);
+
+            Assert.IsFalse(reader.Read());
+            Assert.AreEqual("", reader.Path);
+        }
+#endif
 
         [Test]
         public void ReadAsBytes()
