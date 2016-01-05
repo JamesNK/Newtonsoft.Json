@@ -9200,6 +9200,41 @@ Path '', line 1, position 1.");
 #endif
 
         [Test]
+        public void SerializeObjectWithEvent()
+        {
+            MyObservableObject o = new MyObservableObject
+            {
+                TestString = "Test string"
+            };
+
+            string json = JsonConvert.SerializeObject(o, Formatting.Indented);
+            StringAssert.AreEqual(@"{
+  ""PropertyChanged"": null,
+  ""TestString"": ""Test string""
+}", json);
+
+            MyObservableObject o2 = JsonConvert.DeserializeObject<MyObservableObject>(json);
+            Assert.AreEqual("Test string", o2.TestString);
+        }
+
+        public class MyObservableObject : ObservableObject
+        {
+            public new string PropertyChanged;
+
+            public string TestString { get; set; }
+        }
+
+        public class ObservableObject : INotifyPropertyChanged
+        {
+            public event PropertyChangedEventHandler PropertyChanged;
+
+            protected PropertyChangedEventHandler PropertyChangedHandler
+            {
+                get { return PropertyChanged; }
+            }
+        }
+
+        [Test]
         public void ParameterizedConstructorWithBasePrivateProperties()
         {
             var original = new DerivedConstructorType("Base", "Derived");
