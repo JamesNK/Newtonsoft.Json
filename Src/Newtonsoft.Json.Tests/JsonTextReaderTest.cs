@@ -2786,6 +2786,13 @@ new Date()"));
         }
 
         [Test]
+        public void ReadAsDouble_Hex()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("0XCAFEBABE"));
+            Assert.AreEqual(3405691582d, reader.ReadAsDouble());
+        }
+
+        [Test]
         public void ReadAsDouble_AllowThousands()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader("'1,112.34'"));

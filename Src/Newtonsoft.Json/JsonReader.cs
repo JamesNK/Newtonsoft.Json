@@ -523,7 +523,13 @@ namespace Newtonsoft.Json
                 ReadIntoWrappedTypeObject();
 
                 byte[] data = ReadAsBytes();
-                Read();
+                ReaderReadAndAssert();
+
+                if (TokenType != JsonToken.EndObject)
+                {
+                    throw JsonReaderException.Create(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+                }
+
                 SetToken(JsonToken.Bytes, data, false);
                 return data;
             }

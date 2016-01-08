@@ -6969,6 +6969,70 @@ Path '', line 1, position 1.");
             Assert.AreEqual(d1[0], d2[0]);
         }
 
+        internal class HasByteArray
+        {
+            public byte[] EncryptedPassword { get; set; }
+        }
+
+        [Test]
+        public void DeserializeByteArrayWithTypeName()
+        {
+            string json = @"{
+  ""$type"": ""Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+HasByteArray, Newtonsoft.Json.Tests"",
+  ""EncryptedPassword"": {
+    ""$type"": ""System.Byte[], mscorlib"",
+    ""$value"": ""cGFzc3dvcmQ=""
+  }
+}";
+            HasByteArray value = JsonConvert.DeserializeObject<HasByteArray>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
+
+            CollectionAssert.AreEquivalent(Convert.FromBase64String("cGFzc3dvcmQ="), value.EncryptedPassword);
+        }
+
+        [Test]
+        public void DeserializeByteArrayWithTypeName_BadAdditionalContent()
+        {
+            string json = @"{
+  ""$type"": ""Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+HasByteArray, Newtonsoft.Json.Tests"",
+  ""EncryptedPassword"": {
+    ""$type"": ""System.Byte[], mscorlib"",
+    ""$value"": ""cGFzc3dvcmQ="",
+    ""$value"": ""cGFzc3dvcmQ=""
+  }
+}";
+
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                JsonConvert.DeserializeObject<HasByteArray>(json, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Objects
+                });
+            }, "Error reading bytes. Unexpected token: PropertyName. Path 'EncryptedPassword.$value', line 6, position 13.");
+        }
+
+        [Test]
+        public void DeserializeByteArrayWithTypeName_ExtraProperty()
+        {
+            string json = @"{
+  ""$type"": ""Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+HasByteArray, Newtonsoft.Json.Tests"",
+  ""EncryptedPassword"": {
+    ""$type"": ""System.Byte[], mscorlib"",
+    ""$value"": ""cGFzc3dvcmQ=""
+  },
+  ""Pie"": null
+}";
+            HasByteArray value = JsonConvert.DeserializeObject<HasByteArray>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
+
+            Assert.IsNotNull(value.EncryptedPassword);
+            CollectionAssert.AreEquivalent(Convert.FromBase64String("cGFzc3dvcmQ="), value.EncryptedPassword);
+        }
+
         [Test]
         public void SerializeInheritanceHierarchyWithDuplicateProperty()
         {

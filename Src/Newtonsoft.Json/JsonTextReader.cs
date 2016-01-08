@@ -449,6 +449,7 @@ namespace Newtonsoft.Json
         public override byte[] ReadAsBytes()
         {
             EnsureBuffer();
+            bool isWrappedArray = false;
 
             switch (_currentState)
             {
@@ -475,11 +476,22 @@ namespace Newtonsoft.Json
                             case '"':
                             case '\'':
                                 ParseString(currentChar, ReadType.ReadAsBytes);
-                                return (byte[])Value;
+                                byte[] data = (byte[])Value;
+                                if (isWrappedArray)
+                                {
+                                    ReaderReadAndAssert();
+                                    if (TokenType != JsonToken.EndObject)
+                                    {
+                                        throw JsonReaderException.Create(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+                                    }
+                                    SetToken(JsonToken.Bytes, data, false);
+                                }
+                                return data;
                             case '{':
                                 _charPos++;
                                 SetToken(JsonToken.StartObject);
                                 ReadIntoWrappedTypeObject();
+                                isWrappedArray = true;
                                 break;
                             case '[':
                                 _charPos++;
