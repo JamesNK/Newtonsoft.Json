@@ -186,7 +186,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public void NestedValueObjects()
         {
             StringBuilder sb = new StringBuilder();
-            for (int i = 0; i < 10000; i++)
+            for (int i = 0; i < 3; i++)
             {
                 sb.Append(@"{""$value"":");
             }
@@ -196,7 +196,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 var reader = new JsonTextReader(new StringReader(sb.ToString()));
                 var ser = new JsonSerializer();
                 ser.MetadataPropertyHandling = MetadataPropertyHandling.Default;
-                ser.Deserialize<float>(reader);
+                ser.Deserialize<sbyte>(reader);
             }, "Unexpected token when deserializing primitive value: StartObject. Path '$value', line 1, position 11.");
         }
 

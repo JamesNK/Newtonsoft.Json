@@ -874,8 +874,13 @@ namespace Newtonsoft.Json
         {
             if (!Read())
             {
-                throw JsonReaderException.Create(this, "Unexpected end when reading JSON.");
+                throw CreateUnexpectedEndException();
             }
+        }
+
+        internal JsonReaderException CreateUnexpectedEndException()
+        {
+            return JsonReaderException.Create(this, "Unexpected end when reading JSON.");
         }
 
         internal void ReadIntoWrappedTypeObject()

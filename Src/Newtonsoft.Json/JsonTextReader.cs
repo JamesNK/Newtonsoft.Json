@@ -740,6 +740,7 @@ namespace Newtonsoft.Json
                             case 'f':
                                 bool isTrue = currentChar == 't';
                                 string expected = isTrue ? JsonConvert.True : JsonConvert.False;
+
                                 if (!MatchValueWithTrailingSeparator(expected))
                                 {
                                     throw CreateUnexpectedCharacterException(_chars[_charPos]);
@@ -951,7 +952,8 @@ namespace Newtonsoft.Json
                 throw CreateUnexpectedCharacterException(_chars[_charPos - 1]);
             }
 
-            throw JsonReaderException.Create(this, "Unexpected end when reading JSON.");
+            _charPos = _charsUsed;
+            throw CreateUnexpectedEndException();
         }
 
         private void ReadFinished()
@@ -1550,7 +1552,7 @@ namespace Newtonsoft.Json
                         }
                         else
                         {
-                            throw JsonReaderException.Create(this, "Unexpected end when reading JSON.");
+                            CreateUnexpectedEndException();
                         }
                         return true;
                     case 'N':
@@ -2118,13 +2120,15 @@ namespace Newtonsoft.Json
         {
             if (!EnsureChars(value.Length - 1, true))
             {
-                return false;
+                _charPos = _charsUsed;
+                throw CreateUnexpectedEndException();
             }
 
             for (int i = 0; i < value.Length; i++)
             {
                 if (_chars[_charPos + i] != value[i])
                 {
+                    _charPos += i;
                     return false;
                 }
             }
