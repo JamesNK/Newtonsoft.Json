@@ -449,7 +449,7 @@ namespace Newtonsoft.Json
         public override byte[] ReadAsBytes()
         {
             EnsureBuffer();
-            bool isWrappedArray = false;
+            bool isWrapped = false;
 
             switch (_currentState)
             {
@@ -477,7 +477,7 @@ namespace Newtonsoft.Json
                             case '\'':
                                 ParseString(currentChar, ReadType.ReadAsBytes);
                                 byte[] data = (byte[])Value;
-                                if (isWrappedArray)
+                                if (isWrapped)
                                 {
                                     ReaderReadAndAssert();
                                     if (TokenType != JsonToken.EndObject)
@@ -491,7 +491,7 @@ namespace Newtonsoft.Json
                                 _charPos++;
                                 SetToken(JsonToken.StartObject);
                                 ReadIntoWrappedTypeObject();
-                                isWrappedArray = true;
+                                isWrapped = true;
                                 break;
                             case '[':
                                 _charPos++;
