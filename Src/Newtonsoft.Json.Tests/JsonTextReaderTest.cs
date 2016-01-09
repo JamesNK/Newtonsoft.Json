@@ -1064,6 +1064,27 @@ third line", jsonTextReader.Value);
         }
 
         [Test]
+        public void UnexpectedEndAfterReadingN()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("n"));
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Unexpected end when reading JSON. Path '', line 1, position 1.");
+        }
+
+        [Test]
+        public void UnexpectedEndAfterReadingNu()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("nu"));
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Unexpected end when reading JSON. Path '', line 1, position 2.");
+        }
+
+        [Test]
+        public void UnexpectedEndAfterReadingNe()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("ne"));
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Unexpected end when reading JSON. Path '', line 1, position 2.");
+        }
+
+        [Test]
         public void ReadInt32Overflow()
         {
             long i = int.MaxValue;

@@ -1564,7 +1564,8 @@ namespace Newtonsoft.Json
                         }
                         else
                         {
-                            CreateUnexpectedEndException();
+                            _charPos++;
+                            throw CreateUnexpectedEndException();
                         }
                         return true;
                     case 'N':
