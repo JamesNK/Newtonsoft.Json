@@ -39,6 +39,9 @@ using NUnit.Framework;
 #endif
 using Newtonsoft.Json;
 using System.IO;
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+using System.Numerics;
+#endif
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -743,6 +746,21 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void ReadAsBoolean_InvalidToken()
+        {
+            JArray a = new JArray
+            {
+                1, 2
+            };
+
+            JTokenReader reader = new JTokenReader(a);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => { reader.ReadAsBoolean(); },
+                "Error reading boolean. Unexpected token: StartArray. Path ''.");
+        }
+
+        [Test]
         public void ReadAsDateTime_InvalidToken()
         {
             JArray a = new JArray
@@ -842,6 +860,48 @@ namespace Newtonsoft.Json.Tests.Linq
             JTokenReader reader = new JTokenReader(n);
 
             Assert.AreEqual(1d, reader.ReadAsDouble());
+        }
+
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+        [Test]
+        public void ReadAsBoolean_BigInteger_Success()
+        {
+            JValue s = new JValue(BigInteger.Parse("99999999999999999999999999999999999999999999999999999999999999999999999999"));
+
+            JTokenReader reader = new JTokenReader(s);
+
+            Assert.AreEqual(true, reader.ReadAsBoolean());
+        }
+#endif
+
+        [Test]
+        public void ReadAsBoolean_String_Success()
+        {
+            JValue s = JValue.CreateString("true");
+
+            JTokenReader reader = new JTokenReader(s);
+
+            Assert.AreEqual(true, reader.ReadAsBoolean());
+        }
+
+        [Test]
+        public void ReadAsBoolean_Null_Success()
+        {
+            JValue n = JValue.CreateNull();
+
+            JTokenReader reader = new JTokenReader(n);
+
+            Assert.AreEqual(null, reader.ReadAsBoolean());
+        }
+
+        [Test]
+        public void ReadAsBoolean_Integer_Success()
+        {
+            JValue n = new JValue(1);
+
+            JTokenReader reader = new JTokenReader(n);
+
+            Assert.AreEqual(true, reader.ReadAsBoolean());
         }
 
         [Test]
