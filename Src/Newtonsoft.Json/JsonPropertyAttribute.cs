@@ -62,7 +62,7 @@ namespace Newtonsoft.Json
         /// <example>
         /// [JsonProperty(ItemConverterType = typeof(MyContainerConverter), ItemConverterParameters = new object[] { 123, "Four" })]
         /// </example>
-        public object[] ItemConverterParameters { get; set; } 
+        public object[] ItemConverterParameters { get; set; }
 
         /// <summary>
         /// Gets or sets the null value handling used when serializing this property.
@@ -125,9 +125,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Gets or sets the order of serialization and deserialization of a member.
+        /// Gets or sets the order of serialization of a member.
         /// </summary>
-        /// <value>The numeric order of serialization or deserialization.</value>
+        /// <value>The numeric order of serialization.</value>
         public int Order
         {
             get { return _order ?? default(int); }

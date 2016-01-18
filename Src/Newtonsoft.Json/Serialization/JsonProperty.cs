@@ -71,9 +71,9 @@ namespace Newtonsoft.Json.Serialization
         public Type DeclaringType { get; set; }
 
         /// <summary>
-        /// Gets or sets the order of serialization and deserialization of a member.
+        /// Gets or sets the order of serialization of a member.
         /// </summary>
-        /// <value>The numeric order of serialization or deserialization.</value>
+        /// <value>The numeric order of serialization.</value>
         public int? Order { get; set; }
 
         /// <summary>
@@ -157,7 +157,9 @@ namespace Newtonsoft.Json.Serialization
             get
             {
                 if (!_hasExplicitDefaultValue)
+                {
                     return null;
+                }
 
                 return _defaultValue;
             }
@@ -171,7 +173,9 @@ namespace Newtonsoft.Json.Serialization
         internal object GetResolvedDefaultValue()
         {
             if (_propertyType == null)
+            {
                 return null;
+            }
 
             if (!_hasExplicitDefaultValue && !_hasGeneratedDefaultValue)
             {
@@ -292,9 +296,13 @@ namespace Newtonsoft.Json.Serialization
         internal void WritePropertyName(JsonWriter writer)
         {
             if (_skipPropertyNameEscape)
+            {
                 writer.WritePropertyName(PropertyName, false);
+            }
             else
+            {
                 writer.WritePropertyName(PropertyName);
+            }
         }
     }
 }

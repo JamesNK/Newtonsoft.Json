@@ -80,18 +80,12 @@ namespace Newtonsoft.Json.Converters
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            bool isNullable = ReflectionUtils.IsNullableType(objectType);
-
-            Type t = (isNullable)
-                ? Nullable.GetUnderlyingType(objectType)
-                : objectType;
-
-            ReflectionObject reflectionObject = ReflectionObjectPerType.Get(t);
-
             if (reader.TokenType == JsonToken.Null)
             {
-                if (!isNullable)
+                if (!ReflectionUtils.IsNullableType(objectType))
+                {
                     throw JsonSerializationException.Create(reader, "Cannot convert null value to KeyValuePair.");
+                }
 
                 return null;
             }
@@ -99,19 +93,25 @@ namespace Newtonsoft.Json.Converters
             object key = null;
             object value = null;
 
-            ReadAndAssert(reader);
+            reader.ReadAndAssert();
+
+            Type t = ReflectionUtils.IsNullableType(objectType)
+                ? Nullable.GetUnderlyingType(objectType)
+                : objectType;
+
+            ReflectionObject reflectionObject = ReflectionObjectPerType.Get(t);
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
                 string propertyName = reader.Value.ToString();
                 if (string.Equals(propertyName, KeyName, StringComparison.OrdinalIgnoreCase))
                 {
-                    ReadAndAssert(reader);
+                    reader.ReadAndAssert();
                     key = serializer.Deserialize(reader, reflectionObject.GetType(KeyName));
                 }
                 else if (string.Equals(propertyName, ValueName, StringComparison.OrdinalIgnoreCase))
                 {
-                    ReadAndAssert(reader);
+                    reader.ReadAndAssert();
                     value = serializer.Deserialize(reader, reflectionObject.GetType(ValueName));
                 }
                 else
@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Converters
                     reader.Skip();
                 }
 
-                ReadAndAssert(reader);
+                reader.ReadAndAssert();
             }
 
             return reflectionObject.Creator(key, value);
@@ -139,15 +139,11 @@ namespace Newtonsoft.Json.Converters
                 : objectType;
 
             if (t.IsValueType() && t.IsGenericType())
+            {
                 return (t.GetGenericTypeDefinition() == typeof(KeyValuePair<,>));
+            }
 
             return false;
-        }
-
-        private static void ReadAndAssert(JsonReader reader)
-        {
-            if (!reader.Read())
-                throw JsonSerializationException.Create(reader, "Unexpected end when reading KeyValuePair.");
         }
     }
 }

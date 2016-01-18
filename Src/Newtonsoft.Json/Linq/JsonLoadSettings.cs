@@ -21,7 +21,7 @@ namespace Newtonsoft.Json.Linq
             {
                 if (value < CommentHandling.Ignore || value > CommentHandling.Load)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _commentHandling = value;
@@ -39,7 +39,7 @@ namespace Newtonsoft.Json.Linq
             {
                 if (value < LineInfoHandling.Ignore || value > LineInfoHandling.Load)
                 {
-                    throw new ArgumentOutOfRangeException("value");
+                    throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
                 _lineInfoHandling = value;

@@ -123,7 +123,7 @@ namespace Newtonsoft.Json.Utilities
 
         private static MethodCall<object, object> CreateFSharpFuncCall(Type type, string methodName)
         {
-            MethodInfo innerMethodInfo = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic );
+            MethodInfo innerMethodInfo = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
             MethodInfo invokeFunc = innerMethodInfo.ReturnType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
 
             MethodCall<object, object> call = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(innerMethodInfo);
@@ -149,7 +149,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static ObjectConstructor<object> CreateMap(Type keyType, Type valueType)
         {
-            MethodInfo creatorDefinition = typeof (FSharpUtils).GetMethod("BuildMapCreator");
+            MethodInfo creatorDefinition = typeof(FSharpUtils).GetMethod("BuildMapCreator");
 
             MethodInfo creatorGeneric = creatorDefinition.MakeGenericMethod(keyType, valueType);
 
@@ -175,4 +175,5 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 }
+
 #endif

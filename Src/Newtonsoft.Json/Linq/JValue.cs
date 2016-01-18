@@ -197,9 +197,13 @@ namespace Newtonsoft.Json.Linq
         {
             JValue other = node as JValue;
             if (other == null)
+            {
                 return false;
+            }
             if (other == this)
+            {
                 return true;
+            }
 
             return ValuesEquals(this, other);
         }
@@ -221,7 +225,9 @@ namespace Newtonsoft.Json.Linq
             int result = i1.CompareTo(ConvertUtils.ToBigInteger(i2));
 
             if (result != 0)
+            {
                 return result;
+            }
 
             // converting a fractional number to a BigInteger will lose the fraction
             // check for fraction if result is two numbers are equal
@@ -243,33 +249,53 @@ namespace Newtonsoft.Json.Linq
         internal static int Compare(JTokenType valueType, object objA, object objB)
         {
             if (objA == null && objB == null)
+            {
                 return 0;
+            }
             if (objA != null && objB == null)
+            {
                 return 1;
+            }
             if (objA == null && objB != null)
+            {
                 return -1;
+            }
 
             switch (valueType)
             {
                 case JTokenType.Integer:
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
                     if (objA is BigInteger)
+                    {
                         return CompareBigInteger((BigInteger)objA, objB);
+                    }
                     if (objB is BigInteger)
+                    {
                         return -CompareBigInteger((BigInteger)objB, objA);
+                    }
 #endif
                     if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
+                    {
                         return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
+                    }
                     else if (objA is float || objB is float || objA is double || objB is double)
+                    {
                         return CompareFloat(objA, objB);
+                    }
                     else
+                    {
                         return Convert.ToInt64(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToInt64(objB, CultureInfo.InvariantCulture));
+                    }
                 case JTokenType.Float:
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
                     if (objA is BigInteger)
+                    {
                         return CompareBigInteger((BigInteger)objA, objB);
+                    }
                     if (objB is BigInteger)
+                    {
                         return -CompareBigInteger((BigInteger)objB, objA);
+                    }
 #endif
                     return CompareFloat(objA, objB);
                 case JTokenType.Comment:
@@ -294,10 +320,14 @@ namespace Newtonsoft.Json.Linq
 
 #if !NET20
                         if (objB is DateTimeOffset)
+                        {
                             date2 = ((DateTimeOffset)objB).DateTime;
+                        }
                         else
 #endif
+                        {
                             date2 = Convert.ToDateTime(objB, CultureInfo.InvariantCulture);
+                        }
 
                         return date1.CompareTo(date2);
 #if !NET20
@@ -308,28 +338,40 @@ namespace Newtonsoft.Json.Linq
                         DateTimeOffset date2;
 
                         if (objB is DateTimeOffset)
+                        {
                             date2 = (DateTimeOffset)objB;
+                        }
                         else
+                        {
                             date2 = new DateTimeOffset(Convert.ToDateTime(objB, CultureInfo.InvariantCulture));
+                        }
 
                         return date1.CompareTo(date2);
                     }
 #endif
                 case JTokenType.Bytes:
                     if (!(objB is byte[]))
+                    {
                         throw new ArgumentException("Object must be of type byte[].");
+                    }
 
                     byte[] bytes1 = objA as byte[];
                     byte[] bytes2 = objB as byte[];
                     if (bytes1 == null)
+                    {
                         return -1;
+                    }
                     if (bytes2 == null)
+                    {
                         return 1;
+                    }
 
                     return MiscellaneousUtils.ByteArrayCompare(bytes1, bytes2);
                 case JTokenType.Guid:
                     if (!(objB is Guid))
+                    {
                         throw new ArgumentException("Object must be of type Guid.");
+                    }
 
                     Guid guid1 = (Guid)objA;
                     Guid guid2 = (Guid)objB;
@@ -337,7 +379,9 @@ namespace Newtonsoft.Json.Linq
                     return guid1.CompareTo(guid2);
                 case JTokenType.Uri:
                     if (!(objB is Uri))
+                    {
                         throw new ArgumentException("Object must be of type Uri.");
+                    }
 
                     Uri uri1 = (Uri)objA;
                     Uri uri2 = (Uri)objB;
@@ -345,7 +389,9 @@ namespace Newtonsoft.Json.Linq
                     return Comparer<string>.Default.Compare(uri1.ToString(), uri2.ToString());
                 case JTokenType.TimeSpan:
                     if (!(objB is TimeSpan))
+                    {
                         throw new ArgumentException("Object must be of type TimeSpan.");
+                    }
 
                     TimeSpan ts1 = (TimeSpan)objA;
                     TimeSpan ts2 = (TimeSpan)objB;
@@ -363,7 +409,9 @@ namespace Newtonsoft.Json.Linq
 
             // take into account possible floating point errors
             if (MathUtils.ApproxEquals(d1, d2))
+            {
                 return 0;
+            }
 
             return d1.CompareTo(d2);
         }
@@ -562,40 +610,68 @@ namespace Newtonsoft.Json.Linq
         private static JTokenType GetValueType(JTokenType? current, object value)
         {
             if (value == null)
+            {
                 return JTokenType.Null;
+            }
 #if !(DOTNET || PORTABLE40 || PORTABLE)
             else if (value == DBNull.Value)
+            {
                 return JTokenType.Null;
+            }
 #endif
             else if (value is string)
+            {
                 return GetStringValueType(current);
+            }
             else if (value is long || value is int || value is short || value is sbyte
                      || value is ulong || value is uint || value is ushort || value is byte)
+            {
                 return JTokenType.Integer;
+            }
             else if (value is Enum)
+            {
                 return JTokenType.Integer;
+            }
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             else if (value is BigInteger)
+            {
                 return JTokenType.Integer;
+            }
 #endif
             else if (value is double || value is float || value is decimal)
+            {
                 return JTokenType.Float;
+            }
             else if (value is DateTime)
+            {
                 return JTokenType.Date;
+            }
 #if !NET20
             else if (value is DateTimeOffset)
+            {
                 return JTokenType.Date;
+            }
 #endif
             else if (value is byte[])
+            {
                 return JTokenType.Bytes;
+            }
             else if (value is bool)
+            {
                 return JTokenType.Boolean;
+            }
             else if (value is Guid)
+            {
                 return JTokenType.Guid;
+            }
             else if (value is Uri)
+            {
                 return JTokenType.Uri;
+            }
             else if (value is TimeSpan)
+            {
                 return JTokenType.TimeSpan;
+            }
 
             throw new ArgumentException("Could not determine JSON object type for type {0}.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
         }
@@ -603,14 +679,16 @@ namespace Newtonsoft.Json.Linq
         private static JTokenType GetStringValueType(JTokenType? current)
         {
             if (current == null)
+            {
                 return JTokenType.String;
+            }
 
-            switch (current.Value)
+            switch (current.GetValueOrDefault())
             {
                 case JTokenType.Comment:
                 case JTokenType.String:
                 case JTokenType.Raw:
-                    return current.Value;
+                    return current.GetValueOrDefault();
                 default:
                     return JTokenType.String;
             }
@@ -638,7 +716,9 @@ namespace Newtonsoft.Json.Linq
                 Type newType = (value != null) ? value.GetType() : null;
 
                 if (currentType != newType)
+                {
                     _valueType = GetValueType(_valueType, value);
+                }
 
                 _value = value;
             }
@@ -677,27 +757,45 @@ namespace Newtonsoft.Json.Linq
                     return;
                 case JTokenType.Integer:
                     if (_value is int)
+                    {
                         writer.WriteValue((int)_value);
+                    }
                     else if (_value is long)
+                    {
                         writer.WriteValue((long)_value);
+                    }
                     else if (_value is ulong)
+                    {
                         writer.WriteValue((ulong)_value);
+                    }
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
                     else if (_value is BigInteger)
+                    {
                         writer.WriteValue((BigInteger)_value);
+                    }
 #endif
                     else
+                    {
                         writer.WriteValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
+                    }
                     return;
                 case JTokenType.Float:
                     if (_value is decimal)
+                    {
                         writer.WriteValue((decimal)_value);
+                    }
                     else if (_value is double)
+                    {
                         writer.WriteValue((double)_value);
+                    }
                     else if (_value is float)
+                    {
                         writer.WriteValue((float)_value);
+                    }
                     else
+                    {
                         writer.WriteValue(Convert.ToDouble(_value, CultureInfo.InvariantCulture));
+                    }
                     return;
                 case JTokenType.String:
                     writer.WriteValue((_value != null) ? _value.ToString() : null);
@@ -708,10 +806,14 @@ namespace Newtonsoft.Json.Linq
                 case JTokenType.Date:
 #if !NET20
                     if (_value is DateTimeOffset)
+                    {
                         writer.WriteValue((DateTimeOffset)_value);
+                    }
                     else
 #endif
+                    {
                         writer.WriteValue(Convert.ToDateTime(_value, CultureInfo.InvariantCulture));
+                    }
                     return;
                 case JTokenType.Bytes:
                     writer.WriteValue((byte[])_value);
@@ -721,7 +823,7 @@ namespace Newtonsoft.Json.Linq
                     writer.WriteValue((_value != null) ? _value.ToString() : null);
                     return;
                 case JTokenType.Uri:
-                    writer.WriteValue((_value != null) ? ((Uri) _value).OriginalString : null);
+                    writer.WriteValue((_value != null) ? ((Uri)_value).OriginalString : null);
                     return;
             }
 
@@ -751,7 +853,9 @@ namespace Newtonsoft.Json.Linq
         public bool Equals(JValue other)
         {
             if (other == null)
+            {
                 return false;
+            }
 
             return ValuesEquals(this, other);
         }
@@ -769,11 +873,15 @@ namespace Newtonsoft.Json.Linq
         public override bool Equals(object obj)
         {
             if (obj == null)
+            {
                 return false;
+            }
 
             JValue otherValue = obj as JValue;
             if (otherValue != null)
+            {
                 return Equals(otherValue);
+            }
 
             return base.Equals(obj);
         }
@@ -787,7 +895,9 @@ namespace Newtonsoft.Json.Linq
         public override int GetHashCode()
         {
             if (_value == null)
+            {
                 return 0;
+            }
 
             return _value.GetHashCode();
         }
@@ -801,7 +911,9 @@ namespace Newtonsoft.Json.Linq
         public override string ToString()
         {
             if (_value == null)
+            {
                 return string.Empty;
+            }
 
             return _value.ToString();
         }
@@ -841,13 +953,19 @@ namespace Newtonsoft.Json.Linq
         public string ToString(string format, IFormatProvider formatProvider)
         {
             if (_value == null)
+            {
                 return string.Empty;
+            }
 
             IFormattable formattable = _value as IFormattable;
             if (formattable != null)
+            {
                 return formattable.ToString(format, formatProvider);
+            }
             else
+            {
                 return _value.ToString();
+            }
         }
 
 #if !(NET35 || NET20 || PORTABLE40)
@@ -867,7 +985,7 @@ namespace Newtonsoft.Json.Linq
         {
             public override bool TryConvert(JValue instance, ConvertBinder binder, out object result)
             {
-                if (binder.Type == typeof(JValue))
+                if (binder.Type == typeof(JValue) || binder.Type == typeof(JToken))
                 {
                     result = instance;
                     return true;
@@ -934,7 +1052,9 @@ namespace Newtonsoft.Json.Linq
         int IComparable.CompareTo(object obj)
         {
             if (obj == null)
+            {
                 return 1;
+            }
 
             object otherValue = (obj is JValue) ? ((JValue)obj).Value : obj;
 
@@ -962,7 +1082,9 @@ namespace Newtonsoft.Json.Linq
         public int CompareTo(JValue obj)
         {
             if (obj == null)
+            {
                 return 1;
+            }
 
             return Compare(_valueType, _value, obj._value);
         }
@@ -971,12 +1093,16 @@ namespace Newtonsoft.Json.Linq
         TypeCode IConvertible.GetTypeCode()
         {
             if (_value == null)
+            {
                 return TypeCode.Empty;
+            }
 
             IConvertible convertable = _value as IConvertible;
-            
+
             if (convertable == null)
+            {
                 return TypeCode.Object;
+            }
 
             return convertable.GetTypeCode();
         }
@@ -1056,5 +1182,5 @@ namespace Newtonsoft.Json.Linq
             return ToObject(conversionType);
         }
 #endif
-        }
+    }
 }

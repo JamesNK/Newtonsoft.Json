@@ -15,7 +15,9 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     JToken v = GetTokenIndex(t, errorWhenNoMatch, i);
 
                     if (v != null)
+                    {
                         yield return v;
+                    }
                 }
             }
         }

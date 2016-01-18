@@ -78,27 +78,27 @@ namespace Newtonsoft.Json.Converters
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-#if !NET20
-            Type t = (ReflectionUtils.IsNullableType(objectType))
-                ? Nullable.GetUnderlyingType(objectType)
-                : objectType;
-#endif
-
             if (reader.TokenType == JsonToken.Null)
             {
                 if (!ReflectionUtils.IsNullable(objectType))
+                {
                     throw JsonSerializationException.Create(reader, "Cannot convert null value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
+                }
 
                 return null;
             }
 
             if (reader.TokenType != JsonToken.StartConstructor || !string.Equals(reader.Value.ToString(), "Date", StringComparison.Ordinal))
+            {
                 throw JsonSerializationException.Create(reader, "Unexpected token or value when parsing date. Token: {0}, Value: {1}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType, reader.Value));
+            }
 
             reader.Read();
 
             if (reader.TokenType != JsonToken.Integer)
+            {
                 throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected Integer, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+            }
 
             long ticks = (long)reader.Value;
 
@@ -107,11 +107,18 @@ namespace Newtonsoft.Json.Converters
             reader.Read();
 
             if (reader.TokenType != JsonToken.EndConstructor)
+            {
                 throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected EndConstructor, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+            }
 
 #if !NET20
+            Type t = (ReflectionUtils.IsNullableType(objectType))
+                ? Nullable.GetUnderlyingType(objectType)
+                : objectType;
             if (t == typeof(DateTimeOffset))
+            {
                 return new DateTimeOffset(d);
+            }
 #endif
 
             return d;

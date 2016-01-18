@@ -40,11 +40,15 @@ namespace Newtonsoft.Json.Utilities
         {
             PropertyInfo propertyInfo = memberInfo as PropertyInfo;
             if (propertyInfo != null)
+            {
                 return CreateGet<T>(propertyInfo);
+            }
 
             FieldInfo fieldInfo = memberInfo as FieldInfo;
             if (fieldInfo != null)
+            {
                 return CreateGet<T>(fieldInfo);
+            }
 
             throw new Exception("Could not create getter for {0}.".FormatWith(CultureInfo.InvariantCulture, memberInfo));
         }
@@ -53,11 +57,15 @@ namespace Newtonsoft.Json.Utilities
         {
             PropertyInfo propertyInfo = memberInfo as PropertyInfo;
             if (propertyInfo != null)
+            {
                 return CreateSet<T>(propertyInfo);
+            }
 
             FieldInfo fieldInfo = memberInfo as FieldInfo;
             if (fieldInfo != null)
+            {
                 return CreateSet<T>(fieldInfo);
+            }
 
             throw new Exception("Could not create setter for {0}.".FormatWith(CultureInfo.InvariantCulture, memberInfo));
         }

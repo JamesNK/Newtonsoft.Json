@@ -46,7 +46,7 @@ namespace Newtonsoft.Json.Utilities
             get { return _buffer == null; }
         }
 
-        public StringBuffer(IJsonBufferPool<char> bufferPool, int initalSize) : this(BufferUtils.RentBuffer(bufferPool, initalSize))
+        public StringBuffer(IArrayPool<char> bufferPool, int initalSize) : this(BufferUtils.RentBuffer(bufferPool, initalSize))
         {
         }
 
@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Utilities
             _position = 0;
         }
 
-        public void Append(IJsonBufferPool<char> bufferPool, char value)
+        public void Append(IArrayPool<char> bufferPool, char value)
         {
             // test if the buffer array is large enough to take the value
             if (_position == _buffer.Length)
@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Utilities
             _buffer[_position++] = value;
         }
 
-        public void Append(IJsonBufferPool<char> bufferPool, char[] buffer, int startIndex, int count)
+        public void Append(IArrayPool<char> bufferPool, char[] buffer, int startIndex, int count)
         {
             if (_position + count >= _buffer.Length)
             {
@@ -80,24 +80,24 @@ namespace Newtonsoft.Json.Utilities
             _position += count;
         }
 
-        public void Clear(IJsonBufferPool<char> bufferPool)
+        public void Clear(IArrayPool<char> bufferPool)
         {
             if (_buffer != null)
             {
-                BufferUtils.ReturnBuffer(bufferPool, ref _buffer);
+                BufferUtils.ReturnBuffer(bufferPool, _buffer);
                 _buffer = null;
             }
             _position = 0;
         }
 
-        private void EnsureSize(IJsonBufferPool<char> bufferPool, int appendLength)
+        private void EnsureSize(IArrayPool<char> bufferPool, int appendLength)
         {
             char[] newBuffer = BufferUtils.RentBuffer(bufferPool, (_position + appendLength) * 2);
 
             if (_buffer != null)
             {
                 Array.Copy(_buffer, newBuffer, _position);
-                BufferUtils.ReturnBuffer(bufferPool, ref _buffer);
+                BufferUtils.ReturnBuffer(bufferPool, _buffer);
             }
 
             _buffer = newBuffer;

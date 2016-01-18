@@ -317,7 +317,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             // put objects in a bucket based on their reference
             return RuntimeHelpers.GetHashCode(obj);
 #else
-            // put all objects in the same bucket so ReferenceEquals is called on all
+    // put all objects in the same bucket so ReferenceEquals is called on all
             return -1;
 #endif
         }
@@ -332,7 +332,9 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             AccountWithEquals a = obj as AccountWithEquals;
             if (a == null)
+            {
                 return false;
+            }
 
             return Name == a.Name;
         }
@@ -340,7 +342,9 @@ namespace Newtonsoft.Json.Tests.Serialization
         public override int GetHashCode()
         {
             if (Name == null)
+            {
                 return 0;
+            }
 
             return Name.GetHashCode();
         }
@@ -359,7 +363,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             get
             {
                 if (_accessCount >= 3)
+                {
                     return null;
+                }
 
                 _accessCount++;
                 return new List<PropertyItemReferenceLoopHandling>(_data);

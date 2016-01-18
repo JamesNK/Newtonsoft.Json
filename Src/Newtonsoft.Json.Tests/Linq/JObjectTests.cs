@@ -97,7 +97,9 @@ namespace Newtonsoft.Json.Tests.Linq
                 roles.Add(role);
 
                 if (!reader.Read())
+                {
                     break;
+                }
             }
 
             Assert.AreEqual(2, roles.Count);
@@ -121,7 +123,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             JToken o = JToken.Parse(json);
 
-            Assert.AreEqual("Apple", (string) o["Name"]);
+            Assert.AreEqual("Apple", (string)o["Name"]);
         }
 
         [Test]
@@ -1940,7 +1942,9 @@ Parameter name: arrayIndex");
                     o.WriteTo(writer);
                 }
                 else
+                {
                     token.WriteTo(writer);
+                }
             }
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

@@ -265,7 +265,8 @@ Newtonsoft.Json Error: 0 : Error!
                                 { "1", "!" },
                                 { "Two", "!!" },
                                 { "III", "!!!" }
-                            }
+                            },
+                        Double = 1.1d
                     },
                     new JsonSerializerSettings
                     {
@@ -317,7 +318,8 @@ Newtonsoft.Json Error: 0 : Error!
     ""1"": ""!"",
     ""Two"": ""!!"",
     ""III"": ""!!!""
-  }
+  },
+  ""Double"": 1.1
 }",
                 new JsonSerializerSettings
                 {
@@ -329,6 +331,7 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.AreEqual(1, o2.Version.Major);
             Assert.AreEqual(2, o2.Version.Minor);
             Assert.AreEqual(3, o2.StringDictionary.Count);
+            Assert.AreEqual(1.1d, o2.Double);
 
             Assert.AreEqual("Started deserializing Newtonsoft.Json.Tests.Serialization.TraceTestObject. Path 'IntList', line 2, position 12.", traceWriter.TraceRecords[0].Message);
             Assert.AreEqual("Started deserializing System.Collections.Generic.IList`1[System.Int32]. Path 'IntList', line 2, position 14.", traceWriter.TraceRecords[1].Message);
@@ -376,7 +379,8 @@ Newtonsoft.Json Error: 0 : Error!
     ""1"": ""!"",
     ""Two"": ""!!"",
     ""III"": ""!!!""
-  }
+  },
+  ""Double"": 1.1
 }",
                 o2,
                 new JsonSerializerSettings
@@ -390,6 +394,7 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.AreEqual(1, o2.Version.Major);
             Assert.AreEqual(2, o2.Version.Minor);
             Assert.AreEqual(3, o2.StringDictionary.Count);
+            Assert.AreEqual(1.1d, o2.Double);
 
             Assert.AreEqual("Started deserializing Newtonsoft.Json.Tests.Serialization.TraceTestObject. Path 'IntList', line 2, position 12.", traceWriter.TraceRecords[0].Message);
             Assert.AreEqual("Started deserializing System.Collections.Generic.IList`1[System.Int32]. Path 'IntList', line 2, position 14.", traceWriter.TraceRecords[1].Message);
@@ -992,6 +997,7 @@ Newtonsoft.Json Error: 0 : Error!
     ""U3RyaW5nIQ=="",
     1,
     1.1,
+    1.2,
     9999999990000000000000000000000000000000000,
     null,
     undefined,
@@ -1049,6 +1055,10 @@ Newtonsoft.Json Error: 0 : Error!
             traceReader.ReadAsDecimal();
             Assert.AreEqual(JsonToken.Float, traceReader.TokenType);
             Assert.AreEqual(1.1m, traceReader.Value);
+
+            traceReader.ReadAsDouble();
+            Assert.AreEqual(JsonToken.Float, traceReader.TokenType);
+            Assert.AreEqual(1.2d, traceReader.Value);
 
             traceReader.Read();
             Assert.AreEqual(JsonToken.Integer, traceReader.TokenType);
@@ -1142,6 +1152,7 @@ Newtonsoft.Json Error: 0 : Error!
         public string[] StringArray { get; set; }
         public Version Version { get; set; }
         public IDictionary<string, string> StringDictionary { get; set; }
+        public double Double { get; set; }
     }
 
     public class IntegerTestClass

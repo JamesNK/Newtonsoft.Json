@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Serialization
         /// <param name="memberInfo">The member info.</param>
         public ReflectionValueProvider(MemberInfo memberInfo)
         {
-            ValidationUtils.ArgumentNotNull(memberInfo, "memberInfo");
+            ValidationUtils.ArgumentNotNull(memberInfo, nameof(memberInfo));
             _memberInfo = memberInfo;
         }
 

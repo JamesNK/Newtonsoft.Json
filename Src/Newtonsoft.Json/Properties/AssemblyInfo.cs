@@ -48,11 +48,13 @@ using System.Security;
 [assembly: AssemblyTitle("Json.NET .NET 4.0")]
 [assembly: AllowPartiallyTrustedCallers]
 #else
+
 [assembly: AssemblyTitle("Json.NET")]
 [assembly: AllowPartiallyTrustedCallers]
 #endif
 
 #if !SIGNED
+
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Schema")]
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Tests")]
 #else

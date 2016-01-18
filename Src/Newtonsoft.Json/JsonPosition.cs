@@ -41,7 +41,7 @@ namespace Newtonsoft.Json
 
     internal struct JsonPosition
     {
-        private static readonly char[] SpecialCharacters = {'.', ' ', '[', ']', '(', ')'};
+        private static readonly char[] SpecialCharacters = { '.', ' ', '[', ']', '(', ')' };
 
         internal JsonContainerType Type;
         internal int Position;
@@ -118,7 +118,7 @@ namespace Newtonsoft.Json
             }
             if (currentPosition != null)
             {
-                capacity += currentPosition.Value.CalculateLength();
+                capacity += currentPosition.GetValueOrDefault().CalculateLength();
             }
 
             StringBuilder sb = new StringBuilder(capacity);
@@ -131,7 +131,7 @@ namespace Newtonsoft.Json
             }
             if (currentPosition != null)
             {
-                currentPosition.Value.WriteTo(sb);
+                currentPosition.GetValueOrDefault().WriteTo(sb);
             }
 
             return sb.ToString();
@@ -145,7 +145,9 @@ namespace Newtonsoft.Json
                 message = message.Trim();
 
                 if (!message.EndsWith('.'))
+                {
                     message += ".";
+                }
 
                 message += " ";
             }
@@ -153,7 +155,9 @@ namespace Newtonsoft.Json
             message += "Path '{0}'".FormatWith(CultureInfo.InvariantCulture, path);
 
             if (lineInfo != null && lineInfo.HasLineInfo())
+            {
                 message += ", line {0}, position {1}".FormatWith(CultureInfo.InvariantCulture, lineInfo.LineNumber, lineInfo.LinePosition);
+            }
 
             message += ".";
 

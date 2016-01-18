@@ -34,6 +34,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 #if !(DNXCORE50 || NET20 || NET35)
@@ -43,7 +44,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
     [TestFixture]
     public class CustomTraceWriter : TestFixtureBase
     {
-#region Types
+        #region Types
         public class NLogTraceWriter : ITraceWriter
         {
             private static readonly Logger Logger = LogManager.GetLogger("NLogTraceWriter");
@@ -84,12 +85,12 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
                 }
             }
         }
-#endregion
+        #endregion
 
         [Test]
         public void Example()
         {
-#region Usage
+            #region Usage
             IList<string> countries = new List<string>
             {
                 "New Zealand",
@@ -110,7 +111,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   "Denmark",
             //   "China"
             // ]
-#endregion
+            #endregion
 
             Assert.AreEqual(@"[
   ""New Zealand"",

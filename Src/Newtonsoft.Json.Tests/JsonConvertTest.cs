@@ -53,6 +53,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests
@@ -462,36 +463,36 @@ namespace Newtonsoft.Json.Tests
         {
             string result;
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString("How now brown cow?", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("How now brown cow?", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(@"""How now brown cow?""", result);
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString("How now 'brown' cow?", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("How now 'brown' cow?", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(@"""How now 'brown' cow?""", result);
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString("How now <brown> cow?", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("How now <brown> cow?", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(@"""How now <brown> cow?""", result);
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString("How \r\nnow brown cow?", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("How \r\nnow brown cow?", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(@"""How \r\nnow brown cow?""", result);
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString("\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(@"""\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007""", result);
 
             result =
-                JavaScriptUtils.ToEscapedJavaScriptString("\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013", '"', true);
+                JavaScriptUtils.ToEscapedJavaScriptString("\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(@"""\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013""", result);
 
             result =
                 JavaScriptUtils.ToEscapedJavaScriptString(
-                    "\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f ", '"', true);
+                    "\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f ", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(@"""\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f """, result);
 
             result =
                 JavaScriptUtils.ToEscapedJavaScriptString(
-                    "!\"#$%&\u0027()*+,-./0123456789:;\u003c=\u003e?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]", '"', true);
+                    "!\"#$%&\u0027()*+,-./0123456789:;\u003c=\u003e?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(@"""!\""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]""", result);
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString("^_`abcdefghijklmnopqrstuvwxyz{|}~", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("^_`abcdefghijklmnopqrstuvwxyz{|}~", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(@"""^_`abcdefghijklmnopqrstuvwxyz{|}~""", result);
 
             string data =
@@ -499,22 +500,22 @@ namespace Newtonsoft.Json.Tests
             string expected =
                 @"""\u0000\u0001\u0002\u0003\u0004\u0005\u0006\u0007\b\t\n\u000b\f\r\u000e\u000f\u0010\u0011\u0012\u0013\u0014\u0015\u0016\u0017\u0018\u0019\u001a\u001b\u001c\u001d\u001e\u001f !\""#$%&'()*+,-./0123456789:;<=>?@ABCDEFGHIJKLMNOPQRSTUVWXYZ[\\]^_`abcdefghijklmnopqrstuvwxyz{|}~""";
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString(data, '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString(data, '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(expected, result);
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString("Fred's cat.", '\'', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("Fred's cat.", '\'', true, StringEscapeHandling.Default);
             Assert.AreEqual(result, @"'Fred\'s cat.'");
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString(@"""How are you gentlemen?"" said Cats.", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString(@"""How are you gentlemen?"" said Cats.", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(result, @"""\""How are you gentlemen?\"" said Cats.""");
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString(@"""How are' you gentlemen?"" said Cats.", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString(@"""How are' you gentlemen?"" said Cats.", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(result, @"""\""How are' you gentlemen?\"" said Cats.""");
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString(@"Fred's ""cat"".", '\'', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString(@"Fred's ""cat"".", '\'', true, StringEscapeHandling.Default);
             Assert.AreEqual(result, @"'Fred\'s ""cat"".'");
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString("\u001farray\u003caddress", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("\u001farray\u003caddress", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(result, @"""\u001farray<address""");
         }
 
@@ -523,13 +524,13 @@ namespace Newtonsoft.Json.Tests
         {
             string result;
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString("before" + '\u0085' + "after", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("before" + '\u0085' + "after", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(@"""before\u0085after""", result);
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString("before" + '\u2028' + "after", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("before" + '\u2028' + "after", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(@"""before\u2028after""", result);
 
-            result = JavaScriptUtils.ToEscapedJavaScriptString("before" + '\u2029' + "after", '"', true);
+            result = JavaScriptUtils.ToEscapedJavaScriptString("before" + '\u2029' + "after", '"', true, StringEscapeHandling.Default);
             Assert.AreEqual(@"""before\u2029after""", result);
         }
 
@@ -1201,7 +1202,6 @@ namespace Newtonsoft.Json.Tests
             writer.Flush();
         }
 
-
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
         [Test]
         public void IntegerLengthOverflows()
@@ -1292,7 +1292,7 @@ namespace Newtonsoft.Json.Tests
             }
 
             public ClobberingJsonConverter(string clobberValueString)
-            : this(clobberValueString, 1337)
+                : this(clobberValueString, 1337)
             {
             }
 
@@ -1341,7 +1341,6 @@ namespace Newtonsoft.Json.Tests
             };
 
             string json = JsonConvert.SerializeObject(measurements);
-
 
             Assert.AreEqual("{\"Positions\":[57.72,60.44,63.44,66.81,70.45],\"Loads\":[23284.0,23225.0,23062.0,22846.0,22594.0],\"Gain\":12345.679}", json);
         }
@@ -1393,11 +1392,32 @@ namespace Newtonsoft.Json.Tests
             {
                 throw new NotImplementedException();
             }
-            
+
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
                 writer.WriteValue(Math.Round((double)value, _precision, _rounding));
             }
+        }
+
+        [Test]
+        public void GenericBaseClassSerialization()
+        {
+            string json = JsonConvert.SerializeObject(new NonGenericChildClass());
+            Assert.AreEqual("{\"Data\":null}", json);
+        }
+
+        public class GenericBaseClass<O, T>
+        {
+            public virtual T Data { get; set; }
+        }
+
+        public class GenericIntermediateClass<O> : GenericBaseClass<O, string>
+        {
+            public override string Data { get; set; }
+        }
+
+        public class NonGenericChildClass : GenericIntermediateClass<int>
+        {
         }
     }
 }

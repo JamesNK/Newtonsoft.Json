@@ -13,6 +13,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Converters
@@ -24,7 +25,7 @@ namespace Newtonsoft.Json.Tests.Converters
         public void SerializeUsingInternalConverter()
         {
             DefaultContractResolver contractResolver = new DefaultContractResolver();
-            JsonObjectContract contract = (JsonObjectContract) contractResolver.ResolveContract(typeof (KeyValuePair<string, int>));
+            JsonObjectContract contract = (JsonObjectContract)contractResolver.ResolveContract(typeof(KeyValuePair<string, int>));
 
             Assert.AreEqual(typeof(KeyValuePairConverter), contract.InternalConverter.GetType());
 
@@ -59,7 +60,7 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void DeserializeUnexpectedEnd()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<KeyValuePair<string, int>>(@"{""Key"": ""123"","), "Unexpected end when reading KeyValuePair. Path 'Key', line 1, position 14.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<KeyValuePair<string, int>>(@"{""Key"": ""123"","), "Unexpected end when reading JSON. Path 'Key', line 1, position 14.");
         }
     }
 }

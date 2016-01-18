@@ -60,7 +60,7 @@ namespace Newtonsoft.Json.Tests.Schema
     [TestFixture]
     public class JsonSchemaSpecTests : TestFixtureBase
     {
-        [TestCaseSourceAttribute("GetSpecTestDetails")]
+        [TestCaseSourceAttribute(nameof(GetSpecTestDetails))]
         public void SpecTest(JsonSchemaSpecTest jsonSchemaSpecTest)
         {
             JsonSchema s = JsonSchema.Read(jsonSchemaSpecTest.Schema.CreateReader());
@@ -119,5 +119,6 @@ namespace Newtonsoft.Json.Tests.Schema
         }
     }
 }
+
 #endif
 #pragma warning restore 618

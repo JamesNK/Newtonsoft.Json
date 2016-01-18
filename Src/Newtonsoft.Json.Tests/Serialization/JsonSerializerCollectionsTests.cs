@@ -52,6 +52,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -349,7 +350,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
             });
 
-            string json  = JsonConvert.SerializeObject(d, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(d, Formatting.Indented);
 
             Assert.AreEqual(@"{
   ""key"": [
@@ -776,6 +777,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 ]", json);
         }
 #endif
+
         [Test]
         public void TestEscapeDictionaryStrings()
         {
@@ -1182,7 +1184,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Array3D aa = new Array3D();
             aa.Before = "Before!";
             aa.After = "After!";
-            aa.Coordinates = new[, ,] { { { 1, 1, 1 }, { 1, 1, 2 } }, { { 1, 2, 1 }, { 1, 2, 2 } }, { { 2, 1, 1 }, { 2, 1, 2 } }, { { 2, 2, 1 }, { 2, 2, 2 } } };
+            aa.Coordinates = new[,,] { { { 1, 1, 1 }, { 1, 1, 2 } }, { { 1, 2, 1 }, { 1, 2, 2 } }, { { 2, 1, 1 }, { 2, 1, 2 } }, { { 2, 2, 1 }, { 2, 2, 2 } } };
 
             string json = JsonConvert.SerializeObject(aa);
 
@@ -1195,7 +1197,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Array3DWithConverter aa = new Array3DWithConverter();
             aa.Before = "Before!";
             aa.After = "After!";
-            aa.Coordinates = new[, ,] { { { 1, 1, 1 }, { 1, 1, 2 } }, { { 1, 2, 1 }, { 1, 2, 2 } }, { { 2, 1, 1 }, { 2, 1, 2 } }, { { 2, 2, 1 }, { 2, 2, 2 } } };
+            aa.Coordinates = new[,,] { { { 1, 1, 1 }, { 1, 1, 2 } }, { { 1, 2, 1 }, { 1, 2, 2 } }, { { 2, 1, 1 }, { 2, 1, 2 } }, { { 2, 2, 1 }, { 2, 2, 2 } } };
 
             string json = JsonConvert.SerializeObject(aa, Formatting.Indented);
 
@@ -1954,7 +1956,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class Array3D
     {
         public string Before { get; set; }
-        public int[, ,] Coordinates { get; set; }
+        public int[,,] Coordinates { get; set; }
         public string After { get; set; }
     }
 
@@ -1963,7 +1965,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public string Before { get; set; }
 
         [JsonProperty(ItemConverterType = typeof(IntToFloatConverter))]
-        public int[, ,] Coordinates { get; set; }
+        public int[,,] Coordinates { get; set; }
 
         public string After { get; set; }
     }
@@ -1997,7 +1999,9 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
             }
             else
+            {
                 yield break;
+            }
         }
 
         IEnumerator IEnumerable.GetEnumerator()

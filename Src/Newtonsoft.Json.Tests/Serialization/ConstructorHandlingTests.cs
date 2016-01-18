@@ -44,6 +44,7 @@ using NUnit.Framework;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -175,10 +176,13 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             [DefaultValue("parameter1_default")]
             public string Parameter1 { get; private set; }
+
             [DefaultValue("parameter2_default")]
             public string Parameter2 { get; private set; }
+
             [DefaultValue("parameter3_default")]
             public string Parameter3 { get; set; }
+
             [DefaultValue("parameter4_default")]
             public string Parameter4 { get; set; }
 

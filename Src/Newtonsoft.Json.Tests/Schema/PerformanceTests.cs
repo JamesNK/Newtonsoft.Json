@@ -40,6 +40,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Schema
@@ -174,7 +175,9 @@ namespace Newtonsoft.Json.Tests.Schema
         {
             _stopwatch.Stop();
             if (_callback != null)
+            {
                 _callback(Result);
+            }
         }
 
         public TimeSpan Result
@@ -183,4 +186,5 @@ namespace Newtonsoft.Json.Tests.Schema
         }
     }
 }
+
 #pragma warning restore 618

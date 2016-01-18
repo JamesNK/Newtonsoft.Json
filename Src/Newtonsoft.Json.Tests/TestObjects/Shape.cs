@@ -140,7 +140,6 @@ namespace Newtonsoft.Json.Tests.TestObjects
             }
         }
 
-
         [Serializable, DebuggerDisplay("{__DebugDisplay(),nq}")]
         public class Prism : Shape
         {
@@ -224,4 +223,5 @@ namespace Newtonsoft.Json.Tests.TestObjects
         }
     }
 }
+
 #endif

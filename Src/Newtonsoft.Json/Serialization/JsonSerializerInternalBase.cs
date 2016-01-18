@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Serialization
 
         protected JsonSerializerInternalBase(JsonSerializer serializer)
         {
-            ValidationUtils.ArgumentNotNull(serializer, "serializer");
+            ValidationUtils.ArgumentNotNull(serializer, nameof(serializer));
 
             Serializer = serializer;
             TraceWriter = serializer.TraceWriter;
@@ -69,11 +69,13 @@ namespace Newtonsoft.Json.Serialization
                 // override equality comparer for object key dictionary
                 // object will be modified as it deserializes and might have mutable hashcode
                 if (_mappings == null)
+                {
                     _mappings = new BidirectionalDictionary<string, object>(
                         EqualityComparer<string>.Default,
                         new ReferenceEqualsEqualityComparer(),
                         "A different value already has the Id '{0}'.",
                         "A different Id has already been assigned for value '{0}'.");
+                }
 
                 return _mappings;
             }
@@ -82,10 +84,14 @@ namespace Newtonsoft.Json.Serialization
         private ErrorContext GetErrorContext(object currentObject, object member, string path, Exception error)
         {
             if (_currentErrorContext == null)
+            {
                 _currentErrorContext = new ErrorContext(currentObject, member, path, error);
+            }
 
             if (_currentErrorContext.Error != error)
+            {
                 throw new InvalidOperationException("Current error context error is different to requested error.");
+            }
 
             return _currentErrorContext;
         }
@@ -93,7 +99,9 @@ namespace Newtonsoft.Json.Serialization
         protected void ClearErrorContext()
         {
             if (_currentErrorContext == null)
+            {
                 throw new InvalidOperationException("Could not clear error context. Error context is already null.");
+            }
 
             _currentErrorContext = null;
         }
@@ -110,22 +118,30 @@ namespace Newtonsoft.Json.Serialization
                 // kind of a hack but meh. might clean this up later
                 string message = (GetType() == typeof(JsonSerializerInternalWriter)) ? "Error serializing" : "Error deserializing";
                 if (contract != null)
+                {
                     message += " " + contract.UnderlyingType;
+                }
                 message += ". " + ex.Message;
 
                 // add line information to non-json.net exception message
                 if (!(ex is JsonException))
+                {
                     message = JsonPosition.FormatMessage(lineInfo, path, message);
+                }
 
                 TraceWriter.Trace(TraceLevel.Error, message, ex);
             }
 
             // attribute method is non-static so don't invoke if no object
             if (contract != null && currentObject != null)
+            {
                 contract.InvokeOnError(currentObject, Serializer.Context, errorContext);
+            }
 
             if (!errorContext.Handled)
+            {
                 Serializer.OnError(new ErrorEventArgs(currentObject, errorContext));
+            }
 
             return errorContext.Handled;
         }

@@ -196,7 +196,6 @@ namespace Newtonsoft.Json.Utilities
         }
 
         #region Parse
-
         internal static bool TryParseDateTimeIso(StringReference text, DateTimeZoneHandling dateTimeZoneHandling, out DateTime dt)
         {
             DateTimeParser dateTimeParser = new DateTimeParser();
@@ -228,7 +227,9 @@ namespace Newtonsoft.Json.Utilities
                     {
                         ticks += d.GetUtcOffset().Ticks;
                         if (ticks > DateTime.MaxValue.Ticks)
+                        {
                             ticks = DateTime.MaxValue.Ticks;
+                        }
 
                         d = new DateTime(ticks, DateTimeKind.Local);
                     }
@@ -246,7 +247,9 @@ namespace Newtonsoft.Json.Utilities
                     {
                         ticks += d.GetUtcOffset().Ticks;
                         if (ticks < DateTime.MinValue.Ticks)
+                        {
                             ticks = DateTime.MinValue.Ticks;
+                        }
 
                         d = new DateTime(ticks, DateTimeKind.Local);
                     }
@@ -449,9 +452,11 @@ namespace Newtonsoft.Json.Utilities
                 else if (s.Length >= 19 && s.Length <= 40 && char.IsDigit(s[0]) && s[10] == 'T')
                 {
                     if (DateTimeOffset.TryParseExact(s, IsoDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.RoundtripKind, out dt))
-                    if (TryParseDateTimeOffsetIso(new StringReference(s.ToCharArray(), 0, s.Length), out dt))
                     {
-                        return true;
+                        if (TryParseDateTimeOffsetIso(new StringReference(s.ToCharArray(), 0, s.Length), out dt))
+                        {
+                            return true;
+                        }
                     }
                 }
 
@@ -476,13 +481,15 @@ namespace Newtonsoft.Json.Utilities
             int index = text.IndexOf('+', 7, text.Length - 8);
 
             if (index == -1)
+            {
                 index = text.IndexOf('-', 7, text.Length - 8);
+            }
 
             if (index != -1)
             {
                 kind = DateTimeKind.Local;
 
-                if (!TryReadOffset(text, index, out offset))
+                if (!TryReadOffset(text, index + text.StartIndex, out offset))
                 {
                     ticks = 0;
                     return false;
@@ -494,7 +501,7 @@ namespace Newtonsoft.Json.Utilities
                 index = text.Length - 2;
             }
 
-            return (ConvertUtils.Int64TryParse(text.Chars, 6, index - 6, out ticks) == ParseResult.Success);
+            return (ConvertUtils.Int64TryParse(text.Chars, 6 + text.StartIndex, index - 6, out ticks) == ParseResult.Success);
         }
 
         private static bool TryParseDateTimeMicrosoft(StringReference text, DateTimeZoneHandling dateTimeZoneHandling, out DateTime dt)
@@ -642,7 +649,9 @@ namespace Newtonsoft.Json.Utilities
                 {
                     case DateTimeKind.Unspecified:
                         if (value != DateTime.MaxValue && value != DateTime.MinValue)
+                        {
                             pos = WriteDateTimeOffset(chars, pos, o, format);
+                        }
                         break;
                     case DateTimeKind.Local:
                         pos = WriteDateTimeOffset(chars, pos, o, format);
@@ -729,7 +738,9 @@ namespace Newtonsoft.Json.Utilities
             start += 2;
 
             if (format == DateFormatHandling.IsoDateFormat)
+            {
                 chars[start++] = ':';
+            }
 
             int absMinutes = Math.Abs(offset.Minutes);
             CopyIntToCharArray(chars, start, absMinutes, 2);
@@ -769,7 +780,9 @@ namespace Newtonsoft.Json.Utilities
             int y100 = n / DaysPer100Years;
             // Last 100-year period has an extra day, so decrement result if 4
             if (y100 == 4)
+            {
                 y100 = 3;
+            }
             // n = day number within 100-year period
             n -= y100 * DaysPer100Years;
             // y4 = number of whole 4-year periods within 100-year period
@@ -780,7 +793,9 @@ namespace Newtonsoft.Json.Utilities
             int y1 = n / DaysPerYear;
             // Last year has an extra day, so decrement result if 4
             if (y1 == 4)
+            {
                 y1 = 3;
+            }
 
             year = y400 * 400 + y100 * 100 + y4 * 4 + y1 + 1;
 

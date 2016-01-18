@@ -1753,4 +1753,5 @@ namespace Newtonsoft.Json.Tests
         }
     }
 }
+
 #pragma warning restore 618

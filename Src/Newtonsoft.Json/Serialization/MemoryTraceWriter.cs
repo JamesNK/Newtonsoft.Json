@@ -42,7 +42,9 @@ namespace Newtonsoft.Json.Serialization
         public void Trace(TraceLevel level, string message, Exception ex)
         {
             if (_traceMessages.Count >= 1000)
+            {
                 _traceMessages.Dequeue();
+            }
 
             StringBuilder sb = new StringBuilder();
             sb.Append(DateTime.Now.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff", CultureInfo.InvariantCulture));
@@ -75,7 +77,9 @@ namespace Newtonsoft.Json.Serialization
             foreach (string traceMessage in _traceMessages)
             {
                 if (sb.Length > 0)
+                {
                     sb.AppendLine();
+                }
 
                 sb.Append(traceMessage);
             }

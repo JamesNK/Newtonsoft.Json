@@ -43,6 +43,7 @@ using System.IO;
 using Newtonsoft.Json.Tests.TestObjects;
 #if !(NETFX_CORE || DNXCORE50)
 using System.Data;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Schema
@@ -185,7 +186,9 @@ namespace Newtonsoft.Json.Tests.Schema
             token.Validate(typeSchema, (sender, args) => { errors.Add(args.Message); });
 
             if (errors.Count > 0)
+            {
                 Assert.Fail("Schema generated for type '{0}' is not valid." + Environment.NewLine + string.Join(Environment.NewLine, errors.ToArray()), typeof(T));
+            }
         }
 
         [Test]
@@ -460,4 +463,5 @@ namespace Newtonsoft.Json.Tests.Schema
         }
     }
 }
+
 #pragma warning restore 618

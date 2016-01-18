@@ -6,6 +6,6 @@
     "net20": {}
   },
   "runtimes": {
-    "win-anycpu": {}
+    "win": {}
   }
 }

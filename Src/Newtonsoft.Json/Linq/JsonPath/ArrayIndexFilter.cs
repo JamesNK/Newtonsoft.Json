@@ -14,10 +14,12 @@ namespace Newtonsoft.Json.Linq.JsonPath
             {
                 if (Index != null)
                 {
-                    JToken v = GetTokenIndex(t, errorWhenNoMatch, Index.Value);
+                    JToken v = GetTokenIndex(t, errorWhenNoMatch, Index.GetValueOrDefault());
 
                     if (v != null)
+                    {
                         yield return v;
+                    }
                 }
                 else
                 {
@@ -31,7 +33,9 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     else
                     {
                         if (errorWhenNoMatch)
+                        {
                             throw new JsonException("Index * not valid on {0}.".FormatWith(CultureInfo.InvariantCulture, t.GetType().Name));
+                        }
                     }
                 }
             }

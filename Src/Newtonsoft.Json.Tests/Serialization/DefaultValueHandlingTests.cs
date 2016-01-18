@@ -56,6 +56,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             public MyEnum Status { get; set; }
 
             private string _data;
+
             public string Data
             {
                 get { return _data; }
@@ -82,7 +83,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = "{\"Data\":\"Other with some more text\"}";
 
             MyClass result = JsonConvert.DeserializeObject<MyClass>(json, new JsonSerializerSettings() { DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate });
-            
+
             Assert.AreEqual(MyEnum.Other, result.Status);
         }
 
@@ -382,6 +383,79 @@ namespace Newtonsoft.Json.Tests.Serialization
             [DefaultValue(6)]
             public int IntValue { get; set; }
         }
+
+        public sealed class FieldExportFormat
+        {
+            private string _format;
+            private ExportFormat? _exportFormat;
+
+            [JsonProperty]
+            public ExportFormat? ExportFormat
+            {
+                get { return _exportFormat; }
+                private set
+                {
+                    if (!value.HasValue)
+                    {
+                        throw new ArgumentNullException("ExportFormat");
+                    }
+                    _exportFormat = value;
+                    _format = null;
+                }
+            }
+
+            [JsonProperty]
+            public string Format
+            {
+                get { return _format; }
+                private set
+                {
+                    if (value == null)
+                    {
+                        throw new ArgumentNullException("Format");
+                    }
+                    _format = value;
+                    _exportFormat = null;
+                }
+            }
+
+            public FieldExportFormat(string format)
+            {
+                Format = format;
+            }
+
+            public FieldExportFormat(ExportFormat exportFormat)
+            {
+                ExportFormat = exportFormat;
+            }
+
+            [JsonConstructor]
+            private FieldExportFormat(string format, ExportFormat? exportFormat)
+            {
+                if (exportFormat.HasValue)
+                {
+                    ExportFormat = exportFormat;
+                }
+                else
+                {
+                    Format = format;
+                }
+            }
+        }
+
+        [Test]
+        public void DontSetPropertiesDefaultValueUsedInConstructor()
+        {
+            string json = @"{""ExportFormat"":0}";
+
+            FieldExportFormat o = JsonConvert.DeserializeObject<FieldExportFormat>(json, new JsonSerializerSettings
+            {
+                DefaultValueHandling = DefaultValueHandling.Populate
+            });
+
+            Assert.AreEqual(ExportFormat.Default, o.ExportFormat);
+            Assert.AreEqual(null, o.Format);
+        }
     }
 
 #if !NET20
@@ -528,4 +602,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         public object Object { get; set; }
     }
 #endif
+
+    public enum ExportFormat
+    {
+        Default = 0,
+        Currency,
+        Integer
+    }
 }

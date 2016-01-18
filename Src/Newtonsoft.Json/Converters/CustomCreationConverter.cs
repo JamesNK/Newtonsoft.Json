@@ -57,11 +57,15 @@ namespace Newtonsoft.Json.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
+            {
                 return null;
+            }
 
             T value = Create(objectType);
             if (value == null)
+            {
                 throw new JsonSerializationException("No object created.");
+            }
 
             serializer.Populate(reader, value);
             return value;

@@ -256,9 +256,13 @@ namespace Newtonsoft.Json.Tests.Converters
 
             // if the current timezone is utc then local already equals utc
             if (offset == TimeSpan.Zero)
+            {
                 Assert.AreEqual(json, json2);
+            }
             else
+            {
                 Assert.AreNotEqual(json, json2);
+            }
         }
 #endif
 

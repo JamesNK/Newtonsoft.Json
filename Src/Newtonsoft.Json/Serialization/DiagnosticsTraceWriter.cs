@@ -33,7 +33,7 @@ namespace Newtonsoft.Json.Serialization
                 case TraceLevel.Verbose:
                     return TraceEventType.Verbose;
                 default:
-                    throw new ArgumentOutOfRangeException("level");
+                    throw new ArgumentOutOfRangeException(nameof(level));
             }
         }
 
@@ -46,7 +46,9 @@ namespace Newtonsoft.Json.Serialization
         public void Trace(TraceLevel level, string message, Exception ex)
         {
             if (level == TraceLevel.Off)
+            {
                 return;
+            }
 
             TraceEventCache eventCache = new TraceEventCache();
             TraceEventType traceEventType = GetTraceEventType(level);
@@ -66,7 +68,9 @@ namespace Newtonsoft.Json.Serialization
                 }
 
                 if (DiagnosticsTrace.AutoFlush)
+                {
                     listener.Flush();
+                }
             }
         }
     }

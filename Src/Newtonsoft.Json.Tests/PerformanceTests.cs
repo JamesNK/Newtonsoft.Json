@@ -23,9 +23,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || NET35 || NETFX_CORE || PORTABLE || DNXCORE50)
+#if !(NET20 || NET35 || NET40 || NETFX_CORE || PORTABLE || PORTABLE40 || DNXCORE50)
 using System.Xml;
 using System;
+using System.Buffers;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -66,8 +67,12 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public class PerformanceTests : TestFixtureBase
     {
+#if DEBUG
+        public int Iterations = 1;
+#else
         public int Iterations = 100;
-        //private const int Iterations = 5000;
+        //public int Iterations = 10000;
+#endif
 
         #region Data
         private const string BsonHex =
@@ -79,7 +84,7 @@ namespace Newtonsoft.Json.Tests
         private const string XmlText =
             @"<TestClass xmlns=""http://schemas.datacontract.org/2004/07/Newtonsoft.Json.Tests"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><Address1><Entered>2010-01-21T11:12:16.0809174+13:00</Entered><Phone>(503) 814-6335</Phone><Street>fff Street</Street></Address1><Addresses><Address><Entered>2009-12-31T11:12:16.0809174+13:00</Entered><Phone>(503) 814-6335</Phone><Street>&#x1F;array&lt;address</Street></Address><Address><Entered>2009-12-30T11:12:16.0809174+13:00</Entered><Phone>(503) 814-6335</Phone><Street>array 2 address</Street></Address></Addresses><BigNumber>34123123123.121</BigNumber><Name>Rick</Name><Now>2010-01-01T12:12:16.0809174+13:00</Now><dictionary xmlns:a=""http://schemas.microsoft.com/2003/10/Serialization/Arrays""><a:KeyValueOfstringint><a:Key>Val &amp; asd1</a:Key><a:Value>1</a:Value></a:KeyValueOfstringint><a:KeyValueOfstringint><a:Key>Val2 &amp; asd1</a:Key><a:Value>3</a:Value></a:KeyValueOfstringint><a:KeyValueOfstringint><a:Key>Val3 &amp; asd1</a:Key><a:Value>4</a:Value></a:KeyValueOfstringint></dictionary><strings xmlns:a=""http://schemas.microsoft.com/2003/10/Serialization/Arrays""><a:string i:nil=""true""/><a:string>Markus egger ]&gt;&lt;[, (2nd)</a:string><a:string i:nil=""true""/></strings></TestClass>";
 
-        private const string JsonText =
+        public const string JsonText =
             @"{""strings"":[null,""Markus egger ]><[, (2nd)"",null],""dictionary"":{""Val & asd1"":1,""Val2 & asd1"":3,""Val3 & asd1"":4},""Name"":""Rick"",""Now"":""\/Date(1262301136080+1300)\/"",""BigNumber"":34123123123.121,""Address1"":{""Street"":""fff Street"",""Phone"":""(503) 814-6335"",""Entered"":""\/Date(1264025536080+1300)\/""},""Addresses"":[{""Street"":""\u001farray<address"",""Phone"":""(503) 814-6335"",""Entered"":""\/Date(1262211136080+1300)\/""},{""Street"":""array 2 address"",""Phone"":""(503) 814-6335"",""Entered"":""\/Date(1262124736080+1300)\/""}]}";
 
         private const string JsonIsoText =
@@ -345,7 +350,6 @@ namespace Newtonsoft.Json.Tests
                     ""Property5"":""5""
                 }";
 
-
             var watch = new Stopwatch();
             watch.Start();
             for (long iteration = 0; iteration < totalIterations; ++iteration)
@@ -584,7 +588,6 @@ If attributes are not mentioned, default values are used in each case.
 
             test.dictionary = new Dictionary<string, int> { { "Val & asd1", 1 }, { "Val2 & asd1", 3 }, { "Val3 & asd1", 4 } };
 
-
             test.Address1.Street = "fff Street";
             test.Address1.Entered = DateTime.Now.AddDays(20);
 
@@ -786,7 +789,7 @@ If attributes are not mentioned, default values are used in each case.
                     json = SerializeBinaryFormatter(value);
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("method");
+                    throw new ArgumentOutOfRangeException(nameof(method));
             }
 
             return json;
@@ -809,9 +812,12 @@ If attributes are not mentioned, default values are used in each case.
         public void BenchmarkDeserializeMethod<T>(SerializeMethod method, object json, int? iterations = null, bool warmUp = true)
         {
             GC.Collect();
+            GC.WaitForPendingFinalizers();
 
             if (warmUp)
+            {
                 Deserialize<T>(method, json);
+            }
 
             Stopwatch timed = new Stopwatch();
             timed.Start();
@@ -841,10 +847,17 @@ If attributes are not mentioned, default values are used in each case.
             //serializer.MissingMemberHandling = Newtonsoft.Json.MissingMemberHandling.Ignore;
             //serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             if (isoDateTimeConverter)
+            {
                 serializer.Converters.Add(new IsoDateTimeConverter());
+            }
 
-            var value = (T)serializer.Deserialize(new StringReader(json), type);
-            return value;
+            using (JsonTextReader reader = new JsonTextReader(new StringReader(json)))
+            {
+                //reader.ArrayPool = JsonArrayPool.Instance;
+
+                var value = (T)serializer.Deserialize(reader, type);
+                return value;
+            }
         }
 
         public TestClass DeserializeJsonNetManual(string json)
@@ -973,7 +986,9 @@ If attributes are not mentioned, default values are used in each case.
                     return DeserializeJsonNet<T>((string)json, true);
                 case SerializeMethod.JsonNetManual:
                     if (typeof(T) == typeof(TestClass))
+                    {
                         return (T)(object)DeserializeJsonNetManual((string)json);
+                    }
 
                     return default(T);
                 case SerializeMethod.JsonNetBinary:
@@ -987,7 +1002,7 @@ If attributes are not mentioned, default values are used in each case.
                 case SerializeMethod.DataContractJsonSerializer:
                     return DeserializeDataContractJson<T>((string)json);
                 default:
-                    throw new ArgumentOutOfRangeException("method");
+                    throw new ArgumentOutOfRangeException(nameof(method));
             }
         }
 
@@ -1020,9 +1035,13 @@ If attributes are not mentioned, default values are used in each case.
                 };
 
                 if (rootValue == null)
+                {
                     rootValue = currentValue;
+                }
                 if (parentValue != null)
+                {
                     parentValue.Child = currentValue;
+                }
 
                 parentValue = currentValue;
             }
@@ -1205,7 +1224,6 @@ If attributes are not mentioned, default values are used in each case.
         }
 
         private Address _Address1 = new Address();
-
 
         [DataMember]
         public List<Address> Addresses

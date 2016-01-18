@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="stream">The stream.</param>
         public BsonWriter(Stream stream)
         {
-            ValidationUtils.ArgumentNotNull(stream, "stream");
+            ValidationUtils.ArgumentNotNull(stream, nameof(stream));
             _writer = new BsonBinaryWriter(new BinaryWriter(stream));
         }
 
@@ -75,7 +75,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="writer">The writer.</param>
         public BsonWriter(BinaryWriter writer)
         {
-            ValidationUtils.ArgumentNotNull(writer, "writer");
+            ValidationUtils.ArgumentNotNull(writer, nameof(writer));
             _writer = new BsonBinaryWriter(writer);
         }
 
@@ -177,7 +177,9 @@ namespace Newtonsoft.Json.Bson
             base.Close();
 
             if (CloseOutput && _writer != null)
+            {
                 _writer.Close();
+            }
         }
 
         private void AddParent(BsonToken container)
@@ -213,7 +215,9 @@ namespace Newtonsoft.Json.Bson
             else
             {
                 if (token.Type != BsonType.Object && token.Type != BsonType.Array)
+                {
                     throw JsonWriterException.Create(this, "Error writing {0} value. BSON must start with an Object or Array.".FormatWith(CultureInfo.InvariantCulture, token.Type), null);
+                }
 
                 _parent = token;
                 _root = token;
@@ -267,9 +271,13 @@ namespace Newtonsoft.Json.Bson
         {
             base.WriteValue(value);
             if (value == null)
+            {
                 AddValue(null, BsonType.Null);
+            }
             else
+            {
                 AddToken(new BsonString(value, true));
+            }
         }
 
         /// <summary>
@@ -290,7 +298,9 @@ namespace Newtonsoft.Json.Bson
         public override void WriteValue(uint value)
         {
             if (value > int.MaxValue)
+            {
                 throw JsonWriterException.Create(this, "Value is too large to fit in a signed 32 bit integer. BSON does not support unsigned values.", null);
+            }
 
             base.WriteValue(value);
             AddValue(value, BsonType.Integer);
@@ -314,7 +324,9 @@ namespace Newtonsoft.Json.Bson
         public override void WriteValue(ulong value)
         {
             if (value > long.MaxValue)
+            {
                 throw JsonWriterException.Create(this, "Value is too large to fit in a signed 64 bit integer. BSON does not support unsigned values.", null);
+            }
 
             base.WriteValue(value);
             AddValue(value, BsonType.Long);
@@ -488,10 +500,12 @@ namespace Newtonsoft.Json.Bson
         /// <param name="value">The Object ID value to write.</param>
         public void WriteObjectId(byte[] value)
         {
-            ValidationUtils.ArgumentNotNull(value, "value");
+            ValidationUtils.ArgumentNotNull(value, nameof(value));
 
             if (value.Length != 12)
+            {
                 throw JsonWriterException.Create(this, "An object id must be 12 bytes", null);
+            }
 
             // hack to update the writer state
             UpdateScopeWithFinishedValue();
@@ -506,7 +520,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="options">The regex options.</param>
         public void WriteRegex(string pattern, string options)
         {
-            ValidationUtils.ArgumentNotNull(pattern, "pattern");
+            ValidationUtils.ArgumentNotNull(pattern, nameof(pattern));
 
             // hack to update the writer state
             UpdateScopeWithFinishedValue();

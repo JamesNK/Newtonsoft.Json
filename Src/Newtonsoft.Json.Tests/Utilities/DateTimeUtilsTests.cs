@@ -178,6 +178,21 @@ namespace Newtonsoft.Json.Tests.Utilities
 
 #if !NET20
         [Test]
+        public void ReadOffsetMSDateTimeOffset()
+        {
+            char[] c = @"12345/Date(1418924498000+0800)/12345".ToCharArray();
+            StringReference reference = new StringReference(c, 5, c.Length - 10);
+
+            DateTimeOffset d;
+            DateTimeUtils.TryParseDateTimeOffset(reference, null, CultureInfo.InvariantCulture, out d);
+
+            long initialTicks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(d.DateTime, d.Offset);
+
+            Assert.AreEqual(1418924498000, initialTicks);
+            Assert.AreEqual(8, d.Offset.Hours);
+        }
+
+        [Test]
         public void NewDateTimeOffsetParse()
         {
             AssertNewDateTimeOffsetParseEqual("0001-01-01T00:00:00");

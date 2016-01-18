@@ -40,6 +40,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -529,39 +530,40 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("AAECAwQFBgcICQ==", (string)o["$value"]);
         }
 
-        public class ItemWithTypedPayload
+        public class ItemWithUntypedPayload
         {
-            public double Payload { get; set; }
+            public object Payload { get; set; }
         }
 
         [Test]
-        public void PrimitiveType_MetadataPropertyIgnore_WithType()
+        public void PrimitiveType_MetadataPropertyIgnore_WithNoType()
         {
-            ItemWithTypedPayload actual = JsonConvert.DeserializeObject<ItemWithTypedPayload>(@"{
+            ItemWithUntypedPayload actual = JsonConvert.DeserializeObject<ItemWithUntypedPayload>(@"{
   ""Payload"": {
-    ""$type"": ""System.Double, mscorlib"",
+    ""$type"": ""System.Single, mscorlib"",
     ""$value"": ""5""
   }
 }",
-                new JsonSerializerSettings());
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto
+                });
 
-            Assert.AreEqual(5d, actual.Payload);
+            Assert.AreEqual(5f, actual.Payload);
 
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
-            {
-                JsonConvert.DeserializeObject<ItemWithTypedPayload>(@"{
+            actual = JsonConvert.DeserializeObject<ItemWithUntypedPayload>(@"{
   ""Payload"": {
-    ""$type"": ""System.Double, mscorlib"",
+    ""$type"": ""System.Single, mscorlib"",
     ""$value"": ""5""
   }
 }",
-                    new JsonSerializerSettings
-                    {
-                        MetadataPropertyHandling = MetadataPropertyHandling.Ignore
-                    });
-            }, @"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Double' because the type requires a JSON primitive value (e.g. string, number, boolean, null) to deserialize correctly.
-To fix this error either change the JSON to a JSON primitive value (e.g. string, number, boolean, null) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
-Path 'Payload.$type', line 3, position 12.");
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto,
+                    MetadataPropertyHandling = MetadataPropertyHandling.Ignore
+                });
+
+            Assert.IsTrue(actual.Payload is JObject);
         }
 
         [Test]

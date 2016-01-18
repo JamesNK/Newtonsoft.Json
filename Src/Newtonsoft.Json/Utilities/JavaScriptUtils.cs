@@ -41,42 +41,40 @@ namespace Newtonsoft.Json.Utilities
 {
     internal static class BufferUtils
     {
-        public static char[] RentBuffer(IJsonBufferPool<char> bufferPool, int minSize)
+        public static char[] RentBuffer(IArrayPool<char> bufferPool, int minSize)
         {
             if (bufferPool == null)
             {
                 return new char[minSize];
             }
 
-            char[] buffer = bufferPool.RentBuffer(minSize);
+            char[] buffer = bufferPool.Rent(minSize);
             return buffer;
         }
 
-        public static void ReturnBuffer(IJsonBufferPool<char> bufferPool, ref char[] buffer)
+        public static void ReturnBuffer(IArrayPool<char> bufferPool, char[] buffer)
         {
             if (bufferPool == null)
             {
-                buffer = null;
                 return;
             }
 
-            bufferPool.ReturnBuffer(ref buffer);
+            bufferPool.Return(buffer);
         }
 
-        public static void EnsureBufferSize(IJsonBufferPool<char> bufferPool, int size, ref char[] buffer)
+        public static char[] EnsureBufferSize(IArrayPool<char> bufferPool, int size, char[] buffer)
         {
             if (bufferPool == null)
             {
-                buffer = new char[size];
-                return;
+                return new char[size];
             }
 
             if (buffer != null)
             {
-                bufferPool.ReturnBuffer(ref buffer);
+                bufferPool.Return(buffer);
             }
 
-            buffer = bufferPool.RentBuffer(size);
+            return bufferPool.Rent(size);
         }
     }
 
@@ -118,10 +116,14 @@ namespace Newtonsoft.Json.Utilities
         public static bool[] GetCharEscapeFlags(StringEscapeHandling stringEscapeHandling, char quoteChar)
         {
             if (stringEscapeHandling == StringEscapeHandling.EscapeHtml)
+            {
                 return HtmlCharEscapeFlags;
+            }
 
             if (quoteChar == '"')
+            {
                 return DoubleQuoteCharEscapeFlags;
+            }
 
             return SingleQuoteCharEscapeFlags;
         }
@@ -129,23 +131,29 @@ namespace Newtonsoft.Json.Utilities
         public static bool ShouldEscapeJavaScriptString(string s, bool[] charEscapeFlags)
         {
             if (s == null)
+            {
                 return false;
+            }
 
             foreach (char c in s)
             {
                 if (c >= charEscapeFlags.Length || charEscapeFlags[c])
+                {
                     return true;
+                }
             }
 
             return false;
         }
 
         public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters,
-            bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, IJsonBufferPool<char> bufferPool, ref char[] writeBuffer)
+            bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, IArrayPool<char> bufferPool, ref char[] writeBuffer)
         {
             // leading delimiter
             if (appendDelimiters)
+            {
                 writer.Write(delimiter);
+            }
 
             if (s != null)
             {
@@ -156,7 +164,9 @@ namespace Newtonsoft.Json.Utilities
                     var c = s[i];
 
                     if (c < charEscapeFlags.Length && !charEscapeFlags[c])
+                    {
                         continue;
+                    }
 
                     string escapedValue;
 
@@ -204,7 +214,7 @@ namespace Newtonsoft.Json.Utilities
                                 {
                                     if (writeBuffer == null || writeBuffer.Length < UnicodeTextLength)
                                     {
-                                        BufferUtils.EnsureBufferSize(bufferPool, UnicodeTextLength, ref writeBuffer);
+                                        writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, UnicodeTextLength, writeBuffer);
                                     }
 
                                     StringUtils.ToCharAsUnicode(c, writeBuffer);
@@ -221,7 +231,9 @@ namespace Newtonsoft.Json.Utilities
                     }
 
                     if (escapedValue == null)
+                    {
                         continue;
+                    }
 
                     bool isEscapedUnicodeText = string.Equals(escapedValue, EscapedUnicodeText);
 
@@ -241,7 +253,7 @@ namespace Newtonsoft.Json.Utilities
                                 Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
                             }
 
-                            BufferUtils.ReturnBuffer(bufferPool, ref writeBuffer);
+                            BufferUtils.ReturnBuffer(bufferPool, writeBuffer);
 
                             writeBuffer = newBuffer;
                         }
@@ -254,9 +266,13 @@ namespace Newtonsoft.Json.Utilities
 
                     lastWritePosition = i + 1;
                     if (!isEscapedUnicodeText)
+                    {
                         writer.Write(escapedValue);
+                    }
                     else
+                    {
                         writer.Write(writeBuffer, 0, UnicodeTextLength);
+                    }
                 }
 
                 if (lastWritePosition == 0)
@@ -269,7 +285,9 @@ namespace Newtonsoft.Json.Utilities
                     int length = s.Length - lastWritePosition;
 
                     if (writeBuffer == null || writeBuffer.Length < length)
+                    {
                         writeBuffer = new char[length];
+                    }
 
                     s.CopyTo(lastWritePosition, writeBuffer, 0, length);
 
@@ -280,12 +298,9 @@ namespace Newtonsoft.Json.Utilities
 
             // trailing delimiter
             if (appendDelimiters)
+            {
                 writer.Write(delimiter);
-        }
-
-        public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters)
-        {
-            return ToEscapedJavaScriptString(value, delimiter, appendDelimiters, StringEscapeHandling.Default);
+            }
         }
 
         public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters, StringEscapeHandling stringEscapeHandling)

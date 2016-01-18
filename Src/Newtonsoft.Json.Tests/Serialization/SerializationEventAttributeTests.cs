@@ -104,7 +104,10 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Assert.AreEqual(expectedError, obj.Member5);
 
                 DerivedSerializationEventTestObject derivedObj = obj as DerivedSerializationEventTestObject;
-                if (derivedObj != null) Assert.AreEqual("This value was set after deserialization.", derivedObj.Member7);
+                if (derivedObj != null)
+                {
+                    Assert.AreEqual("This value was set after deserialization.", derivedObj.Member7);
+                }
             }
         }
 

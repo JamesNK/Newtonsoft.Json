@@ -43,7 +43,9 @@ namespace Newtonsoft.Json.Tests.TestObjects
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
+            {
                 return null;
+            }
             return new WidgetId1 { Value = int.Parse(reader.Value.ToString()) };
         }
     }

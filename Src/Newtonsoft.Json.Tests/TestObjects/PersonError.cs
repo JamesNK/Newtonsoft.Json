@@ -42,7 +42,9 @@ namespace Newtonsoft.Json.Tests.TestObjects
             get
             {
                 if (_roles == null)
+                {
                     throw new Exception("Roles not loaded!");
+                }
 
                 return _roles;
             }

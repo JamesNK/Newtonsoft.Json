@@ -48,6 +48,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 using System.Linq;
 #endif
 using System.IO;
+using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Tests.Linq
 {
@@ -220,8 +221,8 @@ namespace Newtonsoft.Json.Tests.Linq
 
             IJsonLineInfo lineInfo = v;
             Assert.AreEqual(true, lineInfo.HasLineInfo());
-            Assert.AreEqual(3, lineInfo.LineNumber);
-            Assert.AreEqual(0, lineInfo.LinePosition);
+            Assert.AreEqual(2, lineInfo.LineNumber);
+            Assert.AreEqual(5, lineInfo.LinePosition);
         }
 
         [Test]
@@ -722,7 +723,7 @@ keyword such as type of business.""
             Post p = new Post
             {
                 Title = "How to use FromObject",
-                Categories = new [] { "LINQ to JSON" }
+                Categories = new[] { "LINQ to JSON" }
             };
 
             // serialize Post to JSON then parse JSON – SLOW!
@@ -1110,8 +1111,8 @@ keyword such as type of business.""
       }
     ]
   }
-}", o.ToString()); 
-            
+}", o.ToString());
+
             CustomAssert.IsInstanceOfType(typeof(JObject), o);
             CustomAssert.IsInstanceOfType(typeof(JObject), o["channel"]);
             Assert.AreEqual("James Newton-King", (string)o["channel"]["title"]);
@@ -1326,6 +1327,57 @@ keyword such as type of business.""
 
                 Assert.AreEqual(users["name2"], "Matthew Doig");
             }, "The best overloaded method match for 'System.Collections.Generic.IDictionary<string,string>.Add(string, string)' has some invalid arguments");
+        }
+#endif
+
+#if !(NET20)
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum FooBar
+        {
+            [EnumMember(Value = "SOME_VALUE")]
+            SomeValue,
+
+            [EnumMember(Value = "SOME_OTHER_VALUE")]
+            SomeOtherValue
+        }
+
+        public class MyObject
+        {
+            public FooBar FooBar { get; set; }
+        }
+
+        [Test]
+        public void ToObject_Enum_Converter()
+        {
+            JObject o = JObject.Parse("{'FooBar':'SOME_OTHER_VALUE'}");
+
+            FooBar e = o["FooBar"].ToObject<FooBar>();
+            Assert.AreEqual(FooBar.SomeOtherValue, e);
+        }
+
+        public enum FooBarNoEnum
+        {
+            [EnumMember(Value = "SOME_VALUE")]
+            SomeValue,
+
+            [EnumMember(Value = "SOME_OTHER_VALUE")]
+            SomeOtherValue
+        }
+
+        public class MyObjectNoEnum
+        {
+            public FooBarNoEnum FooBarNoEnum { get; set; }
+        }
+
+        [Test]
+        public void ToObject_Enum_NoConverter()
+        {
+            JObject o = JObject.Parse("{'FooBarNoEnum':'SOME_OTHER_VALUE'}");
+
+            ExceptionAssert.Throws<ArgumentException>(() =>
+            {
+                o["FooBarNoEnum"].ToObject<FooBarNoEnum>();
+            }, "Could not convert 'SOME_OTHER_VALUE' to FooBarNoEnum.");
         }
 #endif
 

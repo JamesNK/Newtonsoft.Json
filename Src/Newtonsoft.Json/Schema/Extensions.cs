@@ -117,14 +117,16 @@ namespace Newtonsoft.Json.Schema
         [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
         public static void Validate(this JToken source, JsonSchema schema, ValidationEventHandler validationEventHandler)
         {
-            ValidationUtils.ArgumentNotNull(source, "source");
-            ValidationUtils.ArgumentNotNull(schema, "schema");
+            ValidationUtils.ArgumentNotNull(source, nameof(source));
+            ValidationUtils.ArgumentNotNull(schema, nameof(schema));
 
             using (JsonValidatingReader reader = new JsonValidatingReader(source.CreateReader()))
             {
                 reader.Schema = schema;
                 if (validationEventHandler != null)
+                {
                     reader.ValidationEventHandler += validationEventHandler;
+                }
 
                 while (reader.Read())
                 {

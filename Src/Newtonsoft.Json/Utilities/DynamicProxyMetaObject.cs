@@ -76,7 +76,6 @@ namespace Newtonsoft.Json.Utilities
                 : base.BindDeleteMember(binder);
         }
 
-
         public override DynamicMetaObject BindConvert(ConvertBinder binder)
         {
             return IsOverridden("TryConvert")
@@ -87,7 +86,9 @@ namespace Newtonsoft.Json.Utilities
         public override DynamicMetaObject BindInvokeMember(InvokeMemberBinder binder, DynamicMetaObject[] args)
         {
             if (!IsOverridden("TryInvokeMember"))
+            {
                 return base.BindInvokeMember(binder, args);
+            }
 
             //
             // Generate a tree like:
@@ -123,7 +124,6 @@ namespace Newtonsoft.Json.Utilities
 
             return _dontFallbackFirst ? call : fallback(call);
         }
-
 
         public override DynamicMetaObject BindCreateInstance(CreateInstanceBinder binder, DynamicMetaObject[] args)
         {
@@ -201,7 +201,9 @@ namespace Newtonsoft.Json.Utilities
         {
             Type t = binder.GetType();
             while (!t.IsVisible())
+            {
                 t = t.BaseType();
+            }
             return Expression.Constant(binder, t);
         }
 
@@ -260,7 +262,9 @@ namespace Newtonsoft.Json.Utilities
             }
 
             if (fallbackInvoke != null)
+            {
                 resultMetaObject = fallbackInvoke(resultMetaObject);
+            }
 
             DynamicMetaObject callDynamic = new DynamicMetaObject(
                 Expression.Block(

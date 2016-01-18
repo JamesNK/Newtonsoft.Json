@@ -263,7 +263,9 @@ namespace Newtonsoft.Json.Tests.Documentation
             {
                 // only log an error once
                 if (args.CurrentObject == args.ErrorContext.OriginalObject)
+                {
                     errors.Add(args.ErrorContext.Error.Message);
+                }
             };
             #endregion
         }
@@ -281,7 +283,9 @@ namespace Newtonsoft.Json.Tests.Documentation
                 get
                 {
                     if (_roles == null)
+                    {
                         throw new Exception("Roles not loaded!");
+                    }
 
                     return _roles;
                 }
@@ -917,4 +921,5 @@ namespace Newtonsoft.Json.Tests.Documentation
         }
     }
 }
+
 #endif

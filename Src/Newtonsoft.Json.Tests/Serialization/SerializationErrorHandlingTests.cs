@@ -47,6 +47,7 @@ using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 using NUnit.Framework;
 #endif
 using System.IO;
+using Newtonsoft.Json.Linq;
 using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -70,14 +71,15 @@ namespace Newtonsoft.Json.Tests.Serialization
   }
 ]";
 
-            var possibleMsgs = new [] {
+            var possibleMsgs = new[]
+            {
                 "[1] - Error message for member 1 = An item with the same key has already been added.",
                 "[1] - Error message for member 1 = An element with the same key already exists in the dictionary." // mono
             };
             VersionKeyedCollection c = JsonConvert.DeserializeObject<VersionKeyedCollection>(json);
             Assert.AreEqual(1, c.Count);
             Assert.AreEqual(1, c.Messages.Count);
-            Assert.IsTrue (possibleMsgs.Any (m => m == c.Messages[0]), "Expected One of: " + Environment.NewLine + string.Join (Environment.NewLine, possibleMsgs) + Environment.NewLine + "Was: " + Environment.NewLine + c.Messages[0]);
+            Assert.IsTrue(possibleMsgs.Any(m => m == c.Messages[0]), "Expected One of: " + Environment.NewLine + string.Join(Environment.NewLine, possibleMsgs) + Environment.NewLine + "Was: " + Environment.NewLine + c.Messages[0]);
         }
 
         [Test]
@@ -166,7 +168,9 @@ namespace Newtonsoft.Json.Tests.Serialization
                 Error = (s, e) =>
                 {
                     if (e.CurrentObject.GetType().IsArray)
+                    {
                         e.ErrorContext.Handled = true;
+                    }
                 }
             });
 
@@ -294,7 +298,6 @@ namespace Newtonsoft.Json.Tests.Serialization
         ""2000-12-01T00:00:00Z""
       ]")));
 
-
             // 2009-09-09T00:00:00Z
             // 1977-02-20T00:00:00Z
             // 2000-12-01T00:00:00Z
@@ -309,19 +312,20 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(new DateTime(2000, 12, 1, 0, 0, 0, DateTimeKind.Utc), c[2]);
 
             Assert.AreEqual(3, errors.Count);
-            var possibleErrs = new [] {
+            var possibleErrs = new[]
+            {
 #if !(NET20 || NET35)
                 "[1] - 1 - The string was not recognized as a valid DateTime. There is an unknown word starting at index 0.",
                 "[1] - 1 - String was not recognized as a valid DateTime."
 #else
-                // handle typo fix in later versions of .NET
+    // handle typo fix in later versions of .NET
                 "[1] - 1 - The string was not recognized as a valid DateTime. There is an unknown word starting at index 0.",
                 "[1] - 1 - The string was not recognized as a valid DateTime. There is a unknown word starting at index 0."
 #endif
             };
 
-            Assert.IsTrue(possibleErrs.Any (m => m == errors[0]), 
-                "Expected One of: " + string.Join (Environment.NewLine, possibleErrs) + Environment.NewLine + "But was: " + errors[0]);
+            Assert.IsTrue(possibleErrs.Any(m => m == errors[0]),
+                "Expected One of: " + string.Join(Environment.NewLine, possibleErrs) + Environment.NewLine + "But was: " + errors[0]);
 
             Assert.AreEqual("[2] - 2 - Unexpected token parsing date. Expected String, got StartArray. Path '[2]', line 4, position 9.", errors[1]);
             Assert.AreEqual("[4] - 4 - Cannot convert null value to System.DateTime. Path '[4]', line 8, position 12.", errors[2]);
@@ -395,7 +399,9 @@ namespace Newtonsoft.Json.Tests.Serialization
                 {
                     // only log an error once
                     if (args.CurrentObject == args.ErrorContext.OriginalObject)
+                    {
                         errors.Add(args.ErrorContext.Path + " - " + args.ErrorContext.Member + " - " + args.ErrorContext.Error.Message);
+                    }
                 };
 
                 serializer.Deserialize(new StringReader(json), typeof(List<List<DateTime>>));
@@ -517,7 +523,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
-        public void InfiniteLoopArrayHandling()
+        public void ArrayHandling()
         {
             IList<string> errors = new List<string>();
 
@@ -533,16 +539,43 @@ namespace Newtonsoft.Json.Tests.Serialization
                     }
                 });
 
-            Assert.IsNull(o);
+            Assert.IsNotNull(o);
 
-            Assert.AreEqual(3, errors.Count);
-            Assert.AreEqual("Unexpected character encountered while parsing value: x. Path '[0]', line 1, position 3.", errors[0]);
-            Assert.AreEqual("Unexpected character encountered while parsing value: x. Path '[0]', line 1, position 3.", errors[1]);
-            Assert.AreEqual("Infinite loop detected from error handling. Path '[0]', line 1, position 3.", errors[2]);
+            Assert.AreEqual(1, errors.Count);
+            Assert.AreEqual("Unexpected character encountered while parsing value: x. Path '[0]', line 1, position 4.", errors[0]);
+
+            Assert.AreEqual(1, ((int[])o).Length);
+            Assert.AreEqual(0, ((int[])o)[0]);
         }
 
         [Test]
-        public void InfiniteLoopArrayHandlingInObject()
+        public void ArrayHandling_JTokenReader()
+        {
+            IList<string> errors = new List<string>();
+
+            JTokenReader reader = new JTokenReader(new JArray(0, true));
+
+            JsonSerializer serializer = JsonSerializer.Create(new JsonSerializerSettings
+            {
+                Error = (sender, arg) =>
+                {
+                    errors.Add(arg.ErrorContext.Error.Message);
+                    arg.ErrorContext.Handled = true;
+                }
+            });
+            object o = serializer.Deserialize(reader, typeof(int[]));
+
+            Assert.IsNotNull(o);
+
+            Assert.AreEqual(1, errors.Count);
+            Assert.AreEqual("Error reading integer. Unexpected token: Boolean. Path '[1]'.", errors[0]);
+
+            Assert.AreEqual(1, ((int[])o).Length);
+            Assert.AreEqual(0, ((int[])o)[0]);
+        }
+
+        [Test]
+        public void ArrayHandlingInObject()
         {
             IList<string> errors = new List<string>();
 
@@ -558,13 +591,16 @@ namespace Newtonsoft.Json.Tests.Serialization
                     }
                 });
 
-            Assert.IsNull(o);
+            Assert.IsNotNull(o);
 
-            Assert.AreEqual(4, errors.Count);
-            Assert.AreEqual("Unexpected character encountered while parsing value: x. Path 'badarray[0]', line 1, position 15.", errors[0]);
-            Assert.AreEqual("Unexpected character encountered while parsing value: x. Path 'badarray[0]', line 1, position 15.", errors[1]);
-            Assert.AreEqual("Infinite loop detected from error handling. Path 'badarray[0]', line 1, position 15.", errors[2]);
-            Assert.AreEqual("Unexpected character encountered while parsing value: x. Path 'badarray[0]', line 1, position 15.", errors[3]);
+            Assert.AreEqual(2, errors.Count);
+            Assert.AreEqual("Unexpected character encountered while parsing value: x. Path 'badarray[0]', line 1, position 16.", errors[0]);
+            Assert.AreEqual("Unexpected character encountered while parsing value: ,. Path 'badarray[1]', line 1, position 17.", errors[1]);
+
+            Assert.AreEqual(2, o.Count);
+            Assert.AreEqual(2, o["badarray"].Length);
+            Assert.AreEqual(0, o["badarray"][0]);
+            Assert.AreEqual(2, o["badarray"][1]);
         }
 
         [Test]
@@ -820,7 +856,6 @@ namespace Newtonsoft.Json.Tests.Serialization
                     throw new NotImplementedException();
                 }
             }
-
         }
 
         [Test]
@@ -850,7 +885,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 Something = s
             };
-            
+
             var writer = new System.IO.StringWriter();
 
             ExceptionAssert.Throws<Exception>(() => { serialiser.Serialize(writer, r); }, "An error occurred.");

@@ -24,7 +24,11 @@
 #endregion
 
 using System;
+#if !(NET20 || NET35 || NET40 || NETFX_CORE || PORTABLE || PORTABLE40 || DNXCORE50)
+using System.Buffers;
+#endif
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -40,6 +44,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests
@@ -113,8 +118,8 @@ namespace Newtonsoft.Json.Tests
                 // create hex string from value
                 HtmlColor color = (HtmlColor)value;
                 string hexString = color.Red.ToString("X2")
-                    + color.Green.ToString("X2")
-                    + color.Blue.ToString("X2");
+                                   + color.Green.ToString("X2")
+                                   + color.Blue.ToString("X2");
 
                 // write value to json
                 writer.WriteValue("#" + hexString);
@@ -450,10 +455,13 @@ namespace Newtonsoft.Json.Tests
         public class House1
         {
             public string StreetAddress { get; set; }
+
             [JsonIgnore]
             public int Bedrooms { get; set; }
+
             [JsonIgnore]
             public decimal FloorArea { get; set; }
+
             [JsonIgnore]
             public DateTime BuildDate { get; set; }
         }
@@ -463,6 +471,7 @@ namespace Newtonsoft.Json.Tests
         {
             [JsonProperty]
             public string StreetAddress { get; set; }
+
             public int Bedrooms { get; set; }
             public decimal FloorArea { get; set; }
             public DateTime BuildDate { get; set; }
@@ -473,6 +482,7 @@ namespace Newtonsoft.Json.Tests
         {
             [JsonProperty("address")]
             public string StreetAddress { get; set; }
+
             public int Bedrooms { get; set; }
             public decimal FloorArea { get; set; }
             public DateTime BuildDate { get; set; }
@@ -483,8 +493,10 @@ namespace Newtonsoft.Json.Tests
         {
             [JsonProperty("address", Order = 2)]
             public string StreetAddress { get; set; }
+
             public int Bedrooms { get; set; }
             public decimal FloorArea { get; set; }
+
             [JsonProperty("buildDate", Order = 1)]
             public DateTime BuildDate { get; set; }
         }
@@ -494,8 +506,10 @@ namespace Newtonsoft.Json.Tests
         {
             [JsonProperty("address", Order = 2)]
             public string StreetAddress { get; set; }
+
             public int Bedrooms { get; set; }
             public decimal FloorArea { get; set; }
+
             [JsonProperty("buildDate", Order = 1)]
             [JsonConverter(typeof(JavaScriptDateTimeConverter))]
             public DateTime BuildDate { get; set; }
@@ -578,5 +592,40 @@ namespace Newtonsoft.Json.Tests
   ]
 }", json);
         }
+
+#if !(NET20 || NET35 || NET40 || NETFX_CORE || PORTABLE || PORTABLE40 || DNXCORE50)
+        [Test]
+        public void ArrayPooling()
+        {
+            IList<int> value;
+
+            JsonSerializer serializer = new JsonSerializer();
+            using (JsonTextReader reader = new JsonTextReader(new StringReader(@"[1,2,3,4]")))
+            {
+                reader.ArrayPool = JsonArrayPool.Instance;
+
+                value = serializer.Deserialize<IList<int>>(reader);
+            }
+
+            Assert.AreEqual(4, value.Count);
+        }
+
+        public class JsonArrayPool : IArrayPool<char>
+        {
+            public static readonly JsonArrayPool Instance = new JsonArrayPool();
+
+            public char[] Rent(int minimumLength)
+            {
+                // use System.Buffers shared pool
+                return ArrayPool<char>.Shared.Rent(minimumLength);
+            }
+
+            public void Return(char[] array)
+            {
+                // use System.Buffers shared pool
+                ArrayPool<char>.Shared.Return(array);
+            }
+        }
+#endif
     }
 }

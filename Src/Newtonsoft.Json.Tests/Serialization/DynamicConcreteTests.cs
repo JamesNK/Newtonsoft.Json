@@ -44,6 +44,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -59,7 +60,9 @@ namespace Newtonsoft.Json.Tests.Serialization
 
                 // create a dynamic mock object for interfaces or abstract classes
                 if (contract.CreatedType.IsInterface || contract.CreatedType.IsAbstract)
+                {
                     contract.DefaultCreator = () => DynamicConcrete.GetInstanceFor(contract.CreatedType);
+                }
 
                 return contract;
             }
@@ -79,7 +82,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
-        public void UseDynamicConcreteIfTargetObjectTypeIsAnAbstractClassWithNoConcrete() 
+        public void UseDynamicConcreteIfTargetObjectTypeIsAnAbstractClassWithNoConcrete()
         {
             string json = @"{Name:""Name!"", Game:""Same""}";
 
@@ -179,7 +182,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             IncludeType(targetType, typeBuilder);
 
             foreach (var face in targetType.GetInterfaces())
+            {
                 IncludeType(face, typeBuilder);
+            }
 
             return typeBuilder.CreateType();
         }
@@ -189,7 +194,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             var methodInfos = typeOfT.GetMethods();
             foreach (var methodInfo in methodInfos)
             {
-                if (methodInfo.Name.StartsWith("set_")) continue; // we always add a set for a get.
+                if (methodInfo.Name.StartsWith("set_"))
+                {
+                    continue; // we always add a set for a get.
+                }
 
                 if (methodInfo.Name.StartsWith("get_"))
                 {
@@ -197,12 +205,21 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
                 else
                 {
-                    if (methodInfo.IsAbstract) BindMethod(typeBuilder, methodInfo);
+                    if (methodInfo.IsAbstract)
+                    {
+                        BindMethod(typeBuilder, methodInfo);
+                    }
                 }
             }
 
-            if (typeOfT.IsInterface) typeBuilder.AddInterfaceImplementation(typeOfT);
-            else if (typeOfT.IsAbstract) typeBuilder.SetParent(typeOfT);
+            if (typeOfT.IsInterface)
+            {
+                typeBuilder.AddInterfaceImplementation(typeOfT);
+            }
+            else if (typeOfT.IsAbstract)
+            {
+                typeBuilder.SetParent(typeOfT);
+            }
         }
 
         static void BindMethod(TypeBuilder typeBuilder, MethodInfo methodInfo)
@@ -230,7 +247,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 else if (methodInfo.ReturnType.IsValueType || methodInfo.ReturnType.IsEnum)
                 {
                     var getMethod = typeof(Activator).GetMethod("CreateInstance",
-                                                                       new[] { typeof(Type) });
+                        new[] { typeof(Type) });
                     var lb = methodILGen.DeclareLocal(methodInfo.ReturnType);
                     if (lb.LocalType != null)
                     {
@@ -261,19 +278,18 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             //Getter
             var backingGet = typeBuilder.DefineMethod("get_" + propertyName, MethodAttributes.Public |
-                MethodAttributes.SpecialName | MethodAttributes.Virtual |
-                MethodAttributes.HideBySig, propertyType, Type.EmptyTypes);
+                                                                             MethodAttributes.SpecialName | MethodAttributes.Virtual |
+                                                                             MethodAttributes.HideBySig, propertyType, Type.EmptyTypes);
             var getIl = backingGet.GetILGenerator();
 
             getIl.Emit(OpCodes.Ldarg_0);
             getIl.Emit(OpCodes.Ldfld, backingField);
             getIl.Emit(OpCodes.Ret);
 
-
             //Setter
             var backingSet = typeBuilder.DefineMethod("set_" + propertyName, MethodAttributes.Public |
-                MethodAttributes.SpecialName | MethodAttributes.Virtual |
-                MethodAttributes.HideBySig, null, new[] { propertyType });
+                                                                             MethodAttributes.SpecialName | MethodAttributes.Virtual |
+                                                                             MethodAttributes.HideBySig, null, new[] { propertyType });
 
             var setIl = backingSet.GetILGenerator();
 
@@ -289,4 +305,5 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
     }
 }
+
 #endif

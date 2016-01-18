@@ -39,6 +39,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
 #if !(DOTNET || PORTABLE40 || PORTABLE)
 using System.Data.SqlTypes;
+
 #endif
 
 namespace Newtonsoft.Json.Utilities
@@ -276,7 +277,9 @@ namespace Newtonsoft.Json.Utilities
             public override bool Equals(object obj)
             {
                 if (!(obj is TypeConvertKey))
+                {
                     return false;
+                }
 
                 return Equals((TypeConvertKey)obj);
             }
@@ -294,10 +297,14 @@ namespace Newtonsoft.Json.Utilities
         {
             MethodInfo castMethodInfo = t.TargetType.GetMethod("op_Implicit", new[] { t.InitialType });
             if (castMethodInfo == null)
+            {
                 castMethodInfo = t.TargetType.GetMethod("op_Explicit", new[] { t.InitialType });
+            }
 
             if (castMethodInfo == null)
+            {
                 return null;
+            }
 
             MethodCall<object, object> call = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(castMethodInfo);
 
@@ -308,25 +315,45 @@ namespace Newtonsoft.Json.Utilities
         internal static BigInteger ToBigInteger(object value)
         {
             if (value is BigInteger)
+            {
                 return (BigInteger)value;
+            }
             if (value is string)
+            {
                 return BigInteger.Parse((string)value, CultureInfo.InvariantCulture);
+            }
             if (value is float)
+            {
                 return new BigInteger((float)value);
+            }
             if (value is double)
+            {
                 return new BigInteger((double)value);
+            }
             if (value is decimal)
+            {
                 return new BigInteger((decimal)value);
+            }
             if (value is int)
+            {
                 return new BigInteger((int)value);
+            }
             if (value is long)
+            {
                 return new BigInteger((long)value);
+            }
             if (value is uint)
+            {
                 return new BigInteger((uint)value);
+            }
             if (value is ulong)
+            {
                 return new BigInteger((ulong)value);
+            }
             if (value is byte[])
+            {
                 return new BigInteger((byte[])value);
+            }
 
             throw new InvalidCastException("Cannot convert {0} to BigInteger.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
         }
@@ -334,13 +361,25 @@ namespace Newtonsoft.Json.Utilities
         public static object FromBigInteger(BigInteger i, Type targetType)
         {
             if (targetType == typeof(decimal))
+            {
                 return (decimal)i;
+            }
             if (targetType == typeof(double))
+            {
                 return (double)i;
+            }
             if (targetType == typeof(float))
+            {
                 return (float)i;
+            }
             if (targetType == typeof(ulong))
+            {
                 return (ulong)i;
+            }
+            if (targetType == typeof(bool))
+            {
+                return i != 0;
+            }
 
             try
             {
@@ -353,7 +392,7 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
-#region TryConvert
+        #region TryConvert
         internal enum ConvertResult
         {
             Success = 0,
@@ -372,7 +411,7 @@ namespace Newtonsoft.Json.Utilities
                 case ConvertResult.CannotConvertNull:
                     throw new Exception("Can not convert null {0} into non-nullable {1}.".FormatWith(CultureInfo.InvariantCulture, initialValue.GetType(), targetType));
                 case ConvertResult.NotInstantiableType:
-                    throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), "targetType");
+                    throw new ArgumentException("Target type {0} is not a value type or a non-abstract class.".FormatWith(CultureInfo.InvariantCulture, targetType), nameof(targetType));
                 case ConvertResult.NoValidConversion:
                     throw new InvalidOperationException("Can not convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialValue.GetType(), targetType));
                 default:
@@ -385,7 +424,9 @@ namespace Newtonsoft.Json.Utilities
             try
             {
                 if (TryConvertInternal(initialValue, culture, targetType, out value) == ConvertResult.Success)
+                {
                     return true;
+                }
 
                 value = null;
                 return false;
@@ -400,10 +441,14 @@ namespace Newtonsoft.Json.Utilities
         private static ConvertResult TryConvertInternal(object initialValue, CultureInfo culture, Type targetType, out object value)
         {
             if (initialValue == null)
-                throw new ArgumentNullException("initialValue");
+            {
+                throw new ArgumentNullException(nameof(initialValue));
+            }
 
             if (ReflectionUtils.IsNullableType(targetType))
+            {
                 targetType = Nullable.GetUnderlyingType(targetType);
+            }
 
             Type initialType = initialValue.GetType();
 
@@ -558,9 +603,9 @@ namespace Newtonsoft.Json.Utilities
             value = null;
             return ConvertResult.NoValidConversion;
         }
-#endregion
+        #endregion
 
-#region ConvertOrCast
+        #region ConvertOrCast
         /// <summary>
         /// Converts the value to the specified type. If the value is unable to be converted, the
         /// value is checked whether it assignable to the specified type.
@@ -577,17 +622,23 @@ namespace Newtonsoft.Json.Utilities
             object convertedValue;
 
             if (targetType == typeof(object))
+            {
                 return initialValue;
+            }
 
             if (initialValue == null && ReflectionUtils.IsNullable(targetType))
+            {
                 return null;
+            }
 
             if (TryConvert(initialValue, culture, targetType, out convertedValue))
+            {
                 return convertedValue;
+            }
 
             return EnsureTypeAssignable(initialValue, ReflectionUtils.GetObjectType(initialValue), targetType);
         }
-#endregion
+        #endregion
 
         private static object EnsureTypeAssignable(object value, Type initialType, Type targetType)
         {
@@ -596,16 +647,22 @@ namespace Newtonsoft.Json.Utilities
             if (value != null)
             {
                 if (targetType.IsAssignableFrom(valueType))
+                {
                     return value;
+                }
 
                 Func<object, object> castConverter = CastConverters.Get(new TypeConvertKey(valueType, targetType));
                 if (castConverter != null)
+                {
                     return castConverter(value);
+                }
             }
             else
             {
                 if (ReflectionUtils.IsNullable(targetType))
+                {
                     return null;
+                }
             }
 
             throw new ArgumentException("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, (initialType != null) ? initialType.ToString() : "{null}", targetType));
@@ -615,17 +672,29 @@ namespace Newtonsoft.Json.Utilities
         public static object ToValue(INullable nullableValue)
         {
             if (nullableValue == null)
+            {
                 return null;
+            }
             else if (nullableValue is SqlInt32)
+            {
                 return ToValue((SqlInt32)nullableValue);
+            }
             else if (nullableValue is SqlInt64)
+            {
                 return ToValue((SqlInt64)nullableValue);
+            }
             else if (nullableValue is SqlBoolean)
+            {
                 return ToValue((SqlBoolean)nullableValue);
+            }
             else if (nullableValue is SqlString)
+            {
                 return ToValue((SqlString)nullableValue);
+            }
             else if (nullableValue is SqlDateTime)
+            {
                 return ToValue((SqlDateTime)nullableValue);
+            }
 
             throw new ArgumentException("Unsupported INullable type: {0}".FormatWith(CultureInfo.InvariantCulture, nullableValue.GetType()));
         }
@@ -643,7 +712,7 @@ namespace Newtonsoft.Json.Utilities
 #if !(NET20 || NET35)
             return Version.TryParse(input, out result);
 #else
-            // improve failure performance with regex?
+    // improve failure performance with regex?
             try
             {
                 result = new Version(input);
@@ -680,7 +749,9 @@ namespace Newtonsoft.Json.Utilities
             value = 0;
 
             if (length == 0)
+            {
                 return ParseResult.Invalid;
+            }
 
             bool isNegative = (chars[start] == '-');
 
@@ -688,7 +759,9 @@ namespace Newtonsoft.Json.Utilities
             {
                 // text just a negative sign
                 if (length == 1)
+                {
                     return ParseResult.Invalid;
+                }
 
                 start++;
                 length--;
@@ -707,7 +780,9 @@ namespace Newtonsoft.Json.Utilities
                     int c = chars[i] - '0';
 
                     if (c < 0 || c > 9)
+                    {
                         return ParseResult.Invalid;
+                    }
                 }
 
                 return ParseResult.Overflow;
@@ -718,7 +793,9 @@ namespace Newtonsoft.Json.Utilities
                 int c = chars[i] - '0';
 
                 if (c < 0 || c > 9)
+                {
                     return ParseResult.Invalid;
+                }
 
                 int newValue = (10 * value) - c;
 
@@ -734,7 +811,9 @@ namespace Newtonsoft.Json.Utilities
                         c = chars[i] - '0';
 
                         if (c < 0 || c > 9)
+                        {
                             return ParseResult.Invalid;
+                        }
                     }
 
                     return ParseResult.Overflow;
@@ -749,7 +828,9 @@ namespace Newtonsoft.Json.Utilities
             {
                 // negative integer can be one bigger than positive
                 if (value == int.MinValue)
+                {
                     return ParseResult.Overflow;
+                }
 
                 value = -value;
             }
@@ -762,7 +843,9 @@ namespace Newtonsoft.Json.Utilities
             value = 0;
 
             if (length == 0)
+            {
                 return ParseResult.Invalid;
+            }
 
             bool isNegative = (chars[start] == '-');
 
@@ -770,7 +853,9 @@ namespace Newtonsoft.Json.Utilities
             {
                 // text just a negative sign
                 if (length == 1)
+                {
                     return ParseResult.Invalid;
+                }
 
                 start++;
                 length--;
@@ -787,7 +872,9 @@ namespace Newtonsoft.Json.Utilities
                     int c = chars[i] - '0';
 
                     if (c < 0 || c > 9)
+                    {
                         return ParseResult.Invalid;
+                    }
                 }
 
                 return ParseResult.Overflow;
@@ -798,7 +885,9 @@ namespace Newtonsoft.Json.Utilities
                 int c = chars[i] - '0';
 
                 if (c < 0 || c > 9)
+                {
                     return ParseResult.Invalid;
+                }
 
                 long newValue = (10 * value) - c;
 
@@ -814,7 +903,9 @@ namespace Newtonsoft.Json.Utilities
                         c = chars[i] - '0';
 
                         if (c < 0 || c > 9)
+                        {
                             return ParseResult.Invalid;
+                        }
                     }
 
                     return ParseResult.Overflow;
@@ -829,7 +920,9 @@ namespace Newtonsoft.Json.Utilities
             {
                 // negative integer can be one bigger than positive
                 if (value == long.MinValue)
+                {
                     return ParseResult.Overflow;
+                }
 
                 value = -value;
             }
@@ -842,7 +935,9 @@ namespace Newtonsoft.Json.Utilities
             // GUID has to have format 00000000-0000-0000-0000-000000000000
 #if NET20 || NET35
             if (s == null)
+            {
                 throw new ArgumentNullException("s");
+            }
 
             Regex format = new Regex("^[A-Fa-f0-9]{8}-([A-Fa-f0-9]{4}-){3}[A-Fa-f0-9]{12}$");
             Match match = format.Match(s);

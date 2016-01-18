@@ -33,6 +33,7 @@ using System.Globalization;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+
 #endif
 
 namespace Newtonsoft.Json.Utilities
@@ -100,7 +101,9 @@ namespace Newtonsoft.Json.Utilities
             {
                 MemberInfo[] members = t.GetMember(memberName, BindingFlags.Instance | BindingFlags.Public);
                 if (members.Length != 1)
+                {
                     throw new ArgumentException("Expected a single member with the name '{0}'.".FormatWith(CultureInfo.InvariantCulture, memberName));
+                }
 
                 MemberInfo member = members.Single();
 
@@ -111,10 +114,14 @@ namespace Newtonsoft.Json.Utilities
                     case MemberTypes.Field:
                     case MemberTypes.Property:
                         if (ReflectionUtils.CanReadMemberValue(member, false))
+                        {
                             reflectionMember.Getter = delegateFactory.CreateGet<object>(member);
+                        }
 
                         if (ReflectionUtils.CanSetMemberValue(member, false, false))
+                        {
                             reflectionMember.Setter = delegateFactory.CreateSet<object>(member);
+                        }
                         break;
                     case MemberTypes.Method:
                         MethodInfo method = (MethodInfo)member;
@@ -138,10 +145,14 @@ namespace Newtonsoft.Json.Utilities
                 }
 
                 if (ReflectionUtils.CanReadMemberValue(member, false))
+                {
                     reflectionMember.Getter = delegateFactory.CreateGet<object>(member);
+                }
 
                 if (ReflectionUtils.CanSetMemberValue(member, false, false))
+                {
                     reflectionMember.Setter = delegateFactory.CreateSet<object>(member);
+                }
 
                 reflectionMember.MemberType = ReflectionUtils.GetMemberUnderlyingType(member);
 
