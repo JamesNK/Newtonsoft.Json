@@ -214,7 +214,7 @@ namespace Newtonsoft.Json.Converters
             {
                 if (caseInfo.Fields.Length != fields.Count)
                 {
-                    throw JsonSerializationException.Create(reader, "The number of field values does not match the number of properties definied by union '{0}'.".FormatWith(CultureInfo.InvariantCulture, caseName));
+                    throw JsonSerializationException.Create(reader, "The number of field values does not match the number of properties defined by union '{0}'.".FormatWith(CultureInfo.InvariantCulture, caseName));
                 }
 
                 for (int i = 0; i < fields.Count; i++)
