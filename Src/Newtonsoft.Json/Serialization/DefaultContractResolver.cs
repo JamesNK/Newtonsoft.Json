@@ -555,7 +555,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (extensionDataAttribute.WriteData)
             {
-                Type enumerableWrapper = typeof(DictionaryEnumerator<,>).MakeGenericType(keyType, valueType);
+                Type enumerableWrapper = typeof(EnumerableDictionaryWrapper<,>).MakeGenericType(keyType, valueType);
                 ConstructorInfo constructors = enumerableWrapper.GetConstructors().First();
                 ObjectConstructor<object> createEnumerableWrapper = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(constructors);
 
@@ -576,11 +576,13 @@ namespace Newtonsoft.Json.Serialization
             contract.ExtensionDataValueType = valueType;
         }
 
-        internal struct DictionaryEnumerator<TEnumeratorKey, TEnumeratorValue> : IEnumerable<KeyValuePair<object, object>>
+        // leave as class instead of struct
+        // will be always return as an interface and boxed
+        internal class EnumerableDictionaryWrapper<TEnumeratorKey, TEnumeratorValue> : IEnumerable<KeyValuePair<object, object>>
         {
             private readonly IEnumerable<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> _e;
 
-            public DictionaryEnumerator(IEnumerable<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> e)
+            public EnumerableDictionaryWrapper(IEnumerable<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> e)
             {
                 ValidationUtils.ArgumentNotNull(e, nameof(e));
                 _e = e;
@@ -588,7 +590,7 @@ namespace Newtonsoft.Json.Serialization
 
             public IEnumerator<KeyValuePair<object, object>> GetEnumerator()
             {
-                foreach (var item in _e)
+                foreach (KeyValuePair<TEnumeratorKey, TEnumeratorValue> item in _e)
                 {
                     yield return new KeyValuePair<object, object>(item.Key, item.Value);
                 }

@@ -624,10 +624,10 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void ExtensionDataGetterCanBeIteratedMultipleTimes()
         {
-            var resolver = new DefaultContractResolver();
-            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithExtensionData));
+            DefaultContractResolver resolver = new DefaultContractResolver();
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithExtensionData));
 
-            var myClass = new ClassWithExtensionData
+            ClassWithExtensionData myClass = new ClassWithExtensionData
             {
                 Data = new Dictionary<string, object>
                 {
@@ -635,9 +635,13 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
             };
 
-            var getter = contract.ExtensionDataGetter;
+            ExtensionDataGetter getter = contract.ExtensionDataGetter;
 
-            var extensionData = getter(myClass);
+            IEnumerable<KeyValuePair<object, object>> dictionaryData = getter(myClass).ToDictionary(kv => kv.Key, kv => kv.Value);
+            Assert.IsTrue(dictionaryData.Any());
+            Assert.IsTrue(dictionaryData.Any());
+
+            IEnumerable<KeyValuePair<object, object>> extensionData = getter(myClass);
             Assert.IsTrue(extensionData.Any());
             Assert.IsTrue(extensionData.Any()); // second test fails if the enumerator returned isn't reset
         }
