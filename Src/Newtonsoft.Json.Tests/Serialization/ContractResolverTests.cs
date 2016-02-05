@@ -614,5 +614,36 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #pragma warning restore 618
 #endif
+
+        public class ClassWithExtensionData
+        {
+            [JsonExtensionData]
+            public IDictionary<string, object> Data { get; set; }
+        }
+
+        [Test]
+        public void ExtensionDataGetterCanBeIteratedMultipleTimes()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithExtensionData));
+
+            ClassWithExtensionData myClass = new ClassWithExtensionData
+            {
+                Data = new Dictionary<string, object>
+                {
+                    { "SomeField", "Field" },
+                }
+            };
+
+            ExtensionDataGetter getter = contract.ExtensionDataGetter;
+
+            IEnumerable<KeyValuePair<object, object>> dictionaryData = getter(myClass).ToDictionary(kv => kv.Key, kv => kv.Value);
+            Assert.IsTrue(dictionaryData.Any());
+            Assert.IsTrue(dictionaryData.Any());
+
+            IEnumerable<KeyValuePair<object, object>> extensionData = getter(myClass);
+            Assert.IsTrue(extensionData.Any());
+            Assert.IsTrue(extensionData.Any()); // second test fails if the enumerator returned isn't reset
+        }
     }
 }
