@@ -895,6 +895,14 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
+        [Test]
+        public void DeserializeBoolAsStringInDictionary()
+        {
+            Dictionary<string, string> d = JsonConvert.DeserializeObject<Dictionary<string, string>>("{\"Test1\":false}");
+            Assert.AreEqual(1, d.Count);
+            Assert.AreEqual("false", d["Test1"]);
+        }
+
 #if !NET20
         [Test]
         public void PopulateResetSettings()
