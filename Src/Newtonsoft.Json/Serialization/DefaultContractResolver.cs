@@ -576,49 +576,27 @@ namespace Newtonsoft.Json.Serialization
             contract.ExtensionDataValueType = valueType;
         }
 
-        internal struct DictionaryEnumerator<TEnumeratorKey, TEnumeratorValue> : IEnumerable<KeyValuePair<object, object>>, IEnumerator<KeyValuePair<object, object>>
+        internal struct DictionaryEnumerator<TEnumeratorKey, TEnumeratorValue> : IEnumerable<KeyValuePair<object, object>>
         {
-            private readonly IEnumerator<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> _e;
+            private readonly IEnumerable<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> _e;
 
             public DictionaryEnumerator(IEnumerable<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> e)
             {
                 ValidationUtils.ArgumentNotNull(e, nameof(e));
-                _e = e.GetEnumerator();
-            }
-
-            public bool MoveNext()
-            {
-                return _e.MoveNext();
-            }
-
-            public void Reset()
-            {
-                _e.Reset();
-            }
-
-            public KeyValuePair<object, object> Current
-            {
-                get { return new KeyValuePair<object, object>(_e.Current.Key, _e.Current.Value); }
-            }
-
-            public void Dispose()
-            {
-                _e.Dispose();
-            }
-
-            object IEnumerator.Current
-            {
-                get { return Current; }
+                _e = e;
             }
 
             public IEnumerator<KeyValuePair<object, object>> GetEnumerator()
             {
-                return this;
+                foreach (var item in _e)
+                {
+                    yield return new KeyValuePair<object, object>(item.Key, item.Value);
+                }
             }
 
             IEnumerator IEnumerable.GetEnumerator()
             {
-                return this;
+                return GetEnumerator();
             }
         }
 
