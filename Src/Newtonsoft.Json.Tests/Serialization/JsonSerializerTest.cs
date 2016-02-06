@@ -96,6 +96,45 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+        public class ErroringClass
+        {
+            public DateTime Tags { get; set; }
+        }
+
+        [Test]
+        public void DontCloseInputOnDeserializeError()
+        {
+            using (var s = System.IO.File.OpenRead("large.json"))
+            {
+                try
+                {
+                    using (JsonTextReader reader = new JsonTextReader(new StreamReader(s)))
+                    {
+                        reader.SupportMultipleContent = true;
+                        reader.CloseInput = false;
+
+                        // read into array
+                        reader.Read();
+
+                        var ser = new JsonSerializer();
+                        ser.CheckAdditionalContent = false;
+
+                        ser.Deserialize<IList<ErroringClass>>(reader);
+                    }
+
+                    Assert.Fail();
+                }
+                catch (Exception)
+                {
+                    Assert.IsTrue(s.Position > 0);
+
+                    s.Seek(0, SeekOrigin.Begin);
+
+                    Assert.AreEqual(0, s.Position);
+                }
+            }
+        }
+
         public interface ISubclassBase
         {
             int ID { get; set; }
