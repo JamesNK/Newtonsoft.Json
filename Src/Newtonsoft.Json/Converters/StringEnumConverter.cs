@@ -64,6 +64,16 @@ namespace Newtonsoft.Json.Converters
         }
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="StringEnumConverter"/> class.
+        /// </summary>
+        /// <param name="camelCaseText"><c>true</c> if the written enum text will be camel case; otherwise, <c>false</c>.</param>
+        public StringEnumConverter(bool camelCaseText)
+            : this()
+        {
+            CamelCaseText = camelCaseText;
+        }
+
+        /// <summary>
         /// Writes the JSON representation of the object.
         /// </summary>
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>

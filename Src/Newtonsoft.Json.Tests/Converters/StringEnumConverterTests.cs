@@ -104,6 +104,28 @@ namespace Newtonsoft.Json.Tests.Converters
             public NegativeEnum Value2 { get; set; }
         }
 
+        [JsonConverter(typeof(StringEnumConverter), true)]
+        public enum CamelCaseEnum
+        {
+            This,
+            Is,
+            CamelCase
+        }
+
+        [Test]
+        public void Serialize_CamelCaseFromAttribute()
+        {
+            string json = JsonConvert.SerializeObject(CamelCaseEnum.CamelCase);
+            Assert.AreEqual(@"""camelCase""", json);
+        }
+
+        [Test]
+        public void Deserialize_CamelCaseFromAttribute()
+        {
+            CamelCaseEnum e = JsonConvert.DeserializeObject<CamelCaseEnum>(@"""camelCase""");
+            Assert.AreEqual(CamelCaseEnum.CamelCase, e);
+        }
+
 #if !NET20
         [Test]
         public void NamedEnumDuplicateTest()
