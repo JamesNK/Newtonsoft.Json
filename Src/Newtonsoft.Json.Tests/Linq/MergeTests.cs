@@ -569,5 +569,36 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual("name1", p.Name);
             Assert.AreEqual(0, p.Count);
         }
+
+        [Test]
+        public void MergeNullValue()
+        {
+            var source = new JObject
+            {
+                {"Property1", "value"},
+                {"Property2", new JObject()},
+                {"Property3", JValue.CreateNull()},
+                {"Property4", JValue.CreateUndefined()},
+                {"Property5", new JArray()}
+            };
+
+            var patch = JObject.Parse("{Property1: null, Property2: null, Property3: null, Property4: null, Property5: null}");
+
+            source.Merge(patch, new JsonMergeSettings
+            {
+                MergeNullValueHandling = MergeNullValueHandling.Merge
+            });
+
+            Assert.IsNotNull(source["Property1"]);
+            Assert.AreEqual(JTokenType.Null, source["Property1"].Type);
+            Assert.IsNotNull(source["Property2"]);
+            Assert.AreEqual(JTokenType.Null, source["Property2"].Type);
+            Assert.IsNotNull(source["Property3"]);
+            Assert.AreEqual(JTokenType.Null, source["Property3"].Type);
+            Assert.IsNotNull(source["Property4"]);
+            Assert.AreEqual(JTokenType.Null, source["Property4"].Type);
+            Assert.IsNotNull(source["Property5"]);
+            Assert.AreEqual(JTokenType.Null, source["Property5"].Type);
+        }
     }
 }
