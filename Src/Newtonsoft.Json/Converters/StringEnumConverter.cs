@@ -134,6 +134,14 @@ namespace Newtonsoft.Json.Converters
                 if (reader.TokenType == JsonToken.String)
                 {
                     string enumText = reader.Value.ToString();
+
+                    if (!AllowIntegerValues)
+                    {
+                        int newValue;
+                        if (int.TryParse(enumText, out newValue))
+                            throw JsonSerializationException.Create(reader, "Integer value {0} is not allowed.".FormatWith(CultureInfo.InvariantCulture, reader.Value));
+                    }
+
                     return EnumUtils.ParseEnumName(enumText, isNullable, t);
                 }
 
