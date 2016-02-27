@@ -599,9 +599,9 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Creates a <see cref="JValue"/> null value.
+        /// Creates a <see cref="JValue"/> undefined value.
         /// </summary>
-        /// <returns>A <see cref="JValue"/> null value.</returns>
+        /// <returns>A <see cref="JValue"/> undefined value.</returns>
         public static JValue CreateUndefined()
         {
             return new JValue(null, JTokenType.Undefined);
