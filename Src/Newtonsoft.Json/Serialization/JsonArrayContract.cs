@@ -167,7 +167,7 @@ namespace Newtonsoft.Json.Serialization
                     CreatedType = typeof(List<>).MakeGenericType(CollectionItemType);
                 }
 
-#if !(NET20 || NET35 || PORTABLE40)
+#if !(NET20 || NET35)
                 if (ReflectionUtils.IsGenericDefinition(underlyingType, typeof(ISet<>)))
                 {
                     CreatedType = typeof(HashSet<>).MakeGenericType(CollectionItemType);
