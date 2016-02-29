@@ -33,8 +33,10 @@ using System.Security;
 
 #if PORTABLE40
 [assembly: AssemblyTitle("Json.NET Tests Portable .NET 4.0")]
+[assembly: SecurityRules(SecurityRuleSet.Level1)]
 #elif PORTABLE
 [assembly: AssemblyTitle("Json.NET Tests Portable")]
+[assembly: SecurityRules(SecurityRuleSet.Level1)]
 #elif NETFX_CORE
 [assembly: AssemblyTitle("Json.NET Tests WinRT")]
 #elif NET20
@@ -43,10 +45,13 @@ using System.Security;
 [assembly: AssemblyTitle("Json.NET Tests .NET 3.5")]
 #elif NET40
 [assembly: AssemblyTitle("Json.NET Tests .NET 4.0")]
+[assembly: SecurityRules(SecurityRuleSet.Level1)]
 #else
-
 [assembly: AssemblyTitle("Json.NET Tests")]
+[assembly: SecurityRules(SecurityRuleSet.Level1)]
 #endif
+
+[assembly: AllowPartiallyTrustedCallers]
 
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
