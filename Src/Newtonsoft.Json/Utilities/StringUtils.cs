@@ -170,26 +170,25 @@ namespace Newtonsoft.Json.Utilities
 
         public static string ToCamelCase(string s)
         {
-            if (string.IsNullOrEmpty(s))
-            {
-                return s;
-            }
-
-            if (!char.IsUpper(s[0]))
+            if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
             {
                 return s;
             }
 
             char[] chars = s.ToCharArray();
 
-            for (int i = 0; i < chars.Length; i++)
+            int toLowerUntilIndex = 1;
+            for(; toLowerUntilIndex < chars.Length && char.IsUpper(chars[toLowerUntilIndex]); ++toLowerUntilIndex)
             {
-                bool hasNext = (i + 1 < chars.Length);
-                if (i > 0 && hasNext && !char.IsUpper(chars[i + 1]))
-                {
-                    break;
-                }
+            }
+            // decrement if starts with consecutive upper case letters but is not all upper
+            if (toLowerUntilIndex > 1 && toLowerUntilIndex < chars.Length)
+            {
+                --toLowerUntilIndex;
+            }
 
+            for (int i = 0; i < toLowerUntilIndex; ++i)
+            {
 #if !(DOTNET || PORTABLE)
                 chars[i] = char.ToLower(chars[i], CultureInfo.InvariantCulture);
 #else
