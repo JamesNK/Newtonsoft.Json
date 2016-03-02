@@ -178,8 +178,9 @@ namespace Newtonsoft.Json.Utilities
             char[] chars = s.ToCharArray();
 
             int toLowerUntilIndex = 1;
-            for(; toLowerUntilIndex < chars.Length && char.IsUpper(chars[toLowerUntilIndex]); ++toLowerUntilIndex)
+            while (toLowerUntilIndex < chars.Length && char.IsUpper(chars[toLowerUntilIndex]))
             {
+                ++toLowerUntilIndex;
             }
             // decrement if starts with consecutive upper case letters but is not all upper
             if (toLowerUntilIndex > 1 && toLowerUntilIndex < chars.Length)
