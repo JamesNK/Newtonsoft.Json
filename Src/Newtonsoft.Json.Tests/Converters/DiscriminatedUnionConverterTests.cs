@@ -31,6 +31,7 @@ using Microsoft.FSharp.Reflection;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Permissions;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -297,6 +298,15 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual(5.0, r.length);
             Assert.AreEqual(10.0, r.width);
+        }
+
+        [Test]
+        [ReflectionPermission(SecurityAction.PermitOnly, Flags = ReflectionPermissionFlag.MemberAccess)]
+        public void SerializeUnionInPartialTrust()
+        {
+            
+
+            SerializeBasicUnion();
         }
     }
 }

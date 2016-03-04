@@ -88,15 +88,16 @@ namespace Newtonsoft.Json.Utilities
 
                         Type fsharpType = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.FSharpType");
 
-                        MethodInfo isUnionMethodInfo = fsharpType.GetMethod("IsUnion", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
+                        MethodInfo isUnionMethodInfo = fsharpType.GetMethod("IsUnion", BindingFlags.Public | BindingFlags.Static);
                         IsUnion = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(isUnionMethodInfo);
 
-                        MethodInfo getUnionCasesMethodInfo = fsharpType.GetMethod("GetUnionCases", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
+                        MethodInfo getUnionCasesMethodInfo = fsharpType.GetMethod("GetUnionCases", BindingFlags.Public | BindingFlags.Static);
                         GetUnionCases = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(getUnionCasesMethodInfo);
 
                         Type fsharpValue = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.FSharpValue");
 
                         PreComputeUnionTagReader = CreateFSharpFuncCall(fsharpValue, "PreComputeUnionTagReader");
+
                         PreComputeUnionReader = CreateFSharpFuncCall(fsharpValue, "PreComputeUnionReader");
                         PreComputeUnionConstructor = CreateFSharpFuncCall(fsharpValue, "PreComputeUnionConstructor");
 
@@ -111,7 +112,6 @@ namespace Newtonsoft.Json.Utilities
                         _ofSeq = listModule.GetMethod("OfSeq");
 
                         _mapType = fsharpCoreAssembly.GetType("Microsoft.FSharp.Collections.FSharpMap`2");
-
 #if !(DOTNET || PORTABLE)
                         Thread.MemoryBarrier();
 #endif
@@ -123,8 +123,9 @@ namespace Newtonsoft.Json.Utilities
 
         private static MethodCall<object, object> CreateFSharpFuncCall(Type type, string methodName)
         {
-            MethodInfo innerMethodInfo = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
-            MethodInfo invokeFunc = innerMethodInfo.ReturnType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
+            MethodInfo innerMethodInfo = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static);
+            MethodInfo invokeFunc = innerMethodInfo.ReturnType.GetMethod("Invoke", BindingFlags.Public)
+                ?? innerMethodInfo.ReturnType.GetMethod("Invoke");
 
             MethodCall<object, object> call = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(innerMethodInfo);
             MethodCall<object, object> invoke = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(invokeFunc);
