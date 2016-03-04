@@ -57,6 +57,17 @@ namespace Newtonsoft.Json.Tests.Linq
     public class JTokenTests : TestFixtureBase
     {
         [Test]
+        public void DeepEqualsObjectOrder()
+        {
+            string ob1 = @"{""key1"":""1"",""key2"":""2""}";
+            string ob2 = @"{""key2"":""2"",""key1"":""1""}";
+
+            JObject j1 = JObject.Parse(ob1);
+            JObject j2 = JObject.Parse(ob2);
+            Assert.IsTrue(j1.DeepEquals(j2));
+        }
+
+        [Test]
         public void ReadFrom()
         {
             JObject o = (JObject)JToken.ReadFrom(new JsonTextReader(new StringReader("{'pie':true}")));
