@@ -177,19 +177,19 @@ namespace Newtonsoft.Json.Utilities
 
             char[] chars = s.ToCharArray();
 
-            int toLowerUntilIndex = 1;
-            while (toLowerUntilIndex < chars.Length && char.IsUpper(chars[toLowerUntilIndex]))
+            for (int i = 0; i < chars.Length; i++)
             {
-                ++toLowerUntilIndex;
-            }
-            // decrement if starts with consecutive upper case letters but is not all upper
-            if (toLowerUntilIndex > 1 && toLowerUntilIndex < chars.Length)
-            {
-                --toLowerUntilIndex;
-            }
+                if (i == 1 && !char.IsUpper(chars[i]))
+                {
+                    break;
+                }
 
-            for (int i = 0; i < toLowerUntilIndex; ++i)
-            {
+                bool hasNext = (i + 1 < chars.Length);
+                if (i > 0 && hasNext && !char.IsUpper(chars[i + 1]))
+                {
+                    break;
+                }
+
 #if !(DOTNET || PORTABLE)
                 chars[i] = char.ToLower(chars[i], CultureInfo.InvariantCulture);
 #else
