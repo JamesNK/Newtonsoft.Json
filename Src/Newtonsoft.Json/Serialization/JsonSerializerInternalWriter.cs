@@ -533,7 +533,7 @@ namespace Newtonsoft.Json.Serialization
                 }
 
                 memberValue = property.ValueProvider.GetValue(value);
-                memberContract = (property.PropertyContract.IsSealed) ? property.PropertyContract : GetContractSafe(memberValue);
+                memberContract = (property.PropertyContract.IsSealed || !property.PropertyContract.ResolveRealType) ? property.PropertyContract : GetContractSafe(memberValue);
 
                 if (ShouldWriteProperty(memberValue, property))
                 {
