@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -124,6 +124,12 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <value>Whether this type contract is serialized as a reference.</value>
         public bool? IsReference { get; set; }
+
+        /// <summary>
+        /// Gets or sets whether this contract's type is resolved via GetType().
+        /// </summary>
+        /// <value>Whether this contract's type is resolved via GetType().</value>
+        public bool ResolveRealType { get; set; } = true;
 
         /// <summary>
         /// Gets or sets the default <see cref="JsonConverter" /> for this contract.
