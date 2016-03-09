@@ -609,23 +609,25 @@ namespace Newtonsoft.Json.Tests
 
             Assert.AreEqual(4, value.Count);
         }
-
-        public class JsonArrayPool : IArrayPool<char>
-        {
-            public static readonly JsonArrayPool Instance = new JsonArrayPool();
-
-            public char[] Rent(int minimumLength)
-            {
-                // use System.Buffers shared pool
-                return ArrayPool<char>.Shared.Rent(minimumLength);
-            }
-
-            public void Return(char[] array)
-            {
-                // use System.Buffers shared pool
-                ArrayPool<char>.Shared.Return(array);
-            }
-        }
 #endif
     }
+
+#if !(NET20 || NET35 || NET40 || NETFX_CORE || PORTABLE || PORTABLE40 || DNXCORE50)
+    public class JsonArrayPool : IArrayPool<char>
+    {
+        public static readonly JsonArrayPool Instance = new JsonArrayPool();
+
+        public char[] Rent(int minimumLength)
+        {
+            // use System.Buffers shared pool
+            return ArrayPool<char>.Shared.Rent(minimumLength);
+        }
+
+        public void Return(char[] array)
+        {
+            // use System.Buffers shared pool
+            ArrayPool<char>.Shared.Return(array);
+        }
+    }
+#endif
 }
