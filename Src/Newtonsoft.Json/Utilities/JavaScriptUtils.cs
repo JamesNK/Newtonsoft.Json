@@ -286,7 +286,7 @@ namespace Newtonsoft.Json.Utilities
 
                     if (writeBuffer == null || writeBuffer.Length < length)
                     {
-                        writeBuffer = new char[length];
+                        writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, length, writeBuffer);
                     }
 
                     s.CopyTo(lastWritePosition, writeBuffer, 0, length);
