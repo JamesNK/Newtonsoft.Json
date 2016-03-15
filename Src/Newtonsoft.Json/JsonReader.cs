@@ -41,6 +41,15 @@ using System.Linq;
 namespace Newtonsoft.Json
 {
     /// <summary>
+    /// The delegate of a plugin parser to JsonReader.
+    /// </summary>
+    /// <param name="valueToParse">The string value to parse.</param>
+    /// <param name="parsedResult">The parsed result object.</param>
+    /// <param name="jsonToken">JsonToken type.</param>
+    /// <returns>True if the value is parsed.</returns>
+    public delegate bool TryParseHandler(string valueToParse, out object parsedResult, out JsonToken jsonToken);
+
+    /// <summary>
     /// Represents a reader that provides fast, non-cached, forward-only access to serialized JSON data.
     /// </summary>
     public abstract class JsonReader : IDisposable
@@ -167,6 +176,11 @@ namespace Newtonsoft.Json
             get { return _quoteChar; }
             protected internal set { _quoteChar = value; }
         }
+
+        /// <summary>
+        /// The handler to parse the large numeric string found to be overflow.
+        /// </summary>
+        public TryParseHandler NumberOverflowTryParseHandler { get; set; }
 
         /// <summary>
         /// Get or set how <see cref="DateTime"/> time zones are handling when reading JSON.
