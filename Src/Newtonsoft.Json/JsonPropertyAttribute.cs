@@ -64,6 +64,9 @@ namespace Newtonsoft.Json
         /// </example>
         public object[] ItemConverterParameters { get; set; }
 
+        public Type NamingStrategyType { get; set; }
+        public object[] NamingStrategyParameters { get; set; }
+
         /// <summary>
         /// Gets or sets the null value handling used when serializing this property.
         /// </summary>

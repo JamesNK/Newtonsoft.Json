@@ -41,17 +41,11 @@ namespace Newtonsoft.Json.Serialization
             : base(true)
 #pragma warning restore 612,618
         {
-        }
-
-        /// <summary>
-        /// Resolves the name of the property.
-        /// </summary>
-        /// <param name="propertyName">Name of the property.</param>
-        /// <returns>The property name camel cased.</returns>
-        protected override string ResolvePropertyName(string propertyName)
-        {
-            // lower case the first letter (or more) of the passed in name
-            return StringUtils.ToCamelCase(propertyName);
+            NamingStrategy = new CamelCaseNamingStrategy
+            {
+                CamelCaseDictionaryKeys = true,
+                OverrideSpecifiedNames = true
+            };
         }
     }
 }

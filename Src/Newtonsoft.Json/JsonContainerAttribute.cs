@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json
 {
@@ -68,12 +69,36 @@ namespace Newtonsoft.Json
         /// </example>
         public object[] ItemConverterParameters { get; set; }
 
+        public Type NamingStrategyType
+        {
+            get { return _namingStrategyType; }
+            set
+            {
+                _namingStrategyType = value;
+                NamingStrategy = null;
+            }
+        }
+
+        public object[] NamingStrategyParameters
+        {
+            get { return _namingStrategyParameters; }
+            set
+            {
+                _namingStrategyParameters = value;
+                NamingStrategy = null;
+            }
+        }
+
+        internal INamingStrategy NamingStrategy { get; set; }
+
         // yuck. can't set nullable properties on an attribute in C#
         // have to use this approach to get an unset default state
         internal bool? _isReference;
         internal bool? _itemIsReference;
         internal ReferenceLoopHandling? _itemReferenceLoopHandling;
         internal TypeNameHandling? _itemTypeNameHandling;
+        private Type _namingStrategyType;
+        private object[] _namingStrategyParameters;
 
         /// <summary>
         /// Gets or sets a value that indicates whether to preserve object references.

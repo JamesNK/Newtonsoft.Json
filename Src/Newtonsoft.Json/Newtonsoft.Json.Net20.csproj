@@ -128,9 +128,12 @@
     <Compile Include="Linq\MergeNullValueHandling.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
     <Compile Include="SerializationBinder.cs" />
+    <Compile Include="Serialization\CamelCaseNamingStrategy.cs" />
+    <Compile Include="Serialization\DefaultNamingStrategy.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
     <Compile Include="Serialization\ExpressionValueProvider.cs" />
     <Compile Include="Serialization\IAttributeProvider.cs" />
+    <Compile Include="Serialization\INamingStrategy.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />
     <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="Serialization\JsonDynamicContract.cs" />
