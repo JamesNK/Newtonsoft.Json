@@ -76,48 +76,63 @@ namespace Newtonsoft.Json.Linq.JsonPath
             foreach (JToken r in pathResult)
             {
                 JValue v = r as JValue;
-                switch (Operator)
+                if (v != null)
                 {
-                    case QueryOperator.Equals:
-                        if (v != null && EqualsWithStringCoercion(v, Value))
-                        {
+                    switch (Operator)
+                    {
+                        case QueryOperator.Equals:
+                            if (EqualsWithStringCoercion(v, Value))
+                            {
+                                return true;
+                            }
+                            break;
+                        case QueryOperator.NotEquals:
+                            if (!EqualsWithStringCoercion(v, Value))
+                            {
+                                return true;
+                            }
+                            break;
+                        case QueryOperator.GreaterThan:
+                            if (v.CompareTo(Value) > 0)
+                            {
+                                return true;
+                            }
+                            break;
+                        case QueryOperator.GreaterThanOrEquals:
+                            if (v.CompareTo(Value) >= 0)
+                            {
+                                return true;
+                            }
+                            break;
+                        case QueryOperator.LessThan:
+                            if (v.CompareTo(Value) < 0)
+                            {
+                                return true;
+                            }
+                            break;
+                        case QueryOperator.LessThanOrEquals:
+                            if (v.CompareTo(Value) <= 0)
+                            {
+                                return true;
+                            }
+                            break;
+                        case QueryOperator.Exists:
                             return true;
-                        }
-                        break;
-                    case QueryOperator.NotEquals:
-                        if (v != null && !EqualsWithStringCoercion(v, Value))
-                        {
+                    }
+                }
+                else
+                {
+                    switch (Operator)
+                    {
+                        case QueryOperator.NotEquals:
+                            if (Value.Type == JTokenType.Null)
+                            {
+                                return true;
+                            }
+                            break;
+                        case QueryOperator.Exists:
                             return true;
-                        }
-                        break;
-                    case QueryOperator.GreaterThan:
-                        if (v != null && v.CompareTo(Value) > 0)
-                        {
-                            return true;
-                        }
-                        break;
-                    case QueryOperator.GreaterThanOrEquals:
-                        if (v != null && v.CompareTo(Value) >= 0)
-                        {
-                            return true;
-                        }
-                        break;
-                    case QueryOperator.LessThan:
-                        if (v != null && v.CompareTo(Value) < 0)
-                        {
-                            return true;
-                        }
-                        break;
-                    case QueryOperator.LessThanOrEquals:
-                        if (v != null && v.CompareTo(Value) <= 0)
-                        {
-                            return true;
-                        }
-                        break;
-                    case QueryOperator.Exists:
-                        return true;
-                    default:
-                        throw new ArgumentOutOfRangeException();
+                    }
                 }
             }
 

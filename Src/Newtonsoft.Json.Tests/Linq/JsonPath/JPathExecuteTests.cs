@@ -902,5 +902,43 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             Assert.AreEqual("Headlight Fluid", firstProductNames[1]);
             Assert.AreEqual(149.95m, totalPrice);
         }
+
+        [Test]
+        public void NotEqualsNullAndNonPrimativeValues()
+        {
+            string json = @"[
+  {
+    ""name"": ""string"",
+    ""value"": ""aString""
+  },
+  {
+    ""name"": ""number"",
+    ""value"": 123
+  },
+  {
+    ""name"": ""array"",
+    ""value"": [
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  {
+    ""name"": ""object"",
+    ""value"": {
+      ""1"": 1
+    }
+  }
+]";
+
+            JArray a = JArray.Parse(json);
+
+            List<JToken> result = a.SelectTokens("$.[?(@.value!=null)]").ToList();
+            Assert.AreEqual(4, result.Count);
+
+            result = a.SelectTokens("$.[?(@.value)]").ToList();
+            Assert.AreEqual(4, result.Count);
+        }
     }
 }
