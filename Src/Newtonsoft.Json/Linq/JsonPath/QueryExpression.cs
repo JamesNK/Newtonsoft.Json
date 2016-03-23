@@ -124,13 +124,10 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 {
                     switch (Operator)
                     {
-                        case QueryOperator.NotEquals:
-                            if (Value.Type == JTokenType.Null)
-                            {
-                                return true;
-                            }
-                            break;
                         case QueryOperator.Exists:
+                        // you can only specify primative types in a comparison
+                        // notequals will always be true
+                        case QueryOperator.NotEquals:
                             return true;
                     }
                 }

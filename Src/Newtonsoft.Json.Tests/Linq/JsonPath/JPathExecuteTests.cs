@@ -904,7 +904,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
-        public void NotEqualsNullAndNonPrimativeValues()
+        public void NotEqualsAndNonPrimativeValues()
         {
             string json = @"[
   {
@@ -934,8 +934,17 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
 
             JArray a = JArray.Parse(json);
 
-            List<JToken> result = a.SelectTokens("$.[?(@.value!=null)]").ToList();
+            List<JToken> result = a.SelectTokens("$.[?(@.value!=1)]").ToList();
             Assert.AreEqual(4, result.Count);
+
+            result = a.SelectTokens("$.[?(@.value!='2000-12-05T05:07:59-10:00')]").ToList();
+            Assert.AreEqual(4, result.Count);
+
+            result = a.SelectTokens("$.[?(@.value!=null)]").ToList();
+            Assert.AreEqual(4, result.Count);
+
+            result = a.SelectTokens("$.[?(@.value!=123)]").ToList();
+            Assert.AreEqual(3, result.Count);
 
             result = a.SelectTokens("$.[?(@.value)]").ToList();
             Assert.AreEqual(4, result.Count);
