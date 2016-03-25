@@ -57,6 +57,7 @@ namespace Newtonsoft.Json.Tests.Utilities
             Assert.AreEqual(" IPhone", StringUtils.ToCamelCase(" IPhone"));
             Assert.AreEqual("isCIA", StringUtils.ToCamelCase("IsCIA"));
             Assert.AreEqual("vmQ", StringUtils.ToCamelCase("VmQ"));
+            Assert.AreEqual("xml2Json", StringUtils.ToCamelCase("Xml2Json"));
         }
     }
 }
