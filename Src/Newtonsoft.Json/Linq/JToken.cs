@@ -190,9 +190,14 @@ namespace Newtonsoft.Json.Linq
                     return string.Empty;
                 }
 
-                IList<JToken> ancestors = AncestorsAndSelf().Reverse().ToList();
+                List<JToken> ancestors = new List<JToken>();
+                for (JToken current = this; current != null; current = current.Parent)
+                {
+                    ancestors.Add(current);
+                }
+                ancestors.Reverse();
 
-                List<JsonPosition> positions = new List<JsonPosition>();
+                List<JsonPosition> positions = new List<JsonPosition>(ancestors.Count);
                 for (int i = 0; i < ancestors.Count; i++)
                 {
                     JToken current = ancestors[i];
