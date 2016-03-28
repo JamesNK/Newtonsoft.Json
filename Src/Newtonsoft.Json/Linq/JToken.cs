@@ -190,44 +190,31 @@ namespace Newtonsoft.Json.Linq
                     return string.Empty;
                 }
 
-                List<JToken> ancestors = new List<JToken>();
+                List<JsonPosition> positions = new List<JsonPosition>();
+                JToken previous = null;
                 for (JToken current = this; current != null; current = current.Parent)
                 {
-                    ancestors.Add(current);
-                }
-                ancestors.Reverse();
-
-                List<JsonPosition> positions = new List<JsonPosition>(ancestors.Count);
-                for (int i = 0; i < ancestors.Count; i++)
-                {
-                    JToken current = ancestors[i];
-                    JToken next = null;
-                    if (i + 1 < ancestors.Count)
+                    switch (current.Type)
                     {
-                        next = ancestors[i + 1];
-                    }
-                    else if (ancestors[i].Type == JTokenType.Property)
-                    {
-                        next = ancestors[i];
-                    }
-
-                    if (next != null)
-                    {
-                        switch (current.Type)
-                        {
-                            case JTokenType.Property:
-                                JProperty property = (JProperty)current;
-                                positions.Add(new JsonPosition(JsonContainerType.Object) { PropertyName = property.Name });
-                                break;
-                            case JTokenType.Array:
-                            case JTokenType.Constructor:
-                                int index = ((IList<JToken>)current).IndexOf(next);
+                        case JTokenType.Property:
+                            JProperty property = (JProperty)current;
+                            positions.Add(new JsonPosition(JsonContainerType.Object) { PropertyName = property.Name });
+                            break;
+                        case JTokenType.Array:
+                        case JTokenType.Constructor:
+                            if (previous != null)
+                            {
+                                int index = ((IList<JToken>)current).IndexOf(previous);
 
                                 positions.Add(new JsonPosition(JsonContainerType.Array) { Position = index });
-                                break;
-                        }
+                            }
+                            break;
                     }
+
+                    previous = current;
                 }
+
+                positions.Reverse();
 
                 return JsonPosition.BuildPath(positions, null);
             }
