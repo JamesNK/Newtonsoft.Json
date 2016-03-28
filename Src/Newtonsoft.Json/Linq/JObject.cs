@@ -128,6 +128,11 @@ namespace Newtonsoft.Json.Linq
             return _properties.Compare(t._properties);
         }
 
+        internal override int IndexOfItem(JToken item)
+        {
+            return _properties.IndexOfReference(item);
+        }
+
         internal override void InsertItem(int index, JToken item, bool skipParentCheck)
         {
             // don't add comments to JObject, no name to reference comment by

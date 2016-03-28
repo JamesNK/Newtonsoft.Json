@@ -214,11 +214,11 @@ namespace Newtonsoft.Json.Utilities
             return -1;
         }
 
-        public static bool Contains(this IEnumerable list, object value, IEqualityComparer comparer)
+        public static bool Contains<T>(this List<T> list, T value, IEqualityComparer comparer)
         {
-            foreach (object item in list)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (comparer.Equals(item, value))
+                if (comparer.Equals(value, list[i]))
                 {
                     return true;
                 }
@@ -226,24 +226,14 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
-        /// <summary>
-        /// Returns the index of the first occurrence in a sequence by using a specified IEqualityComparer{TSource}.
-        /// </summary>
-        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
-        /// <param name="list">A sequence in which to locate a value.</param>
-        /// <param name="value">The object to locate in the sequence</param>
-        /// <param name="comparer">An equality comparer to compare values.</param>
-        /// <returns>The zero-based index of the first occurrence of value within the entire sequence, if found; otherwise, –1.</returns>
-        public static int IndexOf<TSource>(this IEnumerable<TSource> list, TSource value, IEqualityComparer<TSource> comparer)
+        public static int IndexOfReference<T>(this List<T> list, T item)
         {
-            int index = 0;
-            foreach (TSource item in list)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (comparer.Equals(item, value))
+                if (ReferenceEquals(item, list[i]))
                 {
-                    return index;
+                    return i;
                 }
-                index++;
             }
             return -1;
         }

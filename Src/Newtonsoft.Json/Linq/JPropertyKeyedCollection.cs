@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -34,6 +35,10 @@ namespace Newtonsoft.Json.Linq
         private static readonly IEqualityComparer<string> Comparer = StringComparer.Ordinal;
 
         private Dictionary<string, JToken> _dictionary;
+
+        public JPropertyKeyedCollection() : base(new List<JToken>())
+        {
+        }
 
         private void AddKey(string key, JToken item)
         {
@@ -218,6 +223,11 @@ namespace Newtonsoft.Json.Linq
                 EnsureDictionary();
                 return _dictionary.Values;
             }
+        }
+
+        public int IndexOfReference(JToken t)
+        {
+            return ((List<JToken>)Items).IndexOfReference(t);
         }
 
         public bool Compare(JPropertyKeyedCollection other)

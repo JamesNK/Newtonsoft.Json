@@ -48,6 +48,11 @@ namespace Newtonsoft.Json.Linq
             get { return _values; }
         }
 
+        internal override int IndexOfItem(JToken item)
+        {
+            return _values.IndexOfReference(item);
+        }
+
         internal override void MergeItem(object content, JsonMergeSettings settings)
         {
             JConstructor c = content as JConstructor;

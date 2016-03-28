@@ -351,30 +351,7 @@ namespace Newtonsoft.Json.Linq
             return item;
         }
 
-        private class JTokenReferenceEqualityComparer : IEqualityComparer<JToken>
-        {
-            public static readonly JTokenReferenceEqualityComparer Instance = new JTokenReferenceEqualityComparer();
-
-            public bool Equals(JToken x, JToken y)
-            {
-                return ReferenceEquals(x, y);
-            }
-
-            public int GetHashCode(JToken obj)
-            {
-                if (obj == null)
-                {
-                    return 0;
-                }
-
-                return obj.GetHashCode();
-            }
-        }
-
-        internal int IndexOfItem(JToken item)
-        {
-            return ChildrenTokens.IndexOf(item, JTokenReferenceEqualityComparer.Instance);
-        }
+        internal abstract int IndexOfItem(JToken item);
 
         internal virtual void InsertItem(int index, JToken item, bool skipParentCheck)
         {

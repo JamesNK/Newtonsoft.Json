@@ -235,6 +235,11 @@ namespace Newtonsoft.Json.Linq
             throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
         }
 
+        internal override int IndexOfItem(JToken item)
+        {
+            return _content.IndexOf(item);
+        }
+
         internal override void InsertItem(int index, JToken item, bool skipParentCheck)
         {
             // don't add comments to JProperty

@@ -302,6 +302,77 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
+        public void LargeArrayJTokenPathPerformance()
+        {
+            JArray a = new JArray();
+            for (int i = 0; i < 100000; i++)
+            {
+                a.Add(i);
+            }
+
+            JToken first = a.First;
+            JToken last = a.Last;
+
+            int interations = 1000;
+
+            TimeOperation(() =>
+            {
+                string p = null;
+                for (int i = 0; i < interations; i++)
+                {
+                    p = first.Path;
+                }
+
+                return p;
+            }, "First");
+
+            TimeOperation(() =>
+            {
+                string p = null;
+                for (int i = 0; i < interations; i++)
+                {
+                    p = last.Path;
+                }
+
+                return p;
+            }, "Last");
+        }
+
+        [Test]
+        public void LargeArrayAddPerformance()
+        {
+            JArray a1 = new JArray();
+
+            JArray a2 = new JArray();
+            for (int i = 0; i < 100000; i++)
+            {
+                a2.Add(i);
+            }
+
+            int interations = 1000;
+
+            TimeOperation(() =>
+            {
+                for (int i = 0; i < interations; i++)
+                {
+                    a1.Add(interations);
+                }
+
+                return a1;
+            }, "Small");
+
+            TimeOperation(() =>
+            {
+                for (int i = 0; i < interations; i++)
+                {
+                    a2.Add(interations);
+                }
+
+                return a2;
+            }, "Large");
+        }
+
+        [Test]
         public void BuildJObject()
         {
             JObject o = new JObject();
