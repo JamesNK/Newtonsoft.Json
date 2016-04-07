@@ -1050,48 +1050,59 @@ namespace Newtonsoft.Json.Serialization
 
             int initialDepth = writer.Top;
 
-            foreach (DictionaryEntry entry in values)
+            // Manual use of IDictionaryEnumerator instead of foreach to avoid DictionaryEntry box allocations.
+            IDictionaryEnumerator e = values.GetEnumerator();
+            try
             {
-                bool escape;
-                string propertyName = GetPropertyName(writer, entry.Key, contract.KeyContract, out escape);
-
-                propertyName = (contract.DictionaryKeyResolver != null)
-                    ? contract.DictionaryKeyResolver(propertyName)
-                    : propertyName;
-
-                try
+                while (e.MoveNext())
                 {
-                    object value = entry.Value;
-                    JsonContract valueContract = contract.FinalItemContract ?? GetContractSafe(value);
+                    DictionaryEntry entry = e.Entry;
 
-                    if (ShouldWriteReference(value, null, valueContract, contract, member))
+                    bool escape;
+                    string propertyName = GetPropertyName(writer, entry.Key, contract.KeyContract, out escape);
+
+                    propertyName = (contract.DictionaryKeyResolver != null)
+                        ? contract.DictionaryKeyResolver(propertyName)
+                        : propertyName;
+
+                    try
                     {
-                        writer.WritePropertyName(propertyName, escape);
-                        WriteReference(writer, value);
-                    }
-                    else
-                    {
-                        if (!CheckForCircularReference(writer, value, null, valueContract, contract, member))
+                        object value = entry.Value;
+                        JsonContract valueContract = contract.FinalItemContract ?? GetContractSafe(value);
+
+                        if (ShouldWriteReference(value, null, valueContract, contract, member))
                         {
-                            continue;
+                            writer.WritePropertyName(propertyName, escape);
+                            WriteReference(writer, value);
                         }
+                        else
+                        {
+                            if (!CheckForCircularReference(writer, value, null, valueContract, contract, member))
+                            {
+                                continue;
+                            }
 
-                        writer.WritePropertyName(propertyName, escape);
+                            writer.WritePropertyName(propertyName, escape);
 
-                        SerializeValue(writer, value, valueContract, null, contract, member);
+                            SerializeValue(writer, value, valueContract, null, contract, member);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        if (IsErrorHandled(underlyingDictionary, contract, propertyName, null, writer.ContainerPath, ex))
+                        {
+                            HandleError(writer, initialDepth);
+                        }
+                        else
+                        {
+                            throw;
+                        }
                     }
                 }
-                catch (Exception ex)
-                {
-                    if (IsErrorHandled(underlyingDictionary, contract, propertyName, null, writer.ContainerPath, ex))
-                    {
-                        HandleError(writer, initialDepth);
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+            }
+            finally
+            {
+                (e as IDisposable)?.Dispose();
             }
 
             writer.WriteEndObject();
