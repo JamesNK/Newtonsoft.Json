@@ -2041,9 +2041,19 @@ namespace Newtonsoft.Json.Serialization
                             IDictionary targetDictionary = (dictionaryContract.ShouldCreateWrapper) ? dictionaryContract.CreateWrapper(createdObjectDictionary) : (IDictionary)createdObjectDictionary;
                             IDictionary newValues = (dictionaryContract.ShouldCreateWrapper) ? dictionaryContract.CreateWrapper(value) : (IDictionary)value;
 
-                            foreach (DictionaryEntry newValue in newValues)
+                            // Manual use of IDictionaryEnumerator instead of foreach to avoid DictionaryEntry box allocations.
+                            IDictionaryEnumerator e = newValues.GetEnumerator();
+                            try
                             {
-                                targetDictionary.Add(newValue.Key, newValue.Value);
+                                while (e.MoveNext())
+                                {
+                                    DictionaryEntry entry = e.Entry;
+                                    targetDictionary.Add(entry.Key, entry.Value);
+                                }
+                            }
+                            finally
+                            {
+                                (e as IDisposable)?.Dispose();
                             }
                         }
                     }
