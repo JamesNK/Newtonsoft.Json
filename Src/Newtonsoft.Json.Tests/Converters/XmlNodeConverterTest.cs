@@ -2670,6 +2670,32 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual("null", json);
         }
+
+        [Test]
+        public void SerializeExplicitAttributeNamespace()
+        {
+            var original = XElement.Parse("<MyElement xmlns=\"http://example.com\" />");
+            Assert.AreEqual(@"<MyElement xmlns=""http://example.com"" />", original.ToString());
+
+            var json = JsonConvert.SerializeObject(original);
+            Assert.AreEqual(@"{""MyElement"":{""@xmlns"":""http://example.com""}}", json);
+
+            var deserialized = JsonConvert.DeserializeObject<XElement>(json);
+            Assert.AreEqual(@"<MyElement xmlns=""http://example.com"" />", deserialized.ToString());
+        }
+
+        [Test]
+        public void SerializeImplicitAttributeNamespace()
+        {
+            var original = new XElement("{http://example.com}MyElement");
+            Assert.AreEqual(@"<MyElement xmlns=""http://example.com"" />", original.ToString());
+
+            var json = JsonConvert.SerializeObject(original);
+            Assert.AreEqual(@"{""MyElement"":{""@xmlns"":""http://example.com""}}", json);
+
+            var deserialized = JsonConvert.DeserializeObject<XElement>(json);
+            Assert.AreEqual(@"<MyElement xmlns=""http://example.com"" />", deserialized.ToString());
+        }
 #endif
     }
 }

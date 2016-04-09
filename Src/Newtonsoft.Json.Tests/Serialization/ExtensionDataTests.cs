@@ -374,6 +374,40 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(7, c.ExtensionData.Count);
         }
 
+        [JsonObject(MemberSerialization.OptIn)]
+        public class MyClass
+        {
+            public int NotForJson { get; set; }
+
+            [JsonPropertyAttribute(Required = Required.Always)]
+            public int ForJson { get; set; }
+
+            [JsonExtensionData(ReadData = true, WriteData = true)]
+            public IDictionary<String, JToken> ExtraInfoJson { get; set; }
+
+            public MyClass(MyClass other = null)
+            {
+                if (other != null)
+                {
+                    // copy construct
+                }
+            }
+        }
+
+        [Test]
+        public void PopulateWithExtensionData()
+        {
+            string jsonStirng = @"{ ""ForJson"" : 33 , ""extra1"" : 11, ""extra2"" : 22 }";
+
+            MyClass c = new MyClass();
+
+            JsonConvert.PopulateObject(jsonStirng, c);
+
+            Assert.AreEqual(2, c.ExtraInfoJson.Count);
+            Assert.AreEqual(11, (int)c.ExtraInfoJson["extra1"]);
+            Assert.AreEqual(22, (int)c.ExtraInfoJson["extra2"]);
+        }
+
         public class MultipleExtensionDataAttributesTestClass
         {
             public string Name { get; set; }

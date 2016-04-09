@@ -46,7 +46,6 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Converters
 {
-
     #region XmlNodeWrappers
 #if !DOTNET && !PORTABLE && !PORTABLE40
     internal class XmlDocumentWrapper : XmlNodeWrapper, IXmlDocument
@@ -235,6 +234,7 @@ namespace Newtonsoft.Json.Converters
     {
         private readonly XmlNode _node;
         private IList<IXmlNode> _childNodes;
+        private IList<IXmlNode> _attributes;
 
         public XmlNodeWrapper(XmlNode node)
         {
@@ -295,7 +295,14 @@ namespace Newtonsoft.Json.Converters
                     return null;
                 }
 
-                return _node.Attributes.Cast<XmlAttribute>().Select(WrapNode).ToList();
+                // attributes is read multiple times
+                // cache results to prevent multiple reads which kills perf in large documents
+                if (_attributes == null)
+                {
+                    _attributes = _node.Attributes.Cast<XmlAttribute>().Select(WrapNode).ToList();
+                }
+
+                return _attributes;
             }
         }
 
@@ -327,6 +334,7 @@ namespace Newtonsoft.Json.Converters
             XmlNodeWrapper xmlNodeWrapper = (XmlNodeWrapper)newChild;
             _node.AppendChild(xmlNodeWrapper._node);
             _childNodes = null;
+            _attributes = null;
 
             return newChild;
         }
@@ -861,6 +869,8 @@ namespace Newtonsoft.Json.Converters
 
     internal class XElementWrapper : XContainerWrapper, IXmlElement
     {
+        private IList<IXmlNode> _attributes;
+
         private XElement Element
         {
             get { return (XElement)WrappedNode; }
@@ -875,11 +885,52 @@ namespace Newtonsoft.Json.Converters
         {
             XObjectWrapper wrapper = (XObjectWrapper)attribute;
             Element.Add(wrapper.WrappedNode);
+            _attributes = null;
         }
 
         public override IList<IXmlNode> Attributes
         {
-            get { return Element.Attributes().Select(a => new XAttributeWrapper(a)).Cast<IXmlNode>().ToList(); }
+            get
+            {
+                // attributes is read multiple times
+                // cache results to prevent multiple reads which kills perf in large documents
+                if (_attributes == null)
+                {
+                    _attributes = Element.Attributes().Select(a => new XAttributeWrapper(a)).Cast<IXmlNode>().ToList();
+
+                    // ensure elements created with a namespace but no namespace attribute are converted correctly
+                    // e.g. new XElement("{http://example.com}MyElement");
+                    string namespaceUri = NamespaceUri;
+                    if (!string.IsNullOrEmpty(namespaceUri) && namespaceUri != ParentNode?.NamespaceUri)
+                    {
+                        if (string.IsNullOrEmpty(GetPrefixOfNamespace(namespaceUri)))
+                        {
+                            bool namespaceDeclared = false;
+                            foreach (IXmlNode attribute in _attributes)
+                            {
+                                if (attribute.LocalName == "xmlns" && string.IsNullOrEmpty(attribute.NamespaceUri) && attribute.Value == namespaceUri)
+                                {
+                                    namespaceDeclared = true;
+                                }
+                            }
+
+                            if (!namespaceDeclared)
+                            {
+                                _attributes.Insert(0, new XAttributeWrapper(new XAttribute("xmlns", namespaceUri)));
+                            }
+                        }
+                    }
+                }
+
+                return _attributes;
+            }
+        }
+
+        public override IXmlNode AppendChild(IXmlNode newChild)
+        {
+            IXmlNode result = base.AppendChild(newChild);
+            _attributes = null;
+            return result;
         }
 
         public override string Value
