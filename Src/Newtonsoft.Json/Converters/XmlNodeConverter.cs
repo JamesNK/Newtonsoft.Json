@@ -258,7 +258,7 @@ namespace Newtonsoft.Json.Converters
                 // cache results to prevent multiple reads which kills perf in large documents
                 if (_childNodes == null)
                 {
-                    _childNodes = new List<IXmlNode>();
+                    _childNodes = new List<IXmlNode>(_node.ChildNodes.Count);
                     foreach (XmlNode childNode in _node.ChildNodes)
                     {
                         _childNodes.Add(WrapNode(childNode));
@@ -297,7 +297,7 @@ namespace Newtonsoft.Json.Converters
                 // cache results to prevent multiple reads which kills perf in large documents
                 if (_attributes == null)
                 {
-                    _attributes = new List<IXmlNode>();
+                    _attributes = new List<IXmlNode>(_node.Attributes.Count);
                     foreach (XmlAttribute attribute in _node.Attributes)
                     {
                         _attributes.Add(WrapNode(attribute));
@@ -777,6 +777,7 @@ namespace Newtonsoft.Json.Converters
 
     internal class XObjectWrapper : IXmlNode
     {
+        private static readonly List<IXmlNode> EmptyChildNodes = new List<IXmlNode>();
         private readonly XObject _xmlObject;
 
         public XObjectWrapper(XObject xmlObject)
@@ -801,7 +802,7 @@ namespace Newtonsoft.Json.Converters
 
         public virtual List<IXmlNode> ChildNodes
         {
-            get { return new List<IXmlNode>(); }
+            get { return EmptyChildNodes; }
         }
 
         public virtual List<IXmlNode> Attributes
