@@ -135,7 +135,8 @@ task Package -depends Build {
     Write-Host "Building NuGet package with ID $packageId and version $nugetVersion" -ForegroundColor Green
     Write-Host
 
-    exec { .\Tools\NuGet\NuGet.exe pack $nuspecPath -Symbols }
+    # temporary work around for RC of NuGet command line breaking restore for PCL projects
+    exec { .\Tools\NuGet\NuGet342.exe pack $nuspecPath -Symbols }
     move -Path .\*.nupkg -Destination $workingDir\NuGet
   }
 
@@ -339,7 +340,7 @@ function Update-Project {
   $file = switch($sign) { $true { $signKeyPath } default { $null } }
 
   $json = (Get-Content $projectPath) -join "`n" | ConvertFrom-Json
-  $options = @{"warningsAsErrors" = $true; "keyFile" = $file; "define" = ((GetConstants "dotnet" $sign) -split ";") }
+  $options = @{"warningsAsErrors" = $true; "xmlDoc" = $true; "keyFile" = $file; "define" = ((GetConstants "dotnet" $sign) -split ";") }
   Add-Member -InputObject $json -MemberType NoteProperty -Name "compilationOptions" -Value $options -Force
 
   ConvertTo-Json $json -Depth 10 | Set-Content $projectPath
