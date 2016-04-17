@@ -1,5 +1,5 @@
 ﻿{
-  "version": "7.0.2-beta1",
+  "version": "1.0.0-*",
   "title": "Json.NET",
   "description": "Json.NET is a popular high-performance JSON framework for .NET",
   "authors": [ "James Newton-King" ],
@@ -61,6 +61,7 @@
         "System.ObjectModel": "",
         "System.Reflection": "",
         "System.Reflection.Extensions": "",
+        "System.Resources.ResourceManager": "",
         "System.Runtime": "",
         "System.Runtime.Extensions": "",
         "System.Runtime.Serialization": "",
@@ -88,32 +89,33 @@
         "System.Xml": ""
       }
     },
-    "dotnet": {
+    "netstandard1.0": {
+      "compilationOptions": {
+        "define": [ "PORTABLE" ]
+      },
       "dependencies": {
-        "Microsoft.CSharp": "4.0.0",
-        "System.Collections": "4.0.10",
-        "System.Collections.Concurrent": "4.0.10",
-        "System.ComponentModel.TypeConverter": "4.0.0",
-        "System.Diagnostics.Debug": "4.0.10",
-        "System.Dynamic.Runtime": "4.0.10",
-        "System.Globalization": "4.0.10",
-        "System.IO": "4.0.10",
-        "System.Linq": "4.0.0",
-        "System.Linq.Expressions": "4.0.10",
-        "System.ObjectModel": "4.0.10",
-        "System.Reflection": "4.0.10",
-        "System.Reflection.Extensions": "4.0.0",
-        "System.Runtime": "4.0.20",
-        "System.Runtime.Extensions": "4.0.10",
-        "System.Runtime.Numerics": "4.0.0",
-        "System.Runtime.Serialization.Primitives": "4.0.10",
-        "System.Text.Encoding": "4.0.10",
-        "System.Text.Encoding.Extensions": "4.0.10",
-        "System.Text.RegularExpressions": "4.0.10",
-        "System.Threading": "4.0.10",
-        "System.Threading.Tasks": "4.0.10",
-        "System.Xml.ReaderWriter": "4.0.10",
-        "System.Xml.XDocument": "4.0.10"
+        "Microsoft.CSharp": "4.0.1-rc2-24008",
+        "System.Collections": "4.0.11-rc2-24008",
+        "System.Diagnostics.Debug": "4.0.11-rc2-24008",
+        "System.Dynamic.Runtime": "4.0.11-rc2-24008",
+        "System.Globalization": "4.0.11-rc2-24008",
+        "System.IO": "4.1.0-rc2-24008",
+        "System.Linq": "4.1.0-rc2-24008",
+        "System.Linq.Expressions": "4.0.11-rc2-24008",
+        "System.ObjectModel": "4.0.12-rc2-24008",
+        "System.Reflection": "4.1.0-rc2-24008",
+        "System.Reflection.Extensions": "4.0.1-rc2-24008",
+        "System.Resources.ResourceManager": "4.0.1-rc2-24008",
+        "System.Runtime": "4.1.0-rc2-24008",
+        "System.Runtime.Extensions": "4.1.0-rc2-24008",
+        "System.Runtime.Serialization.Primitives": "4.1.1-rc2-24008",
+        "System.Text.Encoding": "4.0.11-rc2-24008",
+        "System.Text.Encoding.Extensions": "4.0.11-rc2-24008",
+        "System.Text.RegularExpressions": "4.0.12-rc2-24008",
+        "System.Threading": "4.0.11-rc2-24008",
+        "System.Threading.Tasks": "4.0.11-rc2-24008",
+        "System.Xml.ReaderWriter": "4.0.11-rc2-24008",
+        "System.Xml.XDocument": "4.0.11-rc2-24008"
       }
     }
   }
