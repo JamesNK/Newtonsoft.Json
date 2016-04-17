@@ -19,8 +19,8 @@
       <group targetFramework="xamarin.ios" />
       <group targetFramework="monotouch" />
       <group targetFramework="monoandroid" />
-      <group targetFramework=".NETPortable4.5-Profile259" />
-      <group targetFramework=".NETPortable4.0-Profile328" />
+      <group targetFramework=".NETPortable0.0-Profile259" />
+      <group targetFramework=".NETPortable0.0-Profile328" />
       <group targetFramework="netstandard1.0">
         <dependency id="Microsoft.CSharp" version="4.0.1-rc2-24015" />
         <dependency id="System.Collections" version="4.0.11-rc2-24015" />
