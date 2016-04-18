@@ -528,6 +528,64 @@ namespace Newtonsoft.Json.Tests.Serialization
             JObject o = (JObject)actual.Payload;
             Assert.AreEqual("System.Byte[], mscorlib", (string)o["$type"]);
             Assert.AreEqual("AAECAwQFBgcICQ==", (string)o["$value"]);
+            Assert.AreEqual(null, o.Parent);
+        }
+
+        [Test]
+        public void ReadAhead_JObject_NoParent()
+        {
+            ItemWithUntypedPayload actual = JsonConvert.DeserializeObject<ItemWithUntypedPayload>(@"{
+  ""Payload"": {}
+}",
+                new JsonSerializerSettings
+                {
+                    MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
+                });
+
+            JObject o = (JObject)actual.Payload;
+            Assert.AreEqual(null, o.Parent);
+        }
+
+        public class ItemWithJTokens
+        {
+            public JValue Payload1 { get; set; }
+            public JObject Payload2 { get; set; }
+            public JArray Payload3 { get; set; }
+        }
+
+        [Test]
+        public void ReadAhead_TypedJValue_NoParent()
+        {
+            ItemWithJTokens actual = (ItemWithJTokens)JsonConvert.DeserializeObject(@"{
+  ""Payload1"": 1,
+  ""Payload2"": {},
+  ""Payload3"": [1],
+  ""$type"": ""Newtonsoft.Json.Tests.Serialization.MetadataPropertyHandlingTests+ItemWithJTokens, Newtonsoft.Json.Tests""
+}",
+                new JsonSerializerSettings
+                {
+                    MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+                    TypeNameHandling = TypeNameHandling.All
+                });
+
+            Assert.AreEqual(null, actual.Payload1.Parent);
+            Assert.AreEqual(null, actual.Payload2.Parent);
+            Assert.AreEqual(null, actual.Payload3.Parent);
+        }
+
+        [Test]
+        public void ReadAhead_JArray_NoParent()
+        {
+            ItemWithUntypedPayload actual = JsonConvert.DeserializeObject<ItemWithUntypedPayload>(@"{
+  ""Payload"": [1]
+}",
+                new JsonSerializerSettings
+                {
+                    MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
+                });
+
+            JArray o = (JArray)actual.Payload;
+            Assert.AreEqual(null, o.Parent);
         }
 
         public class ItemWithUntypedPayload

@@ -299,9 +299,19 @@ namespace Newtonsoft.Json.Utilities
         {
             if (_dictionary != null)
             {
-                foreach (DictionaryEntry item in _dictionary)
+                // Manual use of IDictionaryEnumerator instead of foreach to avoid DictionaryEntry box allocations.
+                IDictionaryEnumerator e = _dictionary.GetEnumerator();
+                try
                 {
-                    array[arrayIndex++] = new KeyValuePair<TKey, TValue>((TKey)item.Key, (TValue)item.Value);
+                    while (e.MoveNext())
+                    {
+                        DictionaryEntry entry = e.Entry;
+                        array[arrayIndex++] = new KeyValuePair<TKey, TValue>((TKey)entry.Key, (TValue)entry.Value);
+                    }
+                }
+                finally
+                {
+                    (e as IDisposable)?.Dispose();
                 }
             }
 #if !(NET40 || NET35 || NET20 || PORTABLE40)
