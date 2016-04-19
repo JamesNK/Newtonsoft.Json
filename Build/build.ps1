@@ -11,7 +11,7 @@
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
-  $netCliVersion = "1.0.0-rc2-002416"
+  $netCliVersion = "1.0.0-rc2-002424"
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -135,8 +135,7 @@ task Package -depends Build {
     Write-Host "Building NuGet package with ID $packageId and version $nugetVersion" -ForegroundColor Green
     Write-Host
 
-    # temporary work around for RC of NuGet command line breaking restore for PCL projects
-    exec { .\Tools\NuGet\NuGet342.exe pack $nuspecPath -Symbols }
+    exec { .\Tools\NuGet\NuGet.exe pack $nuspecPath -Symbols }
     move -Path .\*.nupkg -Destination $workingDir\NuGet
   }
 
