@@ -62,6 +62,37 @@ namespace Newtonsoft.Json.Tests
     public class JsonTextReaderTest : TestFixtureBase
     {
         [Test]
+        public void FloatParseHandling_ReadAsString()
+        {
+            string json = "[9223372036854775807, 1.7976931348623157E+308, 792281625142643375935439503.35, 792281625142643375935555555555555555555555555555555555555555555555555439503.35]";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.FloatParseHandling = Json.FloatParseHandling.Decimal;
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+            Assert.AreEqual("9223372036854775807", reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+            Assert.AreEqual("9223372036854775807", reader.Value);
+
+            Assert.AreEqual("1.7976931348623157E+308", reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+            Assert.AreEqual("1.7976931348623157E+308", reader.Value);
+
+            Assert.AreEqual("792281625142643375935439503.35", reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+            Assert.AreEqual("792281625142643375935439503.35", reader.Value);
+
+            Assert.AreEqual("792281625142643375935555555555555555555555555555555555555555555555555439503.35", reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+            Assert.AreEqual("792281625142643375935555555555555555555555555555555555555555555555555439503.35", reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+        }
+
+        [Test]
         public void LineInfoAndNewLines()
         {
             string json = "{}";

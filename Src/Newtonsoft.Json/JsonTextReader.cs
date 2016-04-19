@@ -614,10 +614,8 @@ namespace Newtonsoft.Json
                                     _charPos++;
                                     throw CreateUnexpectedCharacterException(currentChar);
                                 }
-                                ParseNumber(ReadType.Read);
-                                string s = ((IFormattable)Value).ToString(null, CultureInfo.InvariantCulture);
-                                SetToken(JsonToken.String, s);
-                                return s;
+                                ParseNumber(ReadType.ReadAsString);
+                                return Value;
                             case 't':
                             case 'f':
                                 if (readType != ReadType.ReadAsString)
@@ -1807,7 +1805,42 @@ namespace Newtonsoft.Json
             bool singleDigit = (char.IsDigit(firstChar) && _stringReference.Length == 1);
             bool nonBase10 = (firstChar == '0' && _stringReference.Length > 1 && _stringReference.Chars[_stringReference.StartIndex + 1] != '.' && _stringReference.Chars[_stringReference.StartIndex + 1] != 'e' && _stringReference.Chars[_stringReference.StartIndex + 1] != 'E');
 
-            if (readType == ReadType.ReadAsInt32)
+            if (readType == ReadType.ReadAsString)
+            {
+                string number = _stringReference.ToString();
+
+                // validate that the string is a valid number
+                if (nonBase10)
+                {
+                    try
+                    {
+                        if (number.StartsWith("0x", StringComparison.OrdinalIgnoreCase))
+                        {
+                            Convert.ToInt64(number, 16);
+                        }
+                        else
+                        {
+                            Convert.ToInt64(number, 8);
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+                    }
+                }
+                else
+                {
+                    double value;
+                    if (!double.TryParse(number, NumberStyles.Float, CultureInfo.InvariantCulture, out value))
+                    {
+                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                    }
+                }
+
+                numberType = JsonToken.String;
+                numberValue = number;
+            }
+            else if (readType == ReadType.ReadAsInt32)
             {
                 if (singleDigit)
                 {
