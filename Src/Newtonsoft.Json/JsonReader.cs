@@ -216,7 +216,7 @@ namespace Newtonsoft.Json
             get { return _floatParseHandling; }
             set
             {
-                if (value < FloatParseHandling.Double || value > FloatParseHandling.Decimal)
+                if (value < FloatParseHandling.Double || value > FloatParseHandling.Auto)
                 {
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
