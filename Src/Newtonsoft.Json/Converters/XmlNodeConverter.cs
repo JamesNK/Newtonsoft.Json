@@ -1476,12 +1476,13 @@ namespace Newtonsoft.Json.Converters
                 return element;
             }
 #endif
-
+#if !(DOTNET || PORTABLE)
             if (objectType == typeof(XmlElement))
             {
                 return document.DocumentElement.WrappedNode;
             }
-            
+#endif
+
             return document.WrappedNode;
         }
 
