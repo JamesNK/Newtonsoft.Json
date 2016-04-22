@@ -11,7 +11,7 @@
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
-  $netCliVersion = "1.0.0-rc2-002424"
+  $netCliVersion = "1.0.0-rc2-002457"
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -90,11 +90,7 @@ task Package -depends Build {
   
   if ($buildNuGet)
   {
-    $nugetVersion = $majorWithReleaseVersion
-    if ($nugetPrelease -ne $null)
-    {
-      $nugetVersion = $nugetVersion + "-" + $nugetPrelease
-    }
+    $nugetVersion = GetNuGetVersion
 
     New-Item -Path $workingDir\NuGet -ItemType Directory
 
@@ -136,6 +132,7 @@ task Package -depends Build {
     Write-Host
 
     exec { .\Tools\NuGet\NuGet.exe pack $nuspecPath -Symbols }
+    exec { dotnet pack $workingSourceDir\Newtonsoft.Json\project.json -c Release }
     move -Path .\*.nupkg -Destination $workingDir\NuGet
   }
 
@@ -260,6 +257,17 @@ function NUnitTests($build)
   exec { .\Tools\NUnit\nunit-console.exe "$workingDir\Deployed\Bin\$finalDir\Newtonsoft.Json.Tests.dll" /framework=$framework /xml:$workingDir\$name.xml | Out-Default } "Error running $name tests"
 }
 
+function GetNuGetVersion()
+{
+  $nugetVersion = $majorWithReleaseVersion
+  if ($nugetPrelease -ne $null)
+  {
+    $nugetVersion = $nugetVersion + "-" + $nugetPrelease
+  }
+
+  return $nugetVersion
+}
+
 function GetConstants($constants, $includeSigned)
 {
   $signed = switch($includeSigned) { $true { ";SIGNED" } default { "" } }
@@ -341,6 +349,8 @@ function Update-Project {
   $json = (Get-Content $projectPath) -join "`n" | ConvertFrom-Json
   $options = @{"warningsAsErrors" = $true; "xmlDoc" = $true; "keyFile" = $file; "define" = ((GetConstants "dotnet" $sign) -split ";") }
   Add-Member -InputObject $json -MemberType NoteProperty -Name "compilationOptions" -Value $options -Force
+
+  $json.version = GetNuGetVersion
 
   ConvertTo-Json $json -Depth 10 | Set-Content $projectPath
 }

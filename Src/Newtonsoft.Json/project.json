@@ -28,6 +28,15 @@
         "System.Xml.Linq": ""
       }
     },
+    "net35": {
+      "frameworkAssemblies": {
+        "System.Core": "",
+        "System.Data": "",
+        "System.Runtime.Serialization": "",
+        "System.Xml": "",
+        "System.Xml.Linq": ""
+      }
+    },
     "net20": {
       "frameworkAssemblies": {
         "System.Data": "",
