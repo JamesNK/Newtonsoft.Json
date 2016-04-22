@@ -1431,9 +1431,9 @@ namespace Newtonsoft.Json.Converters
 #if !(DOTNET || PORTABLE)
             if (typeof(XmlNode).IsAssignableFrom(objectType))
             {
-                if (objectType != typeof(XmlDocument))
+                if (objectType != typeof(XmlDocument) && objectType != typeof(XmlElement))
                 {
-                    throw new JsonSerializationException("XmlNodeConverter only supports deserializing XmlDocuments");
+                    throw new JsonSerializationException("XmlNodeConverter only supports deserializing XmlDocuments or XmlElement");
                 }
 
                 XmlDocument d = new XmlDocument();
@@ -1477,6 +1477,11 @@ namespace Newtonsoft.Json.Converters
             }
 #endif
 
+            if (objectType == typeof(XmlElement))
+            {
+                return document.DocumentElement.WrappedNode;
+            }
+            
             return document.WrappedNode;
         }
 
