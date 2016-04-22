@@ -906,6 +906,23 @@ namespace Newtonsoft.Json.Tests.Converters
             return sw.ToString();
         }
 
+        public class Foo2
+        {
+            public XmlElement Bar { get; set; }
+        }
+
+        [Test]
+        public void SerializeAndDeserializeXmlElement()
+        {
+            Foo2 foo = new Foo2 { Bar = null };
+            string json = JsonConvert.SerializeObject(foo);
+
+            Assert.AreEqual(@"{""Bar"":null}", json);
+            Foo2 foo2 = JsonConvert.DeserializeObject<Foo2>(json);
+
+            Assert.IsNull(foo2.Bar);
+        }
+
         [Test]
         public void SingleTextNode()
         {

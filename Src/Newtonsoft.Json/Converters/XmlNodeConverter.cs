@@ -1433,7 +1433,7 @@ namespace Newtonsoft.Json.Converters
             {
                 if (objectType != typeof(XmlDocument) && objectType != typeof(XmlElement))
                 {
-                    throw new JsonSerializationException("XmlNodeConverter only supports deserializing XmlDocuments or XmlElement");
+                    throw new JsonSerializationException("XmlNodeConverter only supports deserializing XmlDocument or XmlElement");
                 }
 
                 XmlDocument d = new XmlDocument();
