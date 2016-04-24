@@ -2582,6 +2582,20 @@ keyword such as type of business.""
             Assert.AreEqual(3, wibbleOut.Bar[4]);
         }
 
+        [JsonObject]
+        public class ULongClass
+        {
+            public ulong ULong { get; set; } = ulong.MaxValue;
+        }
+
+        [Test]
+        public void SerializeULongMax()
+        {
+            string json = JsonConvert.SerializeObject(new ULongClass(), Formatting.Indented);
+            ULongClass c = JsonConvert.DeserializeObject<ULongClass>(json);
+            Assert.AreEqual((ulong) ulong.MaxValue, c.ULong);
+        }
+
         [Test]
         public void SerializeConverableObjects()
         {
