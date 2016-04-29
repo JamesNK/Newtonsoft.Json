@@ -74,6 +74,15 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void FromObjectUri()
+        {
+            var token1 = new JValue(new Uri("http://www.newtonsoft.com"));
+            var token2 = JToken.FromObject(token1);
+            Assert.IsTrue(JToken.DeepEquals(token1, token2));
+            Assert.AreEqual(token1.Type, token2.Type);
+        }
+
+        [Test]
         public void ToObject_Guid()
         {
             JObject anon = new JObject
