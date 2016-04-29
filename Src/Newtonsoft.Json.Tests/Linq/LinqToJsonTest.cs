@@ -55,6 +55,19 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class LinqToJsonTest : TestFixtureBase
     {
+        [Test]
+        public void ToObject_Guid()
+        {
+            JObject anon = new JObject
+            {
+                ["id"] = Guid.NewGuid()
+            };
+            Assert.AreEqual(JTokenType.Guid, anon["id"].Type);
+
+            Dictionary<string, JToken> dict = anon.ToObject<Dictionary<string, JToken>>();
+            Assert.AreEqual(JTokenType.Guid, dict["id"].Type);
+        }
+
         public class TestClass_ULong
         {
             public ulong Value { get; set; }

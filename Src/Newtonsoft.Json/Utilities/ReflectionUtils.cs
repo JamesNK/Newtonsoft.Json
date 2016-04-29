@@ -769,9 +769,11 @@ namespace Newtonsoft.Json.Utilities
                 Attribute[] attributes = a.Cast<Attribute>().ToArray();
 
 #if (NET20 || NET35)
-    // ye olde .NET GetCustomAttributes doesn't respect the inherit argument
+                // ye olde .NET GetCustomAttributes doesn't respect the inherit argument
                 if (inherit && t.BaseType != null)
+                {
                     attributes = attributes.Union(GetAttributes(t.BaseType, attributeType, inherit)).ToArray();
+                }
 #endif
 
                 return attributes;
