@@ -51,6 +51,20 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class JTokenReaderTest : TestFixtureBase
     {
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+        [Test]
+        public void ConvertBigIntegerToDouble()
+        {
+            var jObject = JObject.Parse("{ maxValue:10000000000000000000}");
+
+            JsonReader reader = jObject.CreateReader();
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(10000000000000000000d, reader.ReadAsDouble());
+            Assert.IsTrue(reader.Read());
+        }
+#endif
+
         [Test]
         public void ErrorTokenIndex()
         {
