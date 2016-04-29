@@ -114,6 +114,13 @@ namespace Newtonsoft.Json.Utilities
 
         public static ConstructorInfo ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType)
         {
+            Type genericConstructorArgument = typeof(IList<>).MakeGenericType(collectionItemType);
+
+            return ResolveEnumerableCollectionConstructor(collectionType, collectionItemType, genericConstructorArgument);
+        }
+
+        public static ConstructorInfo ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType, Type constructorArgumentType)
+        {
             Type genericEnumerable = typeof(IEnumerable<>).MakeGenericType(collectionItemType);
             ConstructorInfo match = null;
 
@@ -123,7 +130,9 @@ namespace Newtonsoft.Json.Utilities
 
                 if (parameters.Count == 1)
                 {
-                    if (genericEnumerable == parameters[0].ParameterType)
+                    Type parameterType = parameters[0].ParameterType;
+
+                    if (genericEnumerable == parameterType)
                     {
                         // exact match
                         match = constructor;
@@ -133,7 +142,7 @@ namespace Newtonsoft.Json.Utilities
                     // incase we can't find an exact match, use first inexact
                     if (match == null)
                     {
-                        if (genericEnumerable.IsAssignableFrom(parameters[0].ParameterType))
+                        if (parameterType.IsAssignableFrom(constructorArgumentType))
                         {
                             match = constructor;
                         }

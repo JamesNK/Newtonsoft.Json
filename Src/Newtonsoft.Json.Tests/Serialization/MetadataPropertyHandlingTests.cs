@@ -558,7 +558,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             ItemWithJTokens actual = (ItemWithJTokens)JsonConvert.DeserializeObject(@"{
   ""Payload1"": 1,
-  ""Payload2"": {},
+  ""Payload2"": {'prop1':1,'prop2':[2]},
   ""Payload3"": [1],
   ""$type"": ""Newtonsoft.Json.Tests.Serialization.MetadataPropertyHandlingTests+ItemWithJTokens, Newtonsoft.Json.Tests""
 }",
@@ -568,8 +568,16 @@ namespace Newtonsoft.Json.Tests.Serialization
                     TypeNameHandling = TypeNameHandling.All
                 });
 
+            Assert.AreEqual(JTokenType.Integer, actual.Payload1.Type);
+            Assert.AreEqual(1, (int)actual.Payload1);
             Assert.AreEqual(null, actual.Payload1.Parent);
+
+            Assert.AreEqual(JTokenType.Object, actual.Payload2.Type);
+            Assert.AreEqual(1, (int)actual.Payload2["prop1"]);
+            Assert.AreEqual(2, (int)actual.Payload2["prop2"][0]);
             Assert.AreEqual(null, actual.Payload2.Parent);
+
+            Assert.AreEqual(1, (int)actual.Payload3[0]);
             Assert.AreEqual(null, actual.Payload3.Parent);
         }
 
