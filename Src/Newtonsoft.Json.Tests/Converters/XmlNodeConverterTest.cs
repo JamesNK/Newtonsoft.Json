@@ -130,6 +130,36 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
 #if !NET20
+        [Test]
+        public void SerializeDollarProperty()
+        {
+            string json1 = @"{""$"":""test""}";
+
+            var doc = JsonConvert.DeserializeXNode(json1);
+
+            Assert.AreEqual(@"<_x0024_>test</_x0024_>", doc.ToString());
+
+            var json2 = JsonConvert.SerializeXNode(doc);
+            
+            Assert.AreEqual(json1, json2);
+        }
+
+        [Test]
+        public void SerializeNonKnownDollarProperty()
+        {
+            string json1 = @"{""$JELLY"":""test""}";
+
+            var doc = JsonConvert.DeserializeXNode(json1);
+
+            Console.WriteLine(doc.ToString());
+
+            Assert.AreEqual(@"<_x0024_JELLY>test</_x0024_JELLY>", doc.ToString());
+
+            var json2 = JsonConvert.SerializeXNode(doc);
+
+            Assert.AreEqual(json1, json2);
+        }
+
         public class MyModel
         {
             public string MyProperty { get; set; }
