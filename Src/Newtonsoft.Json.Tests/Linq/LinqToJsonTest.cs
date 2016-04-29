@@ -56,6 +56,24 @@ namespace Newtonsoft.Json.Tests.Linq
     public class LinqToJsonTest : TestFixtureBase
     {
         [Test]
+        public void FromObjectGuid()
+        {
+            var token1 = new JValue(Guid.NewGuid());
+            var token2 = JToken.FromObject(token1);
+            Assert.IsTrue(JToken.DeepEquals(token1, token2));
+            Assert.AreEqual(token1.Type, token2.Type);
+        }
+
+        [Test]
+        public void FromObjectTimeSpan()
+        {
+            var token1 = new JValue(TimeSpan.FromDays(1));
+            var token2 = JToken.FromObject(token1);
+            Assert.IsTrue(JToken.DeepEquals(token1, token2));
+            Assert.AreEqual(token1.Type, token2.Type);
+        }
+
+        [Test]
         public void ToObject_Guid()
         {
             JObject anon = new JObject

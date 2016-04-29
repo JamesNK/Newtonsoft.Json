@@ -819,11 +819,13 @@ namespace Newtonsoft.Json.Linq
                     writer.WriteValue((byte[])_value);
                     return;
                 case JTokenType.Guid:
+                    writer.WriteValue((_value != null) ? (Guid?)_value : null);
+                    return;
                 case JTokenType.TimeSpan:
-                    writer.WriteValue((_value != null) ? _value.ToString() : null);
+                    writer.WriteValue((_value != null) ? (TimeSpan?)_value : null);
                     return;
                 case JTokenType.Uri:
-                    writer.WriteValue((_value != null) ? ((Uri)_value).OriginalString : null);
+                    writer.WriteValue((Uri)_value);
                     return;
             }
 
