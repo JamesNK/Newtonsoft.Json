@@ -5286,7 +5286,7 @@ Path '', line 1, position 1.");
         }
 #endif
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || DNXCORE50)
         public class XmlNodeTestObject
         {
             public XmlDocument Document { get; set; }
