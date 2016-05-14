@@ -350,7 +350,7 @@ function Update-Project {
 
   $json = (Get-Content $projectPath) -join "`n" | ConvertFrom-Json
   $options = @{"warningsAsErrors" = $true; "xmlDoc" = $true; "keyFile" = $file; "define" = ((GetConstants "dotnet" $sign) -split ";") }
-  Add-Member -InputObject $json -MemberType NoteProperty -Name "compilationOptions" -Value $options -Force
+  Add-Member -InputObject $json -MemberType NoteProperty -Name "buildOptions" -Value $options -Force
 
   $json.version = GetNuGetVersion
 

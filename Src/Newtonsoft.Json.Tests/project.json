@@ -1,7 +1,5 @@
 {
   "version": "1.0.0-*",
-  "exclude": [
-  ],
   "dependencies": {
     "Newtonsoft.Json": {
       "target": "project"
@@ -85,7 +83,7 @@
       }
     },*/
     "netcoreapp1.0": {
-      "compilationOptions": {
+      "buildOptions": {
         "define": [ "NETSTANDARD10", "DNXCORE50", "PORTABLE" ]
       },
       "dependencies": {

@@ -2,13 +2,18 @@
   "version": "1.0.0-*",
   "title": "Json.NET",
   "description": "Json.NET is a popular high-performance JSON framework for .NET",
-  "authors": [ "James Newton-King" ],
-  "tags": [ "json" ],
-  "projectUrl": "http://www.newtonsoft.com/json",
-  "licenseUrl": "https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md",
-  "iconUrl": "http://www.newtonsoft.com/content/images/nugeticon.png",
   "language": "en-US",
-
+  "authors": [ "James Newton-King" ],
+  "packOptions": {
+    "projectUrl": "http://www.newtonsoft.com/json",
+    "tags": [ "json" ],
+    "licenseUrl": "https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md",
+    "iconUrl": "http://www.newtonsoft.com/content/images/nugeticon.png",
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/JamesNK/Newtonsoft.Json"
+    }
+  },
   "frameworks": {
     "net45": {
       "frameworkAssemblies": {
@@ -44,8 +49,10 @@
       }
     },
     ".NETPortable,Version=v4.5,Profile=Profile259": {
-      "compilationOptions": {
-        "define": [ "PORTABLE" ]
+      "buildOptions": {
+        "define": [
+          "PORTABLE"
+        ]
       },
       "frameworkAssemblies": {
         "Microsoft.CSharp": "",
@@ -78,8 +85,10 @@
       }
     },
     ".NETPortable,Version=v4.0,Profile=Profile328": {
-      "compilationOptions": {
-        "define": [ "PORTABLE40" ]
+      "buildOptions": {
+        "define": [
+          "PORTABLE40"
+        ]
       },
       "frameworkAssemblies": {
         "mscorlib": "",
@@ -90,8 +99,11 @@
       }
     },
     "netstandard1.0": {
-      "compilationOptions": {
-        "define": [ "NETSTANDARD10", "PORTABLE" ]
+      "buildOptions": {
+        "define": [
+          "NETSTANDARD10",
+          "PORTABLE"
+        ]
       },
       "dependencies": {
         "Microsoft.CSharp": "4.0.1-rc2-24027",
