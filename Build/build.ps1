@@ -2,7 +2,7 @@
   $zipFileName = "Json80r4.zip"
   $majorVersion = "8.0"
   $majorWithReleaseVersion = "8.0.4"
-  $nugetPrelease = "beta4"
+  $nugetPrerelease = "beta4"
   $version = GetVersion $majorWithReleaseVersion
   $packageId = "Newtonsoft.Json"
   $signAssemblies = $false
@@ -262,9 +262,9 @@ function NUnitTests($build)
 function GetNuGetVersion()
 {
   $nugetVersion = $majorWithReleaseVersion
-  if ($nugetPrelease -ne $null)
+  if ($nugetPrerelease -ne $null)
   {
-    $nugetVersion = $nugetVersion + "-" + $nugetPrelease
+    $nugetVersion = $nugetVersion + "-" + $nugetPrerelease
   }
 
   return $nugetVersion

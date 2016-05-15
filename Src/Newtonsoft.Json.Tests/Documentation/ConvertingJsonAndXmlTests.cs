@@ -54,20 +54,22 @@ using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Newtonsoft.Json.Tests.Documentation
 {
-    public class ConvertingJsonAndXmlTests
+    [TestFixture]
+    public class ConvertingJsonAndXmlTests : TestFixtureBase
     {
+        [Test]
         public void SerializeXmlNode()
         {
             #region SerializeXmlNode
             string xml = @"<?xml version='1.0' standalone='no'?>
             <root>
               <person id='1'>
-              <name>Alan</name>
-              <url>http://www.google.com</url>
+                <name>Alan</name>
+                <url>http://www.google.com</url>
               </person>
               <person id='2'>
-              <name>Louis</name>
-              <url>http://www.yahoo.com</url>
+                <name>Louis</name>
+                <url>http://www.yahoo.com</url>
               </person>
             </root>";
 
@@ -98,6 +100,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             #endregion
         }
 
+        [Test]
         public void DeserializeXmlNode()
         {
             #region DeserializeXmlNode
@@ -126,17 +129,18 @@ namespace Newtonsoft.Json.Tests.Documentation
             // <?xml version="1.0" standalone="no"?>
             // <root>
             //   <person id="1">
-            //   <name>Alan</name>
-            //   <url>http://www.google.com</url>
+            //     <name>Alan</name>
+            //     <url>http://www.google.com</url>
             //   </person>
             //   <person id="2">
-            //   <name>Louis</name>
-            //   <url>http://www.yahoo.com</url>
+            //     <name>Louis</name>
+            //     <url>http://www.yahoo.com</url>
             //   </person>
             // </root>
             #endregion
         }
 
+        [Test]
         public void ForceJsonArray()
         {
             #region ForceJsonArray
