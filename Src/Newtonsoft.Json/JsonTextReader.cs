@@ -598,6 +598,15 @@ namespace Newtonsoft.Json
                                         throw new ArgumentOutOfRangeException(nameof(readType));
                                 }
                             case '-':
+                                if (EnsureChars(1, true) && _chars[_charPos + 1] == 'I')
+                                {
+                                    return ParseNumberNegativeInfinity(readType);
+                                }
+                                else
+                                {
+                                    ParseNumber(readType);
+                                    return Value;
+                                }
                             case '.':
                             case '0':
                             case '1':
@@ -630,6 +639,10 @@ namespace Newtonsoft.Json
                                 }
                                 SetToken(JsonToken.String, expected);
                                 return expected;
+                            case 'I':
+                                return ParseNumberPositiveInfinity(readType);
+                            case 'N':
+                                return ParseNumberNaN(readType);
                             case 'n':
                                 HandleNull();
                                 return null;
@@ -858,7 +871,20 @@ namespace Newtonsoft.Json
                             case 'n':
                                 HandleNull();
                                 return null;
+                            case 'N':
+                                return ParseNumberNaN(readType);
+                            case 'I':
+                                return ParseNumberPositiveInfinity(readType);
                             case '-':
+                                if (EnsureChars(1, true) && _chars[_charPos + 1] == 'I')
+                                {
+                                    return ParseNumberNegativeInfinity(readType);
+                                }
+                                else
+                                {
+                                    ParseNumber(readType);
+                                    return Value;
+                                }
                             case '.':
                             case '0':
                             case '1':
@@ -1567,15 +1593,15 @@ namespace Newtonsoft.Json
                         }
                         return true;
                     case 'N':
-                        ParseNumberNaN();
+                        ParseNumberNaN(ReadType.Read);
                         return true;
                     case 'I':
-                        ParseNumberPositiveInfinity();
+                        ParseNumberPositiveInfinity(ReadType.Read);
                         return true;
                     case '-':
                         if (EnsureChars(1, true) && _chars[_charPos + 1] == 'I')
                         {
-                            ParseNumberNegativeInfinity();
+                            ParseNumberNegativeInfinity(ReadType.Read);
                         }
                         else
                         {
@@ -2293,55 +2319,79 @@ namespace Newtonsoft.Json
             }
         }
 
-        private void ParseNumberNegativeInfinity()
+        private object ParseNumberNegativeInfinity(ReadType readType)
         {
             if (MatchValueWithTrailingSeparator(JsonConvert.NegativeInfinity))
             {
-                if (_floatParseHandling == FloatParseHandling.Decimal)
+                switch (readType)
                 {
-                    throw new JsonReaderException("Cannot read -Infinity as a decimal.");
+                    case ReadType.Read:
+                    case ReadType.ReadAsDouble:
+                        if (_floatParseHandling == FloatParseHandling.Double)
+                        {
+                            SetToken(JsonToken.Float, double.NegativeInfinity);
+                            return double.NegativeInfinity;
+                        }
+                        break;
+                    case ReadType.ReadAsString:
+                        SetToken(JsonToken.String, JsonConvert.NegativeInfinity);
+                        return JsonConvert.NegativeInfinity;
                 }
 
-                SetToken(JsonToken.Float, double.NegativeInfinity);
+                throw JsonReaderException.Create(this, "Cannot read -Infinity value.");
             }
-            else
-            {
-                throw JsonReaderException.Create(this, "Error parsing negative infinity value.");
-            }
+
+            throw JsonReaderException.Create(this, "Error parsing -Infinity value.");
         }
 
-        private void ParseNumberPositiveInfinity()
+        private object ParseNumberPositiveInfinity(ReadType readType)
         {
             if (MatchValueWithTrailingSeparator(JsonConvert.PositiveInfinity))
             {
-                if (_floatParseHandling == FloatParseHandling.Decimal)
+                switch (readType)
                 {
-                    throw new JsonReaderException("Cannot read Infinity as a decimal.");
+                    case ReadType.Read:
+                    case ReadType.ReadAsDouble:
+                        if (_floatParseHandling == FloatParseHandling.Double)
+                        {
+                            SetToken(JsonToken.Float, double.PositiveInfinity);
+                            return double.PositiveInfinity;
+                        }
+                        break;
+                    case ReadType.ReadAsString:
+                        SetToken(JsonToken.String, JsonConvert.PositiveInfinity);
+                        return JsonConvert.PositiveInfinity;
                 }
 
-                SetToken(JsonToken.Float, double.PositiveInfinity);
+                throw JsonReaderException.Create(this, "Cannot read Infinity value.");
             }
-            else
-            {
-                throw JsonReaderException.Create(this, "Error parsing positive infinity value.");
-            }
+
+            throw JsonReaderException.Create(this, "Error parsing Infinity value.");
         }
 
-        private void ParseNumberNaN()
+        private object ParseNumberNaN(ReadType readType)
         {
             if (MatchValueWithTrailingSeparator(JsonConvert.NaN))
             {
-                if (_floatParseHandling == FloatParseHandling.Decimal)
+                switch (readType)
                 {
-                    throw new JsonReaderException("Cannot read NaN as a decimal.");
+                    case ReadType.Read:
+                    case ReadType.ReadAsDouble:
+                        if (_floatParseHandling == FloatParseHandling.Double)
+                        {
+                            SetToken(JsonToken.Float, double.NaN);
+                            return double.NaN;
+                        }
+                        break;
+                    case ReadType.ReadAsString:
+                        SetToken(JsonToken.String, JsonConvert.NaN);
+                        return JsonConvert.NaN;
                 }
 
-                SetToken(JsonToken.Float, double.NaN);
+                throw JsonReaderException.Create(this, "Cannot read NaN value.");
             }
-            else
-            {
-                throw JsonReaderException.Create(this, "Error parsing NaN value.");
-            }
+
+            throw JsonReaderException.Create(this, "Error parsing NaN value.");
         }
 
         /// <summary>
