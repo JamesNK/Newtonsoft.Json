@@ -1381,14 +1381,17 @@ namespace Newtonsoft.Json.Serialization
                                 throw JsonSerializationException.Create(reader, "Unexpected end when deserializing object.");
                             }
 
+                            // This is an IDictionary, so it doesn't have TryGetValue. If the key is not found, null is returned.                            
+                            object existingValue = dictionary[keyValue];
+
                             object itemValue;
                             if (dictionaryValueConverter != null && dictionaryValueConverter.CanRead)
                             {
-                                itemValue = DeserializeConvertable(dictionaryValueConverter, reader, contract.DictionaryValueType, null);
+                                itemValue = DeserializeConvertable(dictionaryValueConverter, reader, contract.DictionaryValueType, existingValue);
                             }
                             else
                             {
-                                itemValue = CreateValueInternal(reader, contract.DictionaryValueType, contract.ItemContract, null, contract, containerProperty, null);
+                                itemValue = CreateValueInternal(reader, contract.DictionaryValueType, contract.ItemContract, null, contract, containerProperty, existingValue);
                             }
 
                             dictionary[keyValue] = itemValue;
