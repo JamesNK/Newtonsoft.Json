@@ -152,7 +152,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="t1">The first <see cref="JToken"/> to compare.</param>
         /// <param name="t2">The second <see cref="JToken"/> to compare.</param>
-        /// <returns>true if the tokens are equal; otherwise false.</returns>
+        /// <returns><c>true</c> if the tokens are equal; otherwise <c>false</c>.</returns>
         public static bool DeepEquals(JToken t1, JToken t2)
         {
             return (t1 == t2 || (t1 != null && t2 != null && t1.DeepEquals(t2)));

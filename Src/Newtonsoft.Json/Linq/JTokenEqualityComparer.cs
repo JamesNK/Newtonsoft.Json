@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="x">The first object of type <see cref="JToken"/> to compare.</param>
         /// <param name="y">The second object of type <see cref="JToken"/> to compare.</param>
         /// <returns>
-        /// true if the specified objects are equal; otherwise, false.
+        /// <c>true</c> if the specified objects are equal; otherwise, <c>false</c>.
         /// </returns>
         public bool Equals(JToken x, JToken y)
         {
