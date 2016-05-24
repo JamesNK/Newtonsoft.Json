@@ -23,20 +23,37 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
+
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-    public class PublicParametizedConstructorTestClass
+    public class PublicParameterizedConstructorWithPropertyNameConflict
     {
-        private readonly string _name;
+        private readonly int _value;
 
-        public PublicParametizedConstructorTestClass(string name)
+        public PublicParameterizedConstructorWithPropertyNameConflict(string name)
         {
-            _name = name;
+            _value = Convert.ToInt32(name);
         }
 
-        public string Name
+        public int Name
         {
-            get { return _name; }
+            get { return _value; }
+        }
+    }
+
+    public class PublicParameterizedConstructorWithPropertyNameConflictWithAttribute
+    {
+        private readonly int _value;
+
+        public PublicParameterizedConstructorWithPropertyNameConflictWithAttribute([JsonProperty("name")] string nameParameter)
+        {
+            _value = Convert.ToInt32(nameParameter);
+        }
+
+        public int Name
+        {
+            get { return _value; }
         }
     }
 }

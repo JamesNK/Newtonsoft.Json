@@ -733,7 +733,7 @@ Newtonsoft.Json Error: 0 : Error!
         }
 
         [Test]
-        public void PublicParametizedConstructorWithPropertyNameConflictWithAttribute()
+        public void PublicParameterizedConstructorWithPropertyNameConflictWithAttribute()
         {
             InMemoryTraceWriter traceWriter = new InMemoryTraceWriter
             {
@@ -742,7 +742,7 @@ Newtonsoft.Json Error: 0 : Error!
 
             string json = @"{name:""1""}";
 
-            PublicParametizedConstructorWithPropertyNameConflictWithAttribute c = JsonConvert.DeserializeObject<PublicParametizedConstructorWithPropertyNameConflictWithAttribute>(json, new JsonSerializerSettings
+            PublicParameterizedConstructorWithPropertyNameConflictWithAttribute c = JsonConvert.DeserializeObject<PublicParameterizedConstructorWithPropertyNameConflictWithAttribute>(json, new JsonSerializerSettings
             {
                 TraceWriter = traceWriter
             });
@@ -750,7 +750,7 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.IsNotNull(c);
             Assert.AreEqual(1, c.Name);
 
-            Assert.AreEqual("Deserializing Newtonsoft.Json.Tests.TestObjects.PublicParametizedConstructorWithPropertyNameConflictWithAttribute using creator with parameters: name. Path 'name', line 1, position 6.", traceWriter.TraceRecords[0].Message);
+            Assert.AreEqual("Deserializing Newtonsoft.Json.Tests.TestObjects.PublicParameterizedConstructorWithPropertyNameConflictWithAttribute using creator with parameters: name. Path 'name', line 1, position 6.", traceWriter.TraceRecords[0].Message);
         }
 
         [Test]

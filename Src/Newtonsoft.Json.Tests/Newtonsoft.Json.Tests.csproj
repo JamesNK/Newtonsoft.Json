@@ -382,7 +382,7 @@
     <Compile Include="TestObjects\PhoneNumber.cs" />
     <Compile Include="TestObjects\PocoDataContractSerializationAttributesClass.cs" />
     <Compile Include="TestObjects\PrivateConstructorTestClass.cs" />
-    <Compile Include="TestObjects\PrivateConstructorWithPublicParametizedConstructorTestClass.cs" />
+    <Compile Include="TestObjects\PrivateConstructorWithPublicParameterizedConstructorTestClass.cs" />
     <Compile Include="TestObjects\PrivateImplementationAClass.cs" />
     <Compile Include="TestObjects\PrivateImplementationBClass.cs" />
     <Compile Include="TestObjects\PrivateMembersClass.cs" />
@@ -391,10 +391,10 @@
     <Compile Include="TestObjects\ProductShort.cs" />
     <Compile Include="TestObjects\PropertyCase.cs" />
     <Compile Include="TestObjects\PropertyItemConverter.cs" />
-    <Compile Include="TestObjects\PublicParametizedConstructorRequiringConverterTestClass.cs" />
-    <Compile Include="TestObjects\PublicParametizedConstructorTestClass.cs" />
-    <Compile Include="TestObjects\PublicParametizedConstructorWithNonPropertyParameterTestClass.cs" />
-    <Compile Include="TestObjects\PublicParametizedConstructorWithPropertyNameConflict.cs" />
+    <Compile Include="TestObjects\PublicParameterizedConstructorRequiringConverterTestClass.cs" />
+    <Compile Include="TestObjects\PublicParameterizedConstructorTestClass.cs" />
+    <Compile Include="TestObjects\PublicParameterizedConstructorWithNonPropertyParameterTestClass.cs" />
+    <Compile Include="TestObjects\PublicParameterizedConstructorWithPropertyNameConflict.cs" />
     <Compile Include="TestObjects\Ratio.cs" />
     <Compile Include="TestObjects\RequestOnly.cs" />
     <Compile Include="TestObjects\RequiredMembersClass.cs" />

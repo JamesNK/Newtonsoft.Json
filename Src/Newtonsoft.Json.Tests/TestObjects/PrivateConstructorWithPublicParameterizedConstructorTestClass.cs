@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -27,33 +27,19 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-    public class PublicParametizedConstructorWithPropertyNameConflict
+    public class PrivateConstructorWithPublicParameterizedConstructorTestClass
     {
-        private readonly int _value;
+        public string Name { get; set; }
+        public int Age { get; set; }
 
-        public PublicParametizedConstructorWithPropertyNameConflict(string name)
+        private PrivateConstructorWithPublicParameterizedConstructorTestClass()
         {
-            _value = Convert.ToInt32(name);
+            Age = 1;
         }
 
-        public int Name
+        public PrivateConstructorWithPublicParameterizedConstructorTestClass(string dummy)
         {
-            get { return _value; }
-        }
-    }
-
-    public class PublicParametizedConstructorWithPropertyNameConflictWithAttribute
-    {
-        private readonly int _value;
-
-        public PublicParametizedConstructorWithPropertyNameConflictWithAttribute([JsonProperty("name")] string nameParameter)
-        {
-            _value = Convert.ToInt32(nameParameter);
-        }
-
-        public int Name
-        {
-            get { return _value; }
+            throw new Exception("Should never get here.");
         }
     }
 }
