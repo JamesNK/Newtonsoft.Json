@@ -407,7 +407,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Reads the next JSON token from the stream.
         /// </summary>
-        /// <returns>true if the next token was read successfully; false if there are no more tokens to read.</returns>
+        /// <returns><c>true</c> if the next token was read successfully; <c>false</c> if there are no more tokens to read.</returns>
         public abstract bool Read();
 
         /// <summary>

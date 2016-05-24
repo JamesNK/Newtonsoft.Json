@@ -2004,7 +2004,7 @@ namespace Newtonsoft.Json.Converters
         /// </summary>
         /// <param name="attributeName">Attribute name to test.</param>
         /// <param name="prefix">The attribute name prefix if it has one, otherwise an empty string.</param>
-        /// <returns>True if attribute name is for a namespace attribute, otherwise false.</returns>
+        /// <returns><c>true</c> if attribute name is for a namespace attribute, otherwise <c>false</c>.</returns>
         private bool IsNamespaceAttribute(string attributeName, out string prefix)
         {
             if (attributeName.StartsWith("xmlns", StringComparison.Ordinal))
