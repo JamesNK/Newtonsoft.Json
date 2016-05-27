@@ -55,6 +55,46 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class LinqToJsonTest : TestFixtureBase
     {
+        [Test]
+        public void FromObjectGuid()
+        {
+            var token1 = new JValue(Guid.NewGuid());
+            var token2 = JToken.FromObject(token1);
+            Assert.IsTrue(JToken.DeepEquals(token1, token2));
+            Assert.AreEqual(token1.Type, token2.Type);
+        }
+
+        [Test]
+        public void FromObjectTimeSpan()
+        {
+            var token1 = new JValue(TimeSpan.FromDays(1));
+            var token2 = JToken.FromObject(token1);
+            Assert.IsTrue(JToken.DeepEquals(token1, token2));
+            Assert.AreEqual(token1.Type, token2.Type);
+        }
+
+        [Test]
+        public void FromObjectUri()
+        {
+            var token1 = new JValue(new Uri("http://www.newtonsoft.com"));
+            var token2 = JToken.FromObject(token1);
+            Assert.IsTrue(JToken.DeepEquals(token1, token2));
+            Assert.AreEqual(token1.Type, token2.Type);
+        }
+
+        [Test]
+        public void ToObject_Guid()
+        {
+            JObject anon = new JObject
+            {
+                ["id"] = Guid.NewGuid()
+            };
+            Assert.AreEqual(JTokenType.Guid, anon["id"].Type);
+
+            Dictionary<string, JToken> dict = anon.ToObject<Dictionary<string, JToken>>();
+            Assert.AreEqual(JTokenType.Guid, dict["id"].Type);
+        }
+
         public class TestClass_ULong
         {
             public ulong Value { get; set; }

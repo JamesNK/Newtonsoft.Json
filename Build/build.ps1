@@ -1,8 +1,8 @@
 ﻿properties { 
-  $zipFileName = "Json80r3.zip"
+  $zipFileName = "Json80r4.zip"
   $majorVersion = "8.0"
-  $majorWithReleaseVersion = "8.0.3"
-  $nugetPrelease = $null
+  $majorWithReleaseVersion = "8.0.4"
+  $nugetPrerelease = "beta1"
   $version = GetVersion $majorWithReleaseVersion
   $packageId = "Newtonsoft.Json"
   $signAssemblies = $false
@@ -11,7 +11,7 @@
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
-  $dnvmVersion = "1.0.0-rc1-update1"
+  $netCliVersion = "1.0.0-preview1-002702"
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -22,9 +22,9 @@
   $workingDir = "$baseDir\$workingName"
   $workingSourceDir = "$workingDir\Src"
   $builds = @(
-    @{Name = "Newtonsoft.Json.Dotnet"; TestsName = "Newtonsoft.Json.Tests.Dotnet"; BuildFunction = "DnxBuild"; TestsFunction = "DnxTests"; Constants="dotnet"; FinalDir=$null; NuGetDir = $null; Framework=$null},
+    @{Name = "Newtonsoft.Json.Dotnet"; TestsName = "Newtonsoft.Json.Tests.Dotnet"; BuildFunction = "NetCliBuild"; TestsFunction = "NetCliTests"; Constants="dotnet"; FinalDir="netstandard1.0"; NuGetDir = "netstandard1.0"; Framework=$null},
     @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; Constants=""; FinalDir="Net45"; NuGetDir = "net45"; Framework="net-4.0"},
-    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = "portable-net45+wp80+win8+wpa81+dnxcore50"; Framework="net-4.0"},
+    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; Constants="PORTABLE"; FinalDir="Portable"; NuGetDir = "portable-net45+wp80+win8+wpa81"; Framework="net-4.0"},
     @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; Constants="PORTABLE40"; FinalDir="Portable40"; NuGetDir = "portable-net40+sl5+wp80+win8+wpa81"; Framework="net-4.0"},
     @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; Constants="NET40"; FinalDir="Net40"; NuGetDir = "net40"; Framework="net-4.0"},
     @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; Constants="NET35"; FinalDir="Net35"; NuGetDir = "net35"; Framework="net-2.0"},
@@ -90,11 +90,7 @@ task Package -depends Build {
   
   if ($buildNuGet)
   {
-    $nugetVersion = $majorWithReleaseVersion
-    if ($nugetPrelease -ne $null)
-    {
-      $nugetVersion = $nugetVersion + "-" + $nugetPrelease
-    }
+    $nugetVersion = GetNuGetVersion
 
     New-Item -Path $workingDir\NuGet -ItemType Directory
 
@@ -136,6 +132,7 @@ task Package -depends Build {
     Write-Host
 
     exec { .\Tools\NuGet\NuGet.exe pack $nuspecPath -Symbols }
+    exec { dotnet pack $workingSourceDir\Newtonsoft.Json\project.json -c Release }
     move -Path .\*.nupkg -Destination $workingDir\NuGet
   }
 
@@ -204,36 +201,32 @@ function MSBuildBuild($build)
   exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:CopyNuGetImplementations=true" "/p:Platform=Any CPU" "/p:PlatformTarget=AnyCPU" /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:VisualStudioVersion=14.0" /p:DefineConstants=`"$constants`" "$workingSourceDir\$name.sln" | Out-Default } "Error building $name"
 }
 
-function DnxBuild($build)
+function NetCliBuild($build)
 {
   $name = $build.Name
   $projectPath = "$workingSourceDir\Newtonsoft.Json\project.json"
 
-  exec { dnvm install $dnvmVersion -r clr | Out-Default }
-  exec { dnvm use $dnvmVersion -r clr | Out-Default }
+  exec { .\Tools\Dotnet\install.ps1 -Version $netCliVersion | Out-Default }
+  exec { dotnet --version | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host
-  exec { dnu restore $projectPath | Out-Default }
+  exec { dotnet restore $projectPath | Out-Default }
 
   Write-Host -ForegroundColor Green "Building $projectPath"
-  exec { dnu build $projectPath --configuration Release | Out-Default }
+  exec { dotnet build $projectPath -f netstandard1.0 -c Release -o bin\Release\netstandard1.0 | Out-Default }
 }
 
-function DnxTests($build)
+function NetCliTests($build)
 {
   $name = $build.TestsName
 
-  #Write-Host -ForegroundColor Green "Ensuring latest CoreCLR is installed for $name"
-  #Write-Host
-  #exec { & $toolsDir\Kvm\kvm.ps1 upgrade -r CoreCLR -NoNative | Out-Default }
-
-  exec { dnvm install $dnvmVersion -r coreclr | Out-Default }
-  exec { dnvm use $dnvmVersion -r coreclr | Out-Default }
+  exec { .\Tools\Dotnet\install.ps1 -Version $netCliVersion | Out-Default }
+  exec { dotnet --version | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
   Write-Host
-  exec { dnu restore "$workingSourceDir\Newtonsoft.Json.Tests\project.json" | Out-Default }
+  exec { dotnet restore "$workingSourceDir\Newtonsoft.Json.Tests\project.json" | Out-Default }
 
   Write-Host -ForegroundColor Green "Ensuring test project builds for $name"
   Write-Host
@@ -241,7 +234,7 @@ function DnxTests($build)
   try
   {
     Set-Location "$workingSourceDir\Newtonsoft.Json.Tests"
-    exec { dnx --configuration Release test | Out-Default }
+    exec { dotnet test "$workingSourceDir\Newtonsoft.Json.Tests\project.json" -f netcoreapp1.0 -c Release -parallel none | Out-Default }
   }
   finally
   {
@@ -264,6 +257,17 @@ function NUnitTests($build)
   Write-Host -ForegroundColor Green "Running NUnit tests " $name
   Write-Host
   exec { .\Tools\NUnit\nunit-console.exe "$workingDir\Deployed\Bin\$finalDir\Newtonsoft.Json.Tests.dll" /framework=$framework /xml:$workingDir\$name.xml | Out-Default } "Error running $name tests"
+}
+
+function GetNuGetVersion()
+{
+  $nugetVersion = $majorWithReleaseVersion
+  if ($nugetPrerelease -ne $null)
+  {
+    $nugetVersion = $nugetVersion + "-" + $nugetPrerelease
+  }
+
+  return $nugetVersion
 }
 
 function GetConstants($constants, $includeSigned)
@@ -345,8 +349,10 @@ function Update-Project {
   $file = switch($sign) { $true { $signKeyPath } default { $null } }
 
   $json = (Get-Content $projectPath) -join "`n" | ConvertFrom-Json
-  $options = @{"warningsAsErrors" = $true; "keyFile" = $file; "define" = ((GetConstants "dotnet" $sign) -split ";") }
-  Add-Member -InputObject $json -MemberType NoteProperty -Name "compilationOptions" -Value $options -Force
+  $options = @{"warningsAsErrors" = $true; "xmlDoc" = $true; "keyFile" = $file; "define" = ((GetConstants "dotnet" $sign) -split ";") }
+  Add-Member -InputObject $json -MemberType NoteProperty -Name "buildOptions" -Value $options -Force
+
+  $json.version = GetNuGetVersion
 
   ConvertTo-Json $json -Depth 10 | Set-Content $projectPath
 }

@@ -270,6 +270,11 @@ namespace Newtonsoft.Json.Linq
             set { SetItem(index, value); }
         }
 
+        internal override int IndexOfItem(JToken item)
+        {
+            return _values.IndexOfReference(item);
+        }
+
         internal override void MergeItem(object content, JsonMergeSettings settings)
         {
             IEnumerable a = (IsMultiContent(content) || content is JArray)

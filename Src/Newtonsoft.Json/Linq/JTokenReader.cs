@@ -33,8 +33,8 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public class JTokenReader : JsonReader, IJsonLineInfo
     {
-        private readonly string _initialPath;
         private readonly JToken _root;
+        private string _initialPath;
         private JToken _parent;
         private JToken _current;
 
@@ -57,6 +57,7 @@ namespace Newtonsoft.Json.Linq
             _root = token;
         }
 
+        // this is used by json.net schema
         internal JTokenReader(JToken token, string initialPath)
             : this(token)
         {
@@ -67,7 +68,7 @@ namespace Newtonsoft.Json.Linq
         /// Reads the next JSON token from the stream.
         /// </summary>
         /// <returns>
-        /// true if the next token was read successfully; false if there are no more tokens to read.
+        /// <c>true</c> if the next token was read successfully; <c>false</c> if there are no more tokens to read.
         /// </returns>
         public override bool Read()
         {
@@ -305,6 +306,11 @@ namespace Newtonsoft.Json.Linq
             get
             {
                 string path = base.Path;
+
+                if (_initialPath == null)
+                {
+                    _initialPath = _root.Path;
+                }
 
                 if (!string.IsNullOrEmpty(_initialPath))
                 {

@@ -5286,7 +5286,7 @@ Path '', line 1, position 1.");
         }
 #endif
 
-#if !NETFX_CORE
+#if !(NETFX_CORE || DNXCORE50)
         public class XmlNodeTestObject
         {
             public XmlDocument Document { get; set; }
@@ -6104,15 +6104,15 @@ Path '', line 1, position 1.");
         public void PublicConstructorOverridenByJsonConstructorTest()
         {
             PublicConstructorOverridenByJsonConstructor c = JsonConvert.DeserializeObject<PublicConstructorOverridenByJsonConstructor>("{Value:'value!'}");
-            Assert.AreEqual("Public Paramatized", c.Constructor);
+            Assert.AreEqual("Public Parameterized", c.Constructor);
             Assert.AreEqual("value!", c.Value);
         }
 
         [Test]
-        public void MultipleParamatrizedConstructorsJsonConstructorTest()
+        public void MultipleParametrizedConstructorsJsonConstructorTest()
         {
-            MultipleParamatrizedConstructorsJsonConstructor c = JsonConvert.DeserializeObject<MultipleParamatrizedConstructorsJsonConstructor>("{Value:'value!', Age:1}");
-            Assert.AreEqual("Public Paramatized 2", c.Constructor);
+            MultipleParametrizedConstructorsJsonConstructor c = JsonConvert.DeserializeObject<MultipleParametrizedConstructorsJsonConstructor>("{Value:'value!', Age:1}");
+            Assert.AreEqual("Public Parameterized 2", c.Constructor);
             Assert.AreEqual("value!", c.Value);
             Assert.AreEqual(1, c.Age);
         }
@@ -9760,7 +9760,7 @@ Path '', line 1, position 1.");
         public NonPublicConstructorWithJsonConstructor(string value)
         {
             Value = value;
-            Constructor = "Public Paramatized";
+            Constructor = "Public Parameterized";
         }
     }
 
@@ -9803,28 +9803,28 @@ Path '', line 1, position 1.");
         public PublicConstructorOverridenByJsonConstructor(string value)
         {
             Value = value;
-            Constructor = "Public Paramatized";
+            Constructor = "Public Parameterized";
         }
     }
 
-    public class MultipleParamatrizedConstructorsJsonConstructor
+    public class MultipleParametrizedConstructorsJsonConstructor
     {
         public string Value { get; private set; }
         public int Age { get; private set; }
         public string Constructor { get; private set; }
 
-        public MultipleParamatrizedConstructorsJsonConstructor(string value)
+        public MultipleParametrizedConstructorsJsonConstructor(string value)
         {
             Value = value;
-            Constructor = "Public Paramatized 1";
+            Constructor = "Public Parameterized 1";
         }
 
         [JsonConstructor]
-        public MultipleParamatrizedConstructorsJsonConstructor(string value, int age)
+        public MultipleParametrizedConstructorsJsonConstructor(string value, int age)
         {
             Value = value;
             Age = age;
-            Constructor = "Public Paramatized 2";
+            Constructor = "Public Parameterized 2";
         }
     }
 

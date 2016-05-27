@@ -66,7 +66,11 @@ namespace Newtonsoft.Json.Tests.TestObjects
 
         public override bool CanConvert(Type objectType)
         {
+#if DNXCORE50
+            return Newtonsoft.Json.Utilities.TypeExtensions.IsAssignableFrom(typeof(IList<T>), objectType);
+#else
             return typeof(IList<T>).IsAssignableFrom(objectType);
+#endif
         }
     }
 }

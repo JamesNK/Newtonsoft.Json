@@ -77,22 +77,22 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
-        public void FailWithPrivateConstructorPlusParametizedAndDefault()
+        public void FailWithPrivateConstructorPlusParameterizedAndDefault()
         {
             ExceptionAssert.Throws<Exception>(() =>
             {
                 string json = @"{Name:""Name!""}";
 
-                PrivateConstructorWithPublicParametizedConstructorTestClass c = JsonConvert.DeserializeObject<PrivateConstructorWithPublicParametizedConstructorTestClass>(json);
+                PrivateConstructorWithPublicParameterizedConstructorTestClass c = JsonConvert.DeserializeObject<PrivateConstructorWithPublicParameterizedConstructorTestClass>(json);
             });
         }
 
         [Test]
-        public void SuccessWithPrivateConstructorPlusParametizedAndAllowNonPublic()
+        public void SuccessWithPrivateConstructorPlusParameterizedAndAllowNonPublic()
         {
             string json = @"{Name:""Name!""}";
 
-            PrivateConstructorWithPublicParametizedConstructorTestClass c = JsonConvert.DeserializeObject<PrivateConstructorWithPublicParametizedConstructorTestClass>(json,
+            PrivateConstructorWithPublicParameterizedConstructorTestClass c = JsonConvert.DeserializeObject<PrivateConstructorWithPublicParameterizedConstructorTestClass>(json,
                 new JsonSerializerSettings
                 {
                     ConstructorHandling = ConstructorHandling.AllowNonPublicDefaultConstructor
@@ -103,71 +103,71 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
-        public void SuccessWithPublicParametizedConstructor()
+        public void SuccessWithPublicParameterizedConstructor()
         {
             string json = @"{Name:""Name!""}";
 
-            var c = JsonConvert.DeserializeObject<PublicParametizedConstructorTestClass>(json);
+            var c = JsonConvert.DeserializeObject<PublicParameterizedConstructorTestClass>(json);
             Assert.IsNotNull(c);
             Assert.AreEqual("Name!", c.Name);
         }
 
         [Test]
-        public void SuccessWithPublicParametizedConstructorWhenParamaterIsNotAProperty()
+        public void SuccessWithPublicParameterizedConstructorWhenParameterIsNotAProperty()
         {
             string json = @"{nameParameter:""Name!""}";
 
-            PublicParametizedConstructorWithNonPropertyParameterTestClass c = JsonConvert.DeserializeObject<PublicParametizedConstructorWithNonPropertyParameterTestClass>(json);
+            PublicParameterizedConstructorWithNonPropertyParameterTestClass c = JsonConvert.DeserializeObject<PublicParameterizedConstructorWithNonPropertyParameterTestClass>(json);
             Assert.IsNotNull(c);
             Assert.AreEqual("Name!", c.Name);
         }
 
         [Test]
-        public void SuccessWithPublicParametizedConstructorWhenParamaterRequiresAConverter()
+        public void SuccessWithPublicParameterizedConstructorWhenParameterRequiresAConverter()
         {
             string json = @"{nameParameter:""Name!""}";
 
-            PublicParametizedConstructorRequiringConverterTestClass c = JsonConvert.DeserializeObject<PublicParametizedConstructorRequiringConverterTestClass>(json, new NameContainerConverter());
+            PublicParameterizedConstructorRequiringConverterTestClass c = JsonConvert.DeserializeObject<PublicParameterizedConstructorRequiringConverterTestClass>(json, new NameContainerConverter());
             Assert.IsNotNull(c);
             Assert.AreEqual("Name!", c.Name.Value);
         }
 
         [Test]
-        public void SuccessWithPublicParametizedConstructorWhenParamaterRequiresAConverterWithParameterAttribute()
+        public void SuccessWithPublicParameterizedConstructorWhenParameterRequiresAConverterWithParameterAttribute()
         {
             string json = @"{nameParameter:""Name!""}";
 
-            PublicParametizedConstructorRequiringConverterWithParameterAttributeTestClass c = JsonConvert.DeserializeObject<PublicParametizedConstructorRequiringConverterWithParameterAttributeTestClass>(json);
+            PublicParameterizedConstructorRequiringConverterWithParameterAttributeTestClass c = JsonConvert.DeserializeObject<PublicParameterizedConstructorRequiringConverterWithParameterAttributeTestClass>(json);
             Assert.IsNotNull(c);
             Assert.AreEqual("Name!", c.Name.Value);
         }
 
         [Test]
-        public void SuccessWithPublicParametizedConstructorWhenParamaterRequiresAConverterWithPropertyAttribute()
+        public void SuccessWithPublicParameterizedConstructorWhenParameterRequiresAConverterWithPropertyAttribute()
         {
             string json = @"{name:""Name!""}";
 
-            PublicParametizedConstructorRequiringConverterWithPropertyAttributeTestClass c = JsonConvert.DeserializeObject<PublicParametizedConstructorRequiringConverterWithPropertyAttributeTestClass>(json);
+            PublicParameterizedConstructorRequiringConverterWithPropertyAttributeTestClass c = JsonConvert.DeserializeObject<PublicParameterizedConstructorRequiringConverterWithPropertyAttributeTestClass>(json);
             Assert.IsNotNull(c);
             Assert.AreEqual("Name!", c.Name.Value);
         }
 
         [Test]
-        public void SuccessWithPublicParametizedConstructorWhenParamaterNameConflictsWithPropertyName()
+        public void SuccessWithPublicParameterizedConstructorWhenParameterNameConflictsWithPropertyName()
         {
             string json = @"{name:""1""}";
 
-            PublicParametizedConstructorWithPropertyNameConflict c = JsonConvert.DeserializeObject<PublicParametizedConstructorWithPropertyNameConflict>(json);
+            PublicParameterizedConstructorWithPropertyNameConflict c = JsonConvert.DeserializeObject<PublicParameterizedConstructorWithPropertyNameConflict>(json);
             Assert.IsNotNull(c);
             Assert.AreEqual(1, c.Name);
         }
 
         [Test]
-        public void PublicParametizedConstructorWithPropertyNameConflictWithAttribute()
+        public void PublicParameterizedConstructorWithPropertyNameConflictWithAttribute()
         {
             string json = @"{name:""1""}";
 
-            PublicParametizedConstructorWithPropertyNameConflictWithAttribute c = JsonConvert.DeserializeObject<PublicParametizedConstructorWithPropertyNameConflictWithAttribute>(json);
+            PublicParameterizedConstructorWithPropertyNameConflictWithAttribute c = JsonConvert.DeserializeObject<PublicParameterizedConstructorWithPropertyNameConflictWithAttribute>(json);
             Assert.IsNotNull(c);
             Assert.AreEqual(1, c.Name);
         }

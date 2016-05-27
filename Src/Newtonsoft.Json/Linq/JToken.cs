@@ -152,7 +152,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="t1">The first <see cref="JToken"/> to compare.</param>
         /// <param name="t2">The second <see cref="JToken"/> to compare.</param>
-        /// <returns>true if the tokens are equal; otherwise false.</returns>
+        /// <returns><c>true</c> if the tokens are equal; otherwise <c>false</c>.</returns>
         public static bool DeepEquals(JToken t1, JToken t2)
         {
             return (t1 == t2 || (t1 != null && t2 != null && t1.DeepEquals(t2)));
@@ -190,39 +190,31 @@ namespace Newtonsoft.Json.Linq
                     return string.Empty;
                 }
 
-                IList<JToken> ancestors = AncestorsAndSelf().Reverse().ToList();
-
                 List<JsonPosition> positions = new List<JsonPosition>();
-                for (int i = 0; i < ancestors.Count; i++)
+                JToken previous = null;
+                for (JToken current = this; current != null; current = current.Parent)
                 {
-                    JToken current = ancestors[i];
-                    JToken next = null;
-                    if (i + 1 < ancestors.Count)
+                    switch (current.Type)
                     {
-                        next = ancestors[i + 1];
-                    }
-                    else if (ancestors[i].Type == JTokenType.Property)
-                    {
-                        next = ancestors[i];
-                    }
-
-                    if (next != null)
-                    {
-                        switch (current.Type)
-                        {
-                            case JTokenType.Property:
-                                JProperty property = (JProperty)current;
-                                positions.Add(new JsonPosition(JsonContainerType.Object) { PropertyName = property.Name });
-                                break;
-                            case JTokenType.Array:
-                            case JTokenType.Constructor:
-                                int index = ((IList<JToken>)current).IndexOf(next);
+                        case JTokenType.Property:
+                            JProperty property = (JProperty)current;
+                            positions.Add(new JsonPosition(JsonContainerType.Object) { PropertyName = property.Name });
+                            break;
+                        case JTokenType.Array:
+                        case JTokenType.Constructor:
+                            if (previous != null)
+                            {
+                                int index = ((IList<JToken>)current).IndexOf(previous);
 
                                 positions.Add(new JsonPosition(JsonContainerType.Array) { Position = index });
-                                break;
-                        }
+                            }
+                            break;
                     }
+
+                    previous = current;
                 }
+
+                positions.Reverse();
 
                 return JsonPosition.BuildPath(positions, null);
             }
@@ -1883,7 +1875,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>An <see cref="JsonReader"/> that can be used to read this token and its descendants.</returns>
         public JsonReader CreateReader()
         {
-            return new JTokenReader(this, Path);
+            return new JTokenReader(this);
         }
 
         internal static JToken FromObjectInternal(object o, JsonSerializer jsonSerializer)

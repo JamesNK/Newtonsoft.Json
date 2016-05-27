@@ -128,6 +128,11 @@ namespace Newtonsoft.Json.Linq
             return _properties.Compare(t._properties);
         }
 
+        internal override int IndexOfItem(JToken item)
+        {
+            return _properties.IndexOfReference(item);
+        }
+
         internal override void InsertItem(int index, JToken item, bool skipParentCheck)
         {
             // don't add comments to JObject, no name to reference comment by
@@ -523,7 +528,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="value">The value.</param>
         /// <param name="comparison">One of the enumeration values that specifies how the strings will be compared.</param>
-        /// <returns>true if a value was successfully retrieved; otherwise, false.</returns>
+        /// <returns><c>true</c> if a value was successfully retrieved; otherwise, <c>false</c>.</returns>
         public bool TryGetValue(string propertyName, StringComparison comparison, out JToken value)
         {
             value = GetValue(propertyName, comparison);
@@ -556,7 +561,7 @@ namespace Newtonsoft.Json.Linq
         /// Removes the property with the specified name.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
-        /// <returns>true if item was successfully removed; otherwise, false.</returns>
+        /// <returns><c>true</c> if item was successfully removed; otherwise, <c>false</c>.</returns>
         public bool Remove(string propertyName)
         {
             JProperty property = Property(propertyName);
@@ -574,7 +579,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="value">The value.</param>
-        /// <returns>true if a value was successfully retrieved; otherwise, false.</returns>
+        /// <returns><c>true</c> if a value was successfully retrieved; otherwise, <c>false</c>.</returns>
         public bool TryGetValue(string propertyName, out JToken value)
         {
             JProperty property = Property(propertyName);

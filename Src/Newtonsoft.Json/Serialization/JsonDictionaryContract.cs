@@ -172,7 +172,10 @@ namespace Newtonsoft.Json.Serialization
 
             if (keyType != null && valueType != null)
             {
-                _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(CreatedType, typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType));
+                _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(
+                    CreatedType,
+                    typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType),
+                    typeof(IDictionary<,>).MakeGenericType(keyType, valueType));
 
 #if !(NET35 || NET20)
                 if (!HasParameterizedCreatorInternal && underlyingType.Name == FSharpUtils.FSharpMapTypeName)

@@ -52,10 +52,9 @@ namespace Newtonsoft.Json.Linq
         /// When overridden in a derived class, returns whether resetting an object changes its value.
         /// </summary>
         /// <returns>
-        /// true if resetting the component changes its value; otherwise, false.
+        /// <c>true</c> if resetting the component changes its value; otherwise, <c>false</c>.
         /// </returns>
-        /// <param name="component">The component to test for reset capability. 
-        ///                 </param>
+        /// <param name="component">The component to test for reset capability.</param>
         public override bool CanResetValue(object component)
         {
             return false;
@@ -102,10 +101,9 @@ namespace Newtonsoft.Json.Linq
         /// When overridden in a derived class, determines a value indicating whether the value of this property needs to be persisted.
         /// </summary>
         /// <returns>
-        /// true if the property should be persisted; otherwise, false.
+        /// <c>true</c> if the property should be persisted; otherwise, <c>false</c>.
         /// </returns>
-        /// <param name="component">The component with the property to be examined for persistence. 
-        ///                 </param>
+        /// <param name="component">The component with the property to be examined for persistence.</param>
         public override bool ShouldSerializeValue(object component)
         {
             return false;
@@ -126,7 +124,7 @@ namespace Newtonsoft.Json.Linq
         /// When overridden in a derived class, gets a value indicating whether this property is read-only.
         /// </summary>
         /// <returns>
-        /// true if the property is read-only; otherwise, false.
+        /// <c>true</c> if the property is read-only; otherwise, <c>false</c>.
         /// </returns>
         public override bool IsReadOnly
         {

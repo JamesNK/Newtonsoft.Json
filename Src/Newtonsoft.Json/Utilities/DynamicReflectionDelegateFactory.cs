@@ -240,7 +240,7 @@ namespace Newtonsoft.Json.Utilities
 
         public override Func<T, object> CreateGet<T>(PropertyInfo propertyInfo)
         {
-            DynamicMethod dynamicMethod = CreateDynamicMethod("Get" + propertyInfo.Name, typeof(T), new[] { typeof(object) }, propertyInfo.DeclaringType);
+            DynamicMethod dynamicMethod = CreateDynamicMethod("Get" + propertyInfo.Name, typeof(object), new[] { typeof(T) }, propertyInfo.DeclaringType);
             ILGenerator generator = dynamicMethod.GetILGenerator();
 
             GenerateCreateGetPropertyIL(propertyInfo, generator);

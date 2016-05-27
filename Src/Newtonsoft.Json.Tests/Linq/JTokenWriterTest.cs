@@ -250,6 +250,100 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void WriteTokenWithParent()
+        {
+            JObject o = new JObject
+            {
+                ["prop1"] = new JArray(1),
+                ["prop2"] = 1
+            };
+
+            JTokenWriter writer = new JTokenWriter();
+
+            writer.WriteStartArray();
+
+            writer.WriteToken(o.CreateReader());
+
+            Assert.AreEqual(WriteState.Array, writer.WriteState);
+
+            writer.WriteEndArray();
+
+            Console.WriteLine(writer.Token.ToString());
+
+            StringAssert.AreEqual(@"[
+  {
+    ""prop1"": [
+      1
+    ],
+    ""prop2"": 1
+  }
+]", writer.Token.ToString());
+        }
+
+        [Test]
+        public void WriteTokenWithPropertyParent()
+        {
+            JValue v = new JValue(1);
+
+            JTokenWriter writer = new JTokenWriter();
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("Prop1");
+
+            writer.WriteToken(v.CreateReader());
+
+            Assert.AreEqual(WriteState.Object, writer.WriteState);
+
+            writer.WriteEndObject();
+
+            StringAssert.AreEqual(@"{
+  ""Prop1"": 1
+}", writer.Token.ToString());
+        }
+
+        [Test]
+        public void WriteValueTokenWithParent()
+        {
+            JValue v = new JValue(1);
+
+            JTokenWriter writer = new JTokenWriter();
+
+            writer.WriteStartArray();
+
+            writer.WriteToken(v.CreateReader());
+
+            Assert.AreEqual(WriteState.Array, writer.WriteState);
+
+            writer.WriteEndArray();
+
+            StringAssert.AreEqual(@"[
+  1
+]", writer.Token.ToString());
+        }
+
+        [Test]
+        public void WriteEmptyToken()
+        {
+            JObject o = new JObject();
+            JsonReader reader = o.CreateReader();
+            while (reader.Read())
+            {   
+            }
+
+            JTokenWriter writer = new JTokenWriter();
+
+            writer.WriteStartArray();
+
+            writer.WriteToken(reader);
+
+            Assert.AreEqual(WriteState.Array, writer.WriteState);
+
+            writer.WriteEndArray();
+
+            StringAssert.AreEqual(@"[]", writer.Token.ToString());
+        }
+
+        [Test]
         public void WriteRawValue()
         {
             JTokenWriter writer = new JTokenWriter();

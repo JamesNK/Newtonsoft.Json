@@ -62,11 +62,11 @@ namespace Newtonsoft.Json.Tests.TestObjects
         }
     }
 
-    public class PublicParametizedConstructorRequiringConverterTestClass
+    public class PublicParameterizedConstructorRequiringConverterTestClass
     {
         private readonly NameContainer _nameContainer;
 
-        public PublicParametizedConstructorRequiringConverterTestClass(NameContainer nameParameter)
+        public PublicParameterizedConstructorRequiringConverterTestClass(NameContainer nameParameter)
         {
             _nameContainer = nameParameter;
         }
@@ -77,11 +77,11 @@ namespace Newtonsoft.Json.Tests.TestObjects
         }
     }
 
-    public class PublicParametizedConstructorRequiringConverterWithParameterAttributeTestClass
+    public class PublicParameterizedConstructorRequiringConverterWithParameterAttributeTestClass
     {
         private readonly NameContainer _nameContainer;
 
-        public PublicParametizedConstructorRequiringConverterWithParameterAttributeTestClass([JsonConverter(typeof(NameContainerConverter))] NameContainer nameParameter)
+        public PublicParameterizedConstructorRequiringConverterWithParameterAttributeTestClass([JsonConverter(typeof(NameContainerConverter))] NameContainer nameParameter)
         {
             _nameContainer = nameParameter;
         }
@@ -92,11 +92,11 @@ namespace Newtonsoft.Json.Tests.TestObjects
         }
     }
 
-    public class PublicParametizedConstructorRequiringConverterWithPropertyAttributeTestClass
+    public class PublicParameterizedConstructorRequiringConverterWithPropertyAttributeTestClass
     {
         private readonly NameContainer _nameContainer;
 
-        public PublicParametizedConstructorRequiringConverterWithPropertyAttributeTestClass(NameContainer name)
+        public PublicParameterizedConstructorRequiringConverterWithPropertyAttributeTestClass(NameContainer name)
         {
             _nameContainer = name;
         }

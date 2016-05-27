@@ -626,7 +626,7 @@ namespace Newtonsoft.Json
             WriteToken(token, null);
         }
 
-        internal void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
+        internal virtual void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
         {
             int initialDepth;
 
@@ -643,11 +643,6 @@ namespace Newtonsoft.Json
                 initialDepth = reader.Depth;
             }
 
-            WriteToken(reader, initialDepth, writeChildren, writeDateConstructorAsDate, writeComments);
-        }
-
-        internal void WriteToken(JsonReader reader, int initialDepth, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
-        {
             do
             {
                 // write a JValue date when the constructor is for a date
@@ -657,7 +652,7 @@ namespace Newtonsoft.Json
                 }
                 else
                 {
-                    if (reader.TokenType != JsonToken.Comment || writeComments)
+                    if (writeComments || reader.TokenType != JsonToken.Comment)
                     {
                         WriteToken(reader.TokenType, reader.Value);
                     }

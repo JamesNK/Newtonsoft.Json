@@ -62,6 +62,126 @@ namespace Newtonsoft.Json.Tests
     public class JsonTextReaderTest : TestFixtureBase
     {
         [Test]
+        public void Float_NaN_Read()
+        {
+            const string testJson = "{float: NaN}";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(testJson));
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.AreEqual(double.NaN, reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsFalse(reader.Read());
+        }
+
+        [Test]
+        public void Float_NaN_ReadAsInt32()
+        {
+            const string testJson = "{float: NaN}";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(testJson));
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.ReadAsInt32(), "Cannot read NaN value. Path 'float', line 1, position 11.");
+        }
+
+        [Test]
+        public void Float_NaNAndInifinity_ReadAsDouble()
+        {
+            const string testJson = @"[
+  NaN,
+  Infinity,
+  -Infinity
+]"; ;
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(testJson));
+
+            Assert.IsTrue(reader.Read());
+
+            Assert.AreEqual(double.NaN, reader.ReadAsDouble());
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.AreEqual(double.NaN, reader.Value);
+
+            Assert.AreEqual(double.PositiveInfinity, reader.ReadAsDouble());
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.AreEqual(double.PositiveInfinity, reader.Value);
+
+            Assert.AreEqual(double.NegativeInfinity, reader.ReadAsDouble());
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.AreEqual(double.NegativeInfinity, reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsFalse(reader.Read());
+        }
+
+        [Test]
+        public void Float_NaNAndInifinity_ReadAsString()
+        {
+            const string testJson = @"[
+  NaN,
+  Infinity,
+  -Infinity
+]"; ;
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(testJson));
+
+            Assert.IsTrue(reader.Read());
+
+            Assert.AreEqual(JsonConvert.NaN, reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+            Assert.AreEqual(JsonConvert.NaN, reader.Value);
+
+            Assert.AreEqual(JsonConvert.PositiveInfinity, reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+            Assert.AreEqual(JsonConvert.PositiveInfinity, reader.Value);
+
+            Assert.AreEqual(JsonConvert.NegativeInfinity, reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+            Assert.AreEqual(JsonConvert.NegativeInfinity, reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsFalse(reader.Read());
+        }
+
+        [Test]
+        public void FloatParseHandling_ReadAsString()
+        {
+            string json = "[9223372036854775807, 1.7976931348623157E+308, 792281625142643375935439503.35, 792281625142643375935555555555555555555555555555555555555555555555555439503.35]";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.FloatParseHandling = Json.FloatParseHandling.Decimal;
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+            Assert.AreEqual("9223372036854775807", reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+            Assert.AreEqual("9223372036854775807", reader.Value);
+
+            Assert.AreEqual("1.7976931348623157E+308", reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+            Assert.AreEqual("1.7976931348623157E+308", reader.Value);
+
+            Assert.AreEqual("792281625142643375935439503.35", reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+            Assert.AreEqual("792281625142643375935439503.35", reader.Value);
+
+            Assert.AreEqual("792281625142643375935555555555555555555555555555555555555555555555555439503.35", reader.ReadAsString());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+            Assert.AreEqual("792281625142643375935555555555555555555555555555555555555555555555555439503.35", reader.Value);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+        }
+
+        [Test]
         public void LineInfoAndNewLines()
         {
             string json = "{}";
@@ -455,7 +575,7 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
 
-            ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Cannot read NaN as a decimal.");
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Cannot read NaN value. Path '', line 1, position 4.");
         }
 
         [Test]

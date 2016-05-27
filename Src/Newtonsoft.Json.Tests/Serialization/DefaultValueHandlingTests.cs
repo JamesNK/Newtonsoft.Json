@@ -27,7 +27,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
-#if !(NET20 || NET35 || NETFX_CORE || PORTABLE)
+#if !(NET20 || NET35 || NETFX_CORE || PORTABLE || DNXCORE50)
 using System.Runtime.Serialization.Json;
 #endif
 using System.Text;

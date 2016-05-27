@@ -31,6 +31,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Script.Serialization;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests;
 using Newtonsoft.Json.Tests.Converters;
 
@@ -52,6 +53,7 @@ namespace Newtonsoft.Json.TestConsole
             //t.DeserializeLargeJson();
 
             //PerformanceTests t = new PerformanceTests();
+            LargeArrayJTokenPathPerformance();
             //t.Iterations = 50000;
             //t.BenchmarkDeserializeMethod<TestClass>(PerformanceTests.SerializeMethod.JsonNet, PerformanceTests.JsonText);
 
@@ -62,7 +64,7 @@ namespace Newtonsoft.Json.TestConsole
 
             //ReadLargeJson();
             //WriteLargeJson();
-            DeserializeJson();
+            //DeserializeJson();
             //ReadLargeJson();
             //ReadLargeJsonJavaScriptSerializer();
 
@@ -70,6 +72,28 @@ namespace Newtonsoft.Json.TestConsole
             Console.WriteLine("Finished");
             Console.WriteLine("Press any key to exit");
             Console.ReadKey();
+        }
+
+        public static void LargeArrayJTokenPathPerformance()
+        {
+            JArray a = new JArray();
+            for (int i = 0; i < 100000; i++)
+            {
+                a.Add(i);
+            }
+
+            JToken last = a.Last;
+
+            int interations = 1000;
+
+            Console.WriteLine("Ready!!!");
+            Console.ReadKey();
+
+            string p = null;
+            for (int i = 0; i < interations; i++)
+            {
+                p = last.Path;
+            }
         }
 
         public static void DeserializeJson()
