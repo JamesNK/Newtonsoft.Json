@@ -59,9 +59,9 @@ namespace Newtonsoft.Json
         public Type ItemConverterType { get; set; }
 
         /// <summary>
-        /// The parameter list to use when constructing the JsonConverter described by ItemConverterType.
+        /// The parameter list to use when constructing the <see cref="JsonConverter"/> described by ItemConverterType.
         /// If null, the default constructor is used.
-        /// When non-null, there must be a constructor defined in the JsonConverter that exactly matches the number,
+        /// When non-null, there must be a constructor defined in the <see cref="JsonConverter"/> that exactly matches the number,
         /// order, and type of these parameters.
         /// </summary>
         /// <example>
@@ -69,6 +69,10 @@ namespace Newtonsoft.Json
         /// </example>
         public object[] ItemConverterParameters { get; set; }
 
+        /// <summary>
+        /// Gets the <see cref="Type"/> of the <see cref="INamingStrategy"/>.
+        /// </summary>
+        /// <value>The <see cref="Type"/> of the <see cref="INamingStrategy"/>.</value>
         public Type NamingStrategyType
         {
             get { return _namingStrategyType; }
@@ -79,6 +83,15 @@ namespace Newtonsoft.Json
             }
         }
 
+        /// <summary>
+        /// The parameter list to use when constructing the <see cref="INamingStrategy"/> described by NamingStrategyType.  
+        /// If null, the default constructor is used.
+        /// When non-null, there must be a constructor defined in the <see cref="INamingStrategy"/> that exactly matches the number,
+        /// order, and type of these parameters.
+        /// </summary>
+        /// <example>
+        /// [JsonContainer(NamingStrategyType = typeof(MyNamingStrategy), NamingStrategyParameters = new object[] { 123, "Four" })]
+        /// </example>
         public object[] NamingStrategyParameters
         {
             get { return _namingStrategyParameters; }

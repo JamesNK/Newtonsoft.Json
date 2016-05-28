@@ -184,6 +184,10 @@ namespace Newtonsoft.Json.Serialization
         public bool IgnoreSerializableAttribute { get; set; }
 #endif
 
+        /// <summary>
+        /// Gets or sets the naming strategy used to resolve how property names and dictionary keys are serialized.
+        /// </summary>
+        /// <value>The naming strategy used to resolve how property names and dictionary keys are serialized.</value>
         public INamingStrategy NamingStrategy { get; set; }
 
         /// <summary>
