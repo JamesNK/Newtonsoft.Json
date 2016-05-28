@@ -3,12 +3,12 @@
 namespace Newtonsoft.Json.Serialization
 {
     /// <summary>
-    /// A camel case naming strategy.
+    /// A snake case naming strategy.
     /// </summary>
-    public class CamelCaseNamingStrategy : NamingStrategy
+    public class SnakeCaseNamingStrategy : NamingStrategy
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="CamelCaseNamingStrategy"/> class.
+        /// Initializes a new instance of the <see cref="SnakeCaseNamingStrategy"/> class.
         /// </summary>
         /// <param name="processDictionaryKeys">
         /// A flag indicating whether dictionary keys should be processed.
@@ -17,16 +17,16 @@ namespace Newtonsoft.Json.Serialization
         /// A flag indicating whether explicitly specified property names should be processed,
         /// e.g. a property name customized with a <see cref="JsonPropertyAttribute"/>.
         /// </param>
-        public CamelCaseNamingStrategy(bool processDictionaryKeys, bool overrideSpecifiedNames)
+        public SnakeCaseNamingStrategy(bool processDictionaryKeys, bool overrideSpecifiedNames)
         {
             ProcessDictionaryKeys = processDictionaryKeys;
             OverrideSpecifiedNames = overrideSpecifiedNames;
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="CamelCaseNamingStrategy"/> class.
+        /// Initializes a new instance of the <see cref="SnakeCaseNamingStrategy"/> class.
         /// </summary>
-        public CamelCaseNamingStrategy()
+        public SnakeCaseNamingStrategy()
         {
         }
 
@@ -37,7 +37,7 @@ namespace Newtonsoft.Json.Serialization
         /// <returns>The resolved property name.</returns>
         protected override string ResolvePropertyName(string name)
         {
-            return StringUtils.ToCamelCase(name);
+            return StringUtils.ToSnakeCase(name);
         }
     }
 }

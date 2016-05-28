@@ -66,15 +66,15 @@ namespace Newtonsoft.Json
         public object[] ItemConverterParameters { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="Type"/> of the <see cref="INamingStrategy"/>.
+        /// Gets the <see cref="Type"/> of the <see cref="NamingStrategy"/>.
         /// </summary>
-        /// <value>The <see cref="Type"/> of the <see cref="INamingStrategy"/>.</value>
+        /// <value>The <see cref="Type"/> of the <see cref="NamingStrategy"/>.</value>
         public Type NamingStrategyType { get; set; }
 
         /// <summary>
-        /// The parameter list to use when constructing the <see cref="INamingStrategy"/> described by NamingStrategyType.  
+        /// The parameter list to use when constructing the <see cref="NamingStrategy"/> described by NamingStrategyType.  
         /// If null, the default constructor is used.
-        /// When non-null, there must be a constructor defined in the <see cref="INamingStrategy"/> that exactly matches the number,
+        /// When non-null, there must be a constructor defined in the <see cref="NamingStrategy"/> that exactly matches the number,
         /// order, and type of these parameters.
         /// </summary>
         /// <example>

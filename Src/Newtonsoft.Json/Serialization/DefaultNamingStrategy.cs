@@ -3,27 +3,16 @@
     /// <summary>
     /// The default naming strategy. Property names and dictionary keys are unchanged.
     /// </summary>
-    public class DefaultNamingStrategy : INamingStrategy
+    public class DefaultNamingStrategy : NamingStrategy
     {
         /// <summary>
-        /// Gets the serialized name for a given property name.
+        /// Resolves the specified property name.
         /// </summary>
-        /// <param name="s">The initial property name.</param>
-        /// <param name="hasSpecifiedName">A flag indicating whether the property has had a name explicitly specfied.</param>
-        /// <returns>A property name.</returns>
-        public string GetPropertyName(string s, bool hasSpecifiedName)
+        /// <param name="name">The property name to resolve.</param>
+        /// <returns>The resolved property name.</returns>
+        protected override string ResolvePropertyName(string name)
         {
-            return s;
-        }
-
-        /// <summary>
-        /// Gets the serialized key for a given dictionary key.
-        /// </summary>
-        /// <param name="s">The initial dictionary key.</param>
-        /// <returns>A dictionary key.</returns>
-        public string GetDictionaryKey(string s)
-        {
-            return s;
+            return name;
         }
     }
 }

@@ -184,13 +184,13 @@ namespace Newtonsoft.Json.Serialization
             return (JsonConverter)converterCreator(converterArgs);
         }
 
-        public static INamingStrategy CreateNamingStrategyInstance(Type namingStrategyType, object[] converterArgs)
+        public static NamingStrategy CreateNamingStrategyInstance(Type namingStrategyType, object[] converterArgs)
         {
             Func<object[], object> converterCreator = CreatorCache.Get(namingStrategyType);
-            return (INamingStrategy)converterCreator(converterArgs);
+            return (NamingStrategy)converterCreator(converterArgs);
         }
 
-        public static INamingStrategy GetContainerNamingStrategy(JsonContainerAttribute containerAttribute)
+        public static NamingStrategy GetContainerNamingStrategy(JsonContainerAttribute containerAttribute)
         {
             if (containerAttribute.NamingStrategy == null)
             {

@@ -45,7 +45,7 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json.Tests.Serialization
 {
     [TestFixture]
-    public class CamelCaseNamingStrategyTests : TestFixtureBase
+    public class SnakeCaseNamingStrategyTests : TestFixtureBase
     {
         [Test]
         public void JsonConvertSerializerSettings()
@@ -57,7 +57,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             DefaultContractResolver contractResolver = new DefaultContractResolver
             {
-                NamingStrategy = new CamelCaseNamingStrategy()
+                NamingStrategy = new SnakeCaseNamingStrategy()
             };
 
             string json = JsonConvert.SerializeObject(person, Formatting.Indented, new JsonSerializerSettings
@@ -67,8 +67,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             StringAssert.AreEqual(@"{
   ""name"": ""Name!"",
-  ""birthDate"": ""2000-11-20T23:55:44Z"",
-  ""lastModified"": ""2000-11-20T23:55:44Z""
+  ""birth_date"": ""2000-11-20T23:55:44Z"",
+  ""last_modified"": ""2000-11-20T23:55:44Z""
 }", json);
 
             Person deserializedPerson = JsonConvert.DeserializeObject<Person>(json, new JsonSerializerSettings
@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             DefaultContractResolver contractResolver = new DefaultContractResolver
             {
-                NamingStrategy = new CamelCaseNamingStrategy
+                NamingStrategy = new SnakeCaseNamingStrategy
                 {
                     OverrideSpecifiedNames = true
                 }
@@ -110,7 +110,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             serializer.Serialize(writer, ignoreAttributeOnClassTestClass);
 
             JObject o = (JObject)writer.Token;
-            JProperty p = o.Property("theField");
+            JProperty p = o.Property("the_field");
 
             Assert.IsNotNull(p);
             Assert.AreEqual(int.MinValue, (int)p.Value);
@@ -129,7 +129,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             DefaultContractResolver contractResolver = new DefaultContractResolver
             {
-                NamingStrategy = new CamelCaseNamingStrategy()
+                NamingStrategy = new SnakeCaseNamingStrategy()
             };
 
             string json =
@@ -152,7 +152,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             StringAssert.AreEqual(@"{
   ""name"": ""Widget"",
-  ""expiryDate"": ""2010-12-20T18:01:00Z"",
+  ""expiry_date"": ""2010-12-20T18:01:00Z"",
   ""price"": 9.99,
   ""sizes"": [
     ""Small"",
@@ -164,7 +164,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
 #if !(NET35 || NET20 || PORTABLE40)
         [Test]
-        public void DynamicCamelCasePropertyNames()
+        public void DynamicSnakeCasePropertyNames()
         {
             dynamic o = new TestDynamicObject();
             o.Text = "Text!";
@@ -172,7 +172,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             DefaultContractResolver contractResolver = new DefaultContractResolver
             {
-                NamingStrategy = new CamelCaseNamingStrategy
+                NamingStrategy = new SnakeCaseNamingStrategy
                 {
                     ProcessDictionaryKeys = true
                 }
@@ -189,13 +189,13 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""text"": ""Text!"",
   ""integer"": 2147483647,
   ""int"": 0,
-  ""childObject"": null
+  ""child_object"": null
 }", json);
         }
 #endif
 
         [Test]
-        public void DictionaryCamelCasePropertyNames_Disabled()
+        public void DictionarySnakeCasePropertyNames_Disabled()
         {
             Dictionary<string, string> values = new Dictionary<string, string>
             {
@@ -205,7 +205,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             DefaultContractResolver contractResolver = new DefaultContractResolver
             {
-                NamingStrategy = new CamelCaseNamingStrategy()
+                NamingStrategy = new SnakeCaseNamingStrategy()
             };
 
             string json = JsonConvert.SerializeObject(values, Formatting.Indented,
@@ -221,7 +221,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
-        public void DictionaryCamelCasePropertyNames_Enabled()
+        public void DictionarySnakeCasePropertyNames_Enabled()
         {
             Dictionary<string, string> values = new Dictionary<string, string>
             {
@@ -231,7 +231,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             DefaultContractResolver contractResolver = new DefaultContractResolver
             {
-                NamingStrategy = new CamelCaseNamingStrategy
+                NamingStrategy = new SnakeCaseNamingStrategy
                 {
                     ProcessDictionaryKeys = true
                 }
@@ -254,7 +254,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             [JsonProperty]
             public string HasNoAttributeNamingStrategy { get; set; }
 
-            [JsonProperty(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
+            [JsonProperty(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
             public string HasAttributeNamingStrategy { get; set; }
         }
 
@@ -271,11 +271,11 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             StringAssert.AreEqual(@"{
   ""HasNoAttributeNamingStrategy"": ""Value1!"",
-  ""hasAttributeNamingStrategy"": ""Value2!""
+  ""has_attribute_naming_strategy"": ""Value2!""
 }", json);
         }
 
-        [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy))]
+        [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy))]
         public class ContainerAttributeNamingStrategyTestClass
         {
             public string Prop1 { get; set; }
@@ -302,7 +302,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
         }
 
-        [JsonDictionary(NamingStrategyType = typeof(CamelCaseNamingStrategy), NamingStrategyParameters = new object[] { true, true })]
+        [JsonDictionary(NamingStrategyType = typeof(SnakeCaseNamingStrategy), NamingStrategyParameters = new object[] { true, true })]
         public class DictionaryAttributeNamingStrategyTestClass : Dictionary<string, string>
         {
         }

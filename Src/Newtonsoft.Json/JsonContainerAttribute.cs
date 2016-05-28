@@ -70,9 +70,9 @@ namespace Newtonsoft.Json
         public object[] ItemConverterParameters { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="Type"/> of the <see cref="INamingStrategy"/>.
+        /// Gets the <see cref="Type"/> of the <see cref="Serialization.NamingStrategy"/>.
         /// </summary>
-        /// <value>The <see cref="Type"/> of the <see cref="INamingStrategy"/>.</value>
+        /// <value>The <see cref="Type"/> of the <see cref="Serialization.NamingStrategy"/>.</value>
         public Type NamingStrategyType
         {
             get { return _namingStrategyType; }
@@ -84,9 +84,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// The parameter list to use when constructing the <see cref="INamingStrategy"/> described by NamingStrategyType.  
+        /// The parameter list to use when constructing the <see cref="Serialization.NamingStrategy"/> described by NamingStrategyType.  
         /// If null, the default constructor is used.
-        /// When non-null, there must be a constructor defined in the <see cref="INamingStrategy"/> that exactly matches the number,
+        /// When non-null, there must be a constructor defined in the <see cref="Serialization.NamingStrategy"/> that exactly matches the number,
         /// order, and type of these parameters.
         /// </summary>
         /// <example>
@@ -102,7 +102,7 @@ namespace Newtonsoft.Json
             }
         }
 
-        internal INamingStrategy NamingStrategy { get; set; }
+        internal NamingStrategy NamingStrategy { get; set; }
 
         // yuck. can't set nullable properties on an attribute in C#
         // have to use this approach to get an unset default state

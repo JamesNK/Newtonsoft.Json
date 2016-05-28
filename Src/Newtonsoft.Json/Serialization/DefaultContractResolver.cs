@@ -188,7 +188,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the naming strategy used to resolve how property names and dictionary keys are serialized.
         /// </summary>
         /// <value>The naming strategy used to resolve how property names and dictionary keys are serialized.</value>
-        public INamingStrategy NamingStrategy { get; set; }
+        public NamingStrategy NamingStrategy { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultContractResolver"/> class.
@@ -947,7 +947,7 @@ namespace Newtonsoft.Json.Serialization
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetAttribute<JsonContainerAttribute>(objectType);
             if (containerAttribute?.NamingStrategyType != null)
             {
-                INamingStrategy namingStrategy = JsonTypeReflector.GetContainerNamingStrategy(containerAttribute);
+                NamingStrategy namingStrategy = JsonTypeReflector.GetContainerNamingStrategy(containerAttribute);
                 contract.DictionaryKeyResolver = s => namingStrategy.GetDictionaryKey(s);
             }
             else
@@ -1084,7 +1084,7 @@ namespace Newtonsoft.Json.Serialization
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetAttribute<JsonContainerAttribute>(objectType);
             if (containerAttribute?.NamingStrategyType != null)
             {
-                INamingStrategy namingStrategy = JsonTypeReflector.GetContainerNamingStrategy(containerAttribute);
+                NamingStrategy namingStrategy = JsonTypeReflector.GetContainerNamingStrategy(containerAttribute);
                 contract.PropertyNameResolver = s => namingStrategy.GetDictionaryKey(s);
             }
             else
@@ -1433,7 +1433,7 @@ namespace Newtonsoft.Json.Serialization
 
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetAttribute<JsonContainerAttribute>(declaringType);
 
-            INamingStrategy namingStrategy;
+            NamingStrategy namingStrategy;
             if (propertyAttribute?.NamingStrategyType != null)
             {
                 namingStrategy = JsonTypeReflector.CreateNamingStrategyInstance(propertyAttribute.NamingStrategyType, propertyAttribute.NamingStrategyParameters);
