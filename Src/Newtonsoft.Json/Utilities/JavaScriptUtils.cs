@@ -307,7 +307,7 @@ namespace Newtonsoft.Json.Utilities
         {
             bool[] charEscapeFlags = GetCharEscapeFlags(stringEscapeHandling, delimiter);
 
-            using (StringWriter w = StringUtils.CreateStringWriter(StringUtils.GetLength(value) ?? 16))
+            using (StringWriter w = StringUtils.CreateStringWriter(value?.Length ?? 16))
             {
                 char[] buffer = null;
                 WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters, charEscapeFlags, stringEscapeHandling, null, ref buffer);

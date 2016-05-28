@@ -33,7 +33,6 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
-using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -104,34 +103,12 @@ namespace Newtonsoft.Json.Utilities
             return true;
         }
 
-        /// <summary>
-        /// Nulls an empty string.
-        /// </summary>
-        /// <param name="s">The string.</param>
-        /// <returns>Null if the string was null, otherwise the string unchanged.</returns>
-        public static string NullEmptyString(string s)
-        {
-            return (string.IsNullOrEmpty(s)) ? null : s;
-        }
-
         public static StringWriter CreateStringWriter(int capacity)
         {
             StringBuilder sb = new StringBuilder(capacity);
             StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
 
             return sw;
-        }
-
-        public static int? GetLength(string value)
-        {
-            if (value == null)
-            {
-                return null;
-            }
-            else
-            {
-                return value.Length;
-            }
         }
 
         public static void ToCharAsUnicode(char c, char[] buffer)
@@ -233,17 +210,17 @@ namespace Newtonsoft.Json.Utilities
                 {
                     switch (state)
                     {
-                    case SnakeCaseState.Upper:
-                        bool hasNext = (i + 1 < s.Length);
-                        if (i > 0 && hasNext && !char.IsUpper(s[i + 1]))
-                        {
+                        case SnakeCaseState.Upper:
+                            bool hasNext = (i + 1 < s.Length);
+                            if (i > 0 && hasNext && !char.IsUpper(s[i + 1]))
+                            {
+                                sb.Append('_');
+                            }
+                            break;
+                        case SnakeCaseState.Lower:
+                        case SnakeCaseState.NewWord:
                             sb.Append('_');
-                        }
-                        break;
-                    case SnakeCaseState.Lower:
-                    case SnakeCaseState.NewWord:
-                        sb.Append('_');
-                        break;
+                            break;
                     }
 
                     char c;

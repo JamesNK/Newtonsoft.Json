@@ -70,23 +70,23 @@ namespace Newtonsoft.Json
         public object[] ItemConverterParameters { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="Type"/> of the <see cref="Serialization.NamingStrategy"/>.
+        /// Gets the <see cref="Type"/> of the <see cref="NamingStrategy"/>.
         /// </summary>
-        /// <value>The <see cref="Type"/> of the <see cref="Serialization.NamingStrategy"/>.</value>
+        /// <value>The <see cref="Type"/> of the <see cref="NamingStrategy"/>.</value>
         public Type NamingStrategyType
         {
             get { return _namingStrategyType; }
             set
             {
                 _namingStrategyType = value;
-                NamingStrategy = null;
+                NamingStrategyInstance = null;
             }
         }
 
         /// <summary>
-        /// The parameter list to use when constructing the <see cref="Serialization.NamingStrategy"/> described by NamingStrategyType.  
+        /// The parameter list to use when constructing the <see cref="NamingStrategy"/> described by NamingStrategyType.  
         /// If null, the default constructor is used.
-        /// When non-null, there must be a constructor defined in the <see cref="Serialization.NamingStrategy"/> that exactly matches the number,
+        /// When non-null, there must be a constructor defined in the <see cref="NamingStrategy"/> that exactly matches the number,
         /// order, and type of these parameters.
         /// </summary>
         /// <example>
@@ -98,11 +98,11 @@ namespace Newtonsoft.Json
             set
             {
                 _namingStrategyParameters = value;
-                NamingStrategy = null;
+                NamingStrategyInstance = null;
             }
         }
 
-        internal NamingStrategy NamingStrategy { get; set; }
+        internal NamingStrategy NamingStrategyInstance { get; set; }
 
         // yuck. can't set nullable properties on an attribute in C#
         // have to use this approach to get an unset default state

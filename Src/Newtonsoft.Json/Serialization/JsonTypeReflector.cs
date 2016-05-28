@@ -192,18 +192,17 @@ namespace Newtonsoft.Json.Serialization
 
         public static NamingStrategy GetContainerNamingStrategy(JsonContainerAttribute containerAttribute)
         {
-            if (containerAttribute.NamingStrategy == null)
+            if (containerAttribute.NamingStrategyInstance == null)
             {
                 if (containerAttribute.NamingStrategyType == null)
                 {
                     return null;
-
                 }
 
-                containerAttribute.NamingStrategy = CreateNamingStrategyInstance(containerAttribute.NamingStrategyType, containerAttribute.NamingStrategyParameters);
+                containerAttribute.NamingStrategyInstance = CreateNamingStrategyInstance(containerAttribute.NamingStrategyType, containerAttribute.NamingStrategyParameters);
             }
 
-            return containerAttribute.NamingStrategy;
+            return containerAttribute.NamingStrategyInstance;
         }
 
         private static Func<object[], object> GetCreator(Type type)
