@@ -213,9 +213,13 @@ namespace Newtonsoft.Json.Utilities
                     {
                         case SnakeCaseState.Upper:
                             bool hasNext = (i + 1 < s.Length);
-                            if (i > 0 && hasNext && !char.IsUpper(s[i + 1]))
+                            if (i > 0 && hasNext)
                             {
-                                sb.Append('_');
+                                char nextChar = s[i + 1];
+                                if (!char.IsUpper(nextChar) && nextChar != '_')
+                                {
+                                    sb.Append('_');
+                                }
                             }
                             break;
                         case SnakeCaseState.Lower:

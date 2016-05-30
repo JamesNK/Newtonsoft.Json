@@ -23,7 +23,7 @@
         /// </summary>
         /// <param name="name">The initial property name.</param>
         /// <param name="hasSpecifiedName">A flag indicating whether the property has had a name explicitly specfied.</param>
-        /// <returns>A property name.</returns>
+        /// <returns>The serialized property name.</returns>
         public virtual string GetPropertyName(string name, bool hasSpecifiedName)
         {
             if (hasSpecifiedName && !OverrideSpecifiedNames)
@@ -38,7 +38,7 @@
         /// Gets the serialized key for a given dictionary key.
         /// </summary>
         /// <param name="key">The initial dictionary key.</param>
-        /// <returns>A dictionary key.</returns>
+        /// <returns>The serialized dictionary key.</returns>
         public virtual string GetDictionaryKey(string key)
         {
             if (!ProcessDictionaryKeys)

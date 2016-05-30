@@ -64,6 +64,10 @@ namespace Newtonsoft.Json.Tests.Utilities
             Assert.AreEqual("snA__kEcAsE", StringUtils.ToCamelCase("SnA__kEcAsE"));
             Assert.AreEqual("snA__ kEcAsE", StringUtils.ToCamelCase("SnA__ kEcAsE"));
             Assert.AreEqual("already_snake_case_ ", StringUtils.ToCamelCase("already_snake_case_ "));
+            Assert.AreEqual("isJSONProperty", StringUtils.ToCamelCase("IsJSONProperty"));
+            Assert.AreEqual("shoutinG_CASE", StringUtils.ToCamelCase("SHOUTING_CASE"));
+            Assert.AreEqual("9999-12-31T23:59:59.9999999Z", StringUtils.ToCamelCase("9999-12-31T23:59:59.9999999Z"));
+            Assert.AreEqual("hi!! This is text. Time to test.", StringUtils.ToCamelCase("Hi!! This is text. Time to test."));
         }
 
         [Test]
@@ -89,6 +93,10 @@ namespace Newtonsoft.Json.Tests.Utilities
             Assert.AreEqual("sn_a__k_ec_as_e", StringUtils.ToSnakeCase("SnA__kEcAsE"));
             Assert.AreEqual("sn_a__k_ec_as_e", StringUtils.ToSnakeCase("SnA__ kEcAsE"));
             Assert.AreEqual("already_snake_case_", StringUtils.ToSnakeCase("already_snake_case_ "));
+            Assert.AreEqual("is_json_property", StringUtils.ToSnakeCase("IsJSONProperty"));
+            Assert.AreEqual("shouting_case", StringUtils.ToSnakeCase("SHOUTING_CASE"));
+            Assert.AreEqual("9999-12-31_t23:59:59.9999999_z", StringUtils.ToSnakeCase("9999-12-31T23:59:59.9999999Z"));
+            Assert.AreEqual("hi!!_this_is_text._time_to_test.", StringUtils.ToSnakeCase("Hi!! This is text. Time to test."));
         }
     }
 }

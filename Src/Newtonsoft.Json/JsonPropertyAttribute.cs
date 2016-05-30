@@ -66,7 +66,7 @@ namespace Newtonsoft.Json
         public object[] ItemConverterParameters { get; set; }
 
         /// <summary>
-        /// Gets the <see cref="Type"/> of the <see cref="NamingStrategy"/>.
+        /// Gets or sets the <see cref="Type"/> of the <see cref="NamingStrategy"/>.
         /// </summary>
         /// <value>The <see cref="Type"/> of the <see cref="NamingStrategy"/>.</value>
         public Type NamingStrategyType { get; set; }
