@@ -50,14 +50,53 @@ namespace Newtonsoft.Json.Tests.Utilities
             Assert.AreEqual("i", StringUtils.ToCamelCase("I"));
             Assert.AreEqual("", StringUtils.ToCamelCase(""));
             Assert.AreEqual(null, StringUtils.ToCamelCase(null));
-            Assert.AreEqual("iPhone", StringUtils.ToCamelCase("iPhone"));
             Assert.AreEqual("person", StringUtils.ToCamelCase("Person"));
+            Assert.AreEqual("iPhone", StringUtils.ToCamelCase("iPhone"));
             Assert.AreEqual("iPhone", StringUtils.ToCamelCase("IPhone"));
             Assert.AreEqual("i Phone", StringUtils.ToCamelCase("I Phone"));
+            Assert.AreEqual("i  Phone", StringUtils.ToCamelCase("I  Phone"));
             Assert.AreEqual(" IPhone", StringUtils.ToCamelCase(" IPhone"));
+            Assert.AreEqual(" IPhone ", StringUtils.ToCamelCase(" IPhone "));
             Assert.AreEqual("isCIA", StringUtils.ToCamelCase("IsCIA"));
             Assert.AreEqual("vmQ", StringUtils.ToCamelCase("VmQ"));
             Assert.AreEqual("xml2Json", StringUtils.ToCamelCase("Xml2Json"));
+            Assert.AreEqual("snAkEcAsE", StringUtils.ToCamelCase("SnAkEcAsE"));
+            Assert.AreEqual("snA__kEcAsE", StringUtils.ToCamelCase("SnA__kEcAsE"));
+            Assert.AreEqual("snA__ kEcAsE", StringUtils.ToCamelCase("SnA__ kEcAsE"));
+            Assert.AreEqual("already_snake_case_ ", StringUtils.ToCamelCase("already_snake_case_ "));
+            Assert.AreEqual("isJSONProperty", StringUtils.ToCamelCase("IsJSONProperty"));
+            Assert.AreEqual("shoutinG_CASE", StringUtils.ToCamelCase("SHOUTING_CASE"));
+            Assert.AreEqual("9999-12-31T23:59:59.9999999Z", StringUtils.ToCamelCase("9999-12-31T23:59:59.9999999Z"));
+            Assert.AreEqual("hi!! This is text. Time to test.", StringUtils.ToCamelCase("Hi!! This is text. Time to test."));
+        }
+
+        [Test]
+        public void ToSnakeCaseTest()
+        {
+            Assert.AreEqual("url_value", StringUtils.ToSnakeCase("URLValue"));
+            Assert.AreEqual("url", StringUtils.ToSnakeCase("URL"));
+            Assert.AreEqual("id", StringUtils.ToSnakeCase("ID"));
+            Assert.AreEqual("i", StringUtils.ToSnakeCase("I"));
+            Assert.AreEqual("", StringUtils.ToSnakeCase(""));
+            Assert.AreEqual(null, StringUtils.ToSnakeCase(null));
+            Assert.AreEqual("person", StringUtils.ToSnakeCase("Person"));
+            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase("iPhone"));
+            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase("IPhone"));
+            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase("I Phone"));
+            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase("I  Phone"));
+            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase(" IPhone"));
+            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase(" IPhone "));
+            Assert.AreEqual("is_cia", StringUtils.ToSnakeCase("IsCIA"));
+            Assert.AreEqual("vm_q", StringUtils.ToSnakeCase("VmQ"));
+            Assert.AreEqual("xml2_json", StringUtils.ToSnakeCase("Xml2Json"));
+            Assert.AreEqual("sn_ak_ec_as_e", StringUtils.ToSnakeCase("SnAkEcAsE"));
+            Assert.AreEqual("sn_a__k_ec_as_e", StringUtils.ToSnakeCase("SnA__kEcAsE"));
+            Assert.AreEqual("sn_a__k_ec_as_e", StringUtils.ToSnakeCase("SnA__ kEcAsE"));
+            Assert.AreEqual("already_snake_case_", StringUtils.ToSnakeCase("already_snake_case_ "));
+            Assert.AreEqual("is_json_property", StringUtils.ToSnakeCase("IsJSONProperty"));
+            Assert.AreEqual("shouting_case", StringUtils.ToSnakeCase("SHOUTING_CASE"));
+            Assert.AreEqual("9999-12-31_t23:59:59.9999999_z", StringUtils.ToSnakeCase("9999-12-31T23:59:59.9999999Z"));
+            Assert.AreEqual("hi!!_this_is_text._time_to_test.", StringUtils.ToSnakeCase("Hi!! This is text. Time to test."));
         }
     }
 }

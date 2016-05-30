@@ -139,6 +139,7 @@
     <Compile Include="Linq\JsonPath\JPathParseTests.cs" />
     <Compile Include="Linq\JsonPath\QueryExpressionTests.cs" />
     <Compile Include="Linq\MergeTests.cs" />
+    <Compile Include="Serialization\CamelCaseNamingStrategyTests.cs" />
     <Compile Include="Serialization\ConstructorHandlingTests.cs" />
     <Compile Include="Serialization\ContractResolverTests.cs" />
     <Compile Include="Serialization\DefaultValueHandlingTests.cs" />
@@ -155,6 +156,7 @@
     <Compile Include="Serialization\ReferenceLoopHandlingTests.cs" />
     <Compile Include="Serialization\ReflectionAttributeProviderTests.cs" />
     <Compile Include="Serialization\ShouldSerializeTests.cs" />
+    <Compile Include="Serialization\SnakeCaseNamingStrategyTests.cs" />
     <Compile Include="Serialization\TraceWriterTests.cs" />
     <Compile Include="Serialization\WebApiIntegrationTests.cs" />
     <Compile Include="TestObjects\Aa.cs" />

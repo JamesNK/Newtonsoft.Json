@@ -56,8 +56,8 @@ namespace Newtonsoft.Json.Serialization
         public const string ShouldSerializePrefix = "ShouldSerialize";
         public const string SpecifiedPostfix = "Specified";
 
-        private static readonly ThreadSafeStore<Type, Func<object[], JsonConverter>> JsonConverterCreatorCache =
-            new ThreadSafeStore<Type, Func<object[], JsonConverter>>(GetJsonConverterCreator);
+        private static readonly ThreadSafeStore<Type, Func<object[], object>> CreatorCache = 
+            new ThreadSafeStore<Type, Func<object[], object>>(GetCreator);
 
 #if !(NET20 || DOTNET)
         private static readonly ThreadSafeStore<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeStore<Type, Type>(GetAssociateMetadataTypeFromAttribute);
@@ -162,10 +162,10 @@ namespace Newtonsoft.Json.Serialization
 
             if (converterAttribute != null)
             {
-                Func<object[], JsonConverter> creator = JsonConverterCreatorCache.Get(converterAttribute.ConverterType);
+                Func<object[], object> creator = CreatorCache.Get(converterAttribute.ConverterType);
                 if (creator != null)
                 {
-                    return creator(converterAttribute.ConverterParameters);
+                    return (JsonConverter)creator(converterAttribute.ConverterParameters);
                 }
             }
 
@@ -180,19 +180,35 @@ namespace Newtonsoft.Json.Serialization
         /// If null, the default constructor is used.</param>
         public static JsonConverter CreateJsonConverterInstance(Type converterType, object[] converterArgs)
         {
-            Func<object[], JsonConverter> converterCreator = JsonConverterCreatorCache.Get(converterType);
-            return converterCreator(converterArgs);
+            Func<object[], object> converterCreator = CreatorCache.Get(converterType);
+            return (JsonConverter)converterCreator(converterArgs);
         }
 
-        /// <summary>
-        /// Create a factory function that can be used to create instances of a JsonConverter described by the 
-        /// argument type.  The returned function can then be used to either invoke the converter's default ctor, or any 
-        /// parameterized constructors by way of an object array.
-        /// </summary>
-        private static Func<object[], JsonConverter> GetJsonConverterCreator(Type converterType)
+        public static NamingStrategy CreateNamingStrategyInstance(Type namingStrategyType, object[] converterArgs)
         {
-            Func<object> defaultConstructor = (ReflectionUtils.HasDefaultConstructor(converterType, false))
-                ? ReflectionDelegateFactory.CreateDefaultConstructor<object>(converterType)
+            Func<object[], object> converterCreator = CreatorCache.Get(namingStrategyType);
+            return (NamingStrategy)converterCreator(converterArgs);
+        }
+
+        public static NamingStrategy GetContainerNamingStrategy(JsonContainerAttribute containerAttribute)
+        {
+            if (containerAttribute.NamingStrategyInstance == null)
+            {
+                if (containerAttribute.NamingStrategyType == null)
+                {
+                    return null;
+                }
+
+                containerAttribute.NamingStrategyInstance = CreateNamingStrategyInstance(containerAttribute.NamingStrategyType, containerAttribute.NamingStrategyParameters);
+            }
+
+            return containerAttribute.NamingStrategyInstance;
+        }
+
+        private static Func<object[], object> GetCreator(Type type)
+        {
+            Func<object> defaultConstructor = (ReflectionUtils.HasDefaultConstructor(type, false))
+                ? ReflectionDelegateFactory.CreateDefaultConstructor<object>(type)
                 : null;
 
             return (parameters) =>
@@ -201,31 +217,30 @@ namespace Newtonsoft.Json.Serialization
                 {
                     if (parameters != null)
                     {
-                        ObjectConstructor<object> parameterizedConstructor = null;
                         Type[] paramTypes = parameters.Select(param => param.GetType()).ToArray();
-                        ConstructorInfo parameterizedConstructorInfo = converterType.GetConstructor(paramTypes);
+                        ConstructorInfo parameterizedConstructorInfo = type.GetConstructor(paramTypes);
 
                         if (null != parameterizedConstructorInfo)
                         {
-                            parameterizedConstructor = ReflectionDelegateFactory.CreateParameterizedConstructor(parameterizedConstructorInfo);
-                            return (JsonConverter)parameterizedConstructor(parameters);
+                            ObjectConstructor<object> parameterizedConstructor = ReflectionDelegateFactory.CreateParameterizedConstructor(parameterizedConstructorInfo);
+                            return parameterizedConstructor(parameters);
                         }
                         else
                         {
-                            throw new JsonException("No matching parameterized constructor found for '{0}'.".FormatWith(CultureInfo.InvariantCulture, converterType));
+                            throw new JsonException("No matching parameterized constructor found for '{0}'.".FormatWith(CultureInfo.InvariantCulture, type));
                         }
                     }
 
                     if (defaultConstructor == null)
                     {
-                        throw new JsonException("No parameterless constructor defined for '{0}'.".FormatWith(CultureInfo.InvariantCulture, converterType));
+                        throw new JsonException("No parameterless constructor defined for '{0}'.".FormatWith(CultureInfo.InvariantCulture, type));
                     }
 
-                    return (JsonConverter)defaultConstructor();
+                    return defaultConstructor();
                 }
                 catch (Exception ex)
                 {
-                    throw new JsonException("Error creating '{0}'.".FormatWith(CultureInfo.InvariantCulture, converterType), ex);
+                    throw new JsonException("Error creating '{0}'.".FormatWith(CultureInfo.InvariantCulture, type), ex);
                 }
             };
         }

@@ -185,6 +185,12 @@ namespace Newtonsoft.Json.Serialization
 #endif
 
         /// <summary>
+        /// Gets or sets the naming strategy used to resolve how property names and dictionary keys are serialized.
+        /// </summary>
+        /// <value>The naming strategy used to resolve how property names and dictionary keys are serialized.</value>
+        public NamingStrategy NamingStrategy { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="DefaultContractResolver"/> class.
         /// </summary>
         public DefaultContractResolver()
@@ -737,7 +743,6 @@ namespace Newtonsoft.Json.Serialization
 #if NET35
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Portability", "CA1903:UseOnlyApiFromTargetedFramework", MessageId = "System.Runtime.Serialization.DataContractAttribute.#get_IsReference()")]
 #endif
-
         private void InitializeContract(JsonContract contract)
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(contract.NonNullableUnderlyingType);
@@ -905,7 +910,9 @@ namespace Newtonsoft.Json.Serialization
 #endif
 #if DOTNET
             if (t.IsGenericType() && t.GetGenericTypeDefinition() == typeof(ConcurrentDictionary<,>))
+            {
                 return true;
+            }
 #endif
 
             return false;
@@ -937,7 +944,16 @@ namespace Newtonsoft.Json.Serialization
             JsonDictionaryContract contract = new JsonDictionaryContract(objectType);
             InitializeContract(contract);
 
-            contract.DictionaryKeyResolver = ResolveDictionaryKey;
+            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetAttribute<JsonContainerAttribute>(objectType);
+            if (containerAttribute?.NamingStrategyType != null)
+            {
+                NamingStrategy namingStrategy = JsonTypeReflector.GetContainerNamingStrategy(containerAttribute);
+                contract.DictionaryKeyResolver = s => namingStrategy.GetDictionaryKey(s);
+            }
+            else
+            {
+                contract.DictionaryKeyResolver = ResolveDictionaryKey;
+            }
 
             ConstructorInfo overrideConstructor = GetAttributeConstructor(contract.NonNullableUnderlyingType);
 
@@ -1065,7 +1081,17 @@ namespace Newtonsoft.Json.Serialization
             JsonDynamicContract contract = new JsonDynamicContract(objectType);
             InitializeContract(contract);
 
-            contract.PropertyNameResolver = ResolvePropertyName;
+            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetAttribute<JsonContainerAttribute>(objectType);
+            if (containerAttribute?.NamingStrategyType != null)
+            {
+                NamingStrategy namingStrategy = JsonTypeReflector.GetContainerNamingStrategy(containerAttribute);
+                contract.PropertyNameResolver = s => namingStrategy.GetDictionaryKey(s);
+            }
+            else
+            {
+                contract.PropertyNameResolver = ResolveDictionaryKey;
+            }
+
             contract.Properties.AddRange(CreateProperties(objectType, MemberSerialization.OptOut));
 
             return contract;
@@ -1386,22 +1412,50 @@ namespace Newtonsoft.Json.Serialization
             JsonRequiredAttribute requiredAttribute = JsonTypeReflector.GetAttribute<JsonRequiredAttribute>(attributeProvider);
 
             string mappedName;
+            bool hasSpecifiedName;
             if (propertyAttribute != null && propertyAttribute.PropertyName != null)
             {
                 mappedName = propertyAttribute.PropertyName;
+                hasSpecifiedName = true;
             }
 #if !NET20
             else if (dataMemberAttribute != null && dataMemberAttribute.Name != null)
             {
                 mappedName = dataMemberAttribute.Name;
+                hasSpecifiedName = true;
             }
 #endif
             else
             {
                 mappedName = name;
+                hasSpecifiedName = false;
             }
 
-            property.PropertyName = ResolvePropertyName(mappedName);
+            JsonContainerAttribute containerAttribute = JsonTypeReflector.GetAttribute<JsonContainerAttribute>(declaringType);
+
+            NamingStrategy namingStrategy;
+            if (propertyAttribute?.NamingStrategyType != null)
+            {
+                namingStrategy = JsonTypeReflector.CreateNamingStrategyInstance(propertyAttribute.NamingStrategyType, propertyAttribute.NamingStrategyParameters);
+            }
+            else if (containerAttribute?.NamingStrategyType != null)
+            {
+                namingStrategy = JsonTypeReflector.GetContainerNamingStrategy(containerAttribute);
+            }
+            else
+            {
+                namingStrategy = NamingStrategy;
+            }
+
+            if (namingStrategy != null)
+            {
+                property.PropertyName = namingStrategy.GetPropertyName(mappedName, hasSpecifiedName);
+            }
+            else
+            {
+                property.PropertyName = ResolvePropertyName(mappedName);
+            }
+            
             property.UnderlyingName = name;
 
             bool hasMemberAttribute = false;
@@ -1542,6 +1596,11 @@ namespace Newtonsoft.Json.Serialization
         /// <returns>Resolved name of the property.</returns>
         protected virtual string ResolvePropertyName(string propertyName)
         {
+            if (NamingStrategy != null)
+            {
+                return NamingStrategy.GetPropertyName(propertyName, false);
+            }
+
             return propertyName;
         }
 
@@ -1552,6 +1611,11 @@ namespace Newtonsoft.Json.Serialization
         /// <returns>Resolved key of the dictionary.</returns>
         protected virtual string ResolveDictionaryKey(string dictionaryKey)
         {
+            if (NamingStrategy != null)
+            {
+                return NamingStrategy.GetDictionaryKey(dictionaryKey);
+            }
+
             return ResolvePropertyName(dictionaryKey);
         }
 

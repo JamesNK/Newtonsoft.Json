@@ -38,16 +38,16 @@ namespace Newtonsoft.Json
         private readonly Type _converterType;
 
         /// <summary>
-        /// Gets the <see cref="Type"/> of the converter.
+        /// Gets the <see cref="Type"/> of the <see cref="JsonConverter"/>.
         /// </summary>
-        /// <value>The <see cref="Type"/> of the converter.</value>
+        /// <value>The <see cref="Type"/> of the <see cref="JsonConverter"/>.</value>
         public Type ConverterType
         {
             get { return _converterType; }
         }
 
         /// <summary>
-        /// The parameter list to use when constructing the JsonConverter described by ConverterType.  
+        /// The parameter list to use when constructing the <see cref="JsonConverter"/> described by ConverterType.  
         /// If null, the default constructor is used.
         /// </summary>
         public object[] ConverterParameters { get; private set; }
@@ -55,7 +55,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonConverterAttribute"/> class.
         /// </summary>
-        /// <param name="converterType">Type of the converter.</param>
+        /// <param name="converterType">Type of the <see cref="JsonConverter"/>.</param>
         public JsonConverterAttribute(Type converterType)
         {
             if (converterType == null)
@@ -69,8 +69,8 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonConverterAttribute"/> class.
         /// </summary>
-        /// <param name="converterType">Type of the converter.</param>
-        /// <param name="converterParameters">Parameter list to use when constructing the JsonConverter. Can be null.</param>
+        /// <param name="converterType">Type of the <see cref="JsonConverter"/>.</param>
+        /// <param name="converterParameters">Parameter list to use when constructing the <see cref="JsonConverter"/>. Can be null.</param>
         public JsonConverterAttribute(Type converterType, params object[] converterParameters)
             : this(converterType)
         {

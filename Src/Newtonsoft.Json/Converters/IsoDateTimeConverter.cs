@@ -57,7 +57,7 @@ namespace Newtonsoft.Json.Converters
         public string DateTimeFormat
         {
             get { return _dateTimeFormat ?? string.Empty; }
-            set { _dateTimeFormat = StringUtils.NullEmptyString(value); }
+            set { _dateTimeFormat = (string.IsNullOrEmpty(value)) ? null : value; }
         }
 
         /// <summary>

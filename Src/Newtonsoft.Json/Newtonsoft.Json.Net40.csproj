@@ -141,13 +141,17 @@
     <Compile Include="Linq\MergeArrayHandling.cs" />
     <Compile Include="Linq\MergeNullValueHandling.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
+    <Compile Include="Serialization\CamelCaseNamingStrategy.cs" />
+    <Compile Include="Serialization\DefaultNamingStrategy.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
     <Compile Include="Serialization\ExpressionValueProvider.cs" />
     <Compile Include="Serialization\IAttributeProvider.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />
     <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="Serialization\MemoryTraceWriter.cs" />
+    <Compile Include="Serialization\NamingStrategy.cs" />
     <Compile Include="Serialization\ReflectionAttributeProvider.cs" />
+    <Compile Include="Serialization\SnakeCaseNamingStrategy.cs" />
     <Compile Include="Serialization\TraceJsonReader.cs" />
     <Compile Include="Serialization\TraceJsonWriter.cs" />
     <Compile Include="StringEscapeHandling.cs" />
