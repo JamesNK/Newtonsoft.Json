@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || DNXCORE50)
+#if !(NET35 || NET20 || NETSTANDARD1_5)
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.FSharp.Core;

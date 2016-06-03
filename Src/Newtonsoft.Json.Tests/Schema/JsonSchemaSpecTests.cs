@@ -24,7 +24,7 @@
 #endregion
 
 #pragma warning disable 618
-#if !(DNXCORE50 || NETFX_CORE)
+#if !(NETSTANDARD1_5 || NETFX_CORE)
 using System;
 using System.Collections.Generic;
 using System.IO;

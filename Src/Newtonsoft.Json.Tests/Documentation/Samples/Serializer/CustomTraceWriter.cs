@@ -28,7 +28,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Text;
-#if DNXCORE50
+#if NETSTANDARD1_5
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -37,7 +37,7 @@ using NUnit.Framework;
 
 #endif
 
-#if !(DNXCORE50 || NET20 || NET35)
+#if !(NETSTANDARD1_5 || NET20 || NET35)
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {

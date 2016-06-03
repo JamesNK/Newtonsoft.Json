@@ -58,19 +58,19 @@ namespace Newtonsoft.Json.Serialization
             {
                 Assembly assembly;
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
                 // look, I don't like using obsolete methods as much as you do but this is the only way
                 // Assembly.Load won't check the GAC for a partial name
 #pragma warning disable 618,612
                 assembly = Assembly.LoadWithPartialName(assemblyName);
 #pragma warning restore 618,612
-#elif DOTNET || PORTABLE
+#elif DOTNET || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5
                 assembly = Assembly.Load(new AssemblyName(assemblyName));
 #else
                 assembly = Assembly.Load(assemblyName);
 #endif
 
-#if !(PORTABLE40 || PORTABLE || DOTNET)
+#if !(PORTABLE40 || PORTABLE || DOTNET || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4)
                 if (assembly == null)
                 {
                     // will find assemblies loaded with Assembly.LoadFile outside of the main directory
@@ -196,7 +196,7 @@ namespace Newtonsoft.Json.Serialization
         /// <param name="typeName">Specifies the <see cref="T:System.Type"/> name of the serialized object. </param>
         public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
         {
-#if (DOTNET || PORTABLE)
+#if (DOTNET || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
             assemblyName = serializedType.GetTypeInfo().Assembly.FullName;
             typeName = serializedType.FullName;
 #else

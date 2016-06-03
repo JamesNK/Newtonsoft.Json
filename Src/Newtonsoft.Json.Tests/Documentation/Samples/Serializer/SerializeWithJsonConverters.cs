@@ -32,7 +32,7 @@ using System.Linq;
 #endif
 using System.Text;
 using Newtonsoft.Json.Converters;
-#if DNXCORE50
+#if NETSTANDARD1_5
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
