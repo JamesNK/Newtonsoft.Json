@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Bson
 
         public void Close()
         {
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
             _writer.Close();
 #else
             _writer.Dispose();

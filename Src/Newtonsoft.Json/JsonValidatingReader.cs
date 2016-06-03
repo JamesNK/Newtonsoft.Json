@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || NETSTANDARD1_0)
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Linq;
@@ -840,7 +840,7 @@ namespace Newtonsoft.Json
             if (schema.DivisibleBy != null)
             {
                 bool notDivisible;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || NETSTANDARD1_0)
                 if (value is BigInteger)
                 {
                     // not that this will lose any decimal point on DivisibleBy

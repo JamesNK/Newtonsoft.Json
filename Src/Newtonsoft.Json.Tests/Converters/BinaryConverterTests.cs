@@ -25,10 +25,10 @@
 
 using System;
 using System.Collections.Generic;
-#if !(NET20 || DNXCORE50)
+#if !(NET20 || NETSTANDARD1_5)
 using System.Data.Linq;
 #endif
-#if !DNXCORE50
+#if !NETSTANDARD1_5
 using System.Data.SqlTypes;
 #endif
 using System.Text;
@@ -37,7 +37,7 @@ using Newtonsoft.Json.Converters;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#elif NETSTANDARD1_5
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Tests.Converters
             public byte[] NullByteArray { get; set; }
         }
 
-#if !(NET20 || PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(NET20 || PORTABLE || PORTABLE40 || NETSTANDARD1_5)
         [Test]
         public void DeserializeBinaryClass()
         {
@@ -125,7 +125,7 @@ namespace Newtonsoft.Json.Tests.Converters
 }", json);
         }
 
-#if !(PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(PORTABLE || PORTABLE40 || NETSTANDARD1_5)
         public class SqlBinaryClass
         {
             public SqlBinary SqlBinary { get; set; }

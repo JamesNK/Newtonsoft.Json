@@ -32,7 +32,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
     {
         protected override string ResolvePropertyName(string propertyName)
         {
-#if !(NETFX_CORE || DNXCORE50)
+#if !(NETFX_CORE || NETSTANDARD1_5)
             return ":::" + propertyName.ToUpper(CultureInfo.InvariantCulture) + ":::";
 #else
             return ":::" + propertyName.ToUpper() + ":::";

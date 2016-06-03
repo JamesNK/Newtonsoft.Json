@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || NETSTANDARD1_0)
 using System.Numerics;
 #endif
 using System.Text;
@@ -232,7 +232,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="value">The <see cref="Object"/> value to write.</param>
         public override void WriteValue(object value)
         {
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40 || NETSTANDARD1_0)
             if (value is BigInteger)
             {
                 InternalWriteValue(JsonToken.Integer);
@@ -391,7 +391,7 @@ namespace Newtonsoft.Json.Bson
         {
             base.WriteValue(value);
             string s = null;
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
             s = value.ToString(CultureInfo.InvariantCulture);
 #else
             s = value.ToString();

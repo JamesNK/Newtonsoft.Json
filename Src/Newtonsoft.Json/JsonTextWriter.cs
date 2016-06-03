@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || NETSTANDARD1_0)
 using System.Numerics;
 #endif
 using System.Text;
@@ -185,7 +185,7 @@ namespace Newtonsoft.Json
 
             if (CloseOutput && _writer != null)
             {
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
                 _writer.Close();
 #else
                 _writer.Dispose();
@@ -359,7 +359,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The <see cref="Object"/> value to write.</param>
         public override void WriteValue(object value)
         {
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40 || NETSTANDARD1_0)
             if (value is BigInteger)
             {
                 InternalWriteValue(JsonToken.Integer);
@@ -680,7 +680,7 @@ namespace Newtonsoft.Json
 
             string text = null;
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
             text = value.ToString("D", CultureInfo.InvariantCulture);
 #else
             text = value.ToString("D");

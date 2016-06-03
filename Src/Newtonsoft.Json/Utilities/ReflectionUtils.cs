@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || NETSTANDARD1_0)
 using System.Numerics;
 #endif
 using System.Reflection;
@@ -43,7 +43,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
-#if (DOTNET || PORTABLE || PORTABLE40)
+#if (DOTNET || PORTABLE || PORTABLE40 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4)
     internal enum MemberTypes
     {
         Property = 0,
@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
-#if PORTABLE
+#if PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2
     [Flags]
     internal enum BindingFlags
     {
@@ -87,7 +87,7 @@ namespace Newtonsoft.Json.Utilities
 
         static ReflectionUtils()
         {
-#if !(PORTABLE40 || PORTABLE)
+#if !(PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
             EmptyTypes = Type.EmptyTypes;
 #else
             EmptyTypes = new Type[0];
@@ -765,7 +765,11 @@ namespace Newtonsoft.Json.Utilities
             if (provider is Type)
             {
                 Type t = (Type)provider;
+#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5
+                object[] a = ((attributeType != null) ? t.GetTypeInfo().GetCustomAttributes(attributeType, inherit) : t.GetTypeInfo().GetCustomAttributes(inherit)).ToArray();
+#else
                 object[] a = (attributeType != null) ? t.GetCustomAttributes(attributeType, inherit) : t.GetCustomAttributes(inherit);
+#endif
                 Attribute[] attributes = a.Cast<Attribute>().ToArray();
 
 #if (NET20 || NET35)
@@ -782,30 +786,46 @@ namespace Newtonsoft.Json.Utilities
             if (provider is Assembly)
             {
                 Assembly a = (Assembly)provider;
+#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5
+                return ((attributeType != null) ? a.GetCustomAttributes(attributeType) : a.GetCustomAttributes()).ToArray();
+#else
                 return (attributeType != null) ? Attribute.GetCustomAttributes(a, attributeType) : Attribute.GetCustomAttributes(a);
+#endif
             }
 
             if (provider is MemberInfo)
             {
                 MemberInfo m = (MemberInfo)provider;
+#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5
+                return ((attributeType != null) ? m.GetCustomAttributes(attributeType, inherit) : m.GetCustomAttributes(inherit)).ToArray();
+#else
                 return (attributeType != null) ? Attribute.GetCustomAttributes(m, attributeType, inherit) : Attribute.GetCustomAttributes(m, inherit);
+#endif
             }
 
 #if !PORTABLE40
             if (provider is Module)
             {
                 Module m = (Module)provider;
+#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5
+                return ((attributeType != null) ? m.GetCustomAttributes(attributeType) : m.GetCustomAttributes()).ToArray();
+#else
                 return (attributeType != null) ? Attribute.GetCustomAttributes(m, attributeType, inherit) : Attribute.GetCustomAttributes(m, inherit);
+#endif
             }
 #endif
 
             if (provider is ParameterInfo)
             {
                 ParameterInfo p = (ParameterInfo)provider;
+#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5
+                return ((attributeType != null) ? p.GetCustomAttributes(attributeType, inherit) : p.GetCustomAttributes(inherit)).ToArray();
+#else
                 return (attributeType != null) ? Attribute.GetCustomAttributes(p, attributeType, inherit) : Attribute.GetCustomAttributes(p, inherit);
+#endif
             }
 
-#if !PORTABLE40
+#if !(PORTABLE40 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4)
             ICustomAttributeProvider customAttributeProvider = (ICustomAttributeProvider)attributeProvider;
             object[] result = (attributeType != null) ? customAttributeProvider.GetCustomAttributes(attributeType, inherit) : customAttributeProvider.GetCustomAttributes(inherit);
 
@@ -1100,7 +1120,7 @@ namespace Newtonsoft.Json.Utilities
                     return 0m;
                 case PrimitiveTypeCode.DateTime:
                     return new DateTime();
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || NETSTANDARD1_0)
                 case PrimitiveTypeCode.BigInteger:
                     return new BigInteger();
 #endif

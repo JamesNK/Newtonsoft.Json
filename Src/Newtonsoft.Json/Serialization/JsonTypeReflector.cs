@@ -29,7 +29,7 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 using System.Security;
-#if !(DOTNET || PORTABLE || PORTABLE40)
+#if !(DOTNET || PORTABLE || PORTABLE40 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
 using System.Security.Permissions;
 #endif
 using Newtonsoft.Json.Utilities;
@@ -141,7 +141,7 @@ namespace Newtonsoft.Json.Serialization
             }
 #endif
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
             if (!ignoreSerializableAttribute)
             {
                 SerializableAttribute serializableAttribute = GetCachedAttribute<SerializableAttribute>(objectType);
@@ -404,7 +404,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 if (_dynamicCodeGeneration == null)
                 {
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
                     try
                     {
                         new ReflectionPermission(ReflectionPermissionFlag.MemberAccess).Demand();
@@ -433,7 +433,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 if (_fullyTrusted == null)
                 {
-#if (DOTNET || PORTABLE || PORTABLE40)
+#if (DOTNET || PORTABLE || PORTABLE40 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
                     _fullyTrusted = false;
 #elif !(NET20 || NET35 || PORTABLE40)
                     AppDomain appDomain = AppDomain.CurrentDomain;

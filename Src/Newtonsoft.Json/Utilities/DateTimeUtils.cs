@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
         }
 
-#if !(PORTABLE40 || PORTABLE)
+#if !(PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2)
         public static XmlDateTimeSerializationMode ToSerializationMode(DateTimeKind kind)
         {
             switch (kind)
