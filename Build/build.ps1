@@ -53,8 +53,7 @@ task Clean {
 }
 
 # Build each solution, optionally signed
-task Build -depends Clean { 
-
+task Build -depends Clean {
   Write-Host "Copying source to working source directory $workingSourceDir"
   robocopy $sourceDir $workingSourceDir /MIR /NP /XD bin obj TestResults AppPackages $packageDirs .vs artifacts /XF *.suo *.user *.lock.json | Out-Default
 
