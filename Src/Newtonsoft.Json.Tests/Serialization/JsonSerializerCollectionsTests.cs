@@ -46,7 +46,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#elif NETSTANDARD1_5
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -166,7 +166,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 "Constructor for 'Newtonsoft.Json.Tests.Serialization.JsonSerializerCollectionsTests+TestCollectionBadIEnumerableParameter' must have no parameters or a single parameter that implements 'System.Collections.Generic.IEnumerable`1[System.Int32]'.");
         }
 
-#if !(DNXCORE50 || PORTABLE)
+#if !(NETSTANDARD1_5 || PORTABLE)
         public class TestCollectionNonGeneric : ArrayList
         {
             [JsonConstructor]
@@ -279,7 +279,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 "Constructor for 'Newtonsoft.Json.Tests.Serialization.JsonSerializerCollectionsTests+TestDictionaryBadIEnumerableParameter' must have no parameters or a single parameter that implements 'System.Collections.Generic.IEnumerable`1[System.Collections.Generic.KeyValuePair`2[System.String,System.Int32]]'.");
         }
 
-#if !(DNXCORE50 || PORTABLE)
+#if !(NETSTANDARD1_5 || PORTABLE)
         public class TestDictionaryNonGeneric : Hashtable
         {
             [JsonConstructor]
@@ -302,7 +302,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-#if !(NETFX_CORE || DNXCORE50)
+#if !(NETFX_CORE || NETSTANDARD1_5)
         public class NameValueCollectionTestClass
         {
             public NameValueCollection Collection { get; set; }
@@ -1673,7 +1673,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(1, (int)((JObject)o.Data[2])["one"]);
         }
 
-#if !(NETFX_CORE || DNXCORE50)
+#if !(NETFX_CORE || NETSTANDARD1_5)
         [Test]
         public void SerializeArrayAsArrayList()
         {
@@ -1903,7 +1903,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-#if !DNXCORE50
+#if !NETSTANDARD1_5
         [Test]
         public void EmptyStringInHashtableIsDeserialized()
         {

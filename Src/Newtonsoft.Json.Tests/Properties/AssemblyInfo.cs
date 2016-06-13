@@ -31,8 +31,18 @@ using System.Security;
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
 
-#if NETSTANDARD10
+#if NETSTANDARD1_0
 [assembly: AssemblyTitle("Json.NET Tests .NET Standard 1.0")]
+#elif NETSTANDARD1_1
+[assembly: AssemblyTitle("Json.NET .NET Standard 1.1")]
+#elif NETSTANDARD1_2
+[assembly: AssemblyTitle("Json.NET .NET Standard 1.2")]
+#elif NETSTANDARD1_3
+[assembly: AssemblyTitle("Json.NET .NET Standard 1.3")]
+#elif NETSTANDARD1_4
+[assembly: AssemblyTitle("Json.NET .NET Standard 1.4")]
+#elif NETSTANDARD1_5
+[assembly: AssemblyTitle("Json.NET .NET Standard 1.5")]
 #elif PORTABLE40
 [assembly: AssemblyTitle("Json.NET Tests Portable .NET 4.0")]
 #elif PORTABLE

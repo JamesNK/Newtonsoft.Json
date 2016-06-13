@@ -23,9 +23,11 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2)
 using System;
+#if !NO_SQL_CLIENT
 using System.Data.SqlTypes;
+#endif
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using System.Collections.Generic;
@@ -71,10 +73,13 @@ namespace Newtonsoft.Json.Converters
                 return (byte[])_reflectionObject.GetValue(value, BinaryToArrayName);
             }
 #endif
+
+#if !NO_SQL_CLIENT
             if (value is SqlBinary)
             {
                 return ((SqlBinary)value).Value;
             }
+#endif
 
             throw new JsonSerializationException("Unexpected value type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
         }
@@ -84,7 +89,11 @@ namespace Newtonsoft.Json.Converters
         {
             if (_reflectionObject == null)
             {
+#if NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5
+                _reflectionObject = ReflectionObject.Create(t, System.Reflection.TypeExtensions.GetConstructor(t, new[] { typeof(byte[]) }), BinaryToArrayName);
+#else
                 _reflectionObject = ReflectionObject.Create(t, t.GetConstructor(new[] { typeof(byte[]) }), BinaryToArrayName);
+#endif
             }
         }
 #endif
@@ -140,10 +149,12 @@ namespace Newtonsoft.Json.Converters
             }
 #endif
 
+#if !NO_SQL_CLIENT
             if (t == typeof(SqlBinary))
             {
                 return new SqlBinary(data);
             }
+#endif
 
             throw JsonSerializationException.Create(reader, "Unexpected object type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, objectType));
         }
@@ -188,10 +199,12 @@ namespace Newtonsoft.Json.Converters
             }
 #endif
 
+#if !NO_SQL_CLIENT
             if (objectType == typeof(SqlBinary) || objectType == typeof(SqlBinary?))
             {
                 return true;
             }
+#endif
 
             return false;
         }

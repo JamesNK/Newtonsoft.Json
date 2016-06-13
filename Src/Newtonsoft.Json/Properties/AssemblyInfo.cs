@@ -32,8 +32,18 @@ using System.Security;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-#if NETSTANDARD10
+#if NETSTANDARD1_0
 [assembly: AssemblyTitle("Json.NET .NET Standard 1.0")]
+#elif NETSTANDARD1_1
+[assembly: AssemblyTitle("Json.NET .NET Standard 1.1")]
+#elif NETSTANDARD1_2
+[assembly: AssemblyTitle("Json.NET .NET Standard 1.2")]
+#elif NETSTANDARD1_3
+[assembly: AssemblyTitle("Json.NET .NET Standard 1.3")]
+#elif NETSTANDARD1_4
+[assembly: AssemblyTitle("Json.NET .NET Standard 1.4")]
+#elif NETSTANDARD1_5
+[assembly: AssemblyTitle("Json.NET .NET Standard 1.5")]
 #elif PORTABLE40
 [assembly: AssemblyTitle("Json.NET Portable .NET 4.0")]
 #elif PORTABLE
@@ -79,9 +89,11 @@ using System.Security;
 
 [assembly: ComVisible(false)]
 
+#if !NETSTANDARD1_0
 // The following GUID is for the ID of the typelib if this project is exposed to COM
 
 [assembly: Guid("9ca358aa-317b-4925-8ada-4a29e943a363")]
+#endif
 #endif
 
 // Version information for an assembly consists of the following four values:

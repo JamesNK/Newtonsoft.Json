@@ -36,7 +36,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#elif NETSTANDARD1_5
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -4189,7 +4189,7 @@ null//comment
         {
             string json = @"{
   ""frameworks"": {
-    ""dnxcore50"": {
+    ""NETSTANDARD1_5"": {
       ""dependencies"": {
         ""System.Xml.ReaderWriter"": {
           ""source"": !!! !!!
@@ -4207,10 +4207,10 @@ null//comment
                     {
                     }
                 },
-                "Unexpected character encountered while parsing value: !. Path 'frameworks.dnxcore50.dependencies['System.Xml.ReaderWriter'].source', line 6, position 20.");
+                "Unexpected character encountered while parsing value: !. Path 'frameworks.NETSTANDARD1_5.dependencies['System.Xml.ReaderWriter'].source', line 6, position 20.");
         }
 
-#if !DNXCORE50
+#if !NETSTANDARD1_5
         [Test]
         public void LinePositionOnNewLine()
         {
@@ -4260,7 +4260,7 @@ null//comment
         }
 #endif
 
-#if !DNXCORE50
+#if !NETSTANDARD1_5
         [Test]
         [Ignore]
         public void ReadFromNetworkStream()
