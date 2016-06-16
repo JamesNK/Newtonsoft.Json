@@ -88,7 +88,9 @@ namespace Newtonsoft.Json.Linq
             get
             {
                 if (_equalityComparer == null)
+                {
                     _equalityComparer = new JTokenEqualityComparer();
+                }
 
                 return _equalityComparer;
             }
@@ -115,7 +117,9 @@ namespace Newtonsoft.Json.Linq
             {
                 JContainer parent = Parent;
                 if (parent == null)
+                {
                     return this;
+                }
 
                 while (parent.Parent != null)
                 {
@@ -148,7 +152,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="t1">The first <see cref="JToken"/> to compare.</param>
         /// <param name="t2">The second <see cref="JToken"/> to compare.</param>
-        /// <returns>true if the tokens are equal; otherwise false.</returns>
+        /// <returns><c>true</c> if the tokens are equal; otherwise <c>false</c>.</returns>
         public static bool DeepEquals(JToken t1, JToken t2)
         {
             return (t1 == t2 || (t1 != null && t2 != null && t1.DeepEquals(t2)));
@@ -182,41 +186,35 @@ namespace Newtonsoft.Json.Linq
             get
             {
                 if (Parent == null)
+                {
                     return string.Empty;
-
-                IList<JToken> ancestors = AncestorsAndSelf().Reverse().ToList();
+                }
 
                 List<JsonPosition> positions = new List<JsonPosition>();
-                for (int i = 0; i < ancestors.Count; i++)
+                JToken previous = null;
+                for (JToken current = this; current != null; current = current.Parent)
                 {
-                    JToken current = ancestors[i];
-                    JToken next = null;
-                    if (i + 1 < ancestors.Count)
+                    switch (current.Type)
                     {
-                        next = ancestors[i + 1];
-                    }
-                    else if (ancestors[i].Type == JTokenType.Property)
-                    {
-                        next = ancestors[i];
-                    }
-
-                    if (next != null)
-                    {
-                        switch (current.Type)
-                        {
-                            case JTokenType.Property:
-                                JProperty property = (JProperty)current;
-                                positions.Add(new JsonPosition(JsonContainerType.Object) { PropertyName = property.Name });
-                                break;
-                            case JTokenType.Array:
-                            case JTokenType.Constructor:
-                                int index = ((IList<JToken>)current).IndexOf(next);
+                        case JTokenType.Property:
+                            JProperty property = (JProperty)current;
+                            positions.Add(new JsonPosition(JsonContainerType.Object) { PropertyName = property.Name });
+                            break;
+                        case JTokenType.Array:
+                        case JTokenType.Constructor:
+                            if (previous != null)
+                            {
+                                int index = ((IList<JToken>)current).IndexOf(previous);
 
                                 positions.Add(new JsonPosition(JsonContainerType.Array) { Position = index });
-                                break;
-                        }
+                            }
+                            break;
                     }
+
+                    previous = current;
                 }
+
+                positions.Reverse();
 
                 return JsonPosition.BuildPath(positions, null);
             }
@@ -233,7 +231,9 @@ namespace Newtonsoft.Json.Linq
         public void AddAfterSelf(object content)
         {
             if (_parent == null)
+            {
                 throw new InvalidOperationException("The parent is missing.");
+            }
 
             int index = _parent.IndexOfItem(this);
             _parent.AddInternal(index + 1, content, false);
@@ -246,7 +246,9 @@ namespace Newtonsoft.Json.Linq
         public void AddBeforeSelf(object content)
         {
             if (_parent == null)
+            {
                 throw new InvalidOperationException("The parent is missing.");
+            }
 
             int index = _parent.IndexOfItem(this);
             _parent.AddInternal(index, content, false);
@@ -285,7 +287,9 @@ namespace Newtonsoft.Json.Linq
         public IEnumerable<JToken> AfterSelf()
         {
             if (Parent == null)
+            {
                 yield break;
+            }
 
             for (JToken o = Next; o != null; o = o.Next)
             {
@@ -382,7 +386,9 @@ namespace Newtonsoft.Json.Linq
         public void Remove()
         {
             if (_parent == null)
+            {
                 throw new InvalidOperationException("The parent is missing.");
+            }
 
             _parent.RemoveItem(this);
         }
@@ -394,7 +400,9 @@ namespace Newtonsoft.Json.Linq
         public void Replace(JToken value)
         {
             if (_parent == null)
+            {
                 throw new InvalidOperationException("The parent is missing.");
+            }
 
             _parent.ReplaceItem(this, value);
         }
@@ -439,10 +447,14 @@ namespace Newtonsoft.Json.Linq
         private static JValue EnsureValue(JToken value)
         {
             if (value == null)
-                throw new ArgumentNullException("value");
+            {
+                throw new ArgumentNullException(nameof(value));
+            }
 
             if (value is JProperty)
+            {
                 value = ((JProperty)value).Value;
+            }
 
             JValue v = value as JValue;
 
@@ -451,10 +463,12 @@ namespace Newtonsoft.Json.Linq
 
         private static string GetType(JToken token)
         {
-            ValidationUtils.ArgumentNotNull(token, "token");
+            ValidationUtils.ArgumentNotNull(token, nameof(token));
 
             if (token is JProperty)
+            {
                 token = ((JProperty)token).Value;
+            }
 
             return token.Type.ToString();
         }
@@ -474,11 +488,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, BooleanTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to Boolean.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return Convert.ToBoolean((int)(BigInteger)v.Value);
+            }
 #endif
 
             return Convert.ToBoolean(v.Value, CultureInfo.InvariantCulture);
@@ -494,12 +512,18 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, DateTimeTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to DateTimeOffset.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
             if (v.Value is DateTimeOffset)
+            {
                 return (DateTimeOffset)v.Value;
+            }
             if (v.Value is string)
+            {
                 return DateTimeOffset.Parse((string)v.Value, CultureInfo.InvariantCulture);
+            }
             return new DateTimeOffset(Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture));
         }
 #endif
@@ -512,15 +536,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator bool?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, BooleanTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to Boolean.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return Convert.ToBoolean((int)(BigInteger)v.Value);
+            }
 #endif
 
             return (v.Value != null) ? (bool?)Convert.ToBoolean(v.Value, CultureInfo.InvariantCulture) : null;
@@ -535,11 +565,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to Int64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (long)(BigInteger)v.Value;
+            }
 #endif
 
             return Convert.ToInt64(v.Value, CultureInfo.InvariantCulture);
@@ -553,15 +587,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator DateTime?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, DateTimeTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to DateTime.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !NET20
             if (v.Value is DateTimeOffset)
+            {
                 return ((DateTimeOffset)v.Value).DateTime;
+            }
 #endif
 
             return (v.Value != null) ? (DateTime?)Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture) : null;
@@ -576,18 +616,28 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator DateTimeOffset?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, DateTimeTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to DateTimeOffset.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
             if (v.Value == null)
+            {
                 return null;
+            }
             if (v.Value is DateTimeOffset)
+            {
                 return (DateTimeOffset?)v.Value;
+            }
             if (v.Value is string)
+            {
                 return DateTimeOffset.Parse((string)v.Value, CultureInfo.InvariantCulture);
+            }
             return new DateTimeOffset(Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture));
         }
 #endif
@@ -600,15 +650,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator decimal?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to Decimal.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (decimal?)(BigInteger)v.Value;
+            }
 #endif
 
             return (v.Value != null) ? (decimal?)Convert.ToDecimal(v.Value, CultureInfo.InvariantCulture) : null;
@@ -622,15 +678,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator double?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to Double.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (double?)(BigInteger)v.Value;
+            }
 #endif
 
             return (v.Value != null) ? (double?)Convert.ToDouble(v.Value, CultureInfo.InvariantCulture) : null;
@@ -644,15 +706,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator char?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, CharTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to Char.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (char?)(BigInteger)v.Value;
+            }
 #endif
 
             return (v.Value != null) ? (char?)Convert.ToChar(v.Value, CultureInfo.InvariantCulture) : null;
@@ -667,11 +735,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to Int32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (int)(BigInteger)v.Value;
+            }
 #endif
 
             return Convert.ToInt32(v.Value, CultureInfo.InvariantCulture);
@@ -686,11 +758,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to Int16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (short)(BigInteger)v.Value;
+            }
 #endif
 
             return Convert.ToInt16(v.Value, CultureInfo.InvariantCulture);
@@ -706,11 +782,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to UInt16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (ushort)(BigInteger)v.Value;
+            }
 #endif
 
             return Convert.ToUInt16(v.Value, CultureInfo.InvariantCulture);
@@ -726,11 +806,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, CharTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to Char.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (char)(BigInteger)v.Value;
+            }
 #endif
 
             return Convert.ToChar(v.Value, CultureInfo.InvariantCulture);
@@ -745,11 +829,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to Byte.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (byte)(BigInteger)v.Value;
+            }
 #endif
 
             return Convert.ToByte(v.Value, CultureInfo.InvariantCulture);
@@ -765,11 +853,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to SByte.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (sbyte)(BigInteger)v.Value;
+            }
 #endif
 
             return Convert.ToSByte(v.Value, CultureInfo.InvariantCulture);
@@ -783,15 +875,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator int?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to Int32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (int?)(BigInteger)v.Value;
+            }
 #endif
 
             return (v.Value != null) ? (int?)Convert.ToInt32(v.Value, CultureInfo.InvariantCulture) : null;
@@ -805,15 +903,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator short?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to Int16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (short?)(BigInteger)v.Value;
+            }
 #endif
 
             return (v.Value != null) ? (short?)Convert.ToInt16(v.Value, CultureInfo.InvariantCulture) : null;
@@ -828,15 +932,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator ushort?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to UInt16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (ushort?)(BigInteger)v.Value;
+            }
 #endif
 
             return (v.Value != null) ? (ushort?)Convert.ToUInt16(v.Value, CultureInfo.InvariantCulture) : null;
@@ -850,15 +960,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator byte?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to Byte.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (byte?)(BigInteger)v.Value;
+            }
 #endif
 
             return (v.Value != null) ? (byte?)Convert.ToByte(v.Value, CultureInfo.InvariantCulture) : null;
@@ -873,15 +989,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator sbyte?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to SByte.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (sbyte?)(BigInteger)v.Value;
+            }
 #endif
 
             return (v.Value != null) ? (sbyte?)Convert.ToSByte(v.Value, CultureInfo.InvariantCulture) : null;
@@ -896,11 +1018,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, DateTimeTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to DateTime.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !NET20
             if (v.Value is DateTimeOffset)
+            {
                 return ((DateTimeOffset)v.Value).DateTime;
+            }
 #endif
 
             return Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture);
@@ -914,15 +1040,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator long?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to Int64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (long?)(BigInteger)v.Value;
+            }
 #endif
 
             return (v.Value != null) ? (long?)Convert.ToInt64(v.Value, CultureInfo.InvariantCulture) : null;
@@ -936,15 +1068,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator float?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to Single.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (float?)(BigInteger)v.Value;
+            }
 #endif
 
             return (v.Value != null) ? (float?)Convert.ToSingle(v.Value, CultureInfo.InvariantCulture) : null;
@@ -959,11 +1097,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to Decimal.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (decimal)(BigInteger)v.Value;
+            }
 #endif
 
             return Convert.ToDecimal(v.Value, CultureInfo.InvariantCulture);
@@ -978,15 +1120,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator uint?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to UInt32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (uint?)(BigInteger)v.Value;
+            }
 #endif
 
             return (v.Value != null) ? (uint?)Convert.ToUInt32(v.Value, CultureInfo.InvariantCulture) : null;
@@ -1001,15 +1149,21 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator ulong?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to UInt64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (ulong?)(BigInteger)v.Value;
+            }
 #endif
 
             return (v.Value != null) ? (ulong?)Convert.ToUInt64(v.Value, CultureInfo.InvariantCulture) : null;
@@ -1024,11 +1178,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to Double.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (double)(BigInteger)v.Value;
+            }
 #endif
 
             return Convert.ToDouble(v.Value, CultureInfo.InvariantCulture);
@@ -1043,11 +1201,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to Single.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (float)(BigInteger)v.Value;
+            }
 #endif
 
             return Convert.ToSingle(v.Value, CultureInfo.InvariantCulture);
@@ -1061,19 +1223,29 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator string(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, StringTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to String.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
             if (v.Value == null)
+            {
                 return null;
+            }
             if (v.Value is byte[])
+            {
                 return Convert.ToBase64String((byte[])v.Value);
+            }
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return ((BigInteger)v.Value).ToString(CultureInfo.InvariantCulture);
+            }
 #endif
 
             return Convert.ToString(v.Value, CultureInfo.InvariantCulture);
@@ -1089,11 +1261,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to UInt32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (uint)(BigInteger)v.Value;
+            }
 #endif
 
             return Convert.ToUInt32(v.Value, CultureInfo.InvariantCulture);
@@ -1109,11 +1285,15 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, NumberTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to UInt64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return (ulong)(BigInteger)v.Value;
+            }
 #endif
 
             return Convert.ToUInt64(v.Value, CultureInfo.InvariantCulture);
@@ -1127,21 +1307,31 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator byte[](JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, BytesTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to byte array.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
             if (v.Value is string)
+            {
                 return Convert.FromBase64String(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
+            }
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
             if (v.Value is BigInteger)
+            {
                 return ((BigInteger)v.Value).ToByteArray();
+            }
 #endif
 
             if (v.Value is byte[])
+            {
                 return (byte[])v.Value;
+            }
 
             throw new ArgumentException("Can not convert {0} to byte array.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
         }
@@ -1155,10 +1345,14 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, GuidTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to Guid.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
             if (v.Value is byte[])
+            {
                 return new Guid((byte[])v.Value);
+            }
 
             return (v.Value is Guid) ? (Guid)v.Value : new Guid(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
         }
@@ -1171,17 +1365,25 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator Guid?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, GuidTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to Guid.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
             if (v.Value == null)
+            {
                 return null;
+            }
 
             if (v.Value is byte[])
+            {
                 return new Guid((byte[])v.Value);
+            }
 
             return (v.Value is Guid) ? (Guid)v.Value : new Guid(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
         }
@@ -1195,7 +1397,9 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, TimeSpanTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to TimeSpan.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
             return (v.Value is TimeSpan) ? (TimeSpan)v.Value : ConvertUtils.ParseTimeSpan(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
         }
@@ -1208,14 +1412,20 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator TimeSpan?(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, TimeSpanTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to TimeSpan.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
             if (v.Value == null)
+            {
                 return null;
+            }
 
             return (v.Value is TimeSpan) ? (TimeSpan)v.Value : ConvertUtils.ParseTimeSpan(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
         }
@@ -1228,14 +1438,20 @@ namespace Newtonsoft.Json.Linq
         public static explicit operator Uri(JToken value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, UriTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to Uri.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
             if (v.Value == null)
+            {
                 return null;
+            }
 
             return (v.Value is Uri) ? (Uri)v.Value : new Uri(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
         }
@@ -1245,7 +1461,9 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, BigIntegerTypes, false))
+            {
                 throw new ArgumentException("Can not convert {0} to BigInteger.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
             return ConvertUtils.ToBigInteger(v.Value);
         }
@@ -1254,10 +1472,14 @@ namespace Newtonsoft.Json.Linq
         {
             JValue v = EnsureValue(value);
             if (v == null || !ValidateToken(v, BigIntegerTypes, true))
+            {
                 throw new ArgumentException("Can not convert {0} to BigInteger.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
+            }
 
             if (v.Value == null)
+            {
                 return null;
+            }
 
             return ConvertUtils.ToBigInteger(v.Value);
         }
@@ -1653,13 +1875,13 @@ namespace Newtonsoft.Json.Linq
         /// <returns>An <see cref="JsonReader"/> that can be used to read this token and its descendants.</returns>
         public JsonReader CreateReader()
         {
-            return new JTokenReader(this, Path);
+            return new JTokenReader(this);
         }
 
         internal static JToken FromObjectInternal(object o, JsonSerializer jsonSerializer)
         {
-            ValidationUtils.ArgumentNotNull(o, "o");
-            ValidationUtils.ArgumentNotNull(jsonSerializer, "jsonSerializer");
+            ValidationUtils.ArgumentNotNull(o, nameof(o));
+            ValidationUtils.ArgumentNotNull(jsonSerializer, nameof(jsonSerializer));
 
             JToken token;
             using (JTokenWriter jsonWriter = new JTokenWriter())
@@ -1718,21 +1940,22 @@ namespace Newtonsoft.Json.Linq
                 {
                     if (Type == JTokenType.String)
                     {
-                        Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType);
                         try
                         {
-                            return Enum.Parse(enumType, (string) this, true);
+                            // use serializer so JsonConverter(typeof(StringEnumConverter)) + EnumMemberAttributes are respected
+                            return ToObject(objectType, JsonSerializer.CreateDefault());
                         }
                         catch (Exception ex)
                         {
-                            throw new ArgumentException("Could not convert '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, (string) this, enumType.Name), ex);
+                            Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType);
+                            throw new ArgumentException("Could not convert '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, (string)this, enumType.Name), ex);
                         }
                     }
 
                     if (Type == JTokenType.Integer)
                     {
                         Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType);
-                        return Enum.ToObject(enumType, ((JValue) this).Value);
+                        return Enum.ToObject(enumType, ((JValue)this).Value);
                     }
                 }
 
@@ -1843,7 +2066,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>The new object created from the JSON value.</returns>
         public object ToObject(Type objectType, JsonSerializer jsonSerializer)
         {
-            ValidationUtils.ArgumentNotNull(jsonSerializer, "jsonSerializer");
+            ValidationUtils.ArgumentNotNull(jsonSerializer, nameof(jsonSerializer));
 
             using (JTokenReader jsonReader = new JTokenReader(this))
             {
@@ -1878,60 +2101,55 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public static JToken ReadFrom(JsonReader reader, JsonLoadSettings settings)
         {
-            ValidationUtils.ArgumentNotNull(reader, "reader");
+            ValidationUtils.ArgumentNotNull(reader, nameof(reader));
 
             if (reader.TokenType == JsonToken.None)
             {
-                if (!reader.Read())
+                bool hasContent = (settings != null && settings.CommentHandling == CommentHandling.Ignore)
+                    ? reader.ReadAndMoveToContent()
+                    : reader.Read();
+
+                if (!hasContent)
+                {
                     throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader.");
+                }
             }
 
-            while (true)
+            IJsonLineInfo lineInfo = reader as IJsonLineInfo;
+
+            switch (reader.TokenType)
             {
-                IJsonLineInfo lineInfo = reader as IJsonLineInfo;
-
-                switch (reader.TokenType)
-                {
-                    case JsonToken.StartObject:
-                        return JObject.Load(reader, settings);
-                    case JsonToken.StartArray:
-                        return JArray.Load(reader, settings);
-                    case JsonToken.StartConstructor:
-                        return JConstructor.Load(reader, settings);
-                    case JsonToken.PropertyName:
-                        return JProperty.Load(reader, settings);
-                    case JsonToken.String:
-                    case JsonToken.Integer:
-                    case JsonToken.Float:
-                    case JsonToken.Date:
-                    case JsonToken.Boolean:
-                    case JsonToken.Bytes:
-                        JValue v = new JValue(reader.Value);
-                        v.SetLineInfo(lineInfo, settings);
-                        return v;
-                    case JsonToken.Comment:
-                        if (settings != null && settings.CommentHandling == CommentHandling.Ignore)
-                        {
-                            if (!reader.Read())
-                                throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader.");
-
-                            continue;
-                        }
-
-                        v = JValue.CreateComment(reader.Value.ToString());
-                        v.SetLineInfo(lineInfo, settings);
-                        return v;
-                    case JsonToken.Null:
-                        v = JValue.CreateNull();
-                        v.SetLineInfo(lineInfo, settings);
-                        return v;
-                    case JsonToken.Undefined:
-                        v = JValue.CreateUndefined();
-                        v.SetLineInfo(lineInfo, settings);
-                        return v;
-                    default:
-                        throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
-                }
+                case JsonToken.StartObject:
+                    return JObject.Load(reader, settings);
+                case JsonToken.StartArray:
+                    return JArray.Load(reader, settings);
+                case JsonToken.StartConstructor:
+                    return JConstructor.Load(reader, settings);
+                case JsonToken.PropertyName:
+                    return JProperty.Load(reader, settings);
+                case JsonToken.String:
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                case JsonToken.Date:
+                case JsonToken.Boolean:
+                case JsonToken.Bytes:
+                    JValue v = new JValue(reader.Value);
+                    v.SetLineInfo(lineInfo, settings);
+                    return v;
+                case JsonToken.Comment:
+                    v = JValue.CreateComment(reader.Value.ToString());
+                    v.SetLineInfo(lineInfo, settings);
+                    return v;
+                case JsonToken.Null:
+                    v = JValue.CreateNull();
+                    v.SetLineInfo(lineInfo, settings);
+                    return v;
+                case JsonToken.Undefined:
+                    v = JValue.CreateUndefined();
+                    v.SetLineInfo(lineInfo, settings);
+                    return v;
+                default:
+                    throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader. Unexpected token: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
         }
 
@@ -1959,7 +2177,9 @@ namespace Newtonsoft.Json.Linq
                 JToken t = Load(reader, settings);
 
                 if (reader.Read() && reader.TokenType != JsonToken.Comment)
+                {
                     throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
+                }
 
                 return t;
             }
@@ -2038,7 +2258,9 @@ namespace Newtonsoft.Json.Linq
             {
                 LineInfoAnnotation annotation = Annotation<LineInfoAnnotation>();
                 if (annotation != null)
+                {
                     return annotation.LineNumber;
+                }
 
                 return 0;
             }
@@ -2050,7 +2272,9 @@ namespace Newtonsoft.Json.Linq
             {
                 LineInfoAnnotation annotation = Annotation<LineInfoAnnotation>();
                 if (annotation != null)
+                {
                     return annotation.LinePosition;
+                }
 
                 return 0;
             }
@@ -2084,7 +2308,9 @@ namespace Newtonsoft.Json.Linq
             foreach (JToken t in p.Evaluate(this, errorWhenNoMatch))
             {
                 if (token != null)
+                {
                     throw new JsonException("Path returned multiple tokens.");
+                }
 
                 token = t;
             }
@@ -2167,18 +2393,20 @@ namespace Newtonsoft.Json.Linq
         public void AddAnnotation(object annotation)
         {
             if (annotation == null)
-                throw new ArgumentNullException("annotation");
+            {
+                throw new ArgumentNullException(nameof(annotation));
+            }
 
             if (_annotations == null)
             {
-                _annotations = (annotation is object[]) ? new [] { annotation } : annotation;
+                _annotations = (annotation is object[]) ? new[] { annotation } : annotation;
             }
             else
             {
                 object[] annotations = _annotations as object[];
                 if (annotations == null)
                 {
-                    _annotations = new [] { _annotations, annotation };
+                    _annotations = new[] { _annotations, annotation };
                 }
                 else
                 {
@@ -2215,11 +2443,15 @@ namespace Newtonsoft.Json.Linq
                 {
                     object annotation = annotations[i];
                     if (annotation == null)
+                    {
                         break;
+                    }
 
                     T local = annotation as T;
                     if (local != null)
+                    {
                         return local;
+                    }
                 }
             }
 
@@ -2234,7 +2466,9 @@ namespace Newtonsoft.Json.Linq
         public object Annotation(Type type)
         {
             if (type == null)
-                throw new ArgumentNullException("type");
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
 
             if (_annotations != null)
             {
@@ -2242,7 +2476,9 @@ namespace Newtonsoft.Json.Linq
                 if (annotations == null)
                 {
                     if (type.IsInstanceOfType(_annotations))
+                    {
                         return _annotations;
+                    }
                 }
                 else
                 {
@@ -2250,10 +2486,14 @@ namespace Newtonsoft.Json.Linq
                     {
                         object o = annotations[i];
                         if (o == null)
+                        {
                             break;
+                        }
 
                         if (type.IsInstanceOfType(o))
+                        {
                             return o;
+                        }
                     }
                 }
             }
@@ -2269,7 +2509,9 @@ namespace Newtonsoft.Json.Linq
         public IEnumerable<T> Annotations<T>() where T : class
         {
             if (_annotations == null)
+            {
                 yield break;
+            }
 
             object[] annotations = _annotations as object[];
             if (annotations != null)
@@ -2278,18 +2520,24 @@ namespace Newtonsoft.Json.Linq
                 {
                     object o = annotations[i];
                     if (o == null)
+                    {
                         break;
+                    }
 
                     T casted = o as T;
                     if (casted != null)
+                    {
                         yield return casted;
+                    }
                 }
                 yield break;
             }
 
             T annotation = _annotations as T;
             if (annotation == null)
+            {
                 yield break;
+            }
 
             yield return annotation;
         }
@@ -2302,10 +2550,14 @@ namespace Newtonsoft.Json.Linq
         public IEnumerable<object> Annotations(Type type)
         {
             if (type == null)
-                throw new ArgumentNullException("type");
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
 
             if (_annotations == null)
+            {
                 yield break;
+            }
 
             object[] annotations = _annotations as object[];
             if (annotations != null)
@@ -2314,16 +2566,22 @@ namespace Newtonsoft.Json.Linq
                 {
                     object o = annotations[i];
                     if (o == null)
+                    {
                         break;
+                    }
 
                     if (type.IsInstanceOfType(o))
+                    {
                         yield return o;
+                    }
                 }
                 yield break;
             }
 
             if (!type.IsInstanceOfType(_annotations))
+            {
                 yield break;
+            }
 
             yield return _annotations;
         }
@@ -2340,7 +2598,9 @@ namespace Newtonsoft.Json.Linq
                 if (annotations == null)
                 {
                     if (_annotations is T)
+                    {
                         _annotations = null;
+                    }
                 }
                 else
                 {
@@ -2350,10 +2610,14 @@ namespace Newtonsoft.Json.Linq
                     {
                         object obj2 = annotations[index];
                         if (obj2 == null)
+                        {
                             break;
+                        }
 
                         if (!(obj2 is T))
+                        {
                             annotations[keepCount++] = obj2;
+                        }
 
                         index++;
                     }
@@ -2380,7 +2644,9 @@ namespace Newtonsoft.Json.Linq
         public void RemoveAnnotations(Type type)
         {
             if (type == null)
-                throw new ArgumentNullException("type");
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
 
             if (_annotations != null)
             {
@@ -2388,7 +2654,9 @@ namespace Newtonsoft.Json.Linq
                 if (annotations == null)
                 {
                     if (type.IsInstanceOfType(_annotations))
+                    {
                         _annotations = null;
+                    }
                 }
                 else
                 {
@@ -2398,10 +2666,14 @@ namespace Newtonsoft.Json.Linq
                     {
                         object o = annotations[index];
                         if (o == null)
+                        {
                             break;
+                        }
 
                         if (!type.IsInstanceOfType(o))
+                        {
                             annotations[keepCount++] = o;
+                        }
 
                         index++;
                     }

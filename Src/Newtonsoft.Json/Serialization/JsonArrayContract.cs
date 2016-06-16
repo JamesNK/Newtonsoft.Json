@@ -77,7 +77,9 @@ namespace Newtonsoft.Json.Serialization
             get
             {
                 if (_parameterizedCreator == null)
+                {
                     _parameterizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(_parameterizedConstructor);
+                }
 
                 return _parameterizedCreator;
             }
@@ -134,15 +136,23 @@ namespace Newtonsoft.Json.Serialization
             else if (typeof(IList).IsAssignableFrom(underlyingType))
             {
                 if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(ICollection<>), out _genericCollectionDefinitionType))
+                {
                     CollectionItemType = _genericCollectionDefinitionType.GetGenericArguments()[0];
+                }
                 else
+                {
                     CollectionItemType = ReflectionUtils.GetCollectionItemType(underlyingType);
+                }
 
                 if (underlyingType == typeof(IList))
+                {
                     CreatedType = typeof(List<object>);
+                }
 
                 if (CollectionItemType != null)
+                {
                     _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(underlyingType, CollectionItemType);
+                }
 
                 IsReadOnlyOrFixedSize = ReflectionUtils.InheritsGenericDefinition(underlyingType, typeof(ReadOnlyCollection<>));
                 canDeserialize = true;
@@ -153,11 +163,15 @@ namespace Newtonsoft.Json.Serialization
 
                 if (ReflectionUtils.IsGenericDefinition(underlyingType, typeof(ICollection<>))
                     || ReflectionUtils.IsGenericDefinition(underlyingType, typeof(IList<>)))
+                {
                     CreatedType = typeof(List<>).MakeGenericType(CollectionItemType);
+                }
 
-#if !(NET20 || NET35 || PORTABLE40)
+#if !(NET20 || NET35)
                 if (ReflectionUtils.IsGenericDefinition(underlyingType, typeof(ISet<>)))
+                {
                     CreatedType = typeof(HashSet<>).MakeGenericType(CollectionItemType);
+                }
 #endif
 
                 _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(underlyingType, CollectionItemType);
@@ -171,7 +185,9 @@ namespace Newtonsoft.Json.Serialization
 
                 if (ReflectionUtils.IsGenericDefinition(underlyingType, typeof(IReadOnlyCollection<>))
                     || ReflectionUtils.IsGenericDefinition(underlyingType, typeof(IReadOnlyList<>)))
+                {
                     CreatedType = typeof(ReadOnlyCollection<>).MakeGenericType(CollectionItemType);
+                }
 
                 _genericCollectionDefinitionType = typeof(List<>).MakeGenericType(CollectionItemType);
                 _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(CreatedType, CollectionItemType);
@@ -184,7 +200,9 @@ namespace Newtonsoft.Json.Serialization
                 CollectionItemType = tempCollectionType.GetGenericArguments()[0];
 
                 if (ReflectionUtils.IsGenericDefinition(UnderlyingType, typeof(IEnumerable<>)))
+                {
                     CreatedType = typeof(List<>).MakeGenericType(CollectionItemType);
+                }
 
                 _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(underlyingType, CollectionItemType);
 
@@ -258,9 +276,13 @@ namespace Newtonsoft.Json.Serialization
 
                 if (ReflectionUtils.InheritsGenericDefinition(_genericCollectionDefinitionType, typeof(List<>))
                     || _genericCollectionDefinitionType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                {
                     constructorArgument = typeof(ICollection<>).MakeGenericType(CollectionItemType);
+                }
                 else
+                {
                     constructorArgument = _genericCollectionDefinitionType;
+                }
 
                 ConstructorInfo genericWrapperConstructor = _genericWrapperType.GetConstructor(new[] { constructorArgument });
                 _genericWrapperCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(genericWrapperConstructor);

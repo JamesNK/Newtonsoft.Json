@@ -45,7 +45,9 @@ namespace Newtonsoft.Json.Linq
             public IEnumerator<JToken> GetEnumerator()
             {
                 if (_token != null)
+                {
                     yield return _token;
+                }
             }
 
             IEnumerator IEnumerable.GetEnumerator()
@@ -71,7 +73,9 @@ namespace Newtonsoft.Json.Linq
             public void CopyTo(JToken[] array, int arrayIndex)
             {
                 if (_token != null)
+                {
                     array[arrayIndex] = _token;
+                }
             }
 
             public bool Remove(JToken item)
@@ -102,13 +106,17 @@ namespace Newtonsoft.Json.Linq
             public void Insert(int index, JToken item)
             {
                 if (index == 0)
+                {
                     _token = item;
+                }
             }
 
             public void RemoveAt(int index)
             {
                 if (index == 0)
+                {
                     _token = null;
+                }
             }
 
             public JToken this[int index]
@@ -117,7 +125,9 @@ namespace Newtonsoft.Json.Linq
                 set
                 {
                     if (index == 0)
+                    {
                         _token = value;
+                    }
                 }
             }
         }
@@ -183,7 +193,9 @@ namespace Newtonsoft.Json.Linq
         internal override JToken GetItem(int index)
         {
             if (index != 0)
+            {
                 throw new ArgumentOutOfRangeException();
+            }
 
             return Value;
         }
@@ -191,18 +203,26 @@ namespace Newtonsoft.Json.Linq
         internal override void SetItem(int index, JToken item)
         {
             if (index != 0)
+            {
                 throw new ArgumentOutOfRangeException();
+            }
 
             if (IsTokenUnchanged(Value, item))
+            {
                 return;
+            }
 
             if (Parent != null)
+            {
                 ((JObject)Parent).InternalPropertyChanging(this);
+            }
 
             base.SetItem(0, item);
 
             if (Parent != null)
+            {
                 ((JObject)Parent).InternalPropertyChanged(this);
+            }
         }
 
         internal override bool RemoveItem(JToken item)
@@ -215,14 +235,23 @@ namespace Newtonsoft.Json.Linq
             throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
         }
 
+        internal override int IndexOfItem(JToken item)
+        {
+            return _content.IndexOf(item);
+        }
+
         internal override void InsertItem(int index, JToken item, bool skipParentCheck)
         {
             // don't add comments to JProperty
             if (item != null && item.Type == JTokenType.Comment)
+            {
                 return;
+            }
 
             if (Value != null)
+            {
                 throw new JsonException("{0} cannot have multiple values.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
+            }
 
             base.InsertItem(0, item, false);
         }
@@ -236,10 +265,14 @@ namespace Newtonsoft.Json.Linq
         {
             JProperty p = content as JProperty;
             if (p == null)
+            {
                 return;
+            }
 
             if (p.Value != null && p.Value.Type != JTokenType.Null)
+            {
                 Value = p.Value;
+            }
         }
 
         internal override void ClearItems()
@@ -271,7 +304,7 @@ namespace Newtonsoft.Json.Linq
         internal JProperty(string name)
         {
             // called from JTokenWriter
-            ValidationUtils.ArgumentNotNull(name, "name");
+            ValidationUtils.ArgumentNotNull(name, nameof(name));
 
             _name = name;
         }
@@ -293,7 +326,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="content">The property content.</param>
         public JProperty(string name, object content)
         {
-            ValidationUtils.ArgumentNotNull(name, "name");
+            ValidationUtils.ArgumentNotNull(name, nameof(name));
 
             _name = name;
 
@@ -313,9 +346,13 @@ namespace Newtonsoft.Json.Linq
 
             JToken value = Value;
             if (value != null)
+            {
                 value.WriteTo(writer, converters);
+            }
             else
+            {
                 writer.WriteNull();
+            }
         }
 
         internal override int GetDeepHashCode()
@@ -345,16 +382,17 @@ namespace Newtonsoft.Json.Linq
             if (reader.TokenType == JsonToken.None)
             {
                 if (!reader.Read())
+                {
                     throw JsonReaderException.Create(reader, "Error reading JProperty from JsonReader.");
+                }
             }
 
-            while (reader.TokenType == JsonToken.Comment)
-            {
-                reader.Read();
-            }
+            reader.MoveToContent();
 
             if (reader.TokenType != JsonToken.PropertyName)
+            {
                 throw JsonReaderException.Create(reader, "Error reading JProperty from JsonReader. Current JsonReader item is not a property: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+            }
 
             JProperty p = new JProperty((string)reader.Value);
             p.SetLineInfo(reader as IJsonLineInfo, settings);

@@ -46,6 +46,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -60,6 +61,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public class B
         {
             public A A { get; set; }
+
             public virtual bool ShouldSerializeA()
             {
                 return false;
@@ -83,26 +85,33 @@ namespace Newtonsoft.Json.Tests.Serialization
                 myBar = new Bar1()
                 {
                     name = Guid.NewGuid().ToString(),
-                    myBaz = new Baz1[] { 
-						new Baz1(){
-							name = Guid.NewGuid().ToString(),
-							myFrob = new Frob1[]{
-								new Frob1{name = Guid.NewGuid().ToString()}
-							}
-						},
-						new Baz1(){
-							name = Guid.NewGuid().ToString(),
-							myFrob = new Frob1[]{
-								new Frob1{name = Guid.NewGuid().ToString()}
-							}
-						},
-						new Baz1(){
-							name = Guid.NewGuid().ToString(),
-							myFrob = new Frob1[]{
-								new Frob1{name = Guid.NewGuid().ToString()}
-							}
-						},
-					}
+                    myBaz = new Baz1[]
+                    {
+                        new Baz1()
+                        {
+                            name = Guid.NewGuid().ToString(),
+                            myFrob = new Frob1[]
+                            {
+                                new Frob1 { name = Guid.NewGuid().ToString() }
+                            }
+                        },
+                        new Baz1()
+                        {
+                            name = Guid.NewGuid().ToString(),
+                            myFrob = new Frob1[]
+                            {
+                                new Frob1 { name = Guid.NewGuid().ToString() }
+                            }
+                        },
+                        new Baz1()
+                        {
+                            name = Guid.NewGuid().ToString(),
+                            myFrob = new Frob1[]
+                            {
+                                new Frob1 { name = Guid.NewGuid().ToString() }
+                            }
+                        },
+                    }
                 }
             };
 
@@ -511,26 +520,19 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class Foo1
     {
         private Bar1 myBarField;
+
         public Bar1 myBar
         {
-            get
-            {
-                return myBarField;
-            }
+            get { return myBarField; }
             set { myBarField = value; }
         }
 
         private string nameField;
+
         public string name
         {
-            get
-            {
-                return nameField;
-            }
-            set
-            {
-                nameField = value;
-            }
+            get { return nameField; }
+            set { nameField = value; }
         }
 
         public virtual bool ShouldSerializemyBar()
@@ -547,29 +549,22 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class Bar1
     {
         [JsonIgnore]
-        public bool ShouldSerializemyBazCalled { get; set;}
+        public bool ShouldSerializemyBazCalled { get; set; }
 
         private Baz1[] myBazField;
+
         public Baz1[] myBaz
         {
-            get
-            {
-                return myBazField;
-            }
+            get { return myBazField; }
             set { myBazField = value; }
         }
 
         private string nameField;
+
         public string name
         {
-            get
-            {
-                return nameField;
-            }
-            set
-            {
-                nameField = value;
-            }
+            get { return nameField; }
+            set { nameField = value; }
         }
 
         public virtual bool ShouldSerializemyBaz()
@@ -587,22 +582,18 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class Baz1
     {
         private Frob1[] myFrobField;
+
         public Frob1[] myFrob
         {
-            get
-            {
-                return myFrobField;
-            }
+            get { return myFrobField; }
             set { myFrobField = value; }
         }
 
         private string nameField;
+
         public string name
         {
-            get
-            {
-                return nameField;
-            }
+            get { return nameField; }
             set { nameField = value; }
         }
 
@@ -620,12 +611,10 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class Frob1
     {
         private string nameField;
+
         public string name
         {
-            get
-            {
-                return nameField;
-            }
+            get { return nameField; }
             set { nameField = value; }
         }
 
@@ -647,10 +636,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             if (shouldDeserializeMethodInfo != null)
             {
-                property.ShouldDeserialize = o =>
-                {
-                    return (bool)shouldDeserializeMethodInfo.Invoke(o, null);
-                };
+                property.ShouldDeserialize = o => { return (bool)shouldDeserializeMethodInfo.Invoke(o, null); };
             }
 
             return property;
@@ -660,7 +646,8 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class ShouldDeserializeTestClass
     {
         [JsonExtensionData]
-        public IDictionary<string, JToken> ExtensionData { get; set; } 
+        public IDictionary<string, JToken> ExtensionData { get; set; }
+
         public bool HasName { get; set; }
         public string Name { get; set; }
 

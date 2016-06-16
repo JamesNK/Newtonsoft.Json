@@ -127,16 +127,17 @@ namespace Newtonsoft.Json.Linq
             if (reader.TokenType == JsonToken.None)
             {
                 if (!reader.Read())
+                {
                     throw JsonReaderException.Create(reader, "Error reading JArray from JsonReader.");
+                }
             }
 
-            while (reader.TokenType == JsonToken.Comment)
-            {
-                reader.Read();
-            }
+            reader.MoveToContent();
 
             if (reader.TokenType != JsonToken.StartArray)
+            {
                 throw JsonReaderException.Create(reader, "Error reading JArray from JsonReader. Current JsonReader item is not an array: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+            }
 
             JArray a = new JArray();
             a.SetLineInfo(reader as IJsonLineInfo, settings);
@@ -176,7 +177,9 @@ namespace Newtonsoft.Json.Linq
                 JArray a = Load(reader, settings);
 
                 if (reader.Read() && reader.TokenType != JsonToken.Comment)
+                {
                     throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
+                }
 
                 return a;
             }
@@ -203,7 +206,9 @@ namespace Newtonsoft.Json.Linq
             JToken token = FromObjectInternal(o, jsonSerializer);
 
             if (token.Type != JTokenType.Array)
+            {
                 throw new ArgumentException("Object serialized to {0}. JArray instance expected.".FormatWith(CultureInfo.InvariantCulture, token.Type));
+            }
 
             return (JArray)token;
         }
@@ -233,7 +238,7 @@ namespace Newtonsoft.Json.Linq
         {
             get
             {
-                ValidationUtils.ArgumentNotNull(key, "o");
+                ValidationUtils.ArgumentNotNull(key, nameof(key));
 
                 if (!(key is int))
                 {
@@ -244,7 +249,7 @@ namespace Newtonsoft.Json.Linq
             }
             set
             {
-                ValidationUtils.ArgumentNotNull(key, "o");
+                ValidationUtils.ArgumentNotNull(key, nameof(key));
 
                 if (!(key is int))
                 {
@@ -265,13 +270,20 @@ namespace Newtonsoft.Json.Linq
             set { SetItem(index, value); }
         }
 
+        internal override int IndexOfItem(JToken item)
+        {
+            return _values.IndexOfReference(item);
+        }
+
         internal override void MergeItem(object content, JsonMergeSettings settings)
         {
             IEnumerable a = (IsMultiContent(content) || content is JArray)
                 ? (IEnumerable)content
                 : null;
             if (a == null)
+            {
                 return;
+            }
 
             MergeEnumerableContent(this, a, settings);
         }

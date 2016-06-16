@@ -48,14 +48,23 @@ namespace Newtonsoft.Json.Linq
             get { return _values; }
         }
 
+        internal override int IndexOfItem(JToken item)
+        {
+            return _values.IndexOfReference(item);
+        }
+
         internal override void MergeItem(object content, JsonMergeSettings settings)
         {
             JConstructor c = content as JConstructor;
             if (c == null)
+            {
                 return;
+            }
 
             if (c.Name != null)
+            {
                 Name = c.Name;
+            }
             MergeEnumerableContent(this, c, settings);
         }
 
@@ -122,7 +131,15 @@ namespace Newtonsoft.Json.Linq
         /// <param name="name">The constructor name.</param>
         public JConstructor(string name)
         {
-            ValidationUtils.ArgumentNotNullOrEmpty(name, "name");
+            if (name == null)
+            {
+                throw new ArgumentNullException(nameof(name));
+            }
+
+            if (name.Length == 0)
+            {
+                throw new ArgumentException("Constructor name cannot be empty.", nameof(name));
+            }
 
             _name = name;
         }
@@ -163,19 +180,23 @@ namespace Newtonsoft.Json.Linq
         {
             get
             {
-                ValidationUtils.ArgumentNotNull(key, "o");
+                ValidationUtils.ArgumentNotNull(key, nameof(key));
 
                 if (!(key is int))
+                {
                     throw new ArgumentException("Accessed JConstructor values with invalid key value: {0}. Argument position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                }
 
                 return GetItem((int)key);
             }
             set
             {
-                ValidationUtils.ArgumentNotNull(key, "o");
+                ValidationUtils.ArgumentNotNull(key, nameof(key));
 
                 if (!(key is int))
+                {
                     throw new ArgumentException("Set JConstructor values with invalid key value: {0}. Argument position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                }
 
                 SetItem((int)key, value);
             }
@@ -208,16 +229,17 @@ namespace Newtonsoft.Json.Linq
             if (reader.TokenType == JsonToken.None)
             {
                 if (!reader.Read())
+                {
                     throw JsonReaderException.Create(reader, "Error reading JConstructor from JsonReader.");
+                }
             }
 
-            while (reader.TokenType == JsonToken.Comment)
-            {
-                reader.Read();
-            }
+            reader.MoveToContent();
 
             if (reader.TokenType != JsonToken.StartConstructor)
+            {
                 throw JsonReaderException.Create(reader, "Error reading JConstructor from JsonReader. Current JsonReader item is not a constructor: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+            }
 
             JConstructor c = new JConstructor((string)reader.Value);
             c.SetLineInfo(reader as IJsonLineInfo, settings);

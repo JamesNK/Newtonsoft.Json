@@ -51,9 +51,13 @@ namespace Newtonsoft.Json.Converters
 
             BsonWriter bsonWriter = writer as BsonWriter;
             if (bsonWriter != null)
+            {
                 WriteBson(bsonWriter, regex);
+            }
             else
+            {
                 WriteJson(writer, regex, serializer);
+            }
         }
 
         private bool HasFlag(RegexOptions options, RegexOptions flag)
@@ -73,18 +77,26 @@ namespace Newtonsoft.Json.Converters
             string options = null;
 
             if (HasFlag(regex.Options, RegexOptions.IgnoreCase))
+            {
                 options += "i";
+            }
 
             if (HasFlag(regex.Options, RegexOptions.Multiline))
+            {
                 options += "m";
+            }
 
             if (HasFlag(regex.Options, RegexOptions.Singleline))
+            {
                 options += "s";
+            }
 
             options += "u";
 
             if (HasFlag(regex.Options, RegexOptions.ExplicitCapture))
+            {
                 options += "x";
+            }
 
             writer.WriteRegex(regex.ToString(), options);
         }
@@ -112,10 +124,14 @@ namespace Newtonsoft.Json.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.StartObject)
+            {
                 return ReadRegexObject(reader, serializer);
+            }
 
             if (reader.TokenType == JsonToken.String)
+            {
                 return ReadRegexString(reader);
+            }
 
             throw JsonSerializationException.Create(reader, "Unexpected token when reading Regex.");
         }
@@ -164,20 +180,30 @@ namespace Newtonsoft.Json.Converters
                         string propertyName = reader.Value.ToString();
 
                         if (!reader.Read())
+                        {
                             throw JsonSerializationException.Create(reader, "Unexpected end when reading Regex.");
+                        }
 
                         if (string.Equals(propertyName, PatternName, StringComparison.OrdinalIgnoreCase))
+                        {
                             pattern = (string)reader.Value;
+                        }
                         else if (string.Equals(propertyName, OptionsName, StringComparison.OrdinalIgnoreCase))
+                        {
                             options = serializer.Deserialize<RegexOptions>(reader);
+                        }
                         else
+                        {
                             reader.Skip();
+                        }
                         break;
                     case JsonToken.Comment:
                         break;
                     case JsonToken.EndObject:
                         if (pattern == null)
+                        {
                             throw JsonSerializationException.Create(reader, "Error deserializing Regex. No pattern found.");
+                        }
 
                         return new Regex(pattern, options ?? RegexOptions.None);
                 }

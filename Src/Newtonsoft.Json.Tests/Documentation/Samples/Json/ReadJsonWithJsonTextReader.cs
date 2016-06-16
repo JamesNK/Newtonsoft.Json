@@ -33,6 +33,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
@@ -59,9 +60,13 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             while (reader.Read())
             {
                 if (reader.Value != null)
+                {
                     Console.WriteLine("Token: {0}, Value: {1}", reader.TokenType, reader.Value);
+                }
                 else
+                {
                     Console.WriteLine("Token: {0}", reader.TokenType);
+                }
             }
 
             // Token: StartObject

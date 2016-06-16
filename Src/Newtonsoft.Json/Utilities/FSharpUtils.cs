@@ -88,10 +88,10 @@ namespace Newtonsoft.Json.Utilities
 
                         Type fsharpType = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.FSharpType");
 
-                        MethodInfo isUnionMethodInfo = fsharpType.GetMethod("IsUnion", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
+                        MethodInfo isUnionMethodInfo = GetMethodWithNonPublicFallback(fsharpType, "IsUnion", BindingFlags.Public | BindingFlags.Static);
                         IsUnion = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(isUnionMethodInfo);
 
-                        MethodInfo getUnionCasesMethodInfo = fsharpType.GetMethod("GetUnionCases", BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic);
+                        MethodInfo getUnionCasesMethodInfo = GetMethodWithNonPublicFallback(fsharpType, "GetUnionCases", BindingFlags.Public | BindingFlags.Static);
                         GetUnionCases = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(getUnionCasesMethodInfo);
 
                         Type fsharpValue = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.FSharpValue");
@@ -121,9 +121,25 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
+        private static MethodInfo GetMethodWithNonPublicFallback(Type type, string methodName, BindingFlags bindingFlags)
+        {
+            MethodInfo methodInfo = type.GetMethod(methodName, bindingFlags);
+
+            // if no matching method then attempt to find with nonpublic flag
+            // this is required because in WinApps some methods are private but always using NonPublic breaks medium trust
+            // https://github.com/JamesNK/Newtonsoft.Json/pull/649
+            // https://github.com/JamesNK/Newtonsoft.Json/issues/821
+            if (methodInfo == null && (bindingFlags & BindingFlags.NonPublic) != BindingFlags.NonPublic)
+            {
+                methodInfo = type.GetMethod(methodName, bindingFlags | BindingFlags.NonPublic);
+            }
+
+            return methodInfo;
+        }
+
         private static MethodCall<object, object> CreateFSharpFuncCall(Type type, string methodName)
         {
-            MethodInfo innerMethodInfo = type.GetMethod(methodName, BindingFlags.Public | BindingFlags.Static | BindingFlags.NonPublic );
+            MethodInfo innerMethodInfo = GetMethodWithNonPublicFallback(type, methodName, BindingFlags.Public | BindingFlags.Static);
             MethodInfo invokeFunc = innerMethodInfo.ReturnType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
 
             MethodCall<object, object> call = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(innerMethodInfo);
@@ -149,7 +165,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static ObjectConstructor<object> CreateMap(Type keyType, Type valueType)
         {
-            MethodInfo creatorDefinition = typeof (FSharpUtils).GetMethod("BuildMapCreator");
+            MethodInfo creatorDefinition = typeof(FSharpUtils).GetMethod("BuildMapCreator");
 
             MethodInfo creatorGeneric = creatorDefinition.MakeGenericMethod(keyType, valueType);
 
@@ -175,4 +191,5 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 }
+
 #endif

@@ -1,4 +1,4 @@
-#region License
+﻿#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,23 +23,20 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-    public class PrivateConstructorWithPublicParametizedConstructorTestClass
+    public class PublicParameterizedConstructorTestClass
     {
-        public string Name { get; set; }
-        public int Age { get; set; }
+        private readonly string _name;
 
-        private PrivateConstructorWithPublicParametizedConstructorTestClass()
+        public PublicParameterizedConstructorTestClass(string name)
         {
-            Age = 1;
+            _name = name;
         }
 
-        public PrivateConstructorWithPublicParametizedConstructorTestClass(string dummy)
+        public string Name
         {
-            throw new Exception("Should never get here.");
+            get { return _name; }
         }
     }
 }

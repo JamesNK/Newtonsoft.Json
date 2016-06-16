@@ -1,7 +1,6 @@
 Json.NET
 
-http://james.newtonking.com/json
-http://www.codeplex.com/json
+http://www.newtonsoft.com/json
 https://github.com/JamesNK/Newtonsoft.Json
 
 
@@ -19,7 +18,7 @@ Json.NET is a popular high-performance JSON framework for .NET
 
 Documentation:
 
-http://james.newtonking.com/json/help/
+http://www.newtonsoft.com/json/help/
 
 
 Versions:
@@ -36,13 +35,10 @@ Json.NET has different libraries for the various .NET Framework versions.
   .NET 3.5
 
 -Net20:
-  .NET 2.0
-
--WinRT:
-  Windows 8 Store
+  .NET 2.0, Unity
 
 -Portable45:
-  .NET 4.5, Windows Phone 8, Windows 8 Store, ASP.NET CoreCLR
+  .NET 4.5, Windows Phone 8, Windows 8 Store, .NET Core
 
 -Portable40:
   .NET 4.0, Windows Phone 8, Windows 8 Store, Silverlight 5, MonoTouch, MonoDroid

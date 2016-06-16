@@ -25,8 +25,8 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
- #if !(NET35 || NET20)
-   [JsonObject(MemberSerialization.OptIn)]
+#if !(NET35 || NET20)
+    [JsonObject(MemberSerialization.OptIn)]
     public class Component
     {
         [JsonIgnore] // Ignore circular reference 

@@ -50,10 +50,10 @@ namespace Newtonsoft.Json.Tests.TestObjects
     internal class MyInterfaceConverter : TypeConverter
     {
         private readonly List<IMyInterface> _writers = new List<IMyInterface>
-            {
-                new ConsoleWriter(),
-                new TraceWriter()
-            };
+        {
+            new ConsoleWriter(),
+            new TraceWriter()
+        };
 
         public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
         {
@@ -68,7 +68,9 @@ namespace Newtonsoft.Json.Tests.TestObjects
         public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
         {
             if (value == null)
+            {
                 return null;
+            }
 
             return (from w in _writers where w.Name == value.ToString() select w).FirstOrDefault();
         }
@@ -77,7 +79,9 @@ namespace Newtonsoft.Json.Tests.TestObjects
             Type destinationType)
         {
             if (value == null)
+            {
                 return null;
+            }
             return ((IMyInterface)value).Name;
         }
     }
@@ -130,11 +134,11 @@ namespace Newtonsoft.Json.Tests.TestObjects
 
             return
                 (from c in converters
-                 let converter =
-                     (TypeConverter)Activator.CreateInstance(Type.GetType(((TypeConverterAttribute)c).ConverterTypeName))
-                 where converter.CanConvertFrom(typeof(string))
-                       && converter.CanConvertTo(typeof(string))
-                 select converter)
+                    let converter =
+                        (TypeConverter)Activator.CreateInstance(Type.GetType(((TypeConverterAttribute)c).ConverterTypeName))
+                    where converter.CanConvertFrom(typeof(string))
+                          && converter.CanConvertTo(typeof(string))
+                    select converter)
                     .FirstOrDefault();
         }
 

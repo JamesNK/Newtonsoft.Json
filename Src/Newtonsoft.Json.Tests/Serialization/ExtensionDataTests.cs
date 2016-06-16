@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -38,6 +39,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -372,6 +374,40 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(7, c.ExtensionData.Count);
         }
 
+        [JsonObject(MemberSerialization.OptIn)]
+        public class MyClass
+        {
+            public int NotForJson { get; set; }
+
+            [JsonPropertyAttribute(Required = Required.Always)]
+            public int ForJson { get; set; }
+
+            [JsonExtensionData(ReadData = true, WriteData = true)]
+            public IDictionary<String, JToken> ExtraInfoJson { get; set; }
+
+            public MyClass(MyClass other = null)
+            {
+                if (other != null)
+                {
+                    // copy construct
+                }
+            }
+        }
+
+        [Test]
+        public void PopulateWithExtensionData()
+        {
+            string jsonStirng = @"{ ""ForJson"" : 33 , ""extra1"" : 11, ""extra2"" : 22 }";
+
+            MyClass c = new MyClass();
+
+            JsonConvert.PopulateObject(jsonStirng, c);
+
+            Assert.AreEqual(2, c.ExtraInfoJson.Count);
+            Assert.AreEqual(11, (int)c.ExtraInfoJson["extra1"]);
+            Assert.AreEqual(22, (int)c.ExtraInfoJson["extra2"]);
+        }
+
         public class MultipleExtensionDataAttributesTestClass
         {
             public string Name { get; set; }
@@ -563,10 +599,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             JObject bizzaroC2 = (JObject)c2.ExtensionData["Self"];
 
-            Assert.AreEqual("Name!", (string)bizzaroC2["Name"]);
-            Assert.AreEqual(1, (int)bizzaroC2["Test"]);
-
-            Assert.AreEqual(1, (int)c2.ExtensionData["Test"]);
+            Assert.AreEqual("1", (string)bizzaroC2["$ref"]);
         }
 
         [Test]
@@ -829,11 +862,70 @@ namespace Newtonsoft.Json.Tests.Serialization
         public void SerializeExtensionData_NoGetter()
         {
             ExceptionAssert.Throws<JsonException>(
-                () =>
-                {
-                    JsonConvert.SerializeObject(new DocNoGetter());
-                },
+                () => { JsonConvert.SerializeObject(new DocNoGetter()); },
                 "Invalid extension data attribute on 'Newtonsoft.Json.Tests.Serialization.ExtensionDataTests+DocNoGetter'. Member 'Content' must have a getter.");
+        }
+
+        public class Item
+        {
+            [JsonExtensionData]
+            public IDictionary<string, JToken> ExtensionData;
+
+            public IEnumerable<string> Foo
+            {
+                get { yield return "foo"; yield return "bar"; }
+            }
+        }
+
+        [Test]
+        public void Deserialize_WriteJsonDirectlyToJToken()
+        {
+            JsonSerializer jsonSerializer = new JsonSerializer
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            };
+            StringWriter stringWriter = new StringWriter();
+            jsonSerializer.Serialize(stringWriter, new Item());
+            string str = stringWriter.GetStringBuilder().ToString();
+            Item deserialize = jsonSerializer.Deserialize<Item>(new JsonTextReader(new StringReader(str)));
+
+            JToken value = deserialize.ExtensionData["Foo"]["$type"];
+            Assert.AreEqual(JTokenType.String, value.Type);
+            Assert.AreEqual("foo", (string)deserialize.ExtensionData["Foo"]["$values"][0]);
+            Assert.AreEqual("bar", (string)deserialize.ExtensionData["Foo"]["$values"][1]);
+        }
+
+        public class ItemWithConstructor
+        {
+            [JsonExtensionData]
+            public IDictionary<string, JToken> ExtensionData;
+
+            public ItemWithConstructor(string temp)
+            {
+            }
+
+            public IEnumerable<string> Foo
+            {
+                get { yield return "foo"; yield return "bar"; }
+            }
+        }
+
+        [Test]
+        public void DeserializeWithConstructor_WriteJsonDirectlyToJToken()
+        {
+            JsonSerializer jsonSerializer = new JsonSerializer
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            };
+            StringWriter stringWriter = new StringWriter();
+            jsonSerializer.Serialize(stringWriter, new ItemWithConstructor(null));
+            string str = stringWriter.GetStringBuilder().ToString();
+            Item deserialize = jsonSerializer.Deserialize<Item>(new JsonTextReader(new StringReader(str)));
+
+            JToken value = deserialize.ExtensionData["Foo"]["$type"];
+            Assert.AreEqual(JTokenType.String, value.Type);
+            Assert.AreEqual("foo", (string)deserialize.ExtensionData["Foo"]["$values"][0]);
+            Assert.AreEqual("bar", (string)deserialize.ExtensionData["Foo"]["$values"][1]);
         }
     }
 }

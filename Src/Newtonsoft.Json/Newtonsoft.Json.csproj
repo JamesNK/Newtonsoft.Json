@@ -81,7 +81,7 @@
     <Compile Include="FloatFormatHandling.cs" />
     <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="Formatting.cs" />
-    <Compile Include="IJsonBufferPool.cs" />
+    <Compile Include="IArrayPool.cs" />
     <Compile Include="IJsonLineInfo.cs" />
     <Compile Include="JsonArrayAttribute.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
@@ -140,6 +140,7 @@
     <Compile Include="Linq\JValue.cs" />
     <Compile Include="Linq\JsonLoadSettings.cs" />
     <Compile Include="Linq\MergeArrayHandling.cs" />
+    <Compile Include="Linq\MergeNullValueHandling.cs" />
     <Compile Include="MemberSerialization.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
     <Compile Include="MissingMemberHandling.cs" />
@@ -167,8 +168,11 @@
     <Compile Include="Schema\ValidationEventHandler.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
+    <Compile Include="Serialization\SnakeCaseNamingStrategy.cs" />
+    <Compile Include="Serialization\CamelCaseNamingStrategy.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolver.cs" />
     <Compile Include="Serialization\DefaultContractResolver.cs" />
+    <Compile Include="Serialization\DefaultNamingStrategy.cs" />
     <Compile Include="Serialization\DefaultReferenceResolver.cs" />
     <Compile Include="Serialization\DefaultSerializationBinder.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
@@ -178,6 +182,7 @@
     <Compile Include="Serialization\ExpressionValueProvider.cs" />
     <Compile Include="Serialization\IAttributeProvider.cs" />
     <Compile Include="Serialization\IContractResolver.cs" />
+    <Compile Include="Serialization\NamingStrategy.cs" />
     <Compile Include="Serialization\IReferenceResolver.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />
     <Compile Include="Serialization\IValueProvider.cs" />

@@ -1,13 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+
 <edmx:Edmx Version="2.0" xmlns:edmx="http://schemas.microsoft.com/ado/2008/10/edmx">
   <!-- EF Runtime content -->
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="DataServicesTestDatabaseModel.Store" Alias="Self" Provider="System.Data.SqlClient" ProviderManifestToken="2005" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
+      <Schema Namespace="DataServicesTestDatabaseModel.Store" Alias="Self" Provider="System.Data.SqlClient"
+              ProviderManifestToken="2005" xmlns="http://schemas.microsoft.com/ado/2009/02/edm/ssdl">
         <EntityContainer Name="DataServicesTestDatabaseModelStoreContainer">
-          <EntitySet Name="File" EntityType="DataServicesTestDatabaseModel.Store.File" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
-          <EntitySet Name="Folder" EntityType="DataServicesTestDatabaseModel.Store.Folder" store:Type="Tables" Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="File" EntityType="DataServicesTestDatabaseModel.Store.File" store:Type="Tables" Schema="dbo"
+                     xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
+          <EntitySet Name="Folder" EntityType="DataServicesTestDatabaseModel.Store.Folder" store:Type="Tables"
+                     Schema="dbo" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" />
           <AssociationSet Name="FK_File_Folder" Association="DataServicesTestDatabaseModel.Store.FK_File_Folder">
             <End Role="Folder" EntitySet="Folder" />
             <End Role="File" EntitySet="File" />
@@ -65,7 +69,8 @@
     </edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
-      <Schema Namespace="DataServicesTestDatabaseModel" Alias="Self" xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
+      <Schema Namespace="DataServicesTestDatabaseModel" Alias="Self"
+              xmlns="http://schemas.microsoft.com/ado/2008/09/edm">
         <EntityContainer Name="DataServicesTestDatabaseEntities">
           <EntitySet Name="File" EntityType="DataServicesTestDatabaseModel.File" />
           <EntitySet Name="Folder" EntityType="DataServicesTestDatabaseModel.Folder" />
@@ -84,9 +89,11 @@
           </Key>
           <Property Name="FileId" Type="Guid" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="200" Unicode="true"
+                    FixedLength="false" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" />
-          <NavigationProperty Name="Folder" Relationship="DataServicesTestDatabaseModel.FK_File_Folder" FromRole="File" ToRole="Folder" />
+          <NavigationProperty Name="Folder" Relationship="DataServicesTestDatabaseModel.FK_File_Folder" FromRole="File"
+                              ToRole="Folder" />
         </EntityType>
         <EntityType Name="Folder">
           <Key>
@@ -94,11 +101,15 @@
           </Key>
           <Property Name="FolderId" Type="Guid" Nullable="false" />
           <Property Name="Name" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
-          <Property Name="Description" Type="String" Nullable="false" MaxLength="200" Unicode="true" FixedLength="false" />
+          <Property Name="Description" Type="String" Nullable="false" MaxLength="200" Unicode="true"
+                    FixedLength="false" />
           <Property Name="CreatedDate" Type="DateTime" Nullable="false" />
-          <NavigationProperty Name="Files" Relationship="DataServicesTestDatabaseModel.FK_File_Folder" FromRole="Folder" ToRole="File" />
-          <NavigationProperty Name="ChildFolders" Relationship="DataServicesTestDatabaseModel.FK_Folder_Folder" FromRole="Folder" ToRole="Folder1" />
-          <NavigationProperty Name="ParentFolder" Relationship="DataServicesTestDatabaseModel.FK_Folder_Folder" FromRole="Folder1" ToRole="Folder" />
+          <NavigationProperty Name="Files" Relationship="DataServicesTestDatabaseModel.FK_File_Folder"
+                              FromRole="Folder" ToRole="File" />
+          <NavigationProperty Name="ChildFolders" Relationship="DataServicesTestDatabaseModel.FK_Folder_Folder"
+                              FromRole="Folder" ToRole="Folder1" />
+          <NavigationProperty Name="ParentFolder" Relationship="DataServicesTestDatabaseModel.FK_Folder_Folder"
+                              FromRole="Folder1" ToRole="Folder" />
         </EntityType>
         <Association Name="FK_File_Folder">
           <End Role="Folder" Type="DataServicesTestDatabaseModel.Folder" Multiplicity="1" />
@@ -113,7 +124,8 @@
     <!-- C-S mapping content -->
     <edmx:Mappings>
       <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2008/09/mapping/cs">
-        <EntityContainerMapping StorageEntityContainer="DataServicesTestDatabaseModelStoreContainer" CdmEntityContainer="DataServicesTestDatabaseEntities">
+        <EntityContainerMapping StorageEntityContainer="DataServicesTestDatabaseModelStoreContainer"
+                                CdmEntityContainer="DataServicesTestDatabaseEntities">
           <EntitySetMapping Name="File">
             <EntityTypeMapping TypeName="IsTypeOf(DataServicesTestDatabaseModel.File)">
               <MappingFragment StoreEntitySet="File">
@@ -134,7 +146,8 @@
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>
-          <AssociationSetMapping Name="FK_File_Folder" TypeName="DataServicesTestDatabaseModel.FK_File_Folder" StoreEntitySet="File">
+          <AssociationSetMapping Name="FK_File_Folder" TypeName="DataServicesTestDatabaseModel.FK_File_Folder"
+                                 StoreEntitySet="File">
             <EndProperty Name="Folder">
               <ScalarProperty Name="FolderId" ColumnName="FolderId" />
             </EndProperty>
@@ -142,7 +155,8 @@
               <ScalarProperty Name="FileId" ColumnName="FileId" />
             </EndProperty>
           </AssociationSetMapping>
-          <AssociationSetMapping Name="FK_Folder_Folder" TypeName="DataServicesTestDatabaseModel.FK_Folder_Folder" StoreEntitySet="Folder">
+          <AssociationSetMapping Name="FK_Folder_Folder" TypeName="DataServicesTestDatabaseModel.FK_Folder_Folder"
+                                 StoreEntitySet="Folder">
             <EndProperty Name="Folder">
               <ScalarProperty Name="FolderId" ColumnName="ParentFolderId" />
             </EndProperty>
@@ -170,15 +184,21 @@
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
       <Diagram Name="FileSystemEntityModel" xmlns="http://schemas.microsoft.com/ado/2008/10/edmx">
-        <EntityTypeShape EntityType="DataServicesTestDatabaseModel.File" Width="1.5" PointX="3" PointY="1.125" Height="1.9802864583333335" IsExpanded="true" />
-        <EntityTypeShape EntityType="DataServicesTestDatabaseModel.Folder" Width="1.5" PointX="0.75" PointY="1" Height="2.3648893229166665" IsExpanded="true" />
+        <EntityTypeShape EntityType="DataServicesTestDatabaseModel.File" Width="1.5" PointX="3" PointY="1.125"
+                         Height="1.9802864583333335" IsExpanded="true" />
+        <EntityTypeShape EntityType="DataServicesTestDatabaseModel.Folder" Width="1.5" PointX="0.75" PointY="1"
+                         Height="2.3648893229166665" IsExpanded="true" />
         <AssociationConnector Association="DataServicesTestDatabaseModel.FK_File_Folder" ManuallyRouted="false">
           <ConnectorPoint PointX="2.25" PointY="2.1151432291666667" />
-          <ConnectorPoint PointX="3" PointY="2.1151432291666667" /></AssociationConnector>
+          <ConnectorPoint PointX="3" PointY="2.1151432291666667" />
+        </AssociationConnector>
         <AssociationConnector Association="DataServicesTestDatabaseModel.FK_Folder_Folder" ManuallyRouted="false">
           <ConnectorPoint PointX="1.2819230769230767" PointY="3.3648893229166665" />
           <ConnectorPoint PointX="1.2819230769230767" PointY="3.6148893229166665" />
           <ConnectorPoint PointX="1.7284615384615383" PointY="3.6148893229166665" />
-          <ConnectorPoint PointX="1.7284615384615383" PointY="3.3648893229166665" /></AssociationConnector></Diagram></edmx:Diagrams>
+          <ConnectorPoint PointX="1.7284615384615383" PointY="3.3648893229166665" />
+        </AssociationConnector>
+      </Diagram>
+    </edmx:Diagrams>
   </edmx:Designer>
 </edmx:Edmx>

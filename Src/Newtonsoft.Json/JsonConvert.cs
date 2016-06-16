@@ -40,6 +40,7 @@ using Newtonsoft.Json.Serialization;
 using System.Text;
 #if !(NET20 || PORTABLE40)
 using System.Xml.Linq;
+
 #endif
 
 namespace Newtonsoft.Json
@@ -273,10 +274,14 @@ namespace Newtonsoft.Json
         private static string EnsureFloatFormat(double value, string text, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
         {
             if (floatFormatHandling == FloatFormatHandling.Symbol || !(double.IsInfinity(value) || double.IsNaN(value)))
+            {
                 return text;
+            }
 
             if (floatFormatHandling == FloatFormatHandling.DefaultValue)
+            {
                 return (!nullable) ? "0.0" : Null;
+            }
 
             return quoteChar + text + quoteChar;
         }
@@ -299,7 +304,9 @@ namespace Newtonsoft.Json
         private static string EnsureDecimalPlace(double value, string text)
         {
             if (double.IsNaN(value) || double.IsInfinity(value) || text.IndexOf('.') != -1 || text.IndexOf('E') != -1 || text.IndexOf('e') != -1)
+            {
                 return text;
+            }
 
             return text + ".0";
         }
@@ -307,7 +314,9 @@ namespace Newtonsoft.Json
         private static string EnsureDecimalPlace(string text)
         {
             if (text.IndexOf('.') != -1)
+            {
                 return text;
+            }
 
             return text + ".0";
         }
@@ -391,7 +400,9 @@ namespace Newtonsoft.Json
         public static string ToString(Uri value)
         {
             if (value == null)
+            {
                 return Null;
+            }
 
             return ToString(value, '"');
         }
@@ -432,7 +443,9 @@ namespace Newtonsoft.Json
         public static string ToString(string value, char delimiter, StringEscapeHandling stringEscapeHandling)
         {
             if (delimiter != '"' && delimiter != '\'')
-                throw new ArgumentException("Delimiter must be a single or double quote.", "delimiter");
+            {
+                throw new ArgumentException("Delimiter must be a single or double quote.", nameof(delimiter));
+            }
 
             return JavaScriptUtils.ToEscapedJavaScriptString(value, delimiter, true, stringEscapeHandling);
         }
@@ -445,7 +458,9 @@ namespace Newtonsoft.Json
         public static string ToString(object value)
         {
             if (value == null)
+            {
                 return Null;
+            }
 
             PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(value.GetType());
 
@@ -833,13 +848,15 @@ namespace Newtonsoft.Json
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeObject(string value, Type type, JsonSerializerSettings settings)
         {
-            ValidationUtils.ArgumentNotNull(value, "value");
+            ValidationUtils.ArgumentNotNull(value, nameof(value));
 
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
             // by default DeserializeObject should check for additional content
             if (!jsonSerializer.IsCheckAdditionalContentSet())
+            {
                 jsonSerializer.CheckAdditionalContent = true;
+            }
 
             using (var reader = new JsonTextReader(new StringReader(value)))
             {
@@ -917,6 +934,7 @@ namespace Newtonsoft.Json
 #endif
         #endregion
 
+        #region Populate
         /// <summary>
         /// Populates the object with values from the JSON string.
         /// </summary>
@@ -945,7 +963,9 @@ namespace Newtonsoft.Json
                 jsonSerializer.Populate(jsonReader, target);
 
                 if (jsonReader.Read() && jsonReader.TokenType != JsonToken.Comment)
+                {
                     throw new JsonSerializationException("Additional text found in JSON string after finishing deserializing object.");
+                }
             }
         }
 
@@ -968,7 +988,9 @@ namespace Newtonsoft.Json
             return Task.Factory.StartNew(() => PopulateObject(value, target, settings));
         }
 #endif
+        #endregion
 
+        #region Xml
 #if !(PORTABLE40 || PORTABLE || DOTNET)
         /// <summary>
         /// Serializes the XML node to a JSON string.
@@ -1126,5 +1148,6 @@ namespace Newtonsoft.Json
             return (XDocument)DeserializeObject(value, typeof(XDocument), converter);
         }
 #endif
+        #endregion
     }
 }

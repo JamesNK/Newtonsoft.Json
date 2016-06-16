@@ -60,7 +60,9 @@ namespace Newtonsoft.Json.Linq
             get
             {
                 if (_token != null)
+                {
                     return _token;
+                }
 
                 return _value;
             }
@@ -72,7 +74,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="container">The container being written to.</param>
         public JTokenWriter(JContainer container)
         {
-            ValidationUtils.ArgumentNotNull(container, "container");
+            ValidationUtils.ArgumentNotNull(container, nameof(container));
 
             _token = container;
             _parent = container;
@@ -113,9 +115,13 @@ namespace Newtonsoft.Json.Linq
         private void AddParent(JContainer container)
         {
             if (_parent == null)
+            {
                 _token = container;
+            }
             else
+            {
                 _parent.AddAndSkipParentCheck(container);
+            }
 
             _parent = container;
             _current = container;
@@ -127,7 +133,9 @@ namespace Newtonsoft.Json.Linq
             _parent = _parent.Parent;
 
             if (_parent != null && _parent.Type == JTokenType.Property)
+            {
                 _parent = _parent.Parent;
+            }
         }
 
         /// <summary>
@@ -194,7 +202,9 @@ namespace Newtonsoft.Json.Linq
                 _current = _parent.Last;
 
                 if (_parent.Type == JTokenType.Property)
+                {
                     _parent = _parent.Parent;
+                }
             }
             else
             {
@@ -475,5 +485,53 @@ namespace Newtonsoft.Json.Linq
             AddValue(value, JsonToken.String);
         }
         #endregion
+
+        internal override void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
+        {
+            JTokenReader tokenReader = reader as JTokenReader;
+
+            // closing the token wrather than reading then writing it doesn't lose some type information, e.g. Guid, byte[], etc
+            if (tokenReader != null && writeChildren && writeDateConstructorAsDate && writeComments)
+            {
+                if (tokenReader.TokenType == JsonToken.None)
+                {
+                    if (!tokenReader.Read())
+                    {
+                        return;
+                    }
+                }
+
+                JToken value = tokenReader.CurrentToken.CloneToken();
+
+                if (_parent != null)
+                {
+                    _parent.Add(value);
+                    _current = _parent.Last;
+
+                    // if the writer was in a property then move out of it and up to its parent object
+                    if (_parent.Type == JTokenType.Property)
+                    {
+                        _parent = _parent.Parent;
+                        InternalWriteValue(JsonToken.Null);
+                    }
+                }
+                else
+                {
+                    _current = value;
+
+                    if (_token == null && _value == null)
+                    {
+                        _token = value as JContainer;
+                        _value = value as JValue;
+                    }
+                }
+
+                tokenReader.Skip();
+            }
+            else
+            {
+                base.WriteToken(reader, writeChildren, writeDateConstructorAsDate, writeComments);
+            }
+        }
     }
 }

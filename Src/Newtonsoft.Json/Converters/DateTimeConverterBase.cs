@@ -42,10 +42,14 @@ namespace Newtonsoft.Json.Converters
         public override bool CanConvert(Type objectType)
         {
             if (objectType == typeof(DateTime) || objectType == typeof(DateTime?))
+            {
                 return true;
+            }
 #if !NET20
             if (objectType == typeof(DateTimeOffset) || objectType == typeof(DateTimeOffset?))
+            {
                 return true;
+            }
 #endif
 
             return false;

@@ -145,7 +145,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="dateTimeKindHandling">The <see cref="DateTimeKind" /> used when reading <see cref="DateTime"/> values from BSON.</param>
         public BsonReader(Stream stream, bool readRootValueAsArray, DateTimeKind dateTimeKindHandling)
         {
-            ValidationUtils.ArgumentNotNull(stream, "stream");
+            ValidationUtils.ArgumentNotNull(stream, nameof(stream));
             _reader = new BinaryReader(stream);
             _stack = new List<ContainerContext>();
             _readRootValueAsArray = readRootValueAsArray;
@@ -160,7 +160,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="dateTimeKindHandling">The <see cref="DateTimeKind" /> used when reading <see cref="DateTime"/> values from BSON.</param>
         public BsonReader(BinaryReader reader, bool readRootValueAsArray, DateTimeKind dateTimeKindHandling)
         {
-            ValidationUtils.ArgumentNotNull(reader, "reader");
+            ValidationUtils.ArgumentNotNull(reader, nameof(reader));
             _reader = reader;
             _stack = new List<ContainerContext>();
             _readRootValueAsArray = readRootValueAsArray;
@@ -175,79 +175,12 @@ namespace Newtonsoft.Json.Bson
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Byte"/>[].
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Byte"/>[] or a null reference if the next JSON token is null. This method will return <c>null</c> at the end of an array.
-        /// </returns>
-        public override byte[] ReadAsBytes()
-        {
-            return ReadAsBytesInternal();
-        }
-
-        /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
-        /// </summary>
-        /// <returns>A <see cref="Nullable{Decimal}"/>. This method will return <c>null</c> at the end of an array.</returns>
-        public override decimal? ReadAsDecimal()
-        {
-            return ReadAsDecimalInternal();
-        }
-
-        /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Int32}"/>.
-        /// </summary>
-        /// <returns>A <see cref="Nullable{Int32}"/>. This method will return <c>null</c> at the end of an array.</returns>
-        public override int? ReadAsInt32()
-        {
-            return ReadAsInt32Internal();
-        }
-
-        /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="String"/>.
-        /// </summary>
-        /// <returns>A <see cref="String"/>. This method will return <c>null</c> at the end of an array.</returns>
-        public override string ReadAsString()
-        {
-            return ReadAsStringInternal();
-        }
-
-        /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTime}"/>.
-        /// </summary>
-        /// <returns>A <see cref="Nullable{DateTime}"/>. This method will return <c>null</c> at the end of an array.</returns>
-        public override DateTime? ReadAsDateTime()
-        {
-            return ReadAsDateTimeInternal();
-        }
-
-#if !NET20
-        /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="Nullable{DateTimeOffset}"/>. This method will return <c>null</c> at the end of an array.
-        /// </returns>
-        public override DateTimeOffset? ReadAsDateTimeOffset()
-        {
-            return ReadAsDateTimeOffsetInternal();
-        }
-#endif
-
-        /// <summary>
         /// Reads the next JSON token from the stream.
         /// </summary>
         /// <returns>
-        /// true if the next token was read successfully; false if there are no more tokens to read.
+        /// <c>true</c> if the next token was read successfully; <c>false</c> if there are no more tokens to read.
         /// </returns>
         public override bool Read()
-        {
-            _readType = Json.ReadType.Read;
-
-            return ReadInternal();
-        }
-
-        internal override bool ReadInternal()
         {
             try
             {
@@ -297,11 +230,13 @@ namespace Newtonsoft.Json.Bson
             base.Close();
 
             if (CloseInput && _reader != null)
+            {
 #if !(DOTNET || PORTABLE40 || PORTABLE)
                 _reader.Close();
 #else
                 _reader.Dispose();
 #endif
+            }
         }
 
         private bool ReadCodeWScope()
@@ -339,7 +274,9 @@ namespace Newtonsoft.Json.Bson
                 case BsonReaderState.CodeWScopeScopeObject:
                     bool result = ReadNormal();
                     if (result && TokenType == JsonToken.EndObject)
+                    {
                         _bsonReaderState = BsonReaderState.CodeWScopeScopeEnd;
+                    }
 
                     return result;
                 case BsonReaderState.CodeWScopeScopeEnd:
@@ -430,7 +367,9 @@ namespace Newtonsoft.Json.Bson
                 case State.PostValue:
                     ContainerContext context = _currentContext;
                     if (context == null)
+                    {
                         return false;
+                    }
 
                     int lengthMinusEnd = context.Length - 1;
 
@@ -451,11 +390,15 @@ namespace Newtonsoft.Json.Bson
                     else if (context.Position == lengthMinusEnd)
                     {
                         if (ReadByte() != 0)
+                        {
                             throw JsonReaderException.Create(this, "Unexpected end of object byte value.");
+                        }
 
                         PopContext();
                         if (_currentContext != null)
+                        {
                             MovePosition(context.Length);
+                        }
 
                         JsonToken endToken = (context.Type == BsonType.Object) ? JsonToken.EndObject : JsonToken.EndArray;
                         SetToken(endToken);
@@ -484,9 +427,13 @@ namespace Newtonsoft.Json.Bson
         {
             _stack.RemoveAt(_stack.Count - 1);
             if (_stack.Count == 0)
+            {
                 _currentContext = null;
+            }
             else
+            {
                 _currentContext = _stack[_stack.Count - 1];
+            }
         }
 
         private void PushContext(ContainerContext newContext)
@@ -509,9 +456,13 @@ namespace Newtonsoft.Json.Bson
                     double d = ReadDouble();
 
                     if (_floatParseHandling == FloatParseHandling.Decimal)
+                    {
                         SetToken(JsonToken.Float, Convert.ToDecimal(d, CultureInfo.InvariantCulture));
+                    }
                     else
+                    {
                         SetToken(JsonToken.Float, d);
+                    }
                     break;
                 case BsonType.String:
                 case BsonType.Symbol:
@@ -605,7 +556,7 @@ namespace Newtonsoft.Json.Bson
                     SetToken(JsonToken.Integer, ReadInt64());
                     break;
                 default:
-                    throw new ArgumentOutOfRangeException("type", "Unexpected BsonType value: " + type);
+                    throw new ArgumentOutOfRangeException(nameof(type), "Unexpected BsonType value: " + type);
             }
         }
 
@@ -635,7 +586,7 @@ namespace Newtonsoft.Json.Bson
             int totalBytesRead = 0;
             // used in case of left over multibyte characters in the buffer
             int offset = 0;
-            do
+            while (true)
             {
                 int count = offset;
                 byte b;
@@ -663,7 +614,9 @@ namespace Newtonsoft.Json.Bson
                     int charCount = Encoding.UTF8.GetChars(_byteBuffer, 0, lastFullCharStop + 1, _charBuffer, 0);
 
                     if (builder == null)
+                    {
                         builder = new StringBuilder(MaxCharBytesSize * 2);
+                    }
 
                     builder.Append(_charBuffer, 0, charCount);
 
@@ -685,7 +638,7 @@ namespace Newtonsoft.Json.Bson
                         offset = 0;
                     }
                 }
-            } while (true);
+            }
         }
 
         private string ReadLengthString()
@@ -703,7 +656,9 @@ namespace Newtonsoft.Json.Bson
         private string GetString(int length)
         {
             if (length == 0)
+            {
                 return string.Empty;
+            }
 
             EnsureBuffers();
 
@@ -722,7 +677,9 @@ namespace Newtonsoft.Json.Bson
                 int byteCount = _reader.Read(_byteBuffer, offset, count);
 
                 if (byteCount == 0)
+                {
                     throw new EndOfStreamException("Unable to read beyond the end of the stream.");
+                }
 
                 totalBytesRead += byteCount;
 
@@ -742,7 +699,9 @@ namespace Newtonsoft.Json.Bson
                     int lastFullCharStop = GetLastFullCharStop(byteCount - 1);
 
                     if (builder == null)
+                    {
                         builder = new StringBuilder(length);
+                    }
 
                     int charCount = Encoding.UTF8.GetChars(_byteBuffer, 0, lastFullCharStop + 1, _charBuffer, 0);
                     builder.Append(_charBuffer, 0, charCount);
@@ -798,10 +757,22 @@ namespace Newtonsoft.Json.Bson
 
         private int BytesInSequence(byte b)
         {
-            if (b <= SeqRange1[1]) return 1;
-            if (b >= SeqRange2[0] && b <= SeqRange2[1]) return 2;
-            if (b >= SeqRange3[0] && b <= SeqRange3[1]) return 3;
-            if (b >= SeqRange4[0] && b <= SeqRange4[1]) return 4;
+            if (b <= SeqRange1[1])
+            {
+                return 1;
+            }
+            if (b >= SeqRange2[0] && b <= SeqRange2[1])
+            {
+                return 2;
+            }
+            if (b >= SeqRange3[0] && b <= SeqRange3[1])
+            {
+                return 3;
+            }
+            if (b >= SeqRange4[0] && b <= SeqRange4[1])
+            {
+                return 4;
+            }
             return 0;
         }
 

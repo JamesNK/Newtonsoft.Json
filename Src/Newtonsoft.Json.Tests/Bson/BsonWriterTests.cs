@@ -301,7 +301,9 @@ namespace Newtonsoft.Json.Tests.Bson
             for (int i = 0; i < 100; i++)
             {
                 if (i > 0)
+                {
                     largeStringBuilder.Append("-");
+                }
 
                 largeStringBuilder.Append(i.ToString(CultureInfo.InvariantCulture));
             }
@@ -483,7 +485,6 @@ namespace Newtonsoft.Json.Tests.Bson
             // 6D-61-6C-6C-00-02-31-00-07-00-00-00-4D-65-64-69-75-6D-
             // 00-02-32-00-06-00-00-00-4C-61-72-67-65-00-00-00
 
-
             ms.Seek(0, SeekOrigin.Begin);
 
             // deserialize product from BSON
@@ -492,7 +493,6 @@ namespace Newtonsoft.Json.Tests.Bson
 
             Console.WriteLine(deserializedProduct.Name);
             // Carlos' Spicy Wieners
-
 
             Assert.AreEqual("Carlos' Spicy Wieners", deserializedProduct.Name);
             Assert.AreEqual(9.95m, deserializedProduct.Price);
@@ -745,10 +745,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
             BsonWriter writer = new BsonWriter(ms);
 
-            ExceptionAssert.Throws<JsonWriterException>(() =>
-            {
-                serializer.Serialize(writer, b);
-            }, "Error writing Binary value. BSON must start with an Object or Array. Path ''.");
+            ExceptionAssert.Throws<JsonWriterException>(() => { serializer.Serialize(writer, b); }, "Error writing Binary value. BSON must start with an Object or Array. Path ''.");
         }
 
         public class GuidTestClass

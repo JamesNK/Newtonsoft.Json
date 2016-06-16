@@ -67,7 +67,9 @@ namespace Newtonsoft.Json.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType != JsonToken.Bytes)
+            {
                 throw new JsonSerializationException("Expected Bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+            }
 
             byte[] value = (byte[])reader.Value;
 

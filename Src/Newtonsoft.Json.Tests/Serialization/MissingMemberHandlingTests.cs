@@ -37,6 +37,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -122,6 +123,16 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(1, myClass.PreProperty);
             Assert.AreEqual(2, myClass.PostProperty);
+        }
+
+        [Test]
+        public void CaseInsensitive()
+        {
+            string json = @"{""height"":1}";
+
+            DoubleClass c = JsonConvert.DeserializeObject<DoubleClass>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+
+            Assert.AreEqual(1d, c.Height);
         }
 
         [Test]

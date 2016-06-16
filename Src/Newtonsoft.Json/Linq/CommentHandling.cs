@@ -9,6 +9,7 @@
         /// Ignore comments.
         /// </summary>
         Ignore = 0,
+
         /// <summary>
         /// Load comments as a <see cref="JValue"/> with type <see cref="JTokenType.Comment"/>.
         /// </summary>
@@ -24,6 +25,7 @@
         /// Ignore line information.
         /// </summary>
         Ignore = 0,
+
         /// <summary>
         /// Load line information.
         /// </summary>

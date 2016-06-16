@@ -227,9 +227,13 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             DateTime? d = (DateTime?)value;
             if (d == null)
+            {
                 writer.WriteNull();
+            }
             else
+            {
                 writer.WriteValue(d.Value.Ticks);
+            }
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)

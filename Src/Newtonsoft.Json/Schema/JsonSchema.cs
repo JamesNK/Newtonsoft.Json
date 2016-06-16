@@ -280,8 +280,8 @@ namespace Newtonsoft.Json.Schema
         /// <returns>The <see cref="JsonSchema"/> object representing the JSON Schema.</returns>
         public static JsonSchema Read(JsonReader reader, JsonSchemaResolver resolver)
         {
-            ValidationUtils.ArgumentNotNull(reader, "reader");
-            ValidationUtils.ArgumentNotNull(resolver, "resolver");
+            ValidationUtils.ArgumentNotNull(reader, nameof(reader));
+            ValidationUtils.ArgumentNotNull(resolver, nameof(resolver));
 
             JsonSchemaBuilder builder = new JsonSchemaBuilder(resolver);
             return builder.Read(reader);
@@ -305,7 +305,7 @@ namespace Newtonsoft.Json.Schema
         /// <returns>A <see cref="JsonSchema"/> populated from the string that contains JSON.</returns>
         public static JsonSchema Parse(string json, JsonSchemaResolver resolver)
         {
-            ValidationUtils.ArgumentNotNull(json, "json");
+            ValidationUtils.ArgumentNotNull(json, nameof(json));
 
             using (JsonReader reader = new JsonTextReader(new StringReader(json)))
             {
@@ -329,8 +329,8 @@ namespace Newtonsoft.Json.Schema
         /// <param name="resolver">The resolver used.</param>
         public void WriteTo(JsonWriter writer, JsonSchemaResolver resolver)
         {
-            ValidationUtils.ArgumentNotNull(writer, "writer");
-            ValidationUtils.ArgumentNotNull(resolver, "resolver");
+            ValidationUtils.ArgumentNotNull(writer, nameof(writer));
+            ValidationUtils.ArgumentNotNull(resolver, nameof(resolver));
 
             JsonSchemaWriter schemaWriter = new JsonSchemaWriter(writer, resolver);
             schemaWriter.WriteSchema(this);

@@ -50,4 +50,5 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Schema
         }
     }
 }
+
 #pragma warning restore 618

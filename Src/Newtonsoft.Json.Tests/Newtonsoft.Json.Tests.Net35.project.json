@@ -6,6 +6,6 @@
     "net35": {}
   },
   "runtimes": {
-    "win-anycpu": {}
+    "win": {}
   }
 }

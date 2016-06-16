@@ -40,6 +40,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -527,41 +528,108 @@ namespace Newtonsoft.Json.Tests.Serialization
             JObject o = (JObject)actual.Payload;
             Assert.AreEqual("System.Byte[], mscorlib", (string)o["$type"]);
             Assert.AreEqual("AAECAwQFBgcICQ==", (string)o["$value"]);
-        }
-
-        public class ItemWithTypedPayload
-        {
-            public double Payload { get; set; }
+            Assert.AreEqual(null, o.Parent);
         }
 
         [Test]
-        public void PrimitiveType_MetadataPropertyIgnore_WithType()
+        public void ReadAhead_JObject_NoParent()
         {
-            ItemWithTypedPayload actual = JsonConvert.DeserializeObject<ItemWithTypedPayload>(@"{
+            ItemWithUntypedPayload actual = JsonConvert.DeserializeObject<ItemWithUntypedPayload>(@"{
+  ""Payload"": {}
+}",
+                new JsonSerializerSettings
+                {
+                    MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
+                });
+
+            JObject o = (JObject)actual.Payload;
+            Assert.AreEqual(null, o.Parent);
+        }
+
+        public class ItemWithJTokens
+        {
+            public JValue Payload1 { get; set; }
+            public JObject Payload2 { get; set; }
+            public JArray Payload3 { get; set; }
+        }
+
+        [Test]
+        public void ReadAhead_TypedJValue_NoParent()
+        {
+            ItemWithJTokens actual = (ItemWithJTokens)JsonConvert.DeserializeObject(@"{
+  ""Payload1"": 1,
+  ""Payload2"": {'prop1':1,'prop2':[2]},
+  ""Payload3"": [1],
+  ""$type"": ""Newtonsoft.Json.Tests.Serialization.MetadataPropertyHandlingTests+ItemWithJTokens, Newtonsoft.Json.Tests""
+}",
+                new JsonSerializerSettings
+                {
+                    MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead,
+                    TypeNameHandling = TypeNameHandling.All
+                });
+
+            Assert.AreEqual(JTokenType.Integer, actual.Payload1.Type);
+            Assert.AreEqual(1, (int)actual.Payload1);
+            Assert.AreEqual(null, actual.Payload1.Parent);
+
+            Assert.AreEqual(JTokenType.Object, actual.Payload2.Type);
+            Assert.AreEqual(1, (int)actual.Payload2["prop1"]);
+            Assert.AreEqual(2, (int)actual.Payload2["prop2"][0]);
+            Assert.AreEqual(null, actual.Payload2.Parent);
+
+            Assert.AreEqual(1, (int)actual.Payload3[0]);
+            Assert.AreEqual(null, actual.Payload3.Parent);
+        }
+
+        [Test]
+        public void ReadAhead_JArray_NoParent()
+        {
+            ItemWithUntypedPayload actual = JsonConvert.DeserializeObject<ItemWithUntypedPayload>(@"{
+  ""Payload"": [1]
+}",
+                new JsonSerializerSettings
+                {
+                    MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
+                });
+
+            JArray o = (JArray)actual.Payload;
+            Assert.AreEqual(null, o.Parent);
+        }
+
+        public class ItemWithUntypedPayload
+        {
+            public object Payload { get; set; }
+        }
+
+        [Test]
+        public void PrimitiveType_MetadataPropertyIgnore_WithNoType()
+        {
+            ItemWithUntypedPayload actual = JsonConvert.DeserializeObject<ItemWithUntypedPayload>(@"{
   ""Payload"": {
-    ""$type"": ""System.Double, mscorlib"",
+    ""$type"": ""System.Single, mscorlib"",
     ""$value"": ""5""
   }
 }",
-                new JsonSerializerSettings());
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto
+                });
 
-            Assert.AreEqual(5d, actual.Payload);
+            Assert.AreEqual(5f, actual.Payload);
 
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
-            {
-                JsonConvert.DeserializeObject<ItemWithTypedPayload>(@"{
+            actual = JsonConvert.DeserializeObject<ItemWithUntypedPayload>(@"{
   ""Payload"": {
-    ""$type"": ""System.Double, mscorlib"",
+    ""$type"": ""System.Single, mscorlib"",
     ""$value"": ""5""
   }
 }",
-                    new JsonSerializerSettings
-                    {
-                        MetadataPropertyHandling = MetadataPropertyHandling.Ignore
-                    });
-            }, @"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Double' because the type requires a JSON primitive value (e.g. string, number, boolean, null) to deserialize correctly.
-To fix this error either change the JSON to a JSON primitive value (e.g. string, number, boolean, null) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object.
-Path 'Payload.$type', line 3, position 12.");
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Auto,
+                    MetadataPropertyHandling = MetadataPropertyHandling.Ignore
+                });
+
+            Assert.IsTrue(actual.Payload is JObject);
         }
 
         [Test]

@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void List()
         {
-            FSharpList<int> l = ListModule.OfSeq(new List<int> {1,2,3});
+            FSharpList<int> l = ListModule.OfSeq(new List<int> { 1, 2, 3 });
 
             string json = JsonConvert.SerializeObject(l, Formatting.Indented);
 
@@ -91,4 +91,5 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
     }
 }
+
 #endif

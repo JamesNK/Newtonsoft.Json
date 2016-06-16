@@ -435,7 +435,6 @@ Parameter name: index");
             }
         }
 
-
 #if !(NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
         [Test]
         public void ITypedListGetItemProperties()

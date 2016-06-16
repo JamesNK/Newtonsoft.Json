@@ -252,7 +252,7 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void DeserializeBasicUnion_MismatchedFieldCount()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Currency>(@"{""Case"":""AUD"",""Fields"":[1]}"), "The number of field values does not match the number of properties definied by union 'AUD'. Path '', line 1, position 27.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Currency>(@"{""Case"":""AUD"",""Fields"":[1]}"), "The number of field values does not match the number of properties defined by union 'AUD'. Path '', line 1, position 27.");
         }
 
         [Test]
@@ -264,7 +264,7 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void DeserializeBasicUnion_UnexpectedEnd()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Currency>(@"{""Case"":"), "Unexpected end when reading union. Path 'Case', line 1, position 8.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Currency>(@"{""Case"":"), "Unexpected end when reading JSON. Path 'Case', line 1, position 8.");
         }
 
         [Test]
@@ -300,4 +300,5 @@ namespace Newtonsoft.Json.Tests.Converters
         }
     }
 }
+
 #endif

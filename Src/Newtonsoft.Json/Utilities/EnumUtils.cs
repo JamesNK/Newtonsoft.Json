@@ -62,7 +62,9 @@ namespace Newtonsoft.Json.Utilities
 
                 string s;
                 if (map.TryGetBySecond(n2, out s))
+                {
                     throw new InvalidOperationException("Enum name '{0}' already exists on enum '{1}'.".FormatWith(CultureInfo.InvariantCulture, n2, type.Name));
+                }
 
                 map.Set(n1, n2);
             }
@@ -75,7 +77,9 @@ namespace Newtonsoft.Json.Utilities
             Type enumType = typeof(T);
 
             if (!enumType.IsDefined(typeof(FlagsAttribute), false))
+            {
                 throw new ArgumentException("Enum type {0} is not a set of flags.".FormatWith(CultureInfo.InvariantCulture, enumType));
+            }
 
             Type underlyingType = Enum.GetUnderlyingType(value.GetType());
 
@@ -86,11 +90,15 @@ namespace Newtonsoft.Json.Utilities
             foreach (EnumValue<ulong> enumNameValue in enumNameValues)
             {
                 if ((num & enumNameValue.Value) == enumNameValue.Value && enumNameValue.Value != 0)
+                {
                     selectedFlagsValues.Add((T)Convert.ChangeType(enumNameValue.Value, underlyingType, CultureInfo.CurrentCulture));
+                }
             }
 
             if (selectedFlagsValues.Count == 0 && enumNameValues.SingleOrDefault(v => v.Value == 0) != null)
+            {
                 selectedFlagsValues.Add(default(T));
+            }
 
             return selectedFlagsValues;
         }
@@ -112,9 +120,14 @@ namespace Newtonsoft.Json.Utilities
         public static IList<EnumValue<TUnderlyingType>> GetNamesAndValues<TUnderlyingType>(Type enumType) where TUnderlyingType : struct
         {
             if (enumType == null)
-                throw new ArgumentNullException("enumType");
+            {
+                throw new ArgumentNullException(nameof(enumType));
+            }
 
-            ValidationUtils.ArgumentTypeIsEnum(enumType, "enumType");
+            if (!enumType.IsEnum())
+            {
+                throw new ArgumentException("Type {0} is not an Enum.".FormatWith(CultureInfo.InvariantCulture, enumType), nameof(enumType));
+            }
 
             IList<object> enumValues = GetValues(enumType);
             IList<string> enumNames = GetNames(enumType);
@@ -141,7 +154,9 @@ namespace Newtonsoft.Json.Utilities
         public static IList<object> GetValues(Type enumType)
         {
             if (!enumType.IsEnum())
+            {
                 throw new ArgumentException("Type '" + enumType.Name + "' is not an enum.");
+            }
 
             List<object> values = new List<object>();
 
@@ -159,7 +174,9 @@ namespace Newtonsoft.Json.Utilities
         public static IList<string> GetNames(Type enumType)
         {
             if (!enumType.IsEnum())
+            {
                 throw new ArgumentException("Type '" + enumType.Name + "' is not an enum.");
+            }
 
             List<string> values = new List<string>();
 
@@ -176,7 +193,9 @@ namespace Newtonsoft.Json.Utilities
         public static object ParseEnumName(string enumText, bool isNullable, Type t)
         {
             if (enumText == string.Empty && isNullable)
+            {
                 return null;
+            }
 
             string finalEnumText;
 
@@ -215,7 +234,9 @@ namespace Newtonsoft.Json.Utilities
                 resolvedEnumName = resolvedEnumName ?? name;
 
                 if (camelCaseText)
+                {
                     resolvedEnumName = StringUtils.ToCamelCase(resolvedEnumName);
+                }
 
                 names[i] = resolvedEnumName;
             }

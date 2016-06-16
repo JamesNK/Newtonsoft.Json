@@ -86,7 +86,9 @@ namespace Newtonsoft.Json.Utilities
             generator.MarkLabel(argsOk);
 
             if (!method.IsConstructor && !method.IsStatic)
+            {
                 generator.PushInstance(method.DeclaringType);
+            }
 
             int localVariableCount = 0;
 
@@ -167,7 +169,7 @@ namespace Newtonsoft.Json.Utilities
                     generator.MarkLabel(finishedProcessingParameter);
                     localVariableCount++;
                 }
-                else 
+                else
                 {
                     generator.PushArrayInstance(argsIndex, i);
 
@@ -176,18 +178,26 @@ namespace Newtonsoft.Json.Utilities
             }
 
             if (method.IsConstructor)
+            {
                 generator.Emit(OpCodes.Newobj, (ConstructorInfo)method);
+            }
             else
+            {
                 generator.CallMethod((MethodInfo)method);
+            }
 
             Type returnType = method.IsConstructor
                 ? method.DeclaringType
                 : ((MethodInfo)method).ReturnType;
 
             if (returnType != typeof(void))
+            {
                 generator.BoxIfNeeded(returnType);
+            }
             else
+            {
                 generator.Emit(OpCodes.Ldnull);
+            }
 
             generator.Return();
         }
@@ -218,7 +228,9 @@ namespace Newtonsoft.Json.Utilities
                         ReflectionUtils.EmptyTypes, null);
 
                 if (constructorInfo == null)
+                {
                     throw new ArgumentException("Could not get constructor for {0}.".FormatWith(CultureInfo.InvariantCulture, type));
+                }
 
                 generator.Emit(OpCodes.Newobj, constructorInfo);
             }
@@ -228,7 +240,7 @@ namespace Newtonsoft.Json.Utilities
 
         public override Func<T, object> CreateGet<T>(PropertyInfo propertyInfo)
         {
-            DynamicMethod dynamicMethod = CreateDynamicMethod("Get" + propertyInfo.Name, typeof(T), new[] { typeof(object) }, propertyInfo.DeclaringType);
+            DynamicMethod dynamicMethod = CreateDynamicMethod("Get" + propertyInfo.Name, typeof(object), new[] { typeof(T) }, propertyInfo.DeclaringType);
             ILGenerator generator = dynamicMethod.GetILGenerator();
 
             GenerateCreateGetPropertyIL(propertyInfo, generator);
@@ -240,10 +252,14 @@ namespace Newtonsoft.Json.Utilities
         {
             MethodInfo getMethod = propertyInfo.GetGetMethod(true);
             if (getMethod == null)
+            {
                 throw new ArgumentException("Property '{0}' does not have a getter.".FormatWith(CultureInfo.InvariantCulture, propertyInfo.Name));
+            }
 
             if (!getMethod.IsStatic)
+            {
                 generator.PushInstance(propertyInfo.DeclaringType);
+            }
 
             generator.CallMethod(getMethod);
             generator.BoxIfNeeded(propertyInfo.PropertyType);
@@ -296,15 +312,21 @@ namespace Newtonsoft.Json.Utilities
         internal static void GenerateCreateSetFieldIL(FieldInfo fieldInfo, ILGenerator generator)
         {
             if (!fieldInfo.IsStatic)
+            {
                 generator.PushInstance(fieldInfo.DeclaringType);
+            }
 
             generator.Emit(OpCodes.Ldarg_1);
             generator.UnboxIfNeeded(fieldInfo.FieldType);
 
             if (!fieldInfo.IsStatic)
+            {
                 generator.Emit(OpCodes.Stfld, fieldInfo);
+            }
             else
+            {
                 generator.Emit(OpCodes.Stsfld, fieldInfo);
+            }
 
             generator.Return();
         }
@@ -323,7 +345,9 @@ namespace Newtonsoft.Json.Utilities
         {
             MethodInfo setMethod = propertyInfo.GetSetMethod(true);
             if (!setMethod.IsStatic)
+            {
                 generator.PushInstance(propertyInfo.DeclaringType);
+            }
 
             generator.Emit(OpCodes.Ldarg_1);
             generator.UnboxIfNeeded(propertyInfo.PropertyType);
@@ -332,4 +356,5 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 }
+
 #endif

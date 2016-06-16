@@ -38,6 +38,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Linq.JsonPath
@@ -80,29 +81,29 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
 
             JObject o1 = new JObject
             {
-                {"Title","Title!"},
-                {"FirstName", "FirstName!"},
-                {"LastName", "LastName!"}
+                { "Title", "Title!" },
+                { "FirstName", "FirstName!" },
+                { "LastName", "LastName!" }
             };
 
             Assert.IsTrue(compositeExpression.IsMatch(o1));
 
             JObject o2 = new JObject
             {
-                {"Title","Title!"},
-                {"FirstName", "FirstName!"}
+                { "Title", "Title!" },
+                { "FirstName", "FirstName!" }
             };
 
             Assert.IsFalse(compositeExpression.IsMatch(o2));
 
             JObject o3 = new JObject
             {
-                {"Title","Title!"}
+                { "Title", "Title!" }
             };
 
             Assert.IsFalse(compositeExpression.IsMatch(o3));
         }
-        
+
         [Test]
         public void OrExpressionTest()
         {
@@ -138,24 +139,24 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
 
             JObject o1 = new JObject
             {
-                {"Title","Title!"},
-                {"FirstName", "FirstName!"},
-                {"LastName", "LastName!"}
+                { "Title", "Title!" },
+                { "FirstName", "FirstName!" },
+                { "LastName", "LastName!" }
             };
 
             Assert.IsTrue(compositeExpression.IsMatch(o1));
 
             JObject o2 = new JObject
             {
-                {"Title","Title!"},
-                {"FirstName", "FirstName!"}
+                { "Title", "Title!" },
+                { "FirstName", "FirstName!" }
             };
 
             Assert.IsTrue(compositeExpression.IsMatch(o2));
 
             JObject o3 = new JObject
             {
-                {"Title","Title!"}
+                { "Title", "Title!" }
             };
 
             Assert.IsFalse(compositeExpression.IsMatch(o3));

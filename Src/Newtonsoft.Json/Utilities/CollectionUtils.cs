@@ -65,10 +65,14 @@ namespace Newtonsoft.Json.Utilities
         public static void AddRange<T>(this IList<T> initial, IEnumerable<T> collection)
         {
             if (initial == null)
-                throw new ArgumentNullException("initial");
+            {
+                throw new ArgumentNullException(nameof(initial));
+            }
 
             if (collection == null)
+            {
                 return;
+            }
 
             foreach (T value in collection)
             {
@@ -79,7 +83,7 @@ namespace Newtonsoft.Json.Utilities
 #if (NET20 || NET35 || PORTABLE40)
         public static void AddRange<T>(this IList<T> initial, IEnumerable collection)
         {
-            ValidationUtils.ArgumentNotNull(initial, "initial");
+            ValidationUtils.ArgumentNotNull(initial, nameof(initial));
 
             // because earlier versions of .NET didn't support covariant generics
             initial.AddRange(collection.Cast<T>());
@@ -88,21 +92,34 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsDictionaryType(Type type)
         {
-            ValidationUtils.ArgumentNotNull(type, "type");
+            ValidationUtils.ArgumentNotNull(type, nameof(type));
 
             if (typeof(IDictionary).IsAssignableFrom(type))
+            {
                 return true;
+            }
             if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IDictionary<,>)))
+            {
                 return true;
+            }
 #if !(NET40 || NET35 || NET20 || PORTABLE40)
             if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IReadOnlyDictionary<,>)))
+            {
                 return true;
+            }
 #endif
 
             return false;
         }
 
         public static ConstructorInfo ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType)
+        {
+            Type genericConstructorArgument = typeof(IList<>).MakeGenericType(collectionItemType);
+
+            return ResolveEnumerableCollectionConstructor(collectionType, collectionItemType, genericConstructorArgument);
+        }
+
+        public static ConstructorInfo ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType, Type constructorArgumentType)
         {
             Type genericEnumerable = typeof(IEnumerable<>).MakeGenericType(collectionItemType);
             ConstructorInfo match = null;
@@ -113,7 +130,9 @@ namespace Newtonsoft.Json.Utilities
 
                 if (parameters.Count == 1)
                 {
-                    if (genericEnumerable == parameters[0].ParameterType)
+                    Type parameterType = parameters[0].ParameterType;
+
+                    if (genericEnumerable == parameterType)
                     {
                         // exact match
                         match = constructor;
@@ -123,7 +142,7 @@ namespace Newtonsoft.Json.Utilities
                     // incase we can't find an exact match, use first inexact
                     if (match == null)
                     {
-                        if (genericEnumerable.IsAssignableFrom(parameters[0].ParameterType))
+                        if (parameterType.IsAssignableFrom(constructorArgumentType))
                         {
                             match = constructor;
                         }
@@ -142,7 +161,9 @@ namespace Newtonsoft.Json.Utilities
         public static bool AddDistinct<T>(this IList<T> list, T value, IEqualityComparer<T> comparer)
         {
             if (list.ContainsValue(value, comparer))
+            {
                 return false;
+            }
 
             list.Add(value);
             return true;
@@ -152,15 +173,21 @@ namespace Newtonsoft.Json.Utilities
         public static bool ContainsValue<TSource>(this IEnumerable<TSource> source, TSource value, IEqualityComparer<TSource> comparer)
         {
             if (comparer == null)
+            {
                 comparer = EqualityComparer<TSource>.Default;
+            }
 
             if (source == null)
-                throw new ArgumentNullException("source");
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
 
             foreach (TSource local in source)
             {
                 if (comparer.Equals(local, value))
+                {
                     return true;
+                }
             }
 
             return false;
@@ -172,7 +199,9 @@ namespace Newtonsoft.Json.Utilities
             foreach (T value in values)
             {
                 if (!list.AddDistinct(value, comparer))
+                {
                     allAdded = false;
+                }
             }
 
             return allAdded;
@@ -184,7 +213,9 @@ namespace Newtonsoft.Json.Utilities
             foreach (T value in collection)
             {
                 if (predicate(value))
+                {
                     return index;
+                }
 
                 index++;
             }
@@ -192,11 +223,11 @@ namespace Newtonsoft.Json.Utilities
             return -1;
         }
 
-        public static bool Contains(this IEnumerable list, object value, IEqualityComparer comparer)
+        public static bool Contains<T>(this List<T> list, T value, IEqualityComparer comparer)
         {
-            foreach (object item in list)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (comparer.Equals(item, value))
+                if (comparer.Equals(value, list[i]))
                 {
                     return true;
                 }
@@ -204,24 +235,14 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
-        /// <summary>
-        /// Returns the index of the first occurrence in a sequence by using a specified IEqualityComparer{TSource}.
-        /// </summary>
-        /// <typeparam name="TSource">The type of the elements of source.</typeparam>
-        /// <param name="list">A sequence in which to locate a value.</param>
-        /// <param name="value">The object to locate in the sequence</param>
-        /// <param name="comparer">An equality comparer to compare values.</param>
-        /// <returns>The zero-based index of the first occurrence of value within the entire sequence, if found; otherwise, –1.</returns>
-        public static int IndexOf<TSource>(this IEnumerable<TSource> list, TSource value, IEqualityComparer<TSource> comparer)
+        public static int IndexOfReference<T>(this List<T> list, T item)
         {
-            int index = 0;
-            foreach (TSource item in list)
+            for (int i = 0; i < list.Count; i++)
             {
-                if (comparer.Equals(item, value))
+                if (ReferenceEquals(item, list[i]))
                 {
-                    return index;
+                    return i;
                 }
-                index++;
             }
             return -1;
         }
@@ -237,16 +258,24 @@ namespace Newtonsoft.Json.Utilities
 
                 // don't keep calculating dimensions for arrays inside the value array
                 if (dimensions.Count == dimensionsCount)
+                {
                     break;
+                }
 
                 if (currentArray.Count == 0)
+                {
                     break;
+                }
 
                 object v = currentArray[0];
                 if (v is IList)
+                {
                     currentArray = (IList)v;
+                }
                 else
+                {
                     break;
+                }
             }
 
             return dimensions;
@@ -265,7 +294,9 @@ namespace Newtonsoft.Json.Utilities
             IList list = (IList)JaggedArrayGetValue(values, indices);
             int currentValuesLength = list.Count;
             if (currentValuesLength != dimensionLength)
+            {
                 throw new Exception("Cannot deserialize non-cubical array as multidimensional array.");
+            }
 
             int[] newIndices = new int[dimension + 1];
             for (int i = 0; i < dimension; i++)
@@ -287,9 +318,13 @@ namespace Newtonsoft.Json.Utilities
             {
                 int index = indices[i];
                 if (i == indices.Length - 1)
+                {
                     return currentList[index];
+                }
                 else
+                {
                     currentList = (IList)currentList[index];
+                }
             }
             return currentList;
         }

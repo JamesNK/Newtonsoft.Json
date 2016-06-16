@@ -28,6 +28,7 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 using System.Security;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
@@ -144,12 +145,27 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         public ExtensionDataGetter ExtensionDataGetter { get; set; }
 
+        /// <summary>
+        /// Gets or sets the extension data value type.
+        /// </summary>
+        public Type ExtensionDataValueType
+        {
+            get { return _extensionDataValueType; }
+            set
+            {
+                _extensionDataValueType = value;
+                ExtensionDataIsJToken = (value != null && typeof(JToken).IsAssignableFrom(value));
+            }
+        }
+
+        internal bool ExtensionDataIsJToken;
         private bool? _hasRequiredOrDefaultValueProperties;
         private ConstructorInfo _parametrizedConstructor;
         private ConstructorInfo _overrideConstructor;
         private ObjectConstructor<object> _overrideCreator;
         private ObjectConstructor<object> _parameterizedCreator;
         private JsonPropertyCollection _creatorParameters;
+        private Type _extensionDataValueType;
 
         internal bool HasRequiredOrDefaultValueProperties
         {
@@ -176,7 +192,7 @@ namespace Newtonsoft.Json.Serialization
                     }
                 }
 
-                return _hasRequiredOrDefaultValueProperties.Value;
+                return _hasRequiredOrDefaultValueProperties.GetValueOrDefault();
             }
         }
 
@@ -200,7 +216,9 @@ namespace Newtonsoft.Json.Serialization
         {
             // we should never get here if the environment is not fully trusted, check just in case
             if (!JsonTypeReflector.FullyTrusted)
+            {
                 throw new JsonException("Insufficient permissions. Creating an uninitialized '{0}' type requires full trust.".FormatWith(CultureInfo.InvariantCulture, NonNullableUnderlyingType));
+            }
 
             return FormatterServices.GetUninitializedObject(NonNullableUnderlyingType);
         }

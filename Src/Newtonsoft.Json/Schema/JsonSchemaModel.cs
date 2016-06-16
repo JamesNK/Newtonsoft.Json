@@ -103,7 +103,9 @@ namespace Newtonsoft.Json.Schema
             if (schema.Enum != null)
             {
                 if (model.Enum == null)
+                {
                     model.Enum = new List<JToken>();
+                }
 
                 model.Enum.AddRangeDistinct(schema.Enum, JToken.EqualityComparer);
             }
@@ -112,7 +114,9 @@ namespace Newtonsoft.Json.Schema
             if (schema.Pattern != null)
             {
                 if (model.Patterns == null)
+                {
                     model.Patterns = new List<string>();
+                }
 
                 model.Patterns.AddDistinct(schema.Pattern);
             }

@@ -1,14 +1,19 @@
 ﻿{
-  "version": "7.0.2-beta1",
+  "version": "1.0.0-*",
   "title": "Json.NET",
   "description": "Json.NET is a popular high-performance JSON framework for .NET",
-  "authors": [ "James Newton-King" ],
-  "tags": [ "json" ],
-  "projectUrl": "http://www.newtonsoft.com/json",
-  "licenseUrl": "https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md",
-  "iconUrl": "http://www.newtonsoft.com/content/images/nugeticon.png",
   "language": "en-US",
-
+  "authors": [ "James Newton-King" ],
+  "packOptions": {
+    "projectUrl": "http://www.newtonsoft.com/json",
+    "tags": [ "json" ],
+    "licenseUrl": "https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md",
+    "iconUrl": "http://www.newtonsoft.com/content/images/nugeticon.png",
+    "repository": {
+      "type": "git",
+      "url": "git://github.com/JamesNK/Newtonsoft.Json"
+    }
+  },
   "frameworks": {
     "net45": {
       "frameworkAssemblies": {
@@ -44,8 +49,10 @@
       }
     },
     ".NETPortable,Version=v4.5,Profile=Profile259": {
-      "compilationOptions": {
-        "define": [ "PORTABLE" ]
+      "buildOptions": {
+        "define": [
+          "PORTABLE"
+        ]
       },
       "frameworkAssemblies": {
         "Microsoft.CSharp": "",
@@ -61,6 +68,7 @@
         "System.ObjectModel": "",
         "System.Reflection": "",
         "System.Reflection.Extensions": "",
+        "System.Resources.ResourceManager": "",
         "System.Runtime": "",
         "System.Runtime.Extensions": "",
         "System.Runtime.Serialization": "",
@@ -77,8 +85,10 @@
       }
     },
     ".NETPortable,Version=v4.0,Profile=Profile328": {
-      "compilationOptions": {
-        "define": [ "PORTABLE40" ]
+      "buildOptions": {
+        "define": [
+          "PORTABLE40"
+        ]
       },
       "frameworkAssemblies": {
         "mscorlib": "",
@@ -88,32 +98,36 @@
         "System.Xml": ""
       }
     },
-    "dotnet": {
+    "netstandard1.0": {
+      "buildOptions": {
+        "define": [
+          "NETSTANDARD10",
+          "PORTABLE"
+        ]
+      },
       "dependencies": {
-        "Microsoft.CSharp": "4.0.0",
-        "System.Collections": "4.0.10",
-        "System.Collections.Concurrent": "4.0.10",
-        "System.ComponentModel.TypeConverter": "4.0.0",
-        "System.Diagnostics.Debug": "4.0.10",
-        "System.Dynamic.Runtime": "4.0.10",
-        "System.Globalization": "4.0.10",
-        "System.IO": "4.0.10",
-        "System.Linq": "4.0.0",
-        "System.Linq.Expressions": "4.0.10",
-        "System.ObjectModel": "4.0.10",
-        "System.Reflection": "4.0.10",
-        "System.Reflection.Extensions": "4.0.0",
-        "System.Runtime": "4.0.20",
-        "System.Runtime.Extensions": "4.0.10",
-        "System.Runtime.Numerics": "4.0.0",
-        "System.Runtime.Serialization.Primitives": "4.0.10",
-        "System.Text.Encoding": "4.0.10",
-        "System.Text.Encoding.Extensions": "4.0.10",
-        "System.Text.RegularExpressions": "4.0.10",
-        "System.Threading": "4.0.10",
-        "System.Threading.Tasks": "4.0.10",
-        "System.Xml.ReaderWriter": "4.0.10",
-        "System.Xml.XDocument": "4.0.10"
+        "Microsoft.CSharp": "4.0.1-rc2-24027",
+        "System.Collections": "4.0.11-rc2-24027",
+        "System.Diagnostics.Debug": "4.0.11-rc2-24027",
+        "System.Dynamic.Runtime": "4.0.11-rc2-24027",
+        "System.Globalization": "4.0.11-rc2-24027",
+        "System.IO": "4.1.0-rc2-24027",
+        "System.Linq": "4.1.0-rc2-24027",
+        "System.Linq.Expressions": "4.0.11-rc2-24027",
+        "System.ObjectModel": "4.0.12-rc2-24027",
+        "System.Reflection": "4.1.0-rc2-24027",
+        "System.Reflection.Extensions": "4.0.1-rc2-24027",
+        "System.Resources.ResourceManager": "4.0.1-rc2-24027",
+        "System.Runtime": "4.1.0-rc2-24027",
+        "System.Runtime.Extensions": "4.1.0-rc2-24027",
+        "System.Runtime.Serialization.Primitives": "4.1.1-rc2-24027",
+        "System.Text.Encoding": "4.0.11-rc2-24027",
+        "System.Text.Encoding.Extensions": "4.0.11-rc2-24027",
+        "System.Text.RegularExpressions": "4.0.12-rc2-24027",
+        "System.Threading": "4.0.11-rc2-24027",
+        "System.Threading.Tasks": "4.0.11-rc2-24027",
+        "System.Xml.ReaderWriter": "4.0.11-rc2-24027",
+        "System.Xml.XDocument": "4.0.11-rc2-24027"
       }
     }
   }

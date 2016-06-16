@@ -91,7 +91,9 @@ namespace Newtonsoft.Json.Serialization
             get
             {
                 if (_parameterizedCreator == null)
+                {
                     _parameterizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(_parameterizedConstructor);
+                }
 
                 return _parameterizedCreator;
             }
@@ -136,7 +138,9 @@ namespace Newtonsoft.Json.Serialization
                 valueType = _genericCollectionDefinitionType.GetGenericArguments()[1];
 
                 if (ReflectionUtils.IsGenericDefinition(UnderlyingType, typeof(IDictionary<,>)))
+                {
                     CreatedType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
+                }
 
 #if !(NET40 || NET35 || NET20 || PORTABLE40)
                 IsReadOnlyOrFixedSize = ReflectionUtils.InheritsGenericDefinition(underlyingType, typeof(ReadOnlyDictionary<,>));
@@ -149,7 +153,9 @@ namespace Newtonsoft.Json.Serialization
                 valueType = _genericCollectionDefinitionType.GetGenericArguments()[1];
 
                 if (ReflectionUtils.IsGenericDefinition(UnderlyingType, typeof(IReadOnlyDictionary<,>)))
+                {
                     CreatedType = typeof(ReadOnlyDictionary<,>).MakeGenericType(keyType, valueType);
+                }
 
                 IsReadOnlyOrFixedSize = true;
             }
@@ -159,12 +165,17 @@ namespace Newtonsoft.Json.Serialization
                 ReflectionUtils.GetDictionaryKeyValueTypes(UnderlyingType, out keyType, out valueType);
 
                 if (UnderlyingType == typeof(IDictionary))
+                {
                     CreatedType = typeof(Dictionary<object, object>);
+                }
             }
 
             if (keyType != null && valueType != null)
             {
-                _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(CreatedType, typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType));
+                _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(
+                    CreatedType,
+                    typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType),
+                    typeof(IDictionary<,>).MakeGenericType(keyType, valueType));
 
 #if !(NET35 || NET20)
                 if (!HasParameterizedCreatorInternal && underlyingType.Name == FSharpUtils.FSharpMapTypeName)

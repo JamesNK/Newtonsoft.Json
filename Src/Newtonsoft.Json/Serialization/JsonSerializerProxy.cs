@@ -214,14 +214,18 @@ namespace Newtonsoft.Json.Serialization
         internal JsonSerializerInternalBase GetInternalSerializer()
         {
             if (_serializerReader != null)
+            {
                 return _serializerReader;
+            }
             else
+            {
                 return _serializerWriter;
+            }
         }
 
         public JsonSerializerProxy(JsonSerializerInternalReader serializerReader)
         {
-            ValidationUtils.ArgumentNotNull(serializerReader, "serializerReader");
+            ValidationUtils.ArgumentNotNull(serializerReader, nameof(serializerReader));
 
             _serializerReader = serializerReader;
             _serializer = serializerReader.Serializer;
@@ -229,7 +233,7 @@ namespace Newtonsoft.Json.Serialization
 
         public JsonSerializerProxy(JsonSerializerInternalWriter serializerWriter)
         {
-            ValidationUtils.ArgumentNotNull(serializerWriter, "serializerWriter");
+            ValidationUtils.ArgumentNotNull(serializerWriter, nameof(serializerWriter));
 
             _serializerWriter = serializerWriter;
             _serializer = serializerWriter.Serializer;
@@ -238,25 +242,37 @@ namespace Newtonsoft.Json.Serialization
         internal override object DeserializeInternal(JsonReader reader, Type objectType)
         {
             if (_serializerReader != null)
+            {
                 return _serializerReader.Deserialize(reader, objectType, false);
+            }
             else
+            {
                 return _serializer.Deserialize(reader, objectType);
+            }
         }
 
         internal override void PopulateInternal(JsonReader reader, object target)
         {
             if (_serializerReader != null)
+            {
                 _serializerReader.Populate(reader, target);
+            }
             else
+            {
                 _serializer.Populate(reader, target);
+            }
         }
 
         internal override void SerializeInternal(JsonWriter jsonWriter, object value, Type rootType)
         {
             if (_serializerWriter != null)
+            {
                 _serializerWriter.Serialize(jsonWriter, value, rootType);
+            }
             else
+            {
                 _serializer.Serialize(jsonWriter, value);
+            }
         }
     }
 }

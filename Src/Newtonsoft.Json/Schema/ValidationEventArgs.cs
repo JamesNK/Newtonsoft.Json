@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Schema
 
         internal ValidationEventArgs(JsonSchemaException ex)
         {
-            ValidationUtils.ArgumentNotNull(ex, "ex");
+            ValidationUtils.ArgumentNotNull(ex, nameof(ex));
             _ex = ex;
         }
 

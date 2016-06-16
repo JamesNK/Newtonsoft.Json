@@ -1,5 +1,7 @@
-<?xml version="1.0" encoding="utf-8"?>
-<APIXML xmlns="http://api.dmds.com/api/v1/schemas/apixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" RetreivalDateUTC="2014-05-08T22:08:27.500">
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<APIXML xmlns="http://api.dmds.com/api/v1/schemas/apixml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:xsd="http://www.w3.org/2001/XMLSchema" RetreivalDateUTC="2014-05-08T22:08:27.500">
   <Associations>
     <Association>
       <Action>Add</Action>

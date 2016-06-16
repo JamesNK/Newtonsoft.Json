@@ -741,6 +741,52 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void WildcardWithProperty()
+        {
+            JObject o = JObject.Parse(@"{
+    ""station"": 92000041000001, 
+    ""containers"": [
+        {
+            ""id"": 1,
+            ""text"": ""Sort system"",
+            ""containers"": [
+                {
+                    ""id"": ""2"",
+                    ""text"": ""Yard 11""
+                },
+                {
+                    ""id"": ""92000020100006"",
+                    ""text"": ""Sort yard 12""
+                },
+                {
+                    ""id"": ""92000020100005"",
+                    ""text"": ""Yard 13""
+                } 
+            ]
+        }, 
+        {
+            ""id"": ""92000020100011"",
+            ""text"": ""TSP-1""
+        }, 
+        {
+            ""id"":""92000020100007"",
+            ""text"": ""Passenger 15""
+        }
+    ]
+}");
+
+            IList<JToken> tokens = o.SelectTokens("$..*[?(@.text)]").ToList();
+            int i = 0;
+            Assert.AreEqual("Sort system", (string)tokens[i++]["text"]);
+            Assert.AreEqual("TSP-1", (string)tokens[i++]["text"]);
+            Assert.AreEqual("Passenger 15", (string)tokens[i++]["text"]);
+            Assert.AreEqual("Yard 11", (string)tokens[i++]["text"]);
+            Assert.AreEqual("Sort yard 12", (string)tokens[i++]["text"]);
+            Assert.AreEqual("Yard 13", (string)tokens[i++]["text"]);
+            Assert.AreEqual(6, tokens.Count);
+        }
+
+        [Test]
         public void QueryAgainstNonStringValues()
         {
             IList<object> values = new List<object>
@@ -765,9 +811,9 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                 new JProperty("prop",
                     new JArray(
                         values.Select(v => new JObject(new JProperty("childProp", v)))
+                        )
                     )
-                )
-            );
+                );
 
             IList<JToken> t = o.SelectTokens("$.prop[?(@.childProp =='ff2dc672-6e15-4aa2-afb0-18f4f69596ad')]").ToList();
             Assert.AreEqual(2, t.Count);
@@ -855,6 +901,53 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             Assert.AreEqual(null, firstProductNames[0]);
             Assert.AreEqual("Headlight Fluid", firstProductNames[1]);
             Assert.AreEqual(149.95m, totalPrice);
+        }
+
+        [Test]
+        public void NotEqualsAndNonPrimativeValues()
+        {
+            string json = @"[
+  {
+    ""name"": ""string"",
+    ""value"": ""aString""
+  },
+  {
+    ""name"": ""number"",
+    ""value"": 123
+  },
+  {
+    ""name"": ""array"",
+    ""value"": [
+      1,
+      2,
+      3,
+      4
+    ]
+  },
+  {
+    ""name"": ""object"",
+    ""value"": {
+      ""1"": 1
+    }
+  }
+]";
+
+            JArray a = JArray.Parse(json);
+
+            List<JToken> result = a.SelectTokens("$.[?(@.value!=1)]").ToList();
+            Assert.AreEqual(4, result.Count);
+
+            result = a.SelectTokens("$.[?(@.value!='2000-12-05T05:07:59-10:00')]").ToList();
+            Assert.AreEqual(4, result.Count);
+
+            result = a.SelectTokens("$.[?(@.value!=null)]").ToList();
+            Assert.AreEqual(4, result.Count);
+
+            result = a.SelectTokens("$.[?(@.value!=123)]").ToList();
+            Assert.AreEqual(3, result.Count);
+
+            result = a.SelectTokens("$.[?(@.value)]").ToList();
+            Assert.AreEqual(4, result.Count);
         }
     }
 }

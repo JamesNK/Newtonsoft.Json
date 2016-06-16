@@ -104,6 +104,28 @@ namespace Newtonsoft.Json.Tests.Converters
             public NegativeEnum Value2 { get; set; }
         }
 
+        [JsonConverter(typeof(StringEnumConverter), true)]
+        public enum CamelCaseEnum
+        {
+            This,
+            Is,
+            CamelCase
+        }
+
+        [Test]
+        public void Serialize_CamelCaseFromAttribute()
+        {
+            string json = JsonConvert.SerializeObject(CamelCaseEnum.CamelCase);
+            Assert.AreEqual(@"""camelCase""", json);
+        }
+
+        [Test]
+        public void Deserialize_CamelCaseFromAttribute()
+        {
+            CamelCaseEnum e = JsonConvert.DeserializeObject<CamelCaseEnum>(@"""camelCase""");
+            Assert.AreEqual(CamelCaseEnum.CamelCase, e);
+        }
+
 #if !NET20
         [Test]
         public void NamedEnumDuplicateTest()
@@ -500,7 +522,6 @@ namespace Newtonsoft.Json.Tests.Converters
 
                 Assert.AreEqual(DuplicateNameEnum.foo_bar, o.Value);
                 Assert.AreEqual(DuplicateNameEnum2.FooBar, o.Value2);
-
             }, "Type 'Newtonsoft.Json.Tests.Converters.DuplicateNameEnum' contains two members 'foo_bar' 'and 'FooBar' with the same name 'foo_bar'. Multiple members with the same name in one type are not supported. Consider changing one of the member names using EnumMemberAttribute attribute.");
         }
 #endif
@@ -512,6 +533,7 @@ namespace Newtonsoft.Json.Tests.Converters
     {
         [DataMember]
         public DuplicateNameEnum Value { get; set; }
+
         [DataMember]
         public DuplicateNameEnum2 Value2 { get; set; }
     }
@@ -521,10 +543,13 @@ namespace Newtonsoft.Json.Tests.Converters
     {
         [EnumMember]
         first = 0,
+
         [EnumMember]
         foo_bar = 1,
+
         [EnumMember(Value = "foo_bar")]
         FooBar = 2,
+
         [EnumMember]
         foo_bar_NOT_USED = 3
     }
@@ -534,10 +559,13 @@ namespace Newtonsoft.Json.Tests.Converters
     {
         [EnumMember]
         first = 0,
+
         [EnumMember(Value = "foo_bar")]
         FooBar = 1,
+
         [EnumMember]
         foo_bar = 2,
+
         [EnumMember(Value = "TEST")]
         foo_bar_NOT_USED = 3
     }

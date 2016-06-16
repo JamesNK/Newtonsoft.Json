@@ -43,6 +43,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -140,7 +141,9 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             // use Autofac to create types that have been registered with it
             if (_container.IsRegistered(objectType))
+            {
                 contract.DefaultCreator = () => _container.Resolve(objectType);
+            }
 
             return contract;
         }
@@ -248,4 +251,5 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
     }
 }
+
 #endif

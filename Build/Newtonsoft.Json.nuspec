@@ -1,15 +1,47 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <package xmlns="http://schemas.microsoft.com/packaging/2010/07/nuspec.xsd">
-  <metadata>
-    <id>Newtonsoft.Json</id>
-    <version></version>
-    <title>Json.NET</title>
-    <description>Json.NET is a popular high-performance JSON framework for .NET</description>
-    <authors>James Newton-King</authors>
-    <language>en-US</language>
-    <projectUrl>http://www.newtonsoft.com/json</projectUrl>
-    <iconUrl>http://www.newtonsoft.com/content/images/nugeticon.png</iconUrl>
-    <licenseUrl>https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md</licenseUrl>
-    <tags>json</tags>
-  </metadata>
+    <metadata>
+        <id>Newtonsoft.Json</id>
+        <version></version>
+        <title>Json.NET</title>
+        <description>Json.NET is a popular high-performance JSON framework for .NET</description>
+        <authors>James Newton-King</authors>
+        <language>en-US</language>
+        <projectUrl>http://www.newtonsoft.com/json</projectUrl>
+        <iconUrl>http://www.newtonsoft.com/content/images/nugeticon.png</iconUrl>
+        <licenseUrl>https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md</licenseUrl>
+        <tags>json</tags>
+        <dependencies>
+            <group targetFramework=".NETFramework4.5" />
+            <group targetFramework=".NETFramework4.0" />
+            <group targetFramework=".NETFramework3.5" />
+            <group targetFramework=".NETFramework2.0" />
+            <group targetFramework=".NETPortable4.5-Profile259" />
+            <group targetFramework=".NETPortable4.0-Profile328" />
+            <group targetFramework=".NETStandard1.0">
+                <dependency id="Microsoft.CSharp" version="4.0.1-rc2-24027" />
+                <dependency id="System.Collections" version="4.0.11-rc2-24027" />
+                <dependency id="System.Diagnostics.Debug" version="4.0.11-rc2-24027" />
+                <dependency id="System.Dynamic.Runtime" version="4.0.11-rc2-24027" />
+                <dependency id="System.Globalization" version="4.0.11-rc2-24027" />
+                <dependency id="System.IO" version="4.1.0-rc2-24027" />
+                <dependency id="System.Linq" version="4.1.0-rc2-24027" />
+                <dependency id="System.Linq.Expressions" version="4.0.11-rc2-24027" />
+                <dependency id="System.ObjectModel" version="4.0.12-rc2-24027" />
+                <dependency id="System.Reflection" version="4.1.0-rc2-24027" />
+                <dependency id="System.Reflection.Extensions" version="4.0.1-rc2-24027" />
+                <dependency id="System.Resources.ResourceManager" version="4.0.1-rc2-24027" />
+                <dependency id="System.Runtime" version="4.1.0-rc2-24027" />
+                <dependency id="System.Runtime.Extensions" version="4.1.0-rc2-24027" />
+                <dependency id="System.Runtime.Serialization.Primitives" version="4.1.1-rc2-24027" />
+                <dependency id="System.Text.Encoding" version="4.0.11-rc2-24027" />
+                <dependency id="System.Text.Encoding.Extensions" version="4.0.11-rc2-24027" />
+                <dependency id="System.Text.RegularExpressions" version="4.0.12-rc2-24027" />
+                <dependency id="System.Threading" version="4.0.11-rc2-24027" />
+                <dependency id="System.Threading.Tasks" version="4.0.11-rc2-24027" />
+                <dependency id="System.Xml.ReaderWriter" version="4.0.11-rc2-24027" />
+                <dependency id="System.Xml.XDocument" version="4.0.11-rc2-24027" />
+            </group>
+        </dependencies>
+    </metadata>
 </package>

@@ -56,8 +56,8 @@ namespace Newtonsoft.Json.Serialization
         public const string ShouldSerializePrefix = "ShouldSerialize";
         public const string SpecifiedPostfix = "Specified";
 
-        private static readonly ThreadSafeStore<Type, Func<object[], JsonConverter>> JsonConverterCreatorCache = 
-            new ThreadSafeStore<Type, Func<object[], JsonConverter>>(GetJsonConverterCreator);
+        private static readonly ThreadSafeStore<Type, Func<object[], object>> CreatorCache = 
+            new ThreadSafeStore<Type, Func<object[], object>>(GetCreator);
 
 #if !(NET20 || DOTNET)
         private static readonly ThreadSafeStore<Type, Type> AssociatedMetadataTypesCache = new ThreadSafeStore<Type, Type>(GetAssociateMetadataTypeFromAttribute);
@@ -79,7 +79,9 @@ namespace Newtonsoft.Json.Serialization
             {
                 DataContractAttribute result = CachedAttributeGetter<DataContractAttribute>.GetAttribute(currentType);
                 if (result != null)
+                {
                     return result;
+                }
 
                 currentType = currentType.BaseType();
             }
@@ -93,7 +95,9 @@ namespace Newtonsoft.Json.Serialization
 
             // can't override a field
             if (memberInfo.MemberType() == MemberTypes.Field)
+            {
                 return CachedAttributeGetter<DataMemberAttribute>.GetAttribute(memberInfo);
+            }
 
             // search property and then search base properties if nothing is returned and the property is virtual
             PropertyInfo propertyInfo = (PropertyInfo)memberInfo;
@@ -108,7 +112,9 @@ namespace Newtonsoft.Json.Serialization
                     {
                         PropertyInfo baseProperty = (PropertyInfo)ReflectionUtils.GetMemberInfoFromType(currentType, propertyInfo);
                         if (baseProperty != null && baseProperty.IsVirtual())
+                        {
                             result = CachedAttributeGetter<DataMemberAttribute>.GetAttribute(baseProperty);
+                        }
 
                         currentType = currentType.BaseType();
                     }
@@ -123,12 +129,16 @@ namespace Newtonsoft.Json.Serialization
         {
             JsonObjectAttribute objectAttribute = GetCachedAttribute<JsonObjectAttribute>(objectType);
             if (objectAttribute != null)
+            {
                 return objectAttribute.MemberSerialization;
+            }
 
 #if !NET20
             DataContractAttribute dataContractAttribute = GetDataContractAttribute(objectType);
             if (dataContractAttribute != null)
+            {
                 return MemberSerialization.OptIn;
+            }
 #endif
 
 #if !(DOTNET || PORTABLE40 || PORTABLE)
@@ -136,7 +146,9 @@ namespace Newtonsoft.Json.Serialization
             {
                 SerializableAttribute serializableAttribute = GetCachedAttribute<SerializableAttribute>(objectType);
                 if (serializableAttribute != null)
+                {
                     return MemberSerialization.Fields;
+                }
             }
 #endif
 
@@ -150,9 +162,11 @@ namespace Newtonsoft.Json.Serialization
 
             if (converterAttribute != null)
             {
-                Func<object[], JsonConverter> creator = JsonConverterCreatorCache.Get(converterAttribute.ConverterType);
+                Func<object[], object> creator = CreatorCache.Get(converterAttribute.ConverterType);
                 if (creator != null)
-                    return creator(converterAttribute.ConverterParameters);
+                {
+                    return (JsonConverter)creator(converterAttribute.ConverterParameters);
+                }
             }
 
             return null;
@@ -166,19 +180,35 @@ namespace Newtonsoft.Json.Serialization
         /// If null, the default constructor is used.</param>
         public static JsonConverter CreateJsonConverterInstance(Type converterType, object[] converterArgs)
         {
-            Func<object[], JsonConverter> converterCreator = JsonConverterCreatorCache.Get(converterType);
-            return converterCreator(converterArgs);
+            Func<object[], object> converterCreator = CreatorCache.Get(converterType);
+            return (JsonConverter)converterCreator(converterArgs);
         }
 
-        /// <summary>
-        /// Create a factory function that can be used to create instances of a JsonConverter described by the 
-        /// argument type.  The returned function can then be used to either invoke the converter's default ctor, or any 
-        /// parameterized constructors by way of an object array.
-        /// </summary>
-        private static Func<object[], JsonConverter> GetJsonConverterCreator(Type converterType)
+        public static NamingStrategy CreateNamingStrategyInstance(Type namingStrategyType, object[] converterArgs)
         {
-            Func<object> defaultConstructor = (ReflectionUtils.HasDefaultConstructor(converterType, false))
-                ? ReflectionDelegateFactory.CreateDefaultConstructor<object>(converterType)
+            Func<object[], object> converterCreator = CreatorCache.Get(namingStrategyType);
+            return (NamingStrategy)converterCreator(converterArgs);
+        }
+
+        public static NamingStrategy GetContainerNamingStrategy(JsonContainerAttribute containerAttribute)
+        {
+            if (containerAttribute.NamingStrategyInstance == null)
+            {
+                if (containerAttribute.NamingStrategyType == null)
+                {
+                    return null;
+                }
+
+                containerAttribute.NamingStrategyInstance = CreateNamingStrategyInstance(containerAttribute.NamingStrategyType, containerAttribute.NamingStrategyParameters);
+            }
+
+            return containerAttribute.NamingStrategyInstance;
+        }
+
+        private static Func<object[], object> GetCreator(Type type)
+        {
+            Func<object> defaultConstructor = (ReflectionUtils.HasDefaultConstructor(type, false))
+                ? ReflectionDelegateFactory.CreateDefaultConstructor<object>(type)
                 : null;
 
             return (parameters) =>
@@ -187,29 +217,30 @@ namespace Newtonsoft.Json.Serialization
                 {
                     if (parameters != null)
                     {
-                        ObjectConstructor<object> parameterizedConstructor = null;
                         Type[] paramTypes = parameters.Select(param => param.GetType()).ToArray();
-                        ConstructorInfo parameterizedConstructorInfo = converterType.GetConstructor(paramTypes);
+                        ConstructorInfo parameterizedConstructorInfo = type.GetConstructor(paramTypes);
 
                         if (null != parameterizedConstructorInfo)
                         {
-                            parameterizedConstructor = ReflectionDelegateFactory.CreateParameterizedConstructor(parameterizedConstructorInfo);
-                            return (JsonConverter)parameterizedConstructor(parameters);
+                            ObjectConstructor<object> parameterizedConstructor = ReflectionDelegateFactory.CreateParameterizedConstructor(parameterizedConstructorInfo);
+                            return parameterizedConstructor(parameters);
                         }
-                        else 
+                        else
                         {
-                            throw new JsonException("No matching parameterized constructor found for '{0}'.".FormatWith(CultureInfo.InvariantCulture, converterType));
-                        }                        
+                            throw new JsonException("No matching parameterized constructor found for '{0}'.".FormatWith(CultureInfo.InvariantCulture, type));
+                        }
                     }
 
                     if (defaultConstructor == null)
-                        throw new JsonException("No parameterless constructor defined for '{0}'.".FormatWith(CultureInfo.InvariantCulture, converterType));
+                    {
+                        throw new JsonException("No parameterless constructor defined for '{0}'.".FormatWith(CultureInfo.InvariantCulture, type));
+                    }
 
-                    return (JsonConverter)defaultConstructor();
+                    return defaultConstructor();
                 }
                 catch (Exception ex)
                 {
-                    throw new JsonException("Error creating '{0}'.".FormatWith(CultureInfo.InvariantCulture, converterType), ex);
+                    throw new JsonException("Error creating '{0}'.".FormatWith(CultureInfo.InvariantCulture, type), ex);
                 }
             };
         }
@@ -242,7 +273,9 @@ namespace Newtonsoft.Json.Serialization
                     const string metadataClassTypeName = "MetadataClassType";
 
                     if (_metadataTypeAttributeReflectionObject == null)
+                    {
                         _metadataTypeAttributeReflectionObject = ReflectionObject.Create(attributeType, metadataClassTypeName);
+                    }
 
                     return (Type)_metadataTypeAttributeReflectionObject.GetValue(attribute, metadataClassTypeName);
                 }
@@ -262,19 +295,25 @@ namespace Newtonsoft.Json.Serialization
             {
                 attribute = ReflectionUtils.GetAttribute<T>(metadataType, true);
                 if (attribute != null)
+                {
                     return attribute;
+                }
             }
 #endif
 
             attribute = ReflectionUtils.GetAttribute<T>(type, true);
             if (attribute != null)
+            {
                 return attribute;
+            }
 
             foreach (Type typeInterface in type.GetInterfaces())
             {
                 attribute = ReflectionUtils.GetAttribute<T>(typeInterface, true);
                 if (attribute != null)
+                {
                     return attribute;
+                }
             }
 
             return null;
@@ -294,14 +333,18 @@ namespace Newtonsoft.Json.Serialization
                 {
                     attribute = ReflectionUtils.GetAttribute<T>(metadataTypeMemberInfo, true);
                     if (attribute != null)
+                    {
                         return attribute;
+                    }
                 }
             }
 #endif
 
             attribute = ReflectionUtils.GetAttribute<T>(memberInfo, true);
             if (attribute != null)
+            {
                 return attribute;
+            }
 
             if (memberInfo.DeclaringType != null)
             {
@@ -313,7 +356,9 @@ namespace Newtonsoft.Json.Serialization
                     {
                         attribute = ReflectionUtils.GetAttribute<T>(interfaceTypeMemberInfo, true);
                         if (attribute != null)
+                        {
                             return attribute;
+                        }
                     }
                 }
             }
@@ -325,11 +370,15 @@ namespace Newtonsoft.Json.Serialization
         {
             Type type = provider as Type;
             if (type != null)
+            {
                 return GetAttribute<T>(type);
+            }
 
             MemberInfo memberInfo = provider as MemberInfo;
             if (memberInfo != null)
+            {
                 return GetAttribute<T>(memberInfo);
+            }
 
             return ReflectionUtils.GetAttribute<T>(provider, true);
         }
@@ -374,7 +423,7 @@ namespace Newtonsoft.Json.Serialization
 #endif
                 }
 
-                return _dynamicCodeGeneration.Value;
+                return _dynamicCodeGeneration.GetValueOrDefault();
             }
         }
 
@@ -403,7 +452,7 @@ namespace Newtonsoft.Json.Serialization
 #endif
                 }
 
-                return _fullyTrusted.Value;
+                return _fullyTrusted.GetValueOrDefault();
             }
         }
 
@@ -413,7 +462,9 @@ namespace Newtonsoft.Json.Serialization
             {
 #if !(PORTABLE40 || PORTABLE || DOTNET)
                 if (DynamicCodeGeneration)
+                {
                     return DynamicReflectionDelegateFactory.Instance;
+                }
 
                 return LateBoundReflectionDelegateFactory.Instance;
 #else

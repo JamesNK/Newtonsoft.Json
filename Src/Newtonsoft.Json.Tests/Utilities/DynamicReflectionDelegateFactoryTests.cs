@@ -46,6 +46,7 @@ using Newtonsoft.Json.Tests.Serialization;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+
 #endif
 
 namespace Newtonsoft.Json.Tests.Utilities
@@ -173,6 +174,24 @@ namespace Newtonsoft.Json.Tests.Utilities
 
             JsonSerializerTest.DictionaryKey key = (JsonSerializerTest.DictionaryKey)result;
             Assert.AreEqual("First!", key.Value);
+        }
+
+        [Test]
+        public void CreatePropertyGetter()
+        {
+            PropertyInfo namePropertyInfo = typeof(Person).GetProperty(nameof(Person.Name));
+
+            Assert.IsNotNull(namePropertyInfo);
+
+            var call = DynamicReflectionDelegateFactory.Instance.CreateGet<Person>(namePropertyInfo);
+
+            Person p = new Person();
+            p.Name = "Name!";
+
+            object result = call(p);
+            Assert.IsNotNull(result);
+
+            Assert.AreEqual("Name!", (string)result);
         }
     }
 }
