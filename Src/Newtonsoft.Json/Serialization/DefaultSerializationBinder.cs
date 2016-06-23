@@ -70,7 +70,7 @@ namespace Newtonsoft.Json.Serialization
                 assembly = Assembly.Load(assemblyName);
 #endif
 
-#if !(PORTABLE40 || PORTABLE || DOTNET || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4)
+#if !(PORTABLE40 || PORTABLE || DOTNET || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2)
                 if (assembly == null)
                 {
                     // will find assemblies loaded with Assembly.LoadFile outside of the main directory
