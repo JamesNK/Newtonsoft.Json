@@ -604,7 +604,7 @@ namespace Newtonsoft.Json.Bson
                     int length = Encoding.UTF8.GetChars(_byteBuffer, 0, byteCount, _charBuffer, 0);
 
                     MovePosition(totalBytesRead + 1);
-                    return new string(_charBuffer, 0, length);
+                    return GetString(_charBuffer, length);
                 }
                 else
                 {
@@ -692,7 +692,7 @@ namespace Newtonsoft.Json.Bson
                     // pref optimization to avoid reading into a string builder
                     // first iteration and all bytes read then return string directly
                     int charCount = Encoding.UTF8.GetChars(_byteBuffer, 0, byteCount, _charBuffer, 0);
-                    return new string(_charBuffer, 0, charCount);
+                    return GetString(_charBuffer, charCount);
                 }
                 else
                 {
@@ -720,6 +720,14 @@ namespace Newtonsoft.Json.Bson
             } while (totalBytesRead < length);
 
             return builder.ToString();
+        }
+
+        /// <summary>
+        /// An extension point that allows optimization of string instantiation. For instance, take it from a cache.
+        /// </summary>
+        protected virtual string GetString(char[] buffer, int charCount)
+        {
+            return new string(buffer, 0, charCount);
         }
 
         private int GetLastFullCharStop(int start)
