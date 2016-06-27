@@ -157,6 +157,10 @@
     </Compile>
     <Compile Include="Documentation\Samples\Serializer\DeserializeMetadataPropertyHandling.cs" />
     <Compile Include="Documentation\Samples\Serializer\JsonConstructorAttribute.cs" />
+    <Compile Include="Documentation\Samples\Serializer\NamingStrategyAttributes.cs" />
+    <Compile Include="Documentation\Samples\Serializer\NamingStrategySkipSpecifiedNames.cs" />
+    <Compile Include="Documentation\Samples\Serializer\NamingStrategySkipDictionaryKeys.cs" />
+    <Compile Include="Documentation\Samples\Serializer\NamingStrategyCamelCase.cs" />
     <Compile Include="Documentation\Samples\Serializer\SerializeDateFormatString.cs" />
     <Compile Include="Documentation\Samples\Serializer\DeserializeCollection.cs" />
     <Compile Include="Documentation\Samples\Serializer\DeserializeConstructorHandling.cs" />
@@ -205,6 +209,7 @@
     <Compile Include="Documentation\Samples\Serializer\SerializeUnindentedJson.cs" />
     <Compile Include="Documentation\Samples\Serializer\SerializeWithJsonConverters.cs" />
     <Compile Include="Documentation\Samples\Serializer\SerializeWithJsonSerializerToFile.cs" />
+    <Compile Include="Documentation\Samples\Serializer\NamingStrategySnakeCase.cs" />
     <Compile Include="Documentation\Samples\Serializer\TraceWriter.cs" />
     <Compile Include="Documentation\Samples\Xml\ConvertJsonToXml.cs" />
     <Compile Include="Documentation\Samples\Xml\ConvertXmlToJson.cs" />
