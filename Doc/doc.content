@@ -30,7 +30,7 @@
   <Topic id="JsonNetVsDotNetSerializers" visible="True" title="Json.NET vs .NET Serializers" />
   <Topic id="JsonNetVsWindowsDataJson" visible="True" title="Json.NET vs Windows.Data.Json" />
   <Topic id="Samples" visible="True" isExpanded="true" title="Samples">
-    <Topic id="d6e185d5-c992-44fc-8d8f-d9acc2bbec2f" visible="True" noFile="true" title="Serializing JSON">
+    <Topic id="d6e185d5-c992-44fc-8d8f-d9acc2bbec2f" visible="True" noFile="true" isExpanded="true" title="Serializing JSON">
       <Topic id="SerializeObject" visible="True" title="Serialize an Object" />
       <Topic id="SerializeCollection" visible="True" title="Serialize a Collection" />
       <Topic id="SerializeDictionary" visible="True" title="Serialize a Dictionary" />
@@ -72,6 +72,7 @@
       <Topic id="JsonConverterAttributeProperty" visible="True" title="JsonConverterAttribute on a property" />
       <Topic id="JsonObjectAttributeOptIn" visible="True" title="JsonObjectAttribute opt-in serialization" />
       <Topic id="JsonObjectAttributeOverrideIEnumerable" visible="True" title="JsonObjectAttribute force object serialization" />
+      <Topic id="NamingStrategyAttributes" visible="True" isSelected="true" title="JsonObjectAttribute NamingStrategy setting" />
       <Topic id="JsonPropertyName" visible="True" title="JsonPropertyAttribute name" />
       <Topic id="JsonPropertyOrder" visible="True" title="JsonPropertyAttribute order" />
       <Topic id="JsonPropertyRequired" visible="True" title="JsonPropertyAttribute required" />
@@ -90,8 +91,12 @@
       <Topic id="DeserializeExtensionData" visible="True" title="Deserialize ExtensionData" />
       <Topic id="DeserializeDateFormatString" visible="True" title="Deserialize DateFormatString" />
       <Topic id="SerializeDateFormatString" visible="True" title="Serialize DateFormatString" />
+      <Topic id="NamingStrategyCamelCase" visible="True" title="Camel case property names" />
+      <Topic id="NamingStrategySnakeCase" visible="True" title="Snake case property names" />
+      <Topic id="NamingStrategySkipDictionaryKeys" visible="True" title="Configure NamingStrategy dictionary serialiation" />
+      <Topic id="NamingStrategySkipSpecifiedNames" visible="True" title="Configure NamingStrategy property name serialization" />
     </Topic>
-    <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" isExpanded="true" title="LINQ to JSON">
+    <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" title="LINQ to JSON">
       <Topic id="CreateJsonManually" visible="True" title="Create JSON manually" />
       <Topic id="CreateJsonCollectionInitializer" visible="True" title="Create JSON using Collection Initializers" />
       <Topic id="CreateJsonDeclaratively" visible="True" title="Create JSON declaratively with LINQ" />
@@ -110,7 +115,7 @@
       <Topic id="QueryJsonDynamic" visible="True" title="Querying JSON with dynamic" />
       <Topic id="QueryJsonLinq" visible="True" title="Querying JSON with LINQ" />
       <Topic id="QueryJsonSelectToken" visible="True" title="Querying JSON with SelectToken" />
-      <Topic id="QueryJsonSelectTokenEscaped" visible="True" isSelected="true" title="Querying JSON with SelectToken and escaped properties" />
+      <Topic id="QueryJsonSelectTokenEscaped" visible="True" title="Querying JSON with SelectToken and escaped properties" />
       <Topic id="QueryJsonSelectTokenWithLinq" visible="True" title="Querying JSON with SelectToken and LINQ" />
       <Topic id="QueryJsonSelectTokenJsonPath" visible="True" title="Querying JSON with JSONPath" />
       <Topic id="ReadJson" visible="True" title="Read JSON from a file" />
@@ -152,7 +157,7 @@
       <Topic id="DeserializeFromBson" visible="True" title="Deserialize from BSON" />
       <Topic id="DeserializeFromBsonCollection" visible="True" title="Deserialize a Collection from BSON" />
     </Topic>
-    <Topic id="ca145ed0-f377-4f1c-9479-d1629082fc6e" visible="True" noFile="true" isExpanded="true" title="Reading and Writing JSON">
+    <Topic id="ca145ed0-f377-4f1c-9479-d1629082fc6e" visible="True" noFile="true" title="Reading and Writing JSON">
       <Topic id="ReadJsonWithJsonTextReader" visible="True" title="Read JSON with JsonTextReader" />
       <Topic id="WriteJsonWithJsonTextWriter" visible="True" title="Write JSON with JsonTextWriter" />
       <Topic id="ReadMultipleContentWithJsonReader" visible="True" title="Read Multiple Fragments With JsonReader" />

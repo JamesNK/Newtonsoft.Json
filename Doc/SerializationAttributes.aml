@@ -48,6 +48,8 @@
         (a member must have the JsonProperty or DataMember attribute to be serialized), opt-out (everything is
         serialized by default but can be ignored with the JsonIgnoreAttribute, Json.NET's default behavior) or
         fields (all public and private fields are serialized and properties are ignored).</para>
+        <para>The NamingStrategy setting on this attributes can be set to a <codeEntityReference>T:Newtonsoft.Json.Serialization.NamingStrategy</codeEntityReference>
+        type that specifies how property names are serialized.</para>
         <para>Json.NET serializes .NET classes that implement IEnumerable as a JSON array populated with the
         IEnumerable values. Placing the <codeEntityReference>T:Newtonsoft.Json.JsonObjectAttribute</codeEntityReference>
         overrides this behavior and forces the serializer to serialize the class's fields and properties.</para>
@@ -77,6 +79,7 @@
   <listItem><para>JsonPropertyAttribute indicates that a property should be serialized when member serialization is set to opt-in.</para></listItem>
   <listItem><para>It includes non-public properties in serialization and deserialization.</para></listItem>
   <listItem><para>It can be used to customize type name, reference, null, and default value handling for the property value.</para></listItem>
+  <listItem><para>It can be used to customize the <codeEntityReference>T:Newtonsoft.Json.Serialization.NamingStrategy</codeEntityReference> of the serialized property name.</para></listItem>
   <listItem><para>It can be used to customize the property's collection items JsonConverter, type name handling, and reference handling.</para></listItem>
 </list>
         
