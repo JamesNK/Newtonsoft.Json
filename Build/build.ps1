@@ -11,7 +11,7 @@
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
-  $netCliVersion = "1.0.0-preview1-002702"
+  $netCliVersion = "1.0.0-preview3-003171"
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"

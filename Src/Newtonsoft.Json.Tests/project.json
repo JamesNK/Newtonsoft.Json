@@ -96,7 +96,7 @@
         "System.Runtime.Serialization.Json": "4.0.2",
         "System.Runtime.Serialization.Xml": "4.1.1",
         "xunit": "2.1.0",
-        "dotnet-test-xunit": "1.0.0-rc2-build10015"
+        "dotnet-test-xunit": "1.0.0-rc2-build10025"
       },
       "imports": [
         "dnxcore50",
