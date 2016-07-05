@@ -205,7 +205,7 @@ function NetCliBuild($build)
   $name = $build.Name
   $projectPath = "$workingSourceDir\Newtonsoft.Json\project.json"
 
-  exec { .\Tools\Dotnet\install.ps1 -Version $netCliVersion | Out-Default }
+  exec { .\Tools\Dotnet\dotnet-install.ps1 -Version $netCliVersion | Out-Default }
   exec { dotnet --version | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
@@ -220,7 +220,7 @@ function NetCliTests($build)
 {
   $name = $build.TestsName
 
-  exec { .\Tools\Dotnet\install.ps1 -Version $netCliVersion | Out-Default }
+  exec { .\Tools\Dotnet\dotnet-install.ps1 -Version $netCliVersion | Out-Default }
   exec { dotnet --version | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
