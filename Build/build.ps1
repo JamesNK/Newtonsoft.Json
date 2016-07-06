@@ -2,7 +2,7 @@
   $zipFileName = "Json90r1.zip"
   $majorVersion = "9.0"
   $majorWithReleaseVersion = "9.0.1"
-  $nugetPrerelease = "beta1"
+  $nugetPrerelease = $null
   $version = GetVersion $majorWithReleaseVersion
   $packageId = "Newtonsoft.Json"
   $signAssemblies = $false
@@ -11,7 +11,7 @@
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
-  $netCliVersion = "1.0.0-preview1-002702"
+  $netCliVersion = "1.0.0-preview3-003171"
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -53,8 +53,7 @@ task Clean {
 }
 
 # Build each solution, optionally signed
-task Build -depends Clean { 
-
+task Build -depends Clean {
   Write-Host "Copying source to working source directory $workingSourceDir"
   robocopy $sourceDir $workingSourceDir /MIR /NP /XD bin obj TestResults AppPackages $packageDirs .vs artifacts /XF *.suo *.user *.lock.json | Out-Default
 
@@ -206,7 +205,7 @@ function NetCliBuild($build)
   $name = $build.Name
   $projectPath = "$workingSourceDir\Newtonsoft.Json\project.json"
 
-  exec { .\Tools\Dotnet\install.ps1 -Version $netCliVersion | Out-Default }
+  exec { .\Tools\Dotnet\dotnet-install.ps1 -Version $netCliVersion | Out-Default }
   exec { dotnet --version | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"
@@ -221,7 +220,7 @@ function NetCliTests($build)
 {
   $name = $build.TestsName
 
-  exec { .\Tools\Dotnet\install.ps1 -Version $netCliVersion | Out-Default }
+  exec { .\Tools\Dotnet\dotnet-install.ps1 -Version $netCliVersion | Out-Default }
   exec { dotnet --version | Out-Default }
 
   Write-Host -ForegroundColor Green "Restoring packages for $name"

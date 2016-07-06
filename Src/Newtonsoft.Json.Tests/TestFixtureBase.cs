@@ -298,12 +298,12 @@ namespace Newtonsoft.Json.Tests
     }
 
 #if NETFX_CORE
-  public static class Console
-  {
-    public static void WriteLine(params object[] args)
+    public static class Console
     {
+        public static void WriteLine(params object[] args)
+        {
+        }
     }
-  }
 #endif
 
     public static class CustomAssert

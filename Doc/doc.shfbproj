@@ -8,7 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{fd19f68e-72c8-4576-9775-b4480b0db686}</ProjectGuid>
-    <SHFBSchemaVersion>1.9.9.0</SHFBSchemaVersion>
+    <SHFBSchemaVersion>2015.6.5.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
          Studio adds them anyway -->
     <AssemblyName>Documentation</AssemblyName>
@@ -100,6 +100,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icons\favicon.ico" />
+    <None Include="Samples\Serializer\NamingStrategyAttributes.aml" />
+    <None Include="Samples\Serializer\NamingStrategySnakeCase.aml" />
+    <None Include="Samples\Serializer\NamingStrategySkipSpecifiedNames.aml" />
+    <None Include="Samples\Serializer\NamingStrategySkipDictionaryKeys.aml" />
+    <None Include="Samples\Serializer\NamingStrategyCamelCase.aml" />
     <None Include="Samples\Linq\QueryJsonSelectTokenEscaped.aml" />
     <None Include="Samples\Serializer\JsonConstructorAttribute.aml" />
     <None Include="Samples\Json\ReadMultipleContentWithJsonReader.aml" />

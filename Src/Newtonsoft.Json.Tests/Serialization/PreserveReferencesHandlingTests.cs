@@ -29,7 +29,9 @@ using System.IO;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
+using Newtonsoft.Json.Utilities;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
@@ -116,7 +118,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""$type"": ""Newtonsoft.Json.Tests.Serialization.PreserveReferencesHandlingTests+Container, Newtonsoft.Json.Tests"",
   ""ListA"": {
     ""$id"": ""2"",
-    ""$type"": ""System.Collections.Generic.List`1[[Newtonsoft.Json.Tests.Serialization.PreserveReferencesHandlingTests+ContentA, Newtonsoft.Json.Tests]], mscorlib"",
+    ""$type"": """ + ReflectionUtils.GetTypeName(typeof(List<ContentA>), 0, DefaultSerializationBinder.Instance) + @""",
     ""$values"": [
       {
         ""$id"": ""3"",
@@ -127,7 +129,7 @@ namespace Newtonsoft.Json.Tests.Serialization
   },
   ""ListB"": {
     ""$id"": ""4"",
-    ""$type"": ""System.Collections.Generic.List`1[[Newtonsoft.Json.Tests.Serialization.PreserveReferencesHandlingTests+ContentA, Newtonsoft.Json.Tests]], mscorlib"",
+    ""$type"": """ + ReflectionUtils.GetTypeName(typeof(List<ContentA>), 0, DefaultSerializationBinder.Instance) + @""",
     ""$values"": [
       {
         ""$ref"": ""3""
