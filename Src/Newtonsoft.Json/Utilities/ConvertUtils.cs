@@ -930,6 +930,112 @@ namespace Newtonsoft.Json.Utilities
             return ParseResult.Success;
         }
 
+        public static ParseResult DoubleTryParse(char[] chars, int start, int length, out double value)
+        {
+            value = 0;
+
+            if (length == 0)
+            {
+                return ParseResult.Invalid;
+            }
+
+            bool isNegative = (chars[start] == '-');
+            if (isNegative)
+            {
+                // text just a negative sign
+                if (length == 1)
+                {
+                    return ParseResult.Invalid;
+                }
+
+                start++;
+                length--;
+            }
+
+            var i = start;
+            int end = start + length;
+            int numDecimals = 0;
+            int exponent = 0;
+            for (; i < end; i++)
+            {
+                char c = chars[i];
+                switch (chars[i])
+                {
+                    case '.':
+                        numDecimals = i;
+                        break;
+                    case 'e':
+                    case 'E':
+                        {
+                            i++;
+                            if (i == end)
+                                return ParseResult.Success;
+
+                            c = chars[i];
+                            bool exponentNegative = false;
+                            switch (c)
+                            {
+                                case '-':
+                                    exponentNegative = true;
+                                    i++;
+                                    break;
+                                case '+':
+                                    i++;
+                                    break;
+                            }
+
+                            // parse 3 digit up to 308 max.
+                            for (;i < end;i++)
+                            {
+                                c = chars[i];
+                                if (c < '0' || c > '9')
+                                    return ParseResult.Invalid;
+
+                                exponent = (10 * exponent) + (c - '0');
+                            }
+
+                            if (exponent > 308)
+                                return ParseResult.Invalid;
+
+                            if (exponentNegative)
+                                exponent = -exponent;
+                        }
+                        break;
+                    case '0':
+                    case '1':
+                    case '2':
+                    case '3':
+                    case '4':
+                    case '5':
+                    case '6':
+                    case '7':
+                    case '8':
+                    case '9':
+                        value = (10 * value) + (c - '0');
+                        break;
+                    default:
+                        return ParseResult.Invalid;
+                }
+            }
+
+            value *= Math.Pow(10, exponent - numDecimals);
+
+            // go from negative to positive to avoids overflow
+            // negative can be slightly bigger than positive
+            if (!isNegative)
+            {
+                // negative integer can be one bigger than positive
+                if (value == double.MinValue)
+                {
+                    return ParseResult.Overflow;
+                }
+
+                value = -value;
+            }
+
+            return ParseResult.Success;
+        }
+
         public static bool TryConvertGuid(string s, out Guid g)
         {
             // GUID has to have format 00000000-0000-0000-0000-000000000000

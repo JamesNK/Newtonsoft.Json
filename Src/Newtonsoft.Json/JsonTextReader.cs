@@ -1973,12 +1973,15 @@ namespace Newtonsoft.Json
                 }
                 else
                 {
-                    string number = _stringReference.ToString();
-
                     double value;
-                    if (double.TryParse(number, NumberStyles.Float, CultureInfo.InvariantCulture, out value))
+                    ParseResult parseResult = ConvertUtils.DoubleTryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out value);
+                    if (parseResult == ParseResult.Success)
                     {
                         numberValue = value;
+                    }
+                    else if (parseResult == ParseResult.Overflow)
+                    {
+                        throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Double.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                     }
                     else
                     {
