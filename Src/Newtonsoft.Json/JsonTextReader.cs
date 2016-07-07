@@ -2058,9 +2058,14 @@ namespace Newtonsoft.Json
                         else
                         {
                             double d;
-                            if (double.TryParse(number, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out d))
+                            parseResult = ConvertUtils.DoubleTryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out d);
+                            if (parseResult == ParseResult.Success)
                             {
                                 numberValue = d;
+                            }
+                            else if (parseResult == ParseResult.Overflow)
+                            {
+                                throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Double.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                             }
                             else
                             {
