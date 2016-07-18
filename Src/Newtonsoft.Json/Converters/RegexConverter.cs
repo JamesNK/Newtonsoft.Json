@@ -123,14 +123,14 @@ namespace Newtonsoft.Json.Converters
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.StartObject)
+            switch (reader.TokenType)
             {
-                return ReadRegexObject(reader, serializer);
-            }
-
-            if (reader.TokenType == JsonToken.String)
-            {
-                return ReadRegexString(reader);
+                case JsonToken.StartObject:
+                    return ReadRegexObject(reader, serializer);
+                case JsonToken.String:
+                    return ReadRegexString(reader);
+                case JsonToken.Null:
+                    return null;
             }
 
             throw JsonSerializationException.Create(reader, "Unexpected token when reading Regex.");

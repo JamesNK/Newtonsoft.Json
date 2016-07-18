@@ -232,5 +232,20 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual("", newRegex.Regex.ToString());
             Assert.AreEqual(RegexOptions.None, newRegex.Regex.Options);
         }
+
+        public class SimpleClassWithRegex
+        {
+            public Regex RegProp { get; set; }
+        }
+
+        [Test]
+        public void DeserializeNullRegex()
+        {
+            string json = JsonConvert.SerializeObject(new SimpleClassWithRegex { RegProp = null });
+            Assert.AreEqual(@"{""RegProp"":null}", json);
+
+            SimpleClassWithRegex obj = JsonConvert.DeserializeObject<SimpleClassWithRegex>(json);
+            Assert.AreEqual(null, obj.RegProp);
+        }
     }
 }
