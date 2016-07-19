@@ -187,7 +187,11 @@ namespace Newtonsoft.Json.Converters
                 }
                 else
                 {
-                    dr[columnName] = (reader.Value != null) ? serializer.Deserialize(reader, column.DataType) : DBNull.Value;
+                    object columnValue = (reader.Value != null)
+                        ? serializer.Deserialize(reader, column.DataType) ?? DBNull.Value
+                        : DBNull.Value;
+
+                    dr[columnName] = columnValue;
                 }
 
                 reader.ReadAndAssert();

@@ -26,6 +26,7 @@
 using System.IO;
 using System.Text;
 using Newtonsoft.Json.Bson;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 #if !(NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
 using System;
@@ -546,6 +547,53 @@ namespace Newtonsoft.Json.Tests.Converters
             }
         }
 #endif
+
+        [Test]
+        public void HandleColumnOnError()
+        {
+            string json = "[{\"timeCol\":\"\"}]";
+            DataTable table = JsonConvert.DeserializeObject<CustomDataTable>(json);
+
+            Assert.AreEqual(DBNull.Value, table.Rows[0]["timeCol"]);
+        }
+
+        [JsonConverter(typeof(DataTableConverterTest))]
+        public class CustomDataTable : DataTable
+        {
+        }
+
+        public class DataTableConverterTest : DataTableConverter
+        {
+            protected DataTable CreateTable()
+            {
+                CustomDataTable table = new CustomDataTable();
+                table.Columns.Add("timeCol", typeof(DateTime));
+                return table;
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                if (existingValue == null)
+                {
+                    existingValue = CreateTable();
+                }
+
+                serializer.Error += OnError;
+                try
+                {
+                    return base.ReadJson(reader, objectType, existingValue, serializer);
+                }
+                finally
+                {
+                    serializer.Error -= OnError;
+                }
+            }
+
+            private void OnError(object sender, Json.Serialization.ErrorEventArgs e)
+            {
+                e.ErrorContext.Handled = true;
+            }
+        }
     }
 }
 
