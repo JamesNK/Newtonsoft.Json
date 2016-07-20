@@ -193,6 +193,29 @@ namespace Newtonsoft.Json.Tests.Utilities
 
             Assert.AreEqual("Name!", (string)result);
         }
+
+        [Test]
+        public void ConstructorStruct()
+        {
+            Func<object> creator1 = DynamicReflectionDelegateFactory.Instance.CreateDefaultConstructor<object>(typeof(MyStruct));
+            MyStruct myStruct1 = (MyStruct)creator1.Invoke();
+            Assert.AreEqual(0, myStruct1.IntProperty);
+
+            Func<MyStruct> creator2 = DynamicReflectionDelegateFactory.Instance.CreateDefaultConstructor<MyStruct>(typeof(MyStruct));
+            MyStruct myStruct2 = creator2.Invoke();
+            Assert.AreEqual(0, myStruct2.IntProperty);
+        }
+    }
+
+    public struct MyStruct
+    {
+        private int _intProperty;
+
+        public int IntProperty
+        {
+            get { return _intProperty; }
+            set { _intProperty = value; }
+        }
     }
 }
 

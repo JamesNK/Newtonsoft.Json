@@ -208,24 +208,28 @@ namespace Newtonsoft.Json.Utilities
             dynamicMethod.InitLocals = true;
             ILGenerator generator = dynamicMethod.GetILGenerator();
 
-            GenerateCreateDefaultConstructorIL(type, generator);
+            GenerateCreateDefaultConstructorIL(type, generator, typeof(T));
 
             return (Func<T>)dynamicMethod.CreateDelegate(typeof(Func<T>));
         }
 
-        private void GenerateCreateDefaultConstructorIL(Type type, ILGenerator generator)
+        private void GenerateCreateDefaultConstructorIL(Type type, ILGenerator generator, Type delegateType)
         {
             if (type.IsValueType())
             {
                 generator.DeclareLocal(type);
                 generator.Emit(OpCodes.Ldloc_0);
-                generator.Emit(OpCodes.Box, type);
+
+                // only need to box if the delegate isn't returning the value type
+                if (type != delegateType)
+                {
+                    generator.Emit(OpCodes.Box, type);
+                }
             }
             else
             {
                 ConstructorInfo constructorInfo =
-                    type.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null,
-                        ReflectionUtils.EmptyTypes, null);
+                    type.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, ReflectionUtils.EmptyTypes, null);
 
                 if (constructorInfo == null)
                 {
