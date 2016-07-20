@@ -529,6 +529,59 @@ third line", jsonTextReader.Value);
             ExceptionAssert.Throws<JsonReaderException>(() => { reader.Read(); }, "Unexpected content while parsing JSON. Path 'u', line 1, position 29.");
         }
 
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+        /// <summary>
+        /// By default large number is parsed to BigInteger but not supporting .Net Framework 3.5.
+        /// </summary>
+        [Test]
+        public void NumberOverflowParsingAsBigInteger()
+        {
+            string json = "{\"StandardPrice\":79228162514264337593543950335}"; // decimal.MaxValue
+            using (JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json)))
+            {
+                jsonTextReader.Read();
+                jsonTextReader.Read();
+                jsonTextReader.Read();
+                Assert.IsTrue(decimal.MaxValue == (decimal)((BigInteger)jsonTextReader.Value));
+                Assert.AreEqual(JsonToken.Integer, jsonTextReader.TokenType);
+            }
+        }
+#endif
+
+        /// <summary>
+        /// By setting a parser handler, large number can be parsed to decimal, supporting all .Net Framework versions.
+        /// </summary>
+        [Test]
+        public void NumberOverflowParsingAsDecimal()
+        {
+            string json = "{\"StandardPrice\":79228162514264337593543950335}"; // decimal.MaxValue
+            using (JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(json)))
+            {
+                jsonTextReader.NumberOverflowTryParseHandler = delegate (string valueToParse, out object parsedResult, out JsonToken jsonToken)
+                {
+                    decimal tmp;
+                    if (decimal.TryParse(valueToParse, out tmp))
+                    {
+                        parsedResult = tmp;
+                        jsonToken = JsonToken.Float;
+                        return true;
+                    }
+                    else
+                    {
+                        parsedResult = null;
+                        jsonToken = JsonToken.None;
+                        return false;
+                    }
+                };
+
+                jsonTextReader.Read();
+                jsonTextReader.Read();
+                jsonTextReader.Read(); // should read the big number
+                Assert.AreEqual(decimal.MaxValue, (decimal)jsonTextReader.Value);
+                Assert.AreEqual(JsonToken.Float, jsonTextReader.TokenType);
+            }
+        }
+
         [Test]
         public void FloatParseHandling()
         {

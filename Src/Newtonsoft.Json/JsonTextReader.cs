@@ -2022,19 +2022,22 @@ namespace Newtonsoft.Json
                     }
                     else if (parseResult == ParseResult.Overflow)
                     {
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
                         string number = _stringReference.ToString();
-
-                        if (number.Length > MaximumJavascriptIntegerCharacterLength)
+                        if (this.NumberOverflowTryParseHandler == null
+                            || (!this.NumberOverflowTryParseHandler(number, out numberValue, out numberType)))
                         {
-                            throw JsonReaderException.Create(this, "JSON integer {0} is too large to parse.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
-                        }
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+                            if (number.Length > MaximumJavascriptIntegerCharacterLength)
+                            {
+                                throw JsonReaderException.Create(this, "JSON integer {0} is too large to parse.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                            }
 
-                        numberValue = BigIntegerParse(number, CultureInfo.InvariantCulture);
-                        numberType = JsonToken.Integer;
+                            numberValue = BigIntegerParse(number, CultureInfo.InvariantCulture);
+                            numberType = JsonToken.Integer;
 #else
                         throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
 #endif
+                        }
                     }
                     else
                     {
