@@ -1979,10 +1979,6 @@ namespace Newtonsoft.Json
                     {
                         numberValue = value;
                     }
-                    else if (parseResult == ParseResult.Overflow)
-                    {
-                        throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Double.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
-                    }
                     else
                     {
                         throw JsonReaderException.Create(this, "Input string '{0}' is not a valid double.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
@@ -2062,10 +2058,6 @@ namespace Newtonsoft.Json
                             if (parseResult == ParseResult.Success)
                             {
                                 numberValue = d;
-                            }
-                            else if (parseResult == ParseResult.Overflow)
-                            {
-                                throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Double.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                             }
                             else
                             {
