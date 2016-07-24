@@ -43,6 +43,72 @@ namespace Newtonsoft.Json.Tests.Utilities
     [TestFixture]
     public class ConvertUtilsTests : TestFixtureBase
     {
+        private void AssertDoubleTryParse(string s, ParseResult expectedResult, double? expectedValue)
+        {
+            double d;
+            char[] c = s.ToCharArray();
+            ParseResult result = ConvertUtils.DoubleTryParse(c, 0, c.Length, out d);
+
+            double d2;
+            bool result2 = double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d2);
+
+            Assert.AreEqual(expectedResult, result);
+            Assert.AreEqual(expectedResult == ParseResult.Success, result2);
+
+            if (expectedValue != null)
+            {
+                Assert.AreEqual(expectedValue.Value, d);
+
+                Assert.AreEqual(expectedValue, d2, "DoubleTryParse result is not equal to double.Parse");
+            }
+        }
+
+        [Test]
+        public void DoubleTryParse()
+        {
+            AssertDoubleTryParse("-123", ParseResult.Success, -123);
+            AssertDoubleTryParse("0", ParseResult.Success, 0);
+            AssertDoubleTryParse("123", ParseResult.Success, 123);
+            AssertDoubleTryParse("567.89", ParseResult.Success, 567.89);
+            AssertDoubleTryParse("-567.89", ParseResult.Success, -567.89);
+            AssertDoubleTryParse("1E23", ParseResult.Success, 1E23);
+            AssertDoubleTryParse("1E+23", ParseResult.Success, 1E+23);
+            AssertDoubleTryParse("1E-1", ParseResult.Success, 1E-1);
+            AssertDoubleTryParse("1E-2", ParseResult.Success, 1E-2);
+            AssertDoubleTryParse("1E-3", ParseResult.Success, 1E-3);
+            AssertDoubleTryParse("1E-4", ParseResult.Success, 1E-4);
+            AssertDoubleTryParse("1E-5", ParseResult.Success, 1E-5);
+            AssertDoubleTryParse("1E-10", ParseResult.Success, 1E-10);
+            AssertDoubleTryParse("1E-20", ParseResult.Success, 1E-20);
+            AssertDoubleTryParse("1", ParseResult.Success, null);
+
+            //AssertDoubleTryParse("1E-23", ParseResult.Success, 1E-23);
+            //AssertDoubleTryParse("1E-25", ParseResult.Success, 1E-25);
+            //AssertDoubleTryParse("1E-50", ParseResult.Success, 1E-50);
+            //AssertDoubleTryParse("1E-75", ParseResult.Success, 1E-75);
+            AssertDoubleTryParse("1E-100", ParseResult.Success, 1E-100);
+            AssertDoubleTryParse("1E-300", ParseResult.Success, 1E-300);
+
+            AssertDoubleTryParse("1E+309", ParseResult.Overflow, null);
+            AssertDoubleTryParse("-1E+5000", ParseResult.Overflow, null);
+
+            AssertDoubleTryParse("", ParseResult.Invalid, null);
+            AssertDoubleTryParse("5.1231231E", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1E+23i", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1EE+23", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1E++23", ParseResult.Invalid, null);
+            AssertDoubleTryParse("E23", ParseResult.Invalid, null);
+
+            AssertDoubleTryParse("4.94065645841247E-324", ParseResult.Success, 4.94065645841247E-324);
+            AssertDoubleTryParse("4.94065645841247E-342", ParseResult.Success, 4.94065645841247E-342);
+
+            AssertDoubleTryParse("1.7976931348623157E+308", ParseResult.Success, double.MaxValue);
+            AssertDoubleTryParse("-1.7976931348623157E+308", ParseResult.Success, double.MinValue);
+
+            AssertDoubleTryParse("1.7976931348623159E+308", ParseResult.Overflow, null);
+            AssertDoubleTryParse("-1.7976931348623159E+308", ParseResult.Overflow, null);
+        }
+
         [Test]
         public void Int64TryParse()
         {
