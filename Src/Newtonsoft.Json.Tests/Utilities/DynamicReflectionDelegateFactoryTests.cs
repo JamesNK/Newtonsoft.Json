@@ -206,17 +206,6 @@ namespace Newtonsoft.Json.Tests.Utilities
             Assert.AreEqual(0, myStruct2.IntProperty);
         }
     }
-
-    public struct MyStruct
-    {
-        private int _intProperty;
-
-        public int IntProperty
-        {
-            get { return _intProperty; }
-            set { _intProperty = value; }
-        }
-    }
 }
 
 #endif
