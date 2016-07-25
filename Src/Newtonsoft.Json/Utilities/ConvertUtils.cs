@@ -973,7 +973,7 @@ namespace Newtonsoft.Json.Utilities
                 length--;
             }
 
-            var i = start;
+            int i = start;
             int end = start + length;
             int numDecimalStart = end;
             int numDecimalEnd = end;
@@ -985,6 +985,17 @@ namespace Newtonsoft.Json.Utilities
                 switch (chars[i])
                 {
                     case '.':
+                        if (i == start)
+                        {
+                            return ParseResult.Invalid;
+                        }
+
+                        if (numDecimalStart != end)
+                        {
+                            // multiple decimal points
+                            return ParseResult.Invalid;
+                        }
+
                         numDecimalStart = i + 1;
                         break;
                     case 'e':
@@ -992,6 +1003,11 @@ namespace Newtonsoft.Json.Utilities
                         {
                             if (i == start)
                             {
+                                return ParseResult.Invalid;
+                            }
+                            if (i == numDecimalStart)
+                            {
+                                // E follows decimal point
                                 return ParseResult.Invalid;
                             }
                             i++;

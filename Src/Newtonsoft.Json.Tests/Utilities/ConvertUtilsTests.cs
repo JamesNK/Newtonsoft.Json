@@ -50,7 +50,9 @@ namespace Newtonsoft.Json.Tests.Utilities
             ParseResult result = ConvertUtils.DoubleTryParse(c, 0, c.Length, out d);
 
             double d2;
-            bool result2 = double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d2);
+            bool result2 = double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d2)
+                && !s.StartsWith(".")
+                && s.IndexOf(".e", StringComparison.OrdinalIgnoreCase) == -1;
 
             Assert.AreEqual(expectedResult, result);
             Assert.AreEqual(expectedResult == ParseResult.Success, result2);
@@ -72,6 +74,7 @@ namespace Newtonsoft.Json.Tests.Utilities
             AssertDoubleTryParse("567.89", ParseResult.Success, 567.89);
             AssertDoubleTryParse("-567.89", ParseResult.Success, -567.89);
             AssertDoubleTryParse("1E23", ParseResult.Success, 1E23);
+            AssertDoubleTryParse("1.1E23", ParseResult.Success, 1.1E23);
             AssertDoubleTryParse("1E+23", ParseResult.Success, 1E+23);
             AssertDoubleTryParse("1E-1", ParseResult.Success, 1E-1);
             AssertDoubleTryParse("1E-2", ParseResult.Success, 1E-2);
@@ -92,6 +95,13 @@ namespace Newtonsoft.Json.Tests.Utilities
             AssertDoubleTryParse("1E+309", ParseResult.Overflow, null);
             AssertDoubleTryParse("-1E+5000", ParseResult.Overflow, null);
 
+            AssertDoubleTryParse(".1E23", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1..1E23", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1.E23", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1E2.3", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1EE-10", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1E-1-0", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1-E10", ParseResult.Invalid, null);
             AssertDoubleTryParse("", ParseResult.Invalid, null);
             AssertDoubleTryParse("5.1231231E", ParseResult.Invalid, null);
             AssertDoubleTryParse("1E+23i", ParseResult.Invalid, null);
