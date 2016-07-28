@@ -12,6 +12,7 @@
         <licenseUrl>https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md</licenseUrl>
         <tags>json</tags>
         <dependencies>
+            <group targetFramework="native" />
             <group targetFramework=".NETFramework4.5" />
             <group targetFramework=".NETFramework4.0" />
             <group targetFramework=".NETFramework3.5" />

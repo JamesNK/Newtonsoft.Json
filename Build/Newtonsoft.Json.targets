@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- for C++/CLI projects only -->
+  <ItemGroup Condition="'$(Language)' == 'C++'">
+    <Reference Include="Newtonsoft.Json">
+      <!--
+        this .targets file is installed next to the assembly,
+        so we do not have to figure out any versions or paths here ourselves
+      -->
+      <HintPath>$(MSBuildThisFileDirectory)..\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+	<Reference Include="System.Data" />
+	<Reference Include="System.Numerics" />
+	<Reference Include="System.Runtime.Serialization" />
+	<Reference Include="System.Xml" />
+	<Reference Include="System.Xml.Linq" />
+  </ItemGroup>
+</Project>

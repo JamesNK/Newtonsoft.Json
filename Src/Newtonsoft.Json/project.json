@@ -12,7 +12,13 @@
     "repository": {
       "type": "git",
       "url": "git://github.com/JamesNK/Newtonsoft.Json"
-    }
+    },
+    "files": {
+      "mappings": {
+        "build/": "../../Build/Newtonsoft.Json.targets",
+        "lib/native/": [ "../../Build/_._" ]
+      }
+	}
   },
   "frameworks": {
     "net45": {
