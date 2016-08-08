@@ -9563,7 +9563,7 @@ Path '', line 1, position 1.");
         }
 #endif
 
-#if !NET20
+#if !(NET20 || PORTABLE || PORTABLE40)
         [Test]
         public void DeserializeDictionaryOfHashSetsWithTypeNameHandlingAll()
         {
