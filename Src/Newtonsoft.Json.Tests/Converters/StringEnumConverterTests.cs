@@ -96,6 +96,21 @@ namespace Newtonsoft.Json.Tests.Converters
             Second,
             Third
         }
+
+        public enum NamedEnumWithComma
+        {
+            [EnumMember(Value = "@first")]
+            First,
+
+            [EnumMember(Value = "@second")]
+            Second,
+
+            [EnumMember(Value = ",third")]
+            Third,
+
+            [EnumMember(Value = ",")]
+            JustComma
+        }
 #endif
 
         public class NegativeEnumClass
@@ -163,6 +178,40 @@ namespace Newtonsoft.Json.Tests.Converters
             StringAssert.AreEqual(@"{
   ""Enum"": ""Third""
 }", json);
+        }
+
+        [Test]
+        public void NamedEnumCommaTest()
+        {
+            EnumContainer<NamedEnumWithComma> c = new EnumContainer<NamedEnumWithComma>
+            {
+                Enum = NamedEnumWithComma.Third
+            };
+
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
+            Assert.AreEqual(@"{
+  ""Enum"": "",third""
+}", json);
+
+            EnumContainer<NamedEnumWithComma> c2 = JsonConvert.DeserializeObject<EnumContainer<NamedEnumWithComma>>(json, new StringEnumConverter());
+            Assert.AreEqual(NamedEnumWithComma.Third, c2.Enum);
+        }
+
+        [Test]
+        public void NamedEnumCommaTest2()
+        {
+            EnumContainer<NamedEnumWithComma> c = new EnumContainer<NamedEnumWithComma>
+            {
+                Enum = NamedEnumWithComma.JustComma
+            };
+
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
+            Assert.AreEqual(@"{
+  ""Enum"": "",""
+}", json);
+
+            EnumContainer<NamedEnumWithComma> c2 = JsonConvert.DeserializeObject<EnumContainer<NamedEnumWithComma>>(json, new StringEnumConverter());
+            Assert.AreEqual(NamedEnumWithComma.JustComma, c2.Enum);
         }
 
         [Test]

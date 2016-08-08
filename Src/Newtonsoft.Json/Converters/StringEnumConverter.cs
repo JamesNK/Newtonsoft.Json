@@ -50,9 +50,9 @@ namespace Newtonsoft.Json.Converters
         public bool CamelCaseText { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether integer values are allowed.
+        /// Gets or sets a value indicating whether integer values are allowed when deserializing.
         /// </summary>
-        /// <value><c>true</c> if integers are allowed; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if integers are allowed when deserializing; otherwise, <c>false</c>.</value>
         public bool AllowIntegerValues { get; set; }
 
         /// <summary>

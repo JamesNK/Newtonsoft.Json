@@ -200,21 +200,28 @@ namespace Newtonsoft.Json.Utilities
             string finalEnumText;
 
             BidirectionalDictionary<string, string> map = EnumMemberNamesPerType.Get(t);
-            if (enumText.IndexOf(',') != -1)
+            string resolvedEnumName;
+            if (TryResolvedEnumName(map, enumText, out resolvedEnumName))
+            {
+                finalEnumText = resolvedEnumName;
+            }
+            else if (enumText.IndexOf(',') != -1)
             {
                 string[] names = enumText.Split(',');
                 for (int i = 0; i < names.Length; i++)
                 {
                     string name = names[i].Trim();
 
-                    names[i] = ResolvedEnumName(map, name);
+                    names[i] = TryResolvedEnumName(map, name, out resolvedEnumName)
+                        ? resolvedEnumName
+                        : name;
                 }
 
                 finalEnumText = string.Join(", ", names);
             }
             else
             {
-                finalEnumText = ResolvedEnumName(map, enumText);
+                finalEnumText = enumText;
             }
 
             return Enum.Parse(t, finalEnumText, true);
@@ -246,12 +253,15 @@ namespace Newtonsoft.Json.Utilities
             return finalName;
         }
 
-        private static string ResolvedEnumName(BidirectionalDictionary<string, string> map, string enumText)
+        private static bool TryResolvedEnumName(BidirectionalDictionary<string, string> map, string enumText, out string resolvedEnumName)
         {
-            string resolvedEnumName;
-            map.TryGetBySecond(enumText, out resolvedEnumName);
-            resolvedEnumName = resolvedEnumName ?? enumText;
-            return resolvedEnumName;
+            if (map.TryGetBySecond(enumText, out resolvedEnumName))
+            {
+                return true;
+            }
+
+            resolvedEnumName = null;
+            return false;
         }
     }
 }

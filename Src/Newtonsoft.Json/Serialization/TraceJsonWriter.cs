@@ -58,13 +58,6 @@ namespace Newtonsoft.Json.Serialization
             base.WriteValue(value);
         }
 
-        public override void WriteValue(byte? value)
-        {
-            _textWriter.WriteValue(value);
-            _innerWriter.WriteValue(value);
-            base.WriteValue(value);
-        }
-
         public override void WriteValue(char value)
         {
             _textWriter.WriteValue(value);

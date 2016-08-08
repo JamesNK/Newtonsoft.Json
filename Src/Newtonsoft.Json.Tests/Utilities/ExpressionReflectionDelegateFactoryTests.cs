@@ -362,6 +362,18 @@ namespace Newtonsoft.Json.Tests.Utilities
             JsonSerializerTest.DictionaryKey key = (JsonSerializerTest.DictionaryKey)result;
             Assert.AreEqual("First!", key.Value);
         }
+
+        [Test]
+        public void ConstructorStruct()
+        {
+            Func<object> creator1 = ExpressionReflectionDelegateFactory.Instance.CreateDefaultConstructor<object>(typeof(MyStruct));
+            MyStruct myStruct1 = (MyStruct)creator1.Invoke();
+            Assert.AreEqual(0, myStruct1.IntProperty);
+
+            Func<MyStruct> creator2 = ExpressionReflectionDelegateFactory.Instance.CreateDefaultConstructor<MyStruct>(typeof(MyStruct));
+            MyStruct myStruct2 = creator2.Invoke();
+            Assert.AreEqual(0, myStruct2.IntProperty);
+        }
     }
 }
 
