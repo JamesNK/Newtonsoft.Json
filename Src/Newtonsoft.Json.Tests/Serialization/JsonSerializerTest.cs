@@ -9563,6 +9563,25 @@ Path '', line 1, position 1.");
         }
 #endif
 
+#if !NET20
+        [Test]
+        public void DeserializeDictionaryOfHashSetsWithTypeNameHandlingAll()
+        {
+            var dictionary = new Dictionary<int, HashSet<string>>
+            {
+                { 1, new HashSet<string>(new[] { "test" }) },
+            };
+
+            var jsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+
+            var obtainedJson = JsonConvert.SerializeObject(dictionary, jsonSerializerSettings);
+
+            var obtainedDictionary = (Dictionary<int, HashSet<string>>)JsonConvert.DeserializeObject(obtainedJson, jsonSerializerSettings);
+
+            Assert.IsNotNull(obtainedDictionary);
+        }
+#endif
+
 #if !(NETFX_CORE || DNXCORE50)
         [Test]
         public void MailMessageConverterTest()
@@ -9616,23 +9635,6 @@ Path '', line 1, position 1.");
                     new EncodingReadConverter());
             },
                 "Cannot populate list type System.Net.Mime.HeaderCollection. Path 'Headers', line 26, position 14.");
-        }
-
-        [Test]
-        public void DeserializeDictionaryOfHashSetsWithTypeNameHandlingAll()
-        {
-            var dictionary = new Dictionary<int, HashSet<string>>
-            {
-                { 1, new HashSet<string>(new[] { "test" }) },
-            };
-
-            var jsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
-
-            var obtainedJson = JsonConvert.SerializeObject(dictionary, jsonSerializerSettings);
-
-            var obtainedDictionary = (Dictionary<int, HashSet<string>>)JsonConvert.DeserializeObject(obtainedJson, jsonSerializerSettings);
-
-            Assert.IsNotNull(obtainedDictionary);
         }
 
         public class MailAddressReadConverter : JsonConverter
