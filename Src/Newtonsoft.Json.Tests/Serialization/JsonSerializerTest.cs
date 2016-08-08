@@ -9618,6 +9618,23 @@ Path '', line 1, position 1.");
                 "Cannot populate list type System.Net.Mime.HeaderCollection. Path 'Headers', line 26, position 14.");
         }
 
+        [Test]
+        public void DeserializeDictionaryOfHashSetsWithTypeNameHandlingAll()
+        {
+            var dictionary = new Dictionary<int, HashSet<string>>
+            {
+                { 1, new HashSet<string>(new[] { "test" }) },
+            };
+
+            var jsonSerializerSettings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+
+            var obtainedJson = JsonConvert.SerializeObject(dictionary, jsonSerializerSettings);
+
+            var obtainedDictionary = (Dictionary<int, HashSet<string>>)JsonConvert.DeserializeObject(obtainedJson, jsonSerializerSettings);
+
+            Assert.IsNotNull(obtainedDictionary);
+        }
+
         public class MailAddressReadConverter : JsonConverter
         {
             public override bool CanConvert(Type objectType)
