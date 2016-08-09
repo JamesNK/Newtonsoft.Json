@@ -39,6 +39,8 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Autofac;
+using Autofac.Core;
+using Autofac.Core.Activators.Reflection;
 using Newtonsoft.Json.Tests.Serialization;
 using LogService = Newtonsoft.Json.Tests.Serialization.LogManager;
 
@@ -59,15 +61,33 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 
             protected override JsonObjectContract CreateObjectContract(Type objectType)
             {
-                JsonObjectContract contract = base.CreateObjectContract(objectType);
-
                 // use Autofac to create types that have been registered with it
                 if (_container.IsRegistered(objectType))
                 {
+                    JsonObjectContract contract = ResolveContact(objectType);
                     contract.DefaultCreator = () => _container.Resolve(objectType);
+
+                    return contract;
                 }
 
-                return contract;
+                return base.CreateObjectContract(objectType);
+            }
+
+            private JsonObjectContract ResolveContact(Type objectType)
+            {
+                // attempt to create the contact from the resolved type
+                IComponentRegistration registration;
+                if (_container.ComponentRegistry.TryGetRegistration(new TypedService(objectType), out registration))
+                {
+                    Type viewType = (registration.Activator as ReflectionActivator)?.LimitType;
+                    if (viewType != null)
+                    {
+                        return base.CreateObjectContract(viewType);
+                    }
+                }
+
+                // fall back to using the registered type
+                return base.CreateObjectContract(objectType);
             }
         }
 

@@ -30,8 +30,11 @@ using Newtonsoft.Json.Tests.TestObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Autofac.Core;
+using Autofac.Core.Activators.Reflection;
 using Microsoft.FSharp.Collections;
 #if NETFX_CORE
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
@@ -126,6 +129,30 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
     }
 
+#if !NET20
+    [DataContract]
+    public class User
+    {
+        [DataMember(Name = "first_name")]
+        public string FirstName { get; set; }
+
+        [DataMember(Name = "company")]
+        public ICompany Company { get; set; }
+    }
+
+    public interface ICompany
+    {
+        string CompanyName { get; set; }
+    }
+
+    [DataContract]
+    public class Company : ICompany
+    {
+        [DataMember(Name = "company_name")]
+        public string CompanyName { get; set; }
+    }
+#endif
+
     public class AutofacContractResolver : DefaultContractResolver
     {
         private readonly IContainer _container;
@@ -137,21 +164,57 @@ namespace Newtonsoft.Json.Tests.Serialization
 
         protected override JsonObjectContract CreateObjectContract(Type objectType)
         {
-            JsonObjectContract contract = base.CreateObjectContract(objectType);
-
             // use Autofac to create types that have been registered with it
             if (_container.IsRegistered(objectType))
             {
+                JsonObjectContract contract = ResolveContact(objectType);
                 contract.DefaultCreator = () => _container.Resolve(objectType);
+
+                return contract;
             }
 
-            return contract;
+            return base.CreateObjectContract(objectType);
+        }
+
+        private JsonObjectContract ResolveContact(Type objectType)
+        {
+            // attempt to create the contact from the resolved type
+            IComponentRegistration registration;
+            if (_container.ComponentRegistry.TryGetRegistration(new TypedService(objectType), out registration))
+            {
+                Type viewType = (registration.Activator as ReflectionActivator)?.LimitType;
+                if (viewType != null)
+                {
+                    return base.CreateObjectContract(viewType);
+                }
+            }
+
+            // fall back to using the registered type
+            return base.CreateObjectContract(objectType);
         }
     }
 
     [TestFixture]
     public class DependencyInjectionTests : TestFixtureBase
     {
+        [Test]
+        public void ResolveContractFromAutofac()
+        {
+            ContainerBuilder builder = new ContainerBuilder();
+            builder.RegisterType<Company>().As<ICompany>();
+            IContainer container = builder.Build();
+
+            AutofacContractResolver resolver = new AutofacContractResolver(container);
+
+            User user = JsonConvert.DeserializeObject<User>("{'company':{'company_name':'Company name!'}}", new JsonSerializerSettings
+            {
+                ContractResolver = resolver
+
+            });
+
+            Assert.AreEqual("Company name!", user.Company.CompanyName);
+        }
+
         [Test]
         public void CreateObjectWithParameters()
         {
