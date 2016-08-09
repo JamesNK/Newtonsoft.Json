@@ -858,9 +858,12 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
-        public static void SplitFullyQualifiedTypeName(string fullyQualifiedTypeName, out string typeName, out string assemblyName)
+        public static TypeNameKey SplitFullyQualifiedTypeName(string fullyQualifiedTypeName)
         {
             int? assemblyDelimiterIndex = GetAssemblyDelimiterIndex(fullyQualifiedTypeName);
+
+            string typeName;
+            string assemblyName;
 
             if (assemblyDelimiterIndex != null)
             {
@@ -872,6 +875,8 @@ namespace Newtonsoft.Json.Utilities
                 typeName = fullyQualifiedTypeName;
                 assemblyName = null;
             }
+
+            return new TypeNameKey(assemblyName, typeName);
         }
 
         private static int? GetAssemblyDelimiterIndex(string fullyQualifiedTypeName)
@@ -1119,6 +1124,38 @@ namespace Newtonsoft.Json.Utilities
 
             // possibly use IL initobj for perf here?
             return Activator.CreateInstance(type);
+        }
+    }
+
+    internal struct TypeNameKey : IEquatable<TypeNameKey>
+    {
+        internal readonly string AssemblyName;
+        internal readonly string TypeName;
+
+        public TypeNameKey(string assemblyName, string typeName)
+        {
+            AssemblyName = assemblyName;
+            TypeName = typeName;
+        }
+
+        public override int GetHashCode()
+        {
+            return (AssemblyName?.GetHashCode() ?? 0) ^ (TypeName?.GetHashCode() ?? 0);
+        }
+
+        public override bool Equals(object obj)
+        {
+            if (!(obj is TypeNameKey))
+            {
+                return false;
+            }
+
+            return Equals((TypeNameKey)obj);
+        }
+
+        public bool Equals(TypeNameKey other)
+        {
+            return (AssemblyName == other.AssemblyName && TypeName == other.TypeName);
         }
     }
 }

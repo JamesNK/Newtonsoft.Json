@@ -96,39 +96,6 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        internal struct TypeNameKey : IEquatable<TypeNameKey>
-        {
-            internal readonly string AssemblyName;
-            internal readonly string TypeName;
-
-            public TypeNameKey(string assemblyName, string typeName)
-            {
-                AssemblyName = assemblyName;
-                TypeName = typeName;
-            }
-
-            public override int GetHashCode()
-            {
-                return ((AssemblyName != null) ? AssemblyName.GetHashCode() : 0)
-                       ^ ((TypeName != null) ? TypeName.GetHashCode() : 0);
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (!(obj is TypeNameKey))
-                {
-                    return false;
-                }
-
-                return Equals((TypeNameKey)obj);
-            }
-
-            public bool Equals(TypeNameKey other)
-            {
-                return (AssemblyName == other.AssemblyName && TypeName == other.TypeName);
-            }
-        }
-
         /// <summary>
         /// When overridden in a derived class, controls the binding of a serialized object to a type.
         /// </summary>

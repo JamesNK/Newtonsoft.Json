@@ -1891,6 +1891,26 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("property", deserialized.Rows["key"].First().SomeProperty);
         }
 #endif
+
+        [Test]
+        public void DeserializeDictionary()
+        {
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
+
+            Dictionary<int, HashSet<string>> dictionary = new Dictionary<int, HashSet<string>>
+            {
+                { 1, new HashSet<string>(new[] { "test" }) },
+            };
+
+            string obtainedJson = JsonConvert.SerializeObject(dictionary, serializerSettings);
+
+            Dictionary<int, HashSet<string>> obtainedDictionary = (Dictionary<int, HashSet<string>>)JsonConvert.DeserializeObject(obtainedJson, serializerSettings);
+
+            Assert.IsNotNull(obtainedDictionary);
+        }
     }
 
     public class DataType

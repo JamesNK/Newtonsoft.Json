@@ -778,14 +778,12 @@ namespace Newtonsoft.Json.Serialization
 
             if (resolvedTypeNameHandling != TypeNameHandling.None)
             {
-                string typeName;
-                string assemblyName;
-                ReflectionUtils.SplitFullyQualifiedTypeName(qualifiedTypeName, out typeName, out assemblyName);
+                TypeNameKey typeNameKey = ReflectionUtils.SplitFullyQualifiedTypeName(qualifiedTypeName);
 
                 Type specifiedType;
                 try
                 {
-                    specifiedType = Serializer._binder.BindToType(assemblyName, typeName);
+                    specifiedType = Serializer._binder.BindToType(typeNameKey.AssemblyName, typeNameKey.TypeName);
                 }
                 catch (Exception ex)
                 {
