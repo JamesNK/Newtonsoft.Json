@@ -61,13 +61,16 @@ namespace Newtonsoft.Json.Tests.Utilities
             {
                 Assert.AreEqual(expectedValue.Value, d);
 
-                Assert.AreEqual(expectedValue, d2, "DoubleTryParse result is not equal to double.Parse");
+                Assert.AreEqual(expectedValue, d2, "DoubleTryParse result is not equal to double.Parse. Input string: " + s);
             }
         }
 
         [Test]
         public void DoubleTryParse()
         {
+            AssertDoubleTryParse("0.25e+5", ParseResult.Success, 25000d);
+            //AssertDoubleTryParse("0.25e-5", ParseResult.Success, 0.0000025d);
+
             AssertDoubleTryParse("-123", ParseResult.Success, -123);
             AssertDoubleTryParse("0", ParseResult.Success, 0);
             AssertDoubleTryParse("123", ParseResult.Success, 123);
@@ -83,12 +86,13 @@ namespace Newtonsoft.Json.Tests.Utilities
             AssertDoubleTryParse("1E-5", ParseResult.Success, 1E-5);
             AssertDoubleTryParse("1E-10", ParseResult.Success, 1E-10);
             AssertDoubleTryParse("1E-20", ParseResult.Success, 1E-20);
-            AssertDoubleTryParse("1", ParseResult.Success, null);
+            AssertDoubleTryParse("1", ParseResult.Success, 1);
+            AssertDoubleTryParse("1.2", ParseResult.Success, 1.2);
 
-            //AssertDoubleTryParse("1E-23", ParseResult.Success, 1E-23);
-            //AssertDoubleTryParse("1E-25", ParseResult.Success, 1E-25);
-            //AssertDoubleTryParse("1E-50", ParseResult.Success, 1E-50);
-            //AssertDoubleTryParse("1E-75", ParseResult.Success, 1E-75);
+            AssertDoubleTryParse("1E-23", ParseResult.Success, 1E-23);
+            AssertDoubleTryParse("1E-25", ParseResult.Success, 1E-25);
+            AssertDoubleTryParse("1E-50", ParseResult.Success, 1E-50);
+            AssertDoubleTryParse("1E-75", ParseResult.Success, 1E-75);
             AssertDoubleTryParse("1E-100", ParseResult.Success, 1E-100);
             AssertDoubleTryParse("1E-300", ParseResult.Success, 1E-300);
 
@@ -107,16 +111,36 @@ namespace Newtonsoft.Json.Tests.Utilities
             AssertDoubleTryParse("1E+23i", ParseResult.Invalid, null);
             AssertDoubleTryParse("1EE+23", ParseResult.Invalid, null);
             AssertDoubleTryParse("1E++23", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1E--23", ParseResult.Invalid, null);
             AssertDoubleTryParse("E23", ParseResult.Invalid, null);
 
             AssertDoubleTryParse("4.94065645841247E-324", ParseResult.Success, 4.94065645841247E-324);
             AssertDoubleTryParse("4.94065645841247E-342", ParseResult.Success, 4.94065645841247E-342);
+            AssertDoubleTryParse("4.94065645841247E-555", ParseResult.Success, 0);
 
             AssertDoubleTryParse("1.7976931348623157E+308", ParseResult.Success, double.MaxValue);
             AssertDoubleTryParse("-1.7976931348623157E+308", ParseResult.Success, double.MinValue);
 
             AssertDoubleTryParse("1.7976931348623159E+308", ParseResult.Overflow, null);
             AssertDoubleTryParse("-1.7976931348623159E+308", ParseResult.Overflow, null);
+        }
+
+        [Test]
+        public void DoubleTryParse_Exponents()
+        {
+            AssertDoubleTryParse("4.94065645841247e-324", ParseResult.Success, double.Epsilon);
+
+            AssertDoubleTryParse("4.9406564584124654E-324", ParseResult.Success, 4.9406564584124654E-324);
+            AssertDoubleTryParse("4.9406564584124654E-325", ParseResult.Success, 0);
+            AssertDoubleTryParse("4.94065645841247E-460", ParseResult.Success, 0);
+            AssertDoubleTryParse("4.94065645841247E-461", ParseResult.Success, 0);
+            AssertDoubleTryParse("4.94065645841247E-462", ParseResult.Success, 0);
+            AssertDoubleTryParse("4.94065645841247E-463", ParseResult.Success, 0);
+            AssertDoubleTryParse("4.94065645841247E-464", ParseResult.Success, 0);
+            AssertDoubleTryParse("4.94065645841247E-465", ParseResult.Success, 0);
+            AssertDoubleTryParse("4.94065645841247E-555", ParseResult.Success, 0);
+
+            AssertDoubleTryParse("4.94065645841247E+555", ParseResult.Overflow, null);
         }
 
         [Test]

@@ -1850,6 +1850,11 @@ third line", jsonTextReader.Value);
             
             reader = new JsonTextReader(new StringReader("5.1231231E"));
             ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Input string '5.1231231E' is not a valid number. Path '', line 1, position 10.");
+
+            reader = new JsonTextReader(new StringReader("1E-23"));
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(typeof(double), reader.ValueType);
+            Assert.AreEqual(1e-23, reader.Value);
         }
 
         [Test]
