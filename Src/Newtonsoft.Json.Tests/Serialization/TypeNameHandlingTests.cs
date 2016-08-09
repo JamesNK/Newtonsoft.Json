@@ -1892,12 +1892,14 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
+#if !(NET20 || PORTABLE || PORTABLE40)
         [Test]
-        public void DeserializeDictionary()
+        public void DeserializeComplexGenericDictionary_Simple()
         {
             JsonSerializerSettings serializerSettings = new JsonSerializerSettings
             {
-                TypeNameHandling = TypeNameHandling.All
+                TypeNameHandling = TypeNameHandling.All,
+                TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple
             };
 
             Dictionary<int, HashSet<string>> dictionary = new Dictionary<int, HashSet<string>>
@@ -1911,6 +1913,28 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.IsNotNull(obtainedDictionary);
         }
+
+        [Test]
+        public void DeserializeComplexGenericDictionary_Full()
+        {
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+                TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+            };
+
+            Dictionary<int, HashSet<string>> dictionary = new Dictionary<int, HashSet<string>>
+            {
+                { 1, new HashSet<string>(new[] { "test" }) },
+            };
+
+            string obtainedJson = JsonConvert.SerializeObject(dictionary, serializerSettings);
+
+            Dictionary<int, HashSet<string>> obtainedDictionary = (Dictionary<int, HashSet<string>>)JsonConvert.DeserializeObject(obtainedJson, serializerSettings);
+
+            Assert.IsNotNull(obtainedDictionary);
+        }
+#endif
     }
 
     public class DataType
@@ -2183,5 +2207,4 @@ namespace Newtonsoft.Json.Tests.Serialization
     }
 #endif
 }
-
 #endif
