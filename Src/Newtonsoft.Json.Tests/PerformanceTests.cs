@@ -184,6 +184,14 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
+        public void DeserializeDoubleList()
+        {
+            var json = new JArray(Enumerable.Range(0, 5000).Select(i => (double)i)).ToString(Formatting.None);
+
+            BenchmarkDeserializeMethod<IList<double>>(SerializeMethod.JsonNet, json, 1000);
+        }
+
+        [Test]
         public void DeserializeLargeJson()
         {
             var json = System.IO.File.ReadAllText("large.json");
