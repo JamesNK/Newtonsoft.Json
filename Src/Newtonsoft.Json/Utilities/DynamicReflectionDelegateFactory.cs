@@ -44,7 +44,11 @@ namespace Newtonsoft.Json.Utilities
         {
             DynamicMethod dynamicMethod = !owner.IsInterface()
                 ? new DynamicMethod(name, returnType, parameterTypes, owner, true)
+#if NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5
+                : new DynamicMethod(name, returnType, parameterTypes, owner.GetTypeInfo().Module, true);
+#else
                 : new DynamicMethod(name, returnType, parameterTypes, owner.Module, true);
+#endif
 
             return dynamicMethod;
         }
@@ -229,8 +233,11 @@ namespace Newtonsoft.Json.Utilities
             else
             {
                 ConstructorInfo constructorInfo =
+#if NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5
+                    type.GetConstructor(ReflectionUtils.EmptyTypes);
+#else
                     type.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, ReflectionUtils.EmptyTypes, null);
-
+#endif
                 if (constructorInfo == null)
                 {
                     throw new ArgumentException("Could not get constructor for {0}.".FormatWith(CultureInfo.InvariantCulture, type));

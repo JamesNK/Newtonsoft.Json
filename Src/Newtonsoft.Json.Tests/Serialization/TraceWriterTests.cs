@@ -14,7 +14,7 @@ using System.Text;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#elif NETSTANDARD1_5
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -44,7 +44,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class TraceWriterTests : TestFixtureBase
     {
-#if !(PORTABLE || DNXCORE50 || NETFX_CORE || PORTABLE40)
+#if !(PORTABLE || NETSTANDARD1_5 || NETFX_CORE || PORTABLE40)
         [Test]
         public void DiagnosticsTraceWriterTest()
         {
@@ -673,7 +673,7 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.IsTrue(traceWriter.TraceRecords[9].Message.StartsWith("Finished deserializing System.Collections.Generic.List`1[System.Object]. Path '$values'"));
         }
 
-#if !(NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(NETFX_CORE || PORTABLE || NETSTANDARD1_5 || PORTABLE40)
         [Test]
         public void DeserializeISerializable()
         {

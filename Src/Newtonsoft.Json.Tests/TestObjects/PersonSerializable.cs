@@ -27,7 +27,7 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NETFX_CORE || PORTABLE || DNXCORE50)
+#if !(NETFX_CORE || PORTABLE || NETSTANDARD1_5)
     [Serializable]
     public class PersonSerializable
     {

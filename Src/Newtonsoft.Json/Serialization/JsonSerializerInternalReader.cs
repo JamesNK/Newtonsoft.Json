@@ -33,7 +33,7 @@ using System.Dynamic;
 #endif
 using System.Diagnostics;
 using System.Globalization;
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || NETSTANDARD1_0)
 using System.Numerics;
 #endif
 using System.Reflection;
@@ -319,7 +319,7 @@ namespace Newtonsoft.Json.Serialization
                         return EnsureType(reader, constructorName, CultureInfo.InvariantCulture, contract, objectType);
                     case JsonToken.Null:
                     case JsonToken.Undefined:
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_1)
                         if (objectType == typeof(DBNull))
                         {
                             return DBNull.Value;
@@ -568,7 +568,7 @@ namespace Newtonsoft.Json.Serialization
                     JsonDynamicContract dynamicContract = (JsonDynamicContract)contract;
                     return CreateDynamic(reader, dynamicContract, member, id);
 #endif
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
                 case JsonContractType.Serializable:
                     JsonISerializableContract serializableContract = (JsonISerializableContract)contract;
                     return CreateISerializable(reader, serializableContract, member, id);
@@ -966,7 +966,7 @@ namespace Newtonsoft.Json.Serialization
                             }
                         }
 
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20 || NETSTANDARD1_0)
                         if (value is BigInteger)
                         {
                             return ConvertUtils.FromBigInteger((BigInteger)value, contract.NonNullableUnderlyingType);
@@ -1668,7 +1668,7 @@ namespace Newtonsoft.Json.Serialization
             return underlyingList;
         }
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
         private object CreateISerializable(JsonReader reader, JsonISerializableContract contract, JsonProperty member, string id)
         {
             Type objectType = contract.UnderlyingType;

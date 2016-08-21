@@ -169,7 +169,7 @@ namespace Newtonsoft.Json.Utilities
                 }
 
                 char c;
-#if !(DOTNET || PORTABLE)
+#if !(DOTNET || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
                 c = char.ToLower(chars[i], CultureInfo.InvariantCulture);
 #else
                 c = char.ToLowerInvariant(chars[i]);
@@ -229,7 +229,7 @@ namespace Newtonsoft.Json.Utilities
                     }
 
                     char c;
-#if !(DOTNET || PORTABLE)
+#if !(DOTNET || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
                     c = char.ToLower(s[i], CultureInfo.InvariantCulture);
 #else
                     c = char.ToLowerInvariant(s[i]);

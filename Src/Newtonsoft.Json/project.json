@@ -1,134 +1,347 @@
 ﻿{
-  "version": "1.0.0-*",
-  "title": "Json.NET",
-  "description": "Json.NET is a popular high-performance JSON framework for .NET",
-  "language": "en-US",
-  "authors": [ "James Newton-King" ],
-  "packOptions": {
-    "projectUrl": "http://www.newtonsoft.com/json",
-    "tags": [ "json" ],
-    "licenseUrl": "https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md",
-    "iconUrl": "http://www.newtonsoft.com/content/images/nugeticon.png",
-    "repository": {
-      "type": "git",
-      "url": "git://github.com/JamesNK/Newtonsoft.Json"
+    "version": "1.0.0-*",
+    "title": "Json.NET",
+    "description": "Json.NET is a popular high-performance JSON framework for .NET",
+    "language": "en-US",
+    "authors": [ "James Newton-King" ],
+    "packOptions": {
+        "projectUrl": "http://www.newtonsoft.com/json",
+        "tags": [ "json" ],
+        "licenseUrl": "https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md",
+        "iconUrl": "http://www.newtonsoft.com/content/images/nugeticon.png",
+        "repository": {
+            "type": "git",
+            "url": "git://github.com/JamesNK/Newtonsoft.Json"
+        }
+    },
+    "frameworks": {
+        "net45": {
+            "frameworkAssemblies": {
+                "System.Data": "",
+                "System.Numerics": "",
+                "System.Runtime.Serialization": "",
+                "System.Xml": "",
+                "System.Xml.Linq": ""
+            }
+        },
+        "net40": {
+            "frameworkAssemblies": {
+                "System.Data": "",
+                "System.Numerics": "",
+                "System.Runtime.Serialization": "",
+                "System.Xml": "",
+                "System.Xml.Linq": ""
+            }
+        },
+        "net35": {
+            "frameworkAssemblies": {
+                "System.Core": "",
+                "System.Data": "",
+                "System.Runtime.Serialization": "",
+                "System.Xml": "",
+                "System.Xml.Linq": ""
+            }
+        },
+        "net20": {
+            "frameworkAssemblies": {
+                "System.Data": "",
+                "System.Xml": ""
+            }
+        },
+        ".NETPortable,Version=v4.5,Profile=Profile259": {
+            "buildOptions": {
+                "define": [
+                    "PORTABLE"
+                ]
+            },
+            "frameworkAssemblies": {
+                "Microsoft.CSharp": "",
+                "System": "",
+                "System.Collections": "",
+                "System.Core": "",
+                "System.Diagnostics.Debug": "",
+                "System.Dynamic.Runtime": "",
+                "System.Globalization": "",
+                "System.IO": "",
+                "System.Linq": "",
+                "System.Linq.Expressions": "",
+                "System.ObjectModel": "",
+                "System.Reflection": "",
+                "System.Reflection.Extensions": "",
+                "System.Resources.ResourceManager": "",
+                "System.Runtime": "",
+                "System.Runtime.Extensions": "",
+                "System.Runtime.Serialization": "",
+                "System.Runtime.Serialization.Primitives": "",
+                "System.Text.Encoding": "",
+                "System.Text.Encoding.Extensions": "",
+                "System.Text.RegularExpressions": "",
+                "System.Threading": "",
+                "System.Threading.Tasks": "",
+                "System.Xml": "",
+                "System.Xml.Linq": "",
+                "System.Xml.ReaderWriter": "",
+                "System.Xml.XDocument": ""
+            }
+        },
+        ".NETPortable,Version=v4.0,Profile=Profile328": {
+            "buildOptions": {
+                "define": [
+                    "PORTABLE40"
+                ]
+            },
+            "frameworkAssemblies": {
+                "mscorlib": "",
+                "System": "",
+                "System.Core": "",
+                "System.Runtime.Serialization": "",
+                "System.Xml": ""
+            }
+        },
+        "netstandard1.0": {
+            "buildOptions": {
+                "debugType": "portable",
+                "define": [
+                    "NETSTANDARD1_0",
+                    "PORTABLE"
+                ]
+            },
+            "dependencies": {
+              "Microsoft.CSharp": "4.0.1",
+              "System.Collections": "4.0.11",
+              "System.Diagnostics.Debug": "4.0.11",
+              "System.Dynamic.Runtime": "4.0.11",
+              "System.ComponentModel.TypeConverter": "4.1.0",
+              "System.IO": "4.1.0",
+              "System.Linq": "4.1.0",
+              "System.Linq.Expressions": "4.1.0",
+              "System.ObjectModel": "4.0.12",
+              "System.Reflection": "4.1.0",
+              "System.Reflection.Extensions": "4.0.1",
+              "System.Resources.ResourceManager": "4.0.1",
+              "System.Runtime": "4.1.0",
+              "System.Runtime.Extensions": "4.1.0",
+              "System.Reflection.Emit.ILGeneration": "4.0.1",
+              "System.Reflection.Emit.Lightweight": "4.0.1",
+              "System.Runtime.Serialization.Primitives": "4.1.1",
+              "System.Text.Encoding": "4.0.11",
+              "System.Text.Encoding.Extensions": "4.0.11",
+              "System.Text.RegularExpressions": "4.1.0",
+              "System.Threading": "4.0.11",
+              "System.Threading.Tasks": "4.0.11",
+              "System.Xml.ReaderWriter": "4.0.11",
+              "System.Xml.XDocument": "4.0.11"
+            }
+        },
+        "netstandard1.1": {
+            "buildOptions": {
+                "debugType": "portable",
+                "define": [
+                    "NETSTANDARD1_1"
+                ]
+            },
+            "dependencies": {
+                "Microsoft.CSharp": "4.0.1",
+                "System.Collections": "4.0.11",
+                "System.Collections.Concurrent": "4.0.12",
+                "System.ComponentModel.TypeConverter": "4.1.0",
+                "System.Diagnostics.Debug": "4.0.11",
+                "System.Dynamic.Runtime": "4.0.11",
+                "System.Globalization": "4.0.11",
+                "System.IO": "4.1.0",
+                "System.Linq": "4.1.0",
+                "System.Linq.Expressions": "4.1.0",
+                "System.ObjectModel": "4.0.12",
+                "System.Reflection": "4.1.0",
+                "System.Reflection.Emit.ILGeneration": "4.0.1",
+                "System.Reflection.Emit.Lightweight": "4.0.1",
+                "System.Reflection.Extensions": "4.0.1",
+                "System.Resources.ResourceManager": "4.0.1",
+                "System.Runtime": "4.1.0",
+                "System.Runtime.Extensions": "4.1.0",
+                "System.Runtime.InteropServices": "4.1.0",
+                "System.Runtime.Numerics": "4.0.1",
+                "System.Runtime.Serialization.Primitives": "4.1.1",
+                "System.Text.Encoding": "4.0.11",
+                "System.Text.Encoding.Extensions": "4.0.11",
+                "System.Text.RegularExpressions": "4.1.0",
+                "System.Threading": "4.0.11",
+                "System.Threading.Tasks": "4.0.11",
+                "System.Xml.ReaderWriter": "4.0.11",
+                "System.Xml.XDocument": "4.0.11"
+            }
+        },
+        "netstandard1.2": {
+            "buildOptions": {
+                "debugType": "portable",
+                "define": [
+                    "NETSTANDARD1_2"
+                ]
+            },
+            "dependencies": {
+                "Microsoft.CSharp": "4.0.1",
+                "System.Collections": "4.0.11",
+                "System.Collections.Concurrent": "4.0.12",
+                "System.ComponentModel.TypeConverter": "4.1.0",
+                "System.Data.Common": "4.1.0",
+                "System.Data.SqlClient": "4.1.0",
+                "System.Diagnostics.Debug": "4.0.11",
+                "System.Dynamic.Runtime": "4.0.11",
+                "System.Globalization": "4.0.11",
+                "System.IO": "4.1.0",
+                "System.Linq": "4.1.0",
+                "System.Linq.Expressions": "4.1.0",
+                "System.ObjectModel": "4.0.12",
+                "System.Reflection": "4.1.0",
+                "System.Reflection.Emit.ILGeneration": "4.0.1",
+                "System.Reflection.Emit.Lightweight": "4.0.1",
+                "System.Reflection.Extensions": "4.0.1",
+                "System.Resources.ResourceManager": "4.0.1",
+                "System.Runtime": "4.1.0",
+                "System.Runtime.Extensions": "4.1.0",
+                "System.Runtime.InteropServices": "4.1.0",
+                "System.Runtime.Numerics": "4.0.1",
+                "System.Runtime.Serialization.Primitives": "4.1.1",
+                "System.Text.Encoding": "4.0.11",
+                "System.Text.Encoding.Extensions": "4.0.11",
+                "System.Text.RegularExpressions": "4.1.0",
+                "System.Threading": "4.0.11",
+                "System.Threading.Tasks": "4.0.11",
+                "System.Xml.ReaderWriter": "4.0.11",
+                "System.Xml.XDocument": "4.0.11"
+            }
+        },
+        "netstandard1.3": {
+            "buildOptions": {
+                "debugType": "portable",
+                "define": [
+                    "NETSTANDARD1_3"
+                ]
+            },
+            "dependencies": {
+                "Microsoft.CSharp": "4.0.1",
+                "System.AppDomain": "2.0.10",
+                "System.Collections": "4.0.11",
+                "System.Collections.Concurrent": "4.0.12",
+                "System.ComponentModel.TypeConverter": "4.1.0",
+                "System.Data.Common": "4.1.0",
+                "System.Data.SqlClient": "4.1.0",
+                "System.Diagnostics.Debug": "4.0.11",
+                "System.Diagnostics.TraceSource": "4.0.0",
+                "System.Dynamic.Runtime": "4.0.11",
+                "System.Globalization": "4.0.11",
+                "System.IO": "4.1.0",
+                "System.Linq": "4.1.0",
+                "System.Linq.Expressions": "4.1.0",
+                "System.ObjectModel": "4.0.12",
+                "System.Reflection": "4.1.0",
+                "System.Reflection.Emit.ILGeneration": "4.0.1",
+                "System.Reflection.Emit.Lightweight": "4.0.1",
+                "System.Reflection.Extensions": "4.0.1",
+                "System.Reflection.TypeExtensions": "4.1.0",
+                "System.Resources.ResourceManager": "4.0.1",
+                "System.Runtime": "4.1.0",
+                "System.Runtime.Extensions": "4.1.0",
+                "System.Runtime.InteropServices": "4.1.0",
+                "System.Runtime.Numerics": "4.0.1",
+                "System.Runtime.Serialization.Primitives": "4.1.1",
+                "System.Text.Encoding": "4.0.11",
+                "System.Text.Encoding.Extensions": "4.0.11",
+                "System.Text.RegularExpressions": "4.1.0",
+                "System.Threading": "4.0.11",
+                "System.Threading.Tasks": "4.0.11",
+                "System.Xml.ReaderWriter": "4.0.11",
+                "System.Xml.XDocument": "4.0.11",
+                "System.Xml.XmlDocument": "4.0.1"
+            }
+        },
+        "netstandard1.4": {
+            "buildOptions": {
+                "debugType": "portable",
+                "define": [
+                    "NETSTANDARD1_4"
+                ]
+            },
+            "dependencies": {
+                "Microsoft.CSharp": "4.0.1",
+                "System.AppDomain": "2.0.10",
+                "System.Collections": "4.0.11",
+                "System.Collections.Concurrent": "4.0.12",
+                "System.ComponentModel.TypeConverter": "4.1.0",
+                "System.Data.Common": "4.1.0",
+                "System.Data.SqlClient": "4.1.0",
+                "System.Diagnostics.Debug": "4.0.11",
+                "System.Diagnostics.TraceSource": "4.0.0",
+                "System.Dynamic.Runtime": "4.0.11",
+                "System.Globalization": "4.0.11",
+                "System.IO": "4.1.0",
+                "System.Linq": "4.1.0",
+                "System.Linq.Expressions": "4.1.0",
+                "System.ObjectModel": "4.0.12",
+                "System.Reflection": "4.1.0",
+                "System.Reflection.Emit.ILGeneration": "4.0.1",
+                "System.Reflection.Emit.Lightweight": "4.0.1",
+                "System.Reflection.Extensions": "4.0.1",
+                "System.Reflection.TypeExtensions": "4.1.0",
+                "System.Resources.ResourceManager": "4.0.1",
+                "System.Runtime": "4.1.0",
+                "System.Runtime.Extensions": "4.1.0",
+                "System.Runtime.InteropServices": "4.1.0",
+                "System.Runtime.Numerics": "4.0.1",
+                "System.Runtime.Serialization.Primitives": "4.1.1",
+                "System.Text.Encoding": "4.0.11",
+                "System.Text.Encoding.Extensions": "4.0.11",
+                "System.Text.RegularExpressions": "4.1.0",
+                "System.Threading": "4.0.11",
+                "System.Threading.Tasks": "4.0.11",
+                "System.Xml.ReaderWriter": "4.0.11",
+                "System.Xml.XDocument": "4.0.11",
+                "System.Xml.XmlDocument": "4.0.1"
+            }
+        },
+        "netstandard1.5": {
+            "buildOptions": {
+                "debugType": "portable",
+                "define": [
+                    "NETSTANDARD1_5"
+                ]
+            },
+            "dependencies": {
+                "Microsoft.CSharp": "4.0.1",
+                "System.AppDomain": "2.0.10", 
+                "System.Collections": "4.0.11",
+                "System.Collections.Concurrent": "4.0.12",
+                "System.ComponentModel.TypeConverter": "4.1.0",
+                "System.Data.Common": "4.1.0",
+                "System.Data.SqlClient": "4.1.0",
+                "System.Diagnostics.Debug": "4.0.11",
+                "System.Diagnostics.TraceSource": "4.0.0",
+                "System.Dynamic.Runtime": "4.0.11",
+                "System.Globalization": "4.0.11",
+                "System.IO": "4.1.0",
+                "System.Linq": "4.1.0",
+                "System.Linq.Expressions": "4.1.0",
+                "System.ObjectModel": "4.0.12",
+                "System.Reflection": "4.1.0",
+                "System.Reflection.Emit.ILGeneration": "4.0.1",
+                "System.Reflection.Emit.Lightweight": "4.0.1",
+                "System.Reflection.Extensions": "4.0.1",
+                "System.Reflection.TypeExtensions": "4.1.0",
+                "System.Resources.ResourceManager": "4.0.1",
+                "System.Runtime": "4.1.0",
+                "System.Runtime.Extensions": "4.1.0",
+                "System.Runtime.InteropServices": "4.1.0",
+                "System.Runtime.Numerics": "4.0.1",
+                "System.Runtime.Serialization.Primitives": "4.1.1",
+                "System.Text.Encoding": "4.0.11",
+                "System.Text.Encoding.Extensions": "4.0.11",
+                "System.Text.RegularExpressions": "4.1.0",
+                "System.Threading": "4.0.11",
+                "System.Threading.Tasks": "4.0.11",
+                "System.Xml.ReaderWriter": "4.0.11",
+                "System.Xml.XDocument": "4.0.11",
+                "System.Xml.XmlDocument": "4.0.1"
+            }
+        }
     }
-  },
-  "frameworks": {
-    "net45": {
-      "frameworkAssemblies": {
-        "System.Data": "",
-        "System.Numerics": "",
-        "System.Runtime.Serialization": "",
-        "System.Xml": "",
-        "System.Xml.Linq": ""
-      }
-    },
-    "net40": {
-      "frameworkAssemblies": {
-        "System.Data": "",
-        "System.Numerics": "",
-        "System.Runtime.Serialization": "",
-        "System.Xml": "",
-        "System.Xml.Linq": ""
-      }
-    },
-    "net35": {
-      "frameworkAssemblies": {
-        "System.Core": "",
-        "System.Data": "",
-        "System.Runtime.Serialization": "",
-        "System.Xml": "",
-        "System.Xml.Linq": ""
-      }
-    },
-    "net20": {
-      "frameworkAssemblies": {
-        "System.Data": "",
-        "System.Xml": ""
-      }
-    },
-    ".NETPortable,Version=v4.5,Profile=Profile259": {
-      "buildOptions": {
-        "define": [
-          "PORTABLE"
-        ]
-      },
-      "frameworkAssemblies": {
-        "Microsoft.CSharp": "",
-        "System": "",
-        "System.Collections": "",
-        "System.Core": "",
-        "System.Diagnostics.Debug": "",
-        "System.Dynamic.Runtime": "",
-        "System.Globalization": "",
-        "System.IO": "",
-        "System.Linq": "",
-        "System.Linq.Expressions": "",
-        "System.ObjectModel": "",
-        "System.Reflection": "",
-        "System.Reflection.Extensions": "",
-        "System.Resources.ResourceManager": "",
-        "System.Runtime": "",
-        "System.Runtime.Extensions": "",
-        "System.Runtime.Serialization": "",
-        "System.Runtime.Serialization.Primitives": "",
-        "System.Text.Encoding": "",
-        "System.Text.Encoding.Extensions": "",
-        "System.Text.RegularExpressions": "",
-        "System.Threading": "",
-        "System.Threading.Tasks": "",
-        "System.Xml": "",
-        "System.Xml.Linq": "",
-        "System.Xml.ReaderWriter": "",
-        "System.Xml.XDocument": ""
-      }
-    },
-    ".NETPortable,Version=v4.0,Profile=Profile328": {
-      "buildOptions": {
-        "define": [
-          "PORTABLE40"
-        ]
-      },
-      "frameworkAssemblies": {
-        "mscorlib": "",
-        "System": "",
-        "System.Core": "",
-        "System.Runtime.Serialization": "",
-        "System.Xml": ""
-      }
-    },
-    "netstandard1.0": {
-      "buildOptions": {
-        "define": [
-          "NETSTANDARD10",
-          "PORTABLE"
-        ]
-      },
-      "dependencies": {
-        "Microsoft.CSharp": "4.0.1",
-        "System.Collections": "4.0.11",
-        "System.Diagnostics.Debug": "4.0.11",
-        "System.Dynamic.Runtime": "4.0.11",
-        "System.Globalization": "4.0.11",
-        "System.IO": "4.1.0",
-        "System.Linq": "4.1.0",
-        "System.Linq.Expressions": "4.1.0",
-        "System.ObjectModel": "4.0.12",
-        "System.Reflection": "4.1.0",
-        "System.Reflection.Extensions": "4.0.1",
-        "System.Resources.ResourceManager": "4.0.1",
-        "System.Runtime": "4.1.0",
-        "System.Runtime.Extensions": "4.1.0",
-        "System.Runtime.Serialization.Primitives": "4.1.1",
-        "System.Text.Encoding": "4.0.11",
-        "System.Text.Encoding.Extensions": "4.0.11",
-        "System.Text.RegularExpressions": "4.1.0",
-        "System.Threading": "4.0.11",
-        "System.Threading.Tasks": "4.0.11",
-        "System.Xml.ReaderWriter": "4.0.11",
-        "System.Xml.XDocument": "4.0.11"
-      }
-    }
-  }
 }

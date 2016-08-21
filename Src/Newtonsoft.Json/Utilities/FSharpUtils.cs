@@ -112,7 +112,7 @@ namespace Newtonsoft.Json.Utilities
 
                         _mapType = fsharpCoreAssembly.GetType("Microsoft.FSharp.Collections.FSharpMap`2");
 
-#if !(DOTNET || PORTABLE)
+#if !(DOTNET || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
                         Thread.MemoryBarrier();
 #endif
                         _initialized = true;

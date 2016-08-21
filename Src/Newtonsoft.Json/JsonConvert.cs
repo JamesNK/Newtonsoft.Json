@@ -26,7 +26,7 @@
 using System;
 using System.IO;
 using System.Globalization;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || NETSTANDARD1_0)
 using System.Numerics;
 #endif
 #if !(NET20 || NET35 || PORTABLE40)
@@ -238,7 +238,7 @@ namespace Newtonsoft.Json
             return value.ToString(null, CultureInfo.InvariantCulture);
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || NETSTANDARD1_0)
         private static string ToStringInternal(BigInteger value)
         {
             return value.ToString(null, CultureInfo.InvariantCulture);
@@ -366,7 +366,7 @@ namespace Newtonsoft.Json
         {
             string text;
             string qc;
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
             text = value.ToString("D", CultureInfo.InvariantCulture);
             qc = quoteChar.ToString(CultureInfo.InvariantCulture);
 #else
@@ -510,7 +510,7 @@ namespace Newtonsoft.Json
                     return ToString((Uri)value);
                 case PrimitiveTypeCode.TimeSpan:
                     return ToString((TimeSpan)value);
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE || NETSTANDARD1_0)
                 case PrimitiveTypeCode.BigInteger:
                     return ToStringInternal((BigInteger)value);
 #endif
@@ -991,7 +991,7 @@ namespace Newtonsoft.Json
         #endregion
 
         #region Xml
-#if !(PORTABLE40 || PORTABLE || DOTNET)
+#if !(PORTABLE40 || PORTABLE || DOTNET || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2)
         /// <summary>
         /// Serializes the XML node to a JSON string.
         /// </summary>

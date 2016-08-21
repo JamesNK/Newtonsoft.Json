@@ -24,7 +24,7 @@
 #endregion
 
 #if !PORTABLE40
-#if !(PORTABLE || NET20 || NET35)
+#if !(PORTABLE || NET20 || NET35 || NETSTANDARD1_0)
 using System.Numerics;
 #endif
 using System;
@@ -41,7 +41,7 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json.Converters
 {
     #region XmlNodeWrappers
-#if !DOTNET && !PORTABLE && !PORTABLE40
+#if !(DOTNET || PORTABLE || PORTABLE40 || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2)
     internal class XmlDocumentWrapper : XmlNodeWrapper, IXmlDocument
     {
         private readonly XmlDocument _document;
@@ -82,10 +82,12 @@ namespace Newtonsoft.Json.Converters
             return new XmlDeclarationWrapper(_document.CreateXmlDeclaration(version, encoding, standalone));
         }
 
+#if !(NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
         public IXmlNode CreateXmlDocumentType(string name, string publicId, string systemId, string internalSubset)
         {
             return new XmlDocumentTypeWrapper(_document.CreateDocumentType(name, publicId, systemId, null));
         }
+#endif
 
         public IXmlNode CreateProcessingInstruction(string target, string data)
         {
@@ -188,6 +190,7 @@ namespace Newtonsoft.Json.Converters
         }
     }
 
+#if !(NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
     internal class XmlDocumentTypeWrapper : XmlNodeWrapper, IXmlDocumentType
     {
         private readonly XmlDocumentType _documentType;
@@ -223,6 +226,7 @@ namespace Newtonsoft.Json.Converters
             get { return "DOCTYPE"; }
         }
     }
+#endif
 
     internal class XmlNodeWrapper : IXmlNode
     {
@@ -277,8 +281,10 @@ namespace Newtonsoft.Json.Converters
                     return new XmlElementWrapper((XmlElement)node);
                 case XmlNodeType.XmlDeclaration:
                     return new XmlDeclarationWrapper((XmlDeclaration)node);
+#if !(NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
                 case XmlNodeType.DocumentType:
                     return new XmlDocumentTypeWrapper((XmlDocumentType)node);
+#endif
                 default:
                     return new XmlNodeWrapper(node);
             }
@@ -358,7 +364,9 @@ namespace Newtonsoft.Json.Converters
         IXmlNode CreateWhitespace(string text);
         IXmlNode CreateSignificantWhitespace(string text);
         IXmlNode CreateXmlDeclaration(string version, string encoding, string standalone);
+#if !(NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
         IXmlNode CreateXmlDocumentType(string name, string publicId, string systemId, string internalSubset);
+#endif
         IXmlNode CreateProcessingInstruction(string target, string data);
         IXmlElement CreateElement(string elementName);
         IXmlElement CreateElement(string qualifiedName, string namespaceUri);
@@ -1040,7 +1048,7 @@ namespace Newtonsoft.Json.Converters
                 return XContainerWrapper.WrapNode((XObject)value);
             }
 #endif
-#if !(DOTNET || PORTABLE)
+#if !(DOTNET || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2)
             if (value is XmlNode)
             {
                 return XmlNodeWrapper.WrapNode((XmlNode)value);
@@ -1428,7 +1436,7 @@ namespace Newtonsoft.Json.Converters
                 rootNode = document;
             }
 #endif
-#if !(DOTNET || PORTABLE)
+#if !(DOTNET || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2)
             if (typeof(XmlNode).IsAssignableFrom(objectType))
             {
                 if (objectType != typeof(XmlDocument))
@@ -1437,8 +1445,10 @@ namespace Newtonsoft.Json.Converters
                 }
 
                 XmlDocument d = new XmlDocument();
+#if !(NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
                 // prevent http request when resolving any DTD references
                 d.XmlResolver = null;
+#endif
 
                 document = new XmlDocumentWrapper(d);
                 rootNode = document;
@@ -1502,10 +1512,12 @@ namespace Newtonsoft.Json.Converters
                     {
                         CreateInstruction(reader, document, currentNode, propertyName);
                     }
+#if !(NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
                     else if (string.Equals(propertyName, "!DOCTYPE", StringComparison.OrdinalIgnoreCase))
                     {
                         CreateDocumentType(reader, document, currentNode);
                     }
+#endif
                     else
                     {
                         if (reader.TokenType == JsonToken.StartArray)
@@ -1635,7 +1647,7 @@ namespace Newtonsoft.Json.Converters
             }
             else if (reader.TokenType == JsonToken.Integer)
             {
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40 || NETSTANDARD1_0)
                 if (reader.Value is BigInteger)
                 {
                     return ((BigInteger)reader.Value).ToString(CultureInfo.InvariantCulture);
@@ -1671,7 +1683,7 @@ namespace Newtonsoft.Json.Converters
 #endif
 
                 DateTime d = Convert.ToDateTime(reader.Value, CultureInfo.InvariantCulture);
-#if !PORTABLE
+#if !(PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2)
                 return XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind));
 #else
                 return XmlConvert.ToString(d);
@@ -1891,6 +1903,7 @@ namespace Newtonsoft.Json.Converters
             }
         }
 
+#if !(NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2 || NETSTANDARD1_3 || NETSTANDARD1_4 || NETSTANDARD1_5)
         private void CreateDocumentType(JsonReader reader, IXmlDocument document, IXmlNode currentNode)
         {
             string name = null;
@@ -1925,6 +1938,7 @@ namespace Newtonsoft.Json.Converters
             IXmlNode documentType = document.CreateXmlDocumentType(name, publicId, systemId, internalSubset);
             currentNode.AppendChild(documentType);
         }
+#endif
 
         private IXmlElement CreateElement(string elementName, IXmlDocument document, string elementPrefix, XmlNamespaceManager manager)
         {
@@ -2053,7 +2067,7 @@ namespace Newtonsoft.Json.Converters
                 return true;
             }
 #endif
-#if !(DOTNET || PORTABLE)
+#if !(DOTNET || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NETSTANDARD1_2)
             if (typeof(XmlNode).IsAssignableFrom(valueType))
             {
                 return true;

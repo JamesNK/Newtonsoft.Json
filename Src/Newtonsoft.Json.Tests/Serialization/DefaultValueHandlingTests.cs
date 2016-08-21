@@ -27,7 +27,7 @@ using System;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
-#if !(NET20 || NET35 || NETFX_CORE || PORTABLE || DNXCORE50)
+#if !(NET20 || NET35 || NETFX_CORE || PORTABLE || NETSTANDARD1_5)
 using System.Runtime.Serialization.Json;
 #endif
 using System.Text;
@@ -36,7 +36,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#elif NETSTANDARD1_5
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -278,7 +278,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             EmitDefaultValueClass c = new EmitDefaultValueClass();
 
-#if !(NET20 || NET35 || NETFX_CORE || PORTABLE)
+#if !(NET20 || NET35 || NETFX_CORE || PORTABLE || NETSTANDARD1_5)
             DataContractJsonSerializer jsonSerializer = new DataContractJsonSerializer(typeof(EmitDefaultValueClass));
 
             MemoryStream ms = new MemoryStream();

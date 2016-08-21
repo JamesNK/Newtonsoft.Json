@@ -41,7 +41,7 @@ using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
 using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
 using TestMethod = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
 using SetUp = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestInitializeAttribute;
-#elif DNXCORE50
+#elif NETSTANDARD1_5
 using Xunit;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 using XAssert = Xunit.Assert;
@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Tests
     {
         public static IEnumerable<ConstructorInfo> GetConstructors(Type type)
         {
-#if !(NETFX_CORE || DNXCORE50)
+#if !(NETFX_CORE || NETSTANDARD1_5)
             return type.GetConstructors();
 #else
             return type.GetTypeInfo().DeclaredConstructors;
@@ -72,7 +72,7 @@ namespace Newtonsoft.Json.Tests
 
         public static PropertyInfo GetProperty(Type type, string name)
         {
-#if !(NETFX_CORE || DNXCORE50)
+#if !(NETFX_CORE || NETSTANDARD1_5)
             return type.GetProperty(name);
 #else
             return type.GetTypeInfo().GetDeclaredProperty(name);
@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Tests
 
         public static FieldInfo GetField(Type type, string name)
         {
-#if !(NETFX_CORE || DNXCORE50)
+#if !(NETFX_CORE || NETSTANDARD1_5)
             return type.GetField(name);
 #else
             return type.GetTypeInfo().GetDeclaredField(name);
@@ -90,7 +90,7 @@ namespace Newtonsoft.Json.Tests
 
         public static MethodInfo GetMethod(Type type, string name)
         {
-#if !(NETFX_CORE || DNXCORE50)
+#if !(NETFX_CORE || NETSTANDARD1_5)
             return type.GetMethod(name);
 #else
             return type.GetTypeInfo().GetDeclaredMethod(name);
@@ -98,7 +98,7 @@ namespace Newtonsoft.Json.Tests
         }
     }
 
-#if DNXCORE50
+#if NETSTANDARD1_5
     public class TestFixtureAttribute : Attribute
     {
         // xunit doesn't need a test fixture attribute
@@ -267,14 +267,14 @@ namespace Newtonsoft.Json.Tests
             return bytes;
         }
 
-#if DNXCORE50
+#if NETSTANDARD1_5
         protected TestFixtureBase()
 #else
         [SetUp]
         protected void TestSetup()
 #endif
         {
-#if !(NETFX_CORE || DNXCORE50)
+#if !(NETFX_CORE || NETSTANDARD1_5)
             //CultureInfo turkey = CultureInfo.CreateSpecificCulture("tr");
             //Thread.CurrentThread.CurrentCulture = turkey;
             //Thread.CurrentThread.CurrentUICulture = turkey;
@@ -325,7 +325,7 @@ namespace Newtonsoft.Json.Tests
 
         public static void Contains(IList collection, object value, string message)
         {
-#if !(NETFX_CORE || DNXCORE50)
+#if !(NETFX_CORE || NETSTANDARD1_5)
             Assert.Contains(value, collection, message);
 #else
             if (!collection.Cast<object>().Any(i => i.Equals(value)))
