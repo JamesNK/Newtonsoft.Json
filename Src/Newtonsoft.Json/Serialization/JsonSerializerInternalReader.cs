@@ -319,7 +319,7 @@ namespace Newtonsoft.Json.Serialization
                         return EnsureType(reader, constructorName, CultureInfo.InvariantCulture, contract, objectType);
                     case JsonToken.Null:
                     case JsonToken.Undefined:
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_1)
                         if (objectType == typeof(DBNull))
                         {
                             return DBNull.Value;

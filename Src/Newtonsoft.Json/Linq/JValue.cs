@@ -613,7 +613,7 @@ namespace Newtonsoft.Json.Linq
             {
                 return JTokenType.Null;
             }
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_1)
             else if (value == DBNull.Value)
             {
                 return JTokenType.Null;

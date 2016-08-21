@@ -37,7 +37,7 @@ using System.Reflection;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
-#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NO_SQL_CLIENT)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NO_SQL_CLIENT)
 using System.Data.SqlTypes;
 #endif
 
@@ -151,7 +151,7 @@ namespace Newtonsoft.Json.Utilities
                 { typeof(Uri), PrimitiveTypeCode.Uri },
                 { typeof(string), PrimitiveTypeCode.String },
                 { typeof(byte[]), PrimitiveTypeCode.Bytes },
-#if !(PORTABLE || PORTABLE40 || DOTNET)
+#if !(PORTABLE || PORTABLE40 || DOTNET || NETSTANDARD1_1)
                 { typeof(DBNull), PrimitiveTypeCode.DBNull }
 #endif
             };
@@ -570,7 +570,7 @@ namespace Newtonsoft.Json.Utilities
                 return ConvertResult.Success;
             }
 #endif
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_1)
             // handle DBNull and INullable
             if (initialValue == DBNull.Value)
             {
@@ -585,7 +585,7 @@ namespace Newtonsoft.Json.Utilities
                 return ConvertResult.CannotConvertNull;
             }
 #endif
-#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NO_SQL_CLIENT)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NO_SQL_CLIENT)
             if (initialValue is INullable)
             {
                 value = EnsureTypeAssignable(ToValue((INullable)initialValue), initialType, targetType);
@@ -667,7 +667,7 @@ namespace Newtonsoft.Json.Utilities
             throw new ArgumentException("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, (initialType != null) ? initialType.ToString() : "{null}", targetType));
         }
 
-#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NO_SQL_CLIENT)
+#if !(DOTNET || PORTABLE40 || PORTABLE || NETSTANDARD1_0 || NETSTANDARD1_1 || NO_SQL_CLIENT)
         public static object ToValue(INullable nullableValue)
         {
             if (nullableValue == null)
