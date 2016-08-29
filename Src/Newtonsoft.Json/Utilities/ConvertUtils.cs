@@ -998,10 +998,13 @@ namespace Newtonsoft.Json.Utilities
             int numDecimalEnd = end;
             int exponent = 0;
             bool exponentNegative = false;
+            ulong mantissa = 0UL;
+            int mantissaDigits = 0;
+            int exponentFromMantissa = 0;
             for (; i < end; i++)
             {
                 char c = chars[i];
-                switch (chars[i])
+                switch (c)
                 {
                     case '.':
                         if (i == start)
@@ -1019,87 +1022,89 @@ namespace Newtonsoft.Json.Utilities
                         break;
                     case 'e':
                     case 'E':
+                        if (i == start)
                         {
-                            if (i == start)
-                            {
-                                return ParseResult.Invalid;
-                            }
-                            if (i == numDecimalStart)
-                            {
-                                // E follows decimal point
-                                return ParseResult.Invalid;
-                            }
-                            i++;
-                            if (i == end)
-                            {
-                                return ParseResult.Invalid;
-                            }
+                            return ParseResult.Invalid;
+                        }
+                        if (i == numDecimalStart)
+                        {
+                            // E follows decimal point
+                            return ParseResult.Invalid;
+                        }
+                        i++;
+                        if (i == end)
+                        {
+                            return ParseResult.Invalid;
+                        }
 
-                            if (numDecimalStart < end)
-                            {
-                                numDecimalEnd = i - 1;
-                            }
+                        if (numDecimalStart < end)
+                        {
+                            numDecimalEnd = i - 1;
+                        }
 
+                        c = chars[i];
+                        switch (c)
+                        {
+                            case '-':
+                                exponentNegative = true;
+                                i++;
+                                break;
+                            case '+':
+                                i++;
+                                break;
+                        }
+
+                        // parse 3 digit 
+                        for (;i < end;i++)
+                        {
                             c = chars[i];
-                            switch (c)
+                            if (c < '0' || c > '9')
                             {
-                                case '-':
-                                    exponentNegative = true;
-                                    i++;
-                                    break;
-                                case '+':
-                                    i++;
-                                    break;
+                                return ParseResult.Invalid;
                             }
 
-                            // parse 3 digit 
-                            for (;i < end;i++)
-                            {
-                                c = chars[i];
-                                if (c < '0' || c > '9')
-                                {
-                                    return ParseResult.Invalid;
-                                }
+                            exponent = (10 * exponent) + (c - '0');
+                        }
 
-                                exponent = (10 * exponent) + (c - '0');
-                            }
-
-                            if (exponentNegative)
+                        if (exponentNegative)
+                        {
+                            exponent = -exponent;
+                        }
+                        else
+                        {
+                            if (exponent > MaxExponent)
                             {
-                                exponent = -exponent;
-                            }
-                            else
-                            {
-                                if (exponent > MaxExponent)
-                                {
-                                    return ParseResult.Overflow;
-                                }
+                                return ParseResult.Overflow;
                             }
                         }
                         break;
-                    case '0':
-                    case '1':
-                    case '2':
-                    case '3':
-                    case '4':
-                    case '5':
-                    case '6':
-                    case '7':
-                    case '8':
-                    case '9':
-                        value = (10 * value) + (c - '0');
-                        break;
                     default:
-                        return ParseResult.Invalid;
+                        if (c < '0' || c > '9')
+                        {
+                            return ParseResult.Invalid;
+                        }
+
+                        if (mantissaDigits < 19)
+                        {
+                            mantissa = (10 * mantissa) + (ulong)(c - '0');
+                            ++mantissaDigits;
+                        }
+                        else
+                        {
+                            ++exponentFromMantissa;
+                        }
+                        break;
                 }
             }
+
+            exponent += exponentFromMantissa;
 
             // correct the decimal point
             exponent -= (numDecimalEnd - numDecimalStart);
 
             if (exponent > 0)
             {
-                value *= DoubleExponents[exponent - 1];
+                value = mantissa * DoubleExponents[exponent - 1];
             }
             else if (exponent < 0)
             {
@@ -1107,8 +1112,12 @@ namespace Newtonsoft.Json.Utilities
                 if (exponent > MaxExponent)
                 {
                     // handle very small numbers, e.g. 4.94065645841247E-324
-                    value *= DoubleNegativeExponents[154 - 1];
+                    value = mantissa * DoubleNegativeExponents[154 - 1];
                     exponent -= 154;
+                }
+                else
+                {
+                    value = mantissa;
                 }
 
                 if (DoubleNegativeExponents.Length <= exponent - 1)
@@ -1116,8 +1125,12 @@ namespace Newtonsoft.Json.Utilities
                     value = 0;
                     return ParseResult.Success;
                 }
-
-                value *= DoubleNegativeExponents[exponent - 1];
+                
+                value = exponent < 23 ? value / DoubleExponents[exponent - 1] : value * DoubleNegativeExponents[exponent - 1];
+            }
+            else
+            {
+                value = mantissa;
             }
 
             if (double.IsPositiveInfinity(value))

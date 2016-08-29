@@ -61,7 +61,7 @@ namespace Newtonsoft.Json.Tests.Utilities
             {
                 Assert.AreEqual(expectedValue.Value, d, "Input string: " + s);
 
-                Assert.AreEqual(expectedValue, d2, "DoubleTryParse result is not equal to double.Parse. Input string: " + s);
+                Assert.AreEqual(expectedValue.Value, d2, "DoubleTryParse result is not equal to double.Parse. Input string: " + s);
             }
         }
 
@@ -89,6 +89,8 @@ namespace Newtonsoft.Json.Tests.Utilities
             AssertDoubleTryParse("1", ParseResult.Success, 1);
             AssertDoubleTryParse("1.2", ParseResult.Success, 1.2);
 
+            AssertDoubleTryParse("1E-21", ParseResult.Success, 1E-21);
+            AssertDoubleTryParse("1E-22", ParseResult.Success, 1E-22);
             AssertDoubleTryParse("1E-23", ParseResult.Success, 1E-23);
             AssertDoubleTryParse("1E-25", ParseResult.Success, 1E-25);
             AssertDoubleTryParse("1E-50", ParseResult.Success, 1E-50);
