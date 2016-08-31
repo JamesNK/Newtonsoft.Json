@@ -163,6 +163,20 @@ namespace Newtonsoft.Json.Utilities
                     // parameter has value, get value from array again and unbox
                     generator.MarkLabel(skipSettingDefault);
                     generator.PushArrayInstance(argsIndex, i);
+
+                    if (parameterType.IsPrimitive())
+                    {
+                        // for primitive types we need to call Convert.ChangeType() to correctly 
+                        // convert value from other compatible primitive types (e.g. short -> int)
+
+                        generator.Emit(OpCodes.Ldtoken, parameterType);
+                        generator.Emit(OpCodes.Call, typeof(Type).GetMethod(
+                            "GetTypeFromHandle", new[] { typeof(RuntimeTypeHandle) }));
+                            
+                        generator.Emit(OpCodes.Call, typeof(Convert).GetMethod(
+                            "ChangeType", new[] { typeof(object), typeof(Type) }));
+                    }
+
                     generator.UnboxIfNeeded(parameterType);
 
                     // parameter finished, we out!

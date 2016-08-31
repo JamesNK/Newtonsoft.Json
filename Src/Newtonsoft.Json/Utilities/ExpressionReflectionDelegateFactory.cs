@@ -360,6 +360,13 @@ namespace Newtonsoft.Json.Utilities
                 return expression;
             }
 
+            if (targetType.IsPrimitive())
+            {
+                expression = Expression.Call(
+                    typeof(Convert).GetMethod("ChangeType", new[] { typeof(object), typeof(Type) }), 
+                    expression, Expression.Constant(targetType));
+            }
+
             return Expression.Convert(expression, targetType);
         }
     }

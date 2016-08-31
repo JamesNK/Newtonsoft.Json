@@ -1330,6 +1330,310 @@ namespace Newtonsoft.Json.Tests
             public string One { get; set; }
         }
 
+        
+        public class OverloadsJsonConverterer : JsonConverter
+        {
+            private readonly string _type;
+            
+            // constructor with Type argument
+
+            public OverloadsJsonConverterer(Type typeParam)
+            {
+                _type = "Type";
+            }
+            
+            public OverloadsJsonConverterer(object objectParam)
+            {
+                _type = string.Format("object({0})", objectParam.GetType().FullName);
+            }
+
+            // primitive type conversions
+
+            public OverloadsJsonConverterer(byte byteParam)
+            {
+                _type = "byte";
+            }
+
+            public OverloadsJsonConverterer(short shortParam)
+            {
+                _type = "short";
+            }
+
+            public OverloadsJsonConverterer(int intParam)
+            {
+                _type = "int";
+            }
+
+            public OverloadsJsonConverterer(long longParam)
+            {
+                _type = "long";
+            }
+
+            public OverloadsJsonConverterer(double doubleParam)
+            {
+                _type = "double";
+            }
+
+            // params argument
+
+            public OverloadsJsonConverterer(params int[] intParams)
+            {
+                _type = "int[]";
+            }
+
+            public OverloadsJsonConverterer(bool[] intParams)
+            {
+                _type = "bool[]";
+            }
+
+            // closest type resolution
+
+            public OverloadsJsonConverterer(IEnumerable<string> iEnumerableParam)
+            {
+                _type = "IEnumerable<string>";
+            }
+
+            public OverloadsJsonConverterer(IList<string> iListParam)
+            {
+                _type = "IList<string>";
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                writer.WriteValue(_type);
+            }
+            
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                throw new NotImplementedException();
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(int);
+            }
+            
+        }
+
+        public class OverloadWithTypeParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), typeof(int))]
+            public int Overload { get; set; }
+        }
+
+        [Test]
+        public void JsonConverterConstructor_OverloadWithTypeParam()
+        {
+            OverloadWithTypeParameter value = new OverloadWithTypeParameter();
+            string json = JsonConvert.SerializeObject(value);
+
+            Assert.AreEqual("{\"Overload\":\"Type\"}", json);
+        }
+        
+        public class OverloadWithUnhandledParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), "str")]
+            public int Overload { get; set; }
+        }
+
+        [Test]
+        public void JsonConverterConstructor_OverloadWithUnhandledParam_FallbackToObject()
+        {
+            OverloadWithUnhandledParameter value = new OverloadWithUnhandledParameter();
+            string json = JsonConvert.SerializeObject(value);
+
+            Assert.AreEqual("{\"Overload\":\"object(System.String)\"}", json);
+        }
+
+        public class OverloadWithIntParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), 1)]
+            public int Overload { get; set; }
+        }
+
+        public class OverloadWithUIntParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), 1U)]
+            public int Overload { get; set; }
+        }
+
+        public class OverloadWithLongParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), 1L)]
+            public int Overload { get; set; }
+        }
+
+        public class OverloadWithULongParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), 1UL)]
+            public int Overload { get; set; }
+        }
+        
+        public class OverloadWithShortParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), (short)1)]
+            public int Overload { get; set; }
+        }
+
+        public class OverloadWithUShortParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), (ushort)1)]
+            public int Overload { get; set; }
+        }
+
+        public class OverloadWithSByteParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), (sbyte)1)]
+            public int Overload { get; set; }
+        }
+        
+        public class OverloadWithByteParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), (byte)1)]
+            public int Overload { get; set; }
+        }
+
+        public class OverloadWithCharParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), 'a')]
+            public int Overload { get; set; }
+        }
+
+        public class OverloadWithBoolParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), true)]
+            public int Overload { get; set; }
+        }
+
+        public class OverloadWithFloatParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), 1.5f)]
+            public int Overload { get; set; }
+        }
+
+        public class OverloadWithDoubleParameter
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), 1.5)]
+            public int Overload { get; set; }
+        }
+        
+        [Test]
+        public void JsonConverterConstructor_OverloadsWithPrimitiveParams()
+        {
+            {
+                OverloadWithIntParameter value = new OverloadWithIntParameter();
+                string json = JsonConvert.SerializeObject(value);
+                Assert.AreEqual("{\"Overload\":\"int\"}", json);
+            }
+
+            {
+                // uint -> long
+                OverloadWithUIntParameter value = new OverloadWithUIntParameter();
+                string json = JsonConvert.SerializeObject(value);
+                Assert.AreEqual("{\"Overload\":\"long\"}", json);
+            }
+
+            {
+                OverloadWithLongParameter value = new OverloadWithLongParameter();
+                string json = JsonConvert.SerializeObject(value);
+                Assert.AreEqual("{\"Overload\":\"long\"}", json);
+            }
+
+            {
+                // ulong -> double
+                OverloadWithULongParameter value = new OverloadWithULongParameter();
+                string json = JsonConvert.SerializeObject(value);
+                Assert.AreEqual("{\"Overload\":\"double\"}", json);
+            }
+
+            {
+                OverloadWithShortParameter value = new OverloadWithShortParameter();
+                string json = JsonConvert.SerializeObject(value);
+                Assert.AreEqual("{\"Overload\":\"short\"}", json);
+            }
+
+            {
+                // ushort -> int
+                OverloadWithUShortParameter value = new OverloadWithUShortParameter();
+                string json = JsonConvert.SerializeObject(value);
+                Assert.AreEqual("{\"Overload\":\"int\"}", json);
+            }
+
+            {
+                // sbyte -> short
+                OverloadWithSByteParameter value = new OverloadWithSByteParameter();
+                string json = JsonConvert.SerializeObject(value);
+                Assert.AreEqual("{\"Overload\":\"short\"}", json);
+            }
+
+            {
+                OverloadWithByteParameter value = new OverloadWithByteParameter();
+                string json = JsonConvert.SerializeObject(value);
+                Assert.AreEqual("{\"Overload\":\"byte\"}", json);
+            }
+
+            {
+                // char -> int
+                OverloadWithCharParameter value = new OverloadWithCharParameter();
+                string json = JsonConvert.SerializeObject(value);
+                Assert.AreEqual("{\"Overload\":\"int\"}", json);
+            }
+
+            {
+                // bool -> (object)bool
+                OverloadWithBoolParameter value = new OverloadWithBoolParameter();
+                var json = JsonConvert.SerializeObject(value);
+                Assert.AreEqual("{\"Overload\":\"object(System.Boolean)\"}", json);
+            }
+
+            {
+                // float -> double
+                OverloadWithFloatParameter value = new OverloadWithFloatParameter();
+                string json = JsonConvert.SerializeObject(value);
+                Assert.AreEqual("{\"Overload\":\"double\"}", json);
+            }
+
+            {
+                OverloadWithDoubleParameter value = new OverloadWithDoubleParameter();
+                var json = JsonConvert.SerializeObject(value);
+                Assert.AreEqual("{\"Overload\":\"double\"}", json);
+            }
+        }
+
+        public class OverloadWithArrayParameters
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), new int[] { 1, 2, 3 })]
+            public int WithParams { get; set; }
+
+            [JsonConverter(typeof(OverloadsJsonConverterer), new bool[] { true, false })]
+            public int WithoutParams { get; set; }
+        }
+
+        [Test]
+        public void JsonConverterConstructor_OverloadsWithArrayParams()
+        {
+            OverloadWithArrayParameters value = new OverloadWithArrayParameters();
+            string json = JsonConvert.SerializeObject(value);
+
+            Assert.AreEqual("{\"WithParams\":\"int[]\",\"WithoutParams\":\"bool[]\"}", json);
+        }
+
+        public class OverloadWithBaseType
+        {
+            [JsonConverter(typeof(OverloadsJsonConverterer), new object[] { new string[] { "a", "b", "c" } })]
+            public int Overload { get; set; }
+        }
+
+        [Test]
+        public void JsonConverterConstructor_OverloadsWithBaseTypes()
+        {
+            OverloadWithBaseType value = new OverloadWithBaseType();
+            string json = JsonConvert.SerializeObject(value);
+
+            Assert.AreEqual("{\"Overload\":\"IList<string>\"}", json);
+        }
+
+
         [Test]
         public void CustomDoubleRounding()
         {
