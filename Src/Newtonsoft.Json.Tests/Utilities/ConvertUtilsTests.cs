@@ -125,6 +125,10 @@ namespace Newtonsoft.Json.Tests.Utilities
 
             AssertDoubleTryParse("1.7976931348623159E+308", ParseResult.Overflow, null);
             AssertDoubleTryParse("-1.7976931348623159E+308", ParseResult.Overflow, null);
+
+            AssertDoubleTryParse("1E4294967297", ParseResult.Overflow, null);
+            AssertDoubleTryParse("1E4294967297B", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1E-4294967297", ParseResult.Success, 0);
         }
 
         [Test]

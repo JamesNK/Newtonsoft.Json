@@ -997,7 +997,6 @@ namespace Newtonsoft.Json.Utilities
             int numDecimalStart = end;
             int numDecimalEnd = end;
             int exponent = 0;
-            bool exponentNegative = false;
             ulong mantissa = 0UL;
             int mantissaDigits = 0;
             int exponentFromMantissa = 0;
@@ -1043,6 +1042,7 @@ namespace Newtonsoft.Json.Utilities
                         }
 
                         c = chars[i];
+                        bool exponentNegative = false;
                         switch (c)
                         {
                             case '-':
@@ -1055,27 +1055,25 @@ namespace Newtonsoft.Json.Utilities
                         }
 
                         // parse 3 digit 
-                        for (;i < end;i++)
+                        for (; i < end; i++)
                         {
                             c = chars[i];
                             if (c < '0' || c > '9')
                             {
                                 return ParseResult.Invalid;
                             }
-
-                            exponent = (10 * exponent) + (c - '0');
+                            
+                            var newExponent = (10 * exponent) + (c - '0');
+                            // stops updating exponent when overflowing
+                            if (exponent < newExponent)
+                            {
+                                exponent = newExponent;
+                            }
                         }
 
                         if (exponentNegative)
                         {
                             exponent = -exponent;
-                        }
-                        else
-                        {
-                            if (exponent > MaxExponent)
-                            {
-                                return ParseResult.Overflow;
-                            }
                         }
                         break;
                     default:
@@ -1102,9 +1100,16 @@ namespace Newtonsoft.Json.Utilities
             // correct the decimal point
             exponent -= (numDecimalEnd - numDecimalStart);
 
+            if (exponent > MaxExponent)
+            {
+                return ParseResult.Overflow;
+            }
+
+            value = mantissa;
+
             if (exponent > 0)
             {
-                value = mantissa * DoubleExponents[exponent - 1];
+                value *= DoubleExponents[exponent - 1];
             }
             else if (exponent < 0)
             {
@@ -1112,25 +1117,16 @@ namespace Newtonsoft.Json.Utilities
                 if (exponent > MaxExponent)
                 {
                     // handle very small numbers, e.g. 4.94065645841247E-324
-                    value = mantissa * DoubleNegativeExponents[154 - 1];
                     exponent -= 154;
-                }
-                else
-                {
-                    value = mantissa;
-                }
-
-                if (DoubleNegativeExponents.Length <= exponent - 1)
-                {
-                    value = 0;
-                    return ParseResult.Success;
+                    if (DoubleNegativeExponents.Length <= exponent - 1)
+                    {
+                        value = 0D;
+                        return ParseResult.Success;
+                    }
+                    value *= DoubleNegativeExponents[154 - 1];
                 }
                 
                 value = exponent < 23 ? value / DoubleExponents[exponent - 1] : value * DoubleNegativeExponents[exponent - 1];
-            }
-            else
-            {
-                value = mantissa;
             }
 
             if (double.IsPositiveInfinity(value))
