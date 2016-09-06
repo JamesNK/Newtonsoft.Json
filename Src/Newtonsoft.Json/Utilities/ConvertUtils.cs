@@ -1006,11 +1006,6 @@ namespace Newtonsoft.Json.Utilities
                 switch (c)
                 {
                     case '.':
-                        if (i == start)
-                        {
-                            return ParseResult.Invalid;
-                        }
-
                         if (numDecimalStart != end)
                         {
                             // multiple decimal points
@@ -1023,11 +1018,6 @@ namespace Newtonsoft.Json.Utilities
                     case 'E':
                         if (i == start)
                         {
-                            return ParseResult.Invalid;
-                        }
-                        if (i == numDecimalStart)
-                        {
-                            // E follows decimal point
                             return ParseResult.Invalid;
                         }
                         i++;
@@ -1085,7 +1075,10 @@ namespace Newtonsoft.Json.Utilities
                         if (mantissaDigits < 19)
                         {
                             mantissa = (10 * mantissa) + (ulong)(c - '0');
-                            ++mantissaDigits;
+                            if (mantissa > 0)
+                            {
+                                ++mantissaDigits;
+                            }
                         }
                         else
                         {
@@ -1125,7 +1118,7 @@ namespace Newtonsoft.Json.Utilities
                     }
                     value *= DoubleNegativeExponents[154 - 1];
                 }
-                
+
                 value = exponent < 23 ? value / DoubleExponents[exponent - 1] : value * DoubleNegativeExponents[exponent - 1];
             }
 
