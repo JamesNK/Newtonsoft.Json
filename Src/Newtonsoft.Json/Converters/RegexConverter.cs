@@ -34,7 +34,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="Regex"/> to and from JSON and BSON.
     /// </summary>
-    public class RegexConverter : JsonConverter
+    public class RegexConverter : JsonConverter<Regex>
     {
         private const string PatternName = "Pattern";
         private const string OptionsName = "Options";
@@ -45,18 +45,16 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, Regex value, JsonSerializer serializer)
         {
-            Regex regex = (Regex)value;
-
             BsonWriter bsonWriter = writer as BsonWriter;
             if (bsonWriter != null)
             {
-                WriteBson(bsonWriter, regex);
+                WriteBson(bsonWriter, value);
             }
             else
             {
-                WriteJson(writer, regex, serializer);
+                WriteJsonInternal(writer, value, serializer);
             }
         }
 
@@ -101,7 +99,7 @@ namespace Newtonsoft.Json.Converters
             writer.WriteRegex(regex.ToString(), options);
         }
 
-        private void WriteJson(JsonWriter writer, Regex regex, JsonSerializer serializer)
+        private void WriteJsonInternal(JsonWriter writer, Regex regex, JsonSerializer serializer)
         {
             DefaultContractResolver resolver = serializer.ContractResolver as DefaultContractResolver;
 
@@ -118,10 +116,11 @@ namespace Newtonsoft.Json.Converters
         /// </summary>
         /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
         /// <param name="objectType">Type of the object.</param>
+        /// <param name="existingHasValue">The existing value has a value.</param>
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override Regex ReadJson(JsonReader reader, Type objectType, bool existingHasValue, Regex existingValue, JsonSerializer serializer)
         {
             switch (reader.TokenType)
             {
@@ -136,7 +135,7 @@ namespace Newtonsoft.Json.Converters
             throw JsonSerializationException.Create(reader, "Unexpected token when reading Regex.");
         }
 
-        private object ReadRegexString(JsonReader reader)
+        private Regex ReadRegexString(JsonReader reader)
         {
             string regexText = (string)reader.Value;
             int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
@@ -210,18 +209,6 @@ namespace Newtonsoft.Json.Converters
             }
 
             throw JsonSerializationException.Create(reader, "Unexpected end when reading Regex.");
-        }
-
-        /// <summary>
-        /// Determines whether this instance can convert the specified object type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-            return (objectType == typeof(Regex));
         }
     }
 }
