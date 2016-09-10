@@ -124,6 +124,10 @@
         <para>The <codeEntityReference>T:Newtonsoft.Json.JsonExtensionDataAttribute</codeEntityReference> instructs the
         <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference> to deserialize properties with no matching field or property
         on the type into the specified collection. During serialization the values in this collection are written back to the instance's JSON object.</para>
+
+<alert class="note">
+  <para>All extension data values will be written during serialization, even if a property the same name has already been written.</para>
+</alert>        
         <para>This example shows the JsonExtensionDataAttribute being applied to a field, unmatched JSON properties being added to the field's collection during deserialization.</para>
         <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\DeserializeExtensionData.cs" region="Types" title="Types" />
         <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Serializer\DeserializeExtensionData.cs" region="Usage" title="Usage" />
