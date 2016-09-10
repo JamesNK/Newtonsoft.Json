@@ -362,9 +362,13 @@ namespace Newtonsoft.Json.Utilities
 
             if (targetType.IsPrimitive())
             {
-                expression = Expression.Call(
-                    typeof(Convert).GetMethod("ChangeType", new[] { typeof(object), typeof(Type) }), 
-                    expression, Expression.Constant(targetType));
+                MethodInfo toTargetTypeMethod = typeof(Convert)
+                    .GetMethod("To" + targetType.Name, new[] { typeof(object) });
+
+                if (toTargetTypeMethod != null)
+                {
+                    expression = Expression.Call(toTargetTypeMethod, expression);
+                }
             }
 
             return Expression.Convert(expression, targetType);

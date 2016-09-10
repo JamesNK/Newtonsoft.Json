@@ -233,6 +233,7 @@
     <Compile Include="Utilities\LateBoundReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\LinqBridge.cs" />
     <Compile Include="Utilities\MathUtils.cs" />
+    <Compile Include="Utilities\MethodBinder.cs" />
     <Compile Include="Utilities\MethodCall.cs" />
     <Compile Include="Utilities\MiscellaneousUtils.cs" />
     <Compile Include="Utilities\PropertyNameTable.cs" />
