@@ -429,14 +429,18 @@ namespace Newtonsoft.Json.Linq.JsonPath
             {
                 EatWhitespace();
 
-                if (_expression[_currentIndex] != '@')
+                List<PathFilter> expressionPath = new List<PathFilter>();
+
+                if (_expression[_currentIndex] == '$')
+                {
+                    expressionPath.Add(new RootFilter());
+                }
+                else if (_expression[_currentIndex] != '@')
                 {
                     throw new JsonException("Unexpected character while parsing path query: " + _expression[_currentIndex]);
                 }
 
                 _currentIndex++;
-
-                List<PathFilter> expressionPath = new List<PathFilter>();
 
                 if (ParsePath(expressionPath, _currentIndex, true))
                 {
@@ -758,17 +762,17 @@ namespace Newtonsoft.Json.Linq.JsonPath
             }
         }
 
-        internal IEnumerable<JToken> Evaluate(JToken t, bool errorWhenNoMatch)
+        internal IEnumerable<JToken> Evaluate(JToken root, JToken t, bool errorWhenNoMatch)
         {
-            return Evaluate(Filters, t, errorWhenNoMatch);
+            return Evaluate(Filters, root, t, errorWhenNoMatch);
         }
 
-        internal static IEnumerable<JToken> Evaluate(List<PathFilter> filters, JToken t, bool errorWhenNoMatch)
+        internal static IEnumerable<JToken> Evaluate(List<PathFilter> filters, JToken root, JToken t, bool errorWhenNoMatch)
         {
             IEnumerable<JToken> current = new[] { t };
             foreach (PathFilter filter in filters)
             {
-                current = filter.ExecuteFilter(current, errorWhenNoMatch);
+                current = filter.ExecuteFilter(root, current, errorWhenNoMatch);
             }
 
             return current;

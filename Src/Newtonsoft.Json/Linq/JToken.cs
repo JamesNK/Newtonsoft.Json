@@ -2305,7 +2305,7 @@ namespace Newtonsoft.Json.Linq
             JPath p = new JPath(path);
 
             JToken token = null;
-            foreach (JToken t in p.Evaluate(this, errorWhenNoMatch))
+            foreach (JToken t in p.Evaluate(this, this, errorWhenNoMatch))
             {
                 if (token != null)
                 {
@@ -2341,7 +2341,7 @@ namespace Newtonsoft.Json.Linq
         public IEnumerable<JToken> SelectTokens(string path, bool errorWhenNoMatch)
         {
             JPath p = new JPath(path);
-            return p.Evaluate(this, errorWhenNoMatch);
+            return p.Evaluate(this, this, errorWhenNoMatch);
         }
 
 #if !(NET35 || NET20 || PORTABLE40)
