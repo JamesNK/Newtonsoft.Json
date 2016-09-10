@@ -32,8 +32,10 @@ using System.Security;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-#if NETSTANDARD10
+#if NETSTANDARD1_0
 [assembly: AssemblyTitle("Json.NET .NET Standard 1.0")]
+#elif NETSTANDARD1_1
+[assembly: AssemblyTitle("Json.NET .NET Standard 1.1")]
 #elif PORTABLE40
 [assembly: AssemblyTitle("Json.NET Portable .NET 4.0")]
 #elif PORTABLE

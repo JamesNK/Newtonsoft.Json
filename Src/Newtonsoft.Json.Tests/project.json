@@ -84,7 +84,7 @@
     },*/
     "netcoreapp1.0": {
       "buildOptions": {
-        "define": [ "NETSTANDARD10", "DNXCORE50", "PORTABLE" ]
+        "define": [ "NETSTANDARD1_1", "DNXCORE50", "PORTABLE" ]
       },
       "dependencies": {
         "Microsoft.NETCore.App": {

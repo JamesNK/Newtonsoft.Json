@@ -29,7 +29,7 @@ using System.ComponentModel;
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
-#if !(NET20 || NET35 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_1
 using System.Numerics;
 #endif
 #if !(NET20 || NETFX_CORE || DNXCORE50)
@@ -8208,7 +8208,7 @@ Path '', line 1, position 1.");
         }
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
-#if !PORTABLE
+#if !PORTABLE || NETSTANDARD1_1
         [Test]
         public void DeserializeReadOnlyListWithBigInteger()
         {
@@ -8551,7 +8551,7 @@ Path '', line 1, position 1.");
         }
 #endif
 
-#if !(PORTABLE || NET35 || NET20 || PORTABLE40)
+#if !(PORTABLE || NET35 || NET20 || PORTABLE40) || NETSTANDARD1_1
         [Test]
         public void ReadTooLargeInteger()
         {
@@ -8734,7 +8734,7 @@ Path '', line 1, position 1.");
         }
 #endif
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
         [Test]
         public void SerializeBigInteger()
         {
