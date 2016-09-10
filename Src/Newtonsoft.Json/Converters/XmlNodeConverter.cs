@@ -1674,7 +1674,7 @@ namespace Newtonsoft.Json.Converters
 #if !PORTABLE
                 return XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind));
 #else
-                return XmlConvert.ToString(d);
+                return XmlConvert.ToString(d, DateTimeUtils.ToDateTimeFormat(d.Kind));
 #endif
             }
             else if (reader.TokenType == JsonToken.Null)
