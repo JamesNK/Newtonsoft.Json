@@ -1831,6 +1831,34 @@ third line", jsonTextReader.Value);
 
             reader = new JsonTextReader(new StringReader("-"));
             ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Input string '-' is not a valid number. Path '', line 1, position 1.");
+            
+            reader = new JsonTextReader(new StringReader("1.7976931348623157E+308"));
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(typeof(double), reader.ValueType);
+            Assert.AreEqual(Double.MaxValue, reader.Value);
+
+            reader = new JsonTextReader(new StringReader("-1.7976931348623157E+308"));
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(typeof(double), reader.ValueType);
+            Assert.AreEqual(Double.MinValue, reader.Value);
+
+            reader = new JsonTextReader(new StringReader("1E+309"));
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(typeof(double), reader.ValueType);
+            Assert.AreEqual(Double.PositiveInfinity, reader.Value);
+
+            reader = new JsonTextReader(new StringReader("-1E+5000"));
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(typeof(double), reader.ValueType);
+            Assert.AreEqual(Double.NegativeInfinity, reader.Value);
+            
+            reader = new JsonTextReader(new StringReader("5.1231231E"));
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Input string '5.1231231E' is not a valid number. Path '', line 1, position 10.");
+
+            reader = new JsonTextReader(new StringReader("1E-23"));
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(typeof(double), reader.ValueType);
+            Assert.AreEqual(1e-23, reader.Value);
         }
 
         [Test]
