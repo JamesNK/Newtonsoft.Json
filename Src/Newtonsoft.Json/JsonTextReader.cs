@@ -1851,7 +1851,7 @@ namespace Newtonsoft.Json
                     }
                     catch (Exception ex)
                     {
-                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+                        throw ThrowReaderError("Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, number), ex);
                     }
                 }
                 else
@@ -1859,7 +1859,7 @@ namespace Newtonsoft.Json
                     double value;
                     if (!double.TryParse(number, NumberStyles.Float, CultureInfo.InvariantCulture, out value))
                     {
-                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                        throw ThrowReaderError("Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                     }
                 }
 
@@ -1885,7 +1885,7 @@ namespace Newtonsoft.Json
                     }
                     catch (Exception ex)
                     {
-                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid integer.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+                        throw ThrowReaderError("Input string '{0}' is not a valid integer.".FormatWith(CultureInfo.InvariantCulture, number), ex);
                     }
                 }
                 else
@@ -1898,11 +1898,11 @@ namespace Newtonsoft.Json
                     }
                     else if (parseResult == ParseResult.Overflow)
                     {
-                        throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int32.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                        throw ThrowReaderError("JSON integer {0} is too large or small for an Int32.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                     }
                     else
                     {
-                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid integer.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                        throw ThrowReaderError("Input string '{0}' is not a valid integer.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                     }
                 }
 
@@ -1928,7 +1928,7 @@ namespace Newtonsoft.Json
                     }
                     catch (Exception ex)
                     {
-                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+                        throw ThrowReaderError("Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, number), ex);
                     }
                 }
                 else
@@ -1942,7 +1942,7 @@ namespace Newtonsoft.Json
                     }
                     else
                     {
-                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                        throw ThrowReaderError("Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                     }
                 }
 
@@ -1968,7 +1968,7 @@ namespace Newtonsoft.Json
                     }
                     catch (Exception ex)
                     {
-                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid double.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+                        throw ThrowReaderError("Input string '{0}' is not a valid double.".FormatWith(CultureInfo.InvariantCulture, number), ex);
                     }
                 }
                 else
@@ -1981,7 +1981,7 @@ namespace Newtonsoft.Json
                     }
                     else
                     {
-                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid double.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                        throw ThrowReaderError("Input string '{0}' is not a valid double.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                     }
                 }
 
@@ -2005,7 +2005,7 @@ namespace Newtonsoft.Json
                     }
                     catch (Exception ex)
                     {
-                        throw JsonReaderException.Create(this, "Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+                        throw ThrowReaderError("Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, number), ex);
                     }
 
                     numberType = JsonToken.Integer;
@@ -2026,13 +2026,13 @@ namespace Newtonsoft.Json
 
                         if (number.Length > MaximumJavascriptIntegerCharacterLength)
                         {
-                            throw JsonReaderException.Create(this, "JSON integer {0} is too large to parse.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                            throw ThrowReaderError("JSON integer {0} is too large to parse.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                         }
 
                         numberValue = BigIntegerParse(number, CultureInfo.InvariantCulture);
                         numberType = JsonToken.Integer;
 #else
-                        throw JsonReaderException.Create(this, "JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                        throw ThrowReaderError("JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
 #endif
                     }
                     else
@@ -2048,7 +2048,7 @@ namespace Newtonsoft.Json
                             }
                             else
                             {
-                                throw JsonReaderException.Create(this, "Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, number));
+                                throw ThrowReaderError("Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, number));
                             }
                         }
                         else
@@ -2061,7 +2061,7 @@ namespace Newtonsoft.Json
                             }
                             else
                             {
-                                throw JsonReaderException.Create(this, "Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, number));
+                                throw ThrowReaderError("Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, number));
                             }
                         }
 
@@ -2074,6 +2074,12 @@ namespace Newtonsoft.Json
 
             // index has already been updated
             SetToken(numberType, numberValue, false);
+        }
+
+        private JsonReaderException ThrowReaderError(string message, Exception ex = null)
+        {
+            SetToken(JsonToken.Undefined, null, false);
+            return JsonReaderException.Create(this, message, ex);
         }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1

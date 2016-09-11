@@ -921,7 +921,15 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             IList<string> errorMessages = new List<string>();
 
-            JsonReader reader = new JsonTextReader(new StringReader("{\"string1\":\"blah\",\"int1\":2147483648,\"string2\":\"also blah\",\"int2\":2147483648,\"string3\":\"more blah\"}"));
+            JsonReader reader = new JsonTextReader(new StringReader(@"{
+  ""string1"": ""blah"",
+  ""int1"": 2147483648,
+  ""string2"": ""also blah"",
+  ""int2"": 2147483648,
+  ""string3"": ""more blah"",
+  ""dateTime1"": ""200NOTDATE"",
+  ""string4"": ""even more blah""
+}"));
             JsonSerializerSettings settings = new JsonSerializerSettings();
             settings.Error = (sender, args) =>
             {
@@ -938,10 +946,13 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("also blah", data.String2);
             Assert.AreEqual(0, data.Int2);
             Assert.AreEqual("more blah", data.String3);
+            Assert.AreEqual(default(DateTime), data.DateTime1);
+            Assert.AreEqual("even more blah", data.String4);
 
-            Assert.AreEqual(2, errorMessages.Count);
-            Assert.AreEqual("JSON integer 2147483648 is too large or small for an Int32. Path 'int1', line 1, position 35.", errorMessages[0]);
-            Assert.AreEqual("JSON integer 2147483648 is too large or small for an Int32. Path 'int2', line 1, position 75.", errorMessages[1]);
+            //Assert.AreEqual(2, errorMessages.Count);
+            Assert.AreEqual("JSON integer 2147483648 is too large or small for an Int32. Path 'int1', line 3, position 20.", errorMessages[0]);
+            Assert.AreEqual("JSON integer 2147483648 is too large or small for an Int32. Path 'int2', line 5, position 20.", errorMessages[1]);
+            Assert.AreEqual("Could not convert string to DateTime: 200NOTDATE. Path 'dateTime1', line 7, position 27.", errorMessages[2]);
         }
 
         private class DataModel
@@ -951,6 +962,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             public string String2 { get; set; }
             public int Int2 { get; set; }
             public string String3 { get; set; }
+            public DateTime DateTime1 { get; set; }
+            public string String4 { get; set; }
         }
     }
 

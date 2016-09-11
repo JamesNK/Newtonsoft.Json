@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -67,7 +68,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             //  ]
             //}
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { ProductShort deserializedProductShort = (ProductShort)JsonConvert.DeserializeObject(output, typeof(ProductShort), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error }); }, @"Could not find member 'Price' on object of type 'ProductShort'. Path 'Price', line 4, position 10.");
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                ProductShort deserializedProductShort = (ProductShort)JsonConvert.DeserializeObject(output, typeof(ProductShort), new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+            }, @"Could not find member 'Price' on object of type 'ProductShort'. Path 'Price', line 4, position 10.");
         }
 
         [Test]
@@ -152,6 +156,68 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 MissingMemberHandling = MissingMemberHandling.Error
             });
+        }
+
+        public class Name
+        {
+            public string First { get; set; }
+        }
+
+        public class Person
+        {
+            public Name Name { get; set; }
+        }
+
+        [Test]
+        public void MissingMemberHandling_RootObject()
+        {
+            IList<string> errors = new List<string>();
+
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                //This works on properties but not on a objects property.
+                /* So nameERROR:{"first":"ni"} would throw. The payload name:{"firstERROR":"hi"} would not */
+                MissingMemberHandling = MissingMemberHandling.Error,
+                Error = (sender, args) =>
+                {
+                    // A more concrete error type would be nice but we are limited by Newtonsofts library here.
+                    errors.Add(args.ErrorContext.Error.Message);
+                    args.ErrorContext.Handled = true;
+                }
+            };
+
+            Person p = new Person();
+
+            JsonConvert.PopulateObject(@"{nameERROR:{""first"":""hi""}}", p, settings);
+
+            Assert.AreEqual(1, errors.Count);
+            Assert.AreEqual("Could not find member 'nameERROR' on object of type 'Person'. Path 'nameERROR', line 1, position 11.", errors[0]);
+        }
+
+        [Test]
+        public void MissingMemberHandling_InnerObject()
+        {
+            IList<string> errors = new List<string>();
+
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                //This works on properties but not on a objects property.
+                /* So nameERROR:{"first":"ni"} would throw. The payload name:{"firstERROR":"hi"} would not */
+                MissingMemberHandling = MissingMemberHandling.Error,
+                Error = (sender, args) =>
+                {
+                    // A more concrete error type would be nice but we are limited by Newtonsofts library here.
+                    errors.Add(args.ErrorContext.Error.Message);
+                    args.ErrorContext.Handled = true;
+                }
+            };
+
+            Person p = new Person();
+
+            JsonConvert.PopulateObject(@"{name:{""firstERROR"":""hi""}}", p, settings);
+
+            Assert.AreEqual(1, errors.Count);
+            Assert.AreEqual("Could not find member 'firstERROR' on object of type 'Name'. Path 'name.firstERROR', line 1, position 20.", errors[0]);
         }
     }
 }
