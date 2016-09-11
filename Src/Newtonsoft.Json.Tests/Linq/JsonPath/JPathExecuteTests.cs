@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Linq.JsonPath;
@@ -652,7 +652,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 3)), t[1]));
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
         [Test]
         public void GreaterQueryBigInteger()
         {
@@ -948,6 +948,58 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
 
             result = a.SelectTokens("$.[?(@.value)]").ToList();
             Assert.AreEqual(4, result.Count);
+        }
+
+        [Test]
+        public void RootInFilter()
+        {
+            string json = @"[
+   {
+      ""store"" : {
+         ""book"" : [
+            {
+               ""category"" : ""reference"",
+               ""author"" : ""Nigel Rees"",
+               ""title"" : ""Sayings of the Century"",
+               ""price"" : 8.95
+            },
+            {
+               ""category"" : ""fiction"",
+               ""author"" : ""Evelyn Waugh"",
+               ""title"" : ""Sword of Honour"",
+               ""price"" : 12.99
+            },
+            {
+               ""category"" : ""fiction"",
+               ""author"" : ""Herman Melville"",
+               ""title"" : ""Moby Dick"",
+               ""isbn"" : ""0-553-21311-3"",
+               ""price"" : 8.99
+            },
+            {
+               ""category"" : ""fiction"",
+               ""author"" : ""J. R. R. Tolkien"",
+               ""title"" : ""The Lord of the Rings"",
+               ""isbn"" : ""0-395-19395-8"",
+               ""price"" : 22.99
+            }
+         ],
+         ""bicycle"" : {
+            ""color"" : ""red"",
+            ""price"" : 19.95
+         }
+      },
+      ""expensive"" : 10
+   }
+]";
+
+            JArray a = JArray.Parse(json);
+
+            List<JToken> result = a.SelectTokens("$.[?($.store.bicycle.price < 20)]").ToList();
+            Assert.AreEqual(1, result.Count);
+
+            result = a.SelectTokens("$.[?($.store.bicycle.price < 10)]").ToList();
+            Assert.AreEqual(0, result.Count);
         }
     }
 }

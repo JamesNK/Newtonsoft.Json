@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.ComponentModel;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
 using System.Numerics;
 #endif
 using System.Text;
@@ -145,7 +145,7 @@ namespace Newtonsoft.Json.Utilities
                 { typeof(Guid?), PrimitiveTypeCode.GuidNullable },
                 { typeof(TimeSpan), PrimitiveTypeCode.TimeSpan },
                 { typeof(TimeSpan?), PrimitiveTypeCode.TimeSpanNullable },
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
                 { typeof(BigInteger), PrimitiveTypeCode.BigInteger },
                 { typeof(BigInteger?), PrimitiveTypeCode.BigIntegerNullable },
 #endif
@@ -311,7 +311,7 @@ namespace Newtonsoft.Json.Utilities
             return o => call(null, o);
         }
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
         internal static BigInteger ToBigInteger(object value)
         {
             if (value is BigInteger)
@@ -540,7 +540,7 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
             if (targetType == typeof(BigInteger))
             {
                 value = ToBigInteger(initialValue);

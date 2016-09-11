@@ -24,7 +24,7 @@
 #endregion
 
 #if !PORTABLE40
-#if !(PORTABLE || NET20 || NET35)
+#if !(PORTABLE || NET20 || NET35) || NETSTANDARD1_1
 using System.Numerics;
 #endif
 using System;
@@ -1635,7 +1635,7 @@ namespace Newtonsoft.Json.Converters
             }
             else if (reader.TokenType == JsonToken.Integer)
             {
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
                 if (reader.Value is BigInteger)
                 {
                     return ((BigInteger)reader.Value).ToString(CultureInfo.InvariantCulture);
@@ -1674,7 +1674,7 @@ namespace Newtonsoft.Json.Converters
 #if !PORTABLE
                 return XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind));
 #else
-                return XmlConvert.ToString(d);
+                return XmlConvert.ToString(d, DateTimeUtils.ToDateTimeFormat(d.Kind));
 #endif
             }
             else if (reader.TokenType == JsonToken.Null)

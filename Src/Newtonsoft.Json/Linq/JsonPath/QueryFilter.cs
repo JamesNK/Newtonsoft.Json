@@ -7,13 +7,13 @@ namespace Newtonsoft.Json.Linq.JsonPath
     {
         public QueryExpression Expression { get; set; }
 
-        public override IEnumerable<JToken> ExecuteFilter(IEnumerable<JToken> current, bool errorWhenNoMatch)
+        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             foreach (JToken t in current)
             {
                 foreach (JToken v in t)
                 {
-                    if (Expression.IsMatch(v))
+                    if (Expression.IsMatch(root, v))
                     {
                         yield return v;
                     }

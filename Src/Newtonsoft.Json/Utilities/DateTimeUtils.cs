@@ -73,6 +73,21 @@ namespace Newtonsoft.Json.Utilities
                     throw MiscellaneousUtils.CreateArgumentOutOfRangeException("kind", kind, "Unexpected DateTimeKind value.");
             }
         }
+#else
+        public static string ToDateTimeFormat(DateTimeKind kind)
+        {
+            switch (kind)
+            {
+                case DateTimeKind.Local:
+                    return "yyyy-MM-ddTHH:mm:sszzzzzzz";
+                case DateTimeKind.Unspecified:
+                    return "s";
+                case DateTimeKind.Utc:
+                    return "yyyy-MM-ddTHH:mm:ssZ";
+                default:
+                    throw new Exception("Unexpected DateTimeKind value.");
+            }
+        }
 #endif
 
         internal static DateTime EnsureDateTime(DateTime value, DateTimeZoneHandling timeZone)

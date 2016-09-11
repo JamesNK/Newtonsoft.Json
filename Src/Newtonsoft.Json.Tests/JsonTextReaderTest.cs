@@ -28,7 +28,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
 using System.Numerics;
 #endif
 using System.Text;
@@ -344,7 +344,7 @@ second line
 third line", jsonTextReader.Value);
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
         [Test]
         public void ReadBigInteger()
         {
@@ -1245,7 +1245,7 @@ third line", jsonTextReader.Value);
             }
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
         [Test]
         public void ReadInt64Overflow()
         {

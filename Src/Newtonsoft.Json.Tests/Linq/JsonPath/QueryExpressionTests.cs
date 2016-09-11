@@ -86,7 +86,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                 { "LastName", "LastName!" }
             };
 
-            Assert.IsTrue(compositeExpression.IsMatch(o1));
+            Assert.IsTrue(compositeExpression.IsMatch(o1, o1));
 
             JObject o2 = new JObject
             {
@@ -94,14 +94,14 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                 { "FirstName", "FirstName!" }
             };
 
-            Assert.IsFalse(compositeExpression.IsMatch(o2));
+            Assert.IsFalse(compositeExpression.IsMatch(o2, o2));
 
             JObject o3 = new JObject
             {
                 { "Title", "Title!" }
             };
 
-            Assert.IsFalse(compositeExpression.IsMatch(o3));
+            Assert.IsFalse(compositeExpression.IsMatch(o3, o3));
         }
 
         [Test]
@@ -144,7 +144,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                 { "LastName", "LastName!" }
             };
 
-            Assert.IsTrue(compositeExpression.IsMatch(o1));
+            Assert.IsTrue(compositeExpression.IsMatch(o1, o1));
 
             JObject o2 = new JObject
             {
@@ -152,14 +152,14 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                 { "FirstName", "FirstName!" }
             };
 
-            Assert.IsTrue(compositeExpression.IsMatch(o2));
+            Assert.IsTrue(compositeExpression.IsMatch(o2, o2));
 
             JObject o3 = new JObject
             {
                 { "Title", "Title!" }
             };
 
-            Assert.IsFalse(compositeExpression.IsMatch(o3));
+            Assert.IsFalse(compositeExpression.IsMatch(o3, o3));
         }
 
         [Test]
@@ -175,10 +175,10 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                 }
             };
 
-            Assert.IsTrue(e1.IsMatch(new JArray(1, 2, 3, 4, 5)));
-            Assert.IsTrue(e1.IsMatch(new JArray(2, 3, 4, 5)));
-            Assert.IsFalse(e1.IsMatch(new JArray(3, 4, 5)));
-            Assert.IsFalse(e1.IsMatch(new JArray(4, 5)));
+            Assert.IsTrue(e1.IsMatch(null, new JArray(1, 2, 3, 4, 5)));
+            Assert.IsTrue(e1.IsMatch(null, new JArray(2, 3, 4, 5)));
+            Assert.IsFalse(e1.IsMatch(null, new JArray(3, 4, 5)));
+            Assert.IsFalse(e1.IsMatch(null, new JArray(4, 5)));
 
             BooleanQueryExpression e2 = new BooleanQueryExpression
             {
@@ -190,10 +190,10 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                 }
             };
 
-            Assert.IsTrue(e2.IsMatch(new JArray(1, 2, 3, 4, 5)));
-            Assert.IsTrue(e2.IsMatch(new JArray(2, 3, 4, 5)));
-            Assert.IsTrue(e2.IsMatch(new JArray(3, 4, 5)));
-            Assert.IsFalse(e2.IsMatch(new JArray(4, 5)));
+            Assert.IsTrue(e2.IsMatch(null, new JArray(1, 2, 3, 4, 5)));
+            Assert.IsTrue(e2.IsMatch(null, new JArray(2, 3, 4, 5)));
+            Assert.IsTrue(e2.IsMatch(null, new JArray(3, 4, 5)));
+            Assert.IsFalse(e2.IsMatch(null, new JArray(4, 5)));
         }
     }
 }

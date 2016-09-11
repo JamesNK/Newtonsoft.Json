@@ -420,6 +420,16 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void FilterWithRoot()
+        {
+            JPath path = new JPath("[?($.name>=12.1)]");
+            BooleanQueryExpression expressions = (BooleanQueryExpression)((QueryFilter)path.Filters[0]).Expression;
+            Assert.AreEqual(2, expressions.Path.Count);
+            Assert.IsInstanceOf(typeof(RootFilter), expressions.Path[0]);
+            Assert.IsInstanceOf(typeof(FieldFilter), expressions.Path[1]);
+        }
+
+        [Test]
         public void BadOr1()
         {
             ExceptionAssert.Throws<JsonException>(() => new JPath("[?(@.name||)]"), "Unexpected character while parsing path query: )");

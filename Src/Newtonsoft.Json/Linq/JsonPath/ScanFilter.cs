@@ -6,17 +6,17 @@ namespace Newtonsoft.Json.Linq.JsonPath
     {
         public string Name { get; set; }
 
-        public override IEnumerable<JToken> ExecuteFilter(IEnumerable<JToken> current, bool errorWhenNoMatch)
+        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
-            foreach (JToken root in current)
+            foreach (JToken c in current)
             {
                 if (Name == null)
                 {
-                    yield return root;
+                    yield return c;
                 }
 
-                JToken value = root;
-                JToken container = root;
+                JToken value = c;
+                JToken container = c;
 
                 while (true)
                 {
@@ -26,12 +26,12 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     }
                     else
                     {
-                        while (value != null && value != root && value == value.Parent.Last)
+                        while (value != null && value != c && value == value.Parent.Last)
                         {
                             value = value.Parent;
                         }
 
-                        if (value == null || value == root)
+                        if (value == null || value == c)
                         {
                             break;
                         }

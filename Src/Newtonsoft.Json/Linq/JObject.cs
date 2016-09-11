@@ -706,10 +706,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="propertyName">Name of the property.</param>
         protected virtual void OnPropertyChanged(string propertyName)
         {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyName));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
 #if !(PORTABLE40 || PORTABLE || NET20)
@@ -719,10 +716,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="propertyName">Name of the property.</param>
         protected virtual void OnPropertyChanging(string propertyName)
         {
-            if (PropertyChanging != null)
-            {
-                PropertyChanging(this, new PropertyChangingEventArgs(propertyName));
-            }
+            PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
         }
 #endif
 

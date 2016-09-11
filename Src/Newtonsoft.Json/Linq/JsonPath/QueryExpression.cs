@@ -24,7 +24,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
     {
         public QueryOperator Operator { get; set; }
 
-        public abstract bool IsMatch(JToken t);
+        public abstract bool IsMatch(JToken root, JToken t);
     }
 
     internal class CompositeExpression : QueryExpression
@@ -36,14 +36,14 @@ namespace Newtonsoft.Json.Linq.JsonPath
             Expressions = new List<QueryExpression>();
         }
 
-        public override bool IsMatch(JToken t)
+        public override bool IsMatch(JToken root, JToken t)
         {
             switch (Operator)
             {
                 case QueryOperator.And:
                     foreach (QueryExpression e in Expressions)
                     {
-                        if (!e.IsMatch(t))
+                        if (!e.IsMatch(root, t))
                         {
                             return false;
                         }
@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 case QueryOperator.Or:
                     foreach (QueryExpression e in Expressions)
                     {
-                        if (e.IsMatch(t))
+                        if (e.IsMatch(root, t))
                         {
                             return true;
                         }
@@ -69,9 +69,9 @@ namespace Newtonsoft.Json.Linq.JsonPath
         public List<PathFilter> Path { get; set; }
         public JValue Value { get; set; }
 
-        public override bool IsMatch(JToken t)
+        public override bool IsMatch(JToken root, JToken t)
         {
-            IEnumerable<JToken> pathResult = JPath.Evaluate(Path, t, false);
+            IEnumerable<JToken> pathResult = JPath.Evaluate(Path, root, t, false);
 
             foreach (JToken r in pathResult)
             {

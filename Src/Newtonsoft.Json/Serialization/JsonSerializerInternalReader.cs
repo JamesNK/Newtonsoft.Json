@@ -33,7 +33,7 @@ using System.Dynamic;
 #endif
 using System.Diagnostics;
 using System.Globalization;
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
 using System.Numerics;
 #endif
 using System.Reflection;
@@ -778,14 +778,12 @@ namespace Newtonsoft.Json.Serialization
 
             if (resolvedTypeNameHandling != TypeNameHandling.None)
             {
-                string typeName;
-                string assemblyName;
-                ReflectionUtils.SplitFullyQualifiedTypeName(qualifiedTypeName, out typeName, out assemblyName);
+                TypeNameKey typeNameKey = ReflectionUtils.SplitFullyQualifiedTypeName(qualifiedTypeName);
 
                 Type specifiedType;
                 try
                 {
-                    specifiedType = Serializer._binder.BindToType(assemblyName, typeName);
+                    specifiedType = Serializer._binder.BindToType(typeNameKey.AssemblyName, typeNameKey.TypeName);
                 }
                 catch (Exception ex)
                 {
@@ -968,7 +966,7 @@ namespace Newtonsoft.Json.Serialization
                             }
                         }
 
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
                         if (value is BigInteger)
                         {
                             return ConvertUtils.FromBigInteger((BigInteger)value, contract.NonNullableUnderlyingType);

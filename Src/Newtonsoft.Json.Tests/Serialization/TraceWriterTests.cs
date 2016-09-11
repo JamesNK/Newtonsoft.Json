@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using Newtonsoft.Json.Linq;
-#if !(NET20 || NET35 || PORTABLE ||PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
 using System.Numerics;
 #endif
 using System.Runtime.Serialization;
@@ -879,7 +879,7 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.AreEqual(23, deserialized.FavoriteNumber);
         }
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
         [Test]
         public void TraceJsonWriterTest()
         {
