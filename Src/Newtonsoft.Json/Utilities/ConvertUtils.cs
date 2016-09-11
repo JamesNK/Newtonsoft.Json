@@ -929,14 +929,13 @@ namespace Newtonsoft.Json.Utilities
 
             return ParseResult.Success;
         }
-        
+
         private static class IEEE754
         {
-            
             /// <summary>
             /// Exponents for both powers of 10 and 0.1
             /// </summary>
-            private static readonly int[] MultExp64Power10 = new int[] 
+            private static readonly int[] MultExp64Power10 = new int[]
             {
                 4, 7, 10, 14, 17, 20, 24, 27, 30, 34, 37, 40, 44, 47, 50
             };
@@ -944,7 +943,7 @@ namespace Newtonsoft.Json.Utilities
             /// <summary>
             /// Normalized powers of 10
             /// </summary>
-            private static readonly ulong[] MultVal64Power10 = new ulong[] 
+            private static readonly ulong[] MultVal64Power10 = new ulong[]
             {
                 0xa000000000000000, 0xc800000000000000, 0xfa00000000000000,
                 0x9c40000000000000, 0xc350000000000000, 0xf424000000000000,
@@ -956,7 +955,7 @@ namespace Newtonsoft.Json.Utilities
             /// <summary>
             /// Normalized powers of 0.1
             /// </summary>
-            private static readonly ulong[] MultVal64Power10Inv = new ulong[] 
+            private static readonly ulong[] MultVal64Power10Inv = new ulong[]
             {
                 0xcccccccccccccccd, 0xa3d70a3d70a3d70b, 0x83126e978d4fdf3c,
                 0xd1b71758e219652e, 0xa7c5ac471b478425, 0x8637bd05af6c69b7,
@@ -968,7 +967,7 @@ namespace Newtonsoft.Json.Utilities
             /// <summary>
             /// Exponents for both powers of 10^16 and 0.1^16
             /// </summary>
-            private static readonly int[] MultExp64Power10By16 = new int[] 
+            private static readonly int[] MultExp64Power10By16 = new int[]
             {
                 54, 107, 160, 213, 266, 319, 373, 426, 479, 532, 585, 638,
                 691, 745, 798, 851, 904, 957, 1010, 1064, 1117,
@@ -977,7 +976,7 @@ namespace Newtonsoft.Json.Utilities
             /// <summary>
             /// Normalized powers of 10^16
             /// </summary>
-            private static readonly ulong[] MultVal64Power10By16 = new ulong[] 
+            private static readonly ulong[] MultVal64Power10By16 = new ulong[]
             {
                 0x8e1bc9bf04000000, 0x9dc5ada82b70b59e, 0xaf298d050e4395d6,
                 0xc2781f49ffcfa6d4, 0xd7e77a8f87daf7fa, 0xefb3ab16c59b14a0,
@@ -991,7 +990,7 @@ namespace Newtonsoft.Json.Utilities
             /// <summary>
             /// Normalized powers of 0.1^16
             /// </summary>
-            private static readonly ulong[] MultVal64Power10By16Inv = new ulong[] 
+            private static readonly ulong[] MultVal64Power10By16Inv = new ulong[]
             {
                 0xe69594bec44de160, 0xcfb11ead453994c3, 0xbb127c53b17ec165,
                 0xa87fea27a539e9b3, 0x97c560ba6b0919b5, 0x88b402f7fd7553ab,
@@ -1001,7 +1000,6 @@ namespace Newtonsoft.Json.Utilities
                 0xc0314325637a1978, 0xad1c8eab5ee43ba2, 0x9becce62836ac5b0,
                 0x8c71dcd9ba0b495c, 0xfd00b89747823938, 0xe3e27a444d8d991a,
             };
-
 
             /// <summary>
             /// Packs <paramref name="val"/>*10^<paramref name="scale"/> as 64-bit floating point value according to IEEE 754 standard
@@ -1016,29 +1014,50 @@ namespace Newtonsoft.Json.Utilities
             public static double PackDouble(bool negative, ulong val, int scale)
             {
                 // handle zero value
-
                 if (val == 0)
                 {
                     return negative ? -0.0 : 0.0;
                 }
 
                 // normalize the mantissa
-
                 int exp = 64;
 
-                if ((val & 0xFFFFFFFF00000000) == 0) { val <<= 32; exp -= 32; }
-                if ((val & 0xFFFF000000000000) == 0) { val <<= 16; exp -= 16; }
-                if ((val & 0xFF00000000000000) == 0) { val <<= 8; exp -= 8; }
-                if ((val & 0xF000000000000000) == 0) { val <<= 4; exp -= 4; }
-                if ((val & 0xC000000000000000) == 0) { val <<= 2; exp -= 2; }
-                if ((val & 0x8000000000000000) == 0) { val <<= 1; exp -= 1; }
+                if ((val & 0xFFFFFFFF00000000) == 0)
+                {
+                    val <<= 32;
+                    exp -= 32;
+                }
+                if ((val & 0xFFFF000000000000) == 0)
+                {
+                    val <<= 16;
+                    exp -= 16;
+                }
+                if ((val & 0xFF00000000000000) == 0)
+                {
+                    val <<= 8;
+                    exp -= 8;
+                }
+                if ((val & 0xF000000000000000) == 0)
+                {
+                    val <<= 4;
+                    exp -= 4;
+                }
+                if ((val & 0xC000000000000000) == 0)
+                {
+                    val <<= 2;
+                    exp -= 2;
+                }
+                if ((val & 0x8000000000000000) == 0)
+                {
+                    val <<= 1;
+                    exp -= 1;
+                }
 
                 if (scale < 0)
                 {
                     scale = -scale;
 
                     // check scale bounds
-
                     if (scale >= 22 * 16)
                     {
                         // underflow
@@ -1046,7 +1065,6 @@ namespace Newtonsoft.Json.Utilities
                     }
 
                     // perform scaling
-
                     var index = scale & 15;
                     if (index != 0)
                     {
@@ -1064,7 +1082,6 @@ namespace Newtonsoft.Json.Utilities
                 else
                 {
                     // check scale bounds
-
                     if (scale >= 22 * 16)
                     {
                         // overflow
@@ -1072,7 +1089,6 @@ namespace Newtonsoft.Json.Utilities
                     }
 
                     // perform scaling
-
                     var index = scale & 15;
                     if (index != 0)
                     {
@@ -1150,8 +1166,10 @@ namespace Newtonsoft.Json.Utilities
 
             private static ulong Mul64Lossy(ulong a, ulong b, ref int exp)
             {
-                ulong a_hi = (a >> 32); uint a_lo = (uint)a;
-                ulong b_hi = (b >> 32); uint b_lo = (uint)b;
+                ulong a_hi = (a >> 32);
+                uint a_lo = (uint)a;
+                ulong b_hi = (b >> 32);
+                uint b_lo = (uint)b;
 
                 var result = a_hi * b_hi;
 
@@ -1159,17 +1177,24 @@ namespace Newtonsoft.Json.Utilities
                 // (hi-parts will be always big enough, since a and b are normalized)
 
                 if ((b_lo & 0xFFFF0000) != 0)
+                {
                     result += (a_hi * b_lo) >> 32;
+                }
 
                 if ((a_lo & 0xFFFF0000) != 0)
+                {
                     result += (a_lo * b_hi) >> 32;
+                }
 
                 // normalize
-                if ((result & 0x8000000000000000) == 0) { result <<= 1; exp--; }
+                if ((result & 0x8000000000000000) == 0)
+                {
+                    result <<= 1;
+                    exp--;
+                }
 
                 return result;
             }
-
         }
 
         public static ParseResult DoubleTryParse(char[] chars, int start, int length, out double value)
@@ -1208,6 +1233,15 @@ namespace Newtonsoft.Json.Utilities
                 switch (c)
                 {
                     case '.':
+                        if (i == start)
+                        {
+                            return ParseResult.Invalid;
+                        }
+                        if (i + 1 == end)
+                        {
+                            return ParseResult.Invalid;
+                        }
+
                         if (numDecimalStart != end)
                         {
                             // multiple decimal points
@@ -1220,6 +1254,11 @@ namespace Newtonsoft.Json.Utilities
                     case 'E':
                         if (i == start)
                         {
+                            return ParseResult.Invalid;
+                        }
+                        if (i == numDecimalStart)
+                        {
+                            // E follows decimal point		
                             return ParseResult.Invalid;
                         }
                         i++;
@@ -1254,7 +1293,7 @@ namespace Newtonsoft.Json.Utilities
                             {
                                 return ParseResult.Invalid;
                             }
-                            
+
                             var newExponent = (10 * exponent) + (c - '0');
                             // stops updating exponent when overflowing
                             if (exponent < newExponent)
@@ -1272,6 +1311,25 @@ namespace Newtonsoft.Json.Utilities
                         if (c < '0' || c > '9')
                         {
                             return ParseResult.Invalid;
+                        }
+
+                        if (i == start && c == '0')
+                        {
+                            i++;
+                            if (i != end)
+                            {
+                                if (chars[i] != '.')
+                                {
+                                    return ParseResult.Invalid;
+                                }
+                                if (i + 1 == end)
+                                {
+                                    return ParseResult.Invalid;
+                                }
+
+                                numDecimalStart = i + 1;
+                                continue;
+                            }
                         }
 
                         if (mantissaDigits < 19)
@@ -1294,7 +1352,7 @@ namespace Newtonsoft.Json.Utilities
 
             // correct the decimal point
             exponent -= (numDecimalEnd - numDecimalStart);
-            
+
             value = IEEE754.PackDouble(isNegative, mantissa, exponent);
             return double.IsInfinity(value) ? ParseResult.Overflow : ParseResult.Success;
         }

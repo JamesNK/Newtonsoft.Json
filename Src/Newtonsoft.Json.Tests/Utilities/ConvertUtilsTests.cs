@@ -50,7 +50,12 @@ namespace Newtonsoft.Json.Tests.Utilities
             ParseResult result = ConvertUtils.DoubleTryParse(c, 0, c.Length, out d);
 
             double d2;
-            bool result2 = double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d2);
+            bool result2 = double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d2)
+                && !s.StartsWith(".")
+                && !s.EndsWith(".")
+                && !(s.StartsWith("0") && s.Length > 1 && !s.StartsWith("0."))
+                && !(s.StartsWith("-0") && s.Length > 2 && !s.StartsWith("-0."))
+                && s.IndexOf(".e", StringComparison.OrdinalIgnoreCase) == -1;
 
             Assert.AreEqual(expectedResult, result);
             Assert.AreEqual(expectedResult == ParseResult.Success, result2);
@@ -68,13 +73,15 @@ namespace Newtonsoft.Json.Tests.Utilities
         [Test]
         public void DoubleTryParse()
         {
+            AssertDoubleTryParse("0.1", ParseResult.Success, 0.1);
+            AssertDoubleTryParse("567.89", ParseResult.Success, 567.89);
+
             AssertDoubleTryParse("0.25e+5", ParseResult.Success, 25000d);
             AssertDoubleTryParse("0.25e-5", ParseResult.Success, 0.0000025d);
 
             AssertDoubleTryParse("-123", ParseResult.Success, -123);
             AssertDoubleTryParse("0", ParseResult.Success, 0);
             AssertDoubleTryParse("123", ParseResult.Success, 123);
-            AssertDoubleTryParse("567.89", ParseResult.Success, 567.89);
             AssertDoubleTryParse("-567.89", ParseResult.Success, -567.89);
             AssertDoubleTryParse("1E23", ParseResult.Success, 1E23);
             AssertDoubleTryParse("1.1E23", ParseResult.Success, 1.1E23);
@@ -98,13 +105,16 @@ namespace Newtonsoft.Json.Tests.Utilities
             AssertDoubleTryParse("1E-100", ParseResult.Success, 1E-100);
             AssertDoubleTryParse("1E-300", ParseResult.Success, 1E-300);
 
-            AssertDoubleTryParse(".1E23", ParseResult.Success, 1E22);
-            AssertDoubleTryParse("1.E23", ParseResult.Success, 1E23);
-
             AssertDoubleTryParse("1E+309", ParseResult.Overflow, null);
             AssertDoubleTryParse("-1E+5000", ParseResult.Overflow, null);
 
+            AssertDoubleTryParse("01E308", ParseResult.Invalid, null);
+            AssertDoubleTryParse("-01E308", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1.", ParseResult.Invalid, null);
+            AssertDoubleTryParse("0.", ParseResult.Invalid, null);
+            AssertDoubleTryParse(".1E23", ParseResult.Invalid, null);
             AssertDoubleTryParse("1..1E23", ParseResult.Invalid, null);
+            AssertDoubleTryParse("1.E23", ParseResult.Invalid, null);
             AssertDoubleTryParse("1E2.3", ParseResult.Invalid, null);
             AssertDoubleTryParse("1EE-10", ParseResult.Invalid, null);
             AssertDoubleTryParse("1E-1-0", ParseResult.Invalid, null);
@@ -130,7 +140,6 @@ namespace Newtonsoft.Json.Tests.Utilities
             AssertDoubleTryParse("1E4294967297", ParseResult.Overflow, null);
             AssertDoubleTryParse("1E4294967297B", ParseResult.Invalid, null);
             AssertDoubleTryParse("1E-4294967297", ParseResult.Success, 0);
-            AssertDoubleTryParse("00000000000000000000000000000001E308", ParseResult.Success, 1E308);
         }
 
         [Test]
