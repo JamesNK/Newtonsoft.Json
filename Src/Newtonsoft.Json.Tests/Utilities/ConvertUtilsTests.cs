@@ -53,8 +53,8 @@ namespace Newtonsoft.Json.Tests.Utilities
             bool result2 = double.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d2)
                 && !s.StartsWith(".")
                 && !s.EndsWith(".")
-                && !(s.StartsWith("0") && s.Length > 1 && !s.StartsWith("0."))
-                && !(s.StartsWith("-0") && s.Length > 2 && !s.StartsWith("-0."))
+                && !(s.StartsWith("0") && s.Length > 1 && !s.StartsWith("0.") && !s.StartsWith("0e", StringComparison.OrdinalIgnoreCase))
+                && !(s.StartsWith("-0") && s.Length > 2 && !s.StartsWith("-0.") && !s.StartsWith("-0e", StringComparison.OrdinalIgnoreCase))
                 && s.IndexOf(".e", StringComparison.OrdinalIgnoreCase) == -1;
 
             Assert.AreEqual(expectedResult, result);
@@ -73,6 +73,8 @@ namespace Newtonsoft.Json.Tests.Utilities
         [Test]
         public void DoubleTryParse()
         {
+            AssertDoubleTryParse("0e-10", ParseResult.Success, 0e-10);
+            AssertDoubleTryParse("0E-10", ParseResult.Success, 0e-10);
             AssertDoubleTryParse("0.1", ParseResult.Success, 0.1);
             AssertDoubleTryParse("567.89", ParseResult.Success, 567.89);
 

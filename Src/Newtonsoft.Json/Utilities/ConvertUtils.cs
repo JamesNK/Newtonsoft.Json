@@ -1318,17 +1318,17 @@ namespace Newtonsoft.Json.Utilities
                             i++;
                             if (i != end)
                             {
-                                if (chars[i] != '.')
+                                c = chars[i];
+                                if (c == '.')
                                 {
-                                    return ParseResult.Invalid;
+                                    goto case '.';
                                 }
-                                if (i + 1 == end)
+                                if (c == 'e' || c == 'E')
                                 {
-                                    return ParseResult.Invalid;
+                                    goto case 'E';
                                 }
 
-                                numDecimalStart = i + 1;
-                                continue;
+                                return ParseResult.Invalid;
                             }
                         }
 
