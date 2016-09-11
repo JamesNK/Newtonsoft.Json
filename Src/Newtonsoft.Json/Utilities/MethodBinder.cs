@@ -42,7 +42,7 @@
         /// <param name="from">Source primitive type</param>
         /// <param name="to">Target primitive type</param>
         /// <returns>True if source type can be widened to target type, false otherwise</returns>
-        internal static bool CanConvertPrimitive(Type from, Type to)
+        private static bool CanConvertPrimitive(Type from, Type to)
         {
             if (from == to)
             {
@@ -50,9 +50,10 @@
                 return true;
             }
 
-            int fromMask = 0, toMask = 0;
+            int fromMask = 0,
+                toMask = 0;
 
-            for (int i = 0; i < PrimitiveTypes.Length && (fromMask == 0 || toMask == 0); i++)
+            for (int i = 0; i < PrimitiveTypes.Length; i++)
             {
                 if (PrimitiveTypes[i] == from)
                 {
@@ -61,6 +62,11 @@
                 else if (PrimitiveTypes[i] == to)
                 {
                     toMask = 1 << i;
+                }
+
+                if (fromMask != 0 && toMask != 0)
+                {
+                    break;
                 }
             }
 
@@ -77,14 +83,9 @@
         /// <returns>True if method can be called with given arguments, false otherwise</returns>
         private static bool FilterParameters(ParameterInfo[] parameters, IList<Type> types, bool enableParamArray)
         {
-            if (parameters == null)
-            {
-                throw new ArgumentNullException(nameof(parameters));
-            }
-            if (types == null)
-            {
-                throw new ArgumentNullException(nameof(types));
-            }
+            ValidationUtils.ArgumentNotNull(parameters, nameof(parameters));
+            ValidationUtils.ArgumentNotNull(types, nameof(types));
+
             if (parameters.Length == 0)
             {
                 // fast check for parameterless methods
@@ -161,10 +162,7 @@
 
             public ParametersMatchComparer(IList<Type> types, bool enableParamArray)
             {
-                if (types == null)
-                {
-                    throw new ArgumentNullException(nameof(types));
-                }
+                ValidationUtils.ArgumentNotNull(types, nameof(types));
 
                 _types = types;
                 _enableParamArray = enableParamArray;
@@ -172,14 +170,8 @@
 
             public int Compare(ParameterInfo[] parameters1, ParameterInfo[] parameters2)
             {
-                if (parameters1 == null)
-                {
-                    throw new ArgumentNullException(nameof(parameters1));
-                }
-                if (parameters2 == null)
-                {
-                    throw new ArgumentNullException(nameof(parameters2));
-                }
+                ValidationUtils.ArgumentNotNull(parameters1, nameof(parameters1));
+                ValidationUtils.ArgumentNotNull(parameters2, nameof(parameters2));
 
                 // parameterless method wins
                 if (parameters1.Length == 0)
@@ -308,14 +300,8 @@
         /// <returns>Best method overload, or <c>null</c> if none matched</returns>
         public static TMethod SelectMethod<TMethod>(IEnumerable<TMethod> candidates, IList<Type> types) where TMethod : MethodBase
         {
-            if (candidates == null)
-            {
-                throw new ArgumentNullException(nameof(candidates));
-            }
-            if (types == null)
-            {
-                throw new ArgumentNullException(nameof(types));
-            }
+            ValidationUtils.ArgumentNotNull(candidates, nameof(candidates));
+            ValidationUtils.ArgumentNotNull(types, nameof(types));
 
             // ParamArrays are not supported by ReflectionDelegateFactory
             // They will be treated like ordinary array arguments
