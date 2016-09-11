@@ -79,11 +79,11 @@ namespace Newtonsoft.Json.Utilities
             switch (kind)
             {
                 case DateTimeKind.Local:
-                    return "yyyy-MM-ddTHH:mm:sszzzzzzz";
+                    return IsoDateFormat;
                 case DateTimeKind.Unspecified:
-                    return "s";
+                    return "yyyy-MM-ddTHH:mm:ss.FFFFFFF";
                 case DateTimeKind.Utc:
-                    return "yyyy-MM-ddTHH:mm:ssZ";
+                    return "yyyy-MM-ddTHH:mm:ss.FFFFFFFZ";
                 default:
                     throw new Exception("Unexpected DateTimeKind value.");
             }

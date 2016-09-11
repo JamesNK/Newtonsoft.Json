@@ -2753,6 +2753,38 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void DateTimeToXml_Unspecified_Precision()
+        {
+            string json = @"{""CreatedDate"": ""2014-01-23T00:00:00.1234567""}";
+            var dxml = JsonConvert.DeserializeXNode(json, "root");
+            Assert.AreEqual("2014-01-23T00:00:00.1234567", dxml.Root.Element("CreatedDate").Value);
+
+            Console.WriteLine("DateTimeToXml_Unspecified: " + dxml.Root.Element("CreatedDate").Value);
+        }
+
+        [Test]
+        public void DateTimeToXml_Utc_Precision()
+        {
+            string json = @"{""CreatedDate"": ""2014-01-23T00:00:00.1234567Z""}";
+            var dxml = JsonConvert.DeserializeXNode(json, "root");
+            Assert.AreEqual("2014-01-23T00:00:00.1234567Z", dxml.Root.Element("CreatedDate").Value);
+
+            Console.WriteLine("DateTimeToXml_Utc: " + dxml.Root.Element("CreatedDate").Value);
+        }
+
+        [Test]
+        public void DateTimeToXml_Local_Precision()
+        {
+            DateTime dt = DateTime.Parse("2014-01-23T00:00:00.1234567+01:00");
+
+            string json = @"{""CreatedDate"": ""2014-01-23T00:00:00.1234567+01:00""}";
+            var dxml = JsonConvert.DeserializeXNode(json, "root");
+            Assert.AreEqual(dt.ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFFK", CultureInfo.InvariantCulture), dxml.Root.Element("CreatedDate").Value);
+
+            Console.WriteLine("DateTimeToXml_Local: " + dxml.Root.Element("CreatedDate").Value);
+        }
+
+        [Test]
         public void SerializeEmptyNodeAndOmitRoot_XElement()
         {
             string xmlString = @"<myemptynode />";
