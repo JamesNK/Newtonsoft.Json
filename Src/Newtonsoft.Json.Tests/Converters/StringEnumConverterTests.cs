@@ -462,6 +462,41 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.Fail();
         }
 
+        [Test]
+        public void DeserializeInvalidStringWhenNotAllowIntegers()
+        {
+            string json = "{ \"Value\" : \"Three\" }";
+
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                var serializer = new JsonSerializer();
+                serializer.Converters.Add(new StringEnumConverter() { AllowIntegerValues = false });
+                serializer.Deserialize<Bucket>(new JsonTextReader(new StringReader(json)));
+            }, @"Error converting value ""Three"" to type 'Newtonsoft.Json.Tests.Converters.StringEnumConverterTests+MyEnum'. Path 'Value', line 1, position 19.");
+        }
+
+        [Test]
+        public void DeserializeIntegerPassedAsStringButNotAllowed()
+        {
+            string json = "{ \"Value\" : \"123\" }";
+
+            try
+            {
+                var serializer = new JsonSerializer();
+                serializer.Converters.Add(new StringEnumConverter { AllowIntegerValues = false });
+                serializer.Deserialize<Bucket>(new JsonTextReader(new StringReader(json)));
+            }
+            catch (JsonSerializationException ex)
+            {
+                Assert.AreEqual("Error converting value \"123\" to type 'Newtonsoft.Json.Tests.Converters.StringEnumConverterTests+MyEnum'. Path 'Value', line 1, position 17.", ex.Message);
+                Assert.AreEqual(@"Integer value 123 is not allowed. Path 'Value', line 1, position 17.", ex.InnerException.Message);
+
+                return;
+            }
+
+            Assert.Fail();
+        }
+
 #if !NET20
         [Test]
         public void EnumMemberPlusFlags()
