@@ -915,6 +915,43 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(string.Empty, result);
         }
+
+        [Test]
+        public void IntegerToLarge_ReadNextValue()
+        {
+            IList<string> errorMessages = new List<string>();
+
+            JsonReader reader = new JsonTextReader(new StringReader("{\"string1\":\"blah\",\"int1\":2147483648,\"string2\":\"also blah\",\"int2\":2147483648,\"string3\":\"more blah\"}"));
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Error = (sender, args) =>
+            {
+                errorMessages.Add(args.ErrorContext.Error.Message);
+                args.ErrorContext.Handled = true;
+            };
+            JsonSerializer serializer = JsonSerializer.Create(settings);
+
+            DataModel data = new DataModel();
+            serializer.Populate(reader, data);
+
+            Assert.AreEqual("blah", data.String1);
+            Assert.AreEqual(0, data.Int1);
+            Assert.AreEqual("also blah", data.String2);
+            Assert.AreEqual(0, data.Int2);
+            Assert.AreEqual("more blah", data.String3);
+
+            Assert.AreEqual(2, errorMessages.Count);
+            Assert.AreEqual("JSON integer 2147483648 is too large or small for an Int32. Path 'int1', line 1, position 35.", errorMessages[0]);
+            Assert.AreEqual("JSON integer 2147483648 is too large or small for an Int32. Path 'int2', line 1, position 75.", errorMessages[1]);
+        }
+
+        private class DataModel
+        {
+            public string String1 { get; set; }
+            public int Int1 { get; set; }
+            public string String2 { get; set; }
+            public int Int2 { get; set; }
+            public string String3 { get; set; }
+        }
     }
 
     internal interface IErrorPerson2
