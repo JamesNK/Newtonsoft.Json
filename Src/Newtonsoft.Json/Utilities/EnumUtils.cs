@@ -190,7 +190,7 @@ namespace Newtonsoft.Json.Utilities
             return values;
         }
 
-        public static object ParseEnumName(string enumText, bool isNullable, Type t)
+        public static object ParseEnumName(string enumText, bool isNullable, bool disallowValue, Type t)
         {
             if (enumText == string.Empty && isNullable)
             {
@@ -222,6 +222,24 @@ namespace Newtonsoft.Json.Utilities
             else
             {
                 finalEnumText = enumText;
+
+                if (disallowValue)
+                {
+                    bool isNumber = true;
+                    for (int i = 0; i < finalEnumText.Length; i++)
+                    {
+                        if (!char.IsNumber(finalEnumText[i]))
+                        {
+                            isNumber = false;
+                            break;
+                        }
+                    }
+
+                    if (isNumber)
+                    {
+                        throw new FormatException("Integer string '{0}' is not allowed.".FormatWith(CultureInfo.InvariantCulture, enumText));
+                    }
+                }
             }
 
             return Enum.Parse(t, finalEnumText, true);

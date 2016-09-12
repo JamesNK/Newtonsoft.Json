@@ -573,7 +573,54 @@ namespace Newtonsoft.Json.Tests.Converters
                 Assert.AreEqual(DuplicateNameEnum2.FooBar, o.Value2);
             }, "Type 'Newtonsoft.Json.Tests.Converters.DuplicateNameEnum' contains two members 'foo_bar' 'and 'FooBar' with the same name 'foo_bar'. Multiple members with the same name in one type are not supported. Consider changing one of the member names using EnumMemberAttribute attribute.");
         }
+
+        [Test]
+        public void EnumMemberWithNumbers()
+        {
+            StringEnumConverter converter = new StringEnumConverter();
+
+            NumberNamesEnum e = JsonConvert.DeserializeObject<NumberNamesEnum>("\"1\"", converter);
+
+            Assert.AreEqual(NumberNamesEnum.second, e);
+
+            e = JsonConvert.DeserializeObject<NumberNamesEnum>("\"2\"", converter);
+
+            Assert.AreEqual(NumberNamesEnum.first, e);
+
+            e = JsonConvert.DeserializeObject<NumberNamesEnum>("\"3\"", converter);
+
+            Assert.AreEqual(NumberNamesEnum.third, e);
+        }
+
+        [Test]
+        public void EnumMemberWithNumbers_NoIntegerValues()
+        {
+            StringEnumConverter converter = new StringEnumConverter { AllowIntegerValues = false };
+
+            NumberNamesEnum e = JsonConvert.DeserializeObject<NumberNamesEnum>("\"1\"", converter);
+
+            Assert.AreEqual(NumberNamesEnum.second, e);
+
+            e = JsonConvert.DeserializeObject<NumberNamesEnum>("\"2\"", converter);
+
+            Assert.AreEqual(NumberNamesEnum.first, e);
+
+            e = JsonConvert.DeserializeObject<NumberNamesEnum>("\"3\"", converter);
+
+            Assert.AreEqual(NumberNamesEnum.third, e);
+        }
 #endif
+
+        [Test]
+        public void AllowIntegerValueAndStringNumber()
+        {
+            JsonSerializationException ex = ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<StoreColor>("\"1\"", new StringEnumConverter {AllowIntegerValues = false});
+            });
+
+            Assert.AreEqual("Integer string '1' is not allowed.", ex.InnerException.Message);
+        }
     }
 
 #if !NET20
@@ -585,6 +632,17 @@ namespace Newtonsoft.Json.Tests.Converters
 
         [DataMember]
         public DuplicateNameEnum2 Value2 { get; set; }
+    }
+
+    [DataContract]
+    public enum NumberNamesEnum
+    {
+        [EnumMember(Value = "2")]
+        first,
+        [EnumMember(Value = "1")]
+        second,
+        [EnumMember(Value = "3")]
+        third
     }
 
     [DataContract]
