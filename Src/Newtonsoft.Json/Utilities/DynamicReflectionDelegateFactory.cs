@@ -92,7 +92,6 @@ namespace Newtonsoft.Json.Utilities
 
             LocalBuilder localConvertible = generator.DeclareLocal(typeof(IConvertible));
             LocalBuilder localObject = generator.DeclareLocal(typeof(object));
-            int localVariableCount = 2;
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -140,11 +139,9 @@ namespace Newtonsoft.Json.Utilities
                     }
 
                     generator.Emit(OpCodes.Ldloca_S, localVariable);
-
-                    localVariableCount++;
                 }
                 else if (parameterType.IsValueType())
-                {                    
+                {
                     generator.PushArrayInstance(argsIndex, i);
                     generator.Emit(OpCodes.Stloc_S, localObject);
 
@@ -170,7 +167,6 @@ namespace Newtonsoft.Json.Utilities
                     if (parameterType.IsPrimitive())
                     {
                         // for primitive types we need to handle type widening (e.g. short -> int)
-
                         MethodInfo toParameterTypeMethod = typeof(IConvertible)
                             .GetMethod("To" + parameterType.Name, new[] { typeof(IFormatProvider) });
                         
@@ -209,7 +205,6 @@ namespace Newtonsoft.Json.Utilities
                     
                     // parameter finished, we out!
                     generator.MarkLabel(finishedProcessingParameter);
-                    localVariableCount++;
                 }
                 else
                 {

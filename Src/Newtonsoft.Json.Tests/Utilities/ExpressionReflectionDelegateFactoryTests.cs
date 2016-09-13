@@ -374,6 +374,37 @@ namespace Newtonsoft.Json.Tests.Utilities
             MyStruct myStruct2 = creator2.Invoke();
             Assert.AreEqual(0, myStruct2.IntProperty);
         }
+
+        public struct TestStruct
+        {
+            public TestStruct(int i)
+            {
+                Value = i;
+            }
+
+            public int Value { get; }
+        }
+
+        public static TestStruct StructMethod(TestStruct s)
+        {
+            return new TestStruct(s.Value + s.Value);
+        }
+
+        [Test]
+        public void CreateStructMethodCall()
+        {
+            MethodInfo methodInfo = typeof(ExpressionReflectionDelegateFactoryTests).GetMethod(nameof(StructMethod), new[] { typeof(TestStruct) });
+
+            Assert.IsNotNull(methodInfo);
+
+            MethodCall<object, object> call = ExpressionReflectionDelegateFactory.Instance.CreateMethodCall<object>(methodInfo);
+
+            object result = call(null, new TestStruct(123));
+            Assert.IsNotNull(result);
+
+            TestStruct s = (TestStruct)result;
+            Assert.AreEqual(246, s.Value);
+        }
     }
 }
 

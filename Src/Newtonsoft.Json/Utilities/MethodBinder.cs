@@ -50,8 +50,8 @@
                 return true;
             }
 
-            int fromMask = 0,
-                toMask = 0;
+            int fromMask = 0;
+            int toMask = 0;
 
             for (int i = 0; i < PrimitiveTypes.Length; i++)
             {
