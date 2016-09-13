@@ -55,7 +55,7 @@ namespace Newtonsoft.Json.Utilities
             ILGenerator generator = dynamicMethod.GetILGenerator();
 
             GenerateCreateMethodCallIL(method, generator, 0);
-
+            
             return (ObjectConstructor<object>)dynamicMethod.CreateDelegate(typeof(ObjectConstructor<object>));
         }
 
@@ -90,7 +90,9 @@ namespace Newtonsoft.Json.Utilities
                 generator.PushInstance(method.DeclaringType);
             }
 
-            int localVariableCount = 0;
+            LocalBuilder localConvertible = generator.DeclareLocal(typeof(IConvertible));
+            LocalBuilder localObject = generator.DeclareLocal(typeof(object));
+            int localVariableCount = 2;
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -125,7 +127,7 @@ namespace Newtonsoft.Json.Utilities
                             generator.MarkLabel(skipSettingDefault);
                             generator.PushArrayInstance(argsIndex, i);
                             generator.UnboxIfNeeded(parameterType);
-                            generator.Emit(OpCodes.Stloc, localVariableCount);
+                            generator.Emit(OpCodes.Stloc_S, localVariable);
 
                             // parameter finished, we out!
                             generator.MarkLabel(finishedProcessingParameter);
@@ -133,7 +135,7 @@ namespace Newtonsoft.Json.Utilities
                         else
                         {
                             generator.UnboxIfNeeded(parameterType);
-                            generator.Emit(OpCodes.Stloc, localVariableCount);
+                            generator.Emit(OpCodes.Stloc_S, localVariable);
                         }
                     }
 
@@ -142,8 +144,9 @@ namespace Newtonsoft.Json.Utilities
                     localVariableCount++;
                 }
                 else if (parameterType.IsValueType())
-                {
+                {                    
                     generator.PushArrayInstance(argsIndex, i);
+                    generator.Emit(OpCodes.Stloc_S, localObject);
 
                     // have to check that value type parameters aren't null
                     // otherwise they will error when unboxed
@@ -151,20 +154,59 @@ namespace Newtonsoft.Json.Utilities
                     Label finishedProcessingParameter = generator.DefineLabel();
 
                     // check if parameter is not null
+                    generator.Emit(OpCodes.Ldloc_S, localObject);
                     generator.Emit(OpCodes.Brtrue_S, skipSettingDefault);
 
                     // parameter has no value, initialize to default
                     LocalBuilder localVariable = generator.DeclareLocal(parameterType);
                     generator.Emit(OpCodes.Ldloca_S, localVariable);
                     generator.Emit(OpCodes.Initobj, parameterType);
-                    generator.Emit(OpCodes.Ldloc, localVariableCount);
+                    generator.Emit(OpCodes.Ldloc_S, localVariable);
                     generator.Emit(OpCodes.Br_S, finishedProcessingParameter);
 
-                    // parameter has value, get value from array again and unbox
+                    // argument has value, try to convert it to parameter type
                     generator.MarkLabel(skipSettingDefault);
-                    generator.PushArrayInstance(argsIndex, i);
-                    generator.UnboxIfNeeded(parameterType);
+                    
+                    if (parameterType.IsPrimitive())
+                    {
+                        // for primitive types we need to handle type widening (e.g. short -> int)
 
+                        MethodInfo toParameterTypeMethod = typeof(IConvertible)
+                            .GetMethod("To" + parameterType.Name, new[] { typeof(IFormatProvider) });
+                        
+                        if (toParameterTypeMethod != null)
+                        {
+                            Label skipConvertible = generator.DefineLabel();
+
+                            // check if argument type is an exact match for parameter type
+                            // in this case we may use cheap unboxing instead
+                            generator.Emit(OpCodes.Ldloc_S, localObject);
+                            generator.Emit(OpCodes.Isinst, parameterType);
+                            generator.Emit(OpCodes.Brtrue_S, skipConvertible);
+
+                            // types don't match, check if argument implements IConvertible
+                            generator.Emit(OpCodes.Ldloc_S, localObject);
+                            generator.Emit(OpCodes.Isinst, typeof(IConvertible));
+                            generator.Emit(OpCodes.Stloc_S, localConvertible);
+                            generator.Emit(OpCodes.Ldloc_S, localConvertible);
+                            generator.Emit(OpCodes.Brfalse_S, skipConvertible);
+
+                            // convert argument to parameter type
+                            generator.Emit(OpCodes.Ldloc_S, localConvertible);
+                            generator.Emit(OpCodes.Ldnull);
+                            generator.Emit(OpCodes.Callvirt, toParameterTypeMethod);
+                            generator.Emit(OpCodes.Br_S, finishedProcessingParameter);
+
+                            generator.MarkLabel(skipConvertible);
+                        }
+                    }
+
+                    // we got here because either argument type matches parameter (conversion will succeed),
+                    // or argument type doesn't match parameter, but we're out of options (conversion will fail)
+                    generator.Emit(OpCodes.Ldloc_S, localObject);
+
+                    generator.UnboxIfNeeded(parameterType);
+                    
                     // parameter finished, we out!
                     generator.MarkLabel(finishedProcessingParameter);
                     localVariableCount++;

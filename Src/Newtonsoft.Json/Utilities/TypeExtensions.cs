@@ -273,6 +273,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
 #if !DOTNET
+        
         public static MethodInfo GetMethod(this Type type, string name)
         {
             return type.GetMethod(name, DefaultFlags);
@@ -295,21 +296,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingFlags, object placeHolder1, IList<Type> parameterTypes, object placeHolder2)
         {
-            return type.GetTypeInfo().DeclaredMethods.Where(
-                m =>
-                {
-                    if (name != null && m.Name != name)
-                    {
-                        return false;
-                    }
-
-                    if (!TestAccessibility(m, bindingFlags))
-                    {
-                        return false;
-                    }
-
-                    return m.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameterTypes);
-                }).SingleOrDefault();
+            return MethodBinder.SelectMethod(type.GetTypeInfo().DeclaredMethods.Where(m => (name == null || m.Name == name) && TestAccessibility(m, bindingFlags)), parameterTypes);
         }
 
         public static IEnumerable<ConstructorInfo> GetConstructors(this Type type)
@@ -319,28 +306,9 @@ namespace Newtonsoft.Json.Utilities
 
         public static IEnumerable<ConstructorInfo> GetConstructors(this Type type, BindingFlags bindingFlags)
         {
-            return type.GetConstructors(bindingFlags, null);
+            return type.GetTypeInfo().DeclaredConstructors.Where(c => TestAccessibility(c, bindingFlags));
         }
-
-        private static IEnumerable<ConstructorInfo> GetConstructors(this Type type, BindingFlags bindingFlags, IList<Type> parameterTypes)
-        {
-            return type.GetTypeInfo().DeclaredConstructors.Where(
-                c =>
-                {
-                    if (!TestAccessibility(c, bindingFlags))
-                    {
-                        return false;
-                    }
-
-                    if (parameterTypes != null && !c.GetParameters().Select(p => p.ParameterType).SequenceEqual(parameterTypes))
-                    {
-                        return false;
-                    }
-
-                    return true;
-                });
-        }
-
+        
         public static ConstructorInfo GetConstructor(this Type type, IList<Type> parameterTypes)
         {
             return type.GetConstructor(DefaultFlags, null, parameterTypes, null);
@@ -348,9 +316,9 @@ namespace Newtonsoft.Json.Utilities
 
         public static ConstructorInfo GetConstructor(this Type type, BindingFlags bindingFlags, object placeholder1, IList<Type> parameterTypes, object placeholder2)
         {
-            return type.GetConstructors(bindingFlags, parameterTypes).SingleOrDefault();
+            return MethodBinder.SelectMethod(type.GetConstructors(bindingFlags), parameterTypes);
         }
-
+        
         public static MemberInfo[] GetMember(this Type type, string member)
         {
             return type.GetMemberInternal(member, null, DefaultFlags);
@@ -571,6 +539,15 @@ namespace Newtonsoft.Json.Utilities
             return type.IsValueType;
 #else
             return type.GetTypeInfo().IsValueType;
+#endif
+        }
+        
+        public static bool IsPrimitive(this Type type)
+        {
+#if !(DOTNET || PORTABLE)
+            return type.IsPrimitive;
+#else
+            return type.GetTypeInfo().IsPrimitive;
 #endif
         }
 

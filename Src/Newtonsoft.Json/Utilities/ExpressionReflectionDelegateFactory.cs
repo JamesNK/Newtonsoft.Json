@@ -105,18 +105,7 @@ namespace Newtonsoft.Json.Utilities
 
                 Expression paramAccessorExpression = Expression.ArrayIndex(argsParameterExpression, indexExpression);
 
-                Expression argExpression;
-
-                if (parameterType.IsValueType())
-                {
-                    BinaryExpression ensureValueTypeNotNull = Expression.Coalesce(paramAccessorExpression, Expression.New(parameterType));
-
-                    argExpression = EnsureCastExpression(ensureValueTypeNotNull, parameterType);
-                }
-                else
-                {
-                    argExpression = EnsureCastExpression(paramAccessorExpression, parameterType);
-                }
+                Expression argExpression = EnsureCastExpression(paramAccessorExpression, parameterType, !isByRef);
 
                 if (isByRef)
                 {
@@ -349,15 +338,39 @@ namespace Newtonsoft.Json.Utilities
             Action<T, object> compiled = (Action<T, object>)lambdaExpression.Compile();
             return compiled;
         }
-
-        private Expression EnsureCastExpression(Expression expression, Type targetType)
+        
+        private Expression EnsureCastExpression(Expression expression, Type targetType, bool allowWidening = false)
         {
             Type expressionType = expression.Type;
-
+            
             // check if a cast or conversion is required
             if (expressionType == targetType || (!expressionType.IsValueType() && targetType.IsAssignableFrom(expressionType)))
             {
                 return expression;
+            }
+
+            if (targetType.IsValueType())
+            {
+                Expression convert = Expression.Unbox(expression, targetType);
+
+                if (allowWidening && targetType.IsPrimitive())
+                {
+                    MethodInfo toTargetTypeMethod = typeof(Convert)
+                        .GetMethod("To" + targetType.Name, new[] { typeof(object) });
+
+                    if (toTargetTypeMethod != null)
+                    {
+                        convert = Expression.Condition(
+                            Expression.TypeIs(expression, targetType),
+                            convert,
+                            Expression.Call(toTargetTypeMethod, expression));
+                    }
+                }
+                
+                return Expression.Condition(
+                    Expression.Equal(expression, Expression.Constant(null, typeof(object))),
+                    Expression.Default(targetType), 
+                    convert);
             }
 
             return Expression.Convert(expression, targetType);

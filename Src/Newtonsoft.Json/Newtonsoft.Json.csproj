@@ -228,6 +228,7 @@
     <Compile Include="Utilities\DynamicReflectionDelegateFactory.cs" />
     <Compile Include="Utilities\DynamicUtils.cs" />
     <Compile Include="Utilities\JsonTokenUtils.cs" />
+    <Compile Include="Utilities\MethodBinder.cs" />
     <Compile Include="Utilities\PropertyNameTable.cs" />
     <Compile Include="Utilities\ReflectionObject.cs" />
     <Compile Include="Utilities\EnumUtils.cs" />
