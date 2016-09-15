@@ -659,6 +659,66 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(employees[0], employees[1].Manager);
         }
 
+        [JsonObject(IsReference = true)]
+        private class Condition
+        {
+            public int Value { get; }
+
+            public Condition(int value)
+            {
+                Value = value;
+            }
+        }
+
+        private class ClassWithConditions
+        {
+            public Condition Condition1 { get; }
+
+            public Condition Condition2 { get; }
+
+            public ClassWithConditions(Condition condition1, Condition condition2)
+            {
+                Condition1 = condition1;
+                Condition2 = condition2;
+            }
+        }
+
+        [Test]
+        public void SerializeIsReferenceReadonlyProperty()
+        {
+            Condition condition = new Condition(1);
+            ClassWithConditions value = new ClassWithConditions(condition, condition);
+
+            string json = JsonConvert.SerializeObject(value, Formatting.Indented);
+            StringAssert.AreEqual(@"{
+  ""Condition1"": {
+    ""$id"": ""1"",
+    ""Value"": 1
+  },
+  ""Condition2"": {
+    ""$ref"": ""1""
+  }
+}", json);
+        }
+
+        [Test]
+        public void DeserializeIsReferenceReadonlyProperty()
+        {
+            string json = @"{
+  ""Condition1"": {
+    ""$id"": ""1"",
+    ""Value"": 1
+  },
+  ""Condition2"": {
+    ""$ref"": ""1""
+  }
+}";
+
+            ClassWithConditions value = JsonConvert.DeserializeObject<ClassWithConditions>(json);
+            Assert.AreEqual(value.Condition1.Value, 1);
+            Assert.AreEqual(value.Condition1, value.Condition2);
+        }
+
         [Test]
         public void SerializeCircularReference()
         {
