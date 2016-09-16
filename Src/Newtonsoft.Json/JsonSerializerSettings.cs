@@ -251,7 +251,32 @@ namespace Newtonsoft.Json
         /// Gets or sets the <see cref="SerializationBinder"/> used by the serializer when resolving type names.
         /// </summary>
         /// <value>The binder.</value>
-        public SerializationBinder Binder { get; set; }
+        [Obsolete("Binder is obsolete. Use SerializationBinder instead.")]
+        public SerializationBinder Binder
+        {
+            get
+            {
+                if (SerializationBinder == null)
+                {
+                    return null;
+                }
+
+                SerializationBinderAdapter adapter = SerializationBinder as SerializationBinderAdapter;
+                if (adapter != null)
+                {
+                    return adapter.SerializationBinder;
+                }
+
+                throw new InvalidOperationException("Cannot get SerializationBinder because an ISerializationBinder was previously set.");
+            }
+            set { SerializationBinder = value == null ? null : new SerializationBinderAdapter(value); }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="ISerializationBinder"/> used by the serializer when resolving type names.
+        /// </summary>
+        /// <value>The binder.</value>
+        public ISerializationBinder SerializationBinder { get; set; }
 
         /// <summary>
         /// Gets or sets the error handler called during serialization and deserialization.

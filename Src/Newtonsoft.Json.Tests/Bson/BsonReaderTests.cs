@@ -1631,7 +1631,9 @@ namespace Newtonsoft.Json.Tests.Bson
             var settings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
+#pragma warning disable CS0618 // Type or member is obsolete
                 Binder = binder
+#pragma warning restore CS0618 // Type or member is obsolete
             };
 
             Zoo zoo = new Zoo

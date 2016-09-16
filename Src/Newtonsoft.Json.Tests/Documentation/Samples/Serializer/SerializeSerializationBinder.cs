@@ -23,10 +23,9 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || NET35)
-
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json.Serialization;
 using System.Runtime.Serialization;
 using System.Text;
 #if DNXCORE50
@@ -49,16 +48,16 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
     public class SerializeSerializationBinder : TestFixtureBase
     {
         #region Types
-        public class KnownTypesBinder : SerializationBinder
+        public class KnownTypesBinder : ISerializationBinder
         {
             public IList<Type> KnownTypes { get; set; }
 
-            public override Type BindToType(string assemblyName, string typeName)
+            public Type BindToType(string assemblyName, string typeName)
             {
                 return KnownTypes.SingleOrDefault(t => t.Name == typeName);
             }
 
-            public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
+            public void BindToName(Type serializedType, out string assemblyName, out string typeName)
             {
                 assemblyName = null;
                 typeName = serializedType.Name;
@@ -90,7 +89,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             string json = JsonConvert.SerializeObject(car, Formatting.Indented, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects,
-                Binder = knownTypesBinder
+                SerializationBinder = knownTypesBinder
             });
 
             Console.WriteLine(json);
@@ -103,7 +102,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             object newValue = JsonConvert.DeserializeObject(json, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects,
-                Binder = knownTypesBinder
+                SerializationBinder = knownTypesBinder
             });
 
             Console.WriteLine(newValue.GetType().Name);
@@ -114,5 +113,3 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
         }
     }
 }
-
-#endif

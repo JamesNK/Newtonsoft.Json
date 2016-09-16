@@ -147,11 +147,13 @@
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
     <Compile Include="Serialization\ExpressionValueProvider.cs" />
     <Compile Include="Serialization\IAttributeProvider.cs" />
+    <Compile Include="Serialization\ISerializationBinder.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />
     <Compile Include="Serialization\JsonContainerContract.cs" />
     <Compile Include="Serialization\MemoryTraceWriter.cs" />
     <Compile Include="Serialization\NamingStrategy.cs" />
     <Compile Include="Serialization\ReflectionAttributeProvider.cs" />
+    <Compile Include="Serialization\SerializationBinderAdapter.cs" />
     <Compile Include="Serialization\SnakeCaseNamingStrategy.cs" />
     <Compile Include="Serialization\TraceJsonReader.cs" />
     <Compile Include="Serialization\TraceJsonWriter.cs" />

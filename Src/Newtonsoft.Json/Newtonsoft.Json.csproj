@@ -169,6 +169,8 @@
     <Compile Include="Schema\ValidationEventHandler.cs" />
     <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\CachedAttributeGetter.cs" />
+    <Compile Include="Serialization\ISerializationBinder.cs" />
+    <Compile Include="Serialization\SerializationBinderAdapter.cs" />
     <Compile Include="Serialization\SnakeCaseNamingStrategy.cs" />
     <Compile Include="Serialization\CamelCaseNamingStrategy.cs" />
     <Compile Include="Serialization\CamelCasePropertyNamesContractResolver.cs" />

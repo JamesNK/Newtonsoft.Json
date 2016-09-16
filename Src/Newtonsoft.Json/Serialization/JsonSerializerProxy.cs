@@ -133,10 +133,17 @@ namespace Newtonsoft.Json.Serialization
             set { _serializer.ConstructorHandling = value; }
         }
 
+        [Obsolete("Binder is obsolete. Use SerializationBinder instead.")]
         public override SerializationBinder Binder
         {
             get { return _serializer.Binder; }
             set { _serializer.Binder = value; }
+        }
+
+        public override ISerializationBinder SerializationBinder
+        {
+            get { return _serializer.SerializationBinder; }
+            set { _serializer.SerializationBinder = value; }
         }
 
         public override StreamingContext Context

@@ -35,7 +35,7 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// The default serialization binder used when resolving and loading classes from type names.
     /// </summary>
-    public class DefaultSerializationBinder : SerializationBinder
+    public class DefaultSerializationBinder : SerializationBinder, ISerializationBinder
     {
         internal static readonly DefaultSerializationBinder Instance = new DefaultSerializationBinder();
 
@@ -187,14 +187,17 @@ namespace Newtonsoft.Json.Serialization
             return GetTypeByName(new TypeNameKey(assemblyName, typeName));
         }
 
-#if !(NET35 || NET20)
         /// <summary>
         /// When overridden in a derived class, controls the binding of a serialized object to a type.
         /// </summary>
         /// <param name="serializedType">The type of the object the formatter creates a new instance of.</param>
         /// <param name="assemblyName">Specifies the <see cref="T:System.Reflection.Assembly"/> name of the serialized object. </param>
         /// <param name="typeName">Specifies the <see cref="T:System.Type"/> name of the serialized object. </param>
-        public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
+        public
+#if !(NET35 || NET20)
+        override
+#endif
+        void BindToName(Type serializedType, out string assemblyName, out string typeName)
         {
 #if (DOTNET || PORTABLE)
             assemblyName = serializedType.GetTypeInfo().Assembly.FullName;
@@ -204,6 +207,5 @@ namespace Newtonsoft.Json.Serialization
             typeName = serializedType.FullName;
 #endif
         }
-#endif
     }
 }
