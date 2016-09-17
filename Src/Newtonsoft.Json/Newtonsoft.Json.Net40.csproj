@@ -113,6 +113,7 @@
     <Compile Include="Converters\VersionConverter.cs" />
     <Compile Include="FloatFormatHandling.cs" />
     <Compile Include="FloatParseHandling.cs" />
+    <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="IArrayPool.cs" />
     <Compile Include="JsonDictionaryAttribute.cs" />
     <Compile Include="JsonException.cs" />
@@ -142,6 +143,7 @@
     <Compile Include="Linq\MergeArrayHandling.cs" />
     <Compile Include="Linq\MergeNullValueHandling.cs" />
     <Compile Include="MetadataPropertyHandling.cs" />
+    <Compile Include="SerializationBinder.cs" />
     <Compile Include="Serialization\CamelCaseNamingStrategy.cs" />
     <Compile Include="Serialization\DefaultNamingStrategy.cs" />
     <Compile Include="Serialization\DiagnosticsTraceWriter.cs" />
@@ -156,6 +158,8 @@
     <Compile Include="Serialization\TraceJsonReader.cs" />
     <Compile Include="Serialization\TraceJsonWriter.cs" />
     <Compile Include="StringEscapeHandling.cs" />
+    <Compile Include="TraceLevel.cs" />
+    <Compile Include="TypeNameAssemblyFormatHandling.cs" />
     <Compile Include="Utilities\DateTimeParser.cs" />
     <Compile Include="Utilities\DynamicProxy.cs" />
     <Compile Include="Linq\JRaw.cs" />

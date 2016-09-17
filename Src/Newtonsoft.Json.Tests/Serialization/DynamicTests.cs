@@ -121,11 +121,13 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(o, Formatting.Indented, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
+#pragma warning disable 618
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+#pragma warning restore 618
             });
 
-            string dynamicChildObjectTypeName = ReflectionUtils.GetTypeName(typeof(DynamicChildObject), FormatterAssemblyStyle.Full, null);
-            string expandoObjectTypeName = ReflectionUtils.GetTypeName(typeof(ExpandoObject), FormatterAssemblyStyle.Full, null);
+            string dynamicChildObjectTypeName = ReflectionUtils.GetTypeName(typeof(DynamicChildObject), TypeNameAssemblyFormatHandling.Full, null);
+            string expandoObjectTypeName = ReflectionUtils.GetTypeName(typeof(ExpandoObject), TypeNameAssemblyFormatHandling.Full, null);
 
             StringAssert.AreEqual(@"{
   ""$type"": """ + expandoObjectTypeName + @""",
@@ -141,7 +143,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             dynamic n = JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
+#pragma warning disable 618
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+#pragma warning restore 618
             });
 
             CustomAssert.IsInstanceOfType(typeof(ExpandoObject), n);

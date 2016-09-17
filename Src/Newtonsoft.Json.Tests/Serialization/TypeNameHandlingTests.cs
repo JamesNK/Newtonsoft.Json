@@ -322,7 +322,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void WriteTypeNameForObjects()
         {
-            string employeeRef = ReflectionUtils.GetTypeName(typeof(EmployeeReference), FormatterAssemblyStyle.Simple, null);
+            string employeeRef = ReflectionUtils.GetTypeName(typeof(EmployeeReference), TypeNameAssemblyFormatHandling.Simple, null);
 
             EmployeeReference employee = new EmployeeReference();
 
@@ -342,7 +342,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void DeserializeTypeName()
         {
-            string employeeRef = ReflectionUtils.GetTypeName(typeof(EmployeeReference), FormatterAssemblyStyle.Simple, null);
+            string employeeRef = ReflectionUtils.GetTypeName(typeof(EmployeeReference), TypeNameAssemblyFormatHandling.Simple, null);
 
             string json = @"{
   ""$id"": ""1"",
@@ -364,7 +364,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void DeserializeTypeNameFromGacAssembly()
         {
-            string cookieRef = ReflectionUtils.GetTypeName(typeof(Cookie), FormatterAssemblyStyle.Simple, null);
+            string cookieRef = ReflectionUtils.GetTypeName(typeof(Cookie), TypeNameAssemblyFormatHandling.Simple, null);
 
             string json = @"{
   ""$id"": ""1"",
@@ -406,7 +406,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects,
+#pragma warning disable 618
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+#pragma warning restore 618
             });
 
             StringAssert.AreEqual(@"[
@@ -463,7 +465,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             List<object> values = (List<object>)JsonConvert.DeserializeObject(json, typeof(List<object>), new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects,
+#pragma warning disable 618
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+#pragma warning restore 618
             });
 
             Assert.AreEqual(4, values.Count);
@@ -500,7 +504,9 @@ namespace Newtonsoft.Json.Tests.Serialization
                 JsonConvert.DeserializeObject(json, typeof(Person), new JsonSerializerSettings
                 {
                     TypeNameHandling = TypeNameHandling.Objects,
+#pragma warning disable 618
                     TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+#pragma warning restore 618
                 });
             }
             catch (JsonSerializationException ex)
@@ -593,7 +599,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             ICorrelatedMessage message = JsonConvert.DeserializeObject<ICorrelatedMessage>(json, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects,
+#pragma warning disable 618
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+#pragma warning restore 618
             });
 
             CustomAssert.IsInstanceOfType(typeof(SendHttpRequest), message);
@@ -621,7 +629,9 @@ namespace Newtonsoft.Json.Tests.Serialization
                 {
                     NullValueHandling = NullValueHandling.Ignore,
                     TypeNameHandling = TypeNameHandling.All,
+#pragma warning disable 618
                     TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+#pragma warning restore 618
                 });
 
             StringAssert.AreEqual(@"{
@@ -648,7 +658,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void WriteObjectTypeNameForProperty()
         {
-            string typeNamePropertyRef = ReflectionUtils.GetTypeName(typeof(TypeNameProperty), FormatterAssemblyStyle.Simple, null);
+            string typeNamePropertyRef = ReflectionUtils.GetTypeName(typeof(TypeNameProperty), TypeNameAssemblyFormatHandling.Simple, null);
 
             TypeNameProperty typeNameProperty = new TypeNameProperty
             {
@@ -682,7 +692,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void WriteListTypeNameForProperty()
         {
-            string listRef = ReflectionUtils.GetTypeName(typeof(List<int>), FormatterAssemblyStyle.Simple, null);
+            string listRef = ReflectionUtils.GetTypeName(typeof(List<int>), TypeNameAssemblyFormatHandling.Simple, null);
 
             TypeNameProperty typeNameProperty = new TypeNameProperty
             {
@@ -863,9 +873,9 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = sw.ToString();
 
-            string contentSubClassRef = ReflectionUtils.GetTypeName(typeof(ContentSubClass), FormatterAssemblyStyle.Simple, null);
-            string dictionaryRef = ReflectionUtils.GetTypeName(typeof(Dictionary<int, IList<ContentBaseClass>>), FormatterAssemblyStyle.Simple, null);
-            string listRef = ReflectionUtils.GetTypeName(typeof(List<ContentBaseClass>), FormatterAssemblyStyle.Simple, null);
+            string contentSubClassRef = ReflectionUtils.GetTypeName(typeof(ContentSubClass), TypeNameAssemblyFormatHandling.Simple, null);
+            string dictionaryRef = ReflectionUtils.GetTypeName(typeof(Dictionary<int, IList<ContentBaseClass>>), TypeNameAssemblyFormatHandling.Simple, null);
+            string listRef = ReflectionUtils.GetTypeName(typeof(List<ContentBaseClass>), TypeNameAssemblyFormatHandling.Simple, null);
 
             string expected = @"{
   ""TestMember"": {
@@ -966,10 +976,12 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(collection, Formatting.Indented, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
+#pragma warning disable 618
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple
+#pragma warning restore 618
             });
 
-            string urlStatusTypeName = ReflectionUtils.GetTypeName(typeof(UrlStatus), FormatterAssemblyStyle.Simple, null);
+            string urlStatusTypeName = ReflectionUtils.GetTypeName(typeof(UrlStatus), TypeNameAssemblyFormatHandling.Simple, null);
 
             StringAssert.AreEqual(@"{
   ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"",
@@ -1003,7 +1015,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             object c = JsonConvert.DeserializeObject(json, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
+#pragma warning disable 618
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple
+#pragma warning restore 618
             });
 
             CustomAssert.IsInstanceOfType(typeof(Dictionary<string, object>), c);
@@ -1019,7 +1033,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void SerializingIEnumerableOfTShouldRetainGenericTypeInfo()
         {
-            string productClassRef = ReflectionUtils.GetTypeName(typeof(CustomEnumerable<Product>), FormatterAssemblyStyle.Simple, null);
+            string productClassRef = ReflectionUtils.GetTypeName(typeof(CustomEnumerable<Product>), TypeNameAssemblyFormatHandling.Simple, null);
 
             CustomEnumerable<Product> products = new CustomEnumerable<Product>();
 
@@ -1107,7 +1121,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string output = JsonConvert.SerializeObject(testerObject, Formatting.Indented, jsonSettings);
 
-            string carClassRef = ReflectionUtils.GetTypeName(typeof(Car), FormatterAssemblyStyle.Simple, null);
+            string carClassRef = ReflectionUtils.GetTypeName(typeof(Car), TypeNameAssemblyFormatHandling.Simple, null);
 
             StringAssert.AreEqual(output, @"{
   ""$type"": """ + carClassRef + @""",
@@ -1823,8 +1837,13 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string serialized = JsonConvert.SerializeObject(input,
                 Newtonsoft.Json.Formatting.Indented,
-                new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All, TypeNameAssemblyFormat = FormatterAssemblyStyle.Full } // TypeNameHandling.Auto will work
-                );
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.All,
+#pragma warning disable 618
+                    TypeNameAssemblyFormat = FormatterAssemblyStyle.Full // TypeNameHandling.Auto will work
+#pragma warning restore 618
+                });
 
             var output = JsonConvert.DeserializeObject<List<Stack<string>>>(serialized,
                 new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All }

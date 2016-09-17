@@ -376,7 +376,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             List<object> values = (List<object>)JsonConvert.DeserializeObject(json, typeof(List<object>), new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects,
+#pragma warning disable 618
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full,
+#pragma warning restore 618
                 MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead
             });
 
@@ -399,7 +401,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void WriteListTypeNameForProperty()
         {
-            string listRef = ReflectionUtils.GetTypeName(typeof(List<int>), FormatterAssemblyStyle.Simple, null);
+            string listRef = ReflectionUtils.GetTypeName(typeof(List<int>), TypeNameAssemblyFormatHandling.Simple, null);
 
             TypeNameHandlingTests.TypeNameProperty typeNameProperty = new TypeNameHandlingTests.TypeNameProperty
             {

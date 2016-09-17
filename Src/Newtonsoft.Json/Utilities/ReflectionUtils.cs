@@ -151,7 +151,7 @@ namespace Newtonsoft.Json.Utilities
             return (v != null) ? v.GetType() : null;
         }
 
-        public static string GetTypeName(Type t, FormatterAssemblyStyle assemblyFormat, SerializationBinder binder)
+        public static string GetTypeName(Type t, TypeNameAssemblyFormatHandling assemblyFormat, SerializationBinder binder)
         {
             string fullyQualifiedTypeName;
 #if !(NET20 || NET35)
@@ -171,9 +171,9 @@ namespace Newtonsoft.Json.Utilities
 
             switch (assemblyFormat)
             {
-                case FormatterAssemblyStyle.Simple:
+                case TypeNameAssemblyFormatHandling.Simple:
                     return RemoveAssemblyDetails(fullyQualifiedTypeName);
-                case FormatterAssemblyStyle.Full:
+                case TypeNameAssemblyFormatHandling.Full:
                     return fullyQualifiedTypeName;
                 default:
                     throw new ArgumentOutOfRangeException();

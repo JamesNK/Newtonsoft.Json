@@ -1259,9 +1259,21 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(traceWriter, serializer.TraceWriter);
 
 #if !(PORTABLE || PORTABLE40 || NETFX_CORE || NET20 || DNXCORE50)
+#pragma warning disable 618
             serializer.TypeNameAssemblyFormat = FormatterAssemblyStyle.Full;
             Assert.AreEqual(FormatterAssemblyStyle.Full, serializer.TypeNameAssemblyFormat);
+#pragma warning restore 618
+
+            Assert.AreEqual(TypeNameAssemblyFormatHandling.Full, serializer.TypeNameAssemblyFormatHandling);
+
+            serializer.TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple;
+#pragma warning disable 618
+            Assert.AreEqual(FormatterAssemblyStyle.Simple, serializer.TypeNameAssemblyFormat);
+#pragma warning restore 618
 #endif
+
+            serializer.TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full;
+            Assert.AreEqual(TypeNameAssemblyFormatHandling.Full, serializer.TypeNameAssemblyFormatHandling);
 
             serializer.TypeNameHandling = TypeNameHandling.All;
             Assert.AreEqual(TypeNameHandling.All, serializer.TypeNameHandling);
@@ -1360,9 +1372,21 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(traceWriter, settings.TraceWriter);
 
 #if !(PORTABLE || PORTABLE40 || NETFX_CORE || NET20 || DNXCORE50)
+#pragma warning disable 618
             settings.TypeNameAssemblyFormat = FormatterAssemblyStyle.Full;
             Assert.AreEqual(FormatterAssemblyStyle.Full, settings.TypeNameAssemblyFormat);
+#pragma warning restore 618
+
+            Assert.AreEqual(TypeNameAssemblyFormatHandling.Full, settings.TypeNameAssemblyFormatHandling);
+
+            settings.TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple;
+#pragma warning disable 618
+            Assert.AreEqual(FormatterAssemblyStyle.Simple, settings.TypeNameAssemblyFormat);
+#pragma warning restore 618
 #endif
+
+            settings.TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full;
+            Assert.AreEqual(TypeNameAssemblyFormatHandling.Full, settings.TypeNameAssemblyFormatHandling);
 
             settings.TypeNameHandling = TypeNameHandling.All;
             Assert.AreEqual(TypeNameHandling.All, settings.TypeNameHandling);
@@ -1455,9 +1479,21 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(traceWriter, serializerProxy.TraceWriter);
 
 #if !(PORTABLE || PORTABLE40 || NETFX_CORE || NET20 || DNXCORE50)
+#pragma warning disable 618
             serializerProxy.TypeNameAssemblyFormat = FormatterAssemblyStyle.Full;
             Assert.AreEqual(FormatterAssemblyStyle.Full, serializerProxy.TypeNameAssemblyFormat);
+#pragma warning restore 618
+
+            Assert.AreEqual(TypeNameAssemblyFormatHandling.Full, serializerProxy.TypeNameAssemblyFormatHandling);
+
+            serializerProxy.TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple;
+#pragma warning disable 618
+            Assert.AreEqual(FormatterAssemblyStyle.Simple, serializerProxy.TypeNameAssemblyFormat);
+#pragma warning restore 618
 #endif
+
+            serializerProxy.TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Full;
+            Assert.AreEqual(TypeNameAssemblyFormatHandling.Full, serializerProxy.TypeNameAssemblyFormatHandling);
 
             serializerProxy.TypeNameHandling = TypeNameHandling.All;
             Assert.AreEqual(TypeNameHandling.All, serializerProxy.TypeNameHandling);

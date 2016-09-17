@@ -57,7 +57,7 @@ namespace Newtonsoft.Json
         internal const FloatParseHandling DefaultFloatParseHandling = FloatParseHandling.Double;
         internal const FloatFormatHandling DefaultFloatFormatHandling = FloatFormatHandling.String;
         internal const StringEscapeHandling DefaultStringEscapeHandling = StringEscapeHandling.Default;
-        internal const FormatterAssemblyStyle DefaultFormatterAssemblyStyle = FormatterAssemblyStyle.Simple;
+        internal const TypeNameAssemblyFormatHandling DefaultTypeNameAssemblyFormatHandling = Json.TypeNameAssemblyFormatHandling.Simple;
         internal static readonly CultureInfo DefaultCulture;
         internal const bool DefaultCheckAdditionalContent = false;
         internal const string DefaultDateFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
@@ -75,7 +75,7 @@ namespace Newtonsoft.Json
         internal bool _maxDepthSet;
         internal string _dateFormatString;
         internal bool _dateFormatStringSet;
-        internal FormatterAssemblyStyle? _typeNameAssemblyFormat;
+        internal TypeNameAssemblyFormatHandling? _typeNameAssemblyFormatHandling;
         internal DefaultValueHandling? _defaultValueHandling;
         internal PreserveReferencesHandling? _preserveReferencesHandling;
         internal NullValueHandling? _nullValueHandling;
@@ -182,10 +182,21 @@ namespace Newtonsoft.Json
         /// Gets or sets how a type name assembly is written and resolved by the serializer.
         /// </summary>
         /// <value>The type name assembly format.</value>
+        [Obsolete("TypeNameAssemblyFormat is obsolete. Use TypeNameAssemblyFormatHandling instead.")]
         public FormatterAssemblyStyle TypeNameAssemblyFormat
         {
-            get { return _typeNameAssemblyFormat ?? DefaultFormatterAssemblyStyle; }
-            set { _typeNameAssemblyFormat = value; }
+            get { return (FormatterAssemblyStyle)TypeNameAssemblyFormatHandling; }
+            set { TypeNameAssemblyFormatHandling = (TypeNameAssemblyFormatHandling)value; }
+        }
+
+        /// <summary>
+        /// Gets or sets how a type name assembly is written and resolved by the serializer.
+        /// </summary>
+        /// <value>The type name assembly format.</value>
+        public TypeNameAssemblyFormatHandling TypeNameAssemblyFormatHandling
+        {
+            get { return _typeNameAssemblyFormatHandling ?? DefaultTypeNameAssemblyFormatHandling; }
+            set { _typeNameAssemblyFormatHandling = value; }
         }
 
         /// <summary>

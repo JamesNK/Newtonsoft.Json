@@ -45,7 +45,7 @@ namespace Newtonsoft.Json
     public class JsonSerializer
     {
         internal TypeNameHandling _typeNameHandling;
-        internal FormatterAssemblyStyle _typeNameAssemblyFormat;
+        internal TypeNameAssemblyFormatHandling _typeNameAssemblyFormatHandling;
         internal PreserveReferencesHandling _preserveReferencesHandling;
         internal ReferenceLoopHandling _referenceLoopHandling;
         internal MissingMemberHandling _missingMemberHandling;
@@ -161,9 +161,10 @@ namespace Newtonsoft.Json
         /// Gets or sets how a type name assembly is written and resolved by the serializer.
         /// </summary>
         /// <value>The type name assembly format.</value>
+        [Obsolete("TypeNameAssemblyFormat is obsolete. Use TypeNameAssemblyFormatHandling instead.")]
         public virtual FormatterAssemblyStyle TypeNameAssemblyFormat
         {
-            get { return _typeNameAssemblyFormat; }
+            get { return (FormatterAssemblyStyle)_typeNameAssemblyFormatHandling; }
             set
             {
                 if (value < FormatterAssemblyStyle.Simple || value > FormatterAssemblyStyle.Full)
@@ -171,7 +172,25 @@ namespace Newtonsoft.Json
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
 
-                _typeNameAssemblyFormat = value;
+                _typeNameAssemblyFormatHandling = (TypeNameAssemblyFormatHandling)value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets how a type name assembly is written and resolved by the serializer.
+        /// </summary>
+        /// <value>The type name assembly format.</value>
+        public virtual TypeNameAssemblyFormatHandling TypeNameAssemblyFormatHandling
+        {
+            get { return _typeNameAssemblyFormatHandling; }
+            set
+            {
+                if (value < TypeNameAssemblyFormatHandling.Simple || value > TypeNameAssemblyFormatHandling.Full)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                }
+
+                _typeNameAssemblyFormatHandling = value;
             }
         }
 
@@ -594,9 +613,9 @@ namespace Newtonsoft.Json
             {
                 serializer.MetadataPropertyHandling = settings.MetadataPropertyHandling;
             }
-            if (settings._typeNameAssemblyFormat != null)
+            if (settings._typeNameAssemblyFormatHandling != null)
             {
-                serializer.TypeNameAssemblyFormat = settings.TypeNameAssemblyFormat;
+                serializer.TypeNameAssemblyFormatHandling = settings.TypeNameAssemblyFormatHandling;
             }
             if (settings._preserveReferencesHandling != null)
             {

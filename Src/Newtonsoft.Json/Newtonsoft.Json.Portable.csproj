@@ -210,6 +210,7 @@
     <Compile Include="Serialization\TraceJsonWriter.cs" />
     <Compile Include="StringEscapeHandling.cs" />
     <Compile Include="TraceLevel.cs" />
+    <Compile Include="TypeNameAssemblyFormatHandling.cs" />
     <Compile Include="TypeNameHandling.cs" />
     <Compile Include="Utilities\Base64Encoder.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
