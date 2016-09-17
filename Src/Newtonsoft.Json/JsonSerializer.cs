@@ -58,7 +58,7 @@ namespace Newtonsoft.Json
         internal IContractResolver _contractResolver;
         internal ITraceWriter _traceWriter;
         internal IEqualityComparer _equalityComparer;
-        internal SerializationBinder _binder;
+        internal ISerializationBinder _serializationBinder;
         internal StreamingContext _context;
         private IReferenceResolver _referenceResolver;
 
@@ -101,9 +101,24 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets or sets the <see cref="SerializationBinder"/> used by the serializer when resolving type names.
         /// </summary>
+        [Obsolete("Binder is obsolete. Use SerializationBinder instead.")]
         public virtual SerializationBinder Binder
         {
-            get { return _binder; }
+            get
+            {
+                if (_serializationBinder == null)
+                {
+                    return null;
+                }
+
+                SerializationBinderAdapter adapter = _serializationBinder as SerializationBinderAdapter;
+                if (adapter != null)
+                {
+                    return adapter.SerializationBinder;
+                }
+
+                throw new InvalidOperationException("Cannot get SerializationBinder because an ISerializationBinder was previously set.");
+            }
             set
             {
                 if (value == null)
@@ -111,7 +126,24 @@ namespace Newtonsoft.Json
                     throw new ArgumentNullException(nameof(value), "Serialization binder cannot be null.");
                 }
 
-                _binder = value;
+                _serializationBinder = new SerializationBinderAdapter(value);
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the <see cref="ISerializationBinder"/> used by the serializer when resolving type names.
+        /// </summary>
+        public virtual ISerializationBinder SerializationBinder
+        {
+            get { return _serializationBinder; }
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(value), "Serialization binder cannot be null.");
+                }
+
+                _serializationBinder = value;
             }
         }
 
@@ -507,7 +539,7 @@ namespace Newtonsoft.Json
             _typeNameHandling = JsonSerializerSettings.DefaultTypeNameHandling;
             _metadataPropertyHandling = JsonSerializerSettings.DefaultMetadataPropertyHandling;
             _context = JsonSerializerSettings.DefaultContext;
-            _binder = DefaultSerializationBinder.Instance;
+            _serializationBinder = DefaultSerializationBinder.Instance;
 
             _culture = JsonSerializerSettings.DefaultCulture;
             _contractResolver = DefaultContractResolver.Instance;
@@ -675,9 +707,9 @@ namespace Newtonsoft.Json
             {
                 serializer.EqualityComparer = settings.EqualityComparer;
             }
-            if (settings.Binder != null)
+            if (settings.SerializationBinder != null)
             {
-                serializer.Binder = settings.Binder;
+                serializer.SerializationBinder = settings.SerializationBinder;
             }
 
             // reader/writer specific

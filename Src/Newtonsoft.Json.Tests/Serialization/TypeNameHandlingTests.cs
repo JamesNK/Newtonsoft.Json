@@ -741,7 +741,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             object p = JsonConvert.DeserializeObject(json, null, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects,
+#pragma warning disable CS0618 // Type or member is obsolete
                 Binder = new CustomSerializationBinder()
+#pragma warning restore CS0618 // Type or member is obsolete
             });
 
             CustomAssert.IsInstanceOfType(typeof(Person), p);
@@ -782,7 +784,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
+#pragma warning disable CS0618 // Type or member is obsolete
                 Binder = binder
+#pragma warning restore CS0618 // Type or member is obsolete
             });
 
             //[
@@ -814,7 +818,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             IList<object> newValues = JsonConvert.DeserializeObject<IList<object>>(json, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
+#pragma warning disable CS0618 // Type or member is obsolete
                 Binder = new TypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests")
+#pragma warning restore CS0618 // Type or member is obsolete
             });
 
             CustomAssert.IsInstanceOfType(typeof(Customer), newValues[0]);
@@ -849,6 +855,95 @@ namespace Newtonsoft.Json.Tests.Serialization
             }
         }
 #endif
+
+        [Test]
+        public void NewSerializeUsingCustomBinder()
+        {
+            NewTypeNameSerializationBinder binder = new NewTypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests");
+
+            IList<object> values = new List<object>
+            {
+                new Customer
+                {
+                    Name = "Caroline Customer"
+                },
+                new Purchase
+                {
+                    ProductName = "Elbow Grease",
+                    Price = 5.99m,
+                    Quantity = 1
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                SerializationBinder = binder
+            });
+
+            //[
+            //  {
+            //    "$type": "Customer",
+            //    "Name": "Caroline Customer"
+            //  },
+            //  {
+            //    "$type": "Purchase",
+            //    "ProductName": "Elbow Grease",
+            //    "Price": 5.99,
+            //    "Quantity": 1
+            //  }
+            //]
+
+            StringAssert.AreEqual(@"[
+  {
+    ""$type"": ""Customer"",
+    ""Name"": ""Caroline Customer""
+  },
+  {
+    ""$type"": ""Purchase"",
+    ""ProductName"": ""Elbow Grease"",
+    ""Price"": 5.99,
+    ""Quantity"": 1
+  }
+]", json);
+
+            IList<object> newValues = JsonConvert.DeserializeObject<IList<object>>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                SerializationBinder = new NewTypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests")
+            });
+
+            CustomAssert.IsInstanceOfType(typeof(Customer), newValues[0]);
+            Customer customer = (Customer)newValues[0];
+            Assert.AreEqual("Caroline Customer", customer.Name);
+
+            CustomAssert.IsInstanceOfType(typeof(Purchase), newValues[1]);
+            Purchase purchase = (Purchase)newValues[1];
+            Assert.AreEqual("Elbow Grease", purchase.ProductName);
+        }
+
+        public class NewTypeNameSerializationBinder : ISerializationBinder
+        {
+            public string TypeFormat { get; private set; }
+
+            public NewTypeNameSerializationBinder(string typeFormat)
+            {
+                TypeFormat = typeFormat;
+            }
+
+            public void BindToName(Type serializedType, out string assemblyName, out string typeName)
+            {
+                assemblyName = null;
+                typeName = serializedType.Name;
+            }
+
+            public Type BindToType(string assemblyName, string typeName)
+            {
+                string resolvedTypeName = string.Format(TypeFormat, typeName);
+
+                return Type.GetType(resolvedTypeName, true);
+            }
+        }
 
         [Test]
         public void CollectionWithAbstractItems()
@@ -1207,7 +1302,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 TypeNameHandling = TypeNameHandling.All,
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full,
+#pragma warning disable CS0618 // Type or member is obsolete
                 Binder = new MetroBinder(),
+#pragma warning restore CS0618 // Type or member is obsolete
                 ContractResolver = new DefaultContractResolver
                 {
 #if !(NETFX_CORE || PORTABLE || DNXCORE50)

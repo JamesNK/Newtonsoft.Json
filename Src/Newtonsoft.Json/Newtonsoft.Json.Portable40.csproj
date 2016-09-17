@@ -184,6 +184,7 @@
     <Compile Include="Serialization\IAttributeProvider.cs" />
     <Compile Include="Serialization\IContractResolver.cs" />
     <Compile Include="Serialization\IReferenceResolver.cs" />
+    <Compile Include="Serialization\ISerializationBinder.cs" />
     <Compile Include="Serialization\ITraceWriter.cs" />
     <Compile Include="Serialization\IValueProvider.cs" />
     <Compile Include="Serialization\JsonArrayContract.cs" />
@@ -210,6 +211,7 @@
     <Compile Include="Serialization\OnErrorAttribute.cs" />
     <Compile Include="Serialization\ReflectionAttributeProvider.cs" />
     <Compile Include="Serialization\ReflectionValueProvider.cs" />
+    <Compile Include="Serialization\SerializationBinderAdapter.cs" />
     <Compile Include="Serialization\SnakeCaseNamingStrategy.cs" />
     <Compile Include="Serialization\TraceJsonReader.cs" />
     <Compile Include="Serialization\TraceJsonWriter.cs" />

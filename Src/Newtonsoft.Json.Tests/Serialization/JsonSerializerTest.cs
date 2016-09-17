@@ -1178,8 +1178,23 @@ namespace Newtonsoft.Json.Tests.Serialization
             JsonSerializer serializer = new JsonSerializer();
 
             DefaultSerializationBinder customBinder = new DefaultSerializationBinder();
+#pragma warning disable CS0618 // Type or member is obsolete
             serializer.Binder = customBinder;
             Assert.AreEqual(customBinder, serializer.Binder);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            Assert.IsInstanceOf(typeof(SerializationBinderAdapter), serializer.SerializationBinder);
+
+            serializer.SerializationBinder = customBinder;
+            Assert.AreEqual(customBinder, serializer.SerializationBinder);
+
+            ExceptionAssert.Throws<InvalidOperationException>(() =>
+            {
+#pragma warning disable CS0618 // Type or member is obsolete
+                var serializationBinder = serializer.Binder;
+#pragma warning restore CS0618 // Type or member is obsolete
+                serializationBinder.ToString();
+            }, "Cannot get SerializationBinder because an ISerializationBinder was previously set.");
 
             serializer.CheckAdditionalContent = true;
             Assert.AreEqual(true, serializer.CheckAdditionalContent);
@@ -1285,8 +1300,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             JsonSerializerSettings settings = new JsonSerializerSettings();
 
             DefaultSerializationBinder customBinder = new DefaultSerializationBinder();
+#pragma warning disable CS0618 // Type or member is obsolete
             settings.Binder = customBinder;
             Assert.AreEqual(customBinder, settings.Binder);
+#pragma warning restore CS0618 // Type or member is obsolete
 
             settings.CheckAdditionalContent = true;
             Assert.AreEqual(true, settings.CheckAdditionalContent);
@@ -1398,8 +1415,23 @@ namespace Newtonsoft.Json.Tests.Serialization
             JsonSerializerProxy serializerProxy = new JsonSerializerProxy(new JsonSerializerInternalReader(new JsonSerializer()));
 
             DefaultSerializationBinder customBinder = new DefaultSerializationBinder();
+#pragma warning disable CS0618 // Type or member is obsolete
             serializerProxy.Binder = customBinder;
             Assert.AreEqual(customBinder, serializerProxy.Binder);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            Assert.IsInstanceOf(typeof(SerializationBinderAdapter), serializerProxy.SerializationBinder);
+
+            serializerProxy.SerializationBinder = customBinder;
+            Assert.AreEqual(customBinder, serializerProxy.SerializationBinder);
+
+            ExceptionAssert.Throws<InvalidOperationException>(() =>
+            {
+#pragma warning disable CS0618 // Type or member is obsolete
+                var serializationBinder = serializerProxy.Binder;
+#pragma warning restore CS0618 // Type or member is obsolete
+                serializationBinder.ToString();
+            }, "Cannot get SerializationBinder because an ISerializationBinder was previously set.");
 
             serializerProxy.CheckAdditionalContent = true;
             Assert.AreEqual(true, serializerProxy.CheckAdditionalContent);

@@ -783,7 +783,7 @@ namespace Newtonsoft.Json.Serialization
                 Type specifiedType;
                 try
                 {
-                    specifiedType = Serializer._binder.BindToType(typeNameKey.AssemblyName, typeNameKey.TypeName);
+                    specifiedType = Serializer._serializationBinder.BindToType(typeNameKey.AssemblyName, typeNameKey.TypeName);
                 }
                 catch (Exception ex)
                 {

@@ -151,23 +151,9 @@ namespace Newtonsoft.Json.Utilities
             return (v != null) ? v.GetType() : null;
         }
 
-        public static string GetTypeName(Type t, TypeNameAssemblyFormatHandling assemblyFormat, SerializationBinder binder)
+        public static string GetTypeName(Type t, TypeNameAssemblyFormatHandling assemblyFormat, ISerializationBinder binder)
         {
-            string fullyQualifiedTypeName;
-#if !(NET20 || NET35)
-            if (binder != null)
-            {
-                string assemblyName, typeName;
-                binder.BindToName(t, out assemblyName, out typeName);
-                fullyQualifiedTypeName = typeName + (assemblyName == null ? "" : ", " + assemblyName);
-            }
-            else
-            {
-                fullyQualifiedTypeName = t.AssemblyQualifiedName;
-            }
-#else
-            fullyQualifiedTypeName = t.AssemblyQualifiedName;
-#endif
+            string fullyQualifiedTypeName = GetFullyQualifiedTypeName(t, binder);
 
             switch (assemblyFormat)
             {
@@ -178,6 +164,25 @@ namespace Newtonsoft.Json.Utilities
                 default:
                     throw new ArgumentOutOfRangeException();
             }
+        }
+
+        private static string GetFullyQualifiedTypeName(Type t, ISerializationBinder binder)
+        {
+            if (binder != null)
+            {
+                string assemblyName, typeName;
+                binder.BindToName(t, out assemblyName, out typeName);
+#if (NET20 || NET35)
+                // for older SerializationBinder implementations that didn't have BindToName
+                if (assemblyName == null & typeName == null)
+                {
+                    return t.AssemblyQualifiedName;
+                }
+#endif
+                return typeName + (assemblyName == null ? "" : ", " + assemblyName);
+            }
+
+            return t.AssemblyQualifiedName;
         }
 
         private static string RemoveAssemblyDetails(string fullyQualifiedTypeName)
