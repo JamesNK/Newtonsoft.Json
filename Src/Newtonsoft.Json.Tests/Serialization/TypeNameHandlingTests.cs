@@ -1301,8 +1301,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(message, Formatting.Indented, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
-                TypeNameAssemblyFormat = FormatterAssemblyStyle.Full,
 #pragma warning disable CS0618 // Type or member is obsolete
+                TypeNameAssemblyFormat = FormatterAssemblyStyle.Full,
                 Binder = new MetroBinder(),
 #pragma warning restore CS0618 // Type or member is obsolete
                 ContractResolver = new DefaultContractResolver
@@ -2015,7 +2015,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             JsonSerializerSettings serializerSettings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
+#pragma warning disable 618
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Simple
+#pragma warning restore 618
             };
 
             Dictionary<int, HashSet<string>> dictionary = new Dictionary<int, HashSet<string>>
@@ -2036,7 +2038,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             JsonSerializerSettings serializerSettings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.All,
+#pragma warning disable 618
                 TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+#pragma warning restore 618
             };
 
             Dictionary<int, HashSet<string>> dictionary = new Dictionary<int, HashSet<string>>
