@@ -433,7 +433,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
                 if (_expression[_currentIndex] == '$')
                 {
-                    expressionPath.Add(new RootFilter());
+                    expressionPath.Add(RootFilter.Instance);
                 }
                 else if (_expression[_currentIndex] != '@')
                 {

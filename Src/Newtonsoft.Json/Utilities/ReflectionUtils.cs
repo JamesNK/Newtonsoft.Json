@@ -170,7 +170,8 @@ namespace Newtonsoft.Json.Utilities
         {
             if (binder != null)
             {
-                string assemblyName, typeName;
+                string assemblyName;
+                string typeName;
                 binder.BindToName(t, out assemblyName, out typeName);
 #if (NET20 || NET35)
                 // for older SerializationBinder implementations that didn't have BindToName

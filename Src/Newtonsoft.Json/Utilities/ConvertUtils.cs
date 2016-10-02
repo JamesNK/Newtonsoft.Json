@@ -1065,7 +1065,7 @@ namespace Newtonsoft.Json.Utilities
                     }
 
                     // perform scaling
-                    var index = scale & 15;
+                    int index = scale & 15;
                     if (index != 0)
                     {
                         exp -= MultExp64Power10[index - 1] - 1;
@@ -1089,7 +1089,7 @@ namespace Newtonsoft.Json.Utilities
                     }
 
                     // perform scaling
-                    var index = scale & 15;
+                    int index = scale & 15;
                     if (index != 0)
                     {
                         exp += MultExp64Power10[index - 1];
@@ -1171,7 +1171,7 @@ namespace Newtonsoft.Json.Utilities
                 ulong b_hi = (b >> 32);
                 uint b_lo = (uint)b;
 
-                var result = a_hi * b_hi;
+                ulong result = a_hi * b_hi;
 
                 // save some multiplications if lo-parts aren't big enough to produce carry
                 // (hi-parts will be always big enough, since a and b are normalized)
@@ -1294,7 +1294,7 @@ namespace Newtonsoft.Json.Utilities
                                 return ParseResult.Invalid;
                             }
 
-                            var newExponent = (10 * exponent) + (c - '0');
+                            int newExponent = (10 * exponent) + (c - '0');
                             // stops updating exponent when overflowing
                             if (exponent < newExponent)
                             {

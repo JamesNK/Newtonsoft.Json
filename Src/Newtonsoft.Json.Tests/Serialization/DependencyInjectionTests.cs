@@ -209,7 +209,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             User user = JsonConvert.DeserializeObject<User>("{'company':{'company_name':'Company name!'}}", new JsonSerializerSettings
             {
                 ContractResolver = resolver
-
             });
 
             Assert.AreEqual("Company name!", user.Company.CompanyName);
