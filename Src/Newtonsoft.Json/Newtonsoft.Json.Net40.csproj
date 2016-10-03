@@ -114,6 +114,7 @@
     <Compile Include="FloatFormatHandling.cs" />
     <Compile Include="FloatParseHandling.cs" />
     <Compile Include="IArrayPool.cs" />
+    <Compile Include="IJsonStringConverter.cs" />
     <Compile Include="JsonDictionaryAttribute.cs" />
     <Compile Include="JsonException.cs" />
     <Compile Include="DateFormatHandling.cs" />

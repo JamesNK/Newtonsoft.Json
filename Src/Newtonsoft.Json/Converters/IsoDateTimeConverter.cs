@@ -32,7 +32,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="DateTime"/> to and from the ISO 8601 date format (e.g. 2008-04-12T12:53Z).
     /// </summary>
-    public class IsoDateTimeConverter : DateTimeConverterBase
+    public class IsoDateTimeConverter : DateTimeConverterBase, IJsonStringConverter
     {
         private const string DefaultDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
 
@@ -78,38 +78,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            string text;
-
-            if (value is DateTime)
-            {
-                DateTime dateTime = (DateTime)value;
-
-                if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
-                    || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
-                {
-                    dateTime = dateTime.ToUniversalTime();
-                }
-
-                text = dateTime.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
-            }
-#if !NET20
-            else if (value is DateTimeOffset)
-            {
-                DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
-                if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
-                    || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
-                {
-                    dateTimeOffset = dateTimeOffset.ToUniversalTime();
-                }
-
-                text = dateTimeOffset.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
-            }
-#endif
-            else
-            {
-                throw new JsonSerializationException("Unexpected value when converting date. Expected DateTime or DateTimeOffset, got {0}.".FormatWith(CultureInfo.InvariantCulture, ReflectionUtils.GetObjectType(value)));
-            }
-
+            string text = ConvertToString(value);
             writer.WriteValue(text);
         }
 
@@ -124,8 +93,12 @@ namespace Newtonsoft.Json.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             bool nullable = ReflectionUtils.IsNullableType(objectType);
-#if !NET20
-            Type t = (nullable)
+
+            Type t =
+#if NET20
+                objectType;
+#else
+                (nullable)
                 ? Nullable.GetUnderlyingType(objectType)
                 : objectType;
 #endif
@@ -163,9 +136,26 @@ namespace Newtonsoft.Json.Converters
                 throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected String, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
 
-            string dateText = reader.Value.ToString();
+            return ConvertFromStringInternal(reader.Value.ToString(), t, nullable);
+        }
 
-            if (string.IsNullOrEmpty(dateText) && nullable)
+        public object ConvertFromString(string value, Type objectType)
+        {
+            bool nullable = ReflectionUtils.IsNullableType(objectType);
+            Type t =
+#if NET20
+                objectType;
+#else
+                (nullable)
+                ? Nullable.GetUnderlyingType(objectType)
+                : objectType;
+#endif
+            return ConvertFromStringInternal(value, t, nullable);
+        }
+
+        private object ConvertFromStringInternal(string value, Type t, bool nullable)
+        {
+            if (string.IsNullOrEmpty(value) && nullable)
             {
                 return null;
             }
@@ -175,23 +165,47 @@ namespace Newtonsoft.Json.Converters
             {
                 if (!string.IsNullOrEmpty(_dateTimeFormat))
                 {
-                    return DateTimeOffset.ParseExact(dateText, _dateTimeFormat, Culture, _dateTimeStyles);
+                    return DateTimeOffset.ParseExact(value, _dateTimeFormat, Culture, _dateTimeStyles);
                 }
-                else
-                {
-                    return DateTimeOffset.Parse(dateText, Culture, _dateTimeStyles);
-                }
+                return DateTimeOffset.Parse(value, Culture, _dateTimeStyles);
             }
 #endif
 
             if (!string.IsNullOrEmpty(_dateTimeFormat))
             {
-                return DateTime.ParseExact(dateText, _dateTimeFormat, Culture, _dateTimeStyles);
+                return DateTime.ParseExact(value, _dateTimeFormat, Culture, _dateTimeStyles);
             }
-            else
+            return DateTime.Parse(value, Culture, _dateTimeStyles);
+        }
+
+        public string ConvertToString(object value)
+        {
+            if (value is DateTime)
             {
-                return DateTime.Parse(dateText, Culture, _dateTimeStyles);
+                DateTime dateTime = (DateTime)value;
+
+                if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
+                    || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
+                {
+                    dateTime = dateTime.ToUniversalTime();
+                }
+
+                return dateTime.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
             }
+#if !NET20
+            if (value is DateTimeOffset)
+            {
+                DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
+                if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
+                    || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
+                {
+                    dateTimeOffset = dateTimeOffset.ToUniversalTime();
+                }
+
+                return dateTimeOffset.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
+            }
+#endif
+            throw new JsonSerializationException("Unexpected value when converting date. Expected DateTime or DateTimeOffset, got {0}.".FormatWith(CultureInfo.InvariantCulture, ReflectionUtils.GetObjectType(value)));
         }
     }
 }

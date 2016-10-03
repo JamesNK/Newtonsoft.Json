@@ -549,6 +549,41 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void EnumDictionaryKeySerializationTest()
+        {
+            Dictionary<Bar, int> value = new Dictionary<Bar, int>
+            {
+                { Bar.FooBar, 9 },
+                { Bar.Bat, 8 },
+                { Bar.SerializeAsBaz, 7 }
+            };
+            string json = JsonConvert.SerializeObject(value, Formatting.Indented);
+
+            Assert.AreEqual(@"{
+  ""foo_bar"": 9,
+  ""Bat"": 8,
+  ""baz"": 7
+}", json);
+        }
+
+        [Test]
+        public void EnumDictionaryKeyDeserializationTest()
+        {
+            string json = @"{
+  ""foo_bar"": 9,
+  ""Bat"": 8,
+  ""baz"": 7
+}";
+
+            Dictionary<Bar, int> value = JsonConvert.DeserializeObject<Dictionary<Bar, int>>(json);
+
+            Assert.AreEqual(3, value.Count);
+            Assert.AreEqual(9, value[Bar.FooBar]);
+            Assert.AreEqual(8, value[Bar.Bat]);
+            Assert.AreEqual(7, value[Bar.SerializeAsBaz]);
+        }
+
+        [Test]
         public void DataContractSerializerDuplicateNameEnumTest()
         {
             MemoryStream ms = new MemoryStream();
