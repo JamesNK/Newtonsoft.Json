@@ -139,6 +139,12 @@ namespace Newtonsoft.Json.Converters
             return ConvertFromStringInternal(reader.Value.ToString(), t, nullable);
         }
 
+        /// <summary>
+        /// Converts the string representation of an object to that object.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="objectType"></param>
+        /// <returns></returns>
         public object ConvertFromString(string value, Type objectType)
         {
             bool nullable = ReflectionUtils.IsNullableType(objectType);
@@ -178,6 +184,11 @@ namespace Newtonsoft.Json.Converters
             return DateTime.Parse(value, Culture, _dateTimeStyles);
         }
 
+        /// <summary>
+        /// Converts the object to its string representation.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public string ConvertToString(object value)
         {
             if (value is DateTime)
