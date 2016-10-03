@@ -1129,6 +1129,13 @@ namespace Newtonsoft.Json.Serialization
         {
             string propertyName;
 
+            IJsonStringConverter jsonStringConverter = contract.Converter as IJsonStringConverter;
+            if (jsonStringConverter?.CanWrite == true)
+            {
+                escape = true;
+                return jsonStringConverter.ConvertToString(name);
+            }
+
             if (contract.ContractType == JsonContractType.Primitive)
             {
                 JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract)contract;

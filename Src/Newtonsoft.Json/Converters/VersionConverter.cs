@@ -32,7 +32,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="Version"/> to and from a string (e.g. <c>"1.2.3.4"</c>).
     /// </summary>
-    public class VersionConverter : JsonConverter
+    public class VersionConverter : JsonConverter, IJsonStringConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -54,6 +54,19 @@ namespace Newtonsoft.Json.Converters
             {
                 throw new JsonSerializationException("Expected Version object value");
             }
+        }
+
+        public string ConvertToString(object value)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+            if (value is Version)
+            {
+                return value.ToString();
+            }
+            throw new JsonSerializationException("Expected Version object value");
         }
 
         /// <summary>
@@ -89,6 +102,15 @@ namespace Newtonsoft.Json.Converters
                     throw JsonSerializationException.Create(reader, "Unexpected token or value when parsing version. Token: {0}, Value: {1}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType, reader.Value));
                 }
             }
+        }
+
+        public object ConvertFromString(string value, Type objectType)
+        {
+            if (value == null)
+            {
+                return null;
+            }
+            return new Version(value);
         }
 
         /// <summary>

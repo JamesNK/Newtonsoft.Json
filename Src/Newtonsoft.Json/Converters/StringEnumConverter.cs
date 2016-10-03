@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts an <see cref="Enum"/> to and from its name string value.
     /// </summary>
-    public class StringEnumConverter : JsonConverter
+    public class StringEnumConverter : JsonConverter, IJsonStringConverter
     {
         /// <summary>
         /// Gets or sets a value indicating whether the written enum text should be camel case.
@@ -88,6 +88,31 @@ namespace Newtonsoft.Json.Converters
                 writer.WriteNull();
                 return;
             }
+            string result;
+            if (TryConvertToString(value, false, out result))
+            {
+                writer.WriteValue(result);
+            }
+            else
+            {
+                writer.WriteValue(value);
+            }
+        }
+
+        public string ConvertToString(object value)
+        {
+            string result;
+            TryConvertToString(value, true, out result);
+            return result;
+        }
+
+        private bool TryConvertToString(object value, bool force, out string result)
+        {
+            if (value == null)
+            {
+                result = null;
+                return true;
+            }
 
             Enum e = (Enum)value;
 
@@ -96,16 +121,18 @@ namespace Newtonsoft.Json.Converters
             if (char.IsNumber(enumName[0]) || enumName[0] == '-')
             {
                 // enum value has no name so write number
-                writer.WriteValue(value);
+                if (force)
+                {
+                    result = enumName;
+                    return true;
+                }
+                result = null;
+                return false;
             }
-            else
-            {
-                Type enumType = e.GetType();
+            Type enumType = e.GetType();
 
-                string finalName = EnumUtils.ToEnumName(enumType, enumName, CamelCaseText);
-
-                writer.WriteValue(finalName);
-            }
+            result = EnumUtils.ToEnumName(enumType, enumName, CamelCaseText);
+            return true;
         }
 
         /// <summary>
@@ -118,9 +145,11 @@ namespace Newtonsoft.Json.Converters
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            bool isNullable = ReflectionUtils.IsNullableType(objectType);
+
             if (reader.TokenType == JsonToken.Null)
             {
-                if (!ReflectionUtils.IsNullableType(objectType))
+                if (!isNullable)
                 {
                     throw JsonSerializationException.Create(reader, "Cannot convert null value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
                 }
@@ -128,7 +157,6 @@ namespace Newtonsoft.Json.Converters
                 return null;
             }
 
-            bool isNullable = ReflectionUtils.IsNullableType(objectType);
             Type t = isNullable ? Nullable.GetUnderlyingType(objectType) : objectType;
 
             try
@@ -157,6 +185,19 @@ namespace Newtonsoft.Json.Converters
 
             // we don't actually expect to get here.
             throw JsonSerializationException.Create(reader, "Unexpected token {0} when parsing enum.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+        }
+
+        public object ConvertFromString(string value, Type objectType)
+        {
+            bool isNullable = ReflectionUtils.IsNullableType(objectType);
+            Type t = isNullable ? Nullable.GetUnderlyingType(objectType) : objectType;
+
+            if (value == null)
+            {
+                return null;
+            }
+
+            return EnumUtils.ParseEnumName(value, isNullable, t);
         }
 
         /// <summary>

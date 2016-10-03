@@ -1320,6 +1320,8 @@ namespace Newtonsoft.Json.Serialization
             }
 
             JsonConverter dictionaryValueConverter = contract.ItemConverter ?? GetConverter(contract.ItemContract, null, contract, containerProperty);
+            IJsonStringConverter dictionaryKeyConverter = (contract.KeyContract?.Converter ?? GetConverter(contract.KeyContract, null, contract, containerProperty)) as IJsonStringConverter;
+            Type keyType = contract.DictionaryKeyType;
             JsonPrimitiveContract keyContract = contract.KeyContract as JsonPrimitiveContract;
             PrimitiveTypeCode keyTypeCode = (keyContract != null) ? keyContract.TypeCode : PrimitiveTypeCode.Empty;
 
@@ -1339,42 +1341,43 @@ namespace Newtonsoft.Json.Serialization
                         {
                             try
                             {
-                                // this is for correctly reading ISO and MS formatted dictionary keys
-                                switch (keyTypeCode)
+                                if (dictionaryKeyConverter?.CanRead == true)
                                 {
-                                    case PrimitiveTypeCode.DateTime:
-                                    case PrimitiveTypeCode.DateTimeNullable:
+                                    keyValue = dictionaryKeyConverter.ConvertFromString(keyValue?.ToString(), keyType);
+                                }
+                                else
+                                {
+                                    // this is for correctly reading ISO and MS formatted dictionary keys
+                                    switch (keyTypeCode)
                                     {
-                                        DateTime dt;
-                                        if (DateTimeUtils.TryParseDateTime(keyValue.ToString(), reader.DateTimeZoneHandling, reader.DateFormatString, reader.Culture, out dt))
-                                        {
-                                            keyValue = dt;
-                                        }
-                                        else
-                                        {
-                                            keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
-                                        }
-                                        break;
-                                    }
+                                        case PrimitiveTypeCode.DateTime:
+                                        case PrimitiveTypeCode.DateTimeNullable:
+                                            {
+                                                DateTime dt;
+                                                if (DateTimeUtils.TryParseDateTime(keyValue.ToString(), reader.DateTimeZoneHandling, reader.DateFormatString, reader.Culture, out dt))
+                                                {
+                                                    keyValue = dt;
+                                                    break;
+                                                }
+                                                goto default;
+                                            }
 #if !NET20
-                                    case PrimitiveTypeCode.DateTimeOffset:
-                                    case PrimitiveTypeCode.DateTimeOffsetNullable:
-                                    {
-                                        DateTimeOffset dt;
-                                        if (DateTimeUtils.TryParseDateTimeOffset(keyValue.ToString(), reader.DateFormatString, reader.Culture, out dt))
-                                        {
-                                            keyValue = dt;
-                                        }
-                                        else
-                                        {
-                                            keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
-                                        }
-                                        break;
-                                    }
+                                        case PrimitiveTypeCode.DateTimeOffset:
+                                        case PrimitiveTypeCode.DateTimeOffsetNullable:
+                                            {
+                                                DateTimeOffset dt;
+                                                if (DateTimeUtils.TryParseDateTimeOffset(keyValue.ToString(), reader.DateFormatString, reader.Culture, out dt))
+                                                {
+                                                    keyValue = dt;
+                                                    break;
+                                                }
+                                                goto default;
+                                            }
 #endif
-                                    default:
-                                        keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
-                                        break;
+                                        default:
+                                            keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType);
+                                            break;
+                                    }
                                 }
                             }
                             catch (Exception ex)

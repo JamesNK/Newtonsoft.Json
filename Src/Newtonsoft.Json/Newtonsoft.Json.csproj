@@ -66,6 +66,7 @@
     <Compile Include="Converters\EntityKeyMemberConverter.cs" />
     <Compile Include="Converters\ExpandoObjectConverter.cs" />
     <Compile Include="Converters\IsoDateTimeConverter.cs" />
+    <Compile Include="IJsonStringConverter.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
     <Compile Include="Converters\KeyValuePairConverter.cs" />
     <Compile Include="Converters\RegexConverter.cs" />
