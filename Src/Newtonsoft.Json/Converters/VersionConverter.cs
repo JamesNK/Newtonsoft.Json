@@ -56,6 +56,11 @@ namespace Newtonsoft.Json.Converters
             }
         }
 
+        /// <summary>
+        /// Converts the object to its string representation.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public string ConvertToString(object value)
         {
             if (value == null)
@@ -104,6 +109,12 @@ namespace Newtonsoft.Json.Converters
             }
         }
 
+        /// <summary>
+        /// Converts the string representation of an object to that object.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="objectType"></param>
+        /// <returns></returns>
         public object ConvertFromString(string value, Type objectType)
         {
             if (value == null)

@@ -97,6 +97,11 @@ namespace Newtonsoft.Json.Converters
             }
         }
 
+        /// <summary>
+        /// Converts the object to its string representation.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
         public string ConvertToString(object value)
         {
             string result;
@@ -184,6 +189,12 @@ namespace Newtonsoft.Json.Converters
             throw JsonSerializationException.Create(reader, "Unexpected token {0} when parsing enum.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
         }
 
+        /// <summary>
+        /// Converts the string representation of an object to that object.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="objectType"></param>
+        /// <returns></returns>
         public object ConvertFromString(string value, Type objectType)
         {
             bool isNullable = ReflectionUtils.IsNullableType(objectType);
