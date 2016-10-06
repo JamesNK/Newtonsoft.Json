@@ -62,6 +62,19 @@ namespace Newtonsoft.Json.Tests
     public class JsonTextReaderTest : TestFixtureBase
     {
         [Test]
+        public void Float_ReadAsString_Exact()
+        {
+            const string testJson = "{float: 0.0620}";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(testJson));
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+
+            string s = reader.ReadAsString();
+            Assert.AreEqual("0.0620", s);
+        }
+
+        [Test]
         public void Float_NaN_Read()
         {
             const string testJson = "{float: NaN}";
