@@ -111,7 +111,6 @@
     <Compile Include="Converters\BinaryConverterTests.cs" />
     <Compile Include="Converters\DiscriminatedUnionConverterTests.cs" />
     <Compile Include="Converters\ExpandoObjectConverterTests.cs" />
-    <Compile Include="Converters\JsonValueConverterTests.cs" />
     <Compile Include="Converters\KeyValuePairConverterTests.cs" />
     <Compile Include="Converters\RegexConverterTests.cs" />
     <Compile Include="Converters\DataTableConverterTests.cs" />
@@ -223,7 +222,6 @@
     <Compile Include="Documentation\Samples\Xml\ConvertXmlToJson.cs" />
     <Compile Include="Documentation\Samples\Xml\ConvertXmlToJsonForceArray.cs" />
     <Compile Include="Documentation\TraceWriterTests.cs" />
-    <Compile Include="Documentation\JsonNetVsWindowsDataJsonTests.cs" />
     <Compile Include="Documentation\PerformanceTests.cs" />
     <Compile Include="Documentation\JsonSchemaTests.cs" />
     <Compile Include="Documentation\ReadingAndWritingJsonTests.cs" />

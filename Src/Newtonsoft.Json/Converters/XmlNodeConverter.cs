@@ -31,7 +31,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
-using System.Reflection;
 using Newtonsoft.Json.Serialization;
 #if !(NET20 || PORTABLE40)
 using System.Xml.Linq;

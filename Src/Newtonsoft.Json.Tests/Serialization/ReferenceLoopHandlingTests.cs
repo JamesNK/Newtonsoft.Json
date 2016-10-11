@@ -27,11 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-#if NETFX_CORE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
-using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -155,7 +151,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
         }
 
-#if !(PORTABLE || DNXCORE50 || NETFX_CORE || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40)
         public class MainClass : ISerializable
         {
             public ChildClass Child { get; set; }
@@ -313,13 +309,8 @@ namespace Newtonsoft.Json.Tests.Serialization
 
         int IEqualityComparer.GetHashCode(object obj)
         {
-#if !(NETFX_CORE)
             // put objects in a bucket based on their reference
             return RuntimeHelpers.GetHashCode(obj);
-#else
-    // put all objects in the same bucket so ReferenceEquals is called on all
-            return -1;
-#endif
         }
     }
 

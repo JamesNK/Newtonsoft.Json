@@ -38,7 +38,7 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NETFX_CORE || NET35 || NET20 || PORTABLE || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
     [TypeConverter(typeof(MyInterfaceConverter))]
     internal interface IMyInterface
     {
