@@ -41,19 +41,4 @@ namespace Newtonsoft.Json.Tests.TestObjects
             get { return _value; }
         }
     }
-
-    public class PublicParameterizedConstructorWithPropertyNameConflictWithAttribute
-    {
-        private readonly int _value;
-
-        public PublicParameterizedConstructorWithPropertyNameConflictWithAttribute([JsonProperty("name")] string nameParameter)
-        {
-            _value = Convert.ToInt32(nameParameter);
-        }
-
-        public int Name
-        {
-            get { return _value; }
-        }
-    }
 }

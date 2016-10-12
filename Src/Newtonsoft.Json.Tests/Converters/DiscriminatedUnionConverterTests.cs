@@ -34,6 +34,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Tests.TestObjects;
+using Newtonsoft.Json.Tests.TestObjects.GeometricForms;
+using Newtonsoft.Json.Tests.TestObjects.Money;
 using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Converters
@@ -238,7 +240,7 @@ namespace Newtonsoft.Json.Tests.Converters
                 10.0, 5.0
             });
 
-            Assert.AreEqual("Newtonsoft.Json.Tests.TestObjects.Shape+Rectangle", value.ToString());
+            Assert.AreEqual("Newtonsoft.Json.Tests.TestObjects.GeometricForms.Shape+Rectangle", value.ToString());
             Assert.AreEqual(10, value.width);
             Assert.AreEqual(5, value.length);
         }

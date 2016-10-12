@@ -47,6 +47,7 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Tests.TestObjects;
 using System.Globalization;
+using Newtonsoft.Json.Tests.TestObjects.GeoCoding;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else

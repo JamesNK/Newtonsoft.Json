@@ -23,18 +23,13 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || NETFX_CORE || DNXCORE50)
+#if !(NET35 || NET20 || DNXCORE50)
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using Microsoft.FSharp.Core;
 
-namespace Newtonsoft.Json.Tests.TestObjects
+namespace Newtonsoft.Json.Tests.TestObjects.GeometricForms
 {
     [Serializable, DebuggerDisplay("{__DebugDisplay(),nq}"), CompilationMapping(SourceConstructFlags.SumType)]
     public class Shape
@@ -211,15 +206,6 @@ namespace Newtonsoft.Json.Tests.TestObjects
                 [CompilerGenerated, DebuggerNonUserCode]
                 get { return this._width; }
             }
-        }
-
-        public static class Tags
-        {
-            // Fields
-            public const int Circle = 1;
-            public const int Empty = 3;
-            public const int Prism = 2;
-            public const int Rectangle = 0;
         }
     }
 }

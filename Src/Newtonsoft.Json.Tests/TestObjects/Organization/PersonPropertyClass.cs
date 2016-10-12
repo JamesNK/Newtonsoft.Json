@@ -23,11 +23,15 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace Newtonsoft.Json.Tests.TestObjects
+namespace Newtonsoft.Json.Tests.TestObjects.Organization
 {
-    public class WagePerson : Person
+    public class PersonPropertyClass
     {
-        [JsonProperty]
-        public decimal HourlyWage { get; set; }
+        public Person Person { get; set; }
+
+        public PersonPropertyClass()
+        {
+            Person = new WagePerson();
+        }
     }
 }

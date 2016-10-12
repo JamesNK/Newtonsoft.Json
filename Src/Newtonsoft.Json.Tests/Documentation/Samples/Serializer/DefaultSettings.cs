@@ -37,7 +37,7 @@ using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.Serialization;
-using Staff = Newtonsoft.Json.Tests.TestObjects.Employee;
+using Staff = Newtonsoft.Json.Tests.TestObjects.Organization.Employee;
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 {
