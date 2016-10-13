@@ -42,6 +42,7 @@ using System.Linq;
 #endif
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
+using Newtonsoft.Json.Tests.TestObjects.Organization;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;

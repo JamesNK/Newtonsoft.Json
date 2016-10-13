@@ -36,6 +36,7 @@ using System.Threading.Tasks;
 using Autofac.Core;
 using Autofac.Core.Activators.Reflection;
 using Microsoft.FSharp.Collections;
+using Newtonsoft.Json.Tests.TestObjects.Organization;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;

@@ -65,6 +65,9 @@ using System.Runtime.Serialization.Json;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
+using Newtonsoft.Json.Tests.TestObjects.Events;
+using Newtonsoft.Json.Tests.TestObjects.GeoCoding;
+using Newtonsoft.Json.Tests.TestObjects.Organization;
 using System.Runtime.Serialization;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
@@ -3862,7 +3865,7 @@ keyword such as type of business.""
         {
             string json = @"{""sublocation"":""AlertEmailSender.Program.Main"",""userId"":0,""type"":0,""summary"":""Loading settings variables"",""details"":null,""stackTrace"":""   at System.Environment.GetStackTrace(Exception e, Boolean needFileInfo)\r\n   at System.Environment.get_StackTrace()\r\n   at mr.Logging.Event..ctor(String summary) in C:\\Projects\\MRUtils\\Logging\\Event.vb:line 71\r\n   at AlertEmailSender.Program.Main(String[] args) in C:\\Projects\\AlertEmailSender\\AlertEmailSender\\Program.cs:line 25"",""tag"":null,""time"":""\/Date(1249591032026-0400)\/""}";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<TestObjects.Event>(json); }, @"Unable to find a constructor to use for type Newtonsoft.Json.Tests.TestObjects.Event. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Path 'sublocation', line 1, position 15.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Event>(json); }, @"Unable to find a constructor to use for type Newtonsoft.Json.Tests.TestObjects.Events.Event. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Path 'sublocation', line 1, position 15.");
         }
 
         [Test]
@@ -3901,7 +3904,7 @@ keyword such as type of business.""
         {
             string json = @"[]";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Person>(json); }, @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'Newtonsoft.Json.Tests.TestObjects.Person' because the type requires a JSON object (e.g. {""name"":""value""}) to deserialize correctly.
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Person>(json); }, @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type 'Newtonsoft.Json.Tests.TestObjects.Organization.Person' because the type requires a JSON object (e.g. {""name"":""value""}) to deserialize correctly.
 To fix this error either change the JSON to a JSON object (e.g. {""name"":""value""}) or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array.
 Path '', line 1, position 1.");
         }
@@ -3971,7 +3974,7 @@ Path '', line 1, position 1.");
         {
             string json = @"new Constructor(123)";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Person>(json); }, @"Error converting value ""Constructor"" to type 'Newtonsoft.Json.Tests.TestObjects.Person'. Path '', line 1, position 16.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Person>(json); }, @"Error converting value ""Constructor"" to type 'Newtonsoft.Json.Tests.TestObjects.Organization.Person'. Path '', line 1, position 16.");
         }
 
         [Test]
@@ -3979,7 +3982,7 @@ Path '', line 1, position 1.");
         {
             string json = @"[new Constructor(123)]";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<List<Person>>(json); }, @"Error converting value ""Constructor"" to type 'Newtonsoft.Json.Tests.TestObjects.Person'. Path '[0]', line 1, position 17.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<List<Person>>(json); }, @"Error converting value ""Constructor"" to type 'Newtonsoft.Json.Tests.TestObjects.Organization.Person'. Path '[0]', line 1, position 17.");
         }
 
         [Test]
@@ -3994,7 +3997,7 @@ Path '', line 1, position 1.");
             }
             catch (JsonSerializationException ex)
             {
-                Assert.IsTrue(ex.Message.StartsWith(@"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]' because the type requires a JSON array (e.g. [1,2,3]) to deserialize correctly." + Environment.NewLine +
+                Assert.IsTrue(ex.Message.StartsWith(@"Cannot deserialize the current JSON object (e.g. {""name"":""value""}) into type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Organization.Person]' because the type requires a JSON array (e.g. [1,2,3]) to deserialize correctly." + Environment.NewLine +
                                                     @"To fix this error either change the JSON to a JSON array (e.g. [1,2,3]) or change the deserialized type so that it is a normal .NET type (e.g. not a primitive type like integer, not a collection type like an array or List<T>) that can be deserialized from a JSON object. JsonObjectAttribute can also be added to the type to force it to deserialize from a JSON object." + Environment.NewLine +
                                                     @"Path ''"));
             }
@@ -4005,7 +4008,7 @@ Path '', line 1, position 1.");
         {
             string json = @"[]";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.PopulateObject(json, new Person()); }, @"Cannot populate JSON array onto type 'Newtonsoft.Json.Tests.TestObjects.Person'. Path '', line 1, position 1.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.PopulateObject(json, new Person()); }, @"Cannot populate JSON array onto type 'Newtonsoft.Json.Tests.TestObjects.Organization.Person'. Path '', line 1, position 1.");
         }
 
         [Test]
@@ -4013,7 +4016,7 @@ Path '', line 1, position 1.");
         {
             string json = @"{}";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.PopulateObject(json, new List<Person>()); }, @"Cannot populate JSON object onto type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Person]'. Path '', line 1, position 2.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.PopulateObject(json, new List<Person>()); }, @"Cannot populate JSON object onto type 'System.Collections.Generic.List`1[Newtonsoft.Json.Tests.TestObjects.Organization.Person]'. Path '', line 1, position 2.");
         }
 
         [Test]
@@ -4196,8 +4199,8 @@ Path '', line 1, position 1.");
             string json = JsonConvert.SerializeObject(dictionary, Formatting.Indented);
 
             StringAssert.AreEqual(@"{
-  ""Newtonsoft.Json.Tests.TestObjects.Person"": 1,
-  ""Newtonsoft.Json.Tests.TestObjects.Person"": 2
+  ""Newtonsoft.Json.Tests.TestObjects.Organization.Person"": 1,
+  ""Newtonsoft.Json.Tests.TestObjects.Organization.Person"": 2
 }", json);
         }
 
@@ -4208,8 +4211,8 @@ Path '', line 1, position 1.");
             {
                 string json =
                     @"{
-  ""Newtonsoft.Json.Tests.TestObjects.Person"": 1,
-  ""Newtonsoft.Json.Tests.TestObjects.Person"": 2
+  ""Newtonsoft.Json.Tests.TestObjects.Organization.Person"": 1,
+  ""Newtonsoft.Json.Tests.TestObjects.Organization.Person"": 2
 }";
 
                 JsonConvert.DeserializeObject<Dictionary<Person, int>>(json);
@@ -4217,7 +4220,7 @@ Path '', line 1, position 1.");
             }
             catch (JsonSerializationException ex)
             {
-                Assert.IsTrue(ex.Message.StartsWith("Could not convert string 'Newtonsoft.Json.Tests.TestObjects.Person' to dictionary key type 'Newtonsoft.Json.Tests.TestObjects.Person'. Create a TypeConverter to convert from the string to the key type object. Path '['Newtonsoft.Json.Tests.TestObjects.Person']'"));
+                Assert.IsTrue(ex.Message.StartsWith("Could not convert string 'Newtonsoft.Json.Tests.TestObjects.Organization.Person' to dictionary key type 'Newtonsoft.Json.Tests.TestObjects.Organization.Person'. Create a TypeConverter to convert from the string to the key type object. Path '['Newtonsoft.Json.Tests.TestObjects.Organization.Person']'"));
             }
         }
 

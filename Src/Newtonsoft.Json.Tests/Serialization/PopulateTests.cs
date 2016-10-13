@@ -27,6 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Tests.TestObjects;
+using Newtonsoft.Json.Tests.TestObjects.Organization;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;

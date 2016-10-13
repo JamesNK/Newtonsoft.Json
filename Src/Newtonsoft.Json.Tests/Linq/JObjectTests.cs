@@ -32,6 +32,7 @@ using System.Numerics;
 #endif
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
+using Newtonsoft.Json.Tests.TestObjects.Organization;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;

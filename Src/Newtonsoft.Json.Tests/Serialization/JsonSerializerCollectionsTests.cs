@@ -40,9 +40,12 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 using System.Linq;
 #endif
 using System.Text;
+using System.Xml;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
+using Newtonsoft.Json.Tests.TestObjects.Events;
+using Newtonsoft.Json.Tests.TestObjects.Organization;
 using Newtonsoft.Json.Utilities;
 #if DNXCORE50
 using Xunit;
@@ -1562,17 +1565,17 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""$type"": """ + ReflectionUtils.GetTypeName(typeof(List<Event1[,]>), 0, DefaultSerializationBinder.Instance) + @""",
   ""$values"": [
     {
-      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Event1[,], Newtonsoft.Json.Tests"",
+      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Events.Event1[,], Newtonsoft.Json.Tests"",
       ""$values"": [
         [
           {
-            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Event1, Newtonsoft.Json.Tests"",
+            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Events.Event1, Newtonsoft.Json.Tests"",
             ""EventName"": ""EventName!"",
             ""Venue"": null,
             ""Performances"": null
           },
           {
-            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Event1, Newtonsoft.Json.Tests"",
+            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Events.Event1, Newtonsoft.Json.Tests"",
             ""EventName"": ""EventName!"",
             ""Venue"": null,
             ""Performances"": null
@@ -1580,13 +1583,13 @@ namespace Newtonsoft.Json.Tests.Serialization
         ],
         [
           {
-            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Event1, Newtonsoft.Json.Tests"",
+            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Events.Event1, Newtonsoft.Json.Tests"",
             ""EventName"": ""EventName!"",
             ""Venue"": null,
             ""Performances"": null
           },
           {
-            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Event1, Newtonsoft.Json.Tests"",
+            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Events.Event1, Newtonsoft.Json.Tests"",
             ""EventName"": ""EventName!"",
             ""Venue"": null,
             ""Performances"": null
@@ -1595,17 +1598,17 @@ namespace Newtonsoft.Json.Tests.Serialization
       ]
     },
     {
-      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Event1[,], Newtonsoft.Json.Tests"",
+      ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Events.Event1[,], Newtonsoft.Json.Tests"",
       ""$values"": [
         [
           {
-            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Event1, Newtonsoft.Json.Tests"",
+            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Events.Event1, Newtonsoft.Json.Tests"",
             ""EventName"": ""EventName!"",
             ""Venue"": null,
             ""Performances"": null
           },
           {
-            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Event1, Newtonsoft.Json.Tests"",
+            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Events.Event1, Newtonsoft.Json.Tests"",
             ""EventName"": ""EventName!"",
             ""Venue"": null,
             ""Performances"": null
@@ -1613,13 +1616,13 @@ namespace Newtonsoft.Json.Tests.Serialization
         ],
         [
           {
-            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Event1, Newtonsoft.Json.Tests"",
+            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Events.Event1, Newtonsoft.Json.Tests"",
             ""EventName"": ""EventName!"",
             ""Venue"": null,
             ""Performances"": null
           },
           {
-            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Event1, Newtonsoft.Json.Tests"",
+            ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Events.Event1, Newtonsoft.Json.Tests"",
             ""EventName"": ""EventName!"",
             ""Venue"": null,
             ""Performances"": null

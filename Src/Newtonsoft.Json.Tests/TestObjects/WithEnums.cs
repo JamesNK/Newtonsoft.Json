@@ -30,11 +30,4 @@ namespace Newtonsoft.Json.Tests.TestObjects
         public int Id { get; set; }
         public MyEnum? NullableEnum { get; set; }
     }
-
-    public enum MyEnum
-    {
-        Value1,
-        Value2,
-        Value3
-    }
 }

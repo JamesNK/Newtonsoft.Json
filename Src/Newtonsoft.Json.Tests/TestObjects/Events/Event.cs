@@ -25,20 +25,8 @@
 
 using System;
 
-namespace Newtonsoft.Json.Tests.TestObjects
+namespace Newtonsoft.Json.Tests.TestObjects.Events
 {
-    /// <summary>
-    /// What types of events are there? Just sticking to a basic set of four for now.
-    /// </summary>
-    /// <remarks></remarks>
-    public enum EventType
-    {
-        Debug = 0,
-        Info = 1,
-        Warning = 2,
-        Error = 3
-    }
-
     public sealed class Event
     {
         /// <summary>

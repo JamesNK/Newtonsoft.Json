@@ -43,6 +43,7 @@ using System.Runtime.Serialization.Formatters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
+using Newtonsoft.Json.Tests.TestObjects.Organization;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -208,7 +209,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             var result = sw.ToString();
 
             StringAssert.AreEqual(@"{
-  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Organization.WagePerson, Newtonsoft.Json.Tests"",
   ""HourlyWage"": 0.0,
   ""Name"": null,
   ""BirthDate"": ""0001-01-01T00:00:00"",
@@ -233,7 +234,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             });
 
             StringAssert.AreEqual(@"{
-  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Organization.WagePerson, Newtonsoft.Json.Tests"",
   ""HourlyWage"": 0.0,
   ""Name"": null,
   ""BirthDate"": ""0001-01-01T00:00:00"",
@@ -250,7 +251,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             });
 
             StringAssert.AreEqual(@"{
-  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Organization.WagePerson, Newtonsoft.Json.Tests"",
   ""HourlyWage"": 0.0,
   ""Name"": null,
   ""BirthDate"": ""0001-01-01T00:00:00"",
@@ -266,7 +267,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 TypeNameHandling = TypeNameHandling.Auto
             });
 
-            StringAssert.AreEqual(@"{""$type"":""Newtonsoft.Json.Tests.TestObjects.WagePerson, Newtonsoft.Json.Tests"",""HourlyWage"":0.0,""Name"":null,""BirthDate"":""0001-01-01T00:00:00"",""LastModified"":""0001-01-01T00:00:00""}", json);
+            StringAssert.AreEqual(@"{""$type"":""Newtonsoft.Json.Tests.TestObjects.Organization.WagePerson, Newtonsoft.Json.Tests"",""HourlyWage"":0.0,""Name"":null,""BirthDate"":""0001-01-01T00:00:00"",""LastModified"":""0001-01-01T00:00:00""}", json);
         }
 
         public class Wrapper
@@ -1381,7 +1382,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     ""MyProperty"": 0
   },
   {
-    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Employee, Newtonsoft.Json.Tests"",
+    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Organization.Employee, Newtonsoft.Json.Tests"",
     ""FirstName"": null,
     ""LastName"": null,
     ""BirthDate"": ""2000-12-12T12:12:12Z"",

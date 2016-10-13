@@ -24,13 +24,12 @@
 #endregion
 
 #if !(NET35 || NET20 || DNXCORE50)
-using Microsoft.FSharp.Core;
 using System;
-using System.Collections;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
+using Microsoft.FSharp.Core;
 
-namespace Newtonsoft.Json.Tests.TestObjects
+namespace Newtonsoft.Json.Tests.TestObjects.Money
 {
     [Serializable, DebuggerDisplay("{__DebugDisplay(),nq}"), CompilationMapping(SourceConstructFlags.SumType)]
     public class Currency
@@ -158,17 +157,6 @@ namespace Newtonsoft.Json.Tests.TestObjects
             [CompilationMapping(SourceConstructFlags.UnionCase, 3)]
             get { return _unique_USD; }
         }
-
-        public static class Tags
-        {
-            public const int AUD = 1;
-            public const int EUR = 4;
-            public const int JPY = 5;
-            public const int LocalCurrency = 0;
-            public const int NZD = 2;
-            public const int USD = 3;
-        }
     }
 }
-
 #endif
