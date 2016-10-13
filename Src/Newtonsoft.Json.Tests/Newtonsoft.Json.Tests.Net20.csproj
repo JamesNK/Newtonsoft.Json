@@ -88,6 +88,11 @@
     <Compile Include="Converters\VersionConverterTests.cs" />
     <Compile Include="JsonArrayAttributeTests.cs" />
     <Compile Include="ExceptionTests.cs" />
+    <Compile Include="JsonTextReaderTests\ExceptionHandlingTests.cs" />
+    <Compile Include="JsonTextReaderTests\FloatTests.cs" />
+    <Compile Include="JsonTextReaderTests\MiscTests.cs" />
+    <Compile Include="JsonTextReaderTests\ParseTests.cs" />
+    <Compile Include="JsonTextReaderTests\ReadTests.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
     <Compile Include="Linq\ComponentModel\BindingTests.cs" />
     <Compile Include="Linq\ComponentModel\JPropertyDescriptorTests.cs" />
@@ -166,6 +171,10 @@
     <Compile Include="TestObjects\Item.cs" />
     <Compile Include="TestObjects\JsonPropertyClass.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />
+    <Compile Include="TestObjects\JsonTextReaderTests\FakeArrayPool.cs" />
+    <Compile Include="TestObjects\JsonTextReaderTests\SlowStream.cs" />
+    <Compile Include="TestObjects\JsonTextReaderTests\ToggleReaderError.cs" />
+    <Compile Include="TestObjects\JsonTextReaderTests\UnmanagedResourceFakingJsonReader.cs" />
     <Compile Include="TestObjects\ListOfIds.cs" />
     <Compile Include="TestObjects\ListTestClass.cs" />
     <Compile Include="TestObjects\LogEntry.cs" />
@@ -288,7 +297,6 @@
     <Compile Include="Converters\IsoDateTimeConverterTests.cs" />
     <Compile Include="JsonConvertTest.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverterTests.cs" />
-    <Compile Include="JsonTextReaderTest.cs" />
     <Compile Include="JsonTextWriterTest.cs" />
     <Compile Include="Linq\JTokenReaderTest.cs" />
     <Compile Include="Linq\JTokenWriterTest.cs" />

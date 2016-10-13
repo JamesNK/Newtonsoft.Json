@@ -46,6 +46,7 @@ using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Tests.TestObjects.JsonTextReaderTests;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests
@@ -56,7 +57,7 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void BufferTest()
         {
-            JsonTextReaderTest.FakeArrayPool arrayPool = new JsonTextReaderTest.FakeArrayPool();
+            FakeArrayPool arrayPool = new FakeArrayPool();
 
             string longString = new string('A', 2000);
             string longEscapedString = "Hello!" + new string('!', 50) + new string('\n', 1000) + "Good bye!";
@@ -100,7 +101,7 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void BufferTest_WithError()
         {
-            JsonTextReaderTest.FakeArrayPool arrayPool = new JsonTextReaderTest.FakeArrayPool();
+            FakeArrayPool arrayPool = new FakeArrayPool();
 
             StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
 
