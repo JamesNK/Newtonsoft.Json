@@ -59,7 +59,6 @@
     <Compile Include="Converters\ExpandoObjectConverterTests.cs" />
     <Compile Include="Converters\IsoDateTimeConverterTests.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverterTests.cs" />
-    <Compile Include="Converters\JsonValueConverterTests.cs" />
     <Compile Include="Converters\KeyValuePairConverterTests.cs" />
     <Compile Include="Converters\ObjectIdConverterTests.cs" />
     <Compile Include="Converters\RegexConverterTests.cs" />
@@ -69,7 +68,6 @@
     <Compile Include="DemoTests.cs" />
     <Compile Include="Documentation\ConditionalPropertiesTests.cs" />
     <Compile Include="Documentation\ConvertingJsonAndXmlTests.cs" />
-    <Compile Include="Documentation\JsonNetVsWindowsDataJsonTests.cs" />
     <Compile Include="Documentation\JsonSchemaTests.cs" />
     <Compile Include="Documentation\LinqToJsonTests.cs" />
     <Compile Include="Documentation\PerformanceTests.cs" />

@@ -33,11 +33,7 @@ using System.Numerics;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Tests.TestObjects.Organization;
-#if NETFX_CORE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
-using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -47,7 +43,7 @@ using NUnit.Framework;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Collections;
-#if !(NETFX_CORE || DNXCORE50)
+#if !(DNXCORE50)
 using System.Web.UI;
 #endif
 #if NET20
@@ -1263,7 +1259,7 @@ Parameter name: arrayIndex");
             }, "Can not add property Test3 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.");
         }
 
-#if !(NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40)
         [Test]
         public void IBindingListSortDirection()
         {
@@ -1587,7 +1583,7 @@ Parameter name: arrayIndex");
             Assert.AreEqual("Name2", value);
         }
 
-#if !(NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40)
         [Test]
         public void WriteObjectNullDBNullValue()
         {
@@ -1699,7 +1695,7 @@ Parameter name: arrayIndex");
             }, "Unexpected end of content while loading JObject. Path 'short.error.code', line 6, position 14.");
         }
 
-#if !(NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40)
         [Test]
         public void GetProperties()
         {

@@ -28,11 +28,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
 using System.Runtime.Serialization;
-#if NETFX_CORE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
-using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -569,7 +565,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", startingWithB);
         }
 
-#if !(NETFX_CORE || PORTABLE || PORTABLE40)
+#if !(PORTABLE || PORTABLE40)
 #pragma warning disable 618
         [Test]
         public void SerializeCompilerGeneratedMembers()

@@ -32,11 +32,7 @@ using Newtonsoft.Json.Tests.TestObjects;
 using System.Numerics;
 #endif
 using System.Text;
-#if NETFX_CORE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
-using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -154,7 +150,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual("Pie", v.Value);
             Assert.AreEqual(JTokenType.String, v.Type);
 
-#if !(NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40)
             v.Value = DBNull.Value;
             Assert.AreEqual(DBNull.Value, v.Value);
             Assert.AreEqual(JTokenType.Null, v.Type);
@@ -498,7 +494,7 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 #endif
 
-#if !(NETFX_CORE || PORTABLE)
+#if !(PORTABLE)
         [Test]
         public void ConvertsToBoolean()
         {

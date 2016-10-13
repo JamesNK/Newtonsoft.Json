@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE || DNXCORE50 || PORTABLE40)
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
@@ -31,11 +31,7 @@ using System.Data;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
-#if NETFX_CORE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
-using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;

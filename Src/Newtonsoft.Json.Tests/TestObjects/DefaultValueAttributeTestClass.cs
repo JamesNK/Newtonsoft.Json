@@ -27,7 +27,7 @@ using System.ComponentModel;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NETFX_CORE || DNXCORE50)
+#if !(DNXCORE50)
     [Description("DefaultValueAttributeTestClass description!")]
 #endif
     public sealed class DefaultValueAttributeTestClass

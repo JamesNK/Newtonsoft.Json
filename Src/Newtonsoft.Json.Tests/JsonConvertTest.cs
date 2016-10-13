@@ -44,11 +44,7 @@ using Newtonsoft.Json.Tests.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Tests.TestObjects.Organization;
 using Newtonsoft.Json.Utilities;
-#if NETFX_CORE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
-using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -611,7 +607,7 @@ namespace Newtonsoft.Json.Tests
             value = null;
             Assert.AreEqual("null", JsonConvert.ToString(value));
 
-#if !(NETFX_CORE || PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40)
             value = DBNull.Value;
             Assert.AreEqual("null", JsonConvert.ToString(value));
 #endif
@@ -908,8 +904,7 @@ namespace Newtonsoft.Json.Tests
             }
 
             TestDateTimeFormat(value, new IsoDateTimeConverter());
-
-#if !NETFX_CORE
+            
             if (value is DateTime)
             {
                 Console.WriteLine(XmlConvert.ToString((DateTime)(object)value, XmlDateTimeSerializationMode.RoundtripKind));
@@ -918,7 +913,6 @@ namespace Newtonsoft.Json.Tests
             {
                 Console.WriteLine(XmlConvert.ToString((DateTimeOffset)(object)value));
             }
-#endif
 
 #if !NET20
             MemoryStream ms = new MemoryStream();

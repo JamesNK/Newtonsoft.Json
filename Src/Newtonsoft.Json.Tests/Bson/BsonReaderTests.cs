@@ -35,11 +35,7 @@ using System.Numerics;
 #endif
 using System.Text;
 using System.Text.RegularExpressions;
-#if NETFX_CORE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
-using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -59,7 +55,6 @@ namespace Newtonsoft.Json.Tests.Bson
     {
         private const char Euro = '\u20ac';
 
-#if !NETFX_CORE
         [Test]
         public void DeserializeLargeBsonObject()
         {
@@ -72,7 +67,6 @@ namespace Newtonsoft.Json.Tests.Bson
 
             Assert.AreEqual("1", (string)o["$id"]);
         }
-#endif
 
         public class MyTest
         {
@@ -1488,8 +1482,7 @@ namespace Newtonsoft.Json.Tests.Bson
                 CollectionAssert.AreEquivalent(new byte[] { 72, 63, 62, 71, 92, 55 }, newObject.Data);
             }
         }
-
-#if !(NETFX_CORE)
+        
         public void Utf8Text()
         {
             string badText = System.IO.File.ReadAllText(@"PoisonText.txt");
@@ -1506,7 +1499,6 @@ namespace Newtonsoft.Json.Tests.Bson
 
             Assert.AreEqual(badText, (string)o["test"]);
         }
-#endif
 
 #if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
         public class BigIntegerTestClass
