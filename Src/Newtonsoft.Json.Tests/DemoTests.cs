@@ -24,7 +24,7 @@
 #endregion
 
 using System;
-#if !(NET20 || NET35 || NET40 || NETFX_CORE || PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50)
 using System.Buffers;
 #endif
 using System.Collections.Generic;
@@ -34,11 +34,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Serialization;
-#if NETFX_CORE
-using Microsoft.VisualStudio.TestPlatform.UnitTestFramework;
-using TestFixture = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestClassAttribute;
-using Test = Microsoft.VisualStudio.TestPlatform.UnitTestFramework.TestMethodAttribute;
-#elif DNXCORE50
+#if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -593,7 +589,7 @@ namespace Newtonsoft.Json.Tests
 }", json);
         }
 
-#if !(NET20 || NET35 || NET40 || NETFX_CORE || PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50)
         [Test]
         public void ArrayPooling()
         {
@@ -612,7 +608,7 @@ namespace Newtonsoft.Json.Tests
 #endif
     }
 
-#if !(NET20 || NET35 || NET40 || NETFX_CORE || PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50)
     public class JsonArrayPool : IArrayPool<char>
     {
         public static readonly JsonArrayPool Instance = new JsonArrayPool();
