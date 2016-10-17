@@ -32,7 +32,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="DateTime"/> to and from the ISO 8601 date format (e.g. <c>"2008-04-12T12:53Z"</c>).
     /// </summary>
-    public class IsoDateTimeConverter : DateTimeConverterBase, IJsonStringConverter
+    public class IsoDateTimeConverter : DateTimeConverterBase
     {
         private const string DefaultDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
 
@@ -140,12 +140,66 @@ namespace Newtonsoft.Json.Converters
         }
 
         /// <summary>
-        /// Converts the string representation of an object to that object.
+        /// Gets a value indicating whether this <see cref="JsonConverter"/> can convert values to strings. Used when serializing dictionary keys.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="objectType"></param>
-        /// <returns></returns>
-        public object ConvertFromString(string value, Type objectType)
+        /// <value><c>true</c> if this <see cref="JsonConverter"/> can convert values to strings; otherwise, <c>false</c>.</value>
+        public override bool CanConvertToString
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="JsonConverter"/> can convert values from strings. Used when deserializing dictionary keys.
+        /// </summary>
+        /// <value></value>
+        /// <value><c>true</c> if this <see cref="JsonConverter"/> can convert values from strings; otherwise, <c>false</c>.</value>
+        public override bool CanConvertFromString
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Converts the object to its string representation. Used when serializing dictionary keys.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The string representation of the value.</returns>
+        public override string ConvertToString(object value)
+        {
+            if (value is DateTime)
+            {
+                DateTime dateTime = (DateTime)value;
+
+                if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
+                    || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
+                {
+                    dateTime = dateTime.ToUniversalTime();
+                }
+
+                return dateTime.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
+            }
+#if !NET20
+            if (value is DateTimeOffset)
+            {
+                DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
+                if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
+                    || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
+                {
+                    dateTimeOffset = dateTimeOffset.ToUniversalTime();
+                }
+
+                return dateTimeOffset.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
+            }
+#endif
+            throw new JsonSerializationException("Unexpected value when converting date. Expected DateTime or DateTimeOffset, got {0}.".FormatWith(CultureInfo.InvariantCulture, ReflectionUtils.GetObjectType(value)));
+        }
+
+        /// <summary>
+        /// Converts the string representation of an object to that object. Used when deserializing dictionary keys.
+        /// </summary>
+        /// <param name="value">The object's string representation.</param>
+        /// <param name="objectType">Type of the object.</param>
+        /// <returns>The object represented by its string representation.</returns>
+        public override object ConvertFromString(string value, Type objectType)
         {
             bool nullable = ReflectionUtils.IsNullableType(objectType);
             Type t =
@@ -182,41 +236,6 @@ namespace Newtonsoft.Json.Converters
                 return DateTime.ParseExact(value, _dateTimeFormat, Culture, _dateTimeStyles);
             }
             return DateTime.Parse(value, Culture, _dateTimeStyles);
-        }
-
-        /// <summary>
-        /// Converts the object to its string representation.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public string ConvertToString(object value)
-        {
-            if (value is DateTime)
-            {
-                DateTime dateTime = (DateTime)value;
-
-                if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
-                    || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
-                {
-                    dateTime = dateTime.ToUniversalTime();
-                }
-
-                return dateTime.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
-            }
-#if !NET20
-            if (value is DateTimeOffset)
-            {
-                DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
-                if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
-                    || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
-                {
-                    dateTimeOffset = dateTimeOffset.ToUniversalTime();
-                }
-
-                return dateTimeOffset.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
-            }
-#endif
-            throw new JsonSerializationException("Unexpected value when converting date. Expected DateTime or DateTimeOffset, got {0}.".FormatWith(CultureInfo.InvariantCulture, ReflectionUtils.GetObjectType(value)));
         }
     }
 }

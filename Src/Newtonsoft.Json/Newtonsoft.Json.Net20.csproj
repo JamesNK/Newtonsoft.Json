@@ -104,7 +104,6 @@
     <Compile Include="FormatterAssemblyStyle.cs" />
     <Compile Include="Formatting.cs" />
     <Compile Include="IArrayPool.cs" />
-    <Compile Include="IJsonStringConverter.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="JsonDictionaryAttribute.cs" />
     <Compile Include="JsonException.cs" />
@@ -190,6 +189,7 @@
     <Compile Include="JsonConvert.cs" />
     <Compile Include="JsonSerializationException.cs" />
     <Compile Include="JsonSerializer.cs" />
+    <Compile Include="JsonStringConverter.cs" />
     <Compile Include="Linq\Extensions.cs" />
     <Compile Include="Linq\JConstructor.cs" />
     <Compile Include="Linq\JContainer.cs" />

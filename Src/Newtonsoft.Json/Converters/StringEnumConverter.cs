@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts an <see cref="Enum"/> to and from its name string value.
     /// </summary>
-    public class StringEnumConverter : JsonConverter, IJsonStringConverter
+    public class StringEnumConverter : JsonConverter
     {
         /// <summary>
         /// Gets or sets a value indicating whether the written enum text should be camel case.
@@ -100,11 +100,30 @@ namespace Newtonsoft.Json.Converters
         }
 
         /// <summary>
-        /// Converts the object to its string representation.
+        /// Gets a value indicating whether this <see cref="JsonConverter"/> can convert values to strings. Used when serializing dictionary keys.
         /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public string ConvertToString(object value)
+        /// <value><c>true</c> if this <see cref="JsonConverter"/> can convert values to strings; otherwise, <c>false</c>.</value>
+        public override bool CanConvertToString
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="JsonConverter"/> can convert values from strings. Used when deserializing dictionary keys.
+        /// </summary>
+        /// <value></value>
+        /// <value><c>true</c> if this <see cref="JsonConverter"/> can convert values from strings; otherwise, <c>false</c>.</value>
+        public override bool CanConvertFromString
+        {
+            get { return true; }
+        }
+
+        /// <summary>
+        /// Converts the object to its string representation. Used when serializing dictionary keys.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The string representation of the value.</returns>
+        public override string ConvertToString(object value)
         {
             string result;
             TryConvertToString(value, true, out result);
@@ -193,12 +212,12 @@ namespace Newtonsoft.Json.Converters
         }
 
         /// <summary>
-        /// Converts the string representation of an object to that object.
+        /// Converts the string representation of an object to that object. Used when deserializing dictionary keys.
         /// </summary>
-        /// <param name="value"></param>
-        /// <param name="objectType"></param>
-        /// <returns></returns>
-        public object ConvertFromString(string value, Type objectType)
+        /// <param name="value">The object's string representation.</param>
+        /// <param name="objectType">Type of the object.</param>
+        /// <returns>The object represented by its string representation.</returns>
+        public override object ConvertFromString(string value, Type objectType)
         {
             bool isNullable = ReflectionUtils.IsNullableType(objectType);
             Type t = isNullable ? Nullable.GetUnderlyingType(objectType) : objectType;
