@@ -39,10 +39,10 @@ namespace Newtonsoft.Json.Bson
     public class BsonReader : JsonReader
     {
         private const int MaxCharBytesSize = 128;
-        private static readonly byte[] SeqRange1 = new byte[] { 0, 127 }; // range of 1-byte sequence
-        private static readonly byte[] SeqRange2 = new byte[] { 194, 223 }; // range of 2-byte sequence
-        private static readonly byte[] SeqRange3 = new byte[] { 224, 239 }; // range of 3-byte sequence
-        private static readonly byte[] SeqRange4 = new byte[] { 240, 244 }; // range of 4-byte sequence
+        private static readonly byte[] SeqRange1 = { 0, 127 }; // range of 1-byte sequence
+        private static readonly byte[] SeqRange2 = { 194, 223 }; // range of 2-byte sequence
+        private static readonly byte[] SeqRange3 = { 224, 239 }; // range of 3-byte sequence
+        private static readonly byte[] SeqRange4 = { 240, 244 }; // range of 4-byte sequence
 
         private readonly BinaryReader _reader;
         private readonly List<ContainerContext> _stack;
