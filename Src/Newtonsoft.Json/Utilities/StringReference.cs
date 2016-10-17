@@ -29,10 +29,7 @@ namespace Newtonsoft.Json.Utilities
 {
     internal struct StringReference
     {
-        public char this[int i]
-        {
-            get { return Chars[i]; }
-        }
+        public char this[int i] => Chars[i];
 
         public char[] Chars { get; }
 

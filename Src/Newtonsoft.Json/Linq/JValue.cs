@@ -214,10 +214,7 @@ namespace Newtonsoft.Json.Linq
         /// <value>
         /// 	<c>true</c> if this token has child values; otherwise, <c>false</c>.
         /// </value>
-        public override bool HasValues
-        {
-            get { return false; }
-        }
+        public override bool HasValues => false;
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
         private static int CompareBigInteger(BigInteger i1, object i2)
@@ -698,10 +695,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets the node type for this <see cref="JToken"/>.
         /// </summary>
         /// <value>The type.</value>
-        public override JTokenType Type
-        {
-            get { return _valueType; }
-        }
+        public override JTokenType Type => _valueType;
 
         /// <summary>
         /// Gets or sets the underlying token value.

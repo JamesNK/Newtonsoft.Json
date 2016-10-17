@@ -34,10 +34,7 @@ namespace Newtonsoft.Json.Utilities
     {
         public int Position { get; set; }
 
-        public bool IsEmpty
-        {
-            get { return InternalBuffer == null; }
-        }
+        public bool IsEmpty => InternalBuffer == null;
 
         public StringBuffer(IArrayPool<char> bufferPool, int initalSize) : this(BufferUtils.RentBuffer(bufferPool, initalSize))
         {

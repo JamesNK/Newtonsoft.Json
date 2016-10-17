@@ -107,27 +107,18 @@ namespace Newtonsoft.Json
         /// Gets the text value of the current JSON token.
         /// </summary>
         /// <value></value>
-        public override object Value
-        {
-            get { return Reader.Value; }
-        }
+        public override object Value => Reader.Value;
 
         /// <summary>
         /// Gets the depth of the current token in the JSON document.
         /// </summary>
         /// <value>The depth of the current token in the JSON document.</value>
-        public override int Depth
-        {
-            get { return Reader.Depth; }
-        }
+        public override int Depth => Reader.Depth;
 
         /// <summary>
         /// Gets the path of the current JSON token. 
         /// </summary>
-        public override string Path
-        {
-            get { return Reader.Path; }
-        }
+        public override string Path => Reader.Path;
 
         /// <summary>
         /// Gets the quotation mark character used to enclose the value of a string.
@@ -143,19 +134,13 @@ namespace Newtonsoft.Json
         /// Gets the type of the current JSON token.
         /// </summary>
         /// <value></value>
-        public override JsonToken TokenType
-        {
-            get { return Reader.TokenType; }
-        }
+        public override JsonToken TokenType => Reader.TokenType;
 
         /// <summary>
         /// Gets the Common Language Runtime (CLR) type for the current JSON token.
         /// </summary>
         /// <value></value>
-        public override Type ValueType
-        {
-            get { return Reader.ValueType; }
-        }
+        public override Type ValueType => Reader.ValueType;
 
         private void Push(SchemaScope scope)
         {
@@ -173,10 +158,7 @@ namespace Newtonsoft.Json
             return poppedScope;
         }
 
-        private IList<JsonSchemaModel> CurrentSchemas
-        {
-            get { return _currentScope.Schemas; }
-        }
+        private IList<JsonSchemaModel> CurrentSchemas => _currentScope.Schemas;
 
         private static readonly IList<JsonSchemaModel> EmptySchemaList = new List<JsonSchemaModel>();
 

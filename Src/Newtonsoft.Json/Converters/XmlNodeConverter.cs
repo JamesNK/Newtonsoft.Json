@@ -153,10 +153,7 @@ namespace Newtonsoft.Json.Converters
             return _element.GetPrefixOfNamespace(namespaceUri);
         }
 
-        public bool IsEmpty
-        {
-            get { return _element.IsEmpty; }
-        }
+        public bool IsEmpty => _element.IsEmpty;
     }
 
     internal class XmlDeclarationWrapper : XmlNodeWrapper, IXmlDeclaration
@@ -169,10 +166,7 @@ namespace Newtonsoft.Json.Converters
             _declaration = declaration;
         }
 
-        public string Version
-        {
-            get { return _declaration.Version; }
-        }
+        public string Version => _declaration.Version;
 
         public string Encoding
         {
@@ -197,30 +191,15 @@ namespace Newtonsoft.Json.Converters
             _documentType = documentType;
         }
 
-        public string Name
-        {
-            get { return _documentType.Name; }
-        }
+        public string Name => _documentType.Name;
 
-        public string System
-        {
-            get { return _documentType.SystemId; }
-        }
+        public string System => _documentType.SystemId;
 
-        public string Public
-        {
-            get { return _documentType.PublicId; }
-        }
+        public string Public => _documentType.PublicId;
 
-        public string InternalSubset
-        {
-            get { return _documentType.InternalSubset; }
-        }
+        public string InternalSubset => _documentType.InternalSubset;
 
-        public override string LocalName
-        {
-            get { return "DOCTYPE"; }
-        }
+        public override string LocalName => "DOCTYPE";
     }
 
     internal class XmlNodeWrapper : IXmlNode
@@ -234,20 +213,11 @@ namespace Newtonsoft.Json.Converters
             _node = node;
         }
 
-        public object WrappedNode
-        {
-            get { return _node; }
-        }
+        public object WrappedNode => _node;
 
-        public XmlNodeType NodeType
-        {
-            get { return _node.NodeType; }
-        }
+        public XmlNodeType NodeType => _node.NodeType;
 
-        public virtual string LocalName
-        {
-            get { return _node.LocalName; }
-        }
+        public virtual string LocalName => _node.LocalName;
 
         public List<IXmlNode> ChildNodes
         {
@@ -340,10 +310,7 @@ namespace Newtonsoft.Json.Converters
             return newChild;
         }
 
-        public string NamespaceUri
-        {
-            get { return _node.NamespaceURI; }
-        }
+        public string NamespaceUri => _node.NamespaceURI;
     }
 #endif
     #endregion
@@ -415,15 +382,9 @@ namespace Newtonsoft.Json.Converters
             Declaration = declaration;
         }
 
-        public override XmlNodeType NodeType
-        {
-            get { return XmlNodeType.XmlDeclaration; }
-        }
+        public override XmlNodeType NodeType => XmlNodeType.XmlDeclaration;
 
-        public string Version
-        {
-            get { return Declaration.Version; }
-        }
+        public string Version => Declaration.Version;
 
         public string Encoding
         {
@@ -448,38 +409,20 @@ namespace Newtonsoft.Json.Converters
             _documentType = documentType;
         }
 
-        public string Name
-        {
-            get { return _documentType.Name; }
-        }
+        public string Name => _documentType.Name;
 
-        public string System
-        {
-            get { return _documentType.SystemId; }
-        }
+        public string System => _documentType.SystemId;
 
-        public string Public
-        {
-            get { return _documentType.PublicId; }
-        }
+        public string Public => _documentType.PublicId;
 
-        public string InternalSubset
-        {
-            get { return _documentType.InternalSubset; }
-        }
+        public string InternalSubset => _documentType.InternalSubset;
 
-        public override string LocalName
-        {
-            get { return "DOCTYPE"; }
-        }
+        public override string LocalName => "DOCTYPE";
     }
 
     internal class XDocumentWrapper : XContainerWrapper, IXmlDocument
     {
-        private XDocument Document
-        {
-            get { return (XDocument)WrappedNode; }
-        }
+        private XDocument Document => (XDocument)WrappedNode;
 
         public XDocumentWrapper(XDocument document)
             : base(document)
@@ -593,10 +536,7 @@ namespace Newtonsoft.Json.Converters
 
     internal class XTextWrapper : XObjectWrapper
     {
-        private XText Text
-        {
-            get { return (XText)WrappedNode; }
-        }
+        private XText Text => (XText)WrappedNode;
 
         public XTextWrapper(XText text)
             : base(text)
@@ -625,10 +565,7 @@ namespace Newtonsoft.Json.Converters
 
     internal class XCommentWrapper : XObjectWrapper
     {
-        private XComment Text
-        {
-            get { return (XComment)WrappedNode; }
-        }
+        private XComment Text => (XComment)WrappedNode;
 
         public XCommentWrapper(XComment text)
             : base(text)
@@ -657,20 +594,14 @@ namespace Newtonsoft.Json.Converters
 
     internal class XProcessingInstructionWrapper : XObjectWrapper
     {
-        private XProcessingInstruction ProcessingInstruction
-        {
-            get { return (XProcessingInstruction)WrappedNode; }
-        }
+        private XProcessingInstruction ProcessingInstruction => (XProcessingInstruction)WrappedNode;
 
         public XProcessingInstructionWrapper(XProcessingInstruction processingInstruction)
             : base(processingInstruction)
         {
         }
 
-        public override string LocalName
-        {
-            get { return ProcessingInstruction.Target; }
-        }
+        public override string LocalName => ProcessingInstruction.Target;
 
         public override string Value
         {
@@ -683,10 +614,7 @@ namespace Newtonsoft.Json.Converters
     {
         private List<IXmlNode> _childNodes;
 
-        private XContainer Container
-        {
-            get { return (XContainer)WrappedNode; }
-        }
+        private XContainer Container => (XContainer)WrappedNode;
 
         public XContainerWrapper(XContainer container)
             : base(container)
@@ -784,35 +712,17 @@ namespace Newtonsoft.Json.Converters
             _xmlObject = xmlObject;
         }
 
-        public object WrappedNode
-        {
-            get { return _xmlObject; }
-        }
+        public object WrappedNode => _xmlObject;
 
-        public virtual XmlNodeType NodeType
-        {
-            get { return _xmlObject.NodeType; }
-        }
+        public virtual XmlNodeType NodeType => _xmlObject.NodeType;
 
-        public virtual string LocalName
-        {
-            get { return null; }
-        }
+        public virtual string LocalName => null;
 
-        public virtual List<IXmlNode> ChildNodes
-        {
-            get { return EmptyChildNodes; }
-        }
+        public virtual List<IXmlNode> ChildNodes => EmptyChildNodes;
 
-        public virtual List<IXmlNode> Attributes
-        {
-            get { return null; }
-        }
+        public virtual List<IXmlNode> Attributes => null;
 
-        public virtual IXmlNode ParentNode
-        {
-            get { return null; }
-        }
+        public virtual IXmlNode ParentNode => null;
 
         public virtual string Value
         {
@@ -825,18 +735,12 @@ namespace Newtonsoft.Json.Converters
             throw new InvalidOperationException();
         }
 
-        public virtual string NamespaceUri
-        {
-            get { return null; }
-        }
+        public virtual string NamespaceUri => null;
     }
 
     internal class XAttributeWrapper : XObjectWrapper
     {
-        private XAttribute Attribute
-        {
-            get { return (XAttribute)WrappedNode; }
-        }
+        private XAttribute Attribute => (XAttribute)WrappedNode;
 
         public XAttributeWrapper(XAttribute attribute)
             : base(attribute)
@@ -849,15 +753,9 @@ namespace Newtonsoft.Json.Converters
             set { Attribute.Value = value; }
         }
 
-        public override string LocalName
-        {
-            get { return Attribute.Name.LocalName; }
-        }
+        public override string LocalName => Attribute.Name.LocalName;
 
-        public override string NamespaceUri
-        {
-            get { return Attribute.Name.NamespaceName; }
-        }
+        public override string NamespaceUri => Attribute.Name.NamespaceName;
 
         public override IXmlNode ParentNode
         {
@@ -877,10 +775,7 @@ namespace Newtonsoft.Json.Converters
     {
         private List<IXmlNode> _attributes;
 
-        private XElement Element
-        {
-            get { return (XElement)WrappedNode; }
-        }
+        private XElement Element => (XElement)WrappedNode;
 
         public XElementWrapper(XElement element)
             : base(element)
@@ -949,25 +844,16 @@ namespace Newtonsoft.Json.Converters
             set { Element.Value = value; }
         }
 
-        public override string LocalName
-        {
-            get { return Element.Name.LocalName; }
-        }
+        public override string LocalName => Element.Name.LocalName;
 
-        public override string NamespaceUri
-        {
-            get { return Element.Name.NamespaceName; }
-        }
+        public override string NamespaceUri => Element.Name.NamespaceName;
 
         public string GetPrefixOfNamespace(string namespaceUri)
         {
             return Element.GetPrefixOfNamespace(namespaceUri);
         }
 
-        public bool IsEmpty
-        {
-            get { return Element.IsEmpty; }
-        }
+        public bool IsEmpty => Element.IsEmpty;
     }
 #endif
     #endregion

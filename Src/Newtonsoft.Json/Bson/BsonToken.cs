@@ -45,10 +45,7 @@ namespace Newtonsoft.Json.Bson
             token.Parent = this;
         }
 
-        public override BsonType Type
-        {
-            get { return BsonType.Object; }
-        }
+        public override BsonType Type => BsonType.Object;
 
         public IEnumerator<BsonProperty> GetEnumerator()
         {
@@ -71,10 +68,7 @@ namespace Newtonsoft.Json.Bson
             token.Parent = this;
         }
 
-        public override BsonType Type
-        {
-            get { return BsonType.Array; }
-        }
+        public override BsonType Type => BsonType.Array;
 
         public IEnumerator<BsonToken> GetEnumerator()
         {
@@ -134,10 +128,7 @@ namespace Newtonsoft.Json.Bson
             Options = new BsonString(options, false);
         }
 
-        public override BsonType Type
-        {
-            get { return BsonType.Regex; }
-        }
+        public override BsonType Type => BsonType.Regex;
     }
 
     internal class BsonProperty

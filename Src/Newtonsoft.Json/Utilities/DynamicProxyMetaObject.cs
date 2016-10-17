@@ -44,10 +44,7 @@ namespace Newtonsoft.Json.Utilities
             _dontFallbackFirst = dontFallbackFirst;
         }
 
-        private new T Value
-        {
-            get { return (T)base.Value; }
-        }
+        private new T Value => (T)base.Value;
 
         private bool IsOverridden(string method)
         {

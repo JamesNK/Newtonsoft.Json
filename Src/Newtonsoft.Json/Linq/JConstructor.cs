@@ -41,10 +41,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets the container's children tokens.
         /// </summary>
         /// <value>The container's children tokens.</value>
-        protected override IList<JToken> ChildrenTokens
-        {
-            get { return _values; }
-        }
+        protected override IList<JToken> ChildrenTokens => _values;
 
         internal override int IndexOfItem(JToken item)
         {
@@ -76,10 +73,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets the node type for this <see cref="JToken"/>.
         /// </summary>
         /// <value>The type.</value>
-        public override JTokenType Type
-        {
-            get { return JTokenType.Constructor; }
-        }
+        public override JTokenType Type => JTokenType.Constructor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JConstructor"/> class.

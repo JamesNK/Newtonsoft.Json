@@ -1852,10 +1852,7 @@ namespace Newtonsoft.Json.Linq
 
         internal abstract int GetDeepHashCode();
 
-        IJEnumerable<JToken> IJEnumerable<JToken>.this[object key]
-        {
-            get { return this[key]; }
-        }
+        IJEnumerable<JToken> IJEnumerable<JToken>.this[object key] => this[key];
 
         /// <summary>
         /// Creates an <see cref="JsonReader"/> for this token.

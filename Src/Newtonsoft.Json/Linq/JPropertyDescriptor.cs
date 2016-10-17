@@ -115,10 +115,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="T:System.Type"/> that represents the type of component this property is bound to. When the <see cref="M:System.ComponentModel.PropertyDescriptor.GetValue(System.Object)"/> or <see cref="M:System.ComponentModel.PropertyDescriptor.SetValue(System.Object,System.Object)"/> methods are invoked, the object specified might be an instance of this type.
         /// </returns>
-        public override Type ComponentType
-        {
-            get { return typeof(JObject); }
-        }
+        public override Type ComponentType => typeof(JObject);
 
         /// <summary>
         /// When overridden in a derived class, gets a value indicating whether this property is read-only.
@@ -126,10 +123,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// <c>true</c> if the property is read-only; otherwise, <c>false</c>.
         /// </returns>
-        public override bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public override bool IsReadOnly => false;
 
         /// <summary>
         /// When overridden in a derived class, gets the type of the property.
@@ -137,10 +131,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="T:System.Type"/> that represents the type of the property.
         /// </returns>
-        public override Type PropertyType
-        {
-            get { return typeof(object); }
-        }
+        public override Type PropertyType => typeof(object);
 
         /// <summary>
         /// Gets the hash code for the name of the member.

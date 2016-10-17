@@ -55,18 +55,12 @@ namespace Newtonsoft.Json.Schema
         /// Gets the path of the JSON location where the validation error occurred.
         /// </summary>
         /// <value>The path of the JSON location where the validation error occurred.</value>
-        public string Path
-        {
-            get { return Exception.Path; }
-        }
+        public string Path => Exception.Path;
 
         /// <summary>
         /// Gets the text description corresponding to the validation error.
         /// </summary>
         /// <value>The text description.</value>
-        public string Message
-        {
-            get { return Exception.Message; }
-        }
+        public string Message => Exception.Message;
     }
 }

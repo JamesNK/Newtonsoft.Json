@@ -88,15 +88,9 @@ namespace Newtonsoft.Json.Linq
                 return false;
             }
 
-            public int Count
-            {
-                get { return (_token != null) ? 1 : 0; }
-            }
+            public int Count => (_token != null) ? 1 : 0;
 
-            public bool IsReadOnly
-            {
-                get { return false; }
-            }
+            public bool IsReadOnly => false;
 
             public int IndexOf(JToken item)
             {
@@ -139,10 +133,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets the container's children tokens.
         /// </summary>
         /// <value>The container's children tokens.</value>
-        protected override IList<JToken> ChildrenTokens
-        {
-            get { return _content; }
-        }
+        protected override IList<JToken> ChildrenTokens => _content;
 
         /// <summary>
         /// Gets the property name.

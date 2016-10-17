@@ -2458,9 +2458,6 @@ namespace Newtonsoft.Json
         /// <value>
         /// The current line position or 0 if no line information is available (for example, HasLineInfo returns false).
         /// </value>
-        public int LinePosition
-        {
-            get { return _charPos - _lineStartPos; }
-        }
+        public int LinePosition => _charPos - _lineStartPos;
     }
 }

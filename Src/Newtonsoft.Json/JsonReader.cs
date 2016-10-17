@@ -134,10 +134,7 @@ namespace Newtonsoft.Json
         /// Gets the current reader state.
         /// </summary>
         /// <value>The current reader state.</value>
-        protected State CurrentState
-        {
-            get { return _currentState; }
-        }
+        protected State CurrentState => _currentState;
 
         /// <summary>
         /// Gets or sets a value indicating whether the underlying stream or
@@ -249,26 +246,17 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets the type of the current JSON token. 
         /// </summary>
-        public virtual JsonToken TokenType
-        {
-            get { return _tokenType; }
-        }
+        public virtual JsonToken TokenType => _tokenType;
 
         /// <summary>
         /// Gets the text value of the current JSON token.
         /// </summary>
-        public virtual object Value
-        {
-            get { return _value; }
-        }
+        public virtual object Value => _value;
 
         /// <summary>
         /// Gets The Common Language Runtime (CLR) type for the current JSON token.
         /// </summary>
-        public virtual Type ValueType
-        {
-            get { return (_value != null) ? _value.GetType() : null; }
-        }
+        public virtual Type ValueType => (_value != null) ? _value.GetType() : null;
 
         /// <summary>
         /// Gets the depth of the current token in the JSON document.

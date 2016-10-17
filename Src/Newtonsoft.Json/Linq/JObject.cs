@@ -65,10 +65,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets the container's children tokens.
         /// </summary>
         /// <value>The container's children tokens.</value>
-        protected override IList<JToken> ChildrenTokens
-        {
-            get { return _properties; }
-        }
+        protected override IList<JToken> ChildrenTokens => _properties;
 
         /// <summary>
         /// Occurs when a property value changes.
@@ -241,10 +238,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets the node type for this <see cref="JToken"/>.
         /// </summary>
         /// <value>The type.</value>
-        public override JTokenType Type
-        {
-            get { return JTokenType.Object; }
-        }
+        public override JTokenType Type => JTokenType.Object;
 
         /// <summary>
         /// Gets an <see cref="IEnumerable{JProperty}"/> of this object's properties.
@@ -562,11 +556,7 @@ namespace Newtonsoft.Json.Linq
             return _properties.Contains(key);
         }
 
-        ICollection<string> IDictionary<string, JToken>.Keys
-        {
-            // todo: make order the collection returned match JObject order
-            get { return _properties.Keys; }
-        }
+        ICollection<string> IDictionary<string, JToken>.Keys => _properties.Keys;
 
         /// <summary>
         /// Removes the property with the specified name.
@@ -663,10 +653,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        bool ICollection<KeyValuePair<string, JToken>>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<KeyValuePair<string, JToken>>.IsReadOnly => false;
 
         bool ICollection<KeyValuePair<string, JToken>>.Remove(KeyValuePair<string, JToken> item)
         {

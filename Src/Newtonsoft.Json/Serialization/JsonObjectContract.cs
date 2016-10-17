@@ -62,10 +62,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets the constructor parameters required for any non-default constructor
         /// </summary>
         [Obsolete("ConstructorParameters is obsolete. Use CreatorParameters instead.")]
-        public JsonPropertyCollection ConstructorParameters
-        {
-            get { return CreatorParameters; }
-        }
+        public JsonPropertyCollection ConstructorParameters => CreatorParameters;
 
         /// <summary>
         /// Gets a collection of <see cref="JsonProperty"/> instances that define the parameters used with <see cref="OverrideCreator"/>.
