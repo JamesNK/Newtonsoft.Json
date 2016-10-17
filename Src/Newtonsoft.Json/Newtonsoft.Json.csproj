@@ -66,7 +66,6 @@
     <Compile Include="Converters\EntityKeyMemberConverter.cs" />
     <Compile Include="Converters\ExpandoObjectConverter.cs" />
     <Compile Include="Converters\IsoDateTimeConverter.cs" />
-    <Compile Include="IJsonStringConverter.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
     <Compile Include="Converters\JsonValueConverter.cs" />
     <Compile Include="Converters\KeyValuePairConverter.cs" />
@@ -104,6 +103,7 @@
     <Compile Include="JsonSerializationException.cs" />
     <Compile Include="JsonSerializer.cs" />
     <Compile Include="JsonSerializerSettings.cs" />
+    <Compile Include="JsonStringConverter.cs" />
     <Compile Include="JsonTextReader.cs" />
     <Compile Include="JsonTextWriter.cs" />
     <Compile Include="JsonToken.cs" />

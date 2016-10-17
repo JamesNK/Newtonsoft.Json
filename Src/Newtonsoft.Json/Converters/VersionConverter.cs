@@ -24,44 +24,20 @@
 #endregion
 
 using System;
-using System.Globalization;
-using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Converters
 {
     /// <summary>
     /// Converts a <see cref="Version"/> to and from a string (e.g. "1.2.3.4").
     /// </summary>
-    public class VersionConverter : JsonConverter, IJsonStringConverter
+    public class VersionConverter : JsonStringConverter
     {
         /// <summary>
-        /// Writes the JSON representation of the object.
+        /// Converts the object to its string representation. Used when serializing dictionary keys.
         /// </summary>
-        /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
-            if (value == null)
-            {
-                writer.WriteNull();
-            }
-            else if (value is Version)
-            {
-                writer.WriteValue(value.ToString());
-            }
-            else
-            {
-                throw new JsonSerializationException("Expected Version object value");
-            }
-        }
-
-        /// <summary>
-        /// Converts the object to its string representation.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public string ConvertToString(object value)
+        /// <returns>The string representation of the value.</returns>
+        public override string ConvertToString(object value)
         {
             if (value == null)
             {
@@ -75,47 +51,12 @@ namespace Newtonsoft.Json.Converters
         }
 
         /// <summary>
-        /// Reads the JSON representation of the object.
+        /// Converts the string representation of an object to that object. Used when deserializing dictionary keys.
         /// </summary>
-        /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
+        /// <param name="value">The object's string representation.</param>
         /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing property value of the JSON that is being converted.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
-            else
-            {
-                if (reader.TokenType == JsonToken.String)
-                {
-                    try
-                    {
-                        Version v = new Version((string)reader.Value);
-                        return v;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw JsonSerializationException.Create(reader, "Error parsing version string: {0}".FormatWith(CultureInfo.InvariantCulture, reader.Value), ex);
-                    }
-                }
-                else
-                {
-                    throw JsonSerializationException.Create(reader, "Unexpected token or value when parsing version. Token: {0}, Value: {1}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType, reader.Value));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Converts the string representation of an object to that object.
-        /// </summary>
-        /// <param name="value"></param>
-        /// <param name="objectType"></param>
-        /// <returns></returns>
-        public object ConvertFromString(string value, Type objectType)
+        /// <returns>The object represented by its string representation.</returns>
+        public override object ConvertFromString(string value, Type objectType)
         {
             if (value == null)
             {

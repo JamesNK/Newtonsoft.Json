@@ -1115,12 +1115,11 @@ namespace Newtonsoft.Json.Serialization
         private string GetPropertyName(JsonWriter writer, object name, JsonContract contract, out bool escape)
         {
             string propertyName;
-
-            IJsonStringConverter jsonStringConverter = contract.Converter as IJsonStringConverter;
-            if (jsonStringConverter?.CanWrite == true)
+            
+            if (contract.Converter?.CanConvertToString == true)
             {
                 escape = true;
-                return jsonStringConverter.ConvertToString(name);
+                return contract.Converter.ConvertToString(name);
             }
 
             if (contract.ContractType == JsonContractType.Primitive)

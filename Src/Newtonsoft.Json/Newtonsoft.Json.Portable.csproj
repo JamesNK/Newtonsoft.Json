@@ -79,7 +79,6 @@
     <Compile Include="Formatting.cs" />
     <Compile Include="IArrayPool.cs" />
     <Compile Include="IJsonLineInfo.cs" />
-    <Compile Include="IJsonStringConverter.cs" />
     <Compile Include="JsonArrayAttribute.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="JsonContainerAttribute.cs" />
@@ -100,6 +99,7 @@
     <Compile Include="JsonSerializationException.cs" />
     <Compile Include="JsonSerializer.cs" />
     <Compile Include="JsonSerializerSettings.cs" />
+    <Compile Include="JsonStringConverter.cs" />
     <Compile Include="JsonTextReader.cs" />
     <Compile Include="JsonTextWriter.cs" />
     <Compile Include="JsonToken.cs" />
