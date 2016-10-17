@@ -25,8 +25,6 @@
 
 #if !(NET20 || NET35)
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;

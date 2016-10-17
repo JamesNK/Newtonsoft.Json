@@ -30,8 +30,6 @@ using System.ComponentModel;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
 using System.Numerics;
 #endif
-using System.Text;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
 #if NET20

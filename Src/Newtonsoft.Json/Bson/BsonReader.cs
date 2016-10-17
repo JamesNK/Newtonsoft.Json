@@ -30,7 +30,6 @@ using System.Text;
 using System.IO;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
-using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Bson
 {

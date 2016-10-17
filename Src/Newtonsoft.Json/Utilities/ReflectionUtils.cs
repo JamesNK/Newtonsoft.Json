@@ -31,8 +31,6 @@ using System.Numerics;
 using System.Reflection;
 using System.Collections;
 using System.Globalization;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters;
 using System.Text;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;

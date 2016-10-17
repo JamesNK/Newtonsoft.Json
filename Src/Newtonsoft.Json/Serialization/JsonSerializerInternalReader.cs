@@ -26,9 +26,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 #if !(NET35 || NET20 || PORTABLE40)
-using System.ComponentModel;
 using System.Dynamic;
 #endif
 using System.Diagnostics;
@@ -36,7 +34,6 @@ using System.Globalization;
 #if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
 using System.Numerics;
 #endif
-using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;

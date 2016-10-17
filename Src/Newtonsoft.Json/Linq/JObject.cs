@@ -25,7 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 #if !PORTABLE40
 using System.Collections.Specialized;
 #endif

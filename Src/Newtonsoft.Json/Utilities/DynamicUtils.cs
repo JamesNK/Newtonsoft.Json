@@ -27,7 +27,6 @@
 using System;
 using System.Collections.Generic;
 using System.Dynamic;
-using System.Linq;
 using System.Linq.Expressions;
 #if !(PORTABLE)
 using System.Reflection;
@@ -35,7 +34,6 @@ using System.Reflection;
 using Microsoft.CSharp.RuntimeBinder;
 #endif
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.Globalization;
 using Newtonsoft.Json.Serialization;
 

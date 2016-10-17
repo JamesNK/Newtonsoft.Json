@@ -25,11 +25,9 @@
 
 #if !(PORTABLE40 || PORTABLE || DOTNET)
 using System;
-using System.Collections.Generic;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
-using System.Text;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
