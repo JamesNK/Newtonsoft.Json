@@ -128,7 +128,6 @@ namespace Newtonsoft.Json
         private bool _hasExceededMaxDepth;
         internal DateParseHandling _dateParseHandling;
         internal FloatParseHandling _floatParseHandling;
-        private string _dateFormatString;
         private List<JsonPosition> _stack;
 
         /// <summary>
@@ -228,11 +227,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Get or set how custom date formatted strings are parsed when reading JSON.
         /// </summary>
-        public string DateFormatString
-        {
-            get { return _dateFormatString; }
-            set { _dateFormatString = value; }
-        }
+        public string DateFormatString { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum depth allowed when reading JSON. Reading past this depth will throw a <see cref="JsonReaderException"/>.
@@ -815,7 +810,7 @@ namespace Newtonsoft.Json
             }
 
             DateTime dt;
-            if (DateTimeUtils.TryParseDateTime(s, DateTimeZoneHandling, _dateFormatString, Culture, out dt))
+            if (DateTimeUtils.TryParseDateTime(s, DateTimeZoneHandling, DateFormatString, Culture, out dt))
             {
                 dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
                 SetToken(JsonToken.Date, dt, false);
@@ -871,7 +866,7 @@ namespace Newtonsoft.Json
             }
 
             DateTimeOffset dt;
-            if (DateTimeUtils.TryParseDateTimeOffset(s, _dateFormatString, Culture, out dt))
+            if (DateTimeUtils.TryParseDateTimeOffset(s, DateFormatString, Culture, out dt))
             {
                 SetToken(JsonToken.Date, dt, false);
                 return dt;

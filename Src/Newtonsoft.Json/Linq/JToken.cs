@@ -60,9 +60,6 @@ namespace Newtonsoft.Json.Linq
     {
         private static JTokenEqualityComparer _equalityComparer;
 
-        private JContainer _parent;
-        private JToken _previous;
-        private JToken _next;
         private object _annotations;
 
         private static readonly JTokenType[] BooleanTypes = { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
@@ -102,8 +99,8 @@ namespace Newtonsoft.Json.Linq
         public JContainer Parent
         {
             [DebuggerStepThrough]
-            get { return _parent; }
-            internal set { _parent = value; }
+            get;
+            internal set;
         }
 
         /// <summary>
@@ -161,21 +158,13 @@ namespace Newtonsoft.Json.Linq
         /// Gets the next sibling token of this node.
         /// </summary>
         /// <value>The <see cref="JToken"/> that contains the next sibling token.</value>
-        public JToken Next
-        {
-            get { return _next; }
-            internal set { _next = value; }
-        }
+        public JToken Next { get; internal set; }
 
         /// <summary>
         /// Gets the previous sibling token of this node.
         /// </summary>
         /// <value>The <see cref="JToken"/> that contains the previous sibling token.</value>
-        public JToken Previous
-        {
-            get { return _previous; }
-            internal set { _previous = value; }
-        }
+        public JToken Previous { get; internal set; }
 
         /// <summary>
         /// Gets the path of the JSON token. 
@@ -229,13 +218,13 @@ namespace Newtonsoft.Json.Linq
         /// <param name="content">A content object that contains simple content or a collection of content objects to be added after this token.</param>
         public void AddAfterSelf(object content)
         {
-            if (_parent == null)
+            if (Parent == null)
             {
                 throw new InvalidOperationException("The parent is missing.");
             }
 
-            int index = _parent.IndexOfItem(this);
-            _parent.AddInternal(index + 1, content, false);
+            int index = Parent.IndexOfItem(this);
+            Parent.AddInternal(index + 1, content, false);
         }
 
         /// <summary>
@@ -244,13 +233,13 @@ namespace Newtonsoft.Json.Linq
         /// <param name="content">A content object that contains simple content or a collection of content objects to be added before this token.</param>
         public void AddBeforeSelf(object content)
         {
-            if (_parent == null)
+            if (Parent == null)
             {
                 throw new InvalidOperationException("The parent is missing.");
             }
 
-            int index = _parent.IndexOfItem(this);
-            _parent.AddInternal(index, content, false);
+            int index = Parent.IndexOfItem(this);
+            Parent.AddInternal(index, content, false);
         }
 
         /// <summary>
@@ -384,12 +373,12 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         public void Remove()
         {
-            if (_parent == null)
+            if (Parent == null)
             {
                 throw new InvalidOperationException("The parent is missing.");
             }
 
-            _parent.RemoveItem(this);
+            Parent.RemoveItem(this);
         }
 
         /// <summary>
@@ -398,12 +387,12 @@ namespace Newtonsoft.Json.Linq
         /// <param name="value">The value.</param>
         public void Replace(JToken value)
         {
-            if (_parent == null)
+            if (Parent == null)
             {
                 throw new InvalidOperationException("The parent is missing.");
             }
 
-            _parent.ReplaceItem(this, value);
+            Parent.ReplaceItem(this, value);
         }
 
         /// <summary>

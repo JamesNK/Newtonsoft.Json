@@ -36,15 +36,11 @@ namespace Newtonsoft.Json.Linq
         private readonly JToken _root;
         private string _initialPath;
         private JToken _parent;
-        private JToken _current;
 
         /// <summary>
         /// Gets the <see cref="JToken"/> at the reader's current position.
         /// </summary>
-        public JToken CurrentToken
-        {
-            get { return _current; }
-        }
+        public JToken CurrentToken { get; private set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JTokenReader"/> class.
@@ -74,24 +70,24 @@ namespace Newtonsoft.Json.Linq
         {
             if (CurrentState != State.Start)
             {
-                if (_current == null)
+                if (CurrentToken == null)
                 {
                     return false;
                 }
 
-                JContainer container = _current as JContainer;
+                JContainer container = CurrentToken as JContainer;
                 if (container != null && _parent != container)
                 {
                     return ReadInto(container);
                 }
                 else
                 {
-                    return ReadOver(_current);
+                    return ReadOver(CurrentToken);
                 }
             }
 
-            _current = _root;
-            SetToken(_current);
+            CurrentToken = _root;
+            SetToken(CurrentToken);
             return true;
         }
 
@@ -114,15 +110,15 @@ namespace Newtonsoft.Json.Linq
             }
             else
             {
-                _current = next;
-                SetToken(_current);
+                CurrentToken = next;
+                SetToken(CurrentToken);
                 return true;
             }
         }
 
         private bool ReadToEnd()
         {
-            _current = null;
+            CurrentToken = null;
             SetToken(JsonToken.None);
             return false;
         }
@@ -154,7 +150,7 @@ namespace Newtonsoft.Json.Linq
             else
             {
                 SetToken(firstChild);
-                _current = firstChild;
+                CurrentToken = firstChild;
                 _parent = c;
                 return true;
             }
@@ -166,7 +162,7 @@ namespace Newtonsoft.Json.Linq
             if (endToken != null)
             {
                 SetToken(endToken.GetValueOrDefault());
-                _current = c;
+                CurrentToken = c;
                 _parent = c;
                 return true;
             }
@@ -256,7 +252,7 @@ namespace Newtonsoft.Json.Linq
                 return false;
             }
 
-            IJsonLineInfo info = _current;
+            IJsonLineInfo info = CurrentToken;
             return (info != null && info.HasLineInfo());
         }
 
@@ -269,7 +265,7 @@ namespace Newtonsoft.Json.Linq
                     return 0;
                 }
 
-                IJsonLineInfo info = _current;
+                IJsonLineInfo info = CurrentToken;
                 if (info != null)
                 {
                     return info.LineNumber;
@@ -288,7 +284,7 @@ namespace Newtonsoft.Json.Linq
                     return 0;
                 }
 
-                IJsonLineInfo info = _current;
+                IJsonLineInfo info = CurrentToken;
                 if (info != null)
                 {
                     return info.LinePosition;

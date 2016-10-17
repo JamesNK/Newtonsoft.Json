@@ -35,7 +35,6 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public class JConstructor : JContainer
     {
-        private string _name;
         private readonly List<JToken> _values = new List<JToken>();
 
         /// <summary>
@@ -71,11 +70,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets or sets the name of this constructor.
         /// </summary>
         /// <value>The constructor name.</value>
-        public string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets the node type for this <see cref="JToken"/>.
@@ -100,7 +95,7 @@ namespace Newtonsoft.Json.Linq
         public JConstructor(JConstructor other)
             : base(other)
         {
-            _name = other.Name;
+            Name = other.Name;
         }
 
         /// <summary>
@@ -140,13 +135,13 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Constructor name cannot be empty.", nameof(name));
             }
 
-            _name = name;
+            Name = name;
         }
 
         internal override bool DeepEquals(JToken node)
         {
             JConstructor c = node as JConstructor;
-            return (c != null && _name == c.Name && ContentsEqual(c));
+            return (c != null && Name == c.Name && ContentsEqual(c));
         }
 
         internal override JToken CloneToken()
@@ -161,7 +156,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
         public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
         {
-            writer.WriteStartConstructor(_name);
+            writer.WriteStartConstructor(Name);
 
             foreach (JToken token in Children())
             {
@@ -203,7 +198,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override int GetDeepHashCode()
         {
-            return _name.GetHashCode() ^ ContentsHashCode();
+            return Name.GetHashCode() ^ ContentsHashCode();
         }
 
         /// <summary>

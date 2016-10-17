@@ -216,7 +216,6 @@ namespace Newtonsoft.Json
         private DateTimeZoneHandling _dateTimeZoneHandling;
         private StringEscapeHandling _stringEscapeHandling;
         private FloatFormatHandling _floatFormatHandling;
-        private string _dateFormatString;
         private CultureInfo _culture;
 
         /// <summary>
@@ -315,11 +314,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Get or set how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatting when writing JSON text.
         /// </summary>
-        public string DateFormatString
-        {
-            get { return _dateFormatString; }
-            set { _dateFormatString = value; }
-        }
+        public string DateFormatString { get; set; }
 
         /// <summary>
         /// Gets or sets the culture used when writing JSON. Defaults to <see cref="CultureInfo.InvariantCulture"/>.

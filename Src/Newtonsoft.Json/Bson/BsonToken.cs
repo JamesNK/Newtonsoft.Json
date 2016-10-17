@@ -89,24 +89,15 @@ namespace Newtonsoft.Json.Bson
 
     internal class BsonValue : BsonToken
     {
-        private readonly object _value;
-        private readonly BsonType _type;
-
         public BsonValue(object value, BsonType type)
         {
-            _value = value;
-            _type = type;
+            Value = value;
+            Type = type;
         }
 
-        public object Value
-        {
-            get { return _value; }
-        }
+        public object Value { get; }
 
-        public override BsonType Type
-        {
-            get { return _type; }
-        }
+        public override BsonType Type { get; }
     }
 
     internal class BsonString : BsonValue

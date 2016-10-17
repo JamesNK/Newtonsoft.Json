@@ -54,10 +54,6 @@ namespace Newtonsoft.Json.Bson
         private BsonReaderState _bsonReaderState;
         private ContainerContext _currentContext;
 
-        private bool _readRootValueAsArray;
-        private bool _jsonNet35BinaryCompatibility;
-        private DateTimeKind _dateTimeKindHandling;
-
         private enum BsonReaderState
         {
             Normal = 0,
@@ -90,11 +86,7 @@ namespace Newtonsoft.Json.Bson
         /// 	<c>true</c> if binary data reading will be compatible with incorrect Json.NET 3.5 written binary; otherwise, <c>false</c>.
         /// </value>
         [Obsolete("JsonNet35BinaryCompatibility will be removed in a future version of Json.NET.")]
-        public bool JsonNet35BinaryCompatibility
-        {
-            get { return _jsonNet35BinaryCompatibility; }
-            set { _jsonNet35BinaryCompatibility = value; }
-        }
+        public bool JsonNet35BinaryCompatibility { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the root object will be read as a JSON array.
@@ -102,21 +94,13 @@ namespace Newtonsoft.Json.Bson
         /// <value>
         /// 	<c>true</c> if the root object will be read as a JSON array; otherwise, <c>false</c>.
         /// </value>
-        public bool ReadRootValueAsArray
-        {
-            get { return _readRootValueAsArray; }
-            set { _readRootValueAsArray = value; }
-        }
+        public bool ReadRootValueAsArray { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="DateTimeKind" /> used when reading <see cref="DateTime"/> values from BSON.
         /// </summary>
         /// <value>The <see cref="DateTimeKind" /> used when reading <see cref="DateTime"/> values from BSON.</value>
-        public DateTimeKind DateTimeKindHandling
-        {
-            get { return _dateTimeKindHandling; }
-            set { _dateTimeKindHandling = value; }
-        }
+        public DateTimeKind DateTimeKindHandling { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BsonReader"/> class.
@@ -147,8 +131,8 @@ namespace Newtonsoft.Json.Bson
             ValidationUtils.ArgumentNotNull(stream, nameof(stream));
             _reader = new BinaryReader(stream);
             _stack = new List<ContainerContext>();
-            _readRootValueAsArray = readRootValueAsArray;
-            _dateTimeKindHandling = dateTimeKindHandling;
+            ReadRootValueAsArray = readRootValueAsArray;
+            DateTimeKindHandling = dateTimeKindHandling;
         }
 
         /// <summary>
@@ -162,8 +146,8 @@ namespace Newtonsoft.Json.Bson
             ValidationUtils.ArgumentNotNull(reader, nameof(reader));
             _reader = reader;
             _stack = new List<ContainerContext>();
-            _readRootValueAsArray = readRootValueAsArray;
-            _dateTimeKindHandling = dateTimeKindHandling;
+            ReadRootValueAsArray = readRootValueAsArray;
+            DateTimeKindHandling = dateTimeKindHandling;
         }
 
         private string ReadElement()
@@ -344,8 +328,8 @@ namespace Newtonsoft.Json.Bson
             {
                 case State.Start:
                 {
-                    JsonToken token = (!_readRootValueAsArray) ? JsonToken.StartObject : JsonToken.StartArray;
-                    BsonType type = (!_readRootValueAsArray) ? BsonType.Object : BsonType.Array;
+                    JsonToken token = (!ReadRootValueAsArray) ? JsonToken.StartObject : JsonToken.StartArray;
+                    BsonType type = (!ReadRootValueAsArray) ? BsonType.Object : BsonType.Array;
 
                     SetToken(token);
                     ContainerContext newContext = new ContainerContext(type);
@@ -567,7 +551,7 @@ namespace Newtonsoft.Json.Bson
 
 #pragma warning disable 612,618
             // the old binary type has the data length repeated in the data for some reason
-            if (binaryType == BsonBinaryType.BinaryOld && !_jsonNet35BinaryCompatibility)
+            if (binaryType == BsonBinaryType.BinaryOld && !JsonNet35BinaryCompatibility)
             {
                 dataLength = ReadInt32();
             }

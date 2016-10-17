@@ -134,7 +134,6 @@ namespace Newtonsoft.Json.Linq
         #endregion
 
         private readonly JPropertyList _content = new JPropertyList();
-        private readonly string _name;
 
         /// <summary>
         /// Gets the container's children tokens.
@@ -152,7 +151,7 @@ namespace Newtonsoft.Json.Linq
         public string Name
         {
             [DebuggerStepThrough]
-            get { return _name; }
+            get;
         }
 
         /// <summary>
@@ -187,7 +186,7 @@ namespace Newtonsoft.Json.Linq
         public JProperty(JProperty other)
             : base(other)
         {
-            _name = other.Name;
+            Name = other.Name;
         }
 
         internal override JToken GetItem(int index)
@@ -283,7 +282,7 @@ namespace Newtonsoft.Json.Linq
         internal override bool DeepEquals(JToken node)
         {
             JProperty t = node as JProperty;
-            return (t != null && _name == t.Name && ContentsEqual(t));
+            return (t != null && Name == t.Name && ContentsEqual(t));
         }
 
         internal override JToken CloneToken()
@@ -306,7 +305,7 @@ namespace Newtonsoft.Json.Linq
             // called from JTokenWriter
             ValidationUtils.ArgumentNotNull(name, nameof(name));
 
-            _name = name;
+            Name = name;
         }
 
         /// <summary>
@@ -328,7 +327,7 @@ namespace Newtonsoft.Json.Linq
         {
             ValidationUtils.ArgumentNotNull(name, nameof(name));
 
-            _name = name;
+            Name = name;
 
             Value = IsMultiContent(content)
                 ? new JArray(content)
@@ -342,7 +341,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
         public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
         {
-            writer.WritePropertyName(_name);
+            writer.WritePropertyName(Name);
 
             JToken value = Value;
             if (value != null)
@@ -357,7 +356,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override int GetDeepHashCode()
         {
-            return _name.GetHashCode() ^ ((Value != null) ? Value.GetDeepHashCode() : 0);
+            return Name.GetHashCode() ^ ((Value != null) ? Value.GetDeepHashCode() : 0);
         }
 
         /// <summary>

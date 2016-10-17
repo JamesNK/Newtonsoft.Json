@@ -43,7 +43,6 @@ namespace Newtonsoft.Json
         private char _indentChar;
         private int _indentation;
         private char _quoteChar;
-        private bool _quoteName;
         private bool[] _charEscapeFlags;
         private char[] _writeBuffer;
         private IArrayPool<char> _arrayPool;
@@ -133,11 +132,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets or sets a value indicating whether object names will be surrounded with quotes.
         /// </summary>
-        public bool QuoteName
-        {
-            get { return _quoteName; }
-            set { _quoteName = value; }
-        }
+        public bool QuoteName { get; set; }
 
         /// <summary>
         /// Creates an instance of the <c>JsonWriter</c> class using the specified <see cref="TextWriter"/>. 
@@ -152,7 +147,7 @@ namespace Newtonsoft.Json
 
             _writer = textWriter;
             _quoteChar = '"';
-            _quoteName = true;
+            QuoteName = true;
             _indentChar = ' ';
             _indentation = 2;
 
@@ -253,7 +248,7 @@ namespace Newtonsoft.Json
         {
             InternalWritePropertyName(name);
 
-            WriteEscapedString(name, _quoteName);
+            WriteEscapedString(name, QuoteName);
 
             _writer.Write(':');
         }
@@ -269,18 +264,18 @@ namespace Newtonsoft.Json
 
             if (escape)
             {
-                WriteEscapedString(name, _quoteName);
+                WriteEscapedString(name, QuoteName);
             }
             else
             {
-                if (_quoteName)
+                if (QuoteName)
                 {
                     _writer.Write(_quoteChar);
                 }
 
                 _writer.Write(name);
 
-                if (_quoteName)
+                if (QuoteName)
                 {
                     _writer.Write(_quoteChar);
                 }

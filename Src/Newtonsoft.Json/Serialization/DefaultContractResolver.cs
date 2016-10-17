@@ -95,13 +95,9 @@ namespace Newtonsoft.Json.Serialization
     public class DefaultContractResolver : IContractResolver
     {
 #pragma warning disable 612,618
-        private static readonly IContractResolver _instance = new DefaultContractResolver(true);
 #pragma warning restore 612,618
 
-        internal static IContractResolver Instance
-        {
-            get { return _instance; }
-        }
+        internal static IContractResolver Instance { get; } = new DefaultContractResolver(true);
 
         private static readonly JsonConverter[] BuiltInConverters =
         {

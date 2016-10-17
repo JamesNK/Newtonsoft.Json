@@ -43,7 +43,6 @@ namespace Newtonsoft.Json.Schema
         private readonly IList<JsonSchema> _stack;
         private readonly JsonSchemaResolver _resolver;
         private readonly IDictionary<string, JsonSchema> _documentSchemas;
-        private JsonSchema _currentSchema;
         private JObject _rootSchema;
 
         public JsonSchemaBuilder(JsonSchemaResolver resolver)
@@ -55,7 +54,7 @@ namespace Newtonsoft.Json.Schema
 
         private void Push(JsonSchema value)
         {
-            _currentSchema = value;
+            CurrentSchema = value;
             _stack.Add(value);
             _resolver.LoadedSchemas.Add(value);
             _documentSchemas.Add(value.Location, value);
@@ -63,17 +62,14 @@ namespace Newtonsoft.Json.Schema
 
         private JsonSchema Pop()
         {
-            JsonSchema poppedSchema = _currentSchema;
+            JsonSchema poppedSchema = CurrentSchema;
             _stack.RemoveAt(_stack.Count - 1);
-            _currentSchema = _stack.LastOrDefault();
+            CurrentSchema = _stack.LastOrDefault();
 
             return poppedSchema;
         }
 
-        private JsonSchema CurrentSchema
-        {
-            get { return _currentSchema; }
-        }
+        private JsonSchema CurrentSchema { get; set; }
 
         internal JsonSchema Read(JsonReader reader)
         {

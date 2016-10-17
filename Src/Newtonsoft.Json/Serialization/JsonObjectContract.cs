@@ -111,7 +111,7 @@ namespace Newtonsoft.Json.Serialization
             set
             {
                 _parametrizedConstructor = value;
-                _parameterizedCreator = (value != null) ? JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(value) : null;
+                ParameterizedCreator = (value != null) ? JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(value) : null;
             }
         }
 
@@ -130,10 +130,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        internal ObjectConstructor<object> ParameterizedCreator
-        {
-            get { return _parameterizedCreator; }
-        }
+        internal ObjectConstructor<object> ParameterizedCreator { get; private set; }
 
         /// <summary>
         /// Gets or sets the extension data setter.
@@ -163,7 +160,6 @@ namespace Newtonsoft.Json.Serialization
         private ConstructorInfo _parametrizedConstructor;
         private ConstructorInfo _overrideConstructor;
         private ObjectConstructor<object> _overrideCreator;
-        private ObjectConstructor<object> _parameterizedCreator;
         private JsonPropertyCollection _creatorParameters;
         private Type _extensionDataValueType;
 

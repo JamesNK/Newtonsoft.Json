@@ -248,28 +248,19 @@ namespace Newtonsoft.Json.Utilities
 
         internal struct TypeConvertKey : IEquatable<TypeConvertKey>
         {
-            private readonly Type _initialType;
-            private readonly Type _targetType;
+            public Type InitialType { get; }
 
-            public Type InitialType
-            {
-                get { return _initialType; }
-            }
-
-            public Type TargetType
-            {
-                get { return _targetType; }
-            }
+            public Type TargetType { get; }
 
             public TypeConvertKey(Type initialType, Type targetType)
             {
-                _initialType = initialType;
-                _targetType = targetType;
+                InitialType = initialType;
+                TargetType = targetType;
             }
 
             public override int GetHashCode()
             {
-                return _initialType.GetHashCode() ^ _targetType.GetHashCode();
+                return InitialType.GetHashCode() ^ TargetType.GetHashCode();
             }
 
             public override bool Equals(object obj)
@@ -284,7 +275,7 @@ namespace Newtonsoft.Json.Utilities
 
             public bool Equals(TypeConvertKey other)
             {
-                return (_initialType == other._initialType && _targetType == other._targetType);
+                return (InitialType == other.InitialType && TargetType == other.TargetType);
             }
         }
 
