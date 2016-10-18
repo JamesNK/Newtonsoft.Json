@@ -1002,14 +1002,14 @@ namespace Newtonsoft.Json.Serialization
             {
                 if (member != null)
                 {
-                    if (contract.UnderlyingType != member.PropertyContract.CreatedType)
+                    if (contract.NonNullableUnderlyingType != member.PropertyContract.CreatedType)
                     {
                         return true;
                     }
                 }
                 else if (containerContract != null)
                 {
-                    if (containerContract.ItemContract == null || contract.UnderlyingType != containerContract.ItemContract.CreatedType)
+                    if (containerContract.ItemContract == null || contract.NonNullableUnderlyingType != containerContract.ItemContract.CreatedType)
                     {
                         return true;
                     }
@@ -1018,7 +1018,7 @@ namespace Newtonsoft.Json.Serialization
                 {
                     JsonContract rootContract = Serializer._contractResolver.ResolveContract(_rootType);
 
-                    if (contract.UnderlyingType != rootContract.CreatedType)
+                    if (contract.NonNullableUnderlyingType != rootContract.CreatedType)
                     {
                         return true;
                     }
