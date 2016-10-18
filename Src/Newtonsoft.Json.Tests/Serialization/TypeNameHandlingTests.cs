@@ -1938,19 +1938,40 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void SerializeNullableStructProperty_Auto()
         {
-            ObjectWithOptionalMessage objWithMessage = new ObjectWithOptionalMessage(new Message2("Hello!"));
-
             JsonSerializerSettings serializerSettings = new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
                 Formatting = Formatting.Indented
             };
 
+            ObjectWithOptionalMessage objWithMessage = new ObjectWithOptionalMessage(new Message2("Hello!"));
+
+            string json = JsonConvert.SerializeObject(objWithMessage, serializerSettings);
+
             StringAssert.AreEqual(@"{
   ""Message"": {
     ""Value"": ""Hello!""
   }
-}", JsonConvert.SerializeObject(objWithMessage, serializerSettings));
+}", json);
+        }
+
+        [Test]
+        public void DeserializeNullableStructProperty_Auto()
+        {
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+
+            string json = @"{
+  ""Message"": {
+    ""Value"": ""Hello!""
+  }
+}";
+            ObjectWithOptionalMessage objWithMessage = JsonConvert.DeserializeObject<ObjectWithOptionalMessage>(json, serializerSettings);
+
+            StringAssert.AreEqual("Hello!", objWithMessage.Message.Value.Value);
         }
 #endif
     }
