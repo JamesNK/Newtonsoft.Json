@@ -2051,7 +2051,69 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.IsNotNull(obtainedDictionary);
         }
+
+        [Test]
+        public void SerializeNullableStructProperty_Auto()
+        {
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+
+            ObjectWithOptionalMessage objWithMessage = new ObjectWithOptionalMessage(new Message2("Hello!"));
+
+            string json = JsonConvert.SerializeObject(objWithMessage, serializerSettings);
+
+            StringAssert.AreEqual(@"{
+  ""Message"": {
+    ""Value"": ""Hello!""
+  }
+}", json);
+        }
+
+        [Test]
+        public void DeserializeNullableStructProperty_Auto()
+        {
+            JsonSerializerSettings serializerSettings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Formatting = Formatting.Indented
+            };
+
+            string json = @"{
+  ""Message"": {
+    ""Value"": ""Hello!""
+  }
+}";
+            ObjectWithOptionalMessage objWithMessage = JsonConvert.DeserializeObject<ObjectWithOptionalMessage>(json, serializerSettings);
+
+            StringAssert.AreEqual("Hello!", objWithMessage.Message.Value.Value);
+        }
 #endif
+    }
+
+    public struct Message2
+    {
+        public string Value { get; }
+
+        [JsonConstructor]
+        public Message2(string value)
+        {
+            if (value == null) throw new ArgumentNullException(nameof(value));
+
+            Value = value;
+        }
+    }
+
+    public class ObjectWithOptionalMessage
+    {
+        public Message2? Message { get; }
+
+        public ObjectWithOptionalMessage(Message2? message)
+        {
+            Message = message;
+        }
     }
 
     public class DataType
