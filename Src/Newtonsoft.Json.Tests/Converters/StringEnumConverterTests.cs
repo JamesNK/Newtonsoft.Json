@@ -413,6 +413,52 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void DeserializeIgnoringWhitespaceEnum() 
+        {
+            string json = @"{
+  ""Enum"": ""dark goldenrod""
+}";
+
+            EnumContainer<StoreColor> container = JsonConvert.DeserializeObject<EnumContainer<StoreColor>>(json, new StringEnumConverter { IgnoreWhitespace = true });
+            Assert.AreEqual(StoreColor.DarkGoldenrod, container.Enum);
+        }
+
+        [Test]
+        public void DeserializeIgnoringWhitespaceFlagEnum() 
+        {
+             string json = @"{
+  ""Enum"": ""red,dark goldenrod, white""
+}";
+            EnumContainer<StoreColor> container = JsonConvert.DeserializeObject<EnumContainer<StoreColor>>(json, new StringEnumConverter { IgnoreWhitespace = true });
+            Assert.AreEqual(StoreColor.Red | StoreColor.DarkGoldenrod | StoreColor.White, container.Enum);
+        }
+
+        [Test]
+        public void DeserializeNonIgnoringWhitespaceEnum() 
+        {
+            string json = @"{
+  ""Enum"": ""dark goldenrod""
+}";
+            ExceptionAssert.Throws<JsonSerializationException>(() => {
+                EnumContainer<StoreColor> container = JsonConvert.DeserializeObject<EnumContainer<StoreColor>>(json, new StringEnumConverter { IgnoreWhitespace = false });
+            });
+        }
+
+        [Test]
+        public void DeserializeNonIngoringWhitespaceFlagEnum() 
+        {
+            string json = @"{
+  ""Enum"": ""red,dark goldenrod, white""
+}";
+            ExceptionAssert.Throws<JsonSerializationException>(() => {
+                EnumContainer<StoreColor> container = JsonConvert.DeserializeObject<EnumContainer<StoreColor>>(json, new StringEnumConverter { IgnoreWhitespace = false });
+                Assert.AreEqual(StoreColor.Red | StoreColor.DarkGoldenrod | StoreColor.White, container.Enum);
+            });
+        }
+
+
+
+        [Test]
         public void DeserializeInvalidString()
         {
             string json = "{ \"Value\" : \"Three\" }";

@@ -190,7 +190,7 @@ namespace Newtonsoft.Json.Utilities
             return values;
         }
 
-        public static object ParseEnumName(string enumText, bool isNullable, bool disallowValue, Type t)
+        public static object ParseEnumName(string enumText, bool isNullable, bool disallowValue, bool ignoreWhitespace, Type t)
         {
             if (enumText == string.Empty && isNullable)
             {
@@ -211,6 +211,11 @@ namespace Newtonsoft.Json.Utilities
                 for (int i = 0; i < names.Length; i++)
                 {
                     string name = names[i].Trim();
+
+                    if (ignoreWhitespace) 
+                    {
+                        name = name.Replace(" ", string.Empty);
+                    }
 
                     names[i] = TryResolvedEnumName(map, name, out resolvedEnumName)
                         ? resolvedEnumName
@@ -239,6 +244,10 @@ namespace Newtonsoft.Json.Utilities
                     {
                         throw new FormatException("Integer string '{0}' is not allowed.".FormatWith(CultureInfo.InvariantCulture, enumText));
                     }
+                }
+                if (ignoreWhitespace) 
+                {
+                    finalEnumText = finalEnumText.Replace(" ", string.Empty);
                 }
             }
 
