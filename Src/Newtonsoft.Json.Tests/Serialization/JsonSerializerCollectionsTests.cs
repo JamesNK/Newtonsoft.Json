@@ -53,7 +53,9 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
-
+#endif
+#if !NET20 && !PORTABLE40
+using System.Xml.Linq;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -1930,7 +1932,255 @@ namespace Newtonsoft.Json.Tests.Serialization
                 JsonConvert.DeserializeObject<ReadOnlyCollectionWithArrayArgument<double>>(json);
             }, "Unable to find a constructor to use for type Newtonsoft.Json.Tests.Serialization.ReadOnlyCollectionWithArrayArgument`1[System.Double]. Path '', line 1, position 1.");
         }
+
+#if !NET20 && !PORTABLE40
+        [Test]
+        public void NonDefaultConstructor_DuplicateKeyInDictionary_Replace()
+        {
+            string json = @"{ ""user"":""bpan"", ""Person"":{ ""groups"":""replaced!"", ""domain"":""adm"", ""mail"":""bpan@sdu.dk"", ""sn"":""Pan"", ""gn"":""Benzhi"", ""cn"":""Benzhi Pan"", ""eo"":""BQHLJaVTMr0eWsi1jaIut4Ls/pSuMeNEmsWfWsfKo="", ""guid"":""9A38CE8E5B288942A8DA415CF5E687"", ""employeenumber"":""2674"", ""omk1"":""930"", ""language"":""da"" }, ""XMLResponce"":""<?xml version='1.0' encoding='iso-8859-1' ?>\n<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>\n\t<cas:authenticationSuccess>\n\t\t<cas:user>bpan</cas:user>\n\t\t<norEduPerson>\n\t\t\t<groups>FNC-PRI-APP-SUNDB-EDOR-A,FNC-RI-APP-SUB-EDITOR-B</groups>\n\t\t\t<domain>adm</domain>\n\t\t\t<mail>bpan@sdu.dk</mail>\n\t\t\t<sn>Pan</sn>\n\t\t\t<gn>Benzhi</gn>\n\t\t\t<cn>Benzhi Pan</cn>\n\t\t\t<eo>BQHLJaVTMr0eWsi1jaIut4Lsfr/pSuMeNEmsWfWsfKo=</eo>\n\t\t\t<guid>9A38CE8E5B288942A8DA415C2C687</guid>\n\t\t\t<employeenumber>274</employeenumber>\n\t\t\t<omk1>930</omk1>\n\t\t\t<language>da</language>\n\t\t</norEduPerson>\n\t</cas:authenticationSuccess>\n</cas:serviceResponse>\n"", ""Language"":1, ""Groups"":[ ""FNC-PRI-APP-SNDB-EDOR-A"", ""FNC-PI-APP-SUNDB-EDOR-B"" ], ""Domain"":""adm"", ""Mail"":""bpan@sdu.dk"", ""Surname"":""Pan"", ""Givenname"":""Benzhi"", ""CommonName"":""Benzhi Pan"", ""OrganizationName"":null }";
+
+            var result = JsonConvert.DeserializeObject<CASResponce>(json);
+
+            Assert.AreEqual("replaced!", result.Person["groups"]);
+        }
+#endif
     }
+
+#if !NET20 && !PORTABLE40
+    public class CASResponce
+    {
+        //<?xml version='1.0' encoding='iso-8859-1' ?>
+        //<cas:serviceResponse xmlns:cas='http://www.yale.edu/tp/cas'>
+        //    <cas:authenticationSuccess>
+        //        <cas:user>and</cas:user>
+        //        <norEduPerson>
+        //            <groups>IT-service-OD,USR-IT-service,IT-service-udvikling</groups>
+        //            <domain>adm</domain>
+        //            <mail>and@sdu.dk</mail>
+        //            <sn>And</sn>
+        //            <gn>Anders</gn>
+        //            <cn>Anders And</cn>
+        //            <eo>QQT3tKSKjCxQSGsDiR8HTP9L5VsojBvOYyjOu8pwLMA=</eo>
+        //            <guid>DE423352CC763649B8F2ECF1DA304750</guid>
+        //            <language>da</language>  
+        //        </norEduPerson>
+        //    </cas:authenticationSuccess>
+        //</cas:serviceResponse>
+
+        // NemID
+        //<cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+        //  <cas:authenticationSuccess>
+        //      <cas:user>
+        //          2903851921
+        //      </cas:user>
+        //  </cas:authenticationSuccess>
+        //</cas:serviceResponse>
+
+
+        //WAYF
+        //<cas:serviceResponse xmlns:cas="http://www.yale.edu/tp/cas">
+        //  <cas:authenticationSuccess>
+        //     <cas:user>
+        //          jj@testidp.wayf.dk
+        //     </cas:user>
+        //  <norEduPerson>
+        //     <sn>Jensen</sn>
+        //     <gn>Jens</gn>
+        //     <cn>Jens farmer</cn>
+        //      <eduPersonPrincipalName>jj @testidp.wayf.dk</eduPersonPrincipalName>
+        //        <mail>jens.jensen @institution.dk</mail>
+        //        <organizationName>Institution</organizationName>
+        //        <eduPersonAssurance>2</eduPersonAssurance>
+        //        <schacPersonalUniqueID>urn:mace:terena.org:schac:personalUniqueID:dk:CPR:0708741234</schacPersonalUniqueID>
+        //        <eduPersonScopedAffiliation>student @course1.testidp.wayf.dk</eduPersonScopedAffiliation>
+        //        <eduPersonScopedAffiliation>staff @course1.testidp.wayf.dk</eduPersonScopedAffiliation>
+        //        <eduPersonScopedAffiliation>staff @course1.testidp.wsayf.dk</eduPersonScopedAffiliation>
+        //        <preferredLanguage>en</preferredLanguage>
+        //        <eduPersonEntitlement>test</eduPersonEntitlement>
+        //        <eduPersonPrimaryAffiliation>student</eduPersonPrimaryAffiliation>
+        //        <schacCountryOfCitizenship>DK</schacCountryOfCitizenship>
+        //        <eduPersonTargetedID>WAYF-DK-7a86d1c3b69a9639d7650b64f2eb773bd21a8c6d</eduPersonTargetedID>
+        //        <schacHomeOrganization>testidp.wayf.dk</schacHomeOrganization>
+        //        <givenName>Jens</givenName>
+        //      <o>Institution</o>
+        //     <idp>https://testbridge.wayf.dk</idp>
+        //  </norEduPerson>
+        // </cas:authenticationSuccess>
+        //</cas:serviceResponse>
+
+
+        public enum ssoLanguage
+        {
+            Unknown,
+            Danish,
+            English
+        }
+
+
+        public CASResponce(string xmlResponce)
+        {
+            this.Domain = "";
+            this.Mail = "";
+            this.Surname = "";
+            this.Givenname = "";
+            this.CommonName = "";
+
+            ParseReplyXML(xmlResponce);
+            ExtractGroups();
+            ExtractLanguage();
+        }
+
+        private void ExtractGroups()
+        {
+            this.Groups = new List<string>();
+            if (this.Person.ContainsKey("groups"))
+            {
+                string groupsString = this.Person["groups"];
+                string[] stringList = groupsString.Split(',');
+
+                foreach (string group in stringList)
+                {
+                    this.Groups.Add(group);
+                }
+            }
+
+        }
+
+        private void ExtractLanguage()
+        {
+            if (Person.ContainsKey("language"))
+            {
+                switch (Person["language"].Trim())
+                {
+                    case "da":
+                        this.Language = ssoLanguage.Danish;
+                        break;
+                    case "en":
+                        this.Language = ssoLanguage.English;
+                        break;
+                    default:
+                        this.Language = ssoLanguage.Unknown;
+                        break;
+                }
+            }
+            else
+            {
+                this.Language = ssoLanguage.Unknown;
+            }
+        }
+
+
+
+
+        private void ParseReplyXML(string xmlString)
+        {
+            try
+            {
+                System.Xml.Linq.XDocument xDoc = XDocument.Parse(xmlString);
+
+                var root = xDoc.Root;
+
+                string ns = "http://www.yale.edu/tp/cas";
+
+                XElement auth = root.Element(XName.Get("authenticationSuccess", ns));
+
+                if (auth == null)
+                    auth = root.Element(XName.Get("authenticationFailure", ns));
+
+                XElement xNodeUser = auth.Element(XName.Get("user", ns));
+
+                XElement eduPers = auth.Element(XName.Get("norEduPerson", ""));
+
+                string casUser = "";
+                Dictionary<string, string> eduPerson = new Dictionary<string, string>();
+
+                if (xNodeUser != null)
+                {
+                    casUser = xNodeUser.Value;
+
+                    if (eduPers != null)
+                    {
+                        foreach (XElement xPersonValue in eduPers.Elements())
+                        {
+                            if (!eduPerson.ContainsKey(xPersonValue.Name.LocalName))
+                            {
+                                eduPerson.Add(xPersonValue.Name.LocalName, xPersonValue.Value);
+                            }
+                            else
+                            {
+                                eduPerson[xPersonValue.Name.LocalName] = eduPerson[xPersonValue.Name.LocalName] + ";" + xPersonValue.Value;
+                            }
+                        }
+                    }
+                }
+
+                if (casUser.Trim() != "")
+                {
+                    this.user = casUser;
+                }
+
+                if (eduPerson.ContainsKey("domain"))
+                    this.Domain = eduPerson["domain"];
+                if (eduPerson.ContainsKey("organizationName"))
+                    this.OrganizationName = eduPerson["organizationName"];
+                if (eduPerson.ContainsKey("mail"))
+                    this.Mail = eduPerson["mail"];
+                if (eduPerson.ContainsKey("sn"))
+                    this.Surname = eduPerson["sn"];
+                if (eduPerson.ContainsKey("gn"))
+                    this.Givenname = eduPerson["gn"];
+                if (eduPerson.ContainsKey("cn"))
+                    this.CommonName = eduPerson["cn"];
+
+                this.Person = eduPerson;
+                this.XMLResponce = xmlString;
+            }
+            catch
+            {
+                this.user = "";
+
+            }
+        }
+
+        /// <summary>
+        /// Fast felt der altid findes.
+        /// </summary>
+        public string user { get; private set; }
+
+        /// <summary>
+        /// Person type som dictionary indeholdende de ekstra informationer returneret ved login.
+        /// </summary>
+        public Dictionary<string, string> Person { get; private set; }
+
+        /// <summary>
+        /// Den oprindelige xml returneret fra CAS.
+        /// </summary>
+        public string XMLResponce { get; private set; }
+
+        /// <summary>
+        /// Det sprog der benyttes i SSO. Muligheder er da eller en.
+        /// </summary>
+        public ssoLanguage Language { get; private set; }
+
+        /// <summary>
+        /// Liste af grupper som man er medlem af. Kun udvalgt iblandt dem der blev puttet ind i systemet.
+        /// </summary>
+        public List<string> Groups { get; private set; }
+
+        public string Domain { get; private set; }
+
+        public string Mail { get; private set; }
+
+        public string Surname { get; private set; }
+
+        public string Givenname { get; private set; }
+
+        public string CommonName { get; private set; }
+
+        public string OrganizationName { get; private set; }
+
+    }
+#endif
 
     public class ReadOnlyCollectionWithArrayArgument<T> : IList<T>
     {

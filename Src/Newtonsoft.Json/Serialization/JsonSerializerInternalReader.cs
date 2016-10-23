@@ -2046,7 +2046,7 @@ namespace Newtonsoft.Json.Serialization
                                 while (e.MoveNext())
                                 {
                                     DictionaryEntry entry = e.Entry;
-                                    targetDictionary.Add(entry.Key, entry.Value);
+                                    targetDictionary[entry.Key] = entry.Value;
                                 }
                             }
                             finally
