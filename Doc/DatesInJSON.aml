@@ -15,11 +15,12 @@
 </externalLink> itself: there is no literal
       syntax for dates in JSON. The spec has objects, arrays, strings, integers,
       and floats, but it defines no standard for what a date looks like.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
          and specify a title so that it can be jumped to with a hyperlink. -->
-    <section>
+    <section address="DatesAndJsonNET">
       <title>Dates and Json.NET</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
@@ -46,7 +47,7 @@
 </externalLink>.</para>
       </content>
     </section>
-    <section>
+    <section address="DateTimeJsonConverters">
       <title>DateTime JsonConverters</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
@@ -63,7 +64,7 @@
         serializer.</para>
       </content>
     </section>
-    <section>
+    <section address="JavaScriptDateTimeConverter">
       <title>JavaScriptDateTimeConverter</title>
       <content>
         <para>The JavaScriptDateTimeConverter class is one of the two DateTime
@@ -77,7 +78,7 @@
         browsers and some JSON frameworks, including Json.NET, support it.</para>
       </content>
     </section>
-    <section>
+    <section address="IsoDateTimeConverter">
       <title>IsoDateTimeConverter</title>
       <content>
       <alert class="note">

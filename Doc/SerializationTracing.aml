@@ -6,8 +6,9 @@
       <codeEntityReference>T:Newtonsoft.Json.Serialization.ITraceWriter</codeEntityReference> interface.
       By assigning a trace writer you can capture serialization messages and errors and debug what happens inside the
       Json.NET serializer when serializing and deserializing JSON.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
-    <section>
+    <section address="ITraceWriter">
       <title>ITraceWriter</title>
       <content>
         <para>A trace writer can be assigned using properties on JsonSerializerSettings or JsonSerializer.</para>
@@ -20,7 +21,7 @@
         System.Diagnostics.TraceListeners your application is using.</para>
       </content>
     </section>
-    <section>
+    <section address="CustomITraceWriter">
       <title>Custom ITraceWriter</title>
       <content>
         <para>To write messages using your existing logging framework, just implement a custom version of ITraceWriter.</para>

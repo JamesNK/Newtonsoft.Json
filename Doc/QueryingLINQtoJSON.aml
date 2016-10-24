@@ -5,9 +5,10 @@
       <para>LINQ to JSON provides a number of methods for getting data from its objects. The index methods on JObject/JArray let you quickly get data by its property name
       on an object or index in a collection, while <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Children</codeEntityReference> lets you get ranges
       of data as <codeInline>IEnumerable&lt;JToken&gt;</codeInline> to then query using LINQ.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
     
-    <section>
+    <section address="Index">
       <title>Getting values by Property Name or Collection Index</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
@@ -21,7 +22,7 @@
 
       </content>
     </section>
-    <section>
+    <section address="QueryingLINQ">
       <title>Querying with LINQ</title>
       <content>
         <para>JObject/JArray can also be queried using LINQ. <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.Children</codeEntityReference>

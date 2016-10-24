@@ -18,11 +18,12 @@
       means more bandwidth and a slower website.</para>
       <para>To solve the issue of unwanted JSON, Json.NET has a range of built-in
       options to fine-tune what gets written from a serialized object.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
          and specify a title so that it can be jumped to with a hyperlink. -->
-    <section>
+    <section address="JsonIgnoreAttributeAndDataMemberAttribute">
       <title>JsonIgnoreAttribute and DataMemberAttribute</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
@@ -47,7 +48,7 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="ReducingSerializedJsonSizeOptIn" title="Opt-in Serialization Example" />
       </content>
     </section>
-    <section>
+    <section address="Formatting">
       <title>Formatting</title>
       <content>
         <para>JSON written by the serializer with an option of
@@ -59,7 +60,7 @@
         JSON possible.</para>
       </content>
     </section>
-    <section>
+    <section address="NullValueHandling">
       <title>NullValueHandling</title>
       <content>
         <para><codeEntityReference>T:Newtonsoft.Json.NullValueHandling</codeEntityReference>
@@ -79,7 +80,7 @@
         property.</para>
       </content>
     </section>
-    <section>
+    <section address="DefaultValueHandling">
       <title>DefaultValueHandling</title>
       <content>
         <para><codeEntityReference>T:Newtonsoft.Json.DefaultValueHandling</codeEntityReference>
@@ -108,7 +109,7 @@
         will override the setting on the JsonSerializer for that property.</para>
       </content>
     </section>
-    <section>
+    <section address="IContractResolver">
       <title>IContractResolver</title>
       <content>
         <para>For more flexibility, the

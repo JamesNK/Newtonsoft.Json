@@ -20,11 +20,12 @@
       contain two completely separate Person objects with the same values. Writing
       references by value will also cause problems on objects where a circular
       reference occurs.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
          and specify a title so that it can be jumped to with a hyperlink. -->
-    <section>
+    <section address="PreserveReferencesHandling">
       <title>PreserveReferencesHandling</title>
       <content>
         <para>Setting <codeEntityReference>T:Newtonsoft.Json.PreserveReferencesHandling</codeEntityReference> will track object references
@@ -47,7 +48,7 @@
       </content>
     </section>
     
-    <section>
+    <section address="IsReference">
       <title>IsReference</title>
       <content>
         <para>The PreserveReferencesHandling setting on the JsonSerializer will
@@ -66,7 +67,7 @@
       </content>
     </section>
     
-    <section>
+    <section address="IReferenceResolver">
       <title>IReferenceResolver</title>
       <content>
         <para>To customize how references are generated and resolved the

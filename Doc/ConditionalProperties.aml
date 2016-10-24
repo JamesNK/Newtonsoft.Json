@@ -8,8 +8,9 @@
 <linkUri>http://msdn.microsoft.com/en-us/library/53b8022e.aspx</linkUri>
 <linkTarget>_blank</linkTarget>
 </externalLink>.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
-    <section>
+    <section address="ShouldSerialize">
       <title>ShouldSerialize</title>
       <content>
         <para>To conditionally serialize a property, add a method that returns boolean with the same name as the property and then prefix the method name
@@ -21,7 +22,7 @@
         
       </content>
     </section>
-    <section>
+    <section address="IContractResolver">
       <title>IContractResolver</title>
       <content>
         <para>ShouldSerialize can also be set using an <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference>.

@@ -3,8 +3,9 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>Json.NET offers many features not found in the JavaScriptSerializer and DataContractSerializer that come with .NET.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
-    <section>
+    <section address="FeatureComparison">
       <title>Feature Comparison</title>
       <content>
 <table>
@@ -487,7 +488,7 @@
 </table>
       </content>
     </section>
-    <section>
+    <section address="Benchmarks">
       <title>Benchmarks</title>
       <content>
         

@@ -18,11 +18,12 @@
       let the error bubble up and be thrown in your application.</para>
       <para>Error handling is defined through two methods: the <codeEntityReference>E:Newtonsoft.Json.JsonSerializer.Error</codeEntityReference> event on
       JsonSerializer and the <codeEntityReference>T:Newtonsoft.Json.Serialization.OnErrorAttribute</codeEntityReference>.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
          and specify a title so that it can be jumped to with a hyperlink. -->
-    <section>
+    <section address="ErrorEvent">
       <title>Error Event</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
@@ -67,7 +68,7 @@
       </content>
     </section>
     
-    <section>
+    <section address="OnErrorAttribute">
       <title>OnErrorAttribute</title>
       <content>
         <!-- Uncomment this to create a sub-section outline

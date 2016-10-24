@@ -9,9 +9,9 @@
     <introduction>
       <para>JsonSerializer has a number of properties on it to customize how it serializes JSON. These can also be used
       with the methods on JsonConvert via the <codeEntityReference>T:Newtonsoft.Json.JsonSerializerSettings</codeEntityReference> overloads.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
-<sections>
-<section>
+<section address="DateFormatHandling">
  <title>DateFormatHandling</title>
  <content><para><codeEntityReference>T:Newtonsoft.Json.DateFormatHandling</codeEntityReference> controls how dates are serialized.</para>
  
@@ -35,7 +35,7 @@
 </content>
 </section>
 
-<section>
+<section address="MissingMemberHandling">
  <title>MissingMemberHandling</title>
  <content><para><codeEntityReference>T:Newtonsoft.Json.MissingMemberHandling</codeEntityReference> controls how missing members, e.g. JSON contains a property that isn't a member on the object, are handled during deserialization.</para>
  
@@ -59,7 +59,7 @@
 </content>
 </section>
 
-<section>
+<section address="ReferenceLoopHandling">
  <title>ReferenceLoopHandling</title>
  <content>
    <para><codeEntityReference>T:Newtonsoft.Json.ReferenceLoopHandling</codeEntityReference> controls how circular referencing objects,
@@ -95,7 +95,7 @@ or a property's object properties or collection items using
 </content>
 </section>
 
-<section>
+<section address="NullValueHandling">
  <title>NullValueHandling</title>
  <content><para><codeEntityReference>T:Newtonsoft.Json.NullValueHandling</codeEntityReference> controls how null values on .NET objects are handled during serialization and how null values in JSON are handled during deserialization.</para>
  
@@ -120,7 +120,7 @@ or a property's object properties or collection items using
 </content>
 </section>
 
-<section>
+<section address="DefaultValueHandling">
  <title>DefaultValueHandling</title>
  <content><para><codeEntityReference>T:Newtonsoft.Json.DefaultValueHandling</codeEntityReference> controls how Json.NET uses default values set using the .NET <codeEntityReference>T:System.ComponentModel.DefaultValueAttribute</codeEntityReference> when serializing and deserializing.</para>
  
@@ -148,7 +148,7 @@ or a property's object properties or collection items using
 </content>
 </section>
 
-<section>
+<section address="ObjectCreationHandling">
  <title>ObjectCreationHandling</title>
  <content><para><codeEntityReference>T:Newtonsoft.Json.ObjectCreationHandling</codeEntityReference> controls how objects are created and deserialized to during deserialization.</para>
  
@@ -177,7 +177,7 @@ or a property's object properties or collection items using
 </content>
 </section>
 
-<section>
+<section address="TypeNameHandling">
  <title>TypeNameHandling</title>
  <content>
  <alert class="caution">
@@ -235,7 +235,7 @@ or a property's object properties or collection items using
 </content>
 </section>
 
-<section>
+<section address="TypeNameAssemblyFormat">
  <title>TypeNameAssemblyFormat</title>
  <content><para><codeEntityReference>T:System.Runtime.Serialization.Formatters.FormatterAssemblyStyle</codeEntityReference> controls how type names are written during serialization.</para>
  
@@ -260,14 +260,14 @@ or a property's object properties or collection items using
 </content>
 </section>
 
-<section>
+<section address="Binder">
  <title>Binder</title>
  <content><para>The <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference> is used to resolve type names to a .NET type.</para>
  <para>Read more about the serialization binder here: <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference></para>
 </content>
 </section>
 
-<section>
+<section address="ConstructorHandling">
  <title>ConstructorHandling</title>
  <content><para><codeEntityReference>T:Newtonsoft.Json.ConstructorHandling</codeEntityReference> controls how constructors are used when initializing objects during deserialization.</para>
  
@@ -294,7 +294,7 @@ or a property's object properties or collection items using
 </content>
 </section>
 
-<section>
+<section address="Converters">
  <title>Converters</title>
  <content><para>This is the collection of JsonConverters that will be used during serialization and deserialization.</para>
  <para>A <codeEntityReference>T:Newtonsoft.Json.JsonConverter</codeEntityReference> allows JSON to be manually written during serialization and read during deserialization.
@@ -322,7 +322,7 @@ or a property's object properties or collection items using
 </content>
 </section>
 
-<section>
+<section address="ContractResolver">
  <title>ContractResolver</title>
  <content><para>Internally for every .NET type the JsonSerializer will create a contract of how the type should be serialized and deserialized,
  based on type metadata and attributes applied to the class. Specifying a custom <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference>
@@ -331,7 +331,7 @@ or a property's object properties or collection items using
 </content>
 </section>
 
-<section>
+<section address="TraceWriter">
  <title>TraceWriter</title>
  <content><para>The Json.NET serializer supports logging and debugging using the
       <codeEntityReference>T:Newtonsoft.Json.Serialization.ITraceWriter</codeEntityReference> interface.
@@ -340,14 +340,13 @@ or a property's object properties or collection items using
 </content>
 </section>
 
-<section>
+<section address="Error">
  <title>Error</title>
  <content><para>The <codeEntityReference>E:Newtonsoft.Json.JsonSerializer.Error</codeEntityReference> event can catch errors during serialization and either handle the event and continue with
  serialization or let the error bubble up and be thrown to the application.</para>
  <para>Read more about error handling here: <link xlink:href="SerializationErrorHandling" /></para>
 </content>
 </section>
-</sections>
     <relatedTopics>
       <link xlink:href="SerializationGuide" />
       <link xlink:href="SerializationAttributes" />

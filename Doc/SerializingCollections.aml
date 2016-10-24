@@ -14,11 +14,12 @@
       <!-- <autoOutline /> -->
       <para>Json.NET has excellent support for serializing and deserializing
       collections of objects.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
          and specify a title so that it can be jumped to with a hyperlink. -->
-    <section>
+    <section address="SerializingCollections">
       <title>Serializing Collections</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
@@ -31,7 +32,7 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializingCollectionsSerializing" title="Serializing Collections" />
       </content>
     </section>
-    <section>
+    <section address="DeserializingCollections">
       <title>Deserializing Collections</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
@@ -42,7 +43,7 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializingCollectionsDeserializing" title="Deserializing Collections" />
       </content>
     </section>
-    <section>
+    <section address="DeserializingDictionaries">
       <title>Deserializing Dictionaries</title>
       <content>
         <!-- Uncomment this to create a sub-section outline

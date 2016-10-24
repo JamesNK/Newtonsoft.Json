@@ -6,9 +6,10 @@
       <codeEntityReference>T:Newtonsoft.Json.JsonReader</codeEntityReference>
       and 
       <codeEntityReference>T:Newtonsoft.Json.JsonWriter</codeEntityReference> classes.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
 
     </introduction>
-    <section>
+    <section address="TextReaderWriter">
       <title>JsonTextReader and JsonTextWriter</title>
       <content>
       
@@ -32,7 +33,7 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\ReadingAndWritingJsonTests.cs" region="ReadingJsonText" title="Reading JSON with JsonTextReader" />
       </content>
     </section>
-    <section>
+    <section address="JTokenReaderWriter">
       <title>JTokenReader and JTokenWriter</title>
       <content>
         <para><codeEntityReference>T:Newtonsoft.Json.Linq.JTokenReader</codeEntityReference>

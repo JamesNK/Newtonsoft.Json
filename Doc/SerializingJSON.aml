@@ -11,10 +11,11 @@
       <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference>.
       The JsonSerializer converts .NET objects into their JSON equivalent and back again by mapping the .NET object property names to the JSON property names
       and copies the values for you.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
     <!-- Optional procedures followed by optional code example but must have
          at least one procedure or code example -->
-<section>
+<section address="JsonConvert">
  <title>JsonConvert</title>
  <content><para>For simple scenarios where you want to convert to and from a JSON string, the
  <codeEntityReference>Overload:Newtonsoft.Json.JsonConvert.SerializeObject</codeEntityReference> and
@@ -28,7 +29,7 @@
 </content>
 </section>
 
-<section>
+<section address="JsonSerializer">
  <title>JsonSerializer</title>
  <content><para>For more control over how an object is serialized, the <codeEntityReference>T:Newtonsoft.Json.JsonSerializer</codeEntityReference> can be used directly.
 The JsonSerializer is able to read and write JSON text directly to a stream via <codeEntityReference>T:Newtonsoft.Json.JsonTextReader</codeEntityReference>

@@ -3,9 +3,10 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>As well as parsing JSON from existing JSON strings, LINQ to JSON objects can be created from scratch to create new JSON structures.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
     
-    <section>
+    <section address="CreatingManually">
       <title>Manually Creating JSON</title>
       <content>
         <para>Setting values and creating objects and arrays one at a time gives you
@@ -15,7 +16,7 @@
       </content>
     </section>
     
-    <section>
+    <section address="CreatingLINQ">
       <title>Creating JSON with LINQ</title>
       <content>
         <para>Declaratively creating JSON objects using LINQ is a fast way to create JSON from collections of values.</para>
@@ -24,7 +25,7 @@
       </content>
     </section>
     
-    <section>
+    <section address="CreatingFromObject">
       <title>Creating JSON from an object</title>
       <content>
         <para>The last option is to create a JSON object from a non-JSON type using the

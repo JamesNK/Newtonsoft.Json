@@ -13,11 +13,12 @@
       </para>
       <para>Anything that can be set on an object, collection, property, etc, using attributes or methods to control serialization
       can also be set using an IContractResolver.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
          and specify a title so that it can be jumped to with a hyperlink. -->
-    <section>
+    <section address="DefaultContractResolver">
       <title>DefaultContractResolver</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
@@ -28,7 +29,7 @@
         virtual methods that can be overridden.</para>
       </content>
     </section>
-    <section>
+    <section address="CamelCasePropertyNamesContractResolver">
       <title>CamelCasePropertyNamesContractResolver</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
@@ -44,7 +45,7 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="ContractResolver" title="ContractResolver" />
       </content>
     </section>
-    <section>
+    <section address="CustomIContractResolverExamples">
       <title>Custom IContractResolver Examples</title>
       <content>
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\PerformanceTests.cs" region="JsonConverterContractResolver" title="Use JsonConverter with IContractResolver" />

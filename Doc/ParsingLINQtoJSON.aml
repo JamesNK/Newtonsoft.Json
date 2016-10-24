@@ -3,9 +3,10 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>LINQ to JSON has methods available for parsing JSON from a string or loading JSON directly from a file.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
     
-    <section>
+    <section address="ParsingJSON">
       <title>Parsing JSON text</title>
       <content>
         <para>JSON values can be read from a string using 
@@ -16,7 +17,7 @@
       </content>
     </section>
     
-    <section>
+    <section address="LoadingJSON">
       <title>Loading JSON from a file</title>
       <content>
         <para>JSON can also be loaded directly from a file using <codeEntityReference>M:Newtonsoft.Json.Linq.JToken.ReadFrom(Newtonsoft.Json.JsonReader)</codeEntityReference>.</para>

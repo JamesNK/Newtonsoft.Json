@@ -8,11 +8,12 @@
     -->
     <introduction>
       <para>The Json.NET serializer can serialize a wide variety of .NET objects. This guide looks at how it works, first at a high level and then in more detail.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
          and specify a title so that it can be jumped to with a hyperlink. -->
-    <section>
+    <section address="Summary">
       <title>Summary</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
@@ -24,7 +25,7 @@
         a collection, then an error will be thrown, and vice-versa.</para>
       </content>
     </section>
-    <section>
+    <section address="ComplexTypes">
       <title>Complex Types</title>
 <content>
 <table>
@@ -49,7 +50,7 @@
 </table>
 </content>
     </section>
-    <section>
+    <section address="PrimitiveTypes">
       <title>Primitive Types</title>
 <content>
 <table>
@@ -122,7 +123,7 @@
 </content>
     </section>
 
-    <section>
+    <section address="Breakdown">
       <title>Breakdown of Type Serialization</title>
       <content>
         <autoOutline />

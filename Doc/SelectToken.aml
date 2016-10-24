@@ -7,8 +7,9 @@
       provides a method to query LINQ to JSON using a single string path to a desired
       <codeEntityReference>T:Newtonsoft.Json.Linq.JToken</codeEntityReference>.
       SelectToken makes dynamic queries easy because the entire query is defined in a string.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
-    <section>
+    <section address="SelectToken">
       <title>SelectToken</title>
       <content>
         <!-- Uncomment this to create a sub-section outline
@@ -22,7 +23,7 @@
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="SelectTokenComplex" title="SelectToken Example" />
       </content>
     </section>
-    <section>
+    <section address="SelectTokenJSONPath">
       <title>SelectToken with JSONPath</title>
       <content>
         <para>SelectToken supports JSONPath queries. Find out more about JSONPath <externalLink>
@@ -34,7 +35,7 @@
         <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Linq\QueryJsonSelectTokenJsonPath.cs" region="Usage" title="SelectToken With JSONPath" />
       </content>
     </section>
-    <section>
+    <section address="SelectTokenLINQ">
       <title>SelectToken with LINQ</title>
       <content>
         <!-- Uncomment this to create a sub-section outline

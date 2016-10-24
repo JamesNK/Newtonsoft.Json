@@ -40,8 +40,11 @@
     
     <section>
       <title>Json.NET Serialization Attributes</title>
+      <content>
+        <autoOutline />
+    </content>
         <sections>
-    <section>
+    <section address="JsonObjectAttribute">
       <title>JsonObjectAttribute</title>
       <content>
         <para>The MemberSerialization flag on this attribute specifies whether member serialization is opt-in
@@ -59,7 +62,7 @@
       </content>
     </section>
         
-    <section>
+    <section address="JsonArrayAttributeJsonDictionaryAttribute">
       <title>JsonArrayAttribute/JsonDictionaryAttribute</title>
       <content>
         <para>The <codeEntityReference>T:Newtonsoft.Json.JsonArrayAttribute</codeEntityReference> and
@@ -69,7 +72,7 @@
       </content>
     </section>
         
-    <section>
+    <section address="JsonPropertyAttribute">
       <title>JsonPropertyAttribute</title>
       <content>
         <para>JsonPropertyAttribute has a number of uses:</para>
@@ -88,7 +91,7 @@
       </content>
     </section>
         
-    <section>
+    <section address="JsonIgnoreAttribute">
       <title>JsonIgnoreAttribute</title>
       <content>
         <para>Excludes a field or property from serialization.</para>
@@ -96,7 +99,7 @@
       </content>
     </section>
         
-    <section>
+    <section address="JsonConverterAttribute">
       <title>JsonConverterAttribute</title>
       <content>
         <para>The <codeEntityReference>T:Newtonsoft.Json.JsonConverterAttribute</codeEntityReference> specifies which
@@ -118,7 +121,7 @@
       </content>
     </section>
         
-    <section>
+    <section address="JsonExtensionDataAttribute">
       <title>JsonExtensionDataAttribute</title>
       <content>
         <para>The <codeEntityReference>T:Newtonsoft.Json.JsonExtensionDataAttribute</codeEntityReference> instructs the
@@ -134,7 +137,7 @@
       </content>
     </section>
         
-    <section>
+    <section address="JsonConstructorAttribute">
       <title>JsonConstructorAttribute</title>
       <content>
         <para>The <codeEntityReference>T:Newtonsoft.Json.JsonConstructorAttribute</codeEntityReference> instructs the

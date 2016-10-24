@@ -264,10 +264,6 @@
       <ImageId>cross</ImageId>
       <AlternateText>cross</AlternateText>
     </Content>
-    <Image Include="jsonnetwindowsdatajson.png">
-      <ImageId>jsonnetwindowsdatajson</ImageId>
-      <AlternateText>jsonnetwindowsdatajson</AlternateText>
-    </Image>
     <Image Include="performance.png">
       <ImageId>performance</ImageId>
       <AlternateText>performance</AlternateText>

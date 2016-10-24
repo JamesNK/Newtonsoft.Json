@@ -1013,7 +1013,8 @@ namespace Newtonsoft.Json.Tests.Documentation
             IList<SearchResult> searchResults = new List<SearchResult>();
             foreach (JToken result in results)
             {
-                SearchResult searchResult = JsonConvert.DeserializeObject<SearchResult>(result.ToString());
+                // JToken.ToObject is a helper method that uses JsonSerializer internally
+                SearchResult searchResult = result.ToObject<SearchResult>();
                 searchResults.Add(searchResult);
             }
 

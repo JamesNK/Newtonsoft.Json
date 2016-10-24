@@ -4,8 +4,9 @@
     <introduction>
       <para>Out of the box Json.NET is faster than DataContractJsonSerializer and JavaScriptSerializer.
       Here are some tips to make it go even faster.</para>
+      <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
-    <section>
+    <section address="MemoryUsage">
       <title>Optimize Memory Usage</title>
       <content>
         <para>To keep an application consistently fast, it is important to minimize the
@@ -31,7 +32,7 @@
         
       </content>
     </section>
-    <section>
+    <section address="JsonConverters">
       <title>JsonConverters</title>
       <content>
         <para>Passing a <codeEntityReference>T:Newtonsoft.Json.JsonConverter</codeEntityReference> to SerializeObject or DeserializeObject provides a simple way to completely
@@ -51,7 +52,7 @@
         <para>The IContractResolver in the example above will set all DateTimes to use the JavaScriptDateConverter.</para>        
       </content>
     </section>
-    <section>
+    <section address="ManuallySerialize">
       <title>Manually Serialize</title>
       <content>
         <para>The absolute fastest way to read and write JSON is to use JsonTextReader/JsonTextWriter directly to manually serialize types.
@@ -64,7 +65,7 @@
         </para>
       </content>
     </section>
-    <section>
+    <section address="Benchmarks">
       <title>Benchmarks</title>
       <content>
         
