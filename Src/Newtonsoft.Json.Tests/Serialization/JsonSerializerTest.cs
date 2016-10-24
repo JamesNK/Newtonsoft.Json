@@ -9753,6 +9753,14 @@ Path '', line 1, position 1.");
             }
         }
 #endif
+
+        [Test]
+        public void ParametrizedConstructor_IncompleteJson()
+        {
+            string s = @"{""text"":""s"",""cursorPosition"":189,""dataSource"":""json_northwind"",";
+
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<CompletionDataRequest>(s), "Unexpected end when deserializing object. Path 'dataSource', line 1, position 63.");
+        }
     }
 
     public class DerivedWithPrivate : BaseWithPrivate
@@ -9911,5 +9919,21 @@ Path '', line 1, position 1.");
         {
             z = 3;
         }
+    }
+
+    public class CompletionDataRequest
+    {
+        public CompletionDataRequest(string text, int cursorPosition, string dataSource, string project)
+        {
+            Text = text;
+            CursorPosition = cursorPosition;
+            DataSource = dataSource;
+            Project = project;
+        }
+
+        public string Text { get; }
+        public int CursorPosition { get; }
+        public string DataSource { get; }
+        public string Project { get; }
     }
 }

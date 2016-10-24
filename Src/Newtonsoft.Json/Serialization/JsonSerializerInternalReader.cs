@@ -2194,6 +2194,11 @@ namespace Newtonsoft.Json.Serialization
                 }
             } while (!exit && reader.Read());
 
+            if (!exit)
+            {
+                ThrowUnexpectedEndException(reader, contract, null, "Unexpected end when deserializing object.");
+            }
+
             return propertyValues;
         }
 
