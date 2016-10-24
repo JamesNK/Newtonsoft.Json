@@ -191,6 +191,36 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
+        public void FloatParseHandling_TestPrecision()
+        {
+            string json = "[9223372036854775807, 1.7976931348623157E+308, 792281625142643375935439503.35]";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.FloatParseHandling = Json.FloatParseHandling.Auto;
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+            Assert.IsTrue(reader.Value is long);
+            Assert.AreEqual(long.MaxValue, reader.Value); // long
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.IsTrue(reader.Value is double);
+            Assert.AreEqual(double.MaxValue, reader.Value); // double
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.IsTrue(reader.Value is decimal);
+            Assert.AreEqual(decimal.MaxValue / 100, reader.Value); // decimal
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+        }
+
+        [Test]
         public void LineInfoAndNewLines()
         {
             string json = "{}";

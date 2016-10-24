@@ -2039,7 +2039,24 @@ namespace Newtonsoft.Json
                     {
                         string number = _stringReference.ToString();
 
-                        if (_floatParseHandling == FloatParseHandling.Decimal)
+                        if (_floatParseHandling == FloatParseHandling.Auto)
+                        {
+                            decimal d;
+                            double d2;
+                            if (decimal.TryParse(number, NumberStyles.Number | NumberStyles.AllowExponent, NumberFormatInfo.InvariantInfo, out d))
+                            {
+                                numberValue = d;
+                            }
+                            else if (double.TryParse(number, NumberStyles.Float | NumberStyles.AllowThousands, NumberFormatInfo.InvariantInfo, out d2))
+                            {
+                                numberValue = d2;
+                            }
+                            else
+                            {
+                                throw JsonReaderException.Create(this, "Input string '{0}' is not a valid decimal/double.".FormatWith(CultureInfo.InvariantCulture, number));
+                            }
+                        }
+                        else if (_floatParseHandling == FloatParseHandling.Decimal)
                         {
                             decimal d;
                             if (decimal.TryParse(number, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out d))
