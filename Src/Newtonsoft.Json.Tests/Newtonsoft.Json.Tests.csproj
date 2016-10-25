@@ -222,7 +222,15 @@
     <Compile Include="ExceptionTests.cs" />
     <Compile Include="JsonArrayAttributeTests.cs" />
     <Compile Include="JsonConvertTest.cs" />
-    <Compile Include="JsonTextReaderTest.cs" />
+    <Compile Include="JsonTextReaderTests\MiscTests.cs" />
+    <Compile Include="JsonTextReaderTests\ExceptionHandlingTests.cs" />
+    <Compile Include="TestObjects\JsonTextReaderTests\FakeArrayPool.cs" />
+    <Compile Include="JsonTextReaderTests\FloatTests.cs" />
+    <Compile Include="JsonTextReaderTests\ParseTests.cs" />
+    <Compile Include="JsonTextReaderTests\ReadTests.cs" />
+    <Compile Include="TestObjects\JsonTextReaderTests\SlowStream.cs" />
+    <Compile Include="TestObjects\JsonTextReaderTests\ToggleReaderError.cs" />
+    <Compile Include="TestObjects\JsonTextReaderTests\UnmanagedResourceFakingJsonReader.cs" />
     <Compile Include="JsonTextWriterTest.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
     <Compile Include="LinqToSql\Department.cs" />
@@ -595,6 +603,7 @@
       <Name>Newtonsoft.Json</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
