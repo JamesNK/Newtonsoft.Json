@@ -1538,7 +1538,7 @@ namespace Newtonsoft.Json.Converters
                 string attributeName = propertyName.Substring(1);
                 string attributePrefix = MiscellaneousUtils.GetPrefix(attributeName);
 
-                AddAttribute(reader, document, currentNode, attributeName, manager, attributePrefix);
+                AddAttribute(reader, document, currentNode, propertyName, attributeName, manager, attributePrefix);
                 return;
             }
 
@@ -1557,7 +1557,7 @@ namespace Newtonsoft.Json.Converters
                     case JsonTypeReflector.ValuePropertyName:
                         string attributeName = propertyName.Substring(1);
                         string attributePrefix = manager.LookupPrefix(JsonNamespaceUri);
-                        AddAttribute(reader, document, currentNode, attributeName, manager, attributePrefix);
+                        AddAttribute(reader, document, currentNode, propertyName, attributeName, manager, attributePrefix);
                         return;
                 }
             }
@@ -1614,8 +1614,13 @@ namespace Newtonsoft.Json.Converters
             }
         }
 
-        private static void AddAttribute(JsonReader reader, IXmlDocument document, IXmlNode currentNode, string attributeName, XmlNamespaceManager manager, string attributePrefix)
+        private static void AddAttribute(JsonReader reader, IXmlDocument document, IXmlNode currentNode, string propertyName, string attributeName, XmlNamespaceManager manager, string attributePrefix)
         {
+            if (currentNode.NodeType == XmlNodeType.Document)
+            {
+                throw JsonSerializationException.Create(reader, "JSON root object has property '{0}' that will be converted to an attribute. A root object cannot have any attribute properties. Consider specifing a DeserializeRootElementName.".FormatWith(CultureInfo.InvariantCulture, propertyName));
+            }
+
             string encodedName = XmlConvert.EncodeName(attributeName);
             string attributeValue = reader.Value.ToString();
 

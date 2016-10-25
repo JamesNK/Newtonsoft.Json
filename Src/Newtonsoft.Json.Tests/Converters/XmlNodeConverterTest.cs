@@ -2702,6 +2702,35 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void RootPropertyError()
+        {
+            string json = @"{
+  ""$id"": ""1"",
+  ""AOSLocaleName"": ""en-US"",
+  ""AXLanguage"": ""EN-AU"",
+  ""Company"": ""AURE"",
+  ""CompanyTimeZone"": 8,
+  ""CurrencyInfo"": {
+    ""$id"": ""2"",
+    ""CurrencyCode"": ""AUD"",
+    ""Description"": ""Australian Dollar"",
+    ""ExchangeRate"": 100.0,
+    ""ISOCurrencyCode"": ""AUD"",
+    ""Prefix"": """",
+    ""Suffix"": """"
+  },
+  ""IsSysAdmin"": true,
+  ""UserId"": ""lamar.miller"",
+  ""UserPreferredCalendar"": 0,
+  ""UserPreferredTimeZone"": 8
+}";
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeXmlNode(json),
+                "JSON root object has property '$id' that will be converted to an attribute. A root object cannot have any attribute properties. Consider specifing a DeserializeRootElementName. Path '$id', line 2, position 12.");
+        }
+
+        [Test]
         public void SerializeEmptyNodeAndOmitRoot()
         {
             string xmlString = @"<myemptynode />";
