@@ -578,7 +578,7 @@ namespace Newtonsoft.Json.Serialization
 
             bool isReference = ResolveIsReference(contract, member, collectionContract, containerProperty) ?? HasFlag(Serializer._preserveReferencesHandling, PreserveReferencesHandling.Objects);
             // don't make readonly fields that aren't creator parameters the referenced value because they can't be deserialized to
-            if (isReference && (member == null || member.Writable || ((collectionContract as JsonObjectContract)?.CreatorParameters.Contains(member.PropertyName) ?? false)))
+            if (isReference && (member == null || member.Writable || HasCreatorParameter(collectionContract, member)))
             {
                 WriteReferenceIdProperty(writer, contract.UnderlyingType, value);
             }
@@ -586,6 +586,17 @@ namespace Newtonsoft.Json.Serialization
             {
                 WriteTypeProperty(writer, contract.UnderlyingType);
             }
+        }
+
+        private bool HasCreatorParameter(JsonContainerContract contract, JsonProperty property)
+        {
+            JsonObjectContract objectContract = contract as JsonObjectContract;
+            if (objectContract == null)
+            {
+                return false;
+            }
+
+            return objectContract.CreatorParameters.Contains(property.PropertyName);
         }
 
         private void WriteReferenceIdProperty(JsonWriter writer, Type type, object value)
@@ -805,7 +816,7 @@ namespace Newtonsoft.Json.Serialization
         {
             bool isReference = ResolveIsReference(contract, member, containerContract, containerProperty) ?? HasFlag(Serializer._preserveReferencesHandling, PreserveReferencesHandling.Arrays);
             // don't make readonly fields that aren't creator parameters the referenced value because they can't be deserialized to
-            isReference = (isReference && (member == null || member.Writable || ((containerContract as JsonObjectContract)?.CreatorParameters.Contains(member.PropertyName) ?? false)));
+            isReference = (isReference && (member == null || member.Writable || HasCreatorParameter(containerContract, member)));
 
             bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Arrays, contract, member, containerContract, containerProperty);
             bool writeMetadataObject = isReference || includeTypeDetails;
