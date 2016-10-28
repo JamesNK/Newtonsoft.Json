@@ -130,6 +130,7 @@
     <Compile Include="Linq\JsonPath\QueryFilter.cs" />
     <Compile Include="Linq\JsonPath\RootFilter.cs" />
     <Compile Include="Linq\JsonPath\ScanFilter.cs" />
+    <Compile Include="Linq\JsonPath\ScanMultipleFilter.cs" />
     <Compile Include="Linq\JToken.cs" />
     <Compile Include="Linq\JTokenEqualityComparer.cs" />
     <Compile Include="Linq\JTokenReader.cs" />

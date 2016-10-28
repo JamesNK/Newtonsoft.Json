@@ -52,6 +52,81 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     public class JPathExecuteTests : TestFixtureBase
     {
         [Test]
+        public void ScanQuoted()
+        {
+            string json = @"{
+    ""Node1"": {
+        ""Child1"": {
+            ""Name"": ""IsMe"",
+            ""TargetNode"": {
+                ""Prop1"": ""Val1"",
+                ""Prop2"": ""Val2""
+            }
+        },
+        ""My.Child.Node"": {
+            ""TargetNode"": {
+                ""Prop1"": ""Val1"",
+                ""Prop2"": ""Val2""
+            }
+        }
+    },
+    ""Node2"": {
+        ""TargetNode"": {
+            ""Prop1"": ""Val1"",
+            ""Prop2"": ""Val2""
+        }
+    }
+}";
+
+            JObject models = JObject.Parse(json);
+
+            int result = models.SelectTokens("$..['My.Child.Node']").Count();
+            Assert.AreEqual(1, result);
+
+            result = models.SelectTokens("..['My.Child.Node']").Count();
+            Assert.AreEqual(1, result);
+        }
+
+        [Test]
+        public void ScanMultipleQuoted()
+        {
+            string json = @"{
+    ""Node1"": {
+        ""Child1"": {
+            ""Name"": ""IsMe"",
+            ""TargetNode"": {
+                ""Prop1"": ""Val1"",
+                ""Prop2"": ""Val2""
+            }
+        },
+        ""My.Child.Node"": {
+            ""TargetNode"": {
+                ""Prop1"": ""Val3"",
+                ""Prop2"": ""Val4""
+            }
+        }
+    },
+    ""Node2"": {
+        ""TargetNode"": {
+            ""Prop1"": ""Val5"",
+            ""Prop2"": ""Val6""
+        }
+    }
+}";
+
+            JObject models = JObject.Parse(json);
+
+            var results = models.SelectTokens("$..['My.Child.Node','Prop1','Prop2']").ToList();
+            Assert.AreEqual("Val1", (string)results[0]);
+            Assert.AreEqual("Val2", (string)results[1]);
+            Assert.AreEqual(JTokenType.Object, results[2].Type);
+            Assert.AreEqual("Val3", (string)results[3]);
+            Assert.AreEqual("Val4", (string)results[4]);
+            Assert.AreEqual("Val5", (string)results[5]);
+            Assert.AreEqual("Val6", (string)results[6]);
+        }
+
+        [Test]
         public void ParseWithEmptyArrayContent()
         {
             var json = @"{
