@@ -224,6 +224,34 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", strJsonMainClass);
         }
 
+        [Test]
+        public void DeserializeGenericIEnumerableWithImplicitConversion()
+        {
+            string deserialized = @"{
+  ""Enumerable"": [ ""abc"", ""def"" ] 
+}";
+            var enumerableClass = JsonConvert.DeserializeObject<GenericIEnumerableWithImplicitConversion>(deserialized);
+            var enumerableObject = enumerableClass.Enumerable.ToArray();
+            Assert.AreEqual(2, enumerableObject.Length);
+            Assert.AreEqual("abc", enumerableObject[0].Value);
+            Assert.AreEqual("def", enumerableObject[1].Value);
+        }
+
+        public class GenericIEnumerableWithImplicitConversion
+        {
+            public IEnumerable<ClassWithImplicitOperator> Enumerable { get; set; }
+        }
+
+        public class ClassWithImplicitOperator
+        {
+            public string Value { get; set; }
+
+            public static implicit operator ClassWithImplicitOperator(string value)
+            {
+                return new ClassWithImplicitOperator() { Value = value };
+            }
+        }
+
 #if !(PORTABLE || PORTABLE40 || NET20 || NET35)
         [Test]
         public void LargeIntegerAsString()
