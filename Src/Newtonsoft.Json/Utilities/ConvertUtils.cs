@@ -1354,7 +1354,7 @@ namespace Newtonsoft.Json.Utilities
             exponent -= (numDecimalEnd - numDecimalStart);
 
             value = IEEE754.PackDouble(isNegative, mantissa, exponent);
-            return double.IsInfinity(value) ? ParseResult.Overflow : ParseResult.Success;
+            return ParseResult.Success;
         }
 
         public static bool TryConvertGuid(string s, out Guid g)
