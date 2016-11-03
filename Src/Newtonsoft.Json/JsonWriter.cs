@@ -1673,7 +1673,7 @@ namespace Newtonsoft.Json
             AutoComplete(JsonToken.PropertyName);
         }
 
-        internal void InternalWriteRaw()
+        internal static void InternalWriteRaw()
         {
         }
 

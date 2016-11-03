@@ -69,7 +69,7 @@ namespace Newtonsoft.Json.Utilities
             return (MethodCall<T, object>)dynamicMethod.CreateDelegate(typeof(MethodCall<T, object>));
         }
 
-        private void GenerateCreateMethodCallIL(MethodBase method, ILGenerator generator, int argsIndex)
+        private static void GenerateCreateMethodCallIL(MethodBase method, ILGenerator generator, int argsIndex)
         {
             ParameterInfo[] args = method.GetParameters();
 
@@ -250,7 +250,7 @@ namespace Newtonsoft.Json.Utilities
             return (Func<T>)dynamicMethod.CreateDelegate(typeof(Func<T>));
         }
 
-        private void GenerateCreateDefaultConstructorIL(Type type, ILGenerator generator, Type delegateType)
+        private static void GenerateCreateDefaultConstructorIL(Type type, ILGenerator generator, Type delegateType)
         {
             if (type.IsValueType())
             {
@@ -289,7 +289,7 @@ namespace Newtonsoft.Json.Utilities
             return (Func<T, object>)dynamicMethod.CreateDelegate(typeof(Func<T, object>));
         }
 
-        private void GenerateCreateGetPropertyIL(PropertyInfo propertyInfo, ILGenerator generator)
+        private static void GenerateCreateGetPropertyIL(PropertyInfo propertyInfo, ILGenerator generator)
         {
             MethodInfo getMethod = propertyInfo.GetGetMethod(true);
             if (getMethod == null)
@@ -324,7 +324,7 @@ namespace Newtonsoft.Json.Utilities
             return (Func<T, object>)dynamicMethod.CreateDelegate(typeof(Func<T, object>));
         }
 
-        private void GenerateCreateGetFieldIL(FieldInfo fieldInfo, ILGenerator generator)
+        private static void GenerateCreateGetFieldIL(FieldInfo fieldInfo, ILGenerator generator)
         {
             if (!fieldInfo.IsStatic)
             {

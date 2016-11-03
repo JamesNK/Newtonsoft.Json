@@ -345,7 +345,7 @@ namespace Newtonsoft.Json.Serialization
             return string.IsNullOrEmpty(s) && objectType != null && objectType != typeof(string) && objectType != typeof(object) && contract != null && contract.IsNullable;
         }
 
-        internal string GetExpectedDescription(JsonContract contract)
+        internal static string GetExpectedDescription(JsonContract contract)
         {
             switch (contract.ContractType)
             {
@@ -814,7 +814,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private JsonArrayContract EnsureArrayContract(JsonReader reader, Type objectType, JsonContract contract)
+        private static JsonArrayContract EnsureArrayContract(JsonReader reader, Type objectType, JsonContract contract)
         {
             if (contract == null)
             {
@@ -921,7 +921,7 @@ namespace Newtonsoft.Json.Serialization
             return value;
         }
 
-        private bool HasNoDefinedType(JsonContract contract)
+        private static bool HasNoDefinedType(JsonContract contract)
         {
             return (contract == null || contract.UnderlyingType == typeof(object) || contract.ContractType == JsonContractType.Linq
 #if !(NET35 || NET20 || PORTABLE40)
@@ -930,7 +930,7 @@ namespace Newtonsoft.Json.Serialization
                 );
         }
 
-        private object EnsureType(JsonReader reader, object value, CultureInfo culture, JsonContract contract, Type targetType)
+        private static object EnsureType(JsonReader reader, object value, CultureInfo culture, JsonContract contract, Type targetType)
         {
             if (targetType == null)
             {
@@ -1132,7 +1132,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private bool HasFlag(DefaultValueHandling value, DefaultValueHandling flag)
+        private static bool HasFlag(DefaultValueHandling value, DefaultValueHandling flag)
         {
             return ((value & flag) == flag);
         }
@@ -2202,7 +2202,7 @@ namespace Newtonsoft.Json.Serialization
             return propertyValues;
         }
 
-        private bool ReadForType(JsonReader reader, JsonContract contract, bool hasConverter)
+        private static bool ReadForType(JsonReader reader, JsonContract contract, bool hasConverter)
         {
             // don't read properties with converters as a specific value
             // the value might be a string which will then get converted which will error if read as date for example
@@ -2551,7 +2551,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private void SetPropertyPresence(JsonReader reader, JsonProperty property, Dictionary<JsonProperty, PropertyPresence> requiredProperties)
+        private static void SetPropertyPresence(JsonReader reader, JsonProperty property, Dictionary<JsonProperty, PropertyPresence> requiredProperties)
         {
             if (property != null && requiredProperties != null)
             {

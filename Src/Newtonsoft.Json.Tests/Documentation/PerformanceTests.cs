@@ -52,12 +52,12 @@ namespace Newtonsoft.Json.Tests.Documentation
 {
     public class HttpClient
     {
-        public Task<string> GetStringAsync(string requestUri)
+        public static Task<string> GetStringAsync(string requestUri)
         {
             return null;
         }
 
-        public Task<Stream> GetStreamAsync(string requestUri)
+        public static Task<Stream> GetStreamAsync(string requestUri)
         {
             return null;
         }
@@ -131,11 +131,9 @@ namespace Newtonsoft.Json.Tests.Documentation
         public void DeserializeString()
         {
             #region DeserializeString
-            HttpClient client = new HttpClient();
-
             // read the json into a string
             // string could potentially be very large and cause memory problems
-            string json = client.GetStringAsync("http://www.test.com/large.json").Result;
+            string json = HttpClient.GetStringAsync("http://www.test.com/large.json").Result;
 
             Person p = JsonConvert.DeserializeObject<Person>(json);
             #endregion
@@ -144,9 +142,7 @@ namespace Newtonsoft.Json.Tests.Documentation
         public void DeserializeStream()
         {
             #region DeserializeStream
-            HttpClient client = new HttpClient();
-
-            using (Stream s = client.GetStreamAsync("http://www.test.com/large.json").Result)
+            using (Stream s = HttpClient.GetStreamAsync("http://www.test.com/large.json").Result)
             using (StreamReader sr = new StreamReader(s))
             using (JsonReader reader = new JsonTextReader(sr))
             {

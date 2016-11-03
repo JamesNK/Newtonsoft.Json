@@ -209,7 +209,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private bool? ResolveIsReference(JsonContract contract, JsonProperty property, JsonContainerContract collectionContract, JsonProperty containerProperty)
+        private static bool? ResolveIsReference(JsonContract contract, JsonProperty property, JsonContainerContract collectionContract, JsonProperty containerProperty)
         {
             bool? isReference = null;
 
@@ -588,7 +588,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private bool HasCreatorParameter(JsonContainerContract contract, JsonProperty property)
+        private static bool HasCreatorParameter(JsonContainerContract contract, JsonProperty property)
         {
             JsonObjectContract objectContract = contract as JsonObjectContract;
             if (objectContract == null)
@@ -625,17 +625,17 @@ namespace Newtonsoft.Json.Serialization
             writer.WriteValue(typeName);
         }
 
-        private bool HasFlag(DefaultValueHandling value, DefaultValueHandling flag)
+        private static bool HasFlag(DefaultValueHandling value, DefaultValueHandling flag)
         {
             return ((value & flag) == flag);
         }
 
-        private bool HasFlag(PreserveReferencesHandling value, PreserveReferencesHandling flag)
+        private static bool HasFlag(PreserveReferencesHandling value, PreserveReferencesHandling flag)
         {
             return ((value & flag) == flag);
         }
 
-        private bool HasFlag(TypeNameHandling value, TypeNameHandling flag)
+        private static bool HasFlag(TypeNameHandling value, TypeNameHandling flag)
         {
             return ((value & flag) == flag);
         }
@@ -1123,7 +1123,7 @@ namespace Newtonsoft.Json.Serialization
             OnSerialized(writer, contract, underlyingDictionary);
         }
 
-        private string GetPropertyName(JsonWriter writer, object name, JsonContract contract, out bool escape)
+        private static string GetPropertyName(JsonWriter writer, object name, JsonContract contract, out bool escape)
         {
             string propertyName;
 

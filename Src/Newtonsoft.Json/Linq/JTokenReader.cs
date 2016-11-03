@@ -127,7 +127,7 @@ namespace Newtonsoft.Json.Linq
             return false;
         }
 
-        private JsonToken? GetEndToken(JContainer c)
+        private static JsonToken? GetEndToken(JContainer c)
         {
             switch (c.Type)
             {
@@ -244,7 +244,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        private string SafeToString(object value)
+        private static string SafeToString(object value)
         {
             return (value != null) ? value.ToString() : null;
         }

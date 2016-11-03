@@ -214,7 +214,7 @@ namespace Newtonsoft.Json.Schema
             _writer.WriteEndArray();
         }
 
-        private void WriteType(string propertyName, JsonWriter writer, JsonSchemaType type)
+        private static void WriteType(string propertyName, JsonWriter writer, JsonSchemaType type)
         {
             IList<JsonSchemaType> types;
             if (System.Enum.IsDefined(typeof(JsonSchemaType), type))
@@ -247,7 +247,7 @@ namespace Newtonsoft.Json.Schema
             writer.WriteEndArray();
         }
 
-        private void WritePropertyIfNotNull(JsonWriter writer, string propertyName, object value)
+        private static void WritePropertyIfNotNull(JsonWriter writer, string propertyName, object value)
         {
             if (value != null)
             {

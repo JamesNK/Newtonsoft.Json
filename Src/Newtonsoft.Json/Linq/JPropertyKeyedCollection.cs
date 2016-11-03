@@ -113,7 +113,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        private string GetKeyForItem(JToken item)
+        private static string GetKeyForItem(JToken item)
         {
             return ((JProperty)item).Name;
         }

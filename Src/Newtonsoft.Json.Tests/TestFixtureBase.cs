@@ -212,12 +212,12 @@ namespace Newtonsoft.Json.Tests
             return new string(chars, 0, pos);
         }
 
-        protected string BytesToHex(byte[] bytes)
+        protected static string BytesToHex(byte[] bytes)
         {
             return BytesToHex(bytes, false);
         }
 
-        protected string BytesToHex(byte[] bytes, bool removeDashes)
+        protected static string BytesToHex(byte[] bytes, bool removeDashes)
         {
             string hex = BitConverter.ToString(bytes);
             if (removeDashes)
@@ -228,7 +228,7 @@ namespace Newtonsoft.Json.Tests
             return hex;
         }
 
-        protected byte[] HexToBytes(string hex)
+        protected static byte[] HexToBytes(string hex)
         {
             string fixedHex = hex.Replace("-", string.Empty);
 
@@ -286,7 +286,7 @@ namespace Newtonsoft.Json.Tests
             Console.WriteLine(EscapeJson(json));
         }
 
-        protected string EscapeJson(string json)
+        protected static string EscapeJson(string json)
         {
             return @"@""" + json.Replace(@"""", @"""""") + @"""";
         }

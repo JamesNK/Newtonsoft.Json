@@ -172,7 +172,7 @@ namespace Newtonsoft.Json.Schema
             return GenerateInternal(type, (!rootSchemaNullable) ? Required.Always : Required.Default, false);
         }
 
-        private string GetTitle(Type type)
+        private static string GetTitle(Type type)
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
@@ -184,7 +184,7 @@ namespace Newtonsoft.Json.Schema
             return null;
         }
 
-        private string GetDescription(Type type)
+        private static string GetDescription(Type type)
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
@@ -378,7 +378,7 @@ namespace Newtonsoft.Json.Schema
             return Pop().Schema;
         }
 
-        private JsonSchemaType AddNullType(JsonSchemaType type, Required valueRequired)
+        private static JsonSchemaType AddNullType(JsonSchemaType type, Required valueRequired)
         {
             if (valueRequired != Required.Always)
             {
@@ -388,7 +388,7 @@ namespace Newtonsoft.Json.Schema
             return type;
         }
 
-        private bool HasFlag(DefaultValueHandling value, DefaultValueHandling flag)
+        private static bool HasFlag(DefaultValueHandling value, DefaultValueHandling flag)
         {
             return ((value & flag) == flag);
         }
@@ -452,7 +452,7 @@ namespace Newtonsoft.Json.Schema
             return false;
         }
 
-        private JsonSchemaType GetJsonSchemaType(Type type, Required valueRequired)
+        private static JsonSchemaType GetJsonSchemaType(Type type, Required valueRequired)
         {
             JsonSchemaType schemaType = JsonSchemaType.None;
             if (valueRequired != Required.Always && ReflectionUtils.IsNullable(type))

@@ -275,7 +275,7 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(1, ds.Tables[1].Rows.Count);
         }
 
-        private DataTable CreateDataTable(string dataTableName, int rows)
+        private static DataTable CreateDataTable(string dataTableName, int rows)
         {
             // create a new DataTable.
             DataTable myTable = new DataTable(dataTableName);

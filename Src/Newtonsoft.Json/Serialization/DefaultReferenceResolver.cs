@@ -33,7 +33,7 @@ namespace Newtonsoft.Json.Serialization
     {
         private int _referenceCount;
 
-        private BidirectionalDictionary<string, object> GetMappings(object context)
+        private static BidirectionalDictionary<string, object> GetMappings(object context)
         {
             JsonSerializerInternalBase internalSerializer;
 

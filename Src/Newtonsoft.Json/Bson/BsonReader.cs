@@ -755,7 +755,7 @@ namespace Newtonsoft.Json.Bson
             }
         }
 
-        private int BytesInSequence(byte b)
+        private static int BytesInSequence(byte b)
         {
             if (b <= SeqRange1[1])
             {

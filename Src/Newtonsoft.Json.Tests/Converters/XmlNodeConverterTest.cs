@@ -128,7 +128,7 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 #endif
 
-        private string IndentXml(string xml)
+        private static string IndentXml(string xml)
         {
             XmlReader reader = XmlReader.Create(new StringReader(xml));
 
@@ -944,7 +944,7 @@ namespace Newtonsoft.Json.Tests.Converters
             StringAssert.AreEqual(expected, formattedXml);
         }
 
-        private string GetIndentedInnerXml(XmlNode node)
+        private static string GetIndentedInnerXml(XmlNode node)
         {
             XmlWriterSettings settings = new XmlWriterSettings();
             settings.Indent = true;

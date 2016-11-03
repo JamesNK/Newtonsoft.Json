@@ -60,12 +60,12 @@ namespace Newtonsoft.Json.Converters
             }
         }
 
-        private bool HasFlag(RegexOptions options, RegexOptions flag)
+        private static bool HasFlag(RegexOptions options, RegexOptions flag)
         {
             return ((options & flag) == flag);
         }
 
-        private void WriteBson(BsonWriter writer, Regex regex)
+        private static void WriteBson(BsonWriter writer, Regex regex)
         {
             // Regular expression - The first cstring is the regex pattern, the second
             // is the regex options string. Options are identified by characters, which 
@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Converters
             writer.WriteRegex(regex.ToString(), options);
         }
 
-        private void WriteJson(JsonWriter writer, Regex regex, JsonSerializer serializer)
+        private static void WriteJson(JsonWriter writer, Regex regex, JsonSerializer serializer)
         {
             DefaultContractResolver resolver = serializer.ContractResolver as DefaultContractResolver;
 
@@ -136,7 +136,7 @@ namespace Newtonsoft.Json.Converters
             throw JsonSerializationException.Create(reader, "Unexpected token when reading Regex.");
         }
 
-        private object ReadRegexString(JsonReader reader)
+        private static object ReadRegexString(JsonReader reader)
         {
             string regexText = (string)reader.Value;
             int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
@@ -167,7 +167,7 @@ namespace Newtonsoft.Json.Converters
             return new Regex(patternText, options);
         }
 
-        private Regex ReadRegexObject(JsonReader reader, JsonSerializer serializer)
+        private static Regex ReadRegexObject(JsonReader reader, JsonSerializer serializer)
         {
             string pattern = null;
             RegexOptions? options = null;

@@ -75,7 +75,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
             }
         }
 
-        private bool IsValid(int index, int stopIndex, bool positiveStep)
+        private static bool IsValid(int index, int stopIndex, bool positiveStep)
         {
             if (positiveStep)
             {

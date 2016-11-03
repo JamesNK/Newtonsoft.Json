@@ -136,7 +136,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
             return false;
         }
 
-        private bool EqualsWithStringCoercion(JValue value, JValue queryValue)
+        private static bool EqualsWithStringCoercion(JValue value, JValue queryValue)
         {
             if (value.Equals(queryValue))
             {

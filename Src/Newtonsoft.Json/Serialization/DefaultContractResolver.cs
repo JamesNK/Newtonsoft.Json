@@ -363,7 +363,7 @@ namespace Newtonsoft.Json.Serialization
         }
 
 #if !NET20
-        private bool ShouldSerializeEntityMember(MemberInfo memberInfo)
+        private static bool ShouldSerializeEntityMember(MemberInfo memberInfo)
         {
             PropertyInfo propertyInfo = memberInfo as PropertyInfo;
             if (propertyInfo != null)
@@ -449,7 +449,7 @@ namespace Newtonsoft.Json.Serialization
             return contract;
         }
 
-        private MemberInfo GetExtensionDataMemberForType(Type type)
+        private static MemberInfo GetExtensionDataMemberForType(Type type)
         {
             IEnumerable<MemberInfo> members = GetClassHierarchyForType(type).SelectMany(baseType =>
             {
@@ -607,7 +607,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private ConstructorInfo GetAttributeConstructor(Type objectType)
+        private static ConstructorInfo GetAttributeConstructor(Type objectType)
         {
             IList<ConstructorInfo> markedConstructors = objectType.GetConstructors(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic).Where(c => c.IsDefined(typeof(JsonConstructorAttribute), true)).ToList();
 
@@ -629,7 +629,7 @@ namespace Newtonsoft.Json.Serialization
             return null;
         }
 
-        private ConstructorInfo GetParameterizedConstructor(Type objectType)
+        private static ConstructorInfo GetParameterizedConstructor(Type objectType)
         {
             IList<ConstructorInfo> constructors = objectType.GetConstructors(BindingFlags.Public | BindingFlags.Instance).ToList();
 
@@ -735,7 +735,7 @@ namespace Newtonsoft.Json.Serialization
             return JsonTypeReflector.GetJsonConverter(objectType);
         }
 
-        private Func<object> GetDefaultCreator(Type createdType)
+        private static Func<object> GetDefaultCreator(Type createdType)
         {
             return JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(createdType);
         }
@@ -779,7 +779,7 @@ namespace Newtonsoft.Json.Serialization
             ResolveCallbackMethods(contract, contract.NonNullableUnderlyingType);
         }
 
-        private void ResolveCallbackMethods(JsonContract contract, Type t)
+        private static void ResolveCallbackMethods(JsonContract contract, Type t)
         {
             List<SerializationCallback> onSerializing;
             List<SerializationCallback> onSerialized;
@@ -815,7 +815,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private void GetCallbackMethodsForType(Type type, out List<SerializationCallback> onSerializing, out List<SerializationCallback> onSerialized, out List<SerializationCallback> onDeserializing, out List<SerializationCallback> onDeserialized, out List<SerializationErrorCallback> onError)
+        private static void GetCallbackMethodsForType(Type type, out List<SerializationCallback> onSerializing, out List<SerializationCallback> onSerialized, out List<SerializationCallback> onDeserializing, out List<SerializationCallback> onDeserialized, out List<SerializationErrorCallback> onError)
         {
             onSerializing = null;
             onSerialized = null;
@@ -918,7 +918,7 @@ namespace Newtonsoft.Json.Serialization
             return false;
         }
 
-        private List<Type> GetClassHierarchyForType(Type type)
+        private static List<Type> GetClassHierarchyForType(Type type)
         {
             List<Type> ret = new List<Type>();
 
@@ -1551,7 +1551,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private Predicate<object> CreateShouldSerializeTest(MemberInfo member)
+        private static Predicate<object> CreateShouldSerializeTest(MemberInfo member)
         {
             MethodInfo shouldSerializeMethod = member.DeclaringType.GetMethod(JsonTypeReflector.ShouldSerializePrefix + member.Name, ReflectionUtils.EmptyTypes);
 
@@ -1566,7 +1566,7 @@ namespace Newtonsoft.Json.Serialization
             return o => (bool)shouldSerializeCall(o);
         }
 
-        private void SetIsSpecifiedActions(JsonProperty property, MemberInfo member, bool allowNonPublicAccess)
+        private static void SetIsSpecifiedActions(JsonProperty property, MemberInfo member, bool allowNonPublicAccess)
         {
             MemberInfo specifiedMember = member.DeclaringType.GetProperty(member.Name + JsonTypeReflector.SpecifiedPostfix);
             if (specifiedMember == null)
