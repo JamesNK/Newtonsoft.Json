@@ -904,7 +904,7 @@ namespace Newtonsoft.Json
         internal void ReadIntoWrappedTypeObject()
         {
             ReaderReadAndAssert();
-            if (Value.ToString() == JsonTypeReflector.TypePropertyName)
+            if (Value != null && Value.ToString() == JsonTypeReflector.TypePropertyName)
             {
                 ReaderReadAndAssert();
                 if (Value != null && Value.ToString().StartsWith("System.Byte[]", StringComparison.Ordinal))
