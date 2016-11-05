@@ -1176,8 +1176,15 @@ namespace Newtonsoft.Json.Serialization
                 }
                 else
                 {
+                    object list = contract.OverrideCreator();
+
+                    if (contract.ShouldCreateWrapper)
+                    {
+                        list = contract.CreateWrapper(list);
+                    }
+
                     createdFromNonDefaultCreator = false;
-                    return (IList)contract.OverrideCreator();
+                    return (IList)list;
                 }
             }
             else if (contract.IsReadOnlyOrFixedSize)
