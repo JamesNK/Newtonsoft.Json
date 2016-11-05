@@ -1970,9 +1970,9 @@ namespace Newtonsoft.Json.Linq
                     case PrimitiveTypeCode.Char:
                         return (char)this;
                     case PrimitiveTypeCode.SByte:
-                        return (sbyte?)this;
-                    case PrimitiveTypeCode.SByteNullable:
                         return (sbyte)this;
+                    case PrimitiveTypeCode.SByteNullable:
+                        return (sbyte?)this;
                     case PrimitiveTypeCode.ByteNullable:
                         return (byte?)this;
                     case PrimitiveTypeCode.Byte:
