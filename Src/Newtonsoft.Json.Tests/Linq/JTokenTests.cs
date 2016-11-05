@@ -478,6 +478,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual((ulong)1L, (new JValue(1).ToObject(typeof(ulong?))));
             Assert.AreEqual((sbyte)1L, (new JValue(1).ToObject(typeof(sbyte))));
             Assert.AreEqual((sbyte)1L, (new JValue(1).ToObject(typeof(sbyte?))));
+            Assert.AreEqual(null, (JValue.CreateNull().ToObject(typeof(sbyte?))));
             Assert.AreEqual((byte)1L, (new JValue(1).ToObject(typeof(byte))));
             Assert.AreEqual((byte)1L, (new JValue(1).ToObject(typeof(byte?))));
             Assert.AreEqual((short)1L, (new JValue(1).ToObject(typeof(short))));
