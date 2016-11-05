@@ -385,6 +385,14 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
         }
 
         [Test]
+        public void ReadBytesEmptyWrappedObject()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"{}"));
+
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Error reading bytes. Unexpected token: StartObject. Path '', line 1, position 2." );
+        }
+
+        [Test]
         public void ReadIntegerWithError()
         {
             string json = @"{
