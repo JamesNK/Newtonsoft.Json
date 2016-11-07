@@ -617,6 +617,73 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual("Integer string '1' is not allowed.", ex.InnerException.Message);
         }
+
+        public enum EnumWithDifferentCases
+        {
+            M,
+            m
+        }
+
+        [Test]
+        public void SerializeEnumWithDifferentCases()
+        {
+            string json = JsonConvert.SerializeObject(EnumWithDifferentCases.M, new StringEnumConverter());
+
+            Assert.AreEqual(@"""M""", json);
+
+            json = JsonConvert.SerializeObject(EnumWithDifferentCases.m, new StringEnumConverter());
+
+            Assert.AreEqual(@"""m""", json);
+        }
+
+        [Test]
+        public void DeserializeEnumWithDifferentCases()
+        {
+            EnumWithDifferentCases e = JsonConvert.DeserializeObject<EnumWithDifferentCases>(@"""M""", new StringEnumConverter());
+
+            Assert.AreEqual(EnumWithDifferentCases.M, e);
+
+            e = JsonConvert.DeserializeObject<EnumWithDifferentCases>(@"""m""", new StringEnumConverter());
+
+            // unfortunatly Enum.Parse with ignoreCase will find the first match rather than the best match
+            // it would be great to find a way around this
+            Assert.AreEqual(EnumWithDifferentCases.M, e);
+        }
+
+#if !NET20
+        [DataContract(Name = "DateFormats")]
+        public enum EnumMemberWithDifferentCases
+        {
+            [EnumMember(Value = "M")]
+            Month,
+            [EnumMember(Value = "m")]
+            Minute
+        }
+
+        [Test]
+        public void SerializeEnumMemberWithDifferentCases()
+        {
+            string json = JsonConvert.SerializeObject(EnumMemberWithDifferentCases.Month, new StringEnumConverter());
+
+            Assert.AreEqual(@"""M""", json);
+
+            json = JsonConvert.SerializeObject(EnumMemberWithDifferentCases.Minute, new StringEnumConverter());
+
+            Assert.AreEqual(@"""m""", json);
+        }
+
+        [Test]
+        public void DeserializeEnumMemberWithDifferentCases()
+        {
+            EnumMemberWithDifferentCases e = JsonConvert.DeserializeObject<EnumMemberWithDifferentCases>(@"""M""", new StringEnumConverter());
+
+            Assert.AreEqual(EnumMemberWithDifferentCases.Month, e);
+
+            e = JsonConvert.DeserializeObject<EnumMemberWithDifferentCases>(@"""m""", new StringEnumConverter());
+
+            Assert.AreEqual(EnumMemberWithDifferentCases.Minute, e);
+        }
+#endif
     }
 
 #if !NET20
