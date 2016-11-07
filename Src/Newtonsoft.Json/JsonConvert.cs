@@ -858,7 +858,7 @@ namespace Newtonsoft.Json
                 jsonSerializer.CheckAdditionalContent = true;
             }
 
-            using (var reader = new JsonTextReader(new StringReader(value)))
+            using (JsonTextReader reader = new JsonTextReader(new StringReader(value)))
             {
                 return jsonSerializer.Deserialize(reader, type);
             }

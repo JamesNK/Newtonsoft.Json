@@ -78,9 +78,9 @@ namespace Newtonsoft.Json
 
         internal static State[][] BuildStateArray()
         {
-            var allStates = StateArrayTempate.ToList();
-            var errorStates = StateArrayTempate[0];
-            var valueStates = StateArrayTempate[7];
+            List<State[]> allStates = StateArrayTempate.ToList();
+            State[] errorStates = StateArrayTempate[0];
+            State[] valueStates = StateArrayTempate[7];
 
             foreach (JsonToken valueToken in EnumUtils.GetValues(typeof(JsonToken)))
             {

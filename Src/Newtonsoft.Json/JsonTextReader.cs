@@ -2249,7 +2249,7 @@ namespace Newtonsoft.Json
                         return false;
                     }
 
-                    var nextChart = _chars[_charPos + 1];
+                    char nextChart = _chars[_charPos + 1];
 
                     return (nextChart == '*' || nextChart == '/');
                 case ')':

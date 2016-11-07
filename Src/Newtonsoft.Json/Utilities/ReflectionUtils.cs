@@ -662,7 +662,7 @@ namespace Newtonsoft.Json.Utilities
             // update: I think this is fixed in .NET 3.5 SP1 - leave this in for now...
             List<MemberInfo> distinctMembers = new List<MemberInfo>(targetMembers.Count);
 
-            foreach (var groupedMember in targetMembers.GroupBy(m => m.Name))
+            foreach (IGrouping<string, MemberInfo> groupedMember in targetMembers.GroupBy(m => m.Name))
             {
                 int count = groupedMember.Count();
                 IList<MemberInfo> members = groupedMember.ToList();

@@ -97,15 +97,15 @@ namespace Newtonsoft.Json.Utilities
                 escapeChars.Add((char)i);
             }
 
-            foreach (var escapeChar in escapeChars.Union(new[] { '\'' }))
+            foreach (char escapeChar in escapeChars.Union(new[] { '\'' }))
             {
                 SingleQuoteCharEscapeFlags[escapeChar] = true;
             }
-            foreach (var escapeChar in escapeChars.Union(new[] { '"' }))
+            foreach (char escapeChar in escapeChars.Union(new[] { '"' }))
             {
                 DoubleQuoteCharEscapeFlags[escapeChar] = true;
             }
-            foreach (var escapeChar in escapeChars.Union(new[] { '"', '\'', '<', '>', '&' }))
+            foreach (char escapeChar in escapeChars.Union(new[] { '"', '\'', '<', '>', '&' }))
             {
                 HtmlCharEscapeFlags[escapeChar] = true;
             }
@@ -161,7 +161,7 @@ namespace Newtonsoft.Json.Utilities
 
                 for (int i = 0; i < s.Length; i++)
                 {
-                    var c = s[i];
+                    char c = s[i];
 
                     if (c < charEscapeFlags.Length && !charEscapeFlags[c])
                     {

@@ -62,7 +62,7 @@ namespace Newtonsoft.Json.Serialization
 
         public string GetReference(object context, object value)
         {
-            var mappings = GetMappings(context);
+            BidirectionalDictionary<string, object> mappings = GetMappings(context);
 
             string reference;
             if (!mappings.TryGetBySecond(value, out reference))

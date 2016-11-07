@@ -160,9 +160,7 @@ namespace Newtonsoft.Json.Utilities
 
             List<object> values = new List<object>();
 
-            var fields = enumType.GetFields().Where(f => f.IsLiteral);
-
-            foreach (FieldInfo field in fields)
+            foreach (FieldInfo field in enumType.GetFields(BindingFlags.Public | BindingFlags.Static))
             {
                 object value = field.GetValue(enumType);
                 values.Add(value);
@@ -180,9 +178,7 @@ namespace Newtonsoft.Json.Utilities
 
             List<string> values = new List<string>();
 
-            var fields = enumType.GetFields().Where(f => f.IsLiteral);
-
-            foreach (FieldInfo field in fields)
+            foreach (FieldInfo field in enumType.GetFields(BindingFlags.Public | BindingFlags.Static))
             {
                 values.Add(field.Name);
             }

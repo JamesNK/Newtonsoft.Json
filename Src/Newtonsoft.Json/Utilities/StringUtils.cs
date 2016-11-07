@@ -133,7 +133,7 @@ namespace Newtonsoft.Json.Utilities
                 throw new ArgumentNullException(nameof(valueSelector));
             }
 
-            var caseInsensitiveResults = source.Where(s => string.Equals(valueSelector(s), testValue, StringComparison.OrdinalIgnoreCase));
+            IEnumerable<TSource> caseInsensitiveResults = source.Where(s => string.Equals(valueSelector(s), testValue, StringComparison.OrdinalIgnoreCase));
             if (caseInsensitiveResults.Count() <= 1)
             {
                 return caseInsensitiveResults.SingleOrDefault();
@@ -141,7 +141,7 @@ namespace Newtonsoft.Json.Utilities
             else
             {
                 // multiple results returned. now filter using case sensitivity
-                var caseSensitiveResults = source.Where(s => string.Equals(valueSelector(s), testValue, StringComparison.Ordinal));
+                IEnumerable<TSource> caseSensitiveResults = source.Where(s => string.Equals(valueSelector(s), testValue, StringComparison.Ordinal));
                 return caseSensitiveResults.SingleOrDefault();
             }
         }
