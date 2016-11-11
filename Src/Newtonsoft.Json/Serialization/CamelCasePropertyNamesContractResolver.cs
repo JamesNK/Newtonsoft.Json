@@ -23,7 +23,6 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System.Globalization;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
@@ -37,8 +36,22 @@ namespace Newtonsoft.Json.Serialization
         /// Initializes a new instance of the <see cref="CamelCasePropertyNamesContractResolver"/> class.
         /// </summary>
         public CamelCasePropertyNamesContractResolver()
+            : this(true)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CamelCasePropertyNamesContractResolver"/> class.
+        /// </summary>
+        /// <param name="shareCache">
+        /// If set to <c>true</c> the <see cref="CamelCasePropertyNamesContractResolver"/> will use a cached shared with other resolvers of the same type.
+        /// Sharing the cache will significantly improve performance with multiple resolver instances because expensive reflection will only
+        /// happen once. This setting can cause unexpected behavior if different instances of the resolver are suppose to produce different
+        /// results. When set to false it is highly recommended to reuse <see cref="CamelCasePropertyNamesContractResolver"/> instances with the <see cref="JsonSerializer"/>.
+        /// </param>
+        public CamelCasePropertyNamesContractResolver(bool shareCache)
 #pragma warning disable 612,618
-            : base(true)
+            : base(shareCache)
 #pragma warning restore 612,618
         {
             NamingStrategy = new CamelCaseNamingStrategy
@@ -46,6 +59,17 @@ namespace Newtonsoft.Json.Serialization
                 ProcessDictionaryKeys = true,
                 OverrideSpecifiedNames = true
             };
+        }
+
+        /// <summary>
+        /// Resolves the name of the property.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns>The property name camel cased.</returns>
+        protected override string ResolvePropertyName(string propertyName)
+        {
+            // lower case the first letter (or more) of the passed in name
+            return StringUtils.ToCamelCase(propertyName);
         }
     }
 }

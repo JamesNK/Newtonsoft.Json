@@ -223,5 +223,23 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""second"": ""Value2!""
 }", json);
         }
+
+        [Test]
+        public void SharedState()
+        {
+            CamelCasePropertyNamesContractResolver a = new CamelCasePropertyNamesContractResolver();
+            CamelCasePropertyNamesContractResolver b = new CamelCasePropertyNamesContractResolver();
+
+            Assert.AreSame(a.GetState(), b.GetState());
+        }
+
+        [Test]
+        public void NoSharedState()
+        {
+            CamelCasePropertyNamesContractResolver a = new CamelCasePropertyNamesContractResolver(false);
+            CamelCasePropertyNamesContractResolver b = new CamelCasePropertyNamesContractResolver(false);
+
+            Assert.AreNotSame(a.GetState(), b.GetState());
+        }
     }
 }
