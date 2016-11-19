@@ -85,7 +85,7 @@ namespace Newtonsoft.Json.Utilities
     {
         public static readonly Type[] EmptyTypes;
 
-        private static readonly ThreadSafeStore<string, TypeNameKey> FullyQualifiedTypeNameKeyCache = new ThreadSafeStore<string, TypeNameKey>(CreateFullyQualifiedTypeNameKey);
+        private static readonly ThreadSafeStore<string, TypeNameKey> FullyQualifiedTypeNameKeyCache = new ThreadSafeStore<string, TypeNameKey>(CreateFullyQualifiedTypeNameKey, 10000);
 
         static ReflectionUtils()
         {
