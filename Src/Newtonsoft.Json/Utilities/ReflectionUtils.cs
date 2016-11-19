@@ -85,6 +85,8 @@ namespace Newtonsoft.Json.Utilities
     {
         public static readonly Type[] EmptyTypes;
 
+        private static readonly ThreadSafeStore<string, TypeNameKey> FullyQualifiedTypeNameKeyCache = new ThreadSafeStore<string, TypeNameKey>(CreateFullyQualifiedTypeNameKey);
+
         static ReflectionUtils()
         {
 #if !(PORTABLE40 || PORTABLE)
@@ -865,6 +867,11 @@ namespace Newtonsoft.Json.Utilities
 #endif
 
         public static TypeNameKey SplitFullyQualifiedTypeName(string fullyQualifiedTypeName)
+        {
+            return FullyQualifiedTypeNameKeyCache.Get(fullyQualifiedTypeName);
+        }
+
+        private static TypeNameKey CreateFullyQualifiedTypeNameKey(string fullyQualifiedTypeName)
         {
             int? assemblyDelimiterIndex = GetAssemblyDelimiterIndex(fullyQualifiedTypeName);
 
