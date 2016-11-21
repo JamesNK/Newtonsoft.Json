@@ -1017,7 +1017,7 @@ namespace Newtonsoft.Json.Utilities
                 {
                     PropertyInfo subTypeProperty = propertyInfo;
 
-                    if (!IsPublic(subTypeProperty))
+                    if (IsPublic(subTypeProperty))
                     {
                         // have to test on name rather than reference because instances are different
                         // depending on the type that GetProperties was called on
