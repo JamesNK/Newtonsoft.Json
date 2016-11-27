@@ -552,8 +552,8 @@ namespace Newtonsoft.Json.Tests.Serialization
         public void IncompleteContainers()
         {
             ExceptionAssert.Throws<JsonSerializationException>(
-                 () => JsonConvert.DeserializeObject<IList<object>>("[1,"),
-                 "Unexpected end when deserializing array. Path '[0]', line 1, position 3.");
+                () => JsonConvert.DeserializeObject<IList<object>>("[1,"),
+                "Unexpected end when deserializing array. Path '[0]', line 1, position 3.");
 
             ExceptionAssert.Throws<JsonSerializationException>(
                 () => JsonConvert.DeserializeObject<IList<int>>("[1,"),
@@ -1817,7 +1817,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsNotNull(deserialized.foo);
             Assert.AreEqual("value", deserialized.foo.bar);
         }
-        
+
         [Test]
         public void ConversionOperator()
         {
@@ -3273,7 +3273,10 @@ keyword such as type of business.""
             testClass.co = new Co();
             String strFromTest = JsonConvert.SerializeObject(testClass);
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { InterfacePropertyTestClass testFromDe = (InterfacePropertyTestClass)JsonConvert.DeserializeObject(strFromTest, typeof(InterfacePropertyTestClass)); }, @"Could not create an instance of type Newtonsoft.Json.Tests.TestObjects.ICo. Type is an interface or abstract class and cannot be instantiated. Path 'co.Name', line 1, position 14.");
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                InterfacePropertyTestClass testFromDe = (InterfacePropertyTestClass)JsonConvert.DeserializeObject(strFromTest, typeof(InterfacePropertyTestClass));
+            }, @"Could not create an instance of type Newtonsoft.Json.Tests.TestObjects.ICo. Type is an interface or abstract class and cannot be instantiated. Path 'co.Name', line 1, position 14.");
         }
 
         private Person GetPerson()
@@ -7200,7 +7203,10 @@ Path '', line 1, position 1.");
   null
 ]";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => { List<int> numbers = JsonConvert.DeserializeObject<List<int>>(json); }, "Error converting value {null} to type 'System.Int32'. Path '[3]', line 5, position 6.");
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                List<int> numbers = JsonConvert.DeserializeObject<List<int>>(json);
+            }, "Error converting value {null} to type 'System.Int32'. Path '[3]', line 5, position 6.");
         }
 
 #if !(PORTABLE)
@@ -8229,7 +8235,7 @@ Path '', line 1, position 1.");
             KeyValuePair<int, string> result =
                 JsonConvert.DeserializeObject<KeyValuePair<int, string>>(
                     "{key: 123, \"VALUE\": \"test value\"}"
-                    );
+                );
 
             Assert.AreEqual(123, result.Key);
             Assert.AreEqual("test value", result.Value);
@@ -8950,7 +8956,7 @@ Path '', line 1, position 1.");
         {
             string json = JsonConvert.SerializeObject(
                 new Dictionary<Size, Size> { { new Size(1, 2), new Size(3, 4) } }
-                );
+            );
 
             Assert.AreEqual(@"{""1, 2"":""3, 4""}", json);
 
@@ -9678,13 +9684,13 @@ Path '', line 1, position 1.");
 }";
 
             ExceptionAssert.Throws<JsonSerializationException>(() =>
-            {
-                JsonConvert.DeserializeObject<System.Net.Mail.MailMessage>(
-                    JsonMessage,
-                    new MailAddressReadConverter(),
-                    new AttachmentReadConverter(),
-                    new EncodingReadConverter());
-            },
+                {
+                    JsonConvert.DeserializeObject<System.Net.Mail.MailMessage>(
+                        JsonMessage,
+                        new MailAddressReadConverter(),
+                        new AttachmentReadConverter(),
+                        new EncodingReadConverter());
+                },
                 "Cannot populate list type System.Net.Mime.HeaderCollection. Path 'Headers', line 26, position 14.");
         }
 
@@ -9788,6 +9794,33 @@ Path '', line 1, position 1.");
             string s = @"{""text"":""s"",""cursorPosition"":189,""dataSource"":""json_northwind"",";
 
             ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<CompletionDataRequest>(s), "Unexpected end when deserializing object. Path 'dataSource', line 1, position 63.");
+        }
+
+        [Test]
+        public void ChildClassWithProtectedOverridePlusJsonProperty_Serialize()
+        {
+            var propertyValue = "test";
+            var testJson = @"{ 'MyProperty' : '" + propertyValue + "' }";
+
+            var testObject = JsonConvert.DeserializeObject<ChildClassWithProtectedOverridePlusJsonProperty>(testJson);
+
+            Assert.AreEqual(propertyValue, testObject.GetPropertyValue(), "MyProperty should be populated");
+        }
+    }
+
+    public class BaseClassWithProtectedVirtual
+    {
+        protected virtual string MyProperty { get; set; }
+    }
+
+    public class ChildClassWithProtectedOverridePlusJsonProperty : BaseClassWithProtectedVirtual
+    {
+        [JsonProperty]
+        protected override string MyProperty { get; set; }
+
+        public string GetPropertyValue()
+        {
+            return MyProperty;
         }
     }
 
