@@ -117,13 +117,13 @@ namespace Newtonsoft.Json.Utilities
         {
             ValidationUtils.ArgumentNotNull(propertyInfo, nameof(propertyInfo));
 
-            MethodInfo m = propertyInfo.GetGetMethod();
+            MethodInfo m = propertyInfo.GetGetMethod(true);
             if (m != null)
             {
                 return m.GetBaseDefinition();
             }
 
-            m = propertyInfo.GetSetMethod();
+            m = propertyInfo.GetSetMethod(true);
             if (m != null)
             {
                 return m.GetBaseDefinition();
@@ -1054,18 +1054,16 @@ namespace Newtonsoft.Json.Utilities
                     }
                     else
                     {
-                        MethodInfo subTypePropertyBaseDefinition = subTypeProperty.GetBaseDefinition();
-                        if (subTypePropertyBaseDefinition != null)
-                        {
-                            int index = initialProperties.IndexOf(p => p.Name == subTypeProperty.Name
-                                                                       && p.IsVirtual()
-                                                                       && p.GetBaseDefinition() != null
-                                                                       && p.GetBaseDefinition().DeclaringType.IsAssignableFrom(subTypePropertyBaseDefinition.DeclaringType));
+                        Type subTypePropertyDeclaringType = subTypeProperty.GetBaseDefinition()?.DeclaringType ?? subTypeProperty.DeclaringType;
 
-                            if (index == -1)
-                            {
-                                initialProperties.Add(subTypeProperty);
-                            }
+                        int index = initialProperties.IndexOf(p => p.Name == subTypeProperty.Name
+                                                                   && p.IsVirtual()
+                                                                   && (p.GetBaseDefinition()?.DeclaringType ?? p.DeclaringType).IsAssignableFrom(subTypePropertyDeclaringType));
+
+                        // don't add a virtual property that has an override
+                        if (index == -1)
+                        {
+                            initialProperties.Add(subTypeProperty);
                         }
                     }
                 }
