@@ -596,5 +596,70 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.IsNotNull(source["Property5"]);
             Assert.AreEqual(JTokenType.Null, source["Property5"].Type);
         }
+
+        [Test]
+        public void MergeNullValueHandling_Array()
+        {
+            string originalJson = @"{
+  ""Bar"": [
+    ""a"",
+    ""b"",
+    ""c""
+  ]
+}";
+            string newJson = @"{
+  ""Bar"": null
+}";
+
+            JObject oldFoo = JObject.Parse(originalJson);
+            JObject newFoo = JObject.Parse(newJson);
+
+            oldFoo.Merge(newFoo, new JsonMergeSettings
+            {
+                MergeNullValueHandling = MergeNullValueHandling.Ignore
+            });
+
+            StringAssert.AreEqual(originalJson, oldFoo.ToString());
+
+            oldFoo.Merge(newFoo, new JsonMergeSettings
+            {
+                MergeNullValueHandling = MergeNullValueHandling.Merge
+            });
+
+            StringAssert.AreEqual(newJson, newFoo.ToString());
+        }
+
+        [Test]
+        public void MergeNullValueHandling_Object()
+        {
+            string originalJson = @"{
+  ""Bar"": {}
+}";
+            string newJson = @"{
+  ""Bar"": null
+}";
+
+            JObject oldFoo = JObject.Parse(originalJson);
+            JObject newFoo = JObject.Parse(newJson);
+
+            oldFoo.Merge(newFoo, new JsonMergeSettings
+            {
+                MergeNullValueHandling = MergeNullValueHandling.Ignore
+            });
+
+            StringAssert.AreEqual(originalJson, oldFoo.ToString());
+
+            oldFoo.Merge(newFoo, new JsonMergeSettings
+            {
+                MergeNullValueHandling = MergeNullValueHandling.Merge
+            });
+
+            StringAssert.AreEqual(newJson, newFoo.ToString());
+        }
+
+        public class Foo
+        {
+            public IEnumerable<string> Bar { get; set; }
+        }
     }
 }
