@@ -656,10 +656,5 @@ namespace Newtonsoft.Json.Tests.Linq
 
             StringAssert.AreEqual(newJson, newFoo.ToString());
         }
-
-        public class Foo
-        {
-            public IEnumerable<string> Bar { get; set; }
-        }
     }
 }
