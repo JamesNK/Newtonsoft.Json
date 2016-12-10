@@ -35,7 +35,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// An exception has been thrown, which has left the <see cref="JsonWriter"/> in an invalid state.
         /// You may call the <see cref="JsonWriter.Close"/> method to put the <see cref="JsonWriter"/> in the <c>Closed</c> state.
-        /// Any other <see cref="JsonWriter"/> method calls results in an <see cref="InvalidOperationException"/> being thrown. 
+        /// Any other <see cref="JsonWriter"/> method calls result in an <see cref="InvalidOperationException"/> being thrown.
         /// </summary>
         Error = 0,
 

@@ -37,7 +37,7 @@ namespace Newtonsoft.Json
         String = 0,
 
         /// <summary>
-        /// Write special floating point values as symbols in JSON, e.g. NaN, Infinity, -Infinity.
+        /// Write special floating point values as symbols in JSON, e.g. "NaN", "Infinity", "-Infinity".
         /// Note that this will produce non-valid JSON.
         /// </summary>
         Symbol = 1,

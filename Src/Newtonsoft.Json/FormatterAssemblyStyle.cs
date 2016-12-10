@@ -9,7 +9,7 @@ namespace System.Runtime.Serialization.Formatters
     public enum FormatterAssemblyStyle
     {
         /// <summary>
-        /// In simple mode, the assembly used during deserialization need not match exactly the assembly used during serialization. Specifically, the version numbers need not match as the LoadWithPartialName method is used to load the assembly.
+        /// In simple mode, the assembly used during deserialization need not match exactly the assembly used during serialization. Specifically, the version numbers need not match as the <see cref="System.Reflection.Assembly.LoadWithPartialName(string)"/> method is used to load the assembly.
         /// </summary>
         Simple = 0,
 

@@ -36,7 +36,7 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json.Converters
 {
     /// <summary>
-    /// Converts an ExpandoObject to and from JSON.
+    /// Converts an <see cref="ExpandoObject"/> to and from JSON.
     /// </summary>
     public class ExpandoObjectConverter : JsonConverter
     {

@@ -123,8 +123,8 @@ namespace Newtonsoft.Json
         /// <see cref="TextReader"/> should be closed when the writer is closed.
         /// </summary>
         /// <value>
-        /// true to close the underlying stream or <see cref="TextReader"/> when
-        /// the writer is closed; otherwise false. The default is true.
+        /// <c>true</c> to close the underlying stream or <see cref="TextReader"/> when
+        /// the writer is closed; otherwise <c>false</c>. The default is <c>true</c>.
         /// </value>
         public bool CloseOutput { get; set; }
 
@@ -221,7 +221,7 @@ namespace Newtonsoft.Json
         private CultureInfo _culture;
 
         /// <summary>
-        /// Indicates how JSON text output is formatted.
+        /// Gets or sets a value indicating how JSON text output should be formatted.
         /// </summary>
         public Formatting Formatting
         {
@@ -238,7 +238,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how dates are written to JSON text.
+        /// Gets or sets how dates are written to JSON text.
         /// </summary>
         public DateFormatHandling DateFormatHandling
         {
@@ -255,7 +255,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how <see cref="DateTime"/> time zones are handling when writing JSON text.
+        /// Gets or sets how <see cref="DateTime"/> time zones are handled when writing JSON text.
         /// </summary>
         public DateTimeZoneHandling DateTimeZoneHandling
         {
@@ -272,7 +272,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how strings are escaped when writing JSON text.
+        /// Gets or sets how strings are escaped when writing JSON text.
         /// </summary>
         public StringEscapeHandling StringEscapeHandling
         {
@@ -295,7 +295,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how special floating point numbers, e.g. <see cref="F:System.Double.NaN"/>,
+        /// Gets or sets how special floating point numbers, e.g. <see cref="F:System.Double.NaN"/>,
         /// <see cref="F:System.Double.PositiveInfinity"/> and <see cref="F:System.Double.NegativeInfinity"/>,
         /// are written to JSON text.
         /// </summary>
@@ -314,7 +314,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatting when writing JSON text.
+        /// Gets or sets how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatted when writing JSON text.
         /// </summary>
         public string DateFormatString
         {
@@ -332,7 +332,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Creates an instance of the <c>JsonWriter</c> class. 
+        /// Initializes a new instance of a <c>JsonWriter</c>-derived class.
         /// </summary>
         protected JsonWriter()
         {
@@ -451,7 +451,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes the property name of a name/value pair on a JSON object.
+        /// Writes the property name of a name/value pair of a JSON object.
         /// </summary>
         /// <param name="name">The name of the property.</param>
         public virtual void WritePropertyName(string name)
@@ -460,7 +460,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes the property name of a name/value pair on a JSON object.
+        /// Writes the property name of a name/value pair of a JSON object.
         /// </summary>
         /// <param name="name">The name of the property.</param>
         /// <param name="escape">A flag to indicate whether the text should be escaped when it is written as a JSON property name.</param>
@@ -1407,7 +1407,7 @@ namespace Newtonsoft.Json
         #endregion
 
         /// <summary>
-        /// Writes out a comment <code>/*...*/</code> containing the specified text. 
+        /// Writes a comment <c>/*...*/</c> containing the specified text.
         /// </summary>
         /// <param name="text">Text to place inside the comment.</param>
         public virtual void WriteComment(string text)
@@ -1416,7 +1416,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes out the given white space.
+        /// Writes the given white space.
         /// </summary>
         /// <param name="ws">The string of white space characters.</param>
         public virtual void WriteWhitespace(string ws)
@@ -1424,6 +1424,9 @@ namespace Newtonsoft.Json
             InternalWriteWhitespace(ws);
         }
 
+        /// <summary>
+        /// Releases both unmanaged and managed resources.
+        /// </summary>
         void IDisposable.Dispose()
         {
             Dispose(true);
@@ -1431,7 +1434,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Releases unmanaged and - optionally - managed resources
+        /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
@@ -1607,7 +1610,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Sets the state of the JsonWriter,
+        /// Sets the state of the JsonWriter.
         /// </summary>
         /// <param name="token">The JsonToken being written.</param>
         /// <param name="value">The value being written.</param>

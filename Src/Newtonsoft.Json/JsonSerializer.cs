@@ -244,7 +244,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how reference loops (e.g. a class referencing itself) is handled.
+        /// Gets or sets how reference loops (e.g. a class referencing itself) is handled.
         /// </summary>
         public virtual ReferenceLoopHandling ReferenceLoopHandling
         {
@@ -261,7 +261,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how missing members (e.g. JSON contains a property that isn't a member on the object) are handled during deserialization.
+        /// Gets or sets how missing members (e.g. JSON contains a property that isn't a member on the object) are handled during deserialization.
         /// </summary>
         public virtual MissingMemberHandling MissingMemberHandling
         {
@@ -278,7 +278,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how null values are handled during serialization and deserialization.
+        /// Gets or sets how null values are handled during serialization and deserialization.
         /// </summary>
         public virtual NullValueHandling NullValueHandling
         {
@@ -295,7 +295,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how null default are handled during serialization and deserialization.
+        /// Gets or sets how default values are handled during serialization and deserialization.
         /// </summary>
         public virtual DefaultValueHandling DefaultValueHandling
         {
@@ -412,7 +412,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how dates are written to JSON text.
+        /// Gets or sets how dates are written to JSON text.
         /// </summary>
         public virtual DateFormatHandling DateFormatHandling
         {
@@ -421,7 +421,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how <see cref="DateTime"/> time zones are handling during serialization and deserialization.
+        /// Gets or sets how <see cref="DateTime"/> time zones are handled during serialization and deserialization.
         /// </summary>
         public virtual DateTimeZoneHandling DateTimeZoneHandling
         {
@@ -430,7 +430,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how date formatted strings, e.g. "\/Date(1198908717056)\/" and "2012-03-21T05:40Z", are parsed when reading JSON.
+        /// Gets or sets how date formatted strings, e.g. "\/Date(1198908717056)\/" and "2012-03-21T05:40Z", are parsed when reading JSON.
         /// </summary>
         public virtual DateParseHandling DateParseHandling
         {
@@ -439,7 +439,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
+        /// Gets or sets how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
         /// </summary>
         public virtual FloatParseHandling FloatParseHandling
         {
@@ -448,7 +448,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how special floating point numbers, e.g. <see cref="F:System.Double.NaN"/>,
+        /// Gets or sets how special floating point numbers, e.g. <see cref="F:System.Double.NaN"/>,
         /// <see cref="F:System.Double.PositiveInfinity"/> and <see cref="F:System.Double.NegativeInfinity"/>,
         /// are written as JSON text.
         /// </summary>
@@ -459,7 +459,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how strings are escaped when writing JSON text.
+        /// Gets or sets how strings are escaped when writing JSON text.
         /// </summary>
         public virtual StringEscapeHandling StringEscapeHandling
         {
@@ -468,7 +468,8 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatted when writing JSON text, and the expected date format when reading JSON text.
+        /// Gets or sets how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatted when writing JSON text,
+        /// and the expected date format when reading JSON text.
         /// </summary>
         public virtual string DateFormatString
         {

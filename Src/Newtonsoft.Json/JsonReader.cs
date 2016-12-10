@@ -51,7 +51,7 @@ namespace Newtonsoft.Json
         protected internal enum State
         {
             /// <summary>
-            /// The Read method has not been called.
+            /// The <see cref="Read"/> method has not been called.
             /// </summary>
             Start,
 
@@ -86,7 +86,7 @@ namespace Newtonsoft.Json
             Array,
 
             /// <summary>
-            /// The Close method has been called.
+            /// The <see cref="Close"/> method has been called.
             /// </summary>
             Closed,
 
@@ -101,7 +101,7 @@ namespace Newtonsoft.Json
             ConstructorStart,
 
             /// <summary>
-            /// Reader in a constructor.
+            /// Reader is in a constructor.
             /// </summary>
             Constructor,
 
@@ -145,8 +145,8 @@ namespace Newtonsoft.Json
         /// <see cref="TextReader"/> should be closed when the reader is closed.
         /// </summary>
         /// <value>
-        /// true to close the underlying stream or <see cref="TextReader"/> when
-        /// the reader is closed; otherwise false. The default is true.
+        /// <c>true</c> to close the underlying stream or <see cref="TextReader"/> when
+        /// the reader is closed; otherwise <c>false</c>. The default is <c>true</c>.
         /// </value>
         public bool CloseInput { get; set; }
 
@@ -155,7 +155,8 @@ namespace Newtonsoft.Json
         /// be read from a continuous stream without erroring.
         /// </summary>
         /// <value>
-        /// true to support reading multiple pieces of JSON content; otherwise false. The default is false.
+        /// <c>true</c> to support reading multiple pieces of JSON content; otherwise <c>false</c>.
+        /// The default is <c>false</c>.
         /// </value>
         public bool SupportMultipleContent { get; set; }
 
@@ -169,7 +170,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how <see cref="DateTime"/> time zones are handling when reading JSON.
+        /// Gets or sets how <see cref="DateTime"/> time zones are handled when reading JSON.
         /// </summary>
         public DateTimeZoneHandling DateTimeZoneHandling
         {
@@ -186,7 +187,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how date formatted strings, e.g. "\/Date(1198908717056)\/" and "2012-03-21T05:40Z", are parsed when reading JSON.
+        /// Gets or sets how date formatted strings, e.g. "\/Date(1198908717056)\/" and "2012-03-21T05:40Z", are parsed when reading JSON.
         /// </summary>
         public DateParseHandling DateParseHandling
         {
@@ -209,7 +210,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
+        /// Gets or sets how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
         /// </summary>
         public FloatParseHandling FloatParseHandling
         {
@@ -226,7 +227,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how custom date formatted strings are parsed when reading JSON.
+        /// Gets or sets how custom date formatted strings are parsed when reading JSON.
         /// </summary>
         public string DateFormatString
         {
@@ -268,7 +269,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Gets The Common Language Runtime (CLR) type for the current JSON token.
+        /// Gets the Common Language Runtime (CLR) type for the current JSON token.
         /// </summary>
         public virtual Type ValueType
         {
@@ -337,7 +338,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="JsonReader"/> class with the specified <see cref="TextReader"/>.
+        /// Initializes a new instance of a <see cref="JsonReader"/>-derived class.
         /// </summary>
         protected JsonReader()
         {
@@ -1113,7 +1114,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Releases unmanaged and - optionally - managed resources
+        /// Releases unmanaged and - optionally - managed resources.
         /// </summary>
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)

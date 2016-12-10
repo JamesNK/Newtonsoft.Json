@@ -128,7 +128,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Gets or sets how null default are handled during serialization and deserialization.
+        /// Gets or sets how default values are handled during serialization and deserialization.
         /// </summary>
         /// <value>The default value handling.</value>
         public DefaultValueHandling DefaultValueHandling
@@ -306,7 +306,8 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatted when writing JSON text, and the expected date format when reading JSON text.
+        /// Gets or sets how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatted when writing JSON text,
+        /// and the expected date format when reading JSON text.
         /// </summary>
         public string DateFormatString
         {
@@ -346,7 +347,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how dates are written to JSON text.
+        /// Gets or sets how dates are written to JSON text.
         /// </summary>
         public DateFormatHandling DateFormatHandling
         {
@@ -355,7 +356,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how <see cref="DateTime"/> time zones are handling during serialization and deserialization.
+        /// Gets or sets how <see cref="DateTime"/> time zones are handled during serialization and deserialization.
         /// </summary>
         public DateTimeZoneHandling DateTimeZoneHandling
         {
@@ -364,7 +365,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how date formatted strings, e.g. "\/Date(1198908717056)\/" and "2012-03-21T05:40Z", are parsed when reading JSON.
+        /// Gets or sets how date formatted strings, e.g. "\/Date(1198908717056)\/" and "2012-03-21T05:40Z", are parsed when reading JSON.
         /// </summary>
         public DateParseHandling DateParseHandling
         {
@@ -373,7 +374,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how special floating point numbers, e.g. <see cref="F:System.Double.NaN"/>,
+        /// Gets or sets how special floating point numbers, e.g. <see cref="F:System.Double.NaN"/>,
         /// <see cref="F:System.Double.PositiveInfinity"/> and <see cref="F:System.Double.NegativeInfinity"/>,
         /// are written as JSON.
         /// </summary>
@@ -384,7 +385,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
+        /// Gets or sets how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
         /// </summary>
         public FloatParseHandling FloatParseHandling
         {
@@ -393,7 +394,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Get or set how strings are escaped when writing JSON text.
+        /// Gets or sets how strings are escaped when writing JSON text.
         /// </summary>
         public StringEscapeHandling StringEscapeHandling
         {

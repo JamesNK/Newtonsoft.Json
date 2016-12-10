@@ -46,7 +46,7 @@ using System.Xml.Linq;
 namespace Newtonsoft.Json
 {
     /// <summary>
-    /// Provides methods for converting between common language runtime types and JSON types.
+    /// Provides methods for converting between Common Language Runtime (CLR) types and JSON types.
     /// </summary>
     /// <example>
     ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializeObject" title="Serializing and Deserializing JSON with JsonConvert" />
@@ -63,22 +63,22 @@ namespace Newtonsoft.Json
         public static Func<JsonSerializerSettings> DefaultSettings { get; set; }
 
         /// <summary>
-        /// Represents JavaScript's boolean value true as a string. This field is read-only.
+        /// Represents JavaScript's boolean value <c>true</c> as a string. This field is read-only.
         /// </summary>
         public static readonly string True = "true";
 
         /// <summary>
-        /// Represents JavaScript's boolean value false as a string. This field is read-only.
+        /// Represents JavaScript's boolean value <c>false</c> as a string. This field is read-only.
         /// </summary>
         public static readonly string False = "false";
 
         /// <summary>
-        /// Represents JavaScript's null as a string. This field is read-only.
+        /// Represents JavaScript's <c>null</c> as a string. This field is read-only.
         /// </summary>
         public static readonly string Null = "null";
 
         /// <summary>
-        /// Represents JavaScript's undefined as a string. This field is read-only.
+        /// Represents JavaScript's <c>undefined</c> as a string. This field is read-only.
         /// </summary>
         public static readonly string Undefined = "undefined";
 
@@ -93,7 +93,7 @@ namespace Newtonsoft.Json
         public static readonly string NegativeInfinity = "-Infinity";
 
         /// <summary>
-        /// Represents JavaScript's NaN as a string. This field is read-only.
+        /// Represents JavaScript's <c>NaN</c> as a string. This field is read-only.
         /// </summary>
         public static readonly string NaN = "NaN";
 
@@ -762,7 +762,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <typeparam name="T">
         /// The anonymous type to deserialize to. This can't be specified
-        /// traditionally and must be infered from the anonymous type passed
+        /// traditionally and must be inferred from the anonymous type passed
         /// as a parameter.
         /// </typeparam>
         /// <param name="value">The JSON to deserialize.</param>
@@ -778,7 +778,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <typeparam name="T">
         /// The anonymous type to deserialize to. This can't be specified
-        /// traditionally and must be infered from the anonymous type passed
+        /// traditionally and must be inferred from the anonymous type passed
         /// as a parameter.
         /// </typeparam>
         /// <param name="value">The JSON to deserialize.</param>
@@ -872,7 +872,7 @@ namespace Newtonsoft.Json
         /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
         /// <param name="value">The JSON to deserialize.</param>
         /// <returns>
-        /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
+        /// A task that represents the asynchronous deserialization operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
         /// </returns>
         [ObsoleteAttribute("DeserializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to deserialize JSON asynchronously: Task.Factory.StartNew(() => JsonConvert.DeserializeObject<T>(value))")]
         public static Task<T> DeserializeObjectAsync<T>(string value)
@@ -891,7 +891,7 @@ namespace Newtonsoft.Json
         /// If this is null, default serialization settings will be used.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
+        /// A task that represents the asynchronous deserialization operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
         /// </returns>
         [ObsoleteAttribute("DeserializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to deserialize JSON asynchronously: Task.Factory.StartNew(() => JsonConvert.DeserializeObject<T>(value, settings))")]
         public static Task<T> DeserializeObjectAsync<T>(string value, JsonSerializerSettings settings)
@@ -905,7 +905,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The JSON to deserialize.</param>
         /// <returns>
-        /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
+        /// A task that represents the asynchronous deserialization operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
         /// </returns>
         [ObsoleteAttribute("DeserializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to deserialize JSON asynchronously: Task.Factory.StartNew(() => JsonConvert.DeserializeObject(value))")]
         public static Task<object> DeserializeObjectAsync(string value)
@@ -924,7 +924,7 @@ namespace Newtonsoft.Json
         /// If this is null, default serialization settings will be used.
         /// </param>
         /// <returns>
-        /// A task that represents the asynchronous deserialize operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
+        /// A task that represents the asynchronous deserialization operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
         /// </returns>
         [ObsoleteAttribute("DeserializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to deserialize JSON asynchronously: Task.Factory.StartNew(() => JsonConvert.DeserializeObject(value, type, settings))")]
         public static Task<object> DeserializeObjectAsync(string value, Type type, JsonSerializerSettings settings)
@@ -993,7 +993,7 @@ namespace Newtonsoft.Json
         #region Xml
 #if !(PORTABLE40 || PORTABLE || DOTNET)
         /// <summary>
-        /// Serializes the XML node to a JSON string.
+        /// Serializes the <see cref="XmlNode"/> to a JSON string.
         /// </summary>
         /// <param name="node">The node to serialize.</param>
         /// <returns>A JSON string of the XmlNode.</returns>
@@ -1003,10 +1003,10 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Serializes the XML node to a JSON string using formatting.
+        /// Serializes the <see cref="XmlNode"/> to a JSON string using formatting.
         /// </summary>
         /// <param name="node">The node to serialize.</param>
-        /// <param name="formatting">Indicates how the output is formatted.</param>
+        /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <returns>A JSON string of the XmlNode.</returns>
         public static string SerializeXmlNode(XmlNode node, Formatting formatting)
         {
@@ -1016,10 +1016,10 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Serializes the XML node to a JSON string using formatting and omits the root object if <paramref name="omitRootObject"/> is <c>true</c>.
+        /// Serializes the <see cref="XmlNode"/> to a JSON string using formatting and omits the root object if <paramref name="omitRootObject"/> is <c>true</c>.
         /// </summary>
         /// <param name="node">The node to serialize.</param>
-        /// <param name="formatting">Indicates how the output is formatted.</param>
+        /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <param name="omitRootObject">Omits writing the root object.</param>
         /// <returns>A JSON string of the XmlNode.</returns>
         public static string SerializeXmlNode(XmlNode node, Formatting formatting, bool omitRootObject)
@@ -1030,7 +1030,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Deserializes the XmlNode from a JSON string.
+        /// Deserializes the <see cref="XmlNode"/> from a JSON string.
         /// </summary>
         /// <param name="value">The JSON string.</param>
         /// <returns>The deserialized XmlNode</returns>
@@ -1040,7 +1040,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Deserializes the XmlNode from a JSON string nested in a root elment specified by <paramref name="deserializeRootElementName"/>.
+        /// Deserializes the <see cref="XmlNode"/> from a JSON string nested in a root element specified by <paramref name="deserializeRootElementName"/>.
         /// </summary>
         /// <param name="value">The JSON string.</param>
         /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
@@ -1051,8 +1051,8 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Deserializes the XmlNode from a JSON string nested in a root elment specified by <paramref name="deserializeRootElementName"/>
-        /// and writes a .NET array attribute for collections.
+        /// Deserializes the <see cref="XmlNode"/> from a JSON string nested in a root element specified by <paramref name="deserializeRootElementName"/>
+        /// and writes a Json.NET array attribute for collections.
         /// </summary>
         /// <param name="value">The JSON string.</param>
         /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
@@ -1086,7 +1086,7 @@ namespace Newtonsoft.Json
         /// Serializes the <see cref="XNode"/> to a JSON string using formatting.
         /// </summary>
         /// <param name="node">The node to convert to JSON.</param>
-        /// <param name="formatting">Indicates how the output is formatted.</param>
+        /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <returns>A JSON string of the XNode.</returns>
         public static string SerializeXNode(XObject node, Formatting formatting)
         {
@@ -1097,7 +1097,7 @@ namespace Newtonsoft.Json
         /// Serializes the <see cref="XNode"/> to a JSON string using formatting and omits the root object if <paramref name="omitRootObject"/> is <c>true</c>.
         /// </summary>
         /// <param name="node">The node to serialize.</param>
-        /// <param name="formatting">Indicates how the output is formatted.</param>
+        /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <param name="omitRootObject">Omits writing the root object.</param>
         /// <returns>A JSON string of the XNode.</returns>
         public static string SerializeXNode(XObject node, Formatting formatting, bool omitRootObject)
@@ -1118,7 +1118,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment specified by <paramref name="deserializeRootElementName"/>.
+        /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root element specified by <paramref name="deserializeRootElementName"/>.
         /// </summary>
         /// <param name="value">The JSON string.</param>
         /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
@@ -1129,8 +1129,8 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root elment specified by <paramref name="deserializeRootElementName"/>
-        /// and writes a .NET array attribute for collections.
+        /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root element specified by <paramref name="deserializeRootElementName"/>
+        /// and writes a Json.NET array attribute for collections.
         /// </summary>
         /// <param name="value">The JSON string.</param>
         /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
