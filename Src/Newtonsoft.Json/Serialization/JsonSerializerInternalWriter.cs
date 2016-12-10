@@ -1130,28 +1130,49 @@ namespace Newtonsoft.Json.Serialization
             if (contract.ContractType == JsonContractType.Primitive)
             {
                 JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract)contract;
-                if (primitiveContract.TypeCode == PrimitiveTypeCode.DateTime || primitiveContract.TypeCode == PrimitiveTypeCode.DateTimeNullable)
+                switch (primitiveContract.TypeCode)
                 {
-                    DateTime dt = DateTimeUtils.EnsureDateTime((DateTime)name, writer.DateTimeZoneHandling);
+                    case PrimitiveTypeCode.DateTime:
+                    case PrimitiveTypeCode.DateTimeNullable:
+                    {
+                        DateTime dt = DateTimeUtils.EnsureDateTime((DateTime)name, writer.DateTimeZoneHandling);
 
-                    escape = false;
-                    StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-                    DateTimeUtils.WriteDateTimeString(sw, dt, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
-                    return sw.ToString();
-                }
+                        escape = false;
+                        StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+                        DateTimeUtils.WriteDateTimeString(sw, dt, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
+                        return sw.ToString();
+                    }
 #if !NET20
-                else if (primitiveContract.TypeCode == PrimitiveTypeCode.DateTimeOffset || primitiveContract.TypeCode == PrimitiveTypeCode.DateTimeOffsetNullable)
-                {
-                    escape = false;
-                    StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-                    DateTimeUtils.WriteDateTimeOffsetString(sw, (DateTimeOffset)name, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
-                    return sw.ToString();
-                }
+                    case PrimitiveTypeCode.DateTimeOffset:
+                    case PrimitiveTypeCode.DateTimeOffsetNullable:
+                    {
+                        escape = false;
+                        StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+                        DateTimeUtils.WriteDateTimeOffsetString(sw, (DateTimeOffset)name, writer.DateFormatHandling, writer.DateFormatString, writer.Culture);
+                        return sw.ToString();
+                    }
 #endif
-                else
-                {
-                    escape = true;
-                    return Convert.ToString(name, CultureInfo.InvariantCulture);
+                    case PrimitiveTypeCode.Double:
+                    case PrimitiveTypeCode.DoubleNullable:
+                    {
+                        double d = (double)name;
+
+                        escape = false;
+                        return d.ToString("R", CultureInfo.InvariantCulture);
+                    }
+                    case PrimitiveTypeCode.Single:
+                    case PrimitiveTypeCode.SingleNullable:
+                    {
+                        float f = (float)name;
+
+                        escape = false;
+                        return f.ToString("R", CultureInfo.InvariantCulture);
+                    }
+                    default:
+                    {
+                        escape = true;
+                        return Convert.ToString(name, CultureInfo.InvariantCulture);
+                    }
                 }
             }
             else if (TryConvertToString(name, name.GetType(), out propertyName))

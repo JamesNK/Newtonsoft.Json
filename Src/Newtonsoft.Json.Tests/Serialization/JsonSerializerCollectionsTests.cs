@@ -63,6 +63,39 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerCollectionsTests : TestFixtureBase
     {
+        [Test]
+        public void DoubleKey_WholeValue()
+        {
+            Dictionary<double, int> dictionary = new Dictionary<double, int> { { 1d, 1 } };
+            string output = JsonConvert.SerializeObject(dictionary);
+            Assert.AreEqual(@"{""1"":1}", output);
+
+            Dictionary<double, int> deserializedValue = JsonConvert.DeserializeObject<Dictionary<double, int>>(output);
+            Assert.AreEqual(1d, deserializedValue.First().Key);
+        }
+
+        [Test]
+        public void DoubleKey_MaxValue()
+        {
+            Dictionary<double, int> dictionary = new Dictionary<double, int> { { double.MaxValue, 1 } };
+            string output = JsonConvert.SerializeObject(dictionary);
+            Assert.AreEqual(@"{""1.7976931348623157E+308"":1}", output);
+
+            Dictionary<double, int> deserializedValue = JsonConvert.DeserializeObject<Dictionary<double, int>>(output);
+            Assert.AreEqual(double.MaxValue, deserializedValue.First().Key);
+        }
+
+        [Test]
+        public void FloatKey_MaxValue()
+        {
+            Dictionary<float, int> dictionary = new Dictionary<float, int> { { float.MaxValue, 1 } };
+            string output = JsonConvert.SerializeObject(dictionary);
+            Assert.AreEqual(@"{""3.40282347E+38"":1}", output);
+
+            Dictionary<float, int> deserializedValue = JsonConvert.DeserializeObject<Dictionary<float, int>>(output);
+            Assert.AreEqual(float.MaxValue, deserializedValue.First().Key);
+        }
+
         public class TestCollectionPrivateParameterized : IEnumerable<int>
         {
             private readonly List<int> _bars;
