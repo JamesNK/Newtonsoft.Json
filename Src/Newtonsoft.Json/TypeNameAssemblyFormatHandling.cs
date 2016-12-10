@@ -31,7 +31,7 @@ namespace Newtonsoft.Json
     public enum TypeNameAssemblyFormatHandling
     {
         /// <summary>
-        /// In simple mode, the assembly used during deserialization need not match exactly the assembly used during serialization. Specifically, the version numbers need not match as the <see cref="System.Reflection.Assembly.LoadWithPartialName(string)"/> method is used to load the assembly.
+        /// In simple mode, the assembly used during deserialization need not match exactly the assembly used during serialization. Specifically, the version numbers need not match as the <c>LoadWithPartialName</c> method is used to load the assembly.
         /// </summary>
         Simple = 0,
 
