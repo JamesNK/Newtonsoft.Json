@@ -332,7 +332,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Initializes a new instance of the <c>JsonWriter</c> class.
+        /// Initializes a new instance of the <see cref="JsonWriter"/> class.
         /// </summary>
         protected JsonWriter()
         {
