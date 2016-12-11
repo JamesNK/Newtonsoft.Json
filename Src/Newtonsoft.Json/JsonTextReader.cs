@@ -73,7 +73,7 @@ namespace Newtonsoft.Json
         internal PropertyNameTable NameTable;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="JsonReader"/> class with the specified <see cref="TextReader"/>.
+        /// Initializes a new instance of the <see cref="JsonTextReader"/> class with the specified <see cref="TextReader"/>.
         /// </summary>
         /// <param name="reader">The <c>TextReader</c> containing the XML data to read.</param>
         public JsonTextReader(TextReader reader)
@@ -2401,7 +2401,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Changes the state to closed. 
+        /// Changes the state to Closed.
         /// </summary>
         public override void Close()
         {

@@ -986,9 +986,9 @@ namespace Newtonsoft.Json.Converters
         private const string JsonNamespaceUri = "http://james.newtonking.com/projects/json";
 
         /// <summary>
-        /// Gets or sets the name of the root element to insert when deserializing to XML if the JSON structure has produces multiple root elements.
+        /// Gets or sets the name of the root element to insert when deserializing to XML if the JSON structure has produced multiple root elements.
         /// </summary>
-        /// <value>The name of the deserialize root element.</value>
+        /// <value>The name of the deserialized root element.</value>
         public string DeserializeRootElementName { get; set; }
 
         /// <summary>
@@ -2004,7 +2004,7 @@ namespace Newtonsoft.Json.Converters
         }
 
         /// <summary>
-        /// Checks if the attributeName is a namespace attribute.
+        /// Checks if the <paramref name="attributeName"/> is a namespace attribute.
         /// </summary>
         /// <param name="attributeName">Attribute name to test.</param>
         /// <param name="prefix">The attribute name prefix if it has one, otherwise an empty string.</param>

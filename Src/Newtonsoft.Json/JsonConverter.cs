@@ -65,7 +65,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// <para>
-        /// Gets the <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.
+        /// Gets the <see cref="JsonSchema"/> of the JSON produced by the <see cref="JsonConverter"/>.
         /// </para>
         /// <note type="caution">
         /// JSON Schema validation has been moved to its own package. See <see href="http://www.newtonsoft.com/jsonschema">http://www.newtonsoft.com/jsonschema</see> for more details.

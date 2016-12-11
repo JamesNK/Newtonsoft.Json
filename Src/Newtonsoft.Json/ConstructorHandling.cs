@@ -31,7 +31,7 @@ namespace Newtonsoft.Json
     public enum ConstructorHandling
     {
         /// <summary>
-        /// First attempt to use the public default constructor, then fall back to single parameterized constructor, then the non-public default constructor.
+        /// First attempt to use the public default constructor, then fall back to a single parameterized constructor, then to the non-public default constructor.
         /// </summary>
         Default = 0,
 

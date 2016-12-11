@@ -85,7 +85,7 @@ namespace Newtonsoft.Json.Bson
         }
 
         /// <summary>
-        /// Gets or sets a value indicating whether binary data reading should compatible with incorrect Json.NET 3.5 written binary.
+        /// Gets or sets a value indicating whether binary data reading should be compatible with incorrect Json.NET 3.5 written binary.
         /// </summary>
         /// <value>
         /// 	<c>true</c> if binary data reading will be compatible with incorrect Json.NET 3.5 written binary; otherwise, <c>false</c>.

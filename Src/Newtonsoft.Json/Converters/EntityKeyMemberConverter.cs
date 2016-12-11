@@ -32,7 +32,7 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json.Converters
 {
     /// <summary>
-    /// Converts an Entity Framework EntityKey to and from JSON.
+    /// Converts an Entity Framework <c>EntityKey</c> to and from JSON.
     /// </summary>
     public class EntityKeyMemberConverter : JsonConverter
     {

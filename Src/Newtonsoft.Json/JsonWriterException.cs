@@ -31,7 +31,7 @@ using System.Text;
 namespace Newtonsoft.Json
 {
     /// <summary>
-    /// The exception thrown when an error occurs while reading JSON text.
+    /// The exception thrown when an error occurs while writing JSON text.
     /// </summary>
 #if !(DOTNET || PORTABLE40 || PORTABLE)
     [Serializable]

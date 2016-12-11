@@ -30,7 +30,7 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json.Converters
 {
     /// <summary>
-    /// Create a custom object
+    /// Creates a custom object.
     /// </summary>
     /// <typeparam name="T">The object type to convert.</typeparam>
     public abstract class CustomCreationConverter<T> : JsonConverter
