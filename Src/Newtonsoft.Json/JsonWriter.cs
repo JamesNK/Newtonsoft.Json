@@ -332,7 +332,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Initializes a new instance of a <c>JsonWriter</c>-derived class.
+        /// Initializes a new instance of the <c>JsonWriter</c> class.
         /// </summary>
         protected JsonWriter()
         {
@@ -1424,9 +1424,6 @@ namespace Newtonsoft.Json
             InternalWriteWhitespace(ws);
         }
 
-        /// <summary>
-        /// Releases both unmanaged and managed resources.
-        /// </summary>
         void IDisposable.Dispose()
         {
             Dispose(true);

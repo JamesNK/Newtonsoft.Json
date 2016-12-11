@@ -46,7 +46,7 @@ using System.Xml.Linq;
 namespace Newtonsoft.Json
 {
     /// <summary>
-    /// Provides methods for converting between Common Language Runtime (CLR) types and JSON types.
+    /// Provides methods for converting between .NET types and JSON types.
     /// </summary>
     /// <example>
     ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializeObject" title="Serializing and Deserializing JSON with JsonConvert" />

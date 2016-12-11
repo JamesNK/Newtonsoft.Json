@@ -269,7 +269,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Gets the Common Language Runtime (CLR) type for the current JSON token.
+        /// Gets the .NET type for the current JSON token.
         /// </summary>
         public virtual Type ValueType
         {
@@ -338,7 +338,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Initializes a new instance of a <see cref="JsonReader"/>-derived class.
+        /// Initializes a new instance of the <see cref="JsonReader"/> class.
         /// </summary>
         protected JsonReader()
         {
