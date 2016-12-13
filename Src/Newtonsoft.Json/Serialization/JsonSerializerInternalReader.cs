@@ -1681,6 +1681,8 @@ namespace Newtonsoft.Json.Serialization
         {
             Type objectType = contract.UnderlyingType;
 
+// TODO: HAVE_APPDOMAIN_TRUSTING?
+#if !NETSTANDARD1_3
             if (!JsonTypeReflector.FullyTrusted)
             {
                 string message = @"Type '{0}' implements ISerializable but cannot be deserialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data." + Environment.NewLine +
@@ -1689,6 +1691,7 @@ namespace Newtonsoft.Json.Serialization
 
                 throw JsonSerializationException.Create(reader, message);
             }
+#endif
 
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
             {

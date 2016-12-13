@@ -823,10 +823,18 @@ namespace Newtonsoft.Json.Utilities
         {
             if (provider is Type)
             {
-                Type t = (Type)provider;
-                return (attributeType != null)
-                    ? t.GetTypeInfo().GetCustomAttributes(attributeType, inherit).ToArray()
-                    : t.GetTypeInfo().GetCustomAttributes(inherit).ToArray();
+                TypeInfo t = ((Type)provider).GetTypeInfo();
+#if NETSTANDARD1_3
+                bool isSerializable = t.Attributes.HasFlag(TypeAttributes.Serializable);
+#endif
+                var customAttribs = (attributeType != null)
+                    ? t.GetCustomAttributes(attributeType, inherit)
+                    : t.GetCustomAttributes(inherit);
+#if NETSTANDARD1_3
+                if ((attributeType == null || attributeType == typeof(SerializableAttribute)) && isSerializable)
+                    customAttribs = customAttribs.Concat(new Attribute[] { new SerializableAttribute() });
+#endif
+                return customAttribs.ToArray();
             }
 
             if (provider is Assembly)
@@ -838,7 +846,19 @@ namespace Newtonsoft.Json.Utilities
             if (provider is MemberInfo)
             {
                 MemberInfo m = (MemberInfo)provider;
-                return (attributeType != null) ? m.GetCustomAttributes(attributeType, inherit).ToArray() : m.GetCustomAttributes(inherit).ToArray();
+#if NETSTANDARD1_3
+                bool notSerialized = false;
+                if (provider is FieldInfo)
+                    notSerialized = ((FieldInfo)provider).Attributes.HasFlag(FieldAttributes.NotSerialized);
+#endif
+                var customAttribs = (attributeType != null)
+                    ? m.GetCustomAttributes(attributeType, inherit)
+                    : m.GetCustomAttributes(inherit);
+#if NETSTANDARD1_3
+                if ((attributeType == null || attributeType == typeof(NonSerializedAttribute)) && notSerialized)
+                    customAttribs = customAttribs.Concat(new Attribute[] { new NonSerializedAttribute() });
+#endif
+                return customAttribs.ToArray();
             }
 
             if (provider is Module)

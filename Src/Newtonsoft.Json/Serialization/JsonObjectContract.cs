@@ -214,7 +214,8 @@ namespace Newtonsoft.Json.Serialization
             Properties = new JsonPropertyCollection(UnderlyingType);
         }
 
-#if HAVE_BINARY_SERIALIZATION
+// TODO: Required when binary serialization is available?
+#if HAVE_SERIALIZATION_FORMATTERS
 #if HAVE_SECURITY_SAFE_CRITICAL_ATTRIBUTE
         [SecuritySafeCritical]
 #endif

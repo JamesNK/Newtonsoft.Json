@@ -991,7 +991,7 @@ namespace Newtonsoft.Json
         #endregion
 
         #region Xml
-#if HAVE_BINARY_SERIALIZATION
+#if HAVE_XML_DOCUMENT
         /// <summary>
         /// Serializes the <see cref="XmlNode"/> to a JSON string.
         /// </summary>

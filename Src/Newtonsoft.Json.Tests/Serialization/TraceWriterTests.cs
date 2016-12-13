@@ -730,6 +730,7 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.IsTrue(traceWriter.TraceRecords[9].Message.StartsWith("Finished deserializing System.Collections.Generic.List`1[System.Object]. Path '$values'"));
         }
 
+// Exception class does not implement ISerializable interface on NetStandard 1.3
 #if !(PORTABLE || DNXCORE50 || PORTABLE40)
         [Test]
         public void DeserializeISerializable()

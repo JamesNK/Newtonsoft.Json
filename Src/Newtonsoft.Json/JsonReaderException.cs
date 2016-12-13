@@ -84,7 +84,7 @@ namespace Newtonsoft.Json
         {
         }
 
-#if HAVE_BINARY_SERIALIZATION
+#if HAVE_SERIALIZABLE_EXCEPTION
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonReaderException"/> class.
         /// </summary>

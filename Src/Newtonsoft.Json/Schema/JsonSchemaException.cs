@@ -88,7 +88,7 @@ namespace Newtonsoft.Json.Schema
         {
         }
 
-#if HAVE_BINARY_SERIALIZATION
+#if HAVE_SERIALIZABLE_EXCEPTION
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonSchemaException"/> class.
         /// </summary>

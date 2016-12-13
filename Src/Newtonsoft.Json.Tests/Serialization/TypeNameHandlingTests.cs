@@ -1239,7 +1239,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             CollectionAssert.AreEquivalent(data, d);
         }
 
-#if !(DNXCORE50)
+#if !(DNXCORE50) || NETSTANDARD1_3
         [Test]
         public void ISerializableTypeNameHandlingTest()
         {
@@ -1780,7 +1780,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-#if !(DNXCORE50)
+#if !(DNXCORE50) || NETSTANDARD1_3
         [Test]
         public void SerializeDeserialize_DictionaryContextContainsGuid_DeserializesItemAsGuid()
         {
@@ -2137,7 +2137,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public string SomeProperty { get; set; }
     }
 
-#if !(DNXCORE50)
+#if !(DNXCORE50) || NETSTANDARD1_3
     public class ParentParent
     {
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
@@ -2205,7 +2205,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public int Quantity { get; set; }
     }
 
-#if !(DNXCORE50)
+#if !(DNXCORE50) || NETSTANDARD1_3
     public class SerializableWrapper
     {
         public object Content { get; set; }

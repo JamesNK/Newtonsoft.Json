@@ -494,7 +494,7 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 #endif
 
-#if !(PORTABLE)
+#if !(PORTABLE) || NETSTANDARD1_3
         [Test]
         public void ConvertsToBoolean()
         {

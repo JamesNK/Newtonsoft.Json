@@ -61,7 +61,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 #endif
     public class ReadTests : TestFixtureBase
     {
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_3
         [Test]
         public void ReadAsBoolean()
         {

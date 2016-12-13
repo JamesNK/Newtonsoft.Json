@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if HAVE_BINARY_SERIALIZATION
+#if HAVE_REFLECTION_EMIT
 using System;
 using System.Collections.Generic;
 #if !HAVE_LINQ

@@ -34,6 +34,8 @@ using System.Security;
 // associated with an assembly.
 #if NETSTANDARD1_0 
 [assembly: AssemblyTitle("Json.NET .NET Standard 1.0")]
+#elif NETSTANDARD1_3
+[assembly: AssemblyTitle("Json.NET .NET Standard 1.3")]
 #elif NETSTANDARD1_1
 [assembly: AssemblyTitle("Json.NET .NET Standard 1.1")]
 #elif PORTABLE40
