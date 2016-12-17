@@ -361,7 +361,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Loads an <see cref="JProperty"/> from a <see cref="JsonReader"/>. 
+        /// Loads a <see cref="JProperty"/> from a <see cref="JsonReader"/>.
         /// </summary>
         /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JProperty"/>.</param>
         /// <returns>A <see cref="JProperty"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>

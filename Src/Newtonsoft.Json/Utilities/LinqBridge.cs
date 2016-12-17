@@ -724,7 +724,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Returns an <see cref="Int64"/> that represents the total number 
+    /// Returns a <see cref="Int64"/> that represents the total number
     /// of elements in a sequence.
     /// </summary>
 
@@ -740,7 +740,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Returns an <see cref="Int64"/> that represents how many elements 
+    /// Returns a <see cref="Int64"/> that represents how many elements
     /// in a sequence satisfy a condition.
     /// </summary>
 
@@ -1777,7 +1777,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
   internal partial class Enumerable
   {
     /// <summary>
-    /// Computes the sum of a sequence of nullable <see cref="System.Int32" /> values.
+    /// Computes the sum of a sequence of <see cref="System.Int32" /> values.
     /// </summary>
 
     public static int Sum(
@@ -1793,7 +1793,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of nullable <see cref="System.Int32" /> 
+    /// Computes the sum of a sequence of <see cref="System.Int32" />
     /// values that are obtained by invoking a transform function on 
     /// each element of the input sequence.
     /// </summary>
@@ -1806,7 +1806,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of nullable <see cref="System.Int32" /> values.
+    /// Computes the average of a sequence of <see cref="System.Int32" /> values.
     /// </summary>
 
     public static double Average(
@@ -1831,7 +1831,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of nullable <see cref="System.Int32" /> values 
+    /// Computes the average of a sequence of <see cref="System.Int32" /> values
     /// that are obtained by invoking a transform function on each 
     /// element of the input sequence.
     /// </summary>
@@ -1845,7 +1845,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
 
 
     /// <summary>
-    /// Computes the sum of a sequence of <see cref="System.Int32" /> values.
+    /// Computes the sum of a sequence of nullable <see cref="System.Int32" /> values.
     /// </summary>
 
     public static int? Sum(
@@ -1861,7 +1861,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of <see cref="System.Int32" /> 
+    /// Computes the sum of a sequence of nullable <see cref="System.Int32" />
     /// values that are obtained by invoking a transform function on 
     /// each element of the input sequence.
     /// </summary>
@@ -1874,7 +1874,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of <see cref="System.Int32" /> values.
+    /// Computes the average of a sequence of nullable <see cref="System.Int32" /> values.
     /// </summary>
 
     public static double? Average(
@@ -1899,7 +1899,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of <see cref="System.Int32" /> values 
+    /// Computes the average of a sequence of nullable <see cref="System.Int32" /> values
     /// that are obtained by invoking a transform function on each 
     /// element of the input sequence.
     /// </summary>
@@ -1963,7 +1963,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of nullable <see cref="System.Int64" /> values.
+    /// Computes the sum of a sequence of <see cref="System.Int64" /> values.
     /// </summary>
 
     public static long Sum(
@@ -1979,7 +1979,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of nullable <see cref="System.Int64" /> 
+    /// Computes the sum of a sequence of <see cref="System.Int64" />
     /// values that are obtained by invoking a transform function on 
     /// each element of the input sequence.
     /// </summary>
@@ -1992,7 +1992,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of nullable <see cref="System.Int64" /> values.
+    /// Computes the average of a sequence of <see cref="System.Int64" /> values.
     /// </summary>
 
     public static double Average(
@@ -2017,7 +2017,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of nullable <see cref="System.Int64" /> values 
+    /// Computes the average of a sequence of <see cref="System.Int64" /> values
     /// that are obtained by invoking a transform function on each 
     /// element of the input sequence.
     /// </summary>
@@ -2031,7 +2031,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
 
 
     /// <summary>
-    /// Computes the sum of a sequence of <see cref="System.Int64" /> values.
+    /// Computes the sum of a sequence of nullable <see cref="System.Int64" /> values.
     /// </summary>
 
     public static long? Sum(
@@ -2047,7 +2047,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of <see cref="System.Int64" /> 
+    /// Computes the sum of a sequence of nullable <see cref="System.Int64" />
     /// values that are obtained by invoking a transform function on 
     /// each element of the input sequence.
     /// </summary>
@@ -2060,7 +2060,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of <see cref="System.Int64" /> values.
+    /// Computes the average of a sequence of nullable <see cref="System.Int64" /> values.
     /// </summary>
 
     public static double? Average(
@@ -2085,7 +2085,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of <see cref="System.Int64" /> values 
+    /// Computes the average of a sequence of nullable <see cref="System.Int64" /> values
     /// that are obtained by invoking a transform function on each 
     /// element of the input sequence.
     /// </summary>
@@ -2165,7 +2165,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of nullable <see cref="System.Single" /> 
+    /// Computes the sum of a sequence of <see cref="System.Single" />
     /// values that are obtained by invoking a transform function on 
     /// each element of the input sequence.
     /// </summary>
@@ -2178,7 +2178,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of nullable <see cref="System.Single" /> values.
+    /// Computes the average of a sequence of <see cref="System.Single" /> values.
     /// </summary>
 
     public static float Average(
@@ -2203,7 +2203,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of nullable <see cref="System.Single" /> values 
+    /// Computes the average of a sequence of <see cref="System.Single" /> values
     /// that are obtained by invoking a transform function on each 
     /// element of the input sequence.
     /// </summary>
@@ -2217,7 +2217,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
 
 
     /// <summary>
-    /// Computes the sum of a sequence of <see cref="System.Single" /> values.
+    /// Computes the sum of a sequence of nullable <see cref="System.Single" /> values.
     /// </summary>
 
     public static float? Sum(
@@ -2233,7 +2233,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of <see cref="System.Single" /> 
+    /// Computes the sum of a sequence of nullable <see cref="System.Single" />
     /// values that are obtained by invoking a transform function on 
     /// each element of the input sequence.
     /// </summary>
@@ -2246,7 +2246,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of <see cref="System.Single" /> values.
+    /// Computes the average of a sequence of nullable <see cref="System.Single" /> values.
     /// </summary>
 
     public static float? Average(
@@ -2271,7 +2271,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of <see cref="System.Single" /> values 
+    /// Computes the average of a sequence of nullable <see cref="System.Single" /> values
     /// that are obtained by invoking a transform function on each 
     /// element of the input sequence.
     /// </summary>
@@ -2335,7 +2335,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of nullable <see cref="System.Double" /> values.
+    /// Computes the sum of a sequence of <see cref="System.Double" /> values.
     /// </summary>
 
     public static double Sum(
@@ -2351,7 +2351,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of nullable <see cref="System.Double" /> 
+    /// Computes the sum of a sequence of <see cref="System.Double" />
     /// values that are obtained by invoking a transform function on 
     /// each element of the input sequence.
     /// </summary>
@@ -2364,7 +2364,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of nullable <see cref="System.Double" /> values.
+    /// Computes the average of a sequence of <see cref="System.Double" /> values.
     /// </summary>
 
     public static double Average(
@@ -2389,7 +2389,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of nullable <see cref="System.Double" /> values 
+    /// Computes the average of a sequence of <see cref="System.Double" /> values
     /// that are obtained by invoking a transform function on each 
     /// element of the input sequence.
     /// </summary>
@@ -2403,7 +2403,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
 
 
     /// <summary>
-    /// Computes the sum of a sequence of <see cref="System.Double" /> values.
+    /// Computes the sum of a sequence of nullable <see cref="System.Double" /> values.
     /// </summary>
 
     public static double? Sum(
@@ -2419,7 +2419,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of <see cref="System.Double" /> 
+    /// Computes the sum of a sequence of nullable <see cref="System.Double" />
     /// values that are obtained by invoking a transform function on 
     /// each element of the input sequence.
     /// </summary>
@@ -2432,7 +2432,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of <see cref="System.Double" /> values.
+    /// Computes the average of a sequence of nullable <see cref="System.Double" /> values.
     /// </summary>
 
     public static double? Average(
@@ -2457,7 +2457,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of <see cref="System.Double" /> values 
+    /// Computes the average of a sequence of nullable <see cref="System.Double" /> values
     /// that are obtained by invoking a transform function on each 
     /// element of the input sequence.
     /// </summary>
@@ -2521,7 +2521,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of nullable <see cref="System.Decimal" /> values.
+    /// Computes the sum of a sequence of <see cref="System.Decimal" /> values.
     /// </summary>
 
     public static decimal Sum(
@@ -2537,7 +2537,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of nullable <see cref="System.Decimal" /> 
+    /// Computes the sum of a sequence of <see cref="System.Decimal" />
     /// values that are obtained by invoking a transform function on 
     /// each element of the input sequence.
     /// </summary>
@@ -2550,7 +2550,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of nullable <see cref="System.Decimal" /> values.
+    /// Computes the average of a sequence of <see cref="System.Decimal" /> values.
     /// </summary>
 
     public static decimal Average(
@@ -2575,7 +2575,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of nullable <see cref="System.Decimal" /> values 
+    /// Computes the average of a sequence of <see cref="System.Decimal" /> values
     /// that are obtained by invoking a transform function on each 
     /// element of the input sequence.
     /// </summary>
@@ -2589,7 +2589,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
 
 
     /// <summary>
-    /// Computes the sum of a sequence of <see cref="System.Decimal" /> values.
+    /// Computes the sum of a sequence of nullable <see cref="System.Decimal" /> values.
     /// </summary>
 
     public static decimal? Sum(
@@ -2605,7 +2605,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the sum of a sequence of <see cref="System.Decimal" /> 
+    /// Computes the sum of a sequence of nullable <see cref="System.Decimal" />
     /// values that are obtained by invoking a transform function on 
     /// each element of the input sequence.
     /// </summary>
@@ -2618,7 +2618,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of <see cref="System.Decimal" /> values.
+    /// Computes the average of a sequence of nullable <see cref="System.Decimal" /> values.
     /// </summary>
 
     public static decimal? Average(
@@ -2643,7 +2643,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     }
 
     /// <summary>
-    /// Computes the average of a sequence of <see cref="System.Decimal" /> values 
+    /// Computes the average of a sequence of nullable <see cref="System.Decimal" /> values
     /// that are obtained by invoking a transform function on each 
     /// element of the input sequence.
     /// </summary>

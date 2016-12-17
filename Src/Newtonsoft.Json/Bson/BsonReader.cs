@@ -35,7 +35,7 @@ using Newtonsoft.Json.Linq;
 namespace Newtonsoft.Json.Bson
 {
     /// <summary>
-    /// Represents a reader that provides fast, non-cached, forward-only access to serialized JSON data.
+    /// Represents a reader that provides fast, non-cached, forward-only access to serialized BSON data.
     /// </summary>
     public class BsonReader : JsonReader
     {

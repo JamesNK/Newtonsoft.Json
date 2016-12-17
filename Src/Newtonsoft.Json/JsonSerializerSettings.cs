@@ -88,7 +88,7 @@ namespace Newtonsoft.Json
         internal MetadataPropertyHandling? _metadataPropertyHandling;
 
         /// <summary>
-        /// Gets or sets how reference loops (e.g. a class referencing itself) is handled.
+        /// Gets or sets how reference loops (e.g. a class referencing itself) are handled.
         /// </summary>
         /// <value>Reference loop handling.</value>
         public ReferenceLoopHandling ReferenceLoopHandling

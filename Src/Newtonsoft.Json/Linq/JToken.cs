@@ -428,7 +428,7 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Returns the JSON for this token using the given formatting and converters.
         /// </summary>
-        /// <param name="formatting">Indicates how the output is formatted.</param>
+        /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
         /// <returns>The JSON for this token using the given formatting and converters.</returns>
         public string ToString(Formatting formatting, params JsonConverter[] converters)
@@ -1358,7 +1358,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Guid"/>.
+        /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{Guid}"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -1405,7 +1405,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.TimeSpan"/>.
+        /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="Nullable{TimeSpan}"/>.
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>The result of the conversion.</returns>
@@ -1870,9 +1870,9 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Creates an <see cref="JsonReader"/> for this token.
+        /// Creates a <see cref="JsonReader"/> for this token.
         /// </summary>
-        /// <returns>An <see cref="JsonReader"/> that can be used to read this token and its descendants.</returns>
+        /// <returns>A <see cref="JsonReader"/> that can be used to read this token and its descendants.</returns>
         public JsonReader CreateReader()
         {
             return new JTokenReader(this);
@@ -1915,7 +1915,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Creates the specified .NET type from the <see cref="JToken"/>.
+        /// Creates an instance of the specified .NET type from the <see cref="JToken"/>.
         /// </summary>
         /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
         /// <returns>The new object created from the JSON value.</returns>
@@ -1925,7 +1925,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Creates the specified .NET type from the <see cref="JToken"/>.
+        /// Creates an instance of the specified .NET type from the <see cref="JToken"/>.
         /// </summary>
         /// <param name="objectType">The object type that the token will be deserialized to.</param>
         /// <returns>The new object created from the JSON value.</returns>
@@ -2048,7 +2048,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Creates the specified .NET type from the <see cref="JToken"/> using the specified <see cref="JsonSerializer"/>.
+        /// Creates an instance of the specified .NET type from the <see cref="JToken"/> using the specified <see cref="JsonSerializer"/>.
         /// </summary>
         /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
         /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used when creating the object.</param>
@@ -2059,7 +2059,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Creates the specified .NET type from the <see cref="JToken"/> using the specified <see cref="JsonSerializer"/>.
+        /// Creates an instance of the specified .NET type from the <see cref="JToken"/> using the specified <see cref="JsonSerializer"/>.
         /// </summary>
         /// <param name="objectType">The object type that the token will be deserialized to.</param>
         /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used when creating the object.</param>
@@ -2077,9 +2077,9 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Creates a <see cref="JToken"/> from a <see cref="JsonReader"/>.
         /// </summary>
-        /// <param name="reader">An <see cref="JsonReader"/> positioned at the token to read into this <see cref="JToken"/>.</param>
+        /// <param name="reader">A <see cref="JsonReader"/> positioned at the token to read into this <see cref="JToken"/>.</param>
         /// <returns>
-        /// An <see cref="JToken"/> that contains the token and its descendant tokens
+        /// A <see cref="JToken"/> that contains the token and its descendant tokens
         /// that were read from the reader. The runtime type of the token is determined
         /// by the token type of the first token encountered in the reader.
         /// </returns>
@@ -2188,11 +2188,11 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Creates a <see cref="JToken"/> from a <see cref="JsonReader"/>.
         /// </summary>
-        /// <param name="reader">An <see cref="JsonReader"/> positioned at the token to read into this <see cref="JToken"/>.</param>
+        /// <param name="reader">A <see cref="JsonReader"/> positioned at the token to read into this <see cref="JToken"/>.</param>
         /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
         /// If this is null, default load settings will be used.</param>
         /// <returns>
-        /// An <see cref="JToken"/> that contains the token and its descendant tokens
+        /// A <see cref="JToken"/> that contains the token and its descendant tokens
         /// that were read from the reader. The runtime type of the token is determined
         /// by the token type of the first token encountered in the reader.
         /// </returns>
@@ -2204,9 +2204,9 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Creates a <see cref="JToken"/> from a <see cref="JsonReader"/>.
         /// </summary>
-        /// <param name="reader">An <see cref="JsonReader"/> positioned at the token to read into this <see cref="JToken"/>.</param>
+        /// <param name="reader">A <see cref="JsonReader"/> positioned at the token to read into this <see cref="JToken"/>.</param>
         /// <returns>
-        /// An <see cref="JToken"/> that contains the token and its descendant tokens
+        /// A <see cref="JToken"/> that contains the token and its descendant tokens
         /// that were read from the reader. The runtime type of the token is determined
         /// by the token type of the first token encountered in the reader.
         /// </returns>
@@ -2505,7 +2505,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets a collection of annotations of the specified type for this <see cref="JToken"/>.
         /// </summary>
         /// <typeparam name="T">The type of the annotations to retrieve.</typeparam>
-        /// <returns>An <see cref="IEnumerable{T}"/>  that contains the annotations for this <see cref="JToken"/>.</returns>
+        /// <returns>An <see cref="IEnumerable{T}"/> that contains the annotations for this <see cref="JToken"/>.</returns>
         public IEnumerable<T> Annotations<T>() where T : class
         {
             if (_annotations == null)
