@@ -36,7 +36,6 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using System.Xml;
 using Newtonsoft.Json.Converters;
-using Newtonsoft.Json.Serialization;
 using System.Text;
 #if !(NET20 || PORTABLE40)
 using System.Xml.Linq;

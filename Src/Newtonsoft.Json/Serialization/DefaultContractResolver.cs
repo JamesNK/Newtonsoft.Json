@@ -25,7 +25,6 @@
 
 using System;
 using System.Collections;
-using Newtonsoft.Json.Schema;
 #if !(NET35 || NET20 || PORTABLE || PORTABLE40)
 using System.Collections.Concurrent;
 #endif
@@ -38,7 +37,6 @@ using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
 #if !(DOTNET || PORTABLE || PORTABLE40)
-using System.Security.Permissions;
 #endif
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
@@ -97,13 +95,9 @@ namespace Newtonsoft.Json.Serialization
     public class DefaultContractResolver : IContractResolver
     {
 #pragma warning disable 612,618
-        private static readonly IContractResolver _instance = new DefaultContractResolver(true);
 #pragma warning restore 612,618
 
-        internal static IContractResolver Instance
-        {
-            get { return _instance; }
-        }
+        internal static IContractResolver Instance { get; } = new DefaultContractResolver(true);
 
         private static readonly JsonConverter[] BuiltInConverters =
         {
@@ -142,10 +136,7 @@ namespace Newtonsoft.Json.Serialization
         /// <value>
         /// 	<c>true</c> if using dynamic code generation; otherwise, <c>false</c>.
         /// </value>
-        public bool DynamicCodeGeneration
-        {
-            get { return JsonTypeReflector.DynamicCodeGeneration; }
-        }
+        public bool DynamicCodeGeneration => JsonTypeReflector.DynamicCodeGeneration;
 
 #if !PORTABLE
         /// <summary>

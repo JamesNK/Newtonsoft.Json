@@ -24,15 +24,11 @@
 #endregion
 
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
 using System.Numerics;
 #endif
-using System.Text;
 using Newtonsoft.Json.Utilities;
-using Newtonsoft.Json.Linq;
 using System.Globalization;
 
 namespace Newtonsoft.Json.Bson

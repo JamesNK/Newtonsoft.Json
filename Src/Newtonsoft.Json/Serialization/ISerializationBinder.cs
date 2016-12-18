@@ -25,7 +25,6 @@
 
 using System;
 using System.Reflection;
-using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Serialization
 {

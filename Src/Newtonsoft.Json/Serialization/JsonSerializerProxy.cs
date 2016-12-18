@@ -62,10 +62,7 @@ namespace Newtonsoft.Json.Serialization
             set { _serializer.EqualityComparer = value; }
         }
 
-        public override JsonConverterCollection Converters
-        {
-            get { return _serializer.Converters; }
-        }
+        public override JsonConverterCollection Converters => _serializer.Converters;
 
         public override DefaultValueHandling DefaultValueHandling
         {

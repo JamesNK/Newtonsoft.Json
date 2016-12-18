@@ -56,37 +56,24 @@ namespace Newtonsoft.Json
     {
         private class SchemaScope
         {
-            private readonly JTokenType _tokenType;
-            private readonly IList<JsonSchemaModel> _schemas;
-            private readonly Dictionary<string, bool> _requiredProperties;
-
             public string CurrentPropertyName { get; set; }
             public int ArrayItemCount { get; set; }
             public bool IsUniqueArray { get; set; }
             public IList<JToken> UniqueArrayItems { get; set; }
             public JTokenWriter CurrentItemWriter { get; set; }
 
-            public IList<JsonSchemaModel> Schemas
-            {
-                get { return _schemas; }
-            }
+            public IList<JsonSchemaModel> Schemas { get; }
 
-            public Dictionary<string, bool> RequiredProperties
-            {
-                get { return _requiredProperties; }
-            }
+            public Dictionary<string, bool> RequiredProperties { get; }
 
-            public JTokenType TokenType
-            {
-                get { return _tokenType; }
-            }
+            public JTokenType TokenType { get; }
 
             public SchemaScope(JTokenType tokenType, IList<JsonSchemaModel> schemas)
             {
-                _tokenType = tokenType;
-                _schemas = schemas;
+                TokenType = tokenType;
+                Schemas = schemas;
 
-                _requiredProperties = schemas.SelectMany<JsonSchemaModel, string>(GetRequiredProperties).Distinct().ToDictionary(p => p, p => false);
+                RequiredProperties = schemas.SelectMany<JsonSchemaModel, string>(GetRequiredProperties).Distinct().ToDictionary(p => p, p => false);
 
                 if (tokenType == JTokenType.Array && schemas.Any(s => s.UniqueItems))
                 {
@@ -106,7 +93,6 @@ namespace Newtonsoft.Json
             }
         }
 
-        private readonly JsonReader _reader;
         private readonly Stack<SchemaScope> _stack;
         private JsonSchema _schema;
         private JsonSchemaModel _model;
@@ -121,27 +107,18 @@ namespace Newtonsoft.Json
         /// Gets the text value of the current JSON token.
         /// </summary>
         /// <value></value>
-        public override object Value
-        {
-            get { return _reader.Value; }
-        }
+        public override object Value => Reader.Value;
 
         /// <summary>
         /// Gets the depth of the current token in the JSON document.
         /// </summary>
         /// <value>The depth of the current token in the JSON document.</value>
-        public override int Depth
-        {
-            get { return _reader.Depth; }
-        }
+        public override int Depth => Reader.Depth;
 
         /// <summary>
         /// Gets the path of the current JSON token. 
         /// </summary>
-        public override string Path
-        {
-            get { return _reader.Path; }
-        }
+        public override string Path => Reader.Path;
 
         /// <summary>
         /// Gets the quotation mark character used to enclose the value of a string.
@@ -149,7 +126,7 @@ namespace Newtonsoft.Json
         /// <value></value>
         public override char QuoteChar
         {
-            get { return _reader.QuoteChar; }
+            get { return Reader.QuoteChar; }
             protected internal set { }
         }
 
@@ -157,19 +134,13 @@ namespace Newtonsoft.Json
         /// Gets the type of the current JSON token.
         /// </summary>
         /// <value></value>
-        public override JsonToken TokenType
-        {
-            get { return _reader.TokenType; }
-        }
+        public override JsonToken TokenType => Reader.TokenType;
 
         /// <summary>
         /// Gets the .NET type for the current JSON token.
         /// </summary>
         /// <value></value>
-        public override Type ValueType
-        {
-            get { return _reader.ValueType; }
-        }
+        public override Type ValueType => Reader.ValueType;
 
         private void Push(SchemaScope scope)
         {
@@ -187,10 +158,7 @@ namespace Newtonsoft.Json
             return poppedScope;
         }
 
-        private IList<JsonSchemaModel> CurrentSchemas
-        {
-            get { return _currentScope.Schemas; }
-        }
+        private IList<JsonSchemaModel> CurrentSchemas => _currentScope.Schemas;
 
         private static readonly IList<JsonSchemaModel> EmptySchemaList = new List<JsonSchemaModel>();
 
@@ -319,7 +287,7 @@ namespace Newtonsoft.Json
         public JsonValidatingReader(JsonReader reader)
         {
             ValidationUtils.ArgumentNotNull(reader, nameof(reader));
-            _reader = reader;
+            Reader = reader;
             _stack = new Stack<SchemaScope>();
         }
 
@@ -346,10 +314,7 @@ namespace Newtonsoft.Json
         /// Gets the <see cref="JsonReader"/> used to construct this <see cref="JsonValidatingReader"/>.
         /// </summary>
         /// <value>The <see cref="JsonReader"/> specified in the constructor.</value>
-        public JsonReader Reader
-        {
-            get { return _reader; }
-        }
+        public JsonReader Reader { get; }
 
         private void ValidateNotDisallowed(JsonSchemaModel schema)
         {
@@ -370,7 +335,7 @@ namespace Newtonsoft.Json
 
         private JsonSchemaType? GetCurrentNodeSchemaType()
         {
-            switch (_reader.TokenType)
+            switch (Reader.TokenType)
             {
                 case JsonToken.StartObject:
                     return JsonSchemaType.Object;
@@ -397,7 +362,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Nullable{Int32}"/>.</returns>
         public override int? ReadAsInt32()
         {
-            int? i = _reader.ReadAsInt32();
+            int? i = Reader.ReadAsInt32();
 
             ValidateCurrentToken();
             return i;
@@ -411,7 +376,7 @@ namespace Newtonsoft.Json
         /// </returns>
         public override byte[] ReadAsBytes()
         {
-            byte[] data = _reader.ReadAsBytes();
+            byte[] data = Reader.ReadAsBytes();
 
             ValidateCurrentToken();
             return data;
@@ -423,7 +388,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Nullable{Decimal}"/>.</returns>
         public override decimal? ReadAsDecimal()
         {
-            decimal? d = _reader.ReadAsDecimal();
+            decimal? d = Reader.ReadAsDecimal();
 
             ValidateCurrentToken();
             return d;
@@ -435,7 +400,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Nullable{Double}"/>.</returns>
         public override double? ReadAsDouble()
         {
-            double? d = _reader.ReadAsDouble();
+            double? d = Reader.ReadAsDouble();
 
             ValidateCurrentToken();
             return d;
@@ -447,7 +412,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Nullable{Boolean}"/>.</returns>
         public override bool? ReadAsBoolean()
         {
-            bool? b = _reader.ReadAsBoolean();
+            bool? b = Reader.ReadAsBoolean();
 
             ValidateCurrentToken();
             return b;
@@ -459,7 +424,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="String"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override string ReadAsString()
         {
-            string s = _reader.ReadAsString();
+            string s = Reader.ReadAsString();
 
             ValidateCurrentToken();
             return s;
@@ -471,7 +436,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Nullable{DateTime}"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override DateTime? ReadAsDateTime()
         {
-            DateTime? dateTime = _reader.ReadAsDateTime();
+            DateTime? dateTime = Reader.ReadAsDateTime();
 
             ValidateCurrentToken();
             return dateTime;
@@ -484,7 +449,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Nullable{DateTimeOffset}"/>.</returns>
         public override DateTimeOffset? ReadAsDateTimeOffset()
         {
-            DateTimeOffset? dateTimeOffset = _reader.ReadAsDateTimeOffset();
+            DateTimeOffset? dateTimeOffset = Reader.ReadAsDateTimeOffset();
 
             ValidateCurrentToken();
             return dateTimeOffset;
@@ -499,12 +464,12 @@ namespace Newtonsoft.Json
         /// </returns>
         public override bool Read()
         {
-            if (!_reader.Read())
+            if (!Reader.Read())
             {
                 return false;
             }
 
-            if (_reader.TokenType == JsonToken.Comment)
+            if (Reader.TokenType == JsonToken.Comment)
             {
                 return true;
             }
@@ -521,13 +486,13 @@ namespace Newtonsoft.Json
                 JsonSchemaModelBuilder builder = new JsonSchemaModelBuilder();
                 _model = builder.Build(_schema);
 
-                if (!JsonTokenUtils.IsStartToken(_reader.TokenType))
+                if (!JsonTokenUtils.IsStartToken(Reader.TokenType))
                 {
                     Push(new SchemaScope(JTokenType.None, CurrentMemberSchemas));
                 }
             }
 
-            switch (_reader.TokenType)
+            switch (Reader.TokenType)
             {
                 case JsonToken.StartObject:
                     ProcessValue();
@@ -640,7 +605,7 @@ namespace Newtonsoft.Json
                 {
                     if (schemaScope.CurrentItemWriter == null)
                     {
-                        if (JsonTokenUtils.IsEndToken(_reader.TokenType))
+                        if (JsonTokenUtils.IsEndToken(Reader.TokenType))
                         {
                             continue;
                         }
@@ -648,10 +613,10 @@ namespace Newtonsoft.Json
                         schemaScope.CurrentItemWriter = new JTokenWriter();
                     }
 
-                    schemaScope.CurrentItemWriter.WriteToken(_reader, false);
+                    schemaScope.CurrentItemWriter.WriteToken(Reader, false);
 
                     // finished writing current item
-                    if (schemaScope.CurrentItemWriter.Top == 0 && _reader.TokenType != JsonToken.PropertyName)
+                    if (schemaScope.CurrentItemWriter.Top == 0 && Reader.TokenType != JsonToken.PropertyName)
                     {
                         JToken finishedItem = schemaScope.CurrentItemWriter.Token;
 
@@ -773,7 +738,7 @@ namespace Newtonsoft.Json
 
             ValidateNotDisallowed(schema);
 
-            string value = _reader.Value.ToString();
+            string value = Reader.Value.ToString();
 
             if (schema.MaximumLength != null && value.Length > schema.MaximumLength)
             {
@@ -811,7 +776,7 @@ namespace Newtonsoft.Json
 
             ValidateNotDisallowed(schema);
 
-            object value = _reader.Value;
+            object value = Reader.Value;
 
             if (schema.Maximum != null)
             {
@@ -903,7 +868,7 @@ namespace Newtonsoft.Json
 
             ValidateNotDisallowed(schema);
 
-            double value = Convert.ToDouble(_reader.Value, CultureInfo.InvariantCulture);
+            double value = Convert.ToDouble(Reader.Value, CultureInfo.InvariantCulture);
 
             if (schema.Maximum != null)
             {
@@ -959,7 +924,7 @@ namespace Newtonsoft.Json
                 return;
             }
 
-            string propertyName = Convert.ToString(_reader.Value, CultureInfo.InvariantCulture);
+            string propertyName = Convert.ToString(Reader.Value, CultureInfo.InvariantCulture);
 
             if (_currentScope.RequiredProperties.ContainsKey(propertyName))
             {
@@ -1033,7 +998,7 @@ namespace Newtonsoft.Json
 
         bool IJsonLineInfo.HasLineInfo()
         {
-            IJsonLineInfo lineInfo = _reader as IJsonLineInfo;
+            IJsonLineInfo lineInfo = Reader as IJsonLineInfo;
             return lineInfo != null && lineInfo.HasLineInfo();
         }
 
@@ -1041,7 +1006,7 @@ namespace Newtonsoft.Json
         {
             get
             {
-                IJsonLineInfo lineInfo = _reader as IJsonLineInfo;
+                IJsonLineInfo lineInfo = Reader as IJsonLineInfo;
                 return (lineInfo != null) ? lineInfo.LineNumber : 0;
             }
         }
@@ -1050,7 +1015,7 @@ namespace Newtonsoft.Json
         {
             get
             {
-                IJsonLineInfo lineInfo = _reader as IJsonLineInfo;
+                IJsonLineInfo lineInfo = Reader as IJsonLineInfo;
                 return (lineInfo != null) ? lineInfo.LinePosition : 0;
             }
         }

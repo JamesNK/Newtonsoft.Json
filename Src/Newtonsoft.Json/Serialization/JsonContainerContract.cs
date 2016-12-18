@@ -24,14 +24,10 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Reflection;
 using Newtonsoft.Json.Utilities;
-using System.Collections;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
-using System.Linq;
 
 #endif
 
@@ -43,7 +39,6 @@ namespace Newtonsoft.Json.Serialization
     public class JsonContainerContract : JsonContract
     {
         private JsonContract _itemContract;
-        private JsonContract _finalItemContract;
 
         // will be null for containers that don't have an item type (e.g. IList) or for complex objects
         internal JsonContract ItemContract
@@ -54,20 +49,17 @@ namespace Newtonsoft.Json.Serialization
                 _itemContract = value;
                 if (_itemContract != null)
                 {
-                    _finalItemContract = (_itemContract.UnderlyingType.IsSealed()) ? _itemContract : null;
+                    FinalItemContract = (_itemContract.UnderlyingType.IsSealed()) ? _itemContract : null;
                 }
                 else
                 {
-                    _finalItemContract = null;
+                    FinalItemContract = null;
                 }
             }
         }
 
         // the final (i.e. can't be inherited from like a sealed class or valuetype) item contract
-        internal JsonContract FinalItemContract
-        {
-            get { return _finalItemContract; }
-        }
+        internal JsonContract FinalItemContract { get; private set; }
 
         /// <summary>
         /// Gets or sets the default collection items <see cref="JsonConverter" />.

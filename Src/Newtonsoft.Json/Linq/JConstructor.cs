@@ -24,7 +24,6 @@
 #endregion
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
@@ -36,17 +35,13 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public class JConstructor : JContainer
     {
-        private string _name;
         private readonly List<JToken> _values = new List<JToken>();
 
         /// <summary>
         /// Gets the container's children tokens.
         /// </summary>
         /// <value>The container's children tokens.</value>
-        protected override IList<JToken> ChildrenTokens
-        {
-            get { return _values; }
-        }
+        protected override IList<JToken> ChildrenTokens => _values;
 
         internal override int IndexOfItem(JToken item)
         {
@@ -72,20 +67,13 @@ namespace Newtonsoft.Json.Linq
         /// Gets or sets the name of this constructor.
         /// </summary>
         /// <value>The constructor name.</value>
-        public string Name
-        {
-            get { return _name; }
-            set { _name = value; }
-        }
+        public string Name { get; set; }
 
         /// <summary>
         /// Gets the node type for this <see cref="JToken"/>.
         /// </summary>
         /// <value>The type.</value>
-        public override JTokenType Type
-        {
-            get { return JTokenType.Constructor; }
-        }
+        public override JTokenType Type => JTokenType.Constructor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JConstructor"/> class.
@@ -101,7 +89,7 @@ namespace Newtonsoft.Json.Linq
         public JConstructor(JConstructor other)
             : base(other)
         {
-            _name = other.Name;
+            Name = other.Name;
         }
 
         /// <summary>
@@ -141,13 +129,13 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Constructor name cannot be empty.", nameof(name));
             }
 
-            _name = name;
+            Name = name;
         }
 
         internal override bool DeepEquals(JToken node)
         {
             JConstructor c = node as JConstructor;
-            return (c != null && _name == c.Name && ContentsEqual(c));
+            return (c != null && Name == c.Name && ContentsEqual(c));
         }
 
         internal override JToken CloneToken()
@@ -162,7 +150,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
         public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
         {
-            writer.WriteStartConstructor(_name);
+            writer.WriteStartConstructor(Name);
 
             foreach (JToken token in Children())
             {
@@ -204,7 +192,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override int GetDeepHashCode()
         {
-            return _name.GetHashCode() ^ ContentsHashCode();
+            return Name.GetHashCode() ^ ContentsHashCode();
         }
 
         /// <summary>

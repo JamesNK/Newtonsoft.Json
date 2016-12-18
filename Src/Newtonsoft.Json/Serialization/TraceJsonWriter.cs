@@ -1,11 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 #if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
 using System.Numerics;
 #endif
-using System.Text;
 
 namespace Newtonsoft.Json.Serialization
 {

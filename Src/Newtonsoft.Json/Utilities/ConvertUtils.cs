@@ -30,8 +30,6 @@ using System.ComponentModel;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
 using System.Numerics;
 #endif
-using System.Text;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
 #if NET20
@@ -250,28 +248,19 @@ namespace Newtonsoft.Json.Utilities
 
         internal struct TypeConvertKey : IEquatable<TypeConvertKey>
         {
-            private readonly Type _initialType;
-            private readonly Type _targetType;
+            public Type InitialType { get; }
 
-            public Type InitialType
-            {
-                get { return _initialType; }
-            }
-
-            public Type TargetType
-            {
-                get { return _targetType; }
-            }
+            public Type TargetType { get; }
 
             public TypeConvertKey(Type initialType, Type targetType)
             {
-                _initialType = initialType;
-                _targetType = targetType;
+                InitialType = initialType;
+                TargetType = targetType;
             }
 
             public override int GetHashCode()
             {
-                return _initialType.GetHashCode() ^ _targetType.GetHashCode();
+                return InitialType.GetHashCode() ^ TargetType.GetHashCode();
             }
 
             public override bool Equals(object obj)
@@ -286,7 +275,7 @@ namespace Newtonsoft.Json.Utilities
 
             public bool Equals(TypeConvertKey other)
             {
-                return (_initialType == other._initialType && _targetType == other._targetType);
+                return (InitialType == other.InitialType && TargetType == other.TargetType);
             }
         }
 
@@ -935,16 +924,14 @@ namespace Newtonsoft.Json.Utilities
             /// <summary>
             /// Exponents for both powers of 10 and 0.1
             /// </summary>
-            private static readonly int[] MultExp64Power10 = new int[]
-            {
+            private static readonly int[] MultExp64Power10 = {
                 4, 7, 10, 14, 17, 20, 24, 27, 30, 34, 37, 40, 44, 47, 50
             };
 
             /// <summary>
             /// Normalized powers of 10
             /// </summary>
-            private static readonly ulong[] MultVal64Power10 = new ulong[]
-            {
+            private static readonly ulong[] MultVal64Power10 = {
                 0xa000000000000000, 0xc800000000000000, 0xfa00000000000000,
                 0x9c40000000000000, 0xc350000000000000, 0xf424000000000000,
                 0x9896800000000000, 0xbebc200000000000, 0xee6b280000000000,
@@ -955,8 +942,7 @@ namespace Newtonsoft.Json.Utilities
             /// <summary>
             /// Normalized powers of 0.1
             /// </summary>
-            private static readonly ulong[] MultVal64Power10Inv = new ulong[]
-            {
+            private static readonly ulong[] MultVal64Power10Inv = {
                 0xcccccccccccccccd, 0xa3d70a3d70a3d70b, 0x83126e978d4fdf3c,
                 0xd1b71758e219652e, 0xa7c5ac471b478425, 0x8637bd05af6c69b7,
                 0xd6bf94d5e57a42be, 0xabcc77118461ceff, 0x89705f4136b4a599,
@@ -967,8 +953,7 @@ namespace Newtonsoft.Json.Utilities
             /// <summary>
             /// Exponents for both powers of 10^16 and 0.1^16
             /// </summary>
-            private static readonly int[] MultExp64Power10By16 = new int[]
-            {
+            private static readonly int[] MultExp64Power10By16 = {
                 54, 107, 160, 213, 266, 319, 373, 426, 479, 532, 585, 638,
                 691, 745, 798, 851, 904, 957, 1010, 1064, 1117,
             };
@@ -976,8 +961,7 @@ namespace Newtonsoft.Json.Utilities
             /// <summary>
             /// Normalized powers of 10^16
             /// </summary>
-            private static readonly ulong[] MultVal64Power10By16 = new ulong[]
-            {
+            private static readonly ulong[] MultVal64Power10By16 = {
                 0x8e1bc9bf04000000, 0x9dc5ada82b70b59e, 0xaf298d050e4395d6,
                 0xc2781f49ffcfa6d4, 0xd7e77a8f87daf7fa, 0xefb3ab16c59b14a0,
                 0x850fadc09923329c, 0x93ba47c980e98cde, 0xa402b9c5a8d3a6e6,
@@ -990,8 +974,7 @@ namespace Newtonsoft.Json.Utilities
             /// <summary>
             /// Normalized powers of 0.1^16
             /// </summary>
-            private static readonly ulong[] MultVal64Power10By16Inv = new ulong[]
-            {
+            private static readonly ulong[] MultVal64Power10By16Inv = {
                 0xe69594bec44de160, 0xcfb11ead453994c3, 0xbb127c53b17ec165,
                 0xa87fea27a539e9b3, 0x97c560ba6b0919b5, 0x88b402f7fd7553ab,
                 0xf64335bcf065d3a0, 0xddd0467c64bce4c4, 0xc7caba6e7c5382ed,

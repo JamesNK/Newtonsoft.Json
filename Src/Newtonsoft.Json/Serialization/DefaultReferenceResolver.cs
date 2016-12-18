@@ -23,7 +23,6 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 

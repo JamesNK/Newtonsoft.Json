@@ -24,9 +24,6 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Text;
-using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Schema;
 
 namespace Newtonsoft.Json
@@ -82,18 +79,12 @@ namespace Newtonsoft.Json
         /// Gets a value indicating whether this <see cref="JsonConverter"/> can read JSON.
         /// </summary>
         /// <value><c>true</c> if this <see cref="JsonConverter"/> can read JSON; otherwise, <c>false</c>.</value>
-        public virtual bool CanRead
-        {
-            get { return true; }
-        }
+        public virtual bool CanRead => true;
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="JsonConverter"/> can write JSON.
         /// </summary>
         /// <value><c>true</c> if this <see cref="JsonConverter"/> can write JSON; otherwise, <c>false</c>.</value>
-        public virtual bool CanWrite
-        {
-            get { return true; }
-        }
+        public virtual bool CanWrite => true;
     }
 }

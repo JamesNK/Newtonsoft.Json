@@ -24,8 +24,6 @@
 #endregion
 
 using System;
-using Newtonsoft.Json.Utilities;
-using System.Globalization;
 
 namespace Newtonsoft.Json
 {
@@ -35,16 +33,11 @@ namespace Newtonsoft.Json
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Property | AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface | AttributeTargets.Enum | AttributeTargets.Parameter, AllowMultiple = false)]
     public sealed class JsonConverterAttribute : Attribute
     {
-        private readonly Type _converterType;
-
         /// <summary>
         /// Gets the <see cref="Type"/> of the <see cref="JsonConverter"/>.
         /// </summary>
         /// <value>The <see cref="Type"/> of the <see cref="JsonConverter"/>.</value>
-        public Type ConverterType
-        {
-            get { return _converterType; }
-        }
+        public Type ConverterType { get; }
 
         /// <summary>
         /// The parameter list to use when constructing the <see cref="JsonConverter"/> described by <see cref="ConverterType"/>.
@@ -63,7 +56,7 @@ namespace Newtonsoft.Json
                 throw new ArgumentNullException(nameof(converterType));
             }
 
-            _converterType = converterType;
+            ConverterType = converterType;
         }
 
         /// <summary>

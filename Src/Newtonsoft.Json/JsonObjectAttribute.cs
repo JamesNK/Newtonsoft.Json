@@ -33,8 +33,6 @@ namespace Newtonsoft.Json
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct | AttributeTargets.Interface, AllowMultiple = false)]
     public sealed class JsonObjectAttribute : JsonContainerAttribute
     {
-        private MemberSerialization _memberSerialization = MemberSerialization.OptOut;
-
         // yuck. can't set nullable properties on an attribute in C#
         // have to use this approach to get an unset default state
         internal Required? _itemRequired;
@@ -43,11 +41,7 @@ namespace Newtonsoft.Json
         /// Gets or sets the member serialization.
         /// </summary>
         /// <value>The member serialization.</value>
-        public MemberSerialization MemberSerialization
-        {
-            get { return _memberSerialization; }
-            set { _memberSerialization = value; }
-        }
+        public MemberSerialization MemberSerialization { get; set; } = MemberSerialization.OptOut;
 
         /// <summary>
         /// Gets or sets a value that indicates whether the object's properties are required.

@@ -62,10 +62,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets the constructor parameters required for any non-default constructor
         /// </summary>
         [Obsolete("ConstructorParameters is obsolete. Use CreatorParameters instead.")]
-        public JsonPropertyCollection ConstructorParameters
-        {
-            get { return CreatorParameters; }
-        }
+        public JsonPropertyCollection ConstructorParameters => CreatorParameters;
 
         /// <summary>
         /// Gets a collection of <see cref="JsonProperty"/> instances that define the parameters used with <see cref="OverrideCreator"/>.
@@ -111,7 +108,7 @@ namespace Newtonsoft.Json.Serialization
             set
             {
                 _parametrizedConstructor = value;
-                _parameterizedCreator = (value != null) ? JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(value) : null;
+                ParameterizedCreator = (value != null) ? JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(value) : null;
             }
         }
 
@@ -130,10 +127,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        internal ObjectConstructor<object> ParameterizedCreator
-        {
-            get { return _parameterizedCreator; }
-        }
+        internal ObjectConstructor<object> ParameterizedCreator { get; private set; }
 
         /// <summary>
         /// Gets or sets the extension data setter.
@@ -163,7 +157,6 @@ namespace Newtonsoft.Json.Serialization
         private ConstructorInfo _parametrizedConstructor;
         private ConstructorInfo _overrideConstructor;
         private ObjectConstructor<object> _overrideCreator;
-        private ObjectConstructor<object> _parameterizedCreator;
         private JsonPropertyCollection _creatorParameters;
         private Type _extensionDataValueType;
 

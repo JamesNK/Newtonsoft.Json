@@ -35,7 +35,7 @@ using Newtonsoft.Json.Utilities;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
-using System.Linq;
+
 #endif
 
 namespace Newtonsoft.Json
@@ -128,17 +128,13 @@ namespace Newtonsoft.Json
         private bool _hasExceededMaxDepth;
         internal DateParseHandling _dateParseHandling;
         internal FloatParseHandling _floatParseHandling;
-        private string _dateFormatString;
         private List<JsonPosition> _stack;
 
         /// <summary>
         /// Gets the current reader state.
         /// </summary>
         /// <value>The current reader state.</value>
-        protected State CurrentState
-        {
-            get { return _currentState; }
-        }
+        protected State CurrentState => _currentState;
 
         /// <summary>
         /// Gets or sets a value indicating whether the underlying stream or
@@ -229,11 +225,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets or sets how custom date formatted strings are parsed when reading JSON.
         /// </summary>
-        public string DateFormatString
-        {
-            get { return _dateFormatString; }
-            set { _dateFormatString = value; }
-        }
+        public string DateFormatString { get; set; }
 
         /// <summary>
         /// Gets or sets the maximum depth allowed when reading JSON. Reading past this depth will throw a <see cref="JsonReaderException"/>.
@@ -255,26 +247,17 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets the type of the current JSON token. 
         /// </summary>
-        public virtual JsonToken TokenType
-        {
-            get { return _tokenType; }
-        }
+        public virtual JsonToken TokenType => _tokenType;
 
         /// <summary>
         /// Gets the text value of the current JSON token.
         /// </summary>
-        public virtual object Value
-        {
-            get { return _value; }
-        }
+        public virtual object Value => _value;
 
         /// <summary>
         /// Gets the .NET type for the current JSON token.
         /// </summary>
-        public virtual Type ValueType
-        {
-            get { return (_value != null) ? _value.GetType() : null; }
-        }
+        public virtual Type ValueType => (_value != null) ? _value.GetType() : null;
 
         /// <summary>
         /// Gets the depth of the current token in the JSON document.
@@ -816,7 +799,7 @@ namespace Newtonsoft.Json
             }
 
             DateTime dt;
-            if (DateTimeUtils.TryParseDateTime(s, DateTimeZoneHandling, _dateFormatString, Culture, out dt))
+            if (DateTimeUtils.TryParseDateTime(s, DateTimeZoneHandling, DateFormatString, Culture, out dt))
             {
                 dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
                 SetToken(JsonToken.Date, dt, false);
@@ -872,7 +855,7 @@ namespace Newtonsoft.Json
             }
 
             DateTimeOffset dt;
-            if (DateTimeUtils.TryParseDateTimeOffset(s, _dateFormatString, Culture, out dt))
+            if (DateTimeUtils.TryParseDateTimeOffset(s, DateFormatString, Culture, out dt))
             {
                 SetToken(JsonToken.Date, dt, false);
                 return dt;

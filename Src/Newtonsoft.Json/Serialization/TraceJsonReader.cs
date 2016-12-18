@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-using System.Text;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -94,15 +92,9 @@ namespace Newtonsoft.Json.Serialization
         }
 #endif
 
-        public override int Depth
-        {
-            get { return _innerReader.Depth; }
-        }
+        public override int Depth => _innerReader.Depth;
 
-        public override string Path
-        {
-            get { return _innerReader.Path; }
-        }
+        public override string Path => _innerReader.Path;
 
         public override char QuoteChar
         {
@@ -110,20 +102,11 @@ namespace Newtonsoft.Json.Serialization
             protected internal set { _innerReader.QuoteChar = value; }
         }
 
-        public override JsonToken TokenType
-        {
-            get { return _innerReader.TokenType; }
-        }
+        public override JsonToken TokenType => _innerReader.TokenType;
 
-        public override object Value
-        {
-            get { return _innerReader.Value; }
-        }
+        public override object Value => _innerReader.Value;
 
-        public override Type ValueType
-        {
-            get { return _innerReader.ValueType; }
-        }
+        public override Type ValueType => _innerReader.ValueType;
 
         public override void Close()
         {

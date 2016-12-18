@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
 using System.Threading;
-using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {

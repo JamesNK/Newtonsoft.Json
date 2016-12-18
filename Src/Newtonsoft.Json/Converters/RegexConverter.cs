@@ -26,7 +26,6 @@
 using System;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Bson;
-using System.Globalization;
 using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Converters

@@ -25,8 +25,6 @@
 
 #if !(NET20 || NET35)
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -38,10 +36,7 @@ namespace Newtonsoft.Json.Utilities
     {
         private static readonly ExpressionReflectionDelegateFactory _instance = new ExpressionReflectionDelegateFactory();
 
-        internal static ReflectionDelegateFactory Instance
-        {
-            get { return _instance; }
-        }
+        internal static ReflectionDelegateFactory Instance => _instance;
 
         public override ObjectConstructor<object> CreateParameterizedConstructor(MethodBase method)
         {

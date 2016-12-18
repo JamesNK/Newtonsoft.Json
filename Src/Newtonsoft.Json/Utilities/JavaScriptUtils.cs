@@ -24,11 +24,7 @@
 #endregion
 
 using System;
-using System.Collections;
-using System.Globalization;
 using System.IO;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.Collections.Generic;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;

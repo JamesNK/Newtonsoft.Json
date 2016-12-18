@@ -41,15 +41,11 @@ namespace Newtonsoft.Json.Linq
         private JContainer _parent;
         // used when writer is writing single value and the value has no containing parent
         private JValue _value;
-        private JToken _current;
 
         /// <summary>
         /// Gets the <see cref="JToken"/> at the writer's current position.
         /// </summary>
-        public JToken CurrentToken
-        {
-            get { return _current; }
-        }
+        public JToken CurrentToken { get; private set; }
 
         /// <summary>
         /// Gets the token being writen.
@@ -124,12 +120,12 @@ namespace Newtonsoft.Json.Linq
             }
 
             _parent = container;
-            _current = container;
+            CurrentToken = container;
         }
 
         private void RemoveParent()
         {
-            _current = _parent;
+            CurrentToken = _parent;
             _parent = _parent.Parent;
 
             if (_parent != null && _parent.Type == JTokenType.Property)
@@ -199,7 +195,7 @@ namespace Newtonsoft.Json.Linq
             if (_parent != null)
             {
                 _parent.Add(value);
-                _current = _parent.Last;
+                CurrentToken = _parent.Last;
 
                 if (_parent.Type == JTokenType.Property)
                 {
@@ -209,7 +205,7 @@ namespace Newtonsoft.Json.Linq
             else
             {
                 _value = value ?? JValue.CreateNull();
-                _current = _value;
+                CurrentToken = _value;
             }
         }
 
@@ -506,7 +502,7 @@ namespace Newtonsoft.Json.Linq
                 if (_parent != null)
                 {
                     _parent.Add(value);
-                    _current = _parent.Last;
+                    CurrentToken = _parent.Last;
 
                     // if the writer was in a property then move out of it and up to its parent object
                     if (_parent.Type == JTokenType.Property)
@@ -517,7 +513,7 @@ namespace Newtonsoft.Json.Linq
                 }
                 else
                 {
-                    _current = value;
+                    CurrentToken = value;
 
                     if (_token == null && _value == null)
                     {

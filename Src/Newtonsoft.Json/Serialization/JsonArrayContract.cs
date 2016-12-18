@@ -26,15 +26,12 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
-using System.Globalization;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
-using System.Linq;
 
 #endif
 
@@ -106,10 +103,7 @@ namespace Newtonsoft.Json.Serialization
         /// <value><c>true</c> if the creator has a parameter with the collection values; otherwise, <c>false</c>.</value>
         public bool HasParameterizedCreator { get; set; }
 
-        internal bool HasParameterizedCreatorInternal
-        {
-            get { return (HasParameterizedCreator || _parameterizedCreator != null || _parameterizedConstructor != null); }
-        }
+        internal bool HasParameterizedCreatorInternal => (HasParameterizedCreator || _parameterizedCreator != null || _parameterizedConstructor != null);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonArrayContract"/> class.

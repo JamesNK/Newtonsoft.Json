@@ -34,7 +34,6 @@ using System.IO;
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
 using System.Numerics;
 #endif
-using System.Text;
 using Newtonsoft.Json.Utilities;
 using System.Diagnostics;
 using System.Globalization;
@@ -61,23 +60,20 @@ namespace Newtonsoft.Json.Linq
     {
         private static JTokenEqualityComparer _equalityComparer;
 
-        private JContainer _parent;
-        private JToken _previous;
-        private JToken _next;
         private object _annotations;
 
-        private static readonly JTokenType[] BooleanTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
-        private static readonly JTokenType[] NumberTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
+        private static readonly JTokenType[] BooleanTypes = { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
+        private static readonly JTokenType[] NumberTypes = { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
-        private static readonly JTokenType[] BigIntegerTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean, JTokenType.Bytes };
+        private static readonly JTokenType[] BigIntegerTypes = { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean, JTokenType.Bytes };
 #endif
-        private static readonly JTokenType[] StringTypes = new[] { JTokenType.Date, JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean, JTokenType.Bytes, JTokenType.Guid, JTokenType.TimeSpan, JTokenType.Uri };
-        private static readonly JTokenType[] GuidTypes = new[] { JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Guid, JTokenType.Bytes };
-        private static readonly JTokenType[] TimeSpanTypes = new[] { JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.TimeSpan };
-        private static readonly JTokenType[] UriTypes = new[] { JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Uri };
-        private static readonly JTokenType[] CharTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw };
-        private static readonly JTokenType[] DateTimeTypes = new[] { JTokenType.Date, JTokenType.String, JTokenType.Comment, JTokenType.Raw };
-        private static readonly JTokenType[] BytesTypes = new[] { JTokenType.Bytes, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Integer };
+        private static readonly JTokenType[] StringTypes = { JTokenType.Date, JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean, JTokenType.Bytes, JTokenType.Guid, JTokenType.TimeSpan, JTokenType.Uri };
+        private static readonly JTokenType[] GuidTypes = { JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Guid, JTokenType.Bytes };
+        private static readonly JTokenType[] TimeSpanTypes = { JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.TimeSpan };
+        private static readonly JTokenType[] UriTypes = { JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Uri };
+        private static readonly JTokenType[] CharTypes = { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw };
+        private static readonly JTokenType[] DateTimeTypes = { JTokenType.Date, JTokenType.String, JTokenType.Comment, JTokenType.Raw };
+        private static readonly JTokenType[] BytesTypes = { JTokenType.Bytes, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Integer };
 
         /// <summary>
         /// Gets a comparer that can compare two tokens for value equality.
@@ -103,8 +99,8 @@ namespace Newtonsoft.Json.Linq
         public JContainer Parent
         {
             [DebuggerStepThrough]
-            get { return _parent; }
-            internal set { _parent = value; }
+            get;
+            internal set;
         }
 
         /// <summary>
@@ -162,21 +158,13 @@ namespace Newtonsoft.Json.Linq
         /// Gets the next sibling token of this node.
         /// </summary>
         /// <value>The <see cref="JToken"/> that contains the next sibling token.</value>
-        public JToken Next
-        {
-            get { return _next; }
-            internal set { _next = value; }
-        }
+        public JToken Next { get; internal set; }
 
         /// <summary>
         /// Gets the previous sibling token of this node.
         /// </summary>
         /// <value>The <see cref="JToken"/> that contains the previous sibling token.</value>
-        public JToken Previous
-        {
-            get { return _previous; }
-            internal set { _previous = value; }
-        }
+        public JToken Previous { get; internal set; }
 
         /// <summary>
         /// Gets the path of the JSON token. 
@@ -230,13 +218,13 @@ namespace Newtonsoft.Json.Linq
         /// <param name="content">A content object that contains simple content or a collection of content objects to be added after this token.</param>
         public void AddAfterSelf(object content)
         {
-            if (_parent == null)
+            if (Parent == null)
             {
                 throw new InvalidOperationException("The parent is missing.");
             }
 
-            int index = _parent.IndexOfItem(this);
-            _parent.AddInternal(index + 1, content, false);
+            int index = Parent.IndexOfItem(this);
+            Parent.AddInternal(index + 1, content, false);
         }
 
         /// <summary>
@@ -245,13 +233,13 @@ namespace Newtonsoft.Json.Linq
         /// <param name="content">A content object that contains simple content or a collection of content objects to be added before this token.</param>
         public void AddBeforeSelf(object content)
         {
-            if (_parent == null)
+            if (Parent == null)
             {
                 throw new InvalidOperationException("The parent is missing.");
             }
 
-            int index = _parent.IndexOfItem(this);
-            _parent.AddInternal(index, content, false);
+            int index = Parent.IndexOfItem(this);
+            Parent.AddInternal(index, content, false);
         }
 
         /// <summary>
@@ -385,12 +373,12 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         public void Remove()
         {
-            if (_parent == null)
+            if (Parent == null)
             {
                 throw new InvalidOperationException("The parent is missing.");
             }
 
-            _parent.RemoveItem(this);
+            Parent.RemoveItem(this);
         }
 
         /// <summary>
@@ -399,12 +387,12 @@ namespace Newtonsoft.Json.Linq
         /// <param name="value">The value.</param>
         public void Replace(JToken value)
         {
-            if (_parent == null)
+            if (Parent == null)
             {
                 throw new InvalidOperationException("The parent is missing.");
             }
 
-            _parent.ReplaceItem(this, value);
+            Parent.ReplaceItem(this, value);
         }
 
         /// <summary>
@@ -1864,10 +1852,7 @@ namespace Newtonsoft.Json.Linq
 
         internal abstract int GetDeepHashCode();
 
-        IJEnumerable<JToken> IJEnumerable<JToken>.this[object key]
-        {
-            get { return this[key]; }
-        }
+        IJEnumerable<JToken> IJEnumerable<JToken>.this[object key] => this[key];
 
         /// <summary>
         /// Creates a <see cref="JsonReader"/> for this token.

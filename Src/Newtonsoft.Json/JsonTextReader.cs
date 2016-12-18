@@ -24,10 +24,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
 using System.Runtime.CompilerServices;
-using System.Text;
 using System.IO;
 using System.Globalization;
 #if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
@@ -2461,9 +2458,6 @@ namespace Newtonsoft.Json
         /// <value>
         /// The current line position or 0 if no line information is available (for example, HasLineInfo returns false).
         /// </value>
-        public int LinePosition
-        {
-            get { return _charPos - _lineStartPos; }
-        }
+        public int LinePosition => _charPos - _lineStartPos;
     }
 }

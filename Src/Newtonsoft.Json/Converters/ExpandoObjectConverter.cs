@@ -29,8 +29,6 @@ using System;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Globalization;
-using System.Linq;
-using System.Text;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Converters
@@ -158,10 +156,7 @@ namespace Newtonsoft.Json.Converters
         /// <value>
         /// 	<c>true</c> if this <see cref="JsonConverter"/> can write JSON; otherwise, <c>false</c>.
         /// </value>
-        public override bool CanWrite
-        {
-            get { return false; }
-        }
+        public override bool CanWrite => false;
     }
 }
 

@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -45,10 +44,7 @@ namespace Newtonsoft.Json.Utilities
             _dontFallbackFirst = dontFallbackFirst;
         }
 
-        private new T Value
-        {
-            get { return (T)base.Value; }
-        }
+        private new T Value => (T)base.Value;
 
         private bool IsOverridden(string method)
         {

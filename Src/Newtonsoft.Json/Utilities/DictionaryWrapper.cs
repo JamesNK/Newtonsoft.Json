@@ -492,25 +492,13 @@ namespace Newtonsoft.Json.Utilities
                 _e = e;
             }
 
-            public DictionaryEntry Entry
-            {
-                get { return (DictionaryEntry)Current; }
-            }
+            public DictionaryEntry Entry => (DictionaryEntry)Current;
 
-            public object Key
-            {
-                get { return Entry.Key; }
-            }
+            public object Key => Entry.Key;
 
-            public object Value
-            {
-                get { return Entry.Value; }
-            }
+            public object Value => Entry.Value;
 
-            public object Current
-            {
-                get { return new DictionaryEntry(_e.Current.Key, _e.Current.Value); }
-            }
+            public object Current => new DictionaryEntry(_e.Current.Key, _e.Current.Value);
 
             public bool MoveNext()
             {

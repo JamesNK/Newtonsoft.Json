@@ -25,12 +25,9 @@
 
 #if !(NET35 || NET20 || PORTABLE40)
 using System;
-using System.Collections.Generic;
 using System.Dynamic;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Utilities;
-using System.Collections;
 
 namespace Newtonsoft.Json.Serialization
 {
