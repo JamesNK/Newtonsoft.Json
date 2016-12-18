@@ -143,7 +143,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Creates an instance of the <c>JsonTextWriter</c> class using the specified <see cref="TextWriter"/>. 
+        /// Initializes a new instance of the <c>JsonTextWriter</c> class using the specified <see cref="TextWriter"/>.
         /// </summary>
         /// <param name="textWriter">The <c>TextWriter</c> to write to.</param>
         public JsonTextWriter(TextWriter textWriter)

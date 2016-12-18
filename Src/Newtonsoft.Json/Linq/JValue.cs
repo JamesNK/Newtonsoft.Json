@@ -869,9 +869,6 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// <c>true</c> if the specified <see cref="T:System.Object"/> is equal to the current <see cref="T:System.Object"/>; otherwise, <c>false</c>.
         /// </returns>
-        /// <exception cref="T:System.NullReferenceException">
-        /// The <paramref name="obj"/> parameter is null.
-        /// </exception>
         public override bool Equals(object obj)
         {
             if (obj == null)
@@ -1079,7 +1076,7 @@ namespace Newtonsoft.Json.Linq
         /// This instance is greater than <paramref name="obj"/>.
         /// </returns>
         /// <exception cref="T:System.ArgumentException">
-        /// 	<paramref name="obj"/> is not the same type as this instance.
+        /// 	<paramref name="obj"/> is not of the same type as this instance.
         /// </exception>
         public int CompareTo(JValue obj)
         {

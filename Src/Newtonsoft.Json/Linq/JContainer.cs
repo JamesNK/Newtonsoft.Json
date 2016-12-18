@@ -685,16 +685,16 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Creates an <see cref="JsonWriter"/> that can be used to add tokens to the <see cref="JToken"/>.
+        /// Creates a <see cref="JsonWriter"/> that can be used to add tokens to the <see cref="JToken"/>.
         /// </summary>
-        /// <returns>An <see cref="JsonWriter"/> that is ready to have content written to it.</returns>
+        /// <returns>A <see cref="JsonWriter"/> that is ready to have content written to it.</returns>
         public JsonWriter CreateWriter()
         {
             return new JTokenWriter(this);
         }
 
         /// <summary>
-        /// Replaces the children nodes of this token with the specified content.
+        /// Replaces the child nodes of this token with the specified content.
         /// </summary>
         /// <param name="content">The content.</param>
         public void ReplaceAll(object content)

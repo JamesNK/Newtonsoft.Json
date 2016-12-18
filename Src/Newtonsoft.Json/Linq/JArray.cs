@@ -189,7 +189,7 @@ namespace Newtonsoft.Json.Linq
         /// Creates a <see cref="JArray"/> from an object.
         /// </summary>
         /// <param name="o">The object that will be used to create <see cref="JArray"/>.</param>
-        /// <returns>A <see cref="JArray"/> with the values of the specified object</returns>
+        /// <returns>A <see cref="JArray"/> with the values of the specified object.</returns>
         public new static JArray FromObject(object o)
         {
             return FromObject(o, JsonSerializer.CreateDefault());
@@ -200,7 +200,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="o">The object that will be used to create <see cref="JArray"/>.</param>
         /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used to read the object.</param>
-        /// <returns>A <see cref="JArray"/> with the values of the specified object</returns>
+        /// <returns>A <see cref="JArray"/> with the values of the specified object.</returns>
         public new static JArray FromObject(object o, JsonSerializer jsonSerializer)
         {
             JToken token = FromObjectInternal(o, jsonSerializer);

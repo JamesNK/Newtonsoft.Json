@@ -75,7 +75,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonTextReader"/> class with the specified <see cref="TextReader"/>.
         /// </summary>
-        /// <param name="reader">The <c>TextReader</c> containing the XML data to read.</param>
+        /// <param name="reader">The <c>TextReader</c> containing the JSON data to read.</param>
         public JsonTextReader(TextReader reader)
         {
             if (reader == null)
