@@ -31,7 +31,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents a raw JSON string.
     /// </summary>
-    public class JRaw : JValue
+    public partial class JRaw : JValue
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="JRaw"/> class from another <see cref="JRaw"/> object.

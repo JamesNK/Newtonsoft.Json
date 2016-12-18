@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts an <see cref="ExpandoObject"/> to and from JSON.
     /// </summary>
-    public class ExpandoObjectConverter : JsonConverter
+    public partial class ExpandoObjectConverter : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -162,6 +162,15 @@ namespace Newtonsoft.Json.Converters
         {
             get { return false; }
         }
+    }
+
+    internal sealed partial class ExpandoObjectConverterImpl : ExpandoObjectConverter
+    {
+        private ExpandoObjectConverterImpl()
+        {
+        }
+
+        public static readonly ExpandoObjectConverter Instance = new ExpandoObjectConverterImpl();
     }
 }
 

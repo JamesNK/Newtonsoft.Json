@@ -34,7 +34,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts an Entity Framework <see cref="T:System.Data.EntityKeyMember"/> to and from JSON.
     /// </summary>
-    public class EntityKeyMemberConverter : JsonConverter
+    public partial class EntityKeyMemberConverter : JsonConverter
     {
         private const string EntityKeyMemberFullTypeName = "System.Data.EntityKeyMember";
 
@@ -151,6 +151,15 @@ namespace Newtonsoft.Json.Converters
         {
             return objectType.AssignableToTypeName(EntityKeyMemberFullTypeName);
         }
+    }
+
+    internal sealed partial class EntityKeyMemberConverterImpl : EntityKeyMemberConverter
+    {
+        private EntityKeyMemberConverterImpl()
+        {
+        }
+
+        public static readonly EntityKeyMemberConverter Instance = new EntityKeyMemberConverterImpl();
     }
 }
 

@@ -975,7 +975,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts XML to and from JSON.
     /// </summary>
-    public class XmlNodeConverter : JsonConverter
+    public partial class XmlNodeConverter : JsonConverter
     {
         private const string TextName = "#text";
         private const string CommentName = "#comment";
@@ -2065,6 +2065,13 @@ namespace Newtonsoft.Json.Converters
 #endif
 
             return false;
+        }
+    }
+
+    internal sealed partial class XmlNodeConverterImpl : XmlNodeConverter
+    {
+        public XmlNodeConverterImpl()
+        {
         }
     }
 }

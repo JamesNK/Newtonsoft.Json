@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// Maps a JSON property to a .NET member or constructor parameter.
     /// </summary>
-    public class JsonProperty
+    public partial class JsonProperty
     {
         internal Required? _required;
         internal bool _hasExplicitDefaultValue;

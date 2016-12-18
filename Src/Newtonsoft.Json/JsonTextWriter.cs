@@ -39,7 +39,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Represents a writer that provides a fast, non-cached, forward-only way of generating JSON data.
     /// </summary>
-    public class JsonTextWriter : JsonWriter
+    public partial class JsonTextWriter : JsonWriter
     {
         private readonly TextWriter _writer;
         private Base64Encoder _base64Encoder;
@@ -803,6 +803,14 @@ namespace Newtonsoft.Json
 
                 _writer.Write(_writeBuffer, 0, length);
             }
+        }
+    }
+
+    internal sealed partial class JsonTextWriterImpl : JsonTextWriter
+    {
+        public JsonTextWriterImpl(TextWriter textWriter)
+            : base(textWriter)
+        {
         }
     }
 }

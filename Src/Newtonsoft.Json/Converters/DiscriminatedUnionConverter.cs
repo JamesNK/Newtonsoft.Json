@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a F# discriminated union type to and from JSON.
     /// </summary>
-    public class DiscriminatedUnionConverter : JsonConverter
+    public partial class DiscriminatedUnionConverter : JsonConverter
     {
         #region UnionDefinition
         internal class Union
@@ -274,6 +274,15 @@ namespace Newtonsoft.Json.Converters
 
             return (bool)FSharpUtils.IsUnion(null, objectType, null);
         }
+    }
+
+    internal sealed partial class DiscriminatedUnionConverterImpl : DiscriminatedUnionConverter
+    {
+        private DiscriminatedUnionConverterImpl()
+        {
+        }
+
+        public static readonly DiscriminatedUnionConverter Instance = new DiscriminatedUnionConverterImpl();
     }
 }
 

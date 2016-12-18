@@ -45,6 +45,9 @@ using NUnit.Framework;
 #endif
 using Newtonsoft.Json.Utilities;
 using System.Collections;
+#if !(NET20 || NET35 || NET40 || PORTABLE40)
+using System.Threading.Tasks;
+#endif
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -379,5 +382,40 @@ namespace Newtonsoft.Json.Tests
                 throw new Exception(string.Format("Exception of type {0} expected; got exception of type {1}.", typeof(TException).Name, ex.GetType().Name), ex);
             }
         }
+
+#if !(NET20 || NET35 || NET40 || PORTABLE40)
+        public static async Task<TException> ThrowsAsync<TException>(Func<Task> action, params string[] possibleMessages)
+            where TException : Exception
+        {
+            try
+            {
+                await action();
+
+                Assert.Fail("Exception of type {0} expected. No exception thrown.", typeof(TException).Name);
+                return null;
+            }
+            catch (TException ex)
+            {
+                if (possibleMessages == null || possibleMessages.Length == 0)
+                {
+                    return ex;
+                }
+                foreach (string possibleMessage in possibleMessages)
+                {
+                    if (StringAssert.Equals(possibleMessage, ex.Message))
+                    {
+                        return ex;
+                    }
+                }
+
+                throw new Exception("Unexpected exception message." + Environment.NewLine + "Expected one of: " + string.Join(Environment.NewLine, possibleMessages) + Environment.NewLine + "Got: " + ex.Message + Environment.NewLine + Environment.NewLine + ex);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(string.Format("Exception of type {0} expected; got exception of type {1}.", typeof(TException).Name, ex.GetType().Name), ex);
+            }
+        }
+#endif
+
     }
 }

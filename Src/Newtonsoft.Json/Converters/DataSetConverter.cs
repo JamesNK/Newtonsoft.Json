@@ -33,7 +33,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="DataSet"/> to and from JSON.
     /// </summary>
-    public class DataSetConverter : JsonConverter
+    public partial class DataSetConverter : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -46,7 +46,7 @@ namespace Newtonsoft.Json.Converters
             DataSet dataSet = (DataSet)value;
             DefaultContractResolver resolver = serializer.ContractResolver as DefaultContractResolver;
 
-            DataTableConverter converter = new DataTableConverter();
+            DataTableConverter converter = DataTableConverterImpl.Instance;
 
             writer.WriteStartObject();
 
@@ -76,11 +76,9 @@ namespace Newtonsoft.Json.Converters
             }
 
             // handle typed datasets
-            DataSet ds = (objectType == typeof(DataSet))
-                ? new DataSet()
-                : (DataSet)Activator.CreateInstance(objectType);
+            DataSet ds = (objectType == typeof(DataSet)) ? new DataSet() : (DataSet)Activator.CreateInstance(objectType);
 
-            DataTableConverter converter = new DataTableConverter();
+            DataTableConverter converter = DataTableConverterImpl.Instance;
 
             reader.ReadAndAssert();
 
@@ -113,6 +111,15 @@ namespace Newtonsoft.Json.Converters
         {
             return typeof(DataSet).IsAssignableFrom(valueType);
         }
+    }
+
+    internal sealed partial class DataSetConverterImpl : DataSetConverter
+    {
+        private DataSetConverterImpl()
+        {
+        }
+
+        public static readonly DataSetConverter Instance = new DataSetConverterImpl();
     }
 }
 

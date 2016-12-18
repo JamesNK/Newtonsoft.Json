@@ -51,7 +51,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents an abstract JSON token.
     /// </summary>
-    public abstract class JToken : IJEnumerable<JToken>, IJsonLineInfo
+    public abstract partial class JToken : IJEnumerable<JToken>, IJsonLineInfo
 #if !(DOTNET || PORTABLE40 || PORTABLE)
         , ICloneable
 #endif

@@ -35,7 +35,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents a JSON property.
     /// </summary>
-    public class JProperty : JContainer
+    public partial class JProperty : JContainer
     {
         #region JPropertyList
         private class JPropertyList : IList<JToken>

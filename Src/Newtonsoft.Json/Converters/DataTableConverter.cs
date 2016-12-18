@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="DataTable"/> to and from JSON.
     /// </summary>
-    public class DataTableConverter : JsonConverter
+    public partial class DataTableConverter : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -242,6 +242,15 @@ namespace Newtonsoft.Json.Converters
         {
             return typeof(DataTable).IsAssignableFrom(valueType);
         }
+    }
+
+    internal sealed partial class DataTableConverterImpl : DataTableConverter
+    {
+        private DataTableConverterImpl()
+        {
+        }
+
+        public static readonly DataTableConverter Instance = new DataTableConverterImpl();
     }
 }
 

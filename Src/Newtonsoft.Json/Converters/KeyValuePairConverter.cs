@@ -34,7 +34,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="KeyValuePair{TKey,TValue}"/> to and from JSON.
     /// </summary>
-    public class KeyValuePairConverter : JsonConverter
+    public partial class KeyValuePairConverter : JsonConverter
     {
         private const string KeyName = "Key";
         private const string ValueName = "Value";
@@ -145,5 +145,14 @@ namespace Newtonsoft.Json.Converters
 
             return false;
         }
+    }
+
+    internal sealed partial class KeyValuePairConverterImpl : KeyValuePairConverter
+    {
+        public KeyValuePairConverterImpl()
+        {
+        }
+
+        public static readonly KeyValuePairConverter Instance = new KeyValuePairConverterImpl();
     }
 }

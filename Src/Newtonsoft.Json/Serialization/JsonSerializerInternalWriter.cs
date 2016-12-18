@@ -46,7 +46,7 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Serialization
 {
-    internal class JsonSerializerInternalWriter : JsonSerializerInternalBase
+    internal partial class JsonSerializerInternalWriter : JsonSerializerInternalBase
     {
         private Type _rootType;
         private int _rootLevel;

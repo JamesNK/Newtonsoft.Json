@@ -78,7 +78,7 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 
-    internal static class JavaScriptUtils
+    internal static partial class JavaScriptUtils
     {
         internal static readonly bool[] SingleQuoteCharEscapeFlags = new bool[128];
         internal static readonly bool[] DoubleQuoteCharEscapeFlags = new bool[128];
