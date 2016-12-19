@@ -579,7 +579,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The object to serialize.</param>
         /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
-        /// If this is null, default serialization settings will be used.</param>
+        /// If this is <c>null</c>, default serialization settings will be used.</param>
         /// <returns>
         /// A JSON string representation of the object.
         /// </returns>
@@ -593,7 +593,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The object to serialize.</param>
         /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
-        /// If this is null, default serialization settings will be used.</param>
+        /// If this is <c>null</c>, default serialization settings will be used.</param>
         /// <param name="type">
         /// The type of the value being serialized.
         /// This parameter is used when <see cref="TypeNameHandling"/> is Auto to write out the type name if the type of the value does not match.
@@ -615,7 +615,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The object to serialize.</param>
         /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
-        /// If this is null, default serialization settings will be used.</param>
+        /// If this is <c>null</c>, default serialization settings will be used.</param>
         /// <returns>
         /// A JSON string representation of the object.
         /// </returns>
@@ -630,7 +630,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The object to serialize.</param>
         /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
-        /// If this is null, default serialization settings will be used.</param>
+        /// If this is <c>null</c>, default serialization settings will be used.</param>
         /// <param name="type">
         /// The type of the value being serialized.
         /// This parameter is used when <see cref="TypeNameHandling"/> is Auto to write out the type name if the type of the value does not match.
@@ -698,7 +698,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The object to serialize.</param>
         /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
-        /// If this is null, default serialization settings will be used.</param>
+        /// If this is <c>null</c>, default serialization settings will be used.</param>
         /// <returns>
         /// A task that represents the asynchronous serialization operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
         /// </returns>
@@ -727,7 +727,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The JSON to deserialize.</param>
         /// <param name="settings">
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
-        /// If this is null, default serialization settings will be used.
+        /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeObject(string value, JsonSerializerSettings settings)
@@ -785,7 +785,7 @@ namespace Newtonsoft.Json
         /// <param name="anonymousTypeObject">The anonymous type object.</param>
         /// <param name="settings">
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
-        /// If this is null, default serialization settings will be used.
+        /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
         /// <returns>The deserialized anonymous type from the JSON string.</returns>
         public static T DeserializeAnonymousType<T>(string value, T anonymousTypeObject, JsonSerializerSettings settings)
@@ -812,7 +812,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The object to deserialize.</param>
         /// <param name="settings">
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
-        /// If this is null, default serialization settings will be used.
+        /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
         /// <returns>The deserialized object from the JSON string.</returns>
         public static T DeserializeObject<T>(string value, JsonSerializerSettings settings)
@@ -843,7 +843,7 @@ namespace Newtonsoft.Json
         /// <param name="type">The type of the object to deserialize to.</param>
         /// <param name="settings">
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
-        /// If this is null, default serialization settings will be used.
+        /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
         /// <returns>The deserialized object from the JSON string.</returns>
         public static object DeserializeObject(string value, Type type, JsonSerializerSettings settings)
@@ -888,7 +888,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The JSON to deserialize.</param>
         /// <param name="settings">
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
-        /// If this is null, default serialization settings will be used.
+        /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
         /// <returns>
         /// A task that represents the asynchronous deserialization operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
@@ -921,7 +921,7 @@ namespace Newtonsoft.Json
         /// <param name="type">The type of the object to deserialize to.</param>
         /// <param name="settings">
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
-        /// If this is null, default serialization settings will be used.
+        /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
         /// <returns>
         /// A task that represents the asynchronous deserialization operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
@@ -952,7 +952,7 @@ namespace Newtonsoft.Json
         /// <param name="target">The target object to populate values onto.</param>
         /// <param name="settings">
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
-        /// If this is null, default serialization settings will be used.
+        /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
         public static void PopulateObject(string value, object target, JsonSerializerSettings settings)
         {
@@ -977,7 +977,7 @@ namespace Newtonsoft.Json
         /// <param name="target">The target object to populate values onto.</param>
         /// <param name="settings">
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
-        /// If this is null, default serialization settings will be used.
+        /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
         /// <returns>
         /// A task that represents the asynchronous population operation.

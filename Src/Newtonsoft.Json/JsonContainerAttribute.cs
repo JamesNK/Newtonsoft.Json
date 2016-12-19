@@ -60,8 +60,8 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// The parameter list to use when constructing the <see cref="JsonConverter"/> described by <see cref="ItemConverterType"/>.
-        /// If null, the default constructor is used.
-        /// When non-null, there must be a constructor defined in the <see cref="JsonConverter"/> that exactly matches the number,
+        /// If <c>null</c>, the default constructor is used.
+        /// When non-<c>null</c>, there must be a constructor defined in the <see cref="JsonConverter"/> that exactly matches the number,
         /// order, and type of these parameters.
         /// </summary>
         /// <example>
@@ -87,8 +87,8 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// The parameter list to use when constructing the <see cref="NamingStrategy"/> described by <see cref="NamingStrategyType"/>.
-        /// If null, the default constructor is used.
-        /// When non-null, there must be a constructor defined in the <see cref="NamingStrategy"/> that exactly matches the number,
+        /// If <c>null</c>, the default constructor is used.
+        /// When non-<c>null</c>, there must be a constructor defined in the <see cref="NamingStrategy"/> that exactly matches the number,
         /// order, and type of these parameters.
         /// </summary>
         /// <example>

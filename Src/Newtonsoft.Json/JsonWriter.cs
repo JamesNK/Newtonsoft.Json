@@ -505,7 +505,8 @@ namespace Newtonsoft.Json
         /// <param name="value">
         /// The value to write.
         /// A value is only required for tokens that have an associated value, e.g. the <see cref="String"/> property name for <see cref="JsonToken.PropertyName"/>.
-        /// A null value can be passed to the method for token's that don't have a value, e.g. <see cref="JsonToken.StartObject"/>.</param>
+        /// <c>null</c> can be passed to the method for tokens that don't have a value, e.g. <see cref="JsonToken.StartObject"/>.
+        /// </param>
         public void WriteToken(JsonToken token, object value)
         {
             switch (token)

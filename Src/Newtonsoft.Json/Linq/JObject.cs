@@ -256,7 +256,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets a <see cref="JProperty"/> the specified name.
         /// </summary>
         /// <param name="name">The property name.</param>
-        /// <returns>A <see cref="JProperty"/> with the specified name or null.</returns>
+        /// <returns>A <see cref="JProperty"/> with the specified name or <c>null</c>.</returns>
         public JProperty Property(string name)
         {
             if (name == null)
@@ -360,7 +360,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JObject"/>.</param>
         /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
-        /// If this is null, default load settings will be used.</param>
+        /// If this is <c>null</c>, default load settings will be used.</param>
         /// <returns>A <see cref="JObject"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
         /// <exception cref="JsonReaderException">
         ///     <paramref name="reader"/> is not valid JSON.
@@ -413,7 +413,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="json">A <see cref="String"/> that contains JSON.</param>
         /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
-        /// If this is null, default load settings will be used.</param>
+        /// If this is <c>null</c>, default load settings will be used.</param>
         /// <returns>A <see cref="JObject"/> populated from the string that contains JSON.</returns>
         /// <exception cref="JsonReaderException">
         ///     <paramref name="json"/> is not valid JSON.

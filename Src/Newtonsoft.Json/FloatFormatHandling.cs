@@ -43,7 +43,7 @@ namespace Newtonsoft.Json
         Symbol = 1,
 
         /// <summary>
-        /// Write special floating point values as the property's default value in JSON, e.g. 0.0 for a <see cref="System.Double"/> property, null for a <see cref="System.Nullable{Double}"/> property.
+        /// Write special floating point values as the property's default value in JSON, e.g. 0.0 for a <see cref="System.Double"/> property, <c>null</c> for a <see cref="System.Nullable{Double}"/> property.
         /// </summary>
         DefaultValue = 2
     }
