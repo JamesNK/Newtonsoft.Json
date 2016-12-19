@@ -75,7 +75,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
         /// <summary>
-        /// Determines whether the string is all white space. Empty string will return false.
+        /// Determines whether the string is all white space. Empty string will return <c>false</c>.
         /// </summary>
         /// <param name="s">The string to test whether it is all white space.</param>
         /// <returns>

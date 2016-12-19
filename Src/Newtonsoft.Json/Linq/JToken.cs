@@ -2093,7 +2093,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="reader">An <see cref="JsonReader"/> positioned at the token to read into this <see cref="JToken"/>.</param>
         /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
-        /// If this is null, default load settings will be used.</param>
+        /// If this is <c>null</c>, default load settings will be used.</param>
         /// <returns>
         /// An <see cref="JToken"/> that contains the token and its descendant tokens
         /// that were read from the reader. The runtime type of the token is determined
@@ -2168,7 +2168,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="json">A <see cref="String"/> that contains JSON.</param>
         /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
-        /// If this is null, default load settings will be used.</param>
+        /// If this is <c>null</c>, default load settings will be used.</param>
         /// <returns>A <see cref="JToken"/> populated from the string that contains JSON.</returns>
         public static JToken Parse(string json, JsonLoadSettings settings)
         {
@@ -2190,7 +2190,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="reader">A <see cref="JsonReader"/> positioned at the token to read into this <see cref="JToken"/>.</param>
         /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
-        /// If this is null, default load settings will be used.</param>
+        /// If this is <c>null</c>, default load settings will be used.</param>
         /// <returns>
         /// A <see cref="JToken"/> that contains the token and its descendant tokens
         /// that were read from the reader. The runtime type of the token is determined
@@ -2286,7 +2286,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="path">
         /// A <see cref="String"/> that contains a JPath expression.
         /// </param>
-        /// <returns>A <see cref="JToken"/>, or null.</returns>
+        /// <returns>A <see cref="JToken"/>, or <c>null</c>.</returns>
         public JToken SelectToken(string path)
         {
             return SelectToken(path, false);

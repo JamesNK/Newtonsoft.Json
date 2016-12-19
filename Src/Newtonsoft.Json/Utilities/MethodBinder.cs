@@ -41,7 +41,7 @@
         /// </summary>
         /// <param name="from">Source primitive type.</param>
         /// <param name="to">Target primitive type.</param>
-        /// <returns>True if source type can be widened to target type, false otherwise.</returns>
+        /// <returns><c>true</c> if source type can be widened to target type, <c>false</c> otherwise.</returns>
         private static bool CanConvertPrimitive(Type from, Type to)
         {
             if (from == to)
@@ -80,7 +80,7 @@
         /// <param name="parameters">Method parameters.</param>
         /// <param name="types">Argument types.</param>
         /// <param name="enableParamArray">Try to pack extra arguments into ParamArray.</param>
-        /// <returns>True if method can be called with given arguments, false otherwise.</returns>
+        /// <returns><c>true</c> if method can be called with given arguments, <c>false</c> otherwise.</returns>
         private static bool FilterParameters(ParameterInfo[] parameters, IList<Type> types, bool enableParamArray)
         {
             ValidationUtils.ArgumentNotNull(parameters, nameof(parameters));

@@ -445,7 +445,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Reads the next JSON token from the stream as a <see cref="Byte"/>[].
         /// </summary>
-        /// <returns>A <see cref="Byte"/>[] or a null reference if the next JSON token is null. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Byte"/>[] or <c>null</c> if the next JSON token is null. This method will return <c>null</c> at the end of an array.</returns>
         public override byte[] ReadAsBytes()
         {
             EnsureBuffer();
@@ -2440,7 +2440,7 @@ namespace Newtonsoft.Json
         /// Gets the current line number.
         /// </summary>
         /// <value>
-        /// The current line number or 0 if no line information is available (for example, HasLineInfo returns false).
+        /// The current line number or 0 if no line information is available (for example, HasLineInfo returns <c>false</c>).
         /// </value>
         public int LineNumber
         {
@@ -2459,7 +2459,7 @@ namespace Newtonsoft.Json
         /// Gets the current line position.
         /// </summary>
         /// <value>
-        /// The current line position or 0 if no line information is available (for example, HasLineInfo returns false).
+        /// The current line position or 0 if no line information is available (for example, HasLineInfo returns <c>false</c>).
         /// </value>
         public int LinePosition
         {

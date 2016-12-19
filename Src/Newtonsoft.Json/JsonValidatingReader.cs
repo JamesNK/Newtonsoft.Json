@@ -407,7 +407,7 @@ namespace Newtonsoft.Json
         /// Reads the next JSON token from the stream as a <see cref="Byte"/>[].
         /// </summary>
         /// <returns>
-        /// A <see cref="Byte"/>[] or a null reference if the next JSON token is null.
+        /// A <see cref="Byte"/>[] or <c>null</c> if the next JSON token is null.
         /// </returns>
         public override byte[] ReadAsBytes()
         {
