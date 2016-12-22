@@ -71,7 +71,7 @@ namespace Newtonsoft.Json
         /// JSON Schema validation has been moved to its own package. See <see href="http://www.newtonsoft.com/jsonschema">http://www.newtonsoft.com/jsonschema</see> for more details.
         /// </note>
         /// </summary>
-        /// <returns>The <see cref="JsonSchema"/> of the JSON produced by the JsonConverter.</returns>
+        /// <returns>The <see cref="JsonSchema"/> of the JSON produced by the <see cref="JsonConverter"/>.</returns>
         [Obsolete("JSON Schema validation has been moved to its own package. It is strongly recommended that you do not override GetSchema() in your own converter. It is not used by Json.NET and will be removed at some point in the future. Converter's that override GetSchema() will stop working when it is removed.")]
         public virtual JsonSchema GetSchema()
         {

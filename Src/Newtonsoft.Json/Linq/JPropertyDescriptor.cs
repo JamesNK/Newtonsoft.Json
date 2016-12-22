@@ -110,9 +110,9 @@ namespace Newtonsoft.Json.Linq
         /// When overridden in a derived class, gets the type of the component this property is bound to.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Type"/> that represents the type of component this property is bound to.
-        /// When the <see cref="M:System.ComponentModel.PropertyDescriptor.GetValue(System.Object)"/> or
-        /// <see cref="M:System.ComponentModel.PropertyDescriptor.SetValue(System.Object,System.Object)"/>
+        /// A <see cref="Type"/> that represents the type of component this property is bound to.
+        /// When the <see cref="PropertyDescriptor.GetValue(Object)"/> or
+        /// <see cref="PropertyDescriptor.SetValue(Object, Object)"/>
         /// methods are invoked, the object specified might be an instance of this type.
         /// </returns>
         public override Type ComponentType
@@ -135,7 +135,7 @@ namespace Newtonsoft.Json.Linq
         /// When overridden in a derived class, gets the type of the property.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Type"/> that represents the type of the property.
+        /// A <see cref="Type"/> that represents the type of the property.
         /// </returns>
         public override Type PropertyType
         {

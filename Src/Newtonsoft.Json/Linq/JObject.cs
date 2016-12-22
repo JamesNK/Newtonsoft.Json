@@ -244,9 +244,9 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Gets an <see cref="IEnumerable{JProperty}"/> of this object's properties.
+        /// Gets an <see cref="IEnumerable{T}"/> of <see cref="JProperty"/> of this object's properties.
         /// </summary>
-        /// <returns>An <see cref="IEnumerable{JProperty}"/> of this object's properties.</returns>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JProperty"/> of this object's properties.</returns>
         public IEnumerable<JProperty> Properties()
         {
             return _properties.Cast<JProperty>();
@@ -270,9 +270,9 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Gets a <see cref="JEnumerable{JToken}"/> of this object's property values.
+        /// Gets a <see cref="JEnumerable{T}"/> of <see cref="JToken"/> of this object's property values.
         /// </summary>
-        /// <returns>A <see cref="JEnumerable{JToken}"/> of this object's property values.</returns>
+        /// <returns>A <see cref="JEnumerable{T}"/> of <see cref="JToken"/> of this object's property values.</returns>
         public JEnumerable<JToken> PropertyValues()
         {
             return new JEnumerable<JToken>(Properties().Select(p => p.Value));
@@ -311,7 +311,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
+        /// Gets or sets the <see cref="JToken"/> with the specified property name.
         /// </summary>
         /// <value></value>
         public JToken this[string propertyName]
@@ -686,7 +686,7 @@ namespace Newtonsoft.Json.Linq
         /// Returns an enumerator that can be used to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+        /// A <see cref="IEnumerator{T}"/> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<KeyValuePair<string, JToken>> GetEnumerator()
         {
@@ -792,11 +792,11 @@ namespace Newtonsoft.Json.Linq
 
 #if !(NET35 || NET20 || PORTABLE40)
         /// <summary>
-        /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
+        /// Returns the <see cref="DynamicMetaObject"/> responsible for binding operations performed on this object.
         /// </summary>
         /// <param name="parameter">The expression tree representation of the runtime value.</param>
         /// <returns>
-        /// The <see cref="T:System.Dynamic.DynamicMetaObject"/> to bind this object.
+        /// The <see cref="DynamicMetaObject"/> to bind this object.
         /// </returns>
         protected override DynamicMetaObject GetMetaObject(Expression parameter)
         {
