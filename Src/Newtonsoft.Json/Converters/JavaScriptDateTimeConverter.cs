@@ -30,7 +30,7 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json.Converters
 {
     /// <summary>
-    /// Converts a <see cref="DateTime"/> to and from a JavaScript date constructor (e.g. new Date(52231943)).
+    /// Converts a <see cref="DateTime"/> to and from a JavaScript <c>Date</c> constructor (e.g. <c>new Date(52231943)</c>).
     /// </summary>
     public class JavaScriptDateTimeConverter : DateTimeConverterBase
     {

@@ -79,7 +79,7 @@
         /// </summary>
         /// <param name="parameters">Method parameters.</param>
         /// <param name="types">Argument types.</param>
-        /// <param name="enableParamArray">Try to pack extra arguments into ParamArray.</param>
+        /// <param name="enableParamArray">Try to pack extra arguments into the last parameter when it is marked up with <see cref="ParamArrayAttribute"/>.</param>
         /// <returns><c>true</c> if method can be called with given arguments, <c>false</c> otherwise.</returns>
         private static bool FilterParameters(ParameterInfo[] parameters, IList<Type> types, bool enableParamArray)
         {

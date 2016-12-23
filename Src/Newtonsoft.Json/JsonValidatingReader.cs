@@ -392,9 +392,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Int32}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="Int32"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{Int32}"/>.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Int32"/>.</returns>
         public override int? ReadAsInt32()
         {
             int? i = _reader.ReadAsInt32();
@@ -418,9 +418,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="Decimal"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{Decimal}"/>.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Decimal"/>.</returns>
         public override decimal? ReadAsDecimal()
         {
             decimal? d = _reader.ReadAsDecimal();
@@ -430,9 +430,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Double}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="Double"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{Double}"/>.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Double"/>.</returns>
         public override double? ReadAsDouble()
         {
             double? d = _reader.ReadAsDouble();
@@ -442,9 +442,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Boolean}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="Boolean"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{Boolean}"/>.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Boolean"/>.</returns>
         public override bool? ReadAsBoolean()
         {
             bool? b = _reader.ReadAsBoolean();
@@ -466,9 +466,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTime}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="DateTime"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{DateTime}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="DateTime"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override DateTime? ReadAsDateTime()
         {
             DateTime? dateTime = _reader.ReadAsDateTime();
@@ -479,9 +479,9 @@ namespace Newtonsoft.Json
 
 #if !NET20
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{DateTimeOffset}"/>.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/>.</returns>
         public override DateTimeOffset? ReadAsDateTimeOffset()
         {
             DateTimeOffset? dateTimeOffset = _reader.ReadAsDateTimeOffset();

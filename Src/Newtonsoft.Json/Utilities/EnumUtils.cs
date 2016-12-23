@@ -104,7 +104,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
         /// <summary>
-        /// Gets a dictionary of the names and values of an Enum type.
+        /// Gets a dictionary of the names and values of an <see cref="Enum"/> type.
         /// </summary>
         /// <returns></returns>
         public static IList<EnumValue<ulong>> GetNamesAndValues<T>() where T : struct

@@ -223,7 +223,7 @@ namespace Newtonsoft.Json.Bson
         }
 
         /// <summary>
-        /// Changes the <see cref="JsonReader.State"/> to Closed.
+        /// Changes the reader's state to <see cref="JsonReader.State.Closed"/>.
         /// </summary>
         public override void Close()
         {

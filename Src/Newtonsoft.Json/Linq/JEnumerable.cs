@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents a collection of <see cref="JToken"/> objects.
     /// </summary>
-    /// <typeparam name="T">The type of token</typeparam>
+    /// <typeparam name="T">The type of token.</typeparam>
     public struct JEnumerable<T> : IJEnumerable<T>, IEquatable<JEnumerable<T>> where T : JToken
     {
         /// <summary>
@@ -60,10 +60,10 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        /// Returns an enumerator that can be used to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+        /// A <see cref="IEnumerator{T}"/> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
@@ -75,19 +75,13 @@ namespace Newtonsoft.Json.Linq
             return _enumerable.GetEnumerator();
         }
 
-        /// <summary>
-        /// Returns an enumerator that iterates through a collection.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.Collections.IEnumerator"/> object that can be used to iterate through the collection.
-        /// </returns>
         IEnumerator IEnumerable.GetEnumerator()
         {
             return GetEnumerator();
         }
 
         /// <summary>
-        /// Gets the <see cref="IJEnumerable{JToken}"/> with the specified key.
+        /// Gets the <see cref="IJEnumerable{T}"/> of <see cref="JToken"/> with the specified key.
         /// </summary>
         /// <value></value>
         public IJEnumerable<JToken> this[object key]
@@ -116,11 +110,11 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Determines whether the specified <see cref="System.Object"/> is equal to this instance.
+        /// Determines whether the specified <see cref="Object"/> is equal to this instance.
         /// </summary>
-        /// <param name="obj">The <see cref="System.Object"/> to compare with this instance.</param>
+        /// <param name="obj">The <see cref="Object"/> to compare with this instance.</param>
         /// <returns>
-        /// 	<c>true</c> if the specified <see cref="System.Object"/> is equal to this instance; otherwise, <c>false</c>.
+        /// 	<c>true</c> if the specified <see cref="Object"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
         public override bool Equals(object obj)
         {

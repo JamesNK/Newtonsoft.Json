@@ -290,9 +290,9 @@ namespace Newtonsoft.Json.Linq
 
         #region IList<JToken> Members
         /// <summary>
-        /// Determines the index of a specific item in the <see cref="T:System.Collections.Generic.IList`1"/>.
+        /// Determines the index of a specific item in the <see cref="JArray"/>.
         /// </summary>
-        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
+        /// <param name="item">The object to locate in the <see cref="JArray"/>.</param>
         /// <returns>
         /// The index of <paramref name="item"/> if found in the list; otherwise, -1.
         /// </returns>
@@ -302,25 +302,25 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Inserts an item to the <see cref="T:System.Collections.Generic.IList`1"/> at the specified index.
+        /// Inserts an item to the <see cref="JArray"/> at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index at which <paramref name="item"/> should be inserted.</param>
-        /// <param name="item">The object to insert into the <see cref="T:System.Collections.Generic.IList`1"/>.</param>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
-        /// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.</exception>
-        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.</exception>
+        /// <param name="item">The object to insert into the <see cref="JArray"/>.</param>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="index"/> is not a valid index in the <see cref="JArray"/>.
+        /// </exception>
         public void Insert(int index, JToken item)
         {
             InsertItem(index, item, false);
         }
 
         /// <summary>
-        /// Removes the <see cref="T:System.Collections.Generic.IList`1"/> item at the specified index.
+        /// Removes the <see cref="JArray"/> item at the specified index.
         /// </summary>
         /// <param name="index">The zero-based index of the item to remove.</param>
-        /// <exception cref="T:System.ArgumentOutOfRangeException">
-        /// 	<paramref name="index"/> is not a valid index in the <see cref="T:System.Collections.Generic.IList`1"/>.</exception>
-        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IList`1"/> is read-only.</exception>
+        /// <exception cref="ArgumentOutOfRangeException">
+        /// <paramref name="index"/> is not a valid index in the <see cref="JArray"/>.
+        /// </exception>
         public void RemoveAt(int index)
         {
             RemoveItemAt(index);
@@ -330,7 +330,7 @@ namespace Newtonsoft.Json.Linq
         /// Returns an enumerator that iterates through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
+        /// A <see cref="IEnumerator{T}"/> of <see cref="JToken"/> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<JToken> GetEnumerator()
         {
@@ -340,30 +340,28 @@ namespace Newtonsoft.Json.Linq
 
         #region ICollection<JToken> Members
         /// <summary>
-        /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// Adds an item to the <see cref="JArray"/>.
         /// </summary>
-        /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
-        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
+        /// <param name="item">The object to add to the <see cref="JArray"/>.</param>
         public void Add(JToken item)
         {
             Add((object)item);
         }
 
         /// <summary>
-        /// Removes all items from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// Removes all items from the <see cref="JArray"/>.
         /// </summary>
-        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only. </exception>
         public void Clear()
         {
             ClearItems();
         }
 
         /// <summary>
-        /// Determines whether the <see cref="T:System.Collections.Generic.ICollection`1"/> contains a specific value.
+        /// Determines whether the <see cref="JArray"/> contains a specific value.
         /// </summary>
-        /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+        /// <param name="item">The object to locate in the <see cref="JArray"/>.</param>
         /// <returns>
-        /// <c>true</c> if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, <c>false</c>.
+        /// <c>true</c> if <paramref name="item"/> is found in the <see cref="JArray"/>; otherwise, <c>false</c>.
         /// </returns>
         public bool Contains(JToken item)
         {
@@ -371,7 +369,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Copies to.
+        /// Copies the elements of the <see cref="JArray"/> to an array, starting at a particular array index.
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
@@ -381,22 +379,21 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Gets a value indicating whether the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.
+        /// Gets a value indicating whether the <see cref="JArray"/> is read-only.
         /// </summary>
-        /// <returns><c>true</c> if the <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only; otherwise, <c>false</c>.</returns>
+        /// <returns><c>true</c> if the <see cref="JArray"/> is read-only; otherwise, <c>false</c>.</returns>
         public bool IsReadOnly
         {
             get { return false; }
         }
 
         /// <summary>
-        /// Removes the first occurrence of a specific object from the <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// Removes the first occurrence of a specific object from the <see cref="JArray"/>.
         /// </summary>
-        /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1"/>.</param>
+        /// <param name="item">The object to remove from the <see cref="JArray"/>.</param>
         /// <returns>
-        /// <c>true</c> if <paramref name="item"/> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, <c>false</c>. This method also returns <c>false</c> if <paramref name="item"/> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1"/>.
+        /// <c>true</c> if <paramref name="item"/> was successfully removed from the <see cref="JArray"/>; otherwise, <c>false</c>. This method also returns <c>false</c> if <paramref name="item"/> is not found in the original <see cref="JArray"/>.
         /// </returns>
-        /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.</exception>
         public bool Remove(JToken item)
         {
             return RemoveItem(item);

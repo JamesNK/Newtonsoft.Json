@@ -1510,7 +1510,7 @@ namespace Newtonsoft.Json.Serialization
             }
 
             // resolve converter for property
-            // the class type might have a converter but the property converter takes presidence
+            // the class type might have a converter but the property converter takes precedence
             property.Converter = JsonTypeReflector.GetJsonConverter(attributeProvider);
             property.MemberConverter = JsonTypeReflector.GetJsonConverter(attributeProvider);
 

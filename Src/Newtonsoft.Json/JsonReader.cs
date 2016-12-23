@@ -51,7 +51,7 @@ namespace Newtonsoft.Json
         protected internal enum State
         {
             /// <summary>
-            /// The <see cref="Read"/> method has not been called.
+            /// A <see cref="JsonReader"/> read method has not been called.
             /// </summary>
             Start,
 
@@ -86,7 +86,7 @@ namespace Newtonsoft.Json
             Array,
 
             /// <summary>
-            /// The <see cref="Close"/> method has been called.
+            /// The <see cref="JsonReader.Close()"/> method has been called.
             /// </summary>
             Closed,
 
@@ -412,9 +412,9 @@ namespace Newtonsoft.Json
         public abstract bool Read();
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Int32}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="Int32"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{Int32}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Int32"/>. This method will return <c>null</c> at the end of an array.</returns>
         public virtual int? ReadAsInt32()
         {
             JsonToken t = GetContentToken();
@@ -606,9 +606,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Double}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="Double"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{Double}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Double"/>. This method will return <c>null</c> at the end of an array.</returns>
         public virtual double? ReadAsDouble()
         {
             JsonToken t = GetContentToken();
@@ -668,9 +668,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Boolean}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="Boolean"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{Boolean}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Boolean"/>. This method will return <c>null</c> at the end of an array.</returns>
         public virtual bool? ReadAsBoolean()
         {
             JsonToken t = GetContentToken();
@@ -729,9 +729,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="Decimal"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{Decimal}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Decimal"/>. This method will return <c>null</c> at the end of an array.</returns>
         public virtual decimal? ReadAsDecimal()
         {
             JsonToken t = GetContentToken();
@@ -779,9 +779,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTime}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="DateTime"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{DateTime}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="DateTime"/>. This method will return <c>null</c> at the end of an array.</returns>
         public virtual DateTime? ReadAsDateTime()
         {
             switch (GetContentToken())
@@ -835,9 +835,9 @@ namespace Newtonsoft.Json
 
 #if !NET20
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{DateTimeOffset}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/>. This method will return <c>null</c> at the end of an array.</returns>
         public virtual DateTimeOffset? ReadAsDateTimeOffset()
         {
             JsonToken t = GetContentToken();
@@ -1104,9 +1104,6 @@ namespace Newtonsoft.Json
             }
         }
 
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
-        /// </summary>
         void IDisposable.Dispose()
         {
             Dispose(true);
@@ -1126,7 +1123,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Changes the <see cref="State"/> to Closed. 
+        /// Changes the reader's state to <see cref="JsonReader.State.Closed"/>.
         /// </summary>
         public virtual void Close()
         {

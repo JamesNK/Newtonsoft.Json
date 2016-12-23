@@ -75,7 +75,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonTextReader"/> class with the specified <see cref="TextReader"/>.
         /// </summary>
-        /// <param name="reader">The <c>TextReader</c> containing the JSON data to read.</param>
+        /// <param name="reader">The <see cref="TextReader"/> containing the JSON data to read.</param>
         public JsonTextReader(TextReader reader)
         {
             if (reader == null)
@@ -416,18 +416,18 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Int32}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="Int32"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{Int32}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Int32"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override int? ReadAsInt32()
         {
             return (int?)ReadNumberValue(ReadType.ReadAsInt32);
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTime}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="DateTime"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{DateTime}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="DateTime"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override DateTime? ReadAsDateTime()
         {
             return (DateTime?)ReadStringValue(ReadType.ReadAsDateTime);
@@ -697,9 +697,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Boolean}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="Boolean"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{Boolean}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Boolean"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override bool? ReadAsBoolean()
         {
             EnsureBuffer();
@@ -945,9 +945,9 @@ namespace Newtonsoft.Json
 
 #if !NET20
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{DateTimeOffset}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{DateTimeOffset}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override DateTimeOffset? ReadAsDateTimeOffset()
         {
             return (DateTimeOffset?)ReadStringValue(ReadType.ReadAsDateTimeOffset);
@@ -955,18 +955,18 @@ namespace Newtonsoft.Json
 #endif
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Decimal}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="Decimal"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{Decimal}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Decimal"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override decimal? ReadAsDecimal()
         {
             return (decimal?)ReadNumberValue(ReadType.ReadAsDecimal);
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream as a <see cref="Nullable{Double}"/>.
+        /// Reads the next JSON token from the stream as a <see cref="Nullable{T}"/> of <see cref="Double"/>.
         /// </summary>
-        /// <returns>A <see cref="Nullable{Double}"/>. This method will return <c>null</c> at the end of an array.</returns>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Double"/>. This method will return <c>null</c> at the end of an array.</returns>
         public override double? ReadAsDouble()
         {
             return (double?)ReadNumberValue(ReadType.ReadAsDouble);
@@ -2401,7 +2401,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Changes the state to Closed.
+        /// Changes the reader's state to <see cref="JsonReader.State.Closed"/>.
         /// </summary>
         public override void Close()
         {
@@ -2429,7 +2429,7 @@ namespace Newtonsoft.Json
         /// Gets a value indicating whether the class can return line information.
         /// </summary>
         /// <returns>
-        /// 	<c>true</c> if LineNumber and LinePosition can be provided; otherwise, <c>false</c>.
+        /// 	<c>true</c> if <see cref="JsonTextReader.LineNumber"/> and <see cref="JsonTextReader.LinePosition"/> can be provided; otherwise, <c>false</c>.
         /// </returns>
         public bool HasLineInfo()
         {
@@ -2440,7 +2440,7 @@ namespace Newtonsoft.Json
         /// Gets the current line number.
         /// </summary>
         /// <value>
-        /// The current line number or 0 if no line information is available (for example, HasLineInfo returns <c>false</c>).
+        /// The current line number or 0 if no line information is available (for example, <see cref="JsonTextReader.HasLineInfo"/> returns <c>false</c>).
         /// </value>
         public int LineNumber
         {
@@ -2459,7 +2459,7 @@ namespace Newtonsoft.Json
         /// Gets the current line position.
         /// </summary>
         /// <value>
-        /// The current line position or 0 if no line information is available (for example, HasLineInfo returns <c>false</c>).
+        /// The current line position or 0 if no line information is available (for example, <see cref="JsonTextReader.HasLineInfo"/> returns <c>false</c>).
         /// </value>
         public int LinePosition
         {

@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
         /// <summary>
-        /// Adds the elements of the specified collection to the specified generic IList.
+        /// Adds the elements of the specified collection to the specified generic <see cref="IList{T}"/>.
         /// </summary>
         /// <param name="initial">The list to add to.</param>
         /// <param name="collection">The collection of elements to add.</param>

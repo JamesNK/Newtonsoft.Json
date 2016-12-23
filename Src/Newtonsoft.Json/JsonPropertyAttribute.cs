@@ -74,7 +74,7 @@ namespace Newtonsoft.Json
         public Type NamingStrategyType { get; set; }
 
         /// <summary>
-        /// The parameter list to use when constructing the <see cref="NamingStrategy"/> described by NamingStrategyType.  
+        /// The parameter list to use when constructing the <see cref="NamingStrategy"/> described by <see cref="JsonPropertyAttribute.NamingStrategyType"/>.
         /// If <c>null</c>, the default constructor is used.
         /// When non-<c>null</c>, there must be a constructor defined in the <see cref="NamingStrategy"/> that exactly matches the number,
         /// order, and type of these parameters.
