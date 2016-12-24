@@ -119,12 +119,10 @@ namespace Newtonsoft.Json
         private Formatting _formatting;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the underlying stream or
-        /// <see cref="TextReader"/> should be closed when the writer is closed.
+        /// Gets or sets a value indicating whether the destination should be closed when this writer is closed.
         /// </summary>
         /// <value>
-        /// <c>true</c> to close the underlying stream or <see cref="TextReader"/> when
-        /// the writer is closed; otherwise <c>false</c>. The default is <c>true</c>.
+        /// <c>true</c> to close the destination when this writer is closed; otherwise <c>false</c>. The default is <c>true</c>.
         /// </value>
         public bool CloseOutput { get; set; }
 
@@ -389,12 +387,13 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Flushes whatever is in the buffer to the underlying streams and also flushes the underlying stream.
+        /// Flushes whatever is in the buffer to the destination and also flushes the destination.
         /// </summary>
         public abstract void Flush();
 
         /// <summary>
-        /// Closes this stream and the underlying stream.
+        /// Closes this writer.
+        /// If <see cref="JsonWriter.CloseOutput"/> is set to <c>true</c>, the destination is also closed.
         /// </summary>
         public virtual void Close()
         {
