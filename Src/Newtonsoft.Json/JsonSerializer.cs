@@ -994,7 +994,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Serializes the specified <see cref="Object"/> and writes the JSON structure
-        /// to a <see cref="Stream"/> using the specified <see cref="TextWriter"/>.
+        /// using the specified <see cref="TextWriter"/>.
         /// </summary>
         /// <param name="textWriter">The <see cref="TextWriter"/> used to write the JSON structure.</param>
         /// <param name="value">The <see cref="Object"/> to serialize.</param>
@@ -1005,7 +1005,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Serializes the specified <see cref="Object"/> and writes the JSON structure
-        /// to a <see cref="Stream"/> using the specified <see cref="TextWriter"/>.
+        /// using the specified <see cref="JsonWriter"/>.
         /// </summary>
         /// <param name="jsonWriter">The <see cref="JsonWriter"/> used to write the JSON structure.</param>
         /// <param name="value">The <see cref="Object"/> to serialize.</param>
@@ -1021,7 +1021,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Serializes the specified <see cref="Object"/> and writes the JSON structure
-        /// to a <c>Stream</c> using the specified <see cref="TextWriter"/>. 
+        /// using the specified <see cref="TextWriter"/>.
         /// </summary>
         /// <param name="textWriter">The <see cref="TextWriter"/> used to write the JSON structure.</param>
         /// <param name="value">The <see cref="Object"/> to serialize.</param>
@@ -1037,7 +1037,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Serializes the specified <see cref="Object"/> and writes the JSON structure
-        /// to a <c>Stream</c> using the specified <see cref="JsonWriter"/>. 
+        /// using the specified <see cref="JsonWriter"/>.
         /// </summary>
         /// <param name="jsonWriter">The <see cref="JsonWriter"/> used to write the JSON structure.</param>
         /// <param name="value">The <see cref="Object"/> to serialize.</param>

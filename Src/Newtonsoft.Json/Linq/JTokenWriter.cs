@@ -52,9 +52,9 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Gets the token being writen.
+        /// Gets the token being written.
         /// </summary>
-        /// <value>The token being writen.</value>
+        /// <value>The token being written.</value>
         public JToken Token
         {
             get
@@ -88,15 +88,18 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Flushes whatever is in the buffer to the underlying streams and also flushes the underlying stream.
+        /// Flushes whatever is in the buffer to the underlying <see cref="JContainer"/>.
         /// </summary>
         public override void Flush()
         {
         }
 
         /// <summary>
-        /// Closes this stream and the underlying stream.
+        /// Closes this writer.
         /// </summary>
+        /// <remarks>
+        /// Setting <see cref="JsonWriter.CloseOutput"/> to <c>true</c> has no additional effect, since the underlying <see cref="JContainer"/> is a type that cannot be closed.
+        /// </remarks>
         public override void Close()
         {
             base.Close();
