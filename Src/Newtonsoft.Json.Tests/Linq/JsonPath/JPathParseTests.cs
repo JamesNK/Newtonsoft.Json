@@ -52,8 +52,8 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             JPath path = new JPath("[?(1 > 2)]");
             Assert.AreEqual(1, path.Filters.Count);
             BooleanQueryExpression booleanExpression = (BooleanQueryExpression)((QueryFilter)path.Filters[0]).Expression;
-            Assert.AreEqual(new JValue(1), booleanExpression.Left);
-            Assert.AreEqual(new JValue(1), booleanExpression.Right);
+            Assert.AreEqual(1, (int)(JValue)booleanExpression.Left);
+            Assert.AreEqual(2, (int)(JValue)booleanExpression.Right);
             Assert.AreEqual(QueryOperator.GreaterThan, booleanExpression.Operator);
         }
 

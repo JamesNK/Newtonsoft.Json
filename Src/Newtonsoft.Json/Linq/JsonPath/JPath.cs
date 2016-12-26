@@ -450,7 +450,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
             return true;
         }
 
-        private JsonException ThrowUnexpectedCharacterException()
+        private JsonException CreateUnexpectedCharacterException()
         {
             return new JsonException("Unexpected character while parsing path query: " + _expression[_currentIndex]);
         }
@@ -477,7 +477,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 return new JValue(value);
             }
 
-            throw ThrowUnexpectedCharacterException();
+            throw CreateUnexpectedCharacterException();
         }
 
         private QueryExpression ParseExpression()
@@ -525,7 +525,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 {
                     if (!Match("&&"))
                     {
-                        throw ThrowUnexpectedCharacterException();
+                        throw CreateUnexpectedCharacterException();
                     }
 
                     if (parentExpression == null || parentExpression.Operator != QueryOperator.And)
@@ -551,7 +551,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 {
                     if (!Match("||"))
                     {
-                        throw ThrowUnexpectedCharacterException();
+                        throw CreateUnexpectedCharacterException();
                     }
 
                     if (parentExpression == null || parentExpression.Operator != QueryOperator.Or)
