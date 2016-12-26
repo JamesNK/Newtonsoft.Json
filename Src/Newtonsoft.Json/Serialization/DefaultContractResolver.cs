@@ -211,7 +211,7 @@ namespace Newtonsoft.Json.Serialization
         /// If set to <c>true</c> the <see cref="DefaultContractResolver"/> will use a cached shared with other resolvers of the same type.
         /// Sharing the cache will significantly improve performance with multiple resolver instances because expensive reflection will only
         /// happen once. This setting can cause unexpected behavior if different instances of the resolver are suppose to produce different
-        /// results. When set to false it is highly recommended to reuse <see cref="DefaultContractResolver"/> instances with the <see cref="JsonSerializer"/>.
+        /// results. When set to <c>false</c> it is highly recommended to reuse <see cref="DefaultContractResolver"/> instances with the <see cref="JsonSerializer"/>.
         /// </param>
         [ObsoleteAttribute("DefaultContractResolver(bool) is obsolete. Use the parameterless constructor and cache instances of the contract resolver within your application for optimal performance.")]
         public DefaultContractResolver(bool shareCache)
@@ -1510,7 +1510,7 @@ namespace Newtonsoft.Json.Serialization
             }
 
             // resolve converter for property
-            // the class type might have a converter but the property converter takes presidence
+            // the class type might have a converter but the property converter takes precedence
             property.Converter = JsonTypeReflector.GetJsonConverter(attributeProvider);
             property.MemberConverter = JsonTypeReflector.GetJsonConverter(attributeProvider);
 

@@ -42,11 +42,11 @@ namespace Newtonsoft.Json.Utilities
     internal static class CollectionUtils
     {
         /// <summary>
-        /// Determines whether the collection is null or empty.
+        /// Determines whether the collection is <c>null</c> or empty.
         /// </summary>
         /// <param name="collection">The collection.</param>
         /// <returns>
-        /// 	<c>true</c> if the collection is null or empty; otherwise, <c>false</c>.
+        /// 	<c>true</c> if the collection is <c>null</c> or empty; otherwise, <c>false</c>.
         /// </returns>
         public static bool IsNullOrEmpty<T>(ICollection<T> collection)
         {
@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
         /// <summary>
-        /// Adds the elements of the specified collection to the specified generic IList.
+        /// Adds the elements of the specified collection to the specified generic <see cref="IList{T}"/>.
         /// </summary>
         /// <param name="initial">The list to add to.</param>
         /// <param name="collection">The collection of elements to add.</param>

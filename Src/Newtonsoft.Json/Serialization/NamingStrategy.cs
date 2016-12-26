@@ -22,7 +22,7 @@
         /// Gets the serialized name for a given property name.
         /// </summary>
         /// <param name="name">The initial property name.</param>
-        /// <param name="hasSpecifiedName">A flag indicating whether the property has had a name explicitly specfied.</param>
+        /// <param name="hasSpecifiedName">A flag indicating whether the property has had a name explicitly specified.</param>
         /// <returns>The serialized property name.</returns>
         public virtual string GetPropertyName(string name, bool hasSpecifiedName)
         {

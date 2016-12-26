@@ -83,7 +83,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Gets or sets how many IndentChars to write for each level in the hierarchy when <see cref="Formatting"/> is set to <c>Formatting.Indented</c>.
+        /// Gets or sets how many <see cref="JsonTextWriter.IndentChar"/>s to write for each level in the hierarchy when <see cref="JsonWriter.Formatting"/> is set to <see cref="Formatting.Indented"/>.
         /// </summary>
         public int Indentation
         {
@@ -118,7 +118,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Gets or sets which character to use for indenting when <see cref="Formatting"/> is set to <c>Formatting.Indented</c>.
+        /// Gets or sets which character to use for indenting when <see cref="JsonWriter.Formatting"/> is set to <see cref="Formatting.Indented"/>.
         /// </summary>
         public char IndentChar
         {
@@ -143,9 +143,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Creates an instance of the <c>JsonTextWriter</c> class using the specified <see cref="TextWriter"/>. 
+        /// Initializes a new instance of the <see cref="JsonTextWriter"/> class using the specified <see cref="TextWriter"/>.
         /// </summary>
-        /// <param name="textWriter">The <c>TextWriter</c> to write to.</param>
+        /// <param name="textWriter">The <see cref="TextWriter"/> to write to.</param>
         public JsonTextWriter(TextWriter textWriter)
         {
             if (textWriter == null)
@@ -163,7 +163,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Flushes whatever is in the buffer to the underlying streams and also flushes the underlying stream.
+        /// Flushes whatever is in the buffer to the underlying <see cref="TextWriter"/> and also flushes the underlying <see cref="TextWriter"/>.
         /// </summary>
         public override void Flush()
         {
@@ -171,7 +171,8 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Closes this stream and the underlying stream.
+        /// Closes this writer.
+        /// If <see cref="JsonWriter.CloseOutput"/> is set to <c>true</c>, the underlying <see cref="TextWriter"/> is also closed.
         /// </summary>
         public override void Close()
         {
@@ -478,9 +479,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{Single}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="Single"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{Single}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Single"/> value to write.</param>
         public override void WriteValue(float? value)
         {
             if (value == null)
@@ -505,9 +506,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{Double}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="Double"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{Double}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Double"/> value to write.</param>
         public override void WriteValue(double? value)
         {
             if (value == null)

@@ -35,7 +35,7 @@ namespace Newtonsoft.Json
     public enum JsonToken
     {
         /// <summary>
-        /// This is returned by the <see cref="JsonReader"/> if a <see cref="JsonReader.Read"/> method has not been called. 
+        /// This is returned by the <see cref="JsonReader"/> if a read method has not been called.
         /// </summary>
         None = 0,
 

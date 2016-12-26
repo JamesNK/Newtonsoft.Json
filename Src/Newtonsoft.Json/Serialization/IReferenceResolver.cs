@@ -35,7 +35,7 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <param name="context">The serialization context.</param>
         /// <param name="reference">The reference to resolve.</param>
-        /// <returns>The object that</returns>
+        /// <returns>The object that was resolved from the reference.</returns>
         object ResolveReference(object context, string reference);
 
         /// <summary>

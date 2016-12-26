@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream.
+        /// Reads the next JSON token from the underlying <see cref="JToken"/>.
         /// </summary>
         /// <returns>
         /// <c>true</c> if the next token was read successfully; <c>false</c> if there are no more tokens to read.

@@ -173,11 +173,11 @@ namespace Newtonsoft.Json.Serialization
         }
 
         /// <summary>
-        /// Lookup and create an instance of the JsonConverter type described by the argument.
+        /// Lookup and create an instance of the <see cref="JsonConverter"/> type described by the argument.
         /// </summary>
-        /// <param name="converterType">The JsonConverter type to create.</param>
+        /// <param name="converterType">The <see cref="JsonConverter"/> type to create.</param>
         /// <param name="converterArgs">Optional arguments to pass to an initializing constructor of the JsonConverter.
-        /// If null, the default constructor is used.</param>
+        /// If <c>null</c>, the default constructor is used.</param>
         public static JsonConverter CreateJsonConverterInstance(Type converterType, object[] converterArgs)
         {
             Func<object[], object> converterCreator = CreatorCache.Get(converterType);

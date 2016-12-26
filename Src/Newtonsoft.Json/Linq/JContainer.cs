@@ -286,7 +286,7 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Returns a collection of the descendant tokens for this token in document order.
         /// </summary>
-        /// <returns>An <see cref="IEnumerable{JToken}"/> containing the descendant tokens of the <see cref="JToken"/>.</returns>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> containing the descendant tokens of the <see cref="JToken"/>.</returns>
         public IEnumerable<JToken> Descendants()
         {
             return GetDescendants(false);
@@ -295,7 +295,7 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Returns a collection of the tokens that contain this token, and all descendant tokens of this token, in document order.
         /// </summary>
-        /// <returns>An <see cref="IEnumerable{JToken}"/> containing this token, and all the descendant tokens of the <see cref="JToken"/>.</returns>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> containing this token, and all the descendant tokens of the <see cref="JToken"/>.</returns>
         public IEnumerable<JToken> DescendantsAndSelf()
         {
             return GetDescendants(true);
@@ -685,16 +685,16 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Creates an <see cref="JsonWriter"/> that can be used to add tokens to the <see cref="JToken"/>.
+        /// Creates a <see cref="JsonWriter"/> that can be used to add tokens to the <see cref="JToken"/>.
         /// </summary>
-        /// <returns>An <see cref="JsonWriter"/> that is ready to have content written to it.</returns>
+        /// <returns>A <see cref="JsonWriter"/> that is ready to have content written to it.</returns>
         public JsonWriter CreateWriter()
         {
             return new JTokenWriter(this);
         }
 
         /// <summary>
-        /// Replaces the children nodes of this token with the specified content.
+        /// Replaces the child nodes of this token with the specified content.
         /// </summary>
         /// <param name="content">The content.</param>
         public void ReplaceAll(object content)
@@ -1026,7 +1026,7 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Gets the count of child JSON tokens.
         /// </summary>
-        /// <value>The count of child JSON tokens</value>
+        /// <value>The count of child JSON tokens.</value>
         public int Count
         {
             get { return ChildrenTokens.Count; }

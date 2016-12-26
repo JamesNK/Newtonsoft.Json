@@ -177,8 +177,8 @@ namespace Newtonsoft.Json.Serialization
         /// <summary>
         /// When overridden in a derived class, controls the binding of a serialized object to a type.
         /// </summary>
-        /// <param name="assemblyName">Specifies the <see cref="T:System.Reflection.Assembly"/> name of the serialized object.</param>
-        /// <param name="typeName">Specifies the <see cref="T:System.Type"/> name of the serialized object.</param>
+        /// <param name="assemblyName">Specifies the <see cref="Assembly"/> name of the serialized object.</param>
+        /// <param name="typeName">Specifies the <see cref="System.Type"/> name of the serialized object.</param>
         /// <returns>
         /// The type of the object the formatter creates a new instance of.
         /// </returns>
@@ -191,8 +191,8 @@ namespace Newtonsoft.Json.Serialization
         /// When overridden in a derived class, controls the binding of a serialized object to a type.
         /// </summary>
         /// <param name="serializedType">The type of the object the formatter creates a new instance of.</param>
-        /// <param name="assemblyName">Specifies the <see cref="T:System.Reflection.Assembly"/> name of the serialized object. </param>
-        /// <param name="typeName">Specifies the <see cref="T:System.Type"/> name of the serialized object. </param>
+        /// <param name="assemblyName">Specifies the <see cref="Assembly"/> name of the serialized object.</param>
+        /// <param name="typeName">Specifies the <see cref="System.Type"/> name of the serialized object.</param>
         public
 #if !(NET35 || NET20)
         override

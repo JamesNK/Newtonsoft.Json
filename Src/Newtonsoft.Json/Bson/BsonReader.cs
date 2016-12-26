@@ -35,7 +35,7 @@ using Newtonsoft.Json.Linq;
 namespace Newtonsoft.Json.Bson
 {
     /// <summary>
-    /// Represents a reader that provides fast, non-cached, forward-only access to serialized JSON data.
+    /// Represents a reader that provides fast, non-cached, forward-only access to serialized BSON data.
     /// </summary>
     public class BsonReader : JsonReader
     {
@@ -122,7 +122,7 @@ namespace Newtonsoft.Json.Bson
         /// <summary>
         /// Initializes a new instance of the <see cref="BsonReader"/> class.
         /// </summary>
-        /// <param name="stream">The stream.</param>
+        /// <param name="stream">The <see cref="Stream"/> containing the BSON data to read.</param>
         public BsonReader(Stream stream)
             : this(stream, false, DateTimeKind.Local)
         {
@@ -131,7 +131,7 @@ namespace Newtonsoft.Json.Bson
         /// <summary>
         /// Initializes a new instance of the <see cref="BsonReader"/> class.
         /// </summary>
-        /// <param name="reader">The reader.</param>
+        /// <param name="reader">The <see cref="BinaryReader"/> containing the BSON data to read.</param>
         public BsonReader(BinaryReader reader)
             : this(reader, false, DateTimeKind.Local)
         {
@@ -140,7 +140,7 @@ namespace Newtonsoft.Json.Bson
         /// <summary>
         /// Initializes a new instance of the <see cref="BsonReader"/> class.
         /// </summary>
-        /// <param name="stream">The stream.</param>
+        /// <param name="stream">The <see cref="Stream"/> containing the BSON data to read.</param>
         /// <param name="readRootValueAsArray">if set to <c>true</c> the root object will be read as a JSON array.</param>
         /// <param name="dateTimeKindHandling">The <see cref="DateTimeKind" /> used when reading <see cref="DateTime"/> values from BSON.</param>
         public BsonReader(Stream stream, bool readRootValueAsArray, DateTimeKind dateTimeKindHandling)
@@ -155,7 +155,7 @@ namespace Newtonsoft.Json.Bson
         /// <summary>
         /// Initializes a new instance of the <see cref="BsonReader"/> class.
         /// </summary>
-        /// <param name="reader">The reader.</param>
+        /// <param name="reader">The <see cref="BinaryReader"/> containing the BSON data to read.</param>
         /// <param name="readRootValueAsArray">if set to <c>true</c> the root object will be read as a JSON array.</param>
         /// <param name="dateTimeKindHandling">The <see cref="DateTimeKind" /> used when reading <see cref="DateTime"/> values from BSON.</param>
         public BsonReader(BinaryReader reader, bool readRootValueAsArray, DateTimeKind dateTimeKindHandling)
@@ -175,7 +175,7 @@ namespace Newtonsoft.Json.Bson
         }
 
         /// <summary>
-        /// Reads the next JSON token from the stream.
+        /// Reads the next JSON token from the underlying <see cref="Stream"/>.
         /// </summary>
         /// <returns>
         /// <c>true</c> if the next token was read successfully; <c>false</c> if there are no more tokens to read.
@@ -223,7 +223,8 @@ namespace Newtonsoft.Json.Bson
         }
 
         /// <summary>
-        /// Changes the <see cref="JsonReader.State"/> to Closed.
+        /// Changes the reader's state to <see cref="JsonReader.State.Closed"/>.
+        /// If <see cref="JsonReader.CloseInput"/> is set to <c>true</c>, the underlying <see cref="Stream"/> is also closed.
         /// </summary>
         public override void Close()
         {

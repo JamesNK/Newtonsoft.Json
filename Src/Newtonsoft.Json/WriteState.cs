@@ -34,13 +34,13 @@ namespace Newtonsoft.Json
     {
         /// <summary>
         /// An exception has been thrown, which has left the <see cref="JsonWriter"/> in an invalid state.
-        /// You may call the <see cref="JsonWriter.Close"/> method to put the <see cref="JsonWriter"/> in the <c>Closed</c> state.
+        /// You may call the <see cref="JsonWriter.Close()"/> method to put the <see cref="JsonWriter"/> in the <see cref="JsonWriter.State.Closed"/> state.
         /// Any other <see cref="JsonWriter"/> method calls result in an <see cref="InvalidOperationException"/> being thrown.
         /// </summary>
         Error = 0,
 
         /// <summary>
-        /// The <see cref="JsonWriter.Close"/> method has been called. 
+        /// The <see cref="JsonWriter.Close()"/> method has been called.
         /// </summary>
         Closed = 1,
 
@@ -50,7 +50,7 @@ namespace Newtonsoft.Json
         Object = 2,
 
         /// <summary>
-        /// A array is being written.
+        /// An array is being written.
         /// </summary>
         Array = 3,
 
@@ -65,7 +65,7 @@ namespace Newtonsoft.Json
         Property = 5,
 
         /// <summary>
-        /// A write method has not been called.
+        /// A <see cref="JsonWriter"/> write method has not been called.
         /// </summary>
         Start = 6
     }

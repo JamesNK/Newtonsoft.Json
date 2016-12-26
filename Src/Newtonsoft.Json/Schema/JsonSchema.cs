@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Schema
         public bool? Required { get; set; }
 
         /// <summary>
-        /// Gets or sets whether the object is read only.
+        /// Gets or sets whether the object is read-only.
         /// </summary>
         public bool? ReadOnly { get; set; }
 
@@ -103,9 +103,9 @@ namespace Newtonsoft.Json.Schema
         public int? MaximumLength { get; set; }
 
         /// <summary>
-        /// Gets or sets a number that the value should be divisble by.
+        /// Gets or sets a number that the value should be divisible by.
         /// </summary>
-        /// <value>A number that the value should be divisble by.</value>
+        /// <value>A number that the value should be divisible by.</value>
         public double? DivisibleBy { get; set; }
 
         /// <summary>
@@ -121,15 +121,15 @@ namespace Newtonsoft.Json.Schema
         public double? Maximum { get; set; }
 
         /// <summary>
-        /// Gets or sets a flag indicating whether the value can not equal the number defined by the "minimum" attribute.
+        /// Gets or sets a flag indicating whether the value can not equal the number defined by the <c>minimum</c> attribute (<see cref="JsonSchema.Minimum"/>).
         /// </summary>
-        /// <value>A flag indicating whether the value can not equal the number defined by the "minimum" attribute.</value>
+        /// <value>A flag indicating whether the value can not equal the number defined by the <c>minimum</c> attribute (<see cref="JsonSchema.Minimum"/>).</value>
         public bool? ExclusiveMinimum { get; set; }
 
         /// <summary>
-        /// Gets or sets a flag indicating whether the value can not equal the number defined by the "maximum" attribute.
+        /// Gets or sets a flag indicating whether the value can not equal the number defined by the <c>maximum</c> attribute (<see cref="JsonSchema.Maximum"/>).
         /// </summary>
-        /// <value>A flag indicating whether the value can not equal the number defined by the "maximum" attribute.</value>
+        /// <value>A flag indicating whether the value can not equal the number defined by the <c>maximum</c> attribute (<see cref="JsonSchema.Maximum"/>).</value>
         public bool? ExclusiveMaximum { get; set; }
 
         /// <summary>
@@ -218,7 +218,7 @@ namespace Newtonsoft.Json.Schema
         /// <summary>
         /// Gets or sets disallowed types.
         /// </summary>
-        /// <value>The disallow types.</value>
+        /// <value>The disallowed types.</value>
         public JsonSchemaType? Disallow { get; set; }
 
         /// <summary>
@@ -288,21 +288,21 @@ namespace Newtonsoft.Json.Schema
         }
 
         /// <summary>
-        /// Load a <see cref="JsonSchema"/> from a string that contains schema JSON.
+        /// Load a <see cref="JsonSchema"/> from a string that contains JSON Schema.
         /// </summary>
-        /// <param name="json">A <see cref="String"/> that contains JSON.</param>
-        /// <returns>A <see cref="JsonSchema"/> populated from the string that contains JSON.</returns>
+        /// <param name="json">A <see cref="String"/> that contains JSON Schema.</param>
+        /// <returns>A <see cref="JsonSchema"/> populated from the string that contains JSON Schema.</returns>
         public static JsonSchema Parse(string json)
         {
             return Parse(json, new JsonSchemaResolver());
         }
 
         /// <summary>
-        /// Parses the specified json.
+        /// Load a <see cref="JsonSchema"/> from a string that contains JSON Schema using the specified <see cref="JsonSchemaResolver"/>.
         /// </summary>
-        /// <param name="json">The json.</param>
+        /// <param name="json">A <see cref="String"/> that contains JSON Schema.</param>
         /// <param name="resolver">The resolver.</param>
-        /// <returns>A <see cref="JsonSchema"/> populated from the string that contains JSON.</returns>
+        /// <returns>A <see cref="JsonSchema"/> populated from the string that contains JSON Schema.</returns>
         public static JsonSchema Parse(string json, JsonSchemaResolver resolver)
         {
             ValidationUtils.ArgumentNotNull(json, nameof(json));
@@ -337,10 +337,10 @@ namespace Newtonsoft.Json.Schema
         }
 
         /// <summary>
-        /// Returns a <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+        /// Returns a <see cref="String"/> that represents the current <see cref="Object"/>.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.String"/> that represents the current <see cref="T:System.Object"/>.
+        /// A <see cref="String"/> that represents the current <see cref="Object"/>.
         /// </returns>
         public override string ToString()
         {

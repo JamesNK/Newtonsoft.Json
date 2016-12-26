@@ -38,7 +38,7 @@ using System.Globalization;
 namespace Newtonsoft.Json.Bson
 {
     /// <summary>
-    /// Represents a writer that provides a fast, non-cached, forward-only way of generating JSON data.
+    /// Represents a writer that provides a fast, non-cached, forward-only way of generating BSON data.
     /// </summary>
     public class BsonWriter : JsonWriter
     {
@@ -62,7 +62,7 @@ namespace Newtonsoft.Json.Bson
         /// <summary>
         /// Initializes a new instance of the <see cref="BsonWriter"/> class.
         /// </summary>
-        /// <param name="stream">The stream.</param>
+        /// <param name="stream">The <see cref="Stream"/> to write to.</param>
         public BsonWriter(Stream stream)
         {
             ValidationUtils.ArgumentNotNull(stream, nameof(stream));
@@ -72,7 +72,7 @@ namespace Newtonsoft.Json.Bson
         /// <summary>
         /// Initializes a new instance of the <see cref="BsonWriter"/> class.
         /// </summary>
-        /// <param name="writer">The writer.</param>
+        /// <param name="writer">The <see cref="BinaryWriter"/> to write to.</param>
         public BsonWriter(BinaryWriter writer)
         {
             ValidationUtils.ArgumentNotNull(writer, nameof(writer));
@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Bson
         }
 
         /// <summary>
-        /// Flushes whatever is in the buffer to the underlying streams and also flushes the underlying stream.
+        /// Flushes whatever is in the buffer to the underlying <see cref="Stream"/> and also flushes the underlying stream.
         /// </summary>
         public override void Flush()
         {
@@ -170,7 +170,8 @@ namespace Newtonsoft.Json.Bson
         }
 
         /// <summary>
-        /// Closes this stream and the underlying stream.
+        /// Closes this writer.
+        /// If <see cref="JsonWriter.CloseOutput"/> is set to <c>true</c>, the underlying <see cref="Stream"/> is also closed.
         /// </summary>
         public override void Close()
         {

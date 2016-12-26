@@ -16,8 +16,8 @@ namespace Newtonsoft.Json.Serialization
 
         /// <summary>
         /// Gets the <see cref="TraceLevel"/> that will be used to filter the trace messages passed to the writer.
-        /// For example a filter level of <code>Info</code> will exclude <code>Verbose</code> messages and include <code>Info</code>,
-        /// <code>Warning</code> and <code>Error</code> messages.
+        /// For example a filter level of <see cref="TraceLevel.Info"/> will exclude <see cref="TraceLevel.Verbose"/> messages and include <see cref="TraceLevel.Info"/>,
+        /// <see cref="TraceLevel.Warning"/> and <see cref="TraceLevel.Error"/> messages.
         /// </summary>
         /// <value>
         /// The <see cref="TraceLevel"/> that will be used to filter the trace messages passed to the writer.

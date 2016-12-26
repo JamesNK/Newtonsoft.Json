@@ -244,9 +244,9 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Gets an <see cref="IEnumerable{JProperty}"/> of this object's properties.
+        /// Gets an <see cref="IEnumerable{T}"/> of <see cref="JProperty"/> of this object's properties.
         /// </summary>
-        /// <returns>An <see cref="IEnumerable{JProperty}"/> of this object's properties.</returns>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JProperty"/> of this object's properties.</returns>
         public IEnumerable<JProperty> Properties()
         {
             return _properties.Cast<JProperty>();
@@ -256,7 +256,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets a <see cref="JProperty"/> the specified name.
         /// </summary>
         /// <param name="name">The property name.</param>
-        /// <returns>A <see cref="JProperty"/> with the specified name or null.</returns>
+        /// <returns>A <see cref="JProperty"/> with the specified name or <c>null</c>.</returns>
         public JProperty Property(string name)
         {
             if (name == null)
@@ -270,9 +270,9 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Gets an <see cref="JEnumerable{JToken}"/> of this object's property values.
+        /// Gets a <see cref="JEnumerable{T}"/> of <see cref="JToken"/> of this object's property values.
         /// </summary>
-        /// <returns>An <see cref="JEnumerable{JToken}"/> of this object's property values.</returns>
+        /// <returns>A <see cref="JEnumerable{T}"/> of <see cref="JToken"/> of this object's property values.</returns>
         public JEnumerable<JToken> PropertyValues()
         {
             return new JEnumerable<JToken>(Properties().Select(p => p.Value));
@@ -311,7 +311,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Gets or sets the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
+        /// Gets or sets the <see cref="JToken"/> with the specified property name.
         /// </summary>
         /// <value></value>
         public JToken this[string propertyName]
@@ -343,7 +343,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Loads an <see cref="JObject"/> from a <see cref="JsonReader"/>. 
+        /// Loads a <see cref="JObject"/> from a <see cref="JsonReader"/>.
         /// </summary>
         /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JObject"/>.</param>
         /// <returns>A <see cref="JObject"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
@@ -356,11 +356,11 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Loads an <see cref="JObject"/> from a <see cref="JsonReader"/>. 
+        /// Loads a <see cref="JObject"/> from a <see cref="JsonReader"/>.
         /// </summary>
         /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JObject"/>.</param>
         /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
-        /// If this is null, default load settings will be used.</param>
+        /// If this is <c>null</c>, default load settings will be used.</param>
         /// <returns>A <see cref="JObject"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
         /// <exception cref="JsonReaderException">
         ///     <paramref name="reader"/> is not valid JSON.
@@ -413,7 +413,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="json">A <see cref="String"/> that contains JSON.</param>
         /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
-        /// If this is null, default load settings will be used.</param>
+        /// If this is <c>null</c>, default load settings will be used.</param>
         /// <returns>A <see cref="JObject"/> populated from the string that contains JSON.</returns>
         /// <exception cref="JsonReaderException">
         ///     <paramref name="json"/> is not valid JSON.
@@ -440,7 +440,7 @@ namespace Newtonsoft.Json.Linq
         /// Creates a <see cref="JObject"/> from an object.
         /// </summary>
         /// <param name="o">The object that will be used to create <see cref="JObject"/>.</param>
-        /// <returns>A <see cref="JObject"/> with the values of the specified object</returns>
+        /// <returns>A <see cref="JObject"/> with the values of the specified object.</returns>
         public new static JObject FromObject(object o)
         {
             return FromObject(o, JsonSerializer.CreateDefault());
@@ -451,7 +451,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="o">The object that will be used to create <see cref="JObject"/>.</param>
         /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used to read the object.</param>
-        /// <returns>A <see cref="JObject"/> with the values of the specified object</returns>
+        /// <returns>A <see cref="JObject"/> with the values of the specified object.</returns>
         public new static JObject FromObject(object o, JsonSerializer jsonSerializer)
         {
             JToken token = FromObjectInternal(o, jsonSerializer);
@@ -583,7 +583,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Tries the get value.
+        /// Tries to get the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
         /// <param name="value">The value.</param>
@@ -683,10 +683,10 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Returns an enumerator that iterates through the collection.
+        /// Returns an enumerator that can be used to iterate through the collection.
         /// </summary>
         /// <returns>
-        /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
+        /// A <see cref="IEnumerator{T}"/> that can be used to iterate through the collection.
         /// </returns>
         public IEnumerator<KeyValuePair<string, JToken>> GetEnumerator()
         {
@@ -720,24 +720,11 @@ namespace Newtonsoft.Json.Linq
         // include custom type descriptor on JObject rather than use a provider because the properties are specific to a type
 
         #region ICustomTypeDescriptor
-        /// <summary>
-        /// Returns the properties for this instance of a component.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.ComponentModel.PropertyDescriptorCollection"/> that represents the properties for this component instance.
-        /// </returns>
         PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties()
         {
             return ((ICustomTypeDescriptor)this).GetProperties(null);
         }
 
-        /// <summary>
-        /// Returns the properties for this instance of a component using the attribute array as a filter.
-        /// </summary>
-        /// <param name="attributes">An array of type <see cref="T:System.Attribute"/> that is used as a filter.</param>
-        /// <returns>
-        /// A <see cref="T:System.ComponentModel.PropertyDescriptorCollection"/> that represents the filtered properties for this component instance.
-        /// </returns>
         PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
         {
             PropertyDescriptorCollection descriptors = new PropertyDescriptorCollection(null);
@@ -750,114 +737,51 @@ namespace Newtonsoft.Json.Linq
             return descriptors;
         }
 
-        /// <summary>
-        /// Returns a collection of custom attributes for this instance of a component.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.ComponentModel.AttributeCollection"/> containing the attributes for this object.
-        /// </returns>
         AttributeCollection ICustomTypeDescriptor.GetAttributes()
         {
             return AttributeCollection.Empty;
         }
 
-        /// <summary>
-        /// Returns the class name of this instance of a component.
-        /// </summary>
-        /// <returns>
-        /// The class name of the object, or null if the class does not have a name.
-        /// </returns>
         string ICustomTypeDescriptor.GetClassName()
         {
             return null;
         }
 
-        /// <summary>
-        /// Returns the name of this instance of a component.
-        /// </summary>
-        /// <returns>
-        /// The name of the object, or null if the object does not have a name.
-        /// </returns>
         string ICustomTypeDescriptor.GetComponentName()
         {
             return null;
         }
 
-        /// <summary>
-        /// Returns a type converter for this instance of a component.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.ComponentModel.TypeConverter"/> that is the converter for this object, or null if there is no <see cref="T:System.ComponentModel.TypeConverter"/> for this object.
-        /// </returns>
         TypeConverter ICustomTypeDescriptor.GetConverter()
         {
             return new TypeConverter();
         }
 
-        /// <summary>
-        /// Returns the default event for this instance of a component.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.ComponentModel.EventDescriptor"/> that represents the default event for this object, or null if this object does not have events.
-        /// </returns>
         EventDescriptor ICustomTypeDescriptor.GetDefaultEvent()
         {
             return null;
         }
 
-        /// <summary>
-        /// Returns the default property for this instance of a component.
-        /// </summary>
-        /// <returns>
-        /// A <see cref="T:System.ComponentModel.PropertyDescriptor"/> that represents the default property for this object, or null if this object does not have properties.
-        /// </returns>
         PropertyDescriptor ICustomTypeDescriptor.GetDefaultProperty()
         {
             return null;
         }
 
-        /// <summary>
-        /// Returns an editor of the specified type for this instance of a component.
-        /// </summary>
-        /// <param name="editorBaseType">A <see cref="T:System.Type"/> that represents the editor for this object.</param>
-        /// <returns>
-        /// An <see cref="T:System.Object"/> of the specified type that is the editor for this object, or null if the editor cannot be found.
-        /// </returns>
         object ICustomTypeDescriptor.GetEditor(Type editorBaseType)
         {
             return null;
         }
 
-        /// <summary>
-        /// Returns the events for this instance of a component using the specified attribute array as a filter.
-        /// </summary>
-        /// <param name="attributes">An array of type <see cref="T:System.Attribute"/> that is used as a filter.</param>
-        /// <returns>
-        /// An <see cref="T:System.ComponentModel.EventDescriptorCollection"/> that represents the filtered events for this component instance.
-        /// </returns>
         EventDescriptorCollection ICustomTypeDescriptor.GetEvents(Attribute[] attributes)
         {
             return EventDescriptorCollection.Empty;
         }
 
-        /// <summary>
-        /// Returns the events for this instance of a component.
-        /// </summary>
-        /// <returns>
-        /// An <see cref="T:System.ComponentModel.EventDescriptorCollection"/> that represents the events for this component instance.
-        /// </returns>
         EventDescriptorCollection ICustomTypeDescriptor.GetEvents()
         {
             return EventDescriptorCollection.Empty;
         }
 
-        /// <summary>
-        /// Returns an object that contains the property described by the specified property descriptor.
-        /// </summary>
-        /// <param name="pd">A <see cref="T:System.ComponentModel.PropertyDescriptor"/> that represents the property whose owner is to be found.</param>
-        /// <returns>
-        /// An <see cref="T:System.Object"/> that represents the owner of the specified property.
-        /// </returns>
         object ICustomTypeDescriptor.GetPropertyOwner(PropertyDescriptor pd)
         {
             return null;
@@ -868,11 +792,11 @@ namespace Newtonsoft.Json.Linq
 
 #if !(NET35 || NET20 || PORTABLE40)
         /// <summary>
-        /// Returns the <see cref="T:System.Dynamic.DynamicMetaObject"/> responsible for binding operations performed on this object.
+        /// Returns the <see cref="DynamicMetaObject"/> responsible for binding operations performed on this object.
         /// </summary>
         /// <param name="parameter">The expression tree representation of the runtime value.</param>
         /// <returns>
-        /// The <see cref="T:System.Dynamic.DynamicMetaObject"/> to bind this object.
+        /// The <see cref="DynamicMetaObject"/> to bind this object.
         /// </returns>
         protected override DynamicMetaObject GetMetaObject(Expression parameter)
         {

@@ -119,12 +119,10 @@ namespace Newtonsoft.Json
         private Formatting _formatting;
 
         /// <summary>
-        /// Gets or sets a value indicating whether the underlying stream or
-        /// <see cref="TextReader"/> should be closed when the writer is closed.
+        /// Gets or sets a value indicating whether the destination should be closed when this writer is closed.
         /// </summary>
         /// <value>
-        /// <c>true</c> to close the underlying stream or <see cref="TextReader"/> when
-        /// the writer is closed; otherwise <c>false</c>. The default is <c>true</c>.
+        /// <c>true</c> to close the destination when this writer is closed; otherwise <c>false</c>. The default is <c>true</c>.
         /// </value>
         public bool CloseOutput { get; set; }
 
@@ -295,8 +293,8 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Gets or sets how special floating point numbers, e.g. <see cref="F:System.Double.NaN"/>,
-        /// <see cref="F:System.Double.PositiveInfinity"/> and <see cref="F:System.Double.NegativeInfinity"/>,
+        /// Gets or sets how special floating point numbers, e.g. <see cref="Double.NaN"/>,
+        /// <see cref="Double.PositiveInfinity"/> and <see cref="Double.NegativeInfinity"/>,
         /// are written to JSON text.
         /// </summary>
         public FloatFormatHandling FloatFormatHandling
@@ -389,12 +387,13 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Flushes whatever is in the buffer to the underlying streams and also flushes the underlying stream.
+        /// Flushes whatever is in the buffer to the destination and also flushes the destination.
         /// </summary>
         public abstract void Flush();
 
         /// <summary>
-        /// Closes this stream and the underlying stream.
+        /// Closes this writer.
+        /// If <see cref="JsonWriter.CloseOutput"/> is set to <c>true</c>, the destination is also closed.
         /// </summary>
         public virtual void Close()
         {
@@ -505,7 +504,8 @@ namespace Newtonsoft.Json
         /// <param name="value">
         /// The value to write.
         /// A value is only required for tokens that have an associated value, e.g. the <see cref="String"/> property name for <see cref="JsonToken.PropertyName"/>.
-        /// A null value can be passed to the method for token's that don't have a value, e.g. <see cref="JsonToken.StartObject"/>.</param>
+        /// <c>null</c> can be passed to the method for tokens that don't have a value, e.g. <see cref="JsonToken.StartObject"/>.
+        /// </param>
         public void WriteToken(JsonToken token, object value)
         {
             switch (token)
@@ -1070,9 +1070,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{Int32}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="Int32"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{Int32}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Int32"/> value to write.</param>
         public virtual void WriteValue(int? value)
         {
             if (value == null)
@@ -1086,9 +1086,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{UInt32}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="UInt32"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{UInt32}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="UInt32"/> value to write.</param>
         [CLSCompliant(false)]
         public virtual void WriteValue(uint? value)
         {
@@ -1103,9 +1103,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{Int64}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="Int64"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{Int64}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Int64"/> value to write.</param>
         public virtual void WriteValue(long? value)
         {
             if (value == null)
@@ -1119,9 +1119,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{UInt64}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="UInt64"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{UInt64}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="UInt64"/> value to write.</param>
         [CLSCompliant(false)]
         public virtual void WriteValue(ulong? value)
         {
@@ -1136,9 +1136,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{Single}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="Single"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{Single}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Single"/> value to write.</param>
         public virtual void WriteValue(float? value)
         {
             if (value == null)
@@ -1152,9 +1152,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{Double}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="Double"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{Double}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Double"/> value to write.</param>
         public virtual void WriteValue(double? value)
         {
             if (value == null)
@@ -1168,9 +1168,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{Boolean}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="Boolean"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{Boolean}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Boolean"/> value to write.</param>
         public virtual void WriteValue(bool? value)
         {
             if (value == null)
@@ -1184,9 +1184,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{Int16}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="Int16"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{Int16}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Int16"/> value to write.</param>
         public virtual void WriteValue(short? value)
         {
             if (value == null)
@@ -1200,9 +1200,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{UInt16}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="UInt16"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{UInt16}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="UInt16"/> value to write.</param>
         [CLSCompliant(false)]
         public virtual void WriteValue(ushort? value)
         {
@@ -1217,9 +1217,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{Char}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="Char"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{Char}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Char"/> value to write.</param>
         public virtual void WriteValue(char? value)
         {
             if (value == null)
@@ -1233,9 +1233,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{Byte}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="Byte"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{Byte}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Byte"/> value to write.</param>
         public virtual void WriteValue(byte? value)
         {
             if (value == null)
@@ -1249,9 +1249,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{SByte}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="SByte"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{SByte}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="SByte"/> value to write.</param>
         [CLSCompliant(false)]
         public virtual void WriteValue(sbyte? value)
         {
@@ -1266,9 +1266,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{Decimal}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="Decimal"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{Decimal}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Decimal"/> value to write.</param>
         public virtual void WriteValue(decimal? value)
         {
             if (value == null)
@@ -1282,9 +1282,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{DateTime}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="DateTime"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{DateTime}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="DateTime"/> value to write.</param>
         public virtual void WriteValue(DateTime? value)
         {
             if (value == null)
@@ -1299,9 +1299,9 @@ namespace Newtonsoft.Json
 
 #if !NET20
         /// <summary>
-        /// Writes a <see cref="Nullable{DateTimeOffset}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{DateTimeOffset}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/> value to write.</param>
         public virtual void WriteValue(DateTimeOffset? value)
         {
             if (value == null)
@@ -1316,9 +1316,9 @@ namespace Newtonsoft.Json
 #endif
 
         /// <summary>
-        /// Writes a <see cref="Nullable{Guid}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="Guid"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{Guid}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Guid"/> value to write.</param>
         public virtual void WriteValue(Guid? value)
         {
             if (value == null)
@@ -1332,9 +1332,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Writes a <see cref="Nullable{TimeSpan}"/> value.
+        /// Writes a <see cref="Nullable{T}"/> of <see cref="TimeSpan"/> value.
         /// </summary>
-        /// <param name="value">The <see cref="Nullable{TimeSpan}"/> value to write.</param>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="TimeSpan"/> value to write.</param>
         public virtual void WriteValue(TimeSpan? value)
         {
             if (value == null)
@@ -1607,9 +1607,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Sets the state of the JsonWriter.
+        /// Sets the state of the <see cref="JsonWriter"/>.
         /// </summary>
-        /// <param name="token">The JsonToken being written.</param>
+        /// <param name="token">The <see cref="JsonToken"/> being written.</param>
         /// <param name="value">The value being written.</param>
         protected void SetWriteState(JsonToken token, object value)
         {

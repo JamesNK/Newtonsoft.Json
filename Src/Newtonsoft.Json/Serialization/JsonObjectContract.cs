@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Serialization
         public JsonPropertyCollection Properties { get; private set; }
 
         /// <summary>
-        /// Gets the constructor parameters required for any non-default constructor
+        /// Gets the constructor parameters required for any non-default constructor.
         /// </summary>
         [Obsolete("ConstructorParameters is obsolete. Use CreatorParameters instead.")]
         public JsonPropertyCollection ConstructorParameters
@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Serialization
         }
 
         /// <summary>
-        /// Gets a collection of <see cref="JsonProperty"/> instances that define the parameters used with <see cref="OverrideCreator"/>.
+        /// Gets a collection of <see cref="JsonProperty"/> instances that define the parameters used with <see cref="JsonObjectContract.OverrideCreator"/>.
         /// </summary>
         public JsonPropertyCollection CreatorParameters
         {
@@ -85,8 +85,8 @@ namespace Newtonsoft.Json.Serialization
 
         /// <summary>
         /// Gets or sets the override constructor used to create the object.
-        /// This is set when a constructor is marked up using the
-        /// JsonConstructor attribute.
+        /// This is set when a constructor is marked up using
+        /// <see cref="JsonConstructorAttribute"/>.
         /// </summary>
         /// <value>The override constructor.</value>
         [Obsolete("OverrideConstructor is obsolete. Use OverrideCreator instead.")]
@@ -117,7 +117,7 @@ namespace Newtonsoft.Json.Serialization
 
         /// <summary>
         /// Gets or sets the function used to create the object. When set this function will override <see cref="JsonContract.DefaultCreator"/>.
-        /// This function is called with a collection of arguments which are defined by the <see cref="CreatorParameters"/> collection.
+        /// This function is called with a collection of arguments which are defined by the <see cref="JsonObjectContract.CreatorParameters"/> collection.
         /// </summary>
         /// <value>The function used to create the object.</value>
         public ObjectConstructor<object> OverrideCreator
