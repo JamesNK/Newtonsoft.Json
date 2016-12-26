@@ -66,70 +66,110 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
     internal class BooleanQueryExpression : QueryExpression
     {
-        public List<PathFilter> Path { get; set; }
-        public JValue Value { get; set; }
+        public object Left { get; set; }
+        public object Right { get; set; }
+
+        private IEnumerable<JToken> GetResult(JToken root, JToken t, object o)
+        {
+            JToken resultToken = o as JToken;
+            if (resultToken != null)
+            {
+                return new[] { resultToken };
+            }
+
+            List<PathFilter> pathFilters = o as List<PathFilter>;
+            if (pathFilters != null)
+            {
+                return JPath.Evaluate(pathFilters, root, t, false);
+            }
+
+            return new JToken[0];
+        }
 
         public override bool IsMatch(JToken root, JToken t)
         {
-            IEnumerable<JToken> pathResult = JPath.Evaluate(Path, root, t, false);
+            IEnumerable<JToken> rightResults = GetResult(root, t, Right);
+            IEnumerable<JToken> leftResults = GetResult(root, t, Left);
 
-            foreach (JToken r in pathResult)
+            foreach (JToken leftResult in leftResults)
             {
-                JValue v = r as JValue;
-                if (v != null)
+                if (Operator == QueryOperator.Exists)
                 {
-                    switch (Operator)
-                    {
-                        case QueryOperator.Equals:
-                            if (EqualsWithStringCoercion(v, Value))
-                            {
-                                return true;
-                            }
-                            break;
-                        case QueryOperator.NotEquals:
-                            if (!EqualsWithStringCoercion(v, Value))
-                            {
-                                return true;
-                            }
-                            break;
-                        case QueryOperator.GreaterThan:
-                            if (v.CompareTo(Value) > 0)
-                            {
-                                return true;
-                            }
-                            break;
-                        case QueryOperator.GreaterThanOrEquals:
-                            if (v.CompareTo(Value) >= 0)
-                            {
-                                return true;
-                            }
-                            break;
-                        case QueryOperator.LessThan:
-                            if (v.CompareTo(Value) < 0)
-                            {
-                                return true;
-                            }
-                            break;
-                        case QueryOperator.LessThanOrEquals:
-                            if (v.CompareTo(Value) <= 0)
-                            {
-                                return true;
-                            }
-                            break;
-                        case QueryOperator.Exists:
-                            return true;
-                    }
+                    return true;
                 }
                 else
                 {
-                    switch (Operator)
+                    foreach (JToken rightResult in rightResults)
                     {
-                        case QueryOperator.Exists:
-                        // you can only specify primative types in a comparison
-                        // notequals will always be true
-                        case QueryOperator.NotEquals:
+                        if (MatchTokens(leftResult, rightResult))
+                        {
                             return true;
+                        }
                     }
+                }
+            }
+
+            return false;
+        }
+
+        private bool MatchTokens(JToken leftResult, JToken rightResult)
+        {
+            JValue leftValue = leftResult as JValue;
+            JValue rightValue = rightResult as JValue;
+
+            if (leftValue != null && rightValue != null)
+            {
+                switch (Operator)
+                {
+                    case QueryOperator.Equals:
+                        if (EqualsWithStringCoercion(leftValue, rightValue))
+                        {
+                            return true;
+                        }
+                        break;
+                    case QueryOperator.NotEquals:
+                        if (!EqualsWithStringCoercion(leftValue, rightValue))
+                        {
+                            return true;
+                        }
+                        break;
+                    case QueryOperator.GreaterThan:
+                        if (leftValue.CompareTo(rightValue) > 0)
+                        {
+                            return true;
+                        }
+                        break;
+                    case QueryOperator.GreaterThanOrEquals:
+                        if (leftValue.CompareTo(rightValue) >= 0)
+                        {
+                            return true;
+                        }
+                        break;
+                    case QueryOperator.LessThan:
+                        if (leftValue.CompareTo(rightValue) < 0)
+                        {
+                            return true;
+                        }
+                        break;
+                    case QueryOperator.LessThanOrEquals:
+                        if (leftValue.CompareTo(rightValue) <= 0)
+                        {
+                            return true;
+                        }
+                        break;
+                    case QueryOperator.Exists:
+                        return true;
+                }
+            }
+            else
+            {
+                switch (Operator)
+                {
+                    case QueryOperator.Exists:
+                    // you can only specify primative types in a comparison
+                    // notequals will always be true
+                    case QueryOperator.NotEquals:
+                        return true;
                 }
             }
 

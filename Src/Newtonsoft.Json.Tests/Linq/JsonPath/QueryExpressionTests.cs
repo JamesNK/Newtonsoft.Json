@@ -53,7 +53,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                     new BooleanQueryExpression
                     {
                         Operator = QueryOperator.Exists,
-                        Path = new List<PathFilter>
+                        Left = new List<PathFilter>
                         {
                             new FieldFilter
                             {
@@ -64,7 +64,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                     new BooleanQueryExpression
                     {
                         Operator = QueryOperator.Exists,
-                        Path = new List<PathFilter>
+                        Left = new List<PathFilter>
                         {
                             new FieldFilter
                             {
@@ -111,7 +111,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                     new BooleanQueryExpression
                     {
                         Operator = QueryOperator.Exists,
-                        Path = new List<PathFilter>
+                        Left = new List<PathFilter>
                         {
                             new FieldFilter
                             {
@@ -122,7 +122,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
                     new BooleanQueryExpression
                     {
                         Operator = QueryOperator.Exists,
-                        Path = new List<PathFilter>
+                        Left = new List<PathFilter>
                         {
                             new FieldFilter
                             {
@@ -164,8 +164,8 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             BooleanQueryExpression e1 = new BooleanQueryExpression
             {
                 Operator = QueryOperator.LessThan,
-                Value = new JValue(3),
-                Path = new List<PathFilter>
+                Right = new JValue(3),
+                Left = new List<PathFilter>
                 {
                     new ArrayIndexFilter()
                 }
@@ -179,8 +179,8 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             BooleanQueryExpression e2 = new BooleanQueryExpression
             {
                 Operator = QueryOperator.LessThanOrEquals,
-                Value = new JValue(3),
-                Path = new List<PathFilter>
+                Right = new JValue(3),
+                Left = new List<PathFilter>
                 {
                     new ArrayIndexFilter()
                 }

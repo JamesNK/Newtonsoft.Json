@@ -723,6 +723,21 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 3)), t[1]));
         }
 
+        [Test]
+        public void LesserQuery_ValueFirst()
+        {
+            JArray a = new JArray(
+                new JObject(new JProperty("hi", 1)),
+                new JObject(new JProperty("hi", 2)),
+                new JObject(new JProperty("hi", 3)));
+
+            IList<JToken> t = a.SelectTokens("[ ?( 1 < @.hi ) ]").ToList();
+            Assert.IsNotNull(t);
+            Assert.AreEqual(2, t.Count);
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 2)), t[0]));
+            Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 3)), t[1]));
+        }
+
 #if !(PORTABLE || DNXCORE50 || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
         [Test]
         public void GreaterQueryBigInteger()
@@ -809,6 +824,79 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
 
             JValue v = (JValue)a.SelectToken("[1].Property2[1][0]");
             Assert.AreEqual(1L, v.Value);
+        }
+
+        [Test]
+        public void MultiplePaths()
+        {
+            JArray a = JArray.Parse(@"[
+  {
+    ""price"": 199,
+    ""max_price"": 200
+  },
+  {
+    ""price"": 200,
+    ""max_price"": 200
+  },
+  {
+    ""price"": 201,
+    ""max_price"": 200
+  }
+]");
+
+            var results = a.SelectTokens("[?(@.price > @.max_price)]").ToList();
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual(a[2], results[0]);
+        }
+
+        [Test]
+        public void Exists_True()
+        {
+            JArray a = JArray.Parse(@"[
+  {
+    ""price"": 199,
+    ""max_price"": 200
+  },
+  {
+    ""price"": 200,
+    ""max_price"": 200
+  },
+  {
+    ""price"": 201,
+    ""max_price"": 200
+  }
+]");
+
+            var results = a.SelectTokens("[?(true)]").ToList();
+            Assert.AreEqual(3, results.Count);
+            Assert.AreEqual(a[0], results[0]);
+            Assert.AreEqual(a[1], results[1]);
+            Assert.AreEqual(a[2], results[2]);
+        }
+
+        [Test]
+        public void Exists_Null()
+        {
+            JArray a = JArray.Parse(@"[
+  {
+    ""price"": 199,
+    ""max_price"": 200
+  },
+  {
+    ""price"": 200,
+    ""max_price"": 200
+  },
+  {
+    ""price"": 201,
+    ""max_price"": 200
+  }
+]");
+
+            var results = a.SelectTokens("[?(true)]").ToList();
+            Assert.AreEqual(3, results.Count);
+            Assert.AreEqual(a[0], results[0]);
+            Assert.AreEqual(a[1], results[1]);
+            Assert.AreEqual(a[2], results[2]);
         }
 
         [Test]
