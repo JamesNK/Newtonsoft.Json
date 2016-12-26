@@ -224,6 +224,7 @@
     <Compile Include="JsonConvertTest.cs" />
     <Compile Include="JsonTextReaderTests\MiscTests.cs" />
     <Compile Include="JsonTextReaderTests\ExceptionHandlingTests.cs" />
+    <Compile Include="TestObjects\JsonReaderStubWithIsClosed.cs" />
     <Compile Include="TestObjects\JsonTextReaderTests\FakeArrayPool.cs" />
     <Compile Include="JsonTextReaderTests\FloatTests.cs" />
     <Compile Include="JsonTextReaderTests\ParseTests.cs" />
