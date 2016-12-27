@@ -329,6 +329,7 @@
     <Compile Include="TestObjects\JsonTextReaderTests\SlowStream.cs" />
     <Compile Include="TestObjects\JsonTextReaderTests\ToggleReaderError.cs" />
     <Compile Include="TestObjects\JsonTextReaderTests\UnmanagedResourceFakingJsonReader.cs" />
+    <Compile Include="TestObjects\JsonReaderStubWithIsClosed.cs" />
     <Compile Include="TestObjects\ListOfIds.cs" />
     <Compile Include="TestObjects\MetroPropertyNameResolver.cs" />
     <Compile Include="TestObjects\MetroStringConverter.cs" />

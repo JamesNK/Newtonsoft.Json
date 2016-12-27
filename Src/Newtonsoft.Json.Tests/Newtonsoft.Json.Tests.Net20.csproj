@@ -171,6 +171,7 @@
     <Compile Include="TestObjects\Item.cs" />
     <Compile Include="TestObjects\JsonPropertyClass.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />
+    <Compile Include="TestObjects\JsonReaderStubWithIsClosed.cs" />
     <Compile Include="TestObjects\JsonTextReaderTests\FakeArrayPool.cs" />
     <Compile Include="TestObjects\JsonTextReaderTests\SlowStream.cs" />
     <Compile Include="TestObjects\JsonTextReaderTests\ToggleReaderError.cs" />
