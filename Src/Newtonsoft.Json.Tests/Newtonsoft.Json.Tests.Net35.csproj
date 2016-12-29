@@ -208,6 +208,7 @@
     <Compile Include="TestObjects\IPrivateImplementationB.cs" />
     <Compile Include="TestObjects\IPrivateOverriddenImplementation.cs" />
     <Compile Include="TestObjects\Item.cs" />
+    <Compile Include="TestObjects\JsonReaderStubWithIsClosed.cs" />
     <Compile Include="TestObjects\JsonTextReaderTests\FakeArrayPool.cs" />
     <Compile Include="TestObjects\JsonTextReaderTests\SlowStream.cs" />
     <Compile Include="TestObjects\JsonTextReaderTests\ToggleReaderError.cs" />

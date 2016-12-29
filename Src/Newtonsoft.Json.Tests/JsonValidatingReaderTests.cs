@@ -1747,6 +1747,17 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(JsonToken.None, reader.TokenType);
             Assert.AreEqual(null, validationEventArgs);
         }
+
+        [Test]
+        public void CloseAlsoClosesUnderlyingReader()
+        {
+            var underlyingReader = new TestObjects.JsonReaderStubWithIsClosed();
+            var validatingReader = new JsonValidatingReader(underlyingReader) { CloseInput = true };
+
+            validatingReader.Close();
+
+            Assert.IsTrue(underlyingReader.IsClosed);
+        }
     }
 }
 
