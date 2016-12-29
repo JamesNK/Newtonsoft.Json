@@ -158,6 +158,12 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
+        /// <summary>
+        /// Gets or sets the extension data name resolver.
+        /// </summary>
+        /// <value>The extension data name resolver.</value>
+        public Func<string, string> ExtensionDataNameResolver { get; set; }
+
         internal bool ExtensionDataIsJToken;
         private bool? _hasRequiredOrDefaultValueProperties;
         private ConstructorInfo _parametrizedConstructor;

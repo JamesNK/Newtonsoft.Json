@@ -496,6 +496,10 @@ namespace Newtonsoft.Json.Serialization
                         bool escape;
                         string propertyName = GetPropertyName(writer, e.Key, keyContract, out escape);
 
+                        propertyName = (contract.ExtensionDataNameResolver != null)
+                            ? contract.ExtensionDataNameResolver(propertyName)
+                            : propertyName;
+
                         if (ShouldWriteReference(e.Value, null, valueContract, contract, member))
                         {
                             writer.WritePropertyName(propertyName);

@@ -398,11 +398,25 @@ namespace Newtonsoft.Json.Serialization
             contract.MemberSerialization = JsonTypeReflector.GetObjectMemberSerialization(contract.NonNullableUnderlyingType, ignoreSerializableAttribute);
             contract.Properties.AddRange(CreateProperties(contract.NonNullableUnderlyingType, contract.MemberSerialization));
 
+            Func<string, string> extensionDataNameResolver = null;
+
             JsonObjectAttribute attribute = JsonTypeReflector.GetCachedAttribute<JsonObjectAttribute>(contract.NonNullableUnderlyingType);
             if (attribute != null)
             {
                 contract.ItemRequired = attribute._itemRequired;
+                if (attribute.NamingStrategyType != null)
+                {
+                    NamingStrategy namingStrategy = JsonTypeReflector.GetContainerNamingStrategy(attribute);
+                    extensionDataNameResolver = s => namingStrategy.GetDictionaryKey(s);
+                }
             }
+
+            if (extensionDataNameResolver == null)
+            {
+                extensionDataNameResolver = ResolveExtensionDataName;
+            }
+
+            contract.ExtensionDataNameResolver = extensionDataNameResolver;
 
             if (contract.IsInstantiable)
             {
@@ -1602,6 +1616,21 @@ namespace Newtonsoft.Json.Serialization
             }
 
             return propertyName;
+        }
+
+        /// <summary>
+        /// Resolves the name of the extension data. By default no changes are made to extension data names.
+        /// </summary>
+        /// <param name="extensionDataName">Name of the extension data.</param>
+        /// <returns>Resolved name of the extension data.</returns>
+        protected virtual string ResolveExtensionDataName(string extensionDataName)
+        {
+            if (NamingStrategy != null)
+            {
+                return NamingStrategy.GetExtensionDataName(extensionDataName);
+            }
+
+            return extensionDataName;
         }
 
         /// <summary>

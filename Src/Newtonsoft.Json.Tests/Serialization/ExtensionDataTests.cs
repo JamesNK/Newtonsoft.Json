@@ -30,6 +30,7 @@ using System.Text;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Tests.TestObjects.Organization;
+using Newtonsoft.Json.Serialization;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -312,6 +313,15 @@ namespace Newtonsoft.Json.Tests.Serialization
             }
         }
 
+        [JsonObject(NamingStrategyType = typeof(CamelCaseNamingStrategy), NamingStrategyParameters = new object[] { true, true, true })]
+        public class ExtensionDataWithNamingStrategyTestClass
+        {
+            public string Name { get; set; }
+
+            [JsonExtensionData]
+            internal IDictionary<string, JToken> ExtensionData { get; set; }
+        }
+
         public class JObjectExtensionDataTestClass
         {
             public string Name { get; set; }
@@ -369,6 +379,158 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsTrue(JToken.DeepEquals(new JArray(1, 2, 3), c.ExtensionData["Ignored"]));
 
             Assert.AreEqual(7, c.ExtensionData.Count);
+        }
+
+        [Test]
+        public void ExtensionDataTest_DeserializeWithNamingStrategy()
+        {
+            string json = @"{
+  ""Ints"": [1,2,3],
+  ""Ignored"": [1,2,3],
+  ""Readonly"": ""Readonly"",
+  ""Name"": ""Actually set!"",
+  ""CustomName"": ""Wrong name!"",
+  ""GetPrivate"": true,
+  ""GetOnly"": true,
+  ""NewValueSimple"": true,
+  ""NewValueComplex"": [1,2,3]
+}";
+
+            ExtensionDataTestClass c = JsonConvert.DeserializeObject<ExtensionDataTestClass>(json, new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy
+                    {
+                        ProcessExtensionDataNames = true
+                    }
+                }
+            });
+
+            Assert.AreEqual("Actually set!", c.Name);
+            Assert.AreEqual(4, c.Ints.Count);
+
+            Assert.AreEqual("Readonly", (string)c.ExtensionData["Readonly"]);
+            Assert.AreEqual("Wrong name!", (string)c.ExtensionData["CustomName"]);
+            Assert.AreEqual(true, (bool)c.ExtensionData["GetPrivate"]);
+            Assert.AreEqual(true, (bool)c.ExtensionData["GetOnly"]);
+            Assert.AreEqual(true, (bool)c.ExtensionData["NewValueSimple"]);
+            Assert.IsTrue(JToken.DeepEquals(new JArray(1, 2, 3), c.ExtensionData["NewValueComplex"]));
+            Assert.IsTrue(JToken.DeepEquals(new JArray(1, 2, 3), c.ExtensionData["Ignored"]));
+
+            Assert.AreEqual(7, c.ExtensionData.Count);
+        }
+
+        [Test]
+        public void ExtensionDataTest_SerializeWithNamingStrategy_Enabled()
+        {
+            ExtensionDataTestClass c = new ExtensionDataTestClass()
+            {
+                ExtensionData = new Dictionary<string, JToken>
+                {
+                    ["TestValue1"] = 1,
+                    ["alreadyCamelCase"] = new JObject
+                    {
+                        ["NotProcessed"] = true
+                    }
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(c, new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy
+                    {
+                        ProcessExtensionDataNames = true
+                    }
+                },
+                Formatting = Formatting.Indented
+            });
+
+            StringAssert.AreEqual(@"{
+  ""readonly"": ""Readonly"",
+  ""name"": null,
+  ""custom_name"": null,
+  ""getPrivate"": false,
+  ""getOnly"": true,
+  ""ints"": [
+    0
+  ],
+  ""testValue1"": 1,
+  ""alreadyCamelCase"": {
+    ""NotProcessed"": true
+  }
+}", json);
+        }
+
+        [Test]
+        public void ExtensionDataTest_SerializeWithNamingStrategy_Disabled()
+        {
+            ExtensionDataTestClass c = new ExtensionDataTestClass()
+            {
+                ExtensionData = new Dictionary<string, JToken>
+                {
+                    ["TestValue1"] = 1,
+                    ["alreadyCamelCase"] = new JObject
+                    {
+                        ["NotProcessed"] = true
+                    }
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(c, new JsonSerializerSettings
+            {
+                ContractResolver = new Newtonsoft.Json.Serialization.DefaultContractResolver
+                {
+                    NamingStrategy = new Newtonsoft.Json.Serialization.CamelCaseNamingStrategy()
+                },
+                Formatting = Formatting.Indented
+            });
+
+            StringAssert.AreEqual(@"{
+  ""readonly"": ""Readonly"",
+  ""name"": null,
+  ""custom_name"": null,
+  ""getPrivate"": false,
+  ""getOnly"": true,
+  ""ints"": [
+    0
+  ],
+  ""TestValue1"": 1,
+  ""alreadyCamelCase"": {
+    ""NotProcessed"": true
+  }
+}", json);
+        }
+
+        [Test]
+        public void ExtensionDataTest_SerializeWithNamingStrategyAttribute()
+        {
+            ExtensionDataWithNamingStrategyTestClass c = new ExtensionDataWithNamingStrategyTestClass()
+            {
+                ExtensionData = new Dictionary<string, JToken>
+                {
+                    ["TestValue1"] = 1,
+                    ["alreadyCamelCase"] = new JObject
+                    {
+                        ["NotProcessed"] = true
+                    }
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(c, new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented
+            });
+
+            StringAssert.AreEqual(@"{
+  ""name"": null,
+  ""testValue1"": 1,
+  ""alreadyCamelCase"": {
+    ""NotProcessed"": true
+  }
+}", json);
         }
 
         [JsonObject(MemberSerialization.OptIn)]
