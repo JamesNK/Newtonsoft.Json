@@ -241,6 +241,10 @@ namespace Newtonsoft.Json.Serialization
 
                     string propertyName = (await GetPropertyNameAsync(writer, e.Key, keyContract, cancellationToken).ConfigureAwait(false)).Item1;
 
+                    propertyName = contract.ExtensionDataNameResolver != null
+                            ? contract.ExtensionDataNameResolver(propertyName)
+                            : propertyName;
+
                     if (ShouldWriteReference(e.Value, null, valueContract, contract, member))
                     {
                         await writer.WritePropertyNameAsync(propertyName, cancellationToken).ConfigureAwait(false);
