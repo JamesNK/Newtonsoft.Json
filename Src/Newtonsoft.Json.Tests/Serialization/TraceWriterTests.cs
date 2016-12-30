@@ -90,6 +90,66 @@ Newtonsoft.Json Error: 0 : Error!
         }
 
         [Test]
+        public void WriteNullObject()
+        {
+            StringWriter sw = new StringWriter();
+            TraceJsonWriter traceJsonWriter = new TraceJsonWriter(new JsonTextWriter(sw));
+            traceJsonWriter.WriteStartArray();
+            traceJsonWriter.WriteValue((object)null);
+            traceJsonWriter.WriteEndArray();
+
+            StringAssert.AreEqual(@"Serialized JSON: 
+[
+  null
+]", traceJsonWriter.GetSerializedJsonMessage());
+        }
+
+        [Test]
+        public void WriteNullString()
+        {
+            StringWriter sw = new StringWriter();
+            TraceJsonWriter traceJsonWriter = new TraceJsonWriter(new JsonTextWriter(sw));
+            traceJsonWriter.WriteStartArray();
+            traceJsonWriter.WriteValue((string)null);
+            traceJsonWriter.WriteEndArray();
+
+            StringAssert.AreEqual(@"Serialized JSON: 
+[
+  null
+]", traceJsonWriter.GetSerializedJsonMessage());
+        }
+
+        [Test]
+        public void WriteNullUri()
+        {
+            StringWriter sw = new StringWriter();
+            TraceJsonWriter traceJsonWriter = new TraceJsonWriter(new JsonTextWriter(sw));
+            traceJsonWriter.WriteStartArray();
+            traceJsonWriter.WriteValue((Uri)null);
+            traceJsonWriter.WriteEndArray();
+
+            StringAssert.AreEqual(@"Serialized JSON: 
+[
+  null
+]", traceJsonWriter.GetSerializedJsonMessage());
+        }
+
+        [Test]
+        public void WriteNullByteArray()
+        {
+            StringWriter sw = new StringWriter();
+            TraceJsonWriter traceJsonWriter = new TraceJsonWriter(new JsonTextWriter(sw));
+            traceJsonWriter.WriteStartArray();
+            traceJsonWriter.WriteValue((byte[])null);
+            traceJsonWriter.WriteEndArray();
+
+            StringAssert.AreEqual(@"Serialized JSON: 
+[
+  null
+]", traceJsonWriter.GetSerializedJsonMessage());
+        }
+
+        [Test]
         public void WriteJRaw()
         {
             ITraceWriter traceWriter = new MemoryTraceWriter();
