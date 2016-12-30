@@ -135,6 +135,21 @@ Newtonsoft.Json Error: 0 : Error!
         }
 
         [Test]
+        public void WriteNullByteArray()
+        {
+            StringWriter sw = new StringWriter();
+            TraceJsonWriter traceJsonWriter = new TraceJsonWriter(new JsonTextWriter(sw));
+            traceJsonWriter.WriteStartArray();
+            traceJsonWriter.WriteValue((byte[])null);
+            traceJsonWriter.WriteEndArray();
+
+            StringAssert.AreEqual(@"Serialized JSON: 
+[
+  null
+]", traceJsonWriter.GetSerializedJsonMessage());
+        }
+
+        [Test]
         public void WriteJRaw()
         {
             ITraceWriter traceWriter = new MemoryTraceWriter();

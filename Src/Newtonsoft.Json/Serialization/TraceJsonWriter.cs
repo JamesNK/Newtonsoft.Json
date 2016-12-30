@@ -69,7 +69,14 @@ namespace Newtonsoft.Json.Serialization
         {
             _textWriter.WriteValue(value);
             _innerWriter.WriteValue(value);
-            base.WriteValue(value);
+            if (value == null)
+            {
+                base.WriteUndefined();
+            }
+            else
+            {
+                base.WriteValue(value);
+            }
         }
 
         public override void WriteValue(DateTime value)
