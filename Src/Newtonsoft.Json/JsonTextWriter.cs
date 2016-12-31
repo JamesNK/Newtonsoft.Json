@@ -39,8 +39,9 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Represents a writer that provides a fast, non-cached, forward-only way of generating JSON data.
     /// </summary>
-    public class JsonTextWriter : JsonWriter
+    public partial class JsonTextWriter : JsonWriter
     {
+        private const int IndentCharBufferSize = 12;
         private readonly TextWriter _writer;
         private Base64Encoder _base64Encoder;
         private char _indentChar;
@@ -160,6 +161,10 @@ namespace Newtonsoft.Json
             _indentation = 2;
 
             UpdateCharEscapeFlags();
+
+#if !(NET20 || NET35 || NET40 || PORTABLE40)
+            _safeAsync = GetType() == typeof(JsonTextWriter);
+#endif
         }
 
         /// <summary>
@@ -178,6 +183,11 @@ namespace Newtonsoft.Json
         {
             base.Close();
 
+            CloseBufferAndWriter();
+        }
+
+        private void CloseBufferAndWriter()
+        {
             if (_writeBuffer != null)
             {
                 BufferUtils.ReturnBuffer(_arrayPool, _writeBuffer);
@@ -308,27 +318,45 @@ namespace Newtonsoft.Json
         /// </summary>
         protected override void WriteIndent()
         {
-            _writer.WriteLine();
-
             // levels of indentation multiplied by the indent count
             int currentIndentCount = Top * _indentation;
 
-            if (currentIndentCount > 0)
+            int newLineLen = SetIndentChars();
+
+            _writer.Write(_indentChars, 0, newLineLen + Math.Min(currentIndentCount, IndentCharBufferSize));
+
+            while ((currentIndentCount -= IndentCharBufferSize) > 0)
             {
-                if (_indentChars == null)
+                _writer.Write(_indentChars, newLineLen, Math.Min(currentIndentCount, IndentCharBufferSize));
+            }
+        }
+
+        private int SetIndentChars()
+        {
+            // Set _indentChars to be a newline followed by IndentCharBufferSize indent characters.
+            string writerNewLine = _writer.NewLine;
+            int newLineLen = writerNewLine.Length;
+            bool match = _indentChars != null && _indentChars.Length == IndentCharBufferSize + newLineLen;
+            if (match)
+            {
+                for (int i = 0; i != newLineLen; ++i)
                 {
-                    _indentChars = new string(_indentChar, 10).ToCharArray();
-                }
-
-                while (currentIndentCount > 0)
-                {
-                    int writeCount = Math.Min(currentIndentCount, 10);
-
-                    _writer.Write(_indentChars, 0, writeCount);
-
-                    currentIndentCount -= writeCount;
+                    if (writerNewLine[i] != _indentChars[i])
+                    {
+                        match = false;
+                        break;
+                    }
                 }
             }
+
+            if (!match)
+            {
+                // If we're here, either _indentChars hasn't been set yet, or _writer.NewLine
+                // has been changed, or _indentChar has been changed.
+                _indentChars = (writerNewLine + new string(_indentChar, IndentCharBufferSize)).ToCharArray();
+            }
+
+            return newLineLen;
         }
 
         /// <summary>
@@ -465,7 +493,7 @@ namespace Newtonsoft.Json
         public override void WriteValue(ulong value)
         {
             InternalWriteValue(JsonToken.Integer);
-            WriteIntegerValue(value);
+            WriteIntegerValue(value, false);
         }
 
         /// <summary>
@@ -605,14 +633,9 @@ namespace Newtonsoft.Json
 
             if (string.IsNullOrEmpty(DateFormatString))
             {
-                EnsureWriteBuffer();
+                int length = WriteValueToBuffer(value);
 
-                int pos = 0;
-                _writeBuffer[pos++] = _quoteChar;
-                pos = DateTimeUtils.WriteDateTimeString(_writeBuffer, pos, value, null, value.Kind, DateFormatHandling);
-                _writeBuffer[pos++] = _quoteChar;
-
-                _writer.Write(_writeBuffer, 0, pos);
+                _writer.Write(_writeBuffer, 0, length);
             }
             else
             {
@@ -620,6 +643,17 @@ namespace Newtonsoft.Json
                 _writer.Write(value.ToString(DateFormatString, Culture));
                 _writer.Write(_quoteChar);
             }
+        }
+
+        private int WriteValueToBuffer(DateTime value)
+        {
+            EnsureWriteBuffer();
+
+            int pos = 0;
+            _writeBuffer[pos++] = _quoteChar;
+            pos = DateTimeUtils.WriteDateTimeString(_writeBuffer, pos, value, null, value.Kind, DateFormatHandling);
+            _writeBuffer[pos++] = _quoteChar;
+            return pos;
         }
 
         /// <summary>
@@ -653,14 +687,9 @@ namespace Newtonsoft.Json
 
             if (string.IsNullOrEmpty(DateFormatString))
             {
-                EnsureWriteBuffer();
+                int length = WriteValueToBuffer(value);
 
-                int pos = 0;
-                _writeBuffer[pos++] = _quoteChar;
-                pos = DateTimeUtils.WriteDateTimeString(_writeBuffer, pos, (DateFormatHandling == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, DateFormatHandling);
-                _writeBuffer[pos++] = _quoteChar;
-
-                _writer.Write(_writeBuffer, 0, pos);
+                _writer.Write(_writeBuffer, 0, length);
             }
             else
             {
@@ -668,6 +697,17 @@ namespace Newtonsoft.Json
                 _writer.Write(value.ToString(DateFormatString, Culture));
                 _writer.Write(_quoteChar);
             }
+        }
+
+        private int WriteValueToBuffer(DateTimeOffset value)
+        {
+            EnsureWriteBuffer();
+
+            int pos = 0;
+            _writeBuffer[pos++] = _quoteChar;
+            pos = DateTimeUtils.WriteDateTimeString(_writeBuffer, pos, (DateFormatHandling == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, DateFormatHandling);
+            _writeBuffer[pos++] = _quoteChar;
+            return pos;
         }
 #endif
 
@@ -771,38 +811,45 @@ namespace Newtonsoft.Json
             }
             else
             {
-                ulong uvalue = (value < 0) ? (ulong)-value : (ulong)value;
-
-                if (value < 0)
-                {
-                    _writer.Write('-');
-                }
-
-                WriteIntegerValue(uvalue);
+                bool negative = value < 0;
+                WriteIntegerValue(negative ? (ulong)-value : (ulong)value, negative);
             }
         }
 
-        private void WriteIntegerValue(ulong uvalue)
+        private void WriteIntegerValue(ulong uvalue, bool negative)
         {
-            if (uvalue <= 9)
+            if (!negative & uvalue <= 9)
             {
                 _writer.Write((char)('0' + uvalue));
             }
             else
             {
-                EnsureWriteBuffer();
-
-                int totalLength = MathUtils.IntLength(uvalue);
-                int length = 0;
-
-                do
-                {
-                    _writeBuffer[totalLength - ++length] = (char)('0' + (uvalue % 10));
-                    uvalue /= 10;
-                } while (uvalue != 0);
-
+                int length = WriteNumberToBuffer(uvalue, negative);
                 _writer.Write(_writeBuffer, 0, length);
             }
+        }
+
+        private int WriteNumberToBuffer(ulong value, bool negative)
+        {
+            EnsureWriteBuffer();
+
+            int totalLength = MathUtils.IntLength(value);
+
+            if (negative)
+            {
+                totalLength++;
+                _writeBuffer[0] = '-';
+            }
+
+            int index = totalLength;
+
+            do
+            {
+                _writeBuffer[--index] = (char)('0' + value % 10);
+                value /= 10;
+            } while (value != 0);
+
+            return totalLength;
         }
     }
 }

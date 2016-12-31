@@ -93,13 +93,17 @@
     <Compile Include="JsonObjectAttribute.cs" />
     <Compile Include="JsonPosition.cs" />
     <Compile Include="JsonPropertyAttribute.cs" />
+    <Compile Include="JsonReader.Async.cs" />
     <Compile Include="JsonReader.cs" />
     <Compile Include="JsonReaderException.cs" />
     <Compile Include="JsonRequiredAttribute.cs" />
     <Compile Include="JsonSerializationException.cs" />
     <Compile Include="JsonSerializer.cs" />
     <Compile Include="JsonSerializerSettings.cs" />
+    <Compile Include="JsonTextReader.Async.cs" />
     <Compile Include="JsonTextReader.cs" />
+    <Compile Include="JsonTextWriter.Async.cs" />
+    <Compile Include="JsonWriter.Async.cs" />
     <Compile Include="JsonTextWriter.cs" />
     <Compile Include="JsonToken.cs" />
     <Compile Include="JsonValidatingReader.cs" />
@@ -215,6 +219,7 @@
     <Compile Include="TraceLevel.cs" />
     <Compile Include="TypeNameAssemblyFormatHandling.cs" />
     <Compile Include="TypeNameHandling.cs" />
+    <Compile Include="Utilities\AsyncUtils.cs" />
     <Compile Include="Utilities\Base64Encoder.cs" />
     <Compile Include="Utilities\BidirectionalDictionary.cs" />
     <Compile Include="Utilities\CollectionUtils.cs" />

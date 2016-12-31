@@ -43,7 +43,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Represents a writer that provides a fast, non-cached, forward-only way of generating JSON data.
     /// </summary>
-    public abstract class JsonWriter : IDisposable
+    public abstract partial class JsonWriter : IDisposable
     {
         internal enum State
         {
@@ -628,20 +628,7 @@ namespace Newtonsoft.Json
 
         internal virtual void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
         {
-            int initialDepth;
-
-            if (reader.TokenType == JsonToken.None)
-            {
-                initialDepth = -1;
-            }
-            else if (!JsonTokenUtils.IsStartToken(reader.TokenType))
-            {
-                initialDepth = reader.Depth + 1;
-            }
-            else
-            {
-                initialDepth = reader.Depth;
-            }
+            int initialDepth = CalculateWriteTokenDepth(reader);
 
             do
             {
@@ -662,6 +649,17 @@ namespace Newtonsoft.Json
                 initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)
                 && writeChildren
                 && reader.Read());
+        }
+
+        private int CalculateWriteTokenDepth(JsonReader reader)
+        {
+            JsonToken type = reader.TokenType;
+            if (type == JsonToken.None)
+            {
+                return -1;
+            }
+
+            return JsonTokenUtils.IsStartToken(type) ? reader.Depth : reader.Depth + 1;
         }
 
         private void WriteConstructorDate(JsonReader reader)
@@ -733,7 +731,33 @@ namespace Newtonsoft.Json
 
         private void AutoCompleteClose(JsonContainerType type)
         {
-            // write closing symbol and calculate new state
+            int levelsToComplete = CalculateLevelsToComplete(type);
+
+            for (int i = 0; i < levelsToComplete; i++)
+            {
+                JsonToken token = GetCloseTokenForType(Pop());
+
+                if (_currentState == State.Property)
+                {
+                    WriteNull();
+                }
+
+                if (_formatting == Formatting.Indented)
+                {
+                    if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
+                    {
+                        WriteIndent();
+                    }
+                }
+
+                WriteEnd(token);
+
+                UpdateCurrentState();
+            }
+        }
+
+        private int CalculateLevelsToComplete(JsonContainerType type)
+        {
             int levelsToComplete = 0;
 
             if (_currentPosition.Type == type)
@@ -760,44 +784,29 @@ namespace Newtonsoft.Json
                 throw JsonWriterException.Create(this, "No token to close.", null);
             }
 
-            for (int i = 0; i < levelsToComplete; i++)
+            return levelsToComplete;
+        }
+
+        private void UpdateCurrentState()
+        {
+            JsonContainerType currentLevelType = Peek();
+
+            switch (currentLevelType)
             {
-                JsonToken token = GetCloseTokenForType(Pop());
-
-                if (_currentState == State.Property)
-                {
-                    WriteNull();
-                }
-
-                if (_formatting == Formatting.Indented)
-                {
-                    if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
-                    {
-                        WriteIndent();
-                    }
-                }
-
-                WriteEnd(token);
-
-                JsonContainerType currentLevelType = Peek();
-
-                switch (currentLevelType)
-                {
-                    case JsonContainerType.Object:
-                        _currentState = State.Object;
-                        break;
-                    case JsonContainerType.Array:
-                        _currentState = State.Array;
-                        break;
-                    case JsonContainerType.Constructor:
-                        _currentState = State.Array;
-                        break;
-                    case JsonContainerType.None:
-                        _currentState = State.Start;
-                        break;
-                    default:
-                        throw JsonWriterException.Create(this, "Unknown JsonType: " + currentLevelType, null);
-                }
+                case JsonContainerType.Object:
+                    _currentState = State.Object;
+                    break;
+                case JsonContainerType.Array:
+                    _currentState = State.Array;
+                    break;
+                case JsonContainerType.Constructor:
+                    _currentState = State.Array;
+                    break;
+                case JsonContainerType.None:
+                    _currentState = State.Start;
+                    break;
+                default:
+                    throw JsonWriterException.Create(this, "Unknown JsonType: " + currentLevelType, null);
             }
         }
 
