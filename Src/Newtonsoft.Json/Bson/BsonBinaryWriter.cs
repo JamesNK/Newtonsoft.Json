@@ -210,12 +210,13 @@ namespace Newtonsoft.Json.Bson
         {
             if (s != null)
             {
-                if (_largeByteBuffer == null)
-                {
-                    _largeByteBuffer = new byte[256];
-                }
                 if (byteCount <= 256)
                 {
+                    if (_largeByteBuffer == null)
+                    {
+                        _largeByteBuffer = new byte[256];
+                    }
+
                     Encoding.GetBytes(s, 0, s.Length, _largeByteBuffer, 0);
                     _writer.Write(_largeByteBuffer, 0, byteCount);
                 }
