@@ -12,6 +12,7 @@
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $netCliVersion = "1.0.0-preview3-003171"
+  $nugetUrl = "http://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -21,6 +22,7 @@
   $releaseDir = "$baseDir\Release"
   $workingDir = "$baseDir\$workingName"
   $workingSourceDir = "$workingDir\Src"
+  $nugetPath = "$buildDir\nuget.exe"
   $builds = @(
     @{Name = "Newtonsoft.Json.Dotnet"; TestsName = "Newtonsoft.Json.Tests.Dotnet"; BuildFunction = "NetCliBuild"; TestsFunction = "NetCliTests"; Constants="NETSTANDARD1_0"; FinalDir="netstandard1.0"; NuGetDir = "netstandard1.0"; Framework=$null},
     @{Name = "Newtonsoft.Json.Dotnet"; TestsName = "Newtonsoft.Json.Tests.Dotnet"; BuildFunction = "NetCliBuild"; TestsFunction = "NetCliTests"; Constants="NETSTANDARD1_1"; FinalDir="netstandard1.1"; NuGetDir = "netstandard1.1"; Framework=$null},
@@ -55,6 +57,8 @@ task Clean {
 
 # Build each solution, optionally signed
 task Build -depends Clean {
+  EnsureNuGetExists
+
   Write-Host "Copying source to working source directory $workingSourceDir"
   robocopy $sourceDir $workingSourceDir /MIR /NP /XD bin obj TestResults AppPackages $packageDirs .vs artifacts /XF *.suo *.user *.lock.json | Out-Default
 
@@ -131,7 +135,7 @@ task Package -depends Build {
     Write-Host "Building NuGet package with ID $packageId and version $nugetVersion" -ForegroundColor Green
     Write-Host
 
-    exec { .\Tools\NuGet\NuGet.exe pack $nuspecPath -Symbols }
+    exec { & $nugetPath pack $nuspecPath -Symbols }
     exec { dotnet pack $workingSourceDir\Newtonsoft.Json\project.json -c Release }
     move -Path .\*.nupkg -Destination $workingDir\NuGet
   }
@@ -191,14 +195,22 @@ function MSBuildBuild($build)
   Write-Host
   Write-Host "Restoring $workingSourceDir\$name.sln" -ForegroundColor Green
   [Environment]::SetEnvironmentVariable("EnableNuGetPackageRestore", "true", "Process")
-  exec { .\Tools\NuGet\NuGet.exe update -self }
-  exec { .\Tools\NuGet\NuGet.exe restore "$workingSourceDir\$name.sln" -verbosity detailed -configfile $workingSourceDir\nuget.config | Out-Default } "Error restoring $name"
+  exec { & $nugetPath update -self }
+  exec { & $nugetPath restore "$workingSourceDir\$name.sln" -verbosity detailed -configfile $workingSourceDir\nuget.config | Out-Default } "Error restoring $name"
 
   $constants = GetConstants $build.Constants $signAssemblies
 
   Write-Host
   Write-Host "Building $workingSourceDir\$name.sln" -ForegroundColor Green
   exec { msbuild "/t:Clean;Rebuild" /p:Configuration=Release "/p:CopyNuGetImplementations=true" "/p:Platform=Any CPU" "/p:PlatformTarget=AnyCPU" /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:VisualStudioVersion=14.0" /p:DefineConstants=`"$constants`" "$workingSourceDir\$name.sln" | Out-Default } "Error building $name"
+}
+
+function EnsureNuGetExists()
+{
+  if (!(Test-Path $nugetPath)) {
+    Write-Host "Couldn't find nuget.exe. Downloading from $nugetUrl to $nugetPath"
+    (New-Object System.Net.WebClient).DownloadFile($nugetUrl, $nugetPath)
+  }
 }
 
 function NetCliBuild($build)

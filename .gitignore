@@ -2,6 +2,7 @@
 [Oo]bj/
 [Ww]orking*/
 Build/runbuild.txt
+Build/nuget.exe
 Doc/doc.shfbproj_*
 TestResults/
 AppPackages/
