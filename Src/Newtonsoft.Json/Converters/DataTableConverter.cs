@@ -24,6 +24,7 @@
 #endregion
 
 #if !(DOTNET || PORTABLE40 || PORTABLE)
+using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
@@ -181,7 +182,7 @@ namespace Newtonsoft.Json.Converters
                     }
 
                     Array destinationArray = Array.CreateInstance(column.DataType.GetElementType(), o.Count);
-                    Array.Copy(o.ToArray(), destinationArray, o.Count);
+                    ((IList)o).CopyTo(destinationArray, 0);
 
                     dr[columnName] = destinationArray;
                 }

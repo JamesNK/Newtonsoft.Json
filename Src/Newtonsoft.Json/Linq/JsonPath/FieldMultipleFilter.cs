@@ -39,7 +39,11 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 {
                     if (errorWhenNoMatch)
                     {
-                        throw new JsonException("Properties {0} not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", Names.Select(n => "'" + n + "'").ToArray()), t.GetType().Name));
+                        throw new JsonException("Properties {0} not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", Names.Select(n => "'" + n + "'")
+#if NET20 || NET35
+                            .ToArray()
+#endif
+                            ), t.GetType().Name));
                     }
                 }
             }

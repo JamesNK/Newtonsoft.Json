@@ -75,7 +75,11 @@ namespace Newtonsoft.Json.Schema
 
         public static string GetId(IEnumerable<JsonSchema> schemata)
         {
-            return string.Join("-", schemata.Select(s => s.InternalId).OrderBy(id => id, StringComparer.Ordinal).ToArray());
+            return string.Join("-", schemata.Select(s => s.InternalId).OrderBy(id => id, StringComparer.Ordinal)
+#if NET20 || NET35
+                    .ToArray()
+#endif
+                );
         }
     }
 }
