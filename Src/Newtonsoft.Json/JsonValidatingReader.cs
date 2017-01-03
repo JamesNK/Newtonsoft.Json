@@ -97,7 +97,7 @@ namespace Newtonsoft.Json
 
             private IEnumerable<string> GetRequiredProperties(JsonSchemaModel schema)
             {
-                if (schema == null || schema.Properties == null)
+                if (schema?.Properties == null)
                 {
                     return Enumerable.Empty<string>();
                 }
@@ -358,9 +358,9 @@ namespace Newtonsoft.Json
         public override void Close()
         {
             base.Close();
-            if (CloseInput && _reader != null)
+            if (CloseInput)
             {
-                _reader.Close();
+                _reader?.Close();
             }
         }
 

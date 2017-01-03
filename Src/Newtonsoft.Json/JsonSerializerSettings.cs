@@ -231,12 +231,7 @@ namespace Newtonsoft.Json
         {
             get
             {
-                if (ReferenceResolverProvider == null)
-                {
-                    return null;
-                }
-
-                return ReferenceResolverProvider();
+                return ReferenceResolverProvider?.Invoke();
             }
             set
             {

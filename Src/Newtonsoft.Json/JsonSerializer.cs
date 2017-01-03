@@ -1182,11 +1182,7 @@ namespace Newtonsoft.Json
 
         internal void OnError(ErrorEventArgs e)
         {
-            EventHandler<ErrorEventArgs> error = Error;
-            if (error != null)
-            {
-                error(this, e);
-            }
+            Error?.Invoke(this, e);
         }
     }
 }

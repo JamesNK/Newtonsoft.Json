@@ -54,12 +54,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static void ReturnBuffer(IArrayPool<char> bufferPool, char[] buffer)
         {
-            if (bufferPool == null)
-            {
-                return;
-            }
-
-            bufferPool.Return(buffer);
+            bufferPool?.Return(buffer);
         }
 
         public static char[] EnsureBufferSize(IArrayPool<char> bufferPool, int size, char[] buffer)

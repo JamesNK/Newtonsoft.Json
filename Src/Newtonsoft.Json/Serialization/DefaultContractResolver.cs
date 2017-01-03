@@ -1427,13 +1427,13 @@ namespace Newtonsoft.Json.Serialization
 
             string mappedName;
             bool hasSpecifiedName;
-            if (propertyAttribute != null && propertyAttribute.PropertyName != null)
+            if (propertyAttribute?.PropertyName != null)
             {
                 mappedName = propertyAttribute.PropertyName;
                 hasSpecifiedName = true;
             }
 #if !NET20
-            else if (dataMemberAttribute != null && dataMemberAttribute.Name != null)
+            else if (dataMemberAttribute?.Name != null)
             {
                 mappedName = dataMemberAttribute.Name;
                 hasSpecifiedName = true;
@@ -1542,7 +1542,7 @@ namespace Newtonsoft.Json.Serialization
 
             property.ItemIsReference = (propertyAttribute != null) ? propertyAttribute._itemIsReference : null;
             property.ItemConverter =
-                (propertyAttribute != null && propertyAttribute.ItemConverterType != null)
+                (propertyAttribute?.ItemConverterType != null)
                     ? JsonTypeReflector.CreateJsonConverterInstance(propertyAttribute.ItemConverterType, propertyAttribute.ItemConverterParameters)
                     : null;
             property.ItemReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._itemReferenceLoopHandling : null;

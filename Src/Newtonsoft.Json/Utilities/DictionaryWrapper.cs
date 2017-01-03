@@ -253,9 +253,9 @@ namespace Newtonsoft.Json.Utilities
                 throw new NotSupportedException();
             }
 #endif
-            else if (_genericDictionary != null)
+            else
             {
-                _genericDictionary.Add(item);
+                _genericDictionary?.Add(item);
             }
         }
 

@@ -177,13 +177,9 @@ namespace Newtonsoft.Json.Linq
         /// <param name="name">The name of the property.</param>
         public override void WritePropertyName(string name)
         {
-            JObject o = _parent as JObject;
-            if (o != null)
-            {
-                // avoid duplicate property name exception
-                // last property name wins
-                o.Remove(name);
-            }
+            // avoid duplicate property name exception
+            // last property name wins
+            (_parent as JObject)?.Remove(name);
 
             AddParent(new JProperty(name));
 

@@ -177,9 +177,9 @@ namespace Newtonsoft.Json.Bson
         {
             base.Close();
 
-            if (CloseOutput && _writer != null)
+            if (CloseOutput)
             {
-                _writer.Close();
+                _writer?.Close();
             }
         }
 

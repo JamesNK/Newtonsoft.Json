@@ -377,11 +377,11 @@ namespace Newtonsoft.Json.Serialization
                 // member attribute converter
                 converter = memberConverter;
             }
-            else if (containerProperty != null && containerProperty.ItemConverter != null)
+            else if (containerProperty?.ItemConverter != null)
             {
                 converter = containerProperty.ItemConverter;
             }
-            else if (containerContract != null && containerContract.ItemConverter != null)
+            else if (containerContract?.ItemConverter != null)
             {
                 converter = containerContract.ItemConverter;
             }

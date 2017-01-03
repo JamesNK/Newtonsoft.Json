@@ -230,12 +230,12 @@ namespace Newtonsoft.Json.Bson
         {
             base.Close();
 
-            if (CloseInput && _reader != null)
+            if (CloseInput)
             {
 #if !(DOTNET || PORTABLE40 || PORTABLE)
-                _reader.Close();
+                _reader?.Close();
 #else
-                _reader.Dispose();
+                _reader?.Dispose();
 #endif
             }
         }

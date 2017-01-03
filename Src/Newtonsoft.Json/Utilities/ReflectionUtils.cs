@@ -123,13 +123,7 @@ namespace Newtonsoft.Json.Utilities
                 return m.GetBaseDefinition();
             }
 
-            m = propertyInfo.GetSetMethod(true);
-            if (m != null)
-            {
-                return m.GetBaseDefinition();
-            }
-
-            return null;
+            return propertyInfo.GetSetMethod(true)?.GetBaseDefinition();
         }
 
         public static bool IsPublic(PropertyInfo property)

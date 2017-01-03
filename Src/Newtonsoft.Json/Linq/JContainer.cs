@@ -139,11 +139,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="e">The <see cref="AddingNewEventArgs"/> instance containing the event data.</param>
         protected virtual void OnAddingNew(AddingNewEventArgs e)
         {
-            AddingNewEventHandler handler = _addingNew;
-            if (handler != null)
-            {
-                handler(this, e);
-            }
+            _addingNew?.Invoke(this, e);
         }
 
         /// <summary>

@@ -72,10 +72,7 @@ namespace Newtonsoft.Json.Linq
         {
             base.ClearItems();
 
-            if (_dictionary != null)
-            {
-                _dictionary.Clear();
-            }
+            _dictionary?.Clear();
         }
 
         public bool Contains(string key)
@@ -148,10 +145,7 @@ namespace Newtonsoft.Json.Linq
 
         private void RemoveKey(string key)
         {
-            if (_dictionary != null)
-            {
-                _dictionary.Remove(key);
-            }
+            _dictionary?.Remove(key);
         }
 
         protected override void SetItem(int index, JToken item)
