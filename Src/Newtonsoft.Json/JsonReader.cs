@@ -283,14 +283,7 @@ namespace Newtonsoft.Json
             get
             {
                 int depth = (_stack != null) ? _stack.Count : 0;
-                if (JsonTokenUtils.IsStartToken(TokenType) || _currentPosition.Type == JsonContainerType.None)
-                {
-                    return depth;
-                }
-                else
-                {
-                    return depth + 1;
-                }
+                return JsonTokenUtils.IsStartToken(TokenType) || _currentPosition.Type == JsonContainerType.None ? depth : depth + 1;
             }
         }
 
@@ -355,38 +348,34 @@ namespace Newtonsoft.Json
             if (_currentPosition.Type == JsonContainerType.None)
             {
                 _currentPosition = new JsonPosition(value);
+                return;
             }
-            else
+
+            if (_stack == null)
             {
-                if (_stack == null)
-                {
-                    _stack = new List<JsonPosition>();
-                }
-
-                _stack.Add(_currentPosition);
-                _currentPosition = new JsonPosition(value);
-
-                // this is a little hacky because Depth increases when first property/value is written but only testing here is faster/simpler
-                if (_maxDepth != null && Depth + 1 > _maxDepth && !_hasExceededMaxDepth)
-                {
-                    _hasExceededMaxDepth = true;
-                    throw JsonReaderException.Create(this, "The reader's MaxDepth of {0} has been exceeded.".FormatWith(CultureInfo.InvariantCulture, _maxDepth));
-                }
+                _stack = new List<JsonPosition>();
             }
+
+            _stack.Add(_currentPosition);
+            _currentPosition = new JsonPosition(value);
+
+            // this is a little hacky because Depth increases when first property/value is written but only testing here is faster/simpler
+            if (_maxDepth == null || !(Depth + 1 > _maxDepth) || _hasExceededMaxDepth) return;
+
+            _hasExceededMaxDepth = true;
+            throw JsonReaderException.Create(this, "The reader's MaxDepth of {0} has been exceeded.".FormatWith(CultureInfo.InvariantCulture, _maxDepth));
         }
 
         private JsonContainerType Pop()
         {
-            JsonPosition oldPosition;
+            JsonPosition oldPosition = _currentPosition;
             if (_stack != null && _stack.Count > 0)
             {
-                oldPosition = _currentPosition;
                 _currentPosition = _stack[_stack.Count - 1];
                 _stack.RemoveAt(_stack.Count - 1);
             }
             else
             {
-                oldPosition = _currentPosition;
                 _currentPosition = new JsonPosition();
             }
 
@@ -478,27 +467,24 @@ namespace Newtonsoft.Json
                     return (string)Value;
             }
 
-            if (JsonTokenUtils.IsPrimitiveToken(t))
+            if (JsonTokenUtils.IsPrimitiveToken(t) && Value != null)
             {
-                if (Value != null)
+                string s;
+                if (Value is IFormattable)
                 {
-                    string s;
-                    if (Value is IFormattable)
-                    {
-                        s = ((IFormattable)Value).ToString(null, Culture);
-                    }
-                    else if (Value is Uri)
-                    {
-                        s = ((Uri)Value).OriginalString;
-                    }
-                    else
-                    {
-                        s = Value.ToString();
-                    }
-
-                    SetToken(JsonToken.String, s, false);
-                    return s;
+                    s = ((IFormattable) Value).ToString(null, Culture);
                 }
+                else if (Value is Uri)
+                {
+                    s = ((Uri) Value).OriginalString;
+                }
+                else
+                {
+                    s = Value.ToString();
+                }
+
+                SetToken(JsonToken.String, s, false);
+                return s;
             }
 
             throw JsonReaderException.Create(this, "Error reading string. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
@@ -658,11 +644,9 @@ namespace Newtonsoft.Json
                 SetToken(JsonToken.Float, d, false);
                 return d;
             }
-            else
-            {
-                SetToken(JsonToken.String, s, false);
-                throw JsonReaderException.Create(this, "Could not convert string to double: {0}.".FormatWith(CultureInfo.InvariantCulture, s));
-            }
+
+            SetToken(JsonToken.String, s, false);
+            throw JsonReaderException.Create(this, "Could not convert string to double: {0}.".FormatWith(CultureInfo.InvariantCulture, s));
         }
 
         /// <summary>
@@ -719,11 +703,9 @@ namespace Newtonsoft.Json
                 SetToken(JsonToken.Boolean, b, false);
                 return b;
             }
-            else
-            {
-                SetToken(JsonToken.String, s, false);
-                throw JsonReaderException.Create(this, "Could not convert string to boolean: {0}.".FormatWith(CultureInfo.InvariantCulture, s));
-            }
+
+            SetToken(JsonToken.String, s, false);
+            throw JsonReaderException.Create(this, "Could not convert string to boolean: {0}.".FormatWith(CultureInfo.InvariantCulture, s));
         }
 
         /// <summary>
@@ -769,11 +751,9 @@ namespace Newtonsoft.Json
                 SetToken(JsonToken.Float, d, false);
                 return d;
             }
-            else
-            {
-                SetToken(JsonToken.String, s, false);
-                throw JsonReaderException.Create(this, "Could not convert string to decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, s));
-            }
+
+            SetToken(JsonToken.String, s, false);
+            throw JsonReaderException.Create(this, "Could not convert string to decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, s));
         }
 
         /// <summary>
@@ -889,10 +869,9 @@ namespace Newtonsoft.Json
 
         internal void ReaderReadAndAssert()
         {
-            if (!Read())
-            {
-                throw CreateUnexpectedEndException();
-            }
+            if (Read()) return;
+
+            throw CreateUnexpectedEndException();
         }
 
         internal JsonReaderException CreateUnexpectedEndException()
@@ -929,13 +908,12 @@ namespace Newtonsoft.Json
                 Read();
             }
 
-            if (JsonTokenUtils.IsStartToken(TokenType))
-            {
-                int depth = Depth;
+            if (!JsonTokenUtils.IsStartToken(TokenType)) return;
 
-                while (Read() && (depth < Depth))
-                {
-                }
+            int depth = Depth;
+
+            while (Read() && (depth < Depth))
+            {
             }
         }
 
@@ -1024,10 +1002,8 @@ namespace Newtonsoft.Json
 
         private void UpdateScopeWithFinishedValue()
         {
-            if (_currentPosition.HasIndex)
-            {
-                _currentPosition.Position++;
-            }
+            if (!_currentPosition.HasIndex) return;
+            _currentPosition.Position++;
         }
 
         private void ValidateEnd(JsonToken endToken)
@@ -1077,14 +1053,7 @@ namespace Newtonsoft.Json
 
         private void SetFinished()
         {
-            if (SupportMultipleContent)
-            {
-                _currentState = State.Start;
-            }
-            else
-            {
-                _currentState = State.Finished;
-            }
+            _currentState = SupportMultipleContent ? State.Start : State.Finished;
         }
 
         private JsonContainerType GetTypeForCloseToken(JsonToken token)
@@ -1114,10 +1083,8 @@ namespace Newtonsoft.Json
         /// <param name="disposing"><c>true</c> to release both managed and unmanaged resources; <c>false</c> to release only unmanaged resources.</param>
         protected virtual void Dispose(bool disposing)
         {
-            if (_currentState != State.Closed && disposing)
-            {
-                Close();
-            }
+            if (_currentState == State.Closed || !disposing) return;
+            Close();
         }
 
         /// <summary>
@@ -1133,10 +1100,8 @@ namespace Newtonsoft.Json
 
         internal void ReadAndAssert()
         {
-            if (!Read())
-            {
-                throw JsonSerializationException.Create(this, "Unexpected end when reading JSON.");
-            }
+            if (Read()) return;
+            throw JsonSerializationException.Create(this, "Unexpected end when reading JSON.");
         }
 
         internal bool ReadAndMoveToContent()
@@ -1170,10 +1135,8 @@ namespace Newtonsoft.Json
                     SetToken(JsonToken.None);
                     return JsonToken.None;
                 }
-                else
-                {
-                    t = TokenType;
-                }
+
+                t = TokenType;
             } while (t == JsonToken.Comment);
 
             return t;

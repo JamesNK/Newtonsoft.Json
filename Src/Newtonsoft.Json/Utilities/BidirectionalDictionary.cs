@@ -64,20 +64,14 @@ namespace Newtonsoft.Json.Utilities
             TFirst existingFirst;
             TSecond existingSecond;
 
-            if (_firstToSecond.TryGetValue(first, out existingSecond))
+            if (_firstToSecond.TryGetValue(first, out existingSecond) && !existingSecond.Equals(second))
             {
-                if (!existingSecond.Equals(second))
-                {
-                    throw new ArgumentException(_duplicateFirstErrorMessage.FormatWith(CultureInfo.InvariantCulture, first));
-                }
+                throw new ArgumentException(_duplicateFirstErrorMessage.FormatWith(CultureInfo.InvariantCulture, first));
             }
 
-            if (_secondToFirst.TryGetValue(second, out existingFirst))
+            if (_secondToFirst.TryGetValue(second, out existingFirst) && !existingFirst.Equals(first))
             {
-                if (!existingFirst.Equals(first))
-                {
-                    throw new ArgumentException(_duplicateSecondErrorMessage.FormatWith(CultureInfo.InvariantCulture, second));
-                }
+                throw new ArgumentException(_duplicateSecondErrorMessage.FormatWith(CultureInfo.InvariantCulture, second));
             }
 
             _firstToSecond.Add(first, second);
