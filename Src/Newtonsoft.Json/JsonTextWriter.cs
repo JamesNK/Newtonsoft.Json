@@ -184,12 +184,12 @@ namespace Newtonsoft.Json
                 _writeBuffer = null;
             }
 
-            if (CloseOutput && _writer != null)
+            if (CloseOutput)
             {
 #if !(DOTNET || PORTABLE40 || PORTABLE)
-                _writer.Close();
+                _writer?.Close();
 #else
-                _writer.Dispose();
+                _writer?.Dispose();
 #endif
             }
         }

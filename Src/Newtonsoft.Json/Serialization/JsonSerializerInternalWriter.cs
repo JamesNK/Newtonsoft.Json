@@ -483,39 +483,36 @@ namespace Newtonsoft.Json.Serialization
                 }
             }
 
-            if (contract.ExtensionDataGetter != null)
+            IEnumerable<KeyValuePair<object, object>> extensionData = contract.ExtensionDataGetter?.Invoke(value);
+            if (extensionData != null)
             {
-                IEnumerable<KeyValuePair<object, object>> extensionData = contract.ExtensionDataGetter(value);
-                if (extensionData != null)
+                foreach (KeyValuePair<object, object> e in extensionData)
                 {
-                    foreach (KeyValuePair<object, object> e in extensionData)
+                    JsonContract keyContract = GetContractSafe(e.Key);
+                    JsonContract valueContract = GetContractSafe(e.Value);
+
+                    bool escape;
+                    string propertyName = GetPropertyName(writer, e.Key, keyContract, out escape);
+
+                    propertyName = (contract.ExtensionDataNameResolver != null)
+                        ? contract.ExtensionDataNameResolver(propertyName)
+                        : propertyName;
+
+                    if (ShouldWriteReference(e.Value, null, valueContract, contract, member))
                     {
-                        JsonContract keyContract = GetContractSafe(e.Key);
-                        JsonContract valueContract = GetContractSafe(e.Value);
-
-                        bool escape;
-                        string propertyName = GetPropertyName(writer, e.Key, keyContract, out escape);
-
-                        propertyName = (contract.ExtensionDataNameResolver != null)
-                            ? contract.ExtensionDataNameResolver(propertyName)
-                            : propertyName;
-
-                        if (ShouldWriteReference(e.Value, null, valueContract, contract, member))
+                        writer.WritePropertyName(propertyName);
+                        WriteReference(writer, e.Value);
+                    }
+                    else
+                    {
+                        if (!CheckForCircularReference(writer, e.Value, null, valueContract, contract, member))
                         {
-                            writer.WritePropertyName(propertyName);
-                            WriteReference(writer, e.Value);
+                            continue;
                         }
-                        else
-                        {
-                            if (!CheckForCircularReference(writer, e.Value, null, valueContract, contract, member))
-                            {
-                                continue;
-                            }
 
-                            writer.WritePropertyName(propertyName);
+                        writer.WritePropertyName(propertyName);
 
-                            SerializeValue(writer, e.Value, valueContract, null, contract, member);
-                        }
+                        SerializeValue(writer, e.Value, valueContract, null, contract, member);
                     }
                 }
             }

@@ -532,10 +532,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     {
                         CompositeExpression andExpression = new CompositeExpression { Operator = QueryOperator.And };
 
-                        if (parentExpression != null)
-                        {
-                            parentExpression.Expressions.Add(andExpression);
-                        }
+                        parentExpression?.Expressions.Add(andExpression);
 
                         parentExpression = andExpression;
 
@@ -558,10 +555,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     {
                         CompositeExpression orExpression = new CompositeExpression { Operator = QueryOperator.Or };
 
-                        if (parentExpression != null)
-                        {
-                            parentExpression.Expressions.Add(orExpression);
-                        }
+                        parentExpression?.Expressions.Add(orExpression);
 
                         parentExpression = orExpression;
 

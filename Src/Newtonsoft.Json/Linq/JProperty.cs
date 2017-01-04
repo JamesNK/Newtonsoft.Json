@@ -212,17 +212,11 @@ namespace Newtonsoft.Json.Linq
                 return;
             }
 
-            if (Parent != null)
-            {
-                ((JObject)Parent).InternalPropertyChanging(this);
-            }
+            ((JObject)Parent)?.InternalPropertyChanging(this);
 
             base.SetItem(0, item);
 
-            if (Parent != null)
-            {
-                ((JObject)Parent).InternalPropertyChanged(this);
-            }
+            ((JObject)Parent)?.InternalPropertyChanged(this);
         }
 
         internal override bool RemoveItem(JToken item)
@@ -263,15 +257,11 @@ namespace Newtonsoft.Json.Linq
 
         internal override void MergeItem(object content, JsonMergeSettings settings)
         {
-            JProperty p = content as JProperty;
-            if (p == null)
-            {
-                return;
-            }
+            JToken value = (content as JProperty)?.Value;
 
-            if (p.Value != null && p.Value.Type != JTokenType.Null)
+            if (value != null && value.Type != JTokenType.Null)
             {
-                Value = p.Value;
+                Value = value;
             }
         }
 

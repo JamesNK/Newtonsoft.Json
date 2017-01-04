@@ -176,7 +176,7 @@ namespace Newtonsoft.Json.Schema
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
-            if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Title))
+            if (!string.IsNullOrEmpty(containerAttribute?.Title))
             {
                 return containerAttribute.Title;
             }
@@ -188,27 +188,24 @@ namespace Newtonsoft.Json.Schema
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
-            if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Description))
+            if (!string.IsNullOrEmpty(containerAttribute?.Description))
             {
                 return containerAttribute.Description;
             }
 
 #if !(DOTNET || PORTABLE40 || PORTABLE)
             DescriptionAttribute descriptionAttribute = ReflectionUtils.GetAttribute<DescriptionAttribute>(type);
-            if (descriptionAttribute != null)
-            {
-                return descriptionAttribute.Description;
-            }
-#endif
-
+            return descriptionAttribute?.Description;
+#else
             return null;
+#endif
         }
 
         private string GetTypeId(Type type, bool explicitOnly)
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
-            if (containerAttribute != null && !string.IsNullOrEmpty(containerAttribute.Id))
+            if (!string.IsNullOrEmpty(containerAttribute?.Id))
             {
                 return containerAttribute.Id;
             }
