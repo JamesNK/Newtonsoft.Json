@@ -72,7 +72,14 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     {
       CheckNotNull(source, "source");
 
-      return CastYield<TResult>(source);
+        var servesItself = source as IEnumerable<TResult>;
+        if (servesItself != null
+            && (!(servesItself is TResult[]) || servesItself.GetType().GetElementType() == typeof(TResult)))
+        {
+            return servesItself;
+        }
+
+        return CastYield<TResult>(source);
     }
 
     private static IEnumerable<TResult> CastYield<TResult>(
