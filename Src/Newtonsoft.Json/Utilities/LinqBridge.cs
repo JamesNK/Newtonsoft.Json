@@ -619,9 +619,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
 
     private static IEnumerable<TSource> ReverseYield<TSource>(IEnumerable<TSource> source)
     {
-      var stack = new Stack<TSource>();
-      foreach (var item in source)
-        stack.Push(item);
+      var stack = new Stack<TSource>(source);
 
       foreach (var item in stack)
         yield return item;
