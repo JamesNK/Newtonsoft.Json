@@ -793,17 +793,25 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       return new List<TSource>(source);
     }
 
-    /// <summary>
-    /// Creates an array from an <see cref="IEnumerable{T}"/>.
-    /// </summary>
+      /// <summary>
+      /// Creates an array from an <see cref="IEnumerable{T}"/>.
+      /// </summary>
 
-    public static TSource[] ToArray<TSource>(
-      this IEnumerable<TSource> source)
-    {
-      return source.ToList().ToArray();
-    }
+      public static TSource[] ToArray<TSource>(
+        this IEnumerable<TSource> source)
+      {
+          IList<TSource> ilist = source as IList<TSource>;
+          if (ilist != null)
+          {
+              TSource[] array = new TSource[ilist.Count];
+              ilist.CopyTo(array, 0);
+              return array;
+          }
 
-    /// <summary>
+          return source.ToList().ToArray();
+      }
+
+      /// <summary>
     /// Returns distinct elements from a sequence by using the default 
     /// equality comparer to compare values.
     /// </summary>
