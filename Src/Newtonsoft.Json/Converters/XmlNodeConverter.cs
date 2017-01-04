@@ -995,7 +995,7 @@ namespace Newtonsoft.Json.Converters
         /// Gets or sets a flag to indicate whether to write the Json.NET array attribute.
         /// This attribute helps preserve arrays when converting the written XML back to JSON.
         /// </summary>
-        /// <value><c>true</c> if the array attibute is written to the XML; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if the array attribute is written to the XML; otherwise, <c>false</c>.</value>
         public bool WriteArrayAttribute { get; set; }
 
         /// <summary>
@@ -1618,7 +1618,7 @@ namespace Newtonsoft.Json.Converters
         {
             if (currentNode.NodeType == XmlNodeType.Document)
             {
-                throw JsonSerializationException.Create(reader, "JSON root object has property '{0}' that will be converted to an attribute. A root object cannot have any attribute properties. Consider specifing a DeserializeRootElementName.".FormatWith(CultureInfo.InvariantCulture, propertyName));
+                throw JsonSerializationException.Create(reader, "JSON root object has property '{0}' that will be converted to an attribute. A root object cannot have any attribute properties. Consider specifying a DeserializeRootElementName.".FormatWith(CultureInfo.InvariantCulture, propertyName));
             }
 
             string encodedName = XmlConvert.EncodeName(attributeName);
@@ -1949,7 +1949,7 @@ namespace Newtonsoft.Json.Converters
                     case JsonToken.PropertyName:
                         if (currentNode.NodeType == XmlNodeType.Document && document.DocumentElement != null)
                         {
-                            throw JsonSerializationException.Create(reader, "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName.");
+                            throw JsonSerializationException.Create(reader, "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifying a DeserializeRootElementName.");
                         }
 
                         string propertyName = reader.Value.ToString();

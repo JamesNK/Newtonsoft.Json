@@ -126,7 +126,7 @@ namespace Newtonsoft.Json.Utilities
 
             if (!enumType.IsEnum())
             {
-                throw new ArgumentException("Type {0} is not an Enum.".FormatWith(CultureInfo.InvariantCulture, enumType), nameof(enumType));
+                throw new ArgumentException("Type {0} is not an enum.".FormatWith(CultureInfo.InvariantCulture, enumType.Name), nameof(enumType));
             }
 
             IList<object> enumValues = GetValues(enumType);
@@ -143,7 +143,7 @@ namespace Newtonsoft.Json.Utilities
                 catch (OverflowException e)
                 {
                     throw new InvalidOperationException(
-                        string.Format(CultureInfo.InvariantCulture, "Value from enum with the underlying type of {0} cannot be added to dictionary with a value type of {1}. Value was too large: {2}",
+                        "Value from enum with the underlying type of {0} cannot be added to dictionary with a value type of {1}. Value was too large: {2}".FormatWith(CultureInfo.InvariantCulture,
                             Enum.GetUnderlyingType(enumType), typeof(TUnderlyingType), Convert.ToUInt64(enumValues[i], CultureInfo.InvariantCulture)), e);
                 }
             }
@@ -155,7 +155,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (!enumType.IsEnum())
             {
-                throw new ArgumentException("Type '" + enumType.Name + "' is not an enum.");
+                throw new ArgumentException("Type {0} is not an enum.".FormatWith(CultureInfo.InvariantCulture, enumType.Name), nameof(enumType));
             }
 
             List<object> values = new List<object>();
@@ -173,7 +173,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (!enumType.IsEnum())
             {
-                throw new ArgumentException("Type '" + enumType.Name + "' is not an enum.");
+                throw new ArgumentException("Type {0} is not an enum.".FormatWith(CultureInfo.InvariantCulture, enumType.Name), nameof(enumType));
             }
 
             List<string> values = new List<string>();

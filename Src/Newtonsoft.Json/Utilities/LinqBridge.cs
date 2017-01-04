@@ -1332,7 +1332,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       IEnumerable<TSource> second,
       IEqualityComparer<TSource> comparer)
     {
-      CheckNotNull(first, "frist");
+      CheckNotNull(first, "first");
       CheckNotNull(second, "second");
 
       comparer = comparer ?? EqualityComparer<TSource>.Default;
@@ -1704,7 +1704,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
         // ToDictionary is meant to throw ArgumentNullException if
         // keySelector produces a key that is null and 
         // Argument exception if keySelector produces duplicate keys 
-        // for two elements. Incidentally, the doucmentation for
+        // for two elements. Incidentally, the documentation for
         // IDictionary<TKey, TValue>.Add says that the Add method
         // throws the same exceptions under the same circumstances
         // so we don't need to do any additional checking or work

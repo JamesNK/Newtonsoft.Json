@@ -39,7 +39,7 @@ namespace Newtonsoft.Json.Serialization
         object ResolveReference(object context, string reference);
 
         /// <summary>
-        /// Gets the reference for the sepecified object.
+        /// Gets the reference for the specified object.
         /// </summary>
         /// <param name="context">The serialization context.</param>
         /// <param name="value">The object to get a reference for.</param>

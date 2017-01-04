@@ -282,13 +282,13 @@ namespace Newtonsoft.Json.Serialization
         public bool? ItemIsReference { get; set; }
 
         /// <summary>
-        /// Gets or sets the the type name handling used when serializing the property's collection items.
+        /// Gets or sets the type name handling used when serializing the property's collection items.
         /// </summary>
         /// <value>The collection's items type name handling.</value>
         public TypeNameHandling? ItemTypeNameHandling { get; set; }
 
         /// <summary>
-        /// Gets or sets the the reference loop handling used when serializing the property's collection items.
+        /// Gets or sets the reference loop handling used when serializing the property's collection items.
         /// </summary>
         /// <value>The collection's items reference loop handling.</value>
         public ReferenceLoopHandling? ItemReferenceLoopHandling { get; set; }

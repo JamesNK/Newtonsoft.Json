@@ -1584,7 +1584,7 @@ namespace Newtonsoft.Json
 
                         TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertable);
 
-                        // if convertable has an underlying typecode of Object then attempt to convert it to a string
+                        // if convertible has an underlying typecode of Object then attempt to convert it to a string
                         PrimitiveTypeCode resolvedTypeCode = (typeInformation.TypeCode == PrimitiveTypeCode.Object) ? PrimitiveTypeCode.String : typeInformation.TypeCode;
                         Type resolvedType = (typeInformation.TypeCode == PrimitiveTypeCode.Object) ? typeof(string) : typeInformation.Type;
 

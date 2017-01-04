@@ -29,7 +29,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Gets or sets how how null value properties are merged.
+        /// Gets or sets how null value properties are merged.
         /// </summary>
         /// <value>How null value properties are merged.</value>
         public MergeNullValueHandling MergeNullValueHandling

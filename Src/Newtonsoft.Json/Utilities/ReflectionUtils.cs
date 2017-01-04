@@ -530,7 +530,7 @@ namespace Newtonsoft.Json.Utilities
                         throw new ArgumentException("MemberInfo '{0}' has index parameters".FormatWith(CultureInfo.InvariantCulture, member.Name), e);
                     }
                 default:
-                    throw new ArgumentException("MemberInfo '{0}' is not of type FieldInfo or PropertyInfo".FormatWith(CultureInfo.InvariantCulture, CultureInfo.InvariantCulture, member.Name), nameof(member));
+                    throw new ArgumentException("MemberInfo '{0}' is not of type FieldInfo or PropertyInfo".FormatWith(CultureInfo.InvariantCulture, member.Name), nameof(member));
             }
         }
 
@@ -983,7 +983,7 @@ namespace Newtonsoft.Json.Utilities
 
             GetChildPrivateProperties(propertyInfos, targetType, bindingAttr);
 
-            // a base class private getter/setter will be inaccessable unless the property was gotten from the base class
+            // a base class private getter/setter will be inaccessible unless the property was gotten from the base class
             for (int i = 0; i < propertyInfos.Count; i++)
             {
                 PropertyInfo member = propertyInfos[i];

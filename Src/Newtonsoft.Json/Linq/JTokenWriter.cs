@@ -493,7 +493,7 @@ namespace Newtonsoft.Json.Linq
         {
             JTokenReader tokenReader = reader as JTokenReader;
 
-            // closing the token wrather than reading then writing it doesn't lose some type information, e.g. Guid, byte[], etc
+            // cloning the token rather than reading then writing it doesn't lose some type information, e.g. Guid, byte[], etc
             if (tokenReader != null && writeChildren && writeDateConstructorAsDate && writeComments)
             {
                 if (tokenReader.TokenType == JsonToken.None)

@@ -505,7 +505,7 @@ namespace Newtonsoft.Json.Tests.Converters
 }";
             ExceptionAssert.Throws<JsonSerializationException>(
                 () => { JsonConvert.DeserializeXmlNode(json); },
-                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName. Path 'Email', line 3, position 13.");
+                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifying a DeserializeRootElementName. Path 'Email', line 3, position 13.");
         }
 
         [Test]
@@ -1053,7 +1053,7 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             ExceptionAssert.Throws<JsonSerializationException>(
                 () => { XmlDocument newDoc = (XmlDocument)JsonConvert.DeserializeXmlNode(@"{Prop1:1,Prop2:2}"); },
-                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName. Path 'Prop2', line 1, position 15.");
+                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifying a DeserializeRootElementName. Path 'Prop2', line 1, position 15.");
         }
 
         [Test]
@@ -1171,7 +1171,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             ExceptionAssert.Throws<JsonSerializationException>(
                 () => { JsonConvert.DeserializeXmlNode(json); },
-                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName. Path 'photos', line 1, position 26.");
+                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifying a DeserializeRootElementName. Path 'photos', line 1, position 26.");
         }
 #endif
 
@@ -1183,7 +1183,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             ExceptionAssert.Throws<JsonSerializationException>(
                 () => { JsonConvert.DeserializeXNode(json); },
-                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifing a DeserializeRootElementName. Path 'photos', line 1, position 26.");
+                "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifying a DeserializeRootElementName. Path 'photos', line 1, position 26.");
         }
 #endif
 
@@ -2727,7 +2727,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             ExceptionAssert.Throws<JsonSerializationException>(
                 () => JsonConvert.DeserializeXmlNode(json),
-                "JSON root object has property '$id' that will be converted to an attribute. A root object cannot have any attribute properties. Consider specifing a DeserializeRootElementName. Path '$id', line 2, position 12.");
+                "JSON root object has property '$id' that will be converted to an attribute. A root object cannot have any attribute properties. Consider specifying a DeserializeRootElementName. Path '$id', line 2, position 12.");
         }
 
         [Test]

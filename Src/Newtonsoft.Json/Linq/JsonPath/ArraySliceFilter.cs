@@ -28,13 +28,13 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     int startIndex = Start ?? ((stepCount > 0) ? 0 : a.Count - 1);
                     int stopIndex = End ?? ((stepCount > 0) ? a.Count : -1);
 
-                    // start from the end of the list if start is negitive
+                    // start from the end of the list if start is negative
                     if (Start < 0)
                     {
                         startIndex = a.Count + startIndex;
                     }
 
-                    // end from the start of the list if stop is negitive
+                    // end from the start of the list if stop is negative
                     if (End < 0)
                     {
                         stopIndex = a.Count + stopIndex;

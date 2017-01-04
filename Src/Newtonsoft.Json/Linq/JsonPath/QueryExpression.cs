@@ -166,7 +166,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 switch (Operator)
                 {
                     case QueryOperator.Exists:
-                    // you can only specify primative types in a comparison
+                    // you can only specify primitive types in a comparison
                     // notequals will always be true
                     case QueryOperator.NotEquals:
                         return true;

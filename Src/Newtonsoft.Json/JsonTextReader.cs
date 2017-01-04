@@ -221,7 +221,7 @@ namespace Newtonsoft.Json
         private void ShiftBufferIfNeeded()
         {
             // once in the last 10% of the buffer shift the remaining content to the start to avoid
-            // unnessesarly increasing the buffer size when reading numbers/strings
+            // unnecessarily increasing the buffer size when reading numbers/strings
             int length = _chars.Length;
             if (length - _charPos <= length * 0.1)
             {
@@ -1235,7 +1235,7 @@ namespace Newtonsoft.Json
             }
             else
             {
-                throw JsonReaderException.Create(this, "Unexpected end while parsing unicode character.");
+                throw JsonReaderException.Create(this, "Unexpected end while parsing Unicode character.");
             }
             return writeChar;
         }

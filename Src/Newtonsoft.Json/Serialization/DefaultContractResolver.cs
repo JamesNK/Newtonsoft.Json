@@ -778,7 +778,7 @@ namespace Newtonsoft.Json.Serialization
 
             contract.Converter = ResolveContractConverter(contract.NonNullableUnderlyingType);
 
-            // then see whether object is compadible with any of the built in converters
+            // then see whether object is compatible with any of the built in converters
             contract.InternalConverter = JsonSerializer.GetMatchingConverter(BuiltInConverters, contract.NonNullableUnderlyingType);
 
             if (contract.IsInstantiable
@@ -1300,7 +1300,7 @@ namespace Newtonsoft.Json.Serialization
                 return type.FullName;
             }
 
-            return string.Format(CultureInfo.InvariantCulture, "{0}.{1}", new object[] { type.Namespace, type.Name });
+            return "{0}.{1}".FormatWith(CultureInfo.InvariantCulture, type.Namespace, type.Name);
         }
 
         /// <summary>
@@ -1314,7 +1314,7 @@ namespace Newtonsoft.Json.Serialization
             List<MemberInfo> members = GetSerializableMembers(type);
             if (members == null)
             {
-                throw new JsonSerializationException("Null collection of seralizable members returned.");
+                throw new JsonSerializationException("Null collection of serializable members returned.");
             }
 
             JsonPropertyCollection properties = new JsonPropertyCollection(type);
