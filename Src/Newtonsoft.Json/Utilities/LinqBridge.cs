@@ -72,7 +72,14 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     {
       CheckNotNull(source, "source");
 
-      return CastYield<TResult>(source);
+        var servesItself = source as IEnumerable<TResult>;
+        if (servesItself != null
+            && (!(servesItself is TResult[]) || servesItself.GetType().GetElementType() == typeof(TResult)))
+        {
+            return servesItself;
+        }
+
+        return CastYield<TResult>(source);
     }
 
     private static IEnumerable<TResult> CastYield<TResult>(
@@ -151,11 +158,20 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       this IEnumerable<TSource> source,
       Func<TSource, bool> predicate)
     {
+      CheckNotNull(source, "source");
       CheckNotNull(predicate, "predicate");
 
-      return source.Where((item, i) => predicate(item));
+      return WhereYield(source, predicate);
     }
 
+    private static IEnumerable<TSource> WhereYield<TSource>(
+      IEnumerable<TSource> source,
+      Func<TSource, bool> predicate)
+    {
+      foreach (var item in source)
+        if (predicate(item))
+          yield return item;
+    }
     /// <summary>
     /// Filters a sequence of values based on a predicate. 
     /// Each element's index is used in the logic of the predicate function.
@@ -189,9 +205,18 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       this IEnumerable<TSource> source,
       Func<TSource, TResult> selector)
     {
+      CheckNotNull(source, "source");
       CheckNotNull(selector, "selector");
 
-      return source.Select((item, i) => selector(item));
+      return SelectYield(source, selector);
+    }
+
+    private static IEnumerable<TResult> SelectYield<TSource, TResult>(
+      IEnumerable<TSource> source,
+      Func<TSource, TResult> selector)
+    {
+      foreach (var item in source)
+        yield return selector(item);
     }
 
     /// <summary>
@@ -612,9 +637,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
 
     private static IEnumerable<TSource> ReverseYield<TSource>(IEnumerable<TSource> source)
     {
-      var stack = new Stack<TSource>();
-      foreach (var item in source)
-        stack.Push(item);
+      var stack = new Stack<TSource>(source);
 
       foreach (var item in stack)
         yield return item;
@@ -706,9 +729,21 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       CheckNotNull(source, "source");
 
       var collection = source as ICollection;
-      return collection != null
-               ? collection.Count
-               : source.Aggregate(0, (count, item) => checked(count + 1));
+      if (collection != null)
+      {
+        return collection.Count;
+      }
+
+      using (var en = source.GetEnumerator())
+      {
+        int count = 0;
+        while (en.MoveNext())
+        {
+          ++count;
+        }
+
+        return count;
+      }
     }
 
     /// <summary>
@@ -788,17 +823,25 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       return new List<TSource>(source);
     }
 
-    /// <summary>
-    /// Creates an array from an <see cref="IEnumerable{T}"/>.
-    /// </summary>
+      /// <summary>
+      /// Creates an array from an <see cref="IEnumerable{T}"/>.
+      /// </summary>
 
-    public static TSource[] ToArray<TSource>(
-      this IEnumerable<TSource> source)
-    {
-      return source.ToList().ToArray();
-    }
+      public static TSource[] ToArray<TSource>(
+        this IEnumerable<TSource> source)
+      {
+          IList<TSource> ilist = source as IList<TSource>;
+          if (ilist != null)
+          {
+              TSource[] array = new TSource[ilist.Count];
+              ilist.CopyTo(array, 0);
+              return array;
+          }
 
-    /// <summary>
+          return source.ToList().ToArray();
+      }
+
+      /// <summary>
     /// Returns distinct elements from a sequence by using the default 
     /// equality comparer to compare values.
     /// </summary>
@@ -1221,7 +1264,15 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       this IEnumerable<TSource> source,
       Func<TSource, bool> predicate)
     {
-      return source.Where(predicate).Any();
+      foreach (TSource item in source)
+      {
+        if (predicate(item))
+        {
+          return true;
+        }
+      }
+
+      return false;
     }
 
     /// <summary>
@@ -2546,7 +2597,16 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       this IEnumerable<TSource> source,
       Func<TSource, decimal> selector)
     {
-      return source.Select(selector).Sum();
+      CheckNotNull(source, "source");
+      CheckNotNull(selector, "selector");
+
+      decimal sum = 0;
+      foreach (TSource item in source)
+      {
+        sum += selector(item);
+      }
+
+        return sum;
     }
 
     /// <summary>
