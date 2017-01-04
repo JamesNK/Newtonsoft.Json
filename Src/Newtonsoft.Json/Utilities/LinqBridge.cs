@@ -1248,7 +1248,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     {
       foreach (TSource item in source)
       {
-          if (predicate(item))
+        if (predicate(item))
         {
           return true;
         }
@@ -2579,7 +2579,16 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       this IEnumerable<TSource> source,
       Func<TSource, decimal> selector)
     {
-      return source.Select(selector).Sum();
+      CheckNotNull(source, "source");
+      CheckNotNull(selector, "selector");
+
+      decimal sum = 0;
+      foreach (TSource item in source)
+      {
+        sum += selector(item);
+      }
+
+        return sum;
     }
 
     /// <summary>
