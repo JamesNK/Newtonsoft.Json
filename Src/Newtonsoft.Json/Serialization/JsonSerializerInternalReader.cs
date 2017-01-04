@@ -1898,7 +1898,11 @@ namespace Newtonsoft.Json.Serialization
 
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
             {
-                string parameters = string.Join(", ", contract.CreatorParameters.Select(p => p.PropertyName).ToArray());
+                string parameters = string.Join(", ", contract.CreatorParameters.Select(p => p.PropertyName)
+#if NET20 || NET35
+                    .ToArray()
+#endif
+                    );
                 TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Deserializing {0} using creator with parameters: {1}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType, parameters)), null);
             }
 

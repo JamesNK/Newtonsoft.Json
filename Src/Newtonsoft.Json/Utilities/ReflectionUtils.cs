@@ -659,16 +659,15 @@ namespace Newtonsoft.Json.Utilities
             foreach (IGrouping<string, MemberInfo> groupedMember in targetMembers.GroupBy(m => m.Name))
             {
                 int count = groupedMember.Count();
-                IList<MemberInfo> members = groupedMember.ToList();
 
                 if (count == 1)
                 {
-                    distinctMembers.Add(members.First());
+                    distinctMembers.Add(groupedMember.First());
                 }
                 else
                 {
                     IList<MemberInfo> resolvedMembers = new List<MemberInfo>();
-                    foreach (MemberInfo memberInfo in members)
+                    foreach (MemberInfo memberInfo in groupedMember)
                     {
                         // this is a bit hacky
                         // if the hiding property is hiding a base property and it is virtual

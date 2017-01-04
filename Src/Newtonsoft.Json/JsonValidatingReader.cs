@@ -710,15 +710,14 @@ namespace Newtonsoft.Json
 
             Dictionary<string, bool> requiredProperties = _currentScope.RequiredProperties;
 
-            if (requiredProperties != null)
+            if (requiredProperties != null && requiredProperties.Values.Any(v => !v))
             {
-                List<string> unmatchedRequiredProperties =
-                    requiredProperties.Where(kv => !kv.Value).Select(kv => kv.Key).ToList();
-
-                if (unmatchedRequiredProperties.Count > 0)
-                {
-                    RaiseError("Required properties are missing from object: {0}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", unmatchedRequiredProperties.ToArray())), schema);
-                }
+                IEnumerable<string> unmatchedRequiredProperties = requiredProperties.Where(kv => !kv.Value).Select(kv => kv.Key);
+                RaiseError("Required properties are missing from object: {0}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", unmatchedRequiredProperties
+#if NET20 || NET35
+                    .ToArray()
+#endif
+                    )), schema);
             }
         }
 
