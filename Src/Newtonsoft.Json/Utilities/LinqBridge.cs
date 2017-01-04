@@ -158,11 +158,20 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       this IEnumerable<TSource> source,
       Func<TSource, bool> predicate)
     {
+      CheckNotNull(source, "source");
       CheckNotNull(predicate, "predicate");
 
-      return source.Where((item, i) => predicate(item));
+      return WhereYield(source, predicate);
     }
 
+    private static IEnumerable<TSource> WhereYield<TSource>(
+      IEnumerable<TSource> source,
+      Func<TSource, bool> predicate)
+    {
+      foreach (var item in source)
+        if (predicate(item))
+          yield return item;
+    }
     /// <summary>
     /// Filters a sequence of values based on a predicate. 
     /// Each element's index is used in the logic of the predicate function.
