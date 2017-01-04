@@ -890,7 +890,7 @@ namespace Newtonsoft.Json
 
                 foreach (JsonSchemaModel currentSchema in CurrentSchemas)
                 {
-                    // if there is positional validation and the array index is past the number of item validation schemas and there is no additonal items then error
+                    // if there is positional validation and the array index is past the number of item validation schemas and there are no additional items then error
                     if (currentSchema != null
                         && currentSchema.PositionalItemsValidation
                         && !currentSchema.AllowAdditionalItems

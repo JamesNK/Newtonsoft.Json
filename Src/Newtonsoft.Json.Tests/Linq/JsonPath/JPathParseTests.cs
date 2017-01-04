@@ -294,7 +294,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         [Test]
         public void SinglePropertyAndFilterWithUnknownEscape()
         {
-            ExceptionAssert.Throws<JsonException>(() => { new JPath(@"Blah[ ?( @.name=='h\i' ) ]"); }, @"Unknown escape chracter: \i");
+            ExceptionAssert.Throws<JsonException>(() => { new JPath(@"Blah[ ?( @.name=='h\i' ) ]"); }, @"Unknown escape character: \i");
         }
 
         [Test]

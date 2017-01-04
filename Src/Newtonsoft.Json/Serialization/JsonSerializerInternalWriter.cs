@@ -98,7 +98,7 @@ namespace Newtonsoft.Json.Serialization
             finally
             {
                 // clear root contract to ensure that if level was > 1 then it won't
-                // accidently be used for non root values
+                // accidentally be used for non root values
                 _rootType = null;
             }
         }

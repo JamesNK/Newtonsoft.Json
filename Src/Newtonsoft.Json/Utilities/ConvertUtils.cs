@@ -1150,7 +1150,7 @@ namespace Newtonsoft.Json.Utilities
                 }
                 else
                 {
-                    // normal postive exponent case
+                    // normal positive exponent case
                     val = ((ulong)exp << 52) | ((val >> 11) & 0x000FFFFFFFFFFFFF);
                 }
 

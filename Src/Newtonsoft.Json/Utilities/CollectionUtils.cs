@@ -139,7 +139,7 @@ namespace Newtonsoft.Json.Utilities
                         break;
                     }
 
-                    // incase we can't find an exact match, use first inexact
+                    // in case we can't find an exact match, use first inexact
                     if (match == null)
                     {
                         if (parameterType.IsAssignableFrom(constructorArgumentType))

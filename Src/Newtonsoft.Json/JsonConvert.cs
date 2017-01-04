@@ -597,7 +597,7 @@ namespace Newtonsoft.Json
         /// <param name="type">
         /// The type of the value being serialized.
         /// This parameter is used when <see cref="JsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
-        /// Specifing the type is optional.
+        /// Specifying the type is optional.
         /// </param>
         /// <returns>
         /// A JSON string representation of the object.
@@ -634,7 +634,7 @@ namespace Newtonsoft.Json
         /// <param name="type">
         /// The type of the value being serialized.
         /// This parameter is used when <see cref="JsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
-        /// Specifing the type is optional.
+        /// Specifying the type is optional.
         /// </param>
         /// <returns>
         /// A JSON string representation of the object.

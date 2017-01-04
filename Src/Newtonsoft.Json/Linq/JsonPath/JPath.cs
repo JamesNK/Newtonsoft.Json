@@ -672,7 +672,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     }
                     else
                     {
-                        throw new JsonException(@"Unknown escape chracter: \" + _expression[_currentIndex]);
+                        throw new JsonException(@"Unknown escape character: \" + _expression[_currentIndex]);
                     }
 
                     _currentIndex++;

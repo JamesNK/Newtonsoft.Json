@@ -561,7 +561,7 @@ namespace Newtonsoft.Json.Linq
 
         ICollection<string> IDictionary<string, JToken>.Keys
         {
-            // todo: make order the collection returned match JObject order
+            // todo: make order of the collection returned match JObject order
             get { return _properties.Keys; }
         }
 
