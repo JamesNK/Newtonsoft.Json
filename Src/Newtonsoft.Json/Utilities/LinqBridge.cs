@@ -205,9 +205,18 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       this IEnumerable<TSource> source,
       Func<TSource, TResult> selector)
     {
+      CheckNotNull(source, "source");
       CheckNotNull(selector, "selector");
 
-      return source.Select((item, i) => selector(item));
+      return SelectYield(source, selector);
+    }
+
+    private static IEnumerable<TResult> SelectYield<TSource, TResult>(
+      IEnumerable<TSource> source,
+      Func<TSource, TResult> selector)
+    {
+      foreach (var item in source)
+        yield return selector(item);
     }
 
     /// <summary>
