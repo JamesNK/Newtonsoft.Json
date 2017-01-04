@@ -711,9 +711,21 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       CheckNotNull(source, "source");
 
       var collection = source as ICollection;
-      return collection != null
-               ? collection.Count
-               : source.Aggregate(0, (count, item) => checked(count + 1));
+      if (collection != null)
+      {
+        return collection.Count;
+      }
+
+      using (var en = source.GetEnumerator())
+      {
+        int count = 0;
+        while (en.MoveNext())
+        {
+          ++count;
+        }
+
+        return count;
+      }
     }
 
     /// <summary>
