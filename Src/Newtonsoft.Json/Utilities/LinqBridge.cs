@@ -1246,7 +1246,15 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       this IEnumerable<TSource> source,
       Func<TSource, bool> predicate)
     {
-      return source.Where(predicate).Any();
+      foreach (TSource item in source)
+      {
+          if (predicate(item))
+        {
+          return true;
+        }
+      }
+
+      return false;
     }
 
     /// <summary>
