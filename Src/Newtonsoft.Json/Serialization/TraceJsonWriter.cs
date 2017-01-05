@@ -9,7 +9,7 @@ using System.Text;
 
 namespace Newtonsoft.Json.Serialization
 {
-    internal class TraceJsonWriter : JsonWriter
+    internal partial class TraceJsonWriter : JsonWriter
     {
         private readonly JsonWriter _innerWriter;
         private readonly JsonTextWriter _textWriter;
@@ -23,7 +23,7 @@ namespace Newtonsoft.Json.Serialization
             // prefix the message in the stringwriter to avoid concat with a potentially large JSON string
             _sw.Write("Serialized JSON: " + Environment.NewLine);
 
-            _textWriter = new JsonTextWriter(_sw);
+            _textWriter = new JsonTextWriterImpl(_sw);
             _textWriter.Formatting = Formatting.Indented;
             _textWriter.Culture = innerWriter.Culture;
             _textWriter.DateFormatHandling = innerWriter.DateFormatHandling;

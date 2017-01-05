@@ -30,7 +30,7 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
-    internal static class DateTimeUtils
+    internal static partial class DateTimeUtils
     {
         internal static readonly long InitialJavaScriptDateTicks = 621355968000000000;
         private const string IsoDateFormat = "yyyy-MM-ddTHH:mm:ss.FFFFFFFK";

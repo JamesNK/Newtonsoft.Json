@@ -56,21 +56,35 @@
     <Compile Include="Bson\BsonType.cs" />
     <Compile Include="Bson\BsonWriter.cs" />
     <Compile Include="ConstructorHandling.cs" />
+    <Compile Include="Converters\BinaryConverter.Async.cs" />
     <Compile Include="Converters\BinaryConverter.cs" />
+    <Compile Include="Converters\BsonObjectIdConverter.Async.cs" />
     <Compile Include="Converters\BsonObjectIdConverter.cs" />
+    <Compile Include="Converters\CustomCreationConverter.Async.cs" />
     <Compile Include="Converters\CustomCreationConverter.cs" />
+    <Compile Include="Converters\DataSetConverter.Async.cs" />
     <Compile Include="Converters\DataSetConverter.cs" />
+    <Compile Include="Converters\DataTableConverter.Async.cs" />
     <Compile Include="Converters\DataTableConverter.cs" />
     <Compile Include="Converters\DateTimeConverterBase.cs" />
+    <Compile Include="Converters\DiscriminatedUnionConverter.Async.cs" />
     <Compile Include="Converters\DiscriminatedUnionConverter.cs" />
+    <Compile Include="Converters\EntityKeyMemberConverter.Async.cs" />
     <Compile Include="Converters\EntityKeyMemberConverter.cs" />
+    <Compile Include="Converters\ExpandoObjectConverter.Async.cs" />
     <Compile Include="Converters\ExpandoObjectConverter.cs" />
     <Compile Include="Converters\IsoDateTimeConverter.cs" />
+    <Compile Include="Converters\JavaScriptDateTimeConverter.Async.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverter.cs" />
+    <Compile Include="Converters\KeyValuePairConverter.Async.cs" />
     <Compile Include="Converters\KeyValuePairConverter.cs" />
+    <Compile Include="Converters\RegexConverter.Async.cs" />
     <Compile Include="Converters\RegexConverter.cs" />
+    <Compile Include="Converters\StringEnumConverter.Async.cs" />
     <Compile Include="Converters\StringEnumConverter.cs" />
+    <Compile Include="Converters\VersionConverter.Async.cs" />
     <Compile Include="Converters\VersionConverter.cs" />
+    <Compile Include="Converters\XmlNodeConverter.Async.cs" />
     <Compile Include="Converters\XmlNodeConverter.cs" />
     <Compile Include="FloatParseHandling.cs" />
     <Compile Include="DateFormatHandling.cs" />
@@ -82,6 +96,28 @@
     <Compile Include="Formatting.cs" />
     <Compile Include="IArrayPool.cs" />
     <Compile Include="IJsonLineInfo.cs" />
+    <Compile Include="JsonConverter.Async.cs" />
+    <Compile Include="JsonSerializer.Async.cs" />
+    <Compile Include="Serialization\JsonSerializerProxy.Async.cs" />
+    <Compile Include="JsonTextReader.Async.cs" />
+    <Compile Include="Linq\JArray.Async.cs" />
+    <Compile Include="Linq\JConstructor.Async.cs" />
+    <Compile Include="Linq\JContainer.Async.cs" />
+    <Compile Include="Linq\JObject.Async.cs" />
+    <Compile Include="Linq\JProperty.Async.cs" />
+    <Compile Include="Linq\JRaw.Async.cs" />
+    <Compile Include="Linq\JToken.Async.cs" />
+    <Compile Include="JsonReader.Async.cs" />
+    <Compile Include="Linq\JValue.Async.cs" />
+    <Compile Include="Serialization\JsonProperty.Async.cs" />
+    <Compile Include="Serialization\JsonSerializerInternalReader.Async.cs" />
+    <Compile Include="Serialization\JsonSerializerInternalWriter.Async.cs" />
+    <Compile Include="Serialization\TraceJsonReader.Async.cs" />
+    <Compile Include="Serialization\TraceJsonWriter.Async.cs" />
+    <Compile Include="Utilities\AsyncUtils.cs" />
+    <Compile Include="Utilities\Base64Encoder.Async.cs" />
+    <Compile Include="Utilities\DateTimeUtils.Async.cs" />
+    <Compile Include="Utilities\JavaScriptUtils.Async.cs" />
     <Compile Include="JsonArrayAttribute.cs" />
     <Compile Include="JsonConstructorAttribute.cs" />
     <Compile Include="JsonContainerAttribute.cs" />
@@ -103,9 +139,11 @@
     <Compile Include="JsonSerializer.cs" />
     <Compile Include="JsonSerializerSettings.cs" />
     <Compile Include="JsonTextReader.cs" />
+    <Compile Include="JsonTextWriter.Async.cs" />
     <Compile Include="JsonTextWriter.cs" />
     <Compile Include="JsonToken.cs" />
     <Compile Include="JsonValidatingReader.cs" />
+    <Compile Include="JsonWriter.Async.cs" />
     <Compile Include="JsonWriter.cs" />
     <Compile Include="JsonWriterException.cs" />
     <Compile Include="Linq\CommentHandling.cs" />
@@ -258,6 +296,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Dynamic.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Converters\IsoDateTimeConverter.Async.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

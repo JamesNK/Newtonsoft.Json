@@ -1649,7 +1649,7 @@ null//comment
 
     public class CustomJsonTextWriter : JsonTextWriter
     {
-        private readonly TextWriter _writer;
+        protected readonly TextWriter _writer;
 
         public CustomJsonTextWriter(TextWriter textWriter) : base(textWriter)
         {

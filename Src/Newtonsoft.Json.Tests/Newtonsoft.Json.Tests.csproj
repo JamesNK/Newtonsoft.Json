@@ -49,7 +49,9 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bson\BsonReaderAsyncTests.cs" />
     <Compile Include="Bson\BsonReaderTests.cs" />
+    <Compile Include="Bson\BsonWriterAsyncTests.cs" />
     <Compile Include="Bson\BsonWriterTests.cs" />
     <Compile Include="Converters\BinaryConverterTests.cs" />
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
@@ -221,10 +223,37 @@
     </Compile>
     <Compile Include="ExceptionTests.cs" />
     <Compile Include="JsonArrayAttributeTests.cs" />
+    <Compile Include="JsonConvertAsyncTests.cs" />
     <Compile Include="JsonConvertTest.cs" />
+    <Compile Include="JsonTextReaderTests\ExceptionHandlingAsyncTests.cs" />
+    <Compile Include="JsonTextReaderTests\FloatAsyncTests.cs" />
+    <Compile Include="JsonTextReaderTests\MiscAsyncTests.cs" />
     <Compile Include="JsonTextReaderTests\MiscTests.cs" />
     <Compile Include="JsonTextReaderTests\ExceptionHandlingTests.cs" />
     <Compile Include="TestObjects\JsonReaderStubWithIsClosed.cs" />
+    <Compile Include="JsonTextReaderTests\ParseAsyncTests.cs" />
+    <Compile Include="JsonTextWriterAsyncTests.cs" />
+    <Compile Include="Linq\JConstructoAsyncTests.cs" />
+    <Compile Include="Linq\JObjectAsyncTests.cs" />
+    <Compile Include="Linq\JPropertyAsyncTests.cs" />
+    <Compile Include="Linq\JTokenReaderAsyncTests.cs" />
+    <Compile Include="Linq\JTokenAsyncTests.cs" />
+    <Compile Include="Linq\JTokenWriterAsyncTests.cs" />
+    <Compile Include="Linq\JValueAsyncTests.cs" />
+    <Compile Include="Linq\LinqToJsonAsyncTests.cs" />
+    <Compile Include="Serialization\CamelCaseNamingStrategyAsyncTests.cs" />
+    <Compile Include="Serialization\CamelCasePropertyNamesContractResolverAsyncTests.cs" />
+    <Compile Include="Serialization\ContractResolverAsyncTests.cs" />
+    <Compile Include="Serialization\ExtensionDataAsyncTests.cs" />
+    <Compile Include="Serialization\JsonSerializerCollectionsAsyncTests.cs" />
+    <Compile Include="Serialization\JsonSerializerAsyncTest.cs" />
+    <Compile Include="Serialization\MissingMemberHandlingAsyncTests.cs" />
+    <Compile Include="Serialization\NullValueHandlingAsyncTests.cs" />
+    <Compile Include="Serialization\PopulateAsyncTests.cs" />
+    <Compile Include="Serialization\PreserveReferencesHandlingAsyncTests.cs" />
+    <Compile Include="Serialization\SerializationErrorHandlingAsyncTests.cs" />
+    <Compile Include="Serialization\TraceWriterAsyncTests.cs" />
+    <Compile Include="Serialization\TypeNameHandlingAsyncTests.cs" />
     <Compile Include="TestObjects\JsonTextReaderTests\FakeArrayPool.cs" />
     <Compile Include="JsonTextReaderTests\FloatTests.cs" />
     <Compile Include="JsonTextReaderTests\ParseTests.cs" />
@@ -478,6 +507,7 @@
     <Compile Include="TestObjects\WidgetId1.cs" />
     <Compile Include="TestObjects\WidgetIdJsonConverter.cs" />
     <Compile Include="TestObjects\WithEnums.cs" />
+    <Compile Include="Utilities\DateTimeUtilsAsyncTests.cs" />
     <Compile Include="Utilities\DateTimeUtilsTests.cs" />
     <Compile Include="Utilities\DynamicReflectionDelegateFactoryTests.cs" />
     <Compile Include="Utilities\ExpressionReflectionDelegateFactoryTests.cs" />

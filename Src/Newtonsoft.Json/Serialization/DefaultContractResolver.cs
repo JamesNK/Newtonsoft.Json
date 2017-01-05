@@ -108,25 +108,25 @@ namespace Newtonsoft.Json.Serialization
         private static readonly JsonConverter[] BuiltInConverters =
         {
 #if !(NET20 || DOTNET || PORTABLE40 || PORTABLE)
-            new EntityKeyMemberConverter(),
+            EntityKeyMemberConverterImpl.Instance,
 #endif
 #if !(NET35 || NET20 || PORTABLE40)
-            new ExpandoObjectConverter(),
+            ExpandoObjectConverterImpl.Instance,
 #endif
 #if !(PORTABLE40)
-            new XmlNodeConverter(),
+            new XmlNodeConverterImpl(),
 #endif
 #if !(DOTNET || PORTABLE40 || PORTABLE)
-            new BinaryConverter(),
-            new DataSetConverter(),
-            new DataTableConverter(),
+            BinaryConverterImpl.Instance,
+            DataSetConverterImpl.Instance, 
+            DataTableConverterImpl.Instance,
 #endif
 #if !(NET35 || NET20)
-            new DiscriminatedUnionConverter(),
+            DiscriminatedUnionConverterImpl.Instance,
 #endif
-            new KeyValuePairConverter(),
-            new BsonObjectIdConverter(),
-            new RegexConverter()
+            KeyValuePairConverterImpl.Instance,
+            BsonObjectIdConverterImpl.Instance, 
+            RegexConverterImpl.Instance
         };
 
         private static readonly object TypeContractCacheLock = new object();

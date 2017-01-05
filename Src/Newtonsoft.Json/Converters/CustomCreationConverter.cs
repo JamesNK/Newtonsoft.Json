@@ -33,7 +33,7 @@ namespace Newtonsoft.Json.Converters
     /// Creates a custom object.
     /// </summary>
     /// <typeparam name="T">The object type to convert.</typeparam>
-    public abstract class CustomCreationConverter<T> : JsonConverter
+    public abstract partial class CustomCreationConverter<T> : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.

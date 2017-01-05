@@ -28,7 +28,7 @@ using System.IO;
 
 namespace Newtonsoft.Json.Utilities
 {
-    internal class Base64Encoder
+    internal partial class Base64Encoder
     {
         private const int Base64LineSize = 76;
         private const int LineSizeInBytes = 57;

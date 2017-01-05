@@ -23,7 +23,7 @@ namespace Newtonsoft.Json.Tests.Converters
             DefaultContractResolver contractResolver = new DefaultContractResolver();
             JsonObjectContract contract = (JsonObjectContract)contractResolver.ResolveContract(typeof(KeyValuePair<string, int>));
 
-            Assert.AreEqual(typeof(KeyValuePairConverter), contract.InternalConverter.GetType());
+            Assert.IsTrue(contract.InternalConverter is KeyValuePairConverter);
 
             IList<KeyValuePair<string, int>> values = new List<KeyValuePair<string, int>>
             {

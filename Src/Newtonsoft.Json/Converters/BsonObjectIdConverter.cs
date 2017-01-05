@@ -33,7 +33,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="BsonObjectId"/> to and from JSON and BSON.
     /// </summary>
-    public class BsonObjectIdConverter : JsonConverter
+    public partial class BsonObjectIdConverter : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -87,5 +87,15 @@ namespace Newtonsoft.Json.Converters
         {
             return (objectType == typeof(BsonObjectId));
         }
+    }
+
+    // By-passes any checks to avoid problems with inheritance in async calls.
+    internal sealed partial class BsonObjectIdConverterImpl : BsonObjectIdConverter
+    {
+        private BsonObjectIdConverterImpl()
+        {
+        }
+
+        public static readonly BsonObjectIdConverter Instance = new BsonObjectIdConverterImpl();
     }
 }
