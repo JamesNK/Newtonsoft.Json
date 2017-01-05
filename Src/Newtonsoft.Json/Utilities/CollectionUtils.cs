@@ -268,9 +268,10 @@ namespace Newtonsoft.Json.Utilities
                 }
 
                 object v = currentArray[0];
-                if (v is IList)
+                IList list = v as IList;
+                if (list != null)
                 {
-                    currentArray = (IList)v;
+                    currentArray = list;
                 }
                 else
                 {

@@ -89,7 +89,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="value">The new value.</param>
         public override void SetValue(object component, object value)
         {
-            JToken token = (value is JToken) ? (JToken)value : new JValue(value);
+            JToken token = value as JToken ?? new JValue(value);
 
             CastInstance(component)[Name] = token;
         }

@@ -483,17 +483,15 @@ namespace Newtonsoft.Json
                 if (Value != null)
                 {
                     string s;
-                    if (Value is IFormattable)
+                    IFormattable formattable = Value as IFormattable;
+                    if (formattable != null)
                     {
-                        s = ((IFormattable)Value).ToString(null, Culture);
-                    }
-                    else if (Value is Uri)
-                    {
-                        s = ((Uri)Value).OriginalString;
+                        s = formattable.ToString(null, Culture);
                     }
                     else
                     {
-                        s = Value.ToString();
+                        Uri uri = Value as Uri;
+                        s = uri != null ? uri.OriginalString : Value.ToString();
                     }
 
                     SetToken(JsonToken.String, s, false);

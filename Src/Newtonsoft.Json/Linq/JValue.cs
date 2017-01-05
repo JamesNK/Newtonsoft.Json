@@ -1004,7 +1004,8 @@ namespace Newtonsoft.Json.Linq
 
             public override bool TryBinaryOperation(JValue instance, BinaryOperationBinder binder, object arg, out object result)
             {
-                object compareValue = (arg is JValue) ? ((JValue)arg).Value : arg;
+                JValue value = arg as JValue;
+                object compareValue = value != null ? value.Value : arg;
 
                 switch (binder.Operation)
                 {
@@ -1055,7 +1056,8 @@ namespace Newtonsoft.Json.Linq
                 return 1;
             }
 
-            object otherValue = (obj is JValue) ? ((JValue)obj).Value : obj;
+            JValue value = obj as JValue;
+            object otherValue = value != null ? value.Value : obj;
 
             return Compare(_valueType, _value, otherValue);
         }

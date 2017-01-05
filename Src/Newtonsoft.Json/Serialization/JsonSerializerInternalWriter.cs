@@ -403,9 +403,10 @@ namespace Newtonsoft.Json.Serialization
             }
 #endif
 
-            if (value is Type)
+            type = value as Type;
+            if (type != null)
             {
-                s = ((Type)value).AssemblyQualifiedName;
+                s = type.AssemblyQualifiedName;
                 return true;
             }
 

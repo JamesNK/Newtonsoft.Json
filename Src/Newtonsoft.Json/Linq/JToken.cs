@@ -520,9 +520,11 @@ namespace Newtonsoft.Json.Linq
             {
                 return (DateTimeOffset)v.Value;
             }
-            if (v.Value is string)
+
+            string s = v.Value as string;
+            if (s != null)
             {
-                return DateTimeOffset.Parse((string)v.Value, CultureInfo.InvariantCulture);
+                return DateTimeOffset.Parse(s, CultureInfo.InvariantCulture);
             }
             return new DateTimeOffset(Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture));
         }
@@ -634,10 +636,13 @@ namespace Newtonsoft.Json.Linq
             {
                 return (DateTimeOffset?)v.Value;
             }
-            if (v.Value is string)
+
+            string s = v.Value as string;
+            if (s != null)
             {
-                return DateTimeOffset.Parse((string)v.Value, CultureInfo.InvariantCulture);
+                return DateTimeOffset.Parse(s, CultureInfo.InvariantCulture);
             }
+
             return new DateTimeOffset(Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture));
         }
 #endif
@@ -1237,10 +1242,13 @@ namespace Newtonsoft.Json.Linq
             {
                 return null;
             }
-            if (v.Value is byte[])
+
+            byte[] bytes = v.Value as byte[];
+            if (bytes != null)
             {
-                return Convert.ToBase64String((byte[])v.Value);
+                return Convert.ToBase64String(bytes);
             }
+
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
             if (v.Value is BigInteger)
             {
@@ -1328,9 +1336,10 @@ namespace Newtonsoft.Json.Linq
             }
 #endif
 
-            if (v.Value is byte[])
+            byte[] bytes = v.Value as byte[];
+            if (bytes != null)
             {
-                return (byte[])v.Value;
+                return bytes;
             }
 
             throw new ArgumentException("Can not convert {0} to byte array.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
@@ -1349,9 +1358,10 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Guid.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-            if (v.Value is byte[])
+            byte[] bytes = v.Value as byte[];
+            if (bytes != null)
             {
-                return new Guid((byte[])v.Value);
+                return new Guid(bytes);
             }
 
             return (v.Value is Guid) ? (Guid)v.Value : new Guid(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
@@ -1380,9 +1390,10 @@ namespace Newtonsoft.Json.Linq
                 return null;
             }
 
-            if (v.Value is byte[])
+            byte[] bytes = v.Value as byte[];
+            if (bytes != null)
             {
-                return new Guid((byte[])v.Value);
+                return new Guid(bytes);
             }
 
             return (v.Value is Guid) ? (Guid)v.Value : new Guid(Convert.ToString(v.Value, CultureInfo.InvariantCulture));

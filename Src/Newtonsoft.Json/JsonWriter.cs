@@ -1576,28 +1576,25 @@ namespace Newtonsoft.Json
 #endif
                 default:
 #if !PORTABLE
-                    if (value is IConvertible)
+                    IConvertible convertible = value as IConvertible;
+                    if (convertible != null)
                     {
                         // the value is a non-standard IConvertible
                         // convert to the underlying value and retry
-                        IConvertible convertable = (IConvertible)value;
 
-                        TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertable);
+                        TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertible);
 
                         // if convertible has an underlying typecode of Object then attempt to convert it to a string
                         PrimitiveTypeCode resolvedTypeCode = (typeInformation.TypeCode == PrimitiveTypeCode.Object) ? PrimitiveTypeCode.String : typeInformation.TypeCode;
                         Type resolvedType = (typeInformation.TypeCode == PrimitiveTypeCode.Object) ? typeof(string) : typeInformation.Type;
 
-                        object convertedValue = convertable.ToType(resolvedType, CultureInfo.InvariantCulture);
+                        object convertedValue = convertible.ToType(resolvedType, CultureInfo.InvariantCulture);
 
                         WriteValue(writer, resolvedTypeCode, convertedValue);
                         break;
                     }
-                    else
 #endif
-                    {
-                        throw CreateUnsupportedTypeException(writer, value);
-                    }
+                    throw CreateUnsupportedTypeException(writer, value);
             }
         }
 

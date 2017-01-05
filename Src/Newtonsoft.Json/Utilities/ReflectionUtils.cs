@@ -761,11 +761,11 @@ namespace Newtonsoft.Json.Utilities
             // http://hyperthink.net/blog/getcustomattributes-gotcha/
             // ICustomAttributeProvider doesn't do inheritance
 
-            if (provider is Type)
+            Type t = provider as Type;
+            if (t != null)
             {
-                Type t = (Type)provider;
-                object[] a = (attributeType != null) ? t.GetCustomAttributes(attributeType, inherit) : t.GetCustomAttributes(inherit);
-                Attribute[] attributes = a.Cast<Attribute>().ToArray();
+                object[] array = attributeType != null ? t.GetCustomAttributes(attributeType, inherit) : t.GetCustomAttributes(inherit);
+                Attribute[] attributes = array.Cast<Attribute>().ToArray();
 
 #if (NET20 || NET35)
                 // ye olde .NET GetCustomAttributes doesn't respect the inherit argument
@@ -778,29 +778,29 @@ namespace Newtonsoft.Json.Utilities
                 return attributes;
             }
 
-            if (provider is Assembly)
+            Assembly a = provider as Assembly;
+            if (a != null)
             {
-                Assembly a = (Assembly)provider;
                 return (attributeType != null) ? Attribute.GetCustomAttributes(a, attributeType) : Attribute.GetCustomAttributes(a);
             }
 
-            if (provider is MemberInfo)
+            MemberInfo mi = provider as MemberInfo;
+            if (mi != null)
             {
-                MemberInfo m = (MemberInfo)provider;
-                return (attributeType != null) ? Attribute.GetCustomAttributes(m, attributeType, inherit) : Attribute.GetCustomAttributes(m, inherit);
+                return (attributeType != null) ? Attribute.GetCustomAttributes(mi, attributeType, inherit) : Attribute.GetCustomAttributes(mi, inherit);
             }
 
 #if !PORTABLE40
-            if (provider is Module)
+            Module m = provider as Module;
+            if (m != null)
             {
-                Module m = (Module)provider;
                 return (attributeType != null) ? Attribute.GetCustomAttributes(m, attributeType, inherit) : Attribute.GetCustomAttributes(m, inherit);
             }
 #endif
 
-            if (provider is ParameterInfo)
+            ParameterInfo p = provider as ParameterInfo;
+            if (p != null)
             {
-                ParameterInfo p = (ParameterInfo)provider;
                 return (attributeType != null) ? Attribute.GetCustomAttributes(p, attributeType, inherit) : Attribute.GetCustomAttributes(p, inherit);
             }
 

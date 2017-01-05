@@ -227,14 +227,8 @@ namespace Newtonsoft.Json.Linq
                     break;
                 case JTokenType.Uri:
                     object v = ((JValue)token).Value;
-                    if (v is Uri)
-                    {
-                        SetToken(JsonToken.String, ((Uri)v).OriginalString);
-                    }
-                    else
-                    {
-                        SetToken(JsonToken.String, SafeToString(v));
-                    }
+                    Uri uri = v as Uri;
+                    SetToken(JsonToken.String, uri != null ? uri.OriginalString : SafeToString(v));
                     break;
                 case JTokenType.TimeSpan:
                     SetToken(JsonToken.String, SafeToString(((JValue)token).Value));

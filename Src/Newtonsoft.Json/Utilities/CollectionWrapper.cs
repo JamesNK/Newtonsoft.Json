@@ -52,9 +52,10 @@ namespace Newtonsoft.Json.Utilities
         {
             ValidationUtils.ArgumentNotNull(list, nameof(list));
 
-            if (list is ICollection<T>)
+            ICollection<T> collection = list as ICollection<T>;
+            if (collection != null)
             {
-                _genericCollection = (ICollection<T>)list;
+                _genericCollection = collection;
             }
             else
             {

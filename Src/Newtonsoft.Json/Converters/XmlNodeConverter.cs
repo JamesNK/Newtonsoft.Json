@@ -311,9 +311,8 @@ namespace Newtonsoft.Json.Converters
         {
             get
             {
-                XmlNode node = (_node is XmlAttribute)
-                    ? ((XmlAttribute)_node).OwnerElement
-                    : _node.ParentNode;
+                XmlAttribute attribute = _node as XmlAttribute;
+                XmlNode node = attribute != null ? attribute.OwnerElement : _node.ParentNode;
 
                 if (node == null)
                 {
@@ -727,42 +726,55 @@ namespace Newtonsoft.Json.Converters
 
         internal static IXmlNode WrapNode(XObject node)
         {
-            if (node is XDocument)
+            XDocument document = node as XDocument;
+            if (document != null)
             {
-                return new XDocumentWrapper((XDocument)node);
+                return new XDocumentWrapper(document);
             }
-            else if (node is XElement)
+
+            XElement element = node as XElement;
+            if (element != null)
             {
-                return new XElementWrapper((XElement)node);
+                return new XElementWrapper(element);
             }
-            else if (node is XContainer)
+
+            XContainer container = node as XContainer;
+            if (container != null)
             {
-                return new XContainerWrapper((XContainer)node);
+                return new XContainerWrapper(container);
             }
-            else if (node is XProcessingInstruction)
+
+            XProcessingInstruction pi = node as XProcessingInstruction;
+            if (pi != null)
             {
-                return new XProcessingInstructionWrapper((XProcessingInstruction)node);
+                return new XProcessingInstructionWrapper(pi);
             }
-            else if (node is XText)
+
+            XText text = node as XText;
+            if (text != null)
             {
-                return new XTextWrapper((XText)node);
+                return new XTextWrapper(text);
             }
-            else if (node is XComment)
+
+            XComment comment = node as XComment;
+            if (comment != null)
             {
-                return new XCommentWrapper((XComment)node);
+                return new XCommentWrapper(comment);
             }
-            else if (node is XAttribute)
+
+            XAttribute attribute = node as XAttribute;
+            if (attribute != null)
             {
-                return new XAttributeWrapper((XAttribute)node);
+                return new XAttributeWrapper(attribute);
             }
-            else if (node is XDocumentType)
+
+            XDocumentType type = node as XDocumentType;
+            if (type != null)
             {
-                return new XDocumentTypeWrapper((XDocumentType)node);
+                return new XDocumentTypeWrapper(type);
             }
-            else
-            {
-                return new XObjectWrapper(node);
-            }
+
+            return new XObjectWrapper(node);
         }
 
         public override IXmlNode AppendChild(IXmlNode newChild)
@@ -1034,15 +1046,17 @@ namespace Newtonsoft.Json.Converters
         private IXmlNode WrapXml(object value)
         {
 #if !NET20
-            if (value is XObject)
+            XObject xObject = value as XObject;
+            if (xObject != null)
             {
-                return XContainerWrapper.WrapNode((XObject)value);
+                return XContainerWrapper.WrapNode(xObject);
             }
 #endif
 #if !(DOTNET || PORTABLE)
-            if (value is XmlNode)
+            XmlNode node = value as XmlNode;
+            if (node != null)
             {
-                return XmlNodeWrapper.WrapNode((XmlNode)value);
+                return XmlNodeWrapper.WrapNode(node);
             }
 #endif
 
