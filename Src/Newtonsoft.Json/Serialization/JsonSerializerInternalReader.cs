@@ -1320,7 +1320,8 @@ namespace Newtonsoft.Json.Serialization
             }
 
             JsonConverter dictionaryValueConverter = contract.ItemConverter ?? GetConverter(contract.ItemContract, null, contract, containerProperty);
-            PrimitiveTypeCode keyTypeCode = (contract.KeyContract is JsonPrimitiveContract) ? ((JsonPrimitiveContract)contract.KeyContract).TypeCode : PrimitiveTypeCode.Empty;
+            JsonPrimitiveContract keyContract = contract.KeyContract as JsonPrimitiveContract;
+            PrimitiveTypeCode keyTypeCode = (keyContract != null) ? keyContract.TypeCode : PrimitiveTypeCode.Empty;
 
             bool finished = false;
             do

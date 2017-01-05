@@ -318,10 +318,13 @@ namespace Newtonsoft.Json.Utilities
             {
                 return (BigInteger)value;
             }
-            if (value is string)
+
+            string s = value as string;
+            if (s != null)
             {
-                return BigInteger.Parse((string)value, CultureInfo.InvariantCulture);
+                return BigInteger.Parse(s, CultureInfo.InvariantCulture);
             }
+
             if (value is float)
             {
                 return new BigInteger((float)value);
@@ -350,9 +353,11 @@ namespace Newtonsoft.Json.Utilities
             {
                 return new BigInteger((ulong)value);
             }
-            if (value is byte[])
+
+            byte[] bytes = value as byte[];
+            if (bytes != null)
             {
-                return new BigInteger((byte[])value);
+                return new BigInteger(bytes);
             }
 
             throw new InvalidCastException("Cannot convert {0} to BigInteger.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
@@ -487,9 +492,10 @@ namespace Newtonsoft.Json.Utilities
             }
 #endif
 
-            if (initialValue is byte[] && targetType == typeof(Guid))
+            byte[] bytes = initialValue as byte[];
+            if (bytes != null && targetType == typeof(Guid))
             {
-                value = new Guid((byte[])initialValue);
+                value = new Guid(bytes);
                 return ConvertResult.Success;
             }
 
@@ -587,9 +593,10 @@ namespace Newtonsoft.Json.Utilities
             }
 #endif
 #if !(DOTNET || PORTABLE40 || PORTABLE)
-            if (initialValue is INullable)
+            INullable nullable = initialValue as INullable;
+            if (nullable != null)
             {
-                value = EnsureTypeAssignable(ToValue((INullable)initialValue), initialType, targetType);
+                value = EnsureTypeAssignable(ToValue(nullable), initialType, targetType);
                 return ConvertResult.Success;
             }
 #endif

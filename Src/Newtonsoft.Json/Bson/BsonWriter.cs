@@ -203,9 +203,10 @@ namespace Newtonsoft.Json.Bson
         {
             if (_parent != null)
             {
-                if (_parent is BsonObject)
+                BsonObject bo = _parent as BsonObject;
+                if (bo != null)
                 {
-                    ((BsonObject)_parent).Add(_propertyName, token);
+                    bo.Add(_propertyName, token);
                     _propertyName = null;
                 }
                 else
