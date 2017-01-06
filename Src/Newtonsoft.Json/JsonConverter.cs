@@ -95,5 +95,45 @@ namespace Newtonsoft.Json
         {
             get { return true; }
         }
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="JsonConverter"/> can convert values to strings. Used when serializing dictionary keys.
+        /// </summary>
+        /// <value><c>true</c> if this <see cref="JsonConverter"/> can convert values to strings; otherwise, <c>false</c>.</value>
+        public virtual bool CanConvertToString
+        {
+            get { return false; }
+        }
+
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="JsonConverter"/> can convert values from strings. Used when deserializing dictionary keys.
+        /// </summary>
+        /// <value></value>
+        /// <value><c>true</c> if this <see cref="JsonConverter"/> can convert values from strings; otherwise, <c>false</c>.</value>
+        public virtual bool CanConvertFromString
+        {
+            get { return false; }
+        }
+
+        /// <summary>
+        /// Converts the object to its string representation. Used when serializing dictionary keys.
+        /// </summary>
+        /// <param name="value">The value.</param>
+        /// <returns>The string representation of the value.</returns>
+        public virtual string ConvertToString(object value)
+        {
+            throw new NotSupportedException("This method must be overriden to use");
+        }
+
+        /// <summary>
+        /// Converts the string representation of an object to that object. Used when deserializing dictionary keys.
+        /// </summary>
+        /// <param name="value">The object's string representation.</param>
+        /// <param name="objectType">Type of the object.</param>
+        /// <returns>The object represented by its string representation.</returns>
+        public virtual object ConvertFromString(string value, Type objectType)
+        {
+            throw new NotSupportedException("This method must be overriden to use");
+        }
     }
 }
