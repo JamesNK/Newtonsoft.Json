@@ -107,8 +107,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Bson\BsonWriterTests.cs" />
+    <Compile Include="Bson\BsonReaderAsyncTests.cs" />
     <Compile Include="Bson\BsonReaderTests.cs" />
+    <Compile Include="Bson\BsonWriterAsyncTests.cs" />
+    <Compile Include="Bson\BsonWriterTests.cs" />
     <Compile Include="Converters\BinaryConverterTests.cs" />
     <Compile Include="Converters\DiscriminatedUnionConverterTests.cs" />
     <Compile Include="Converters\ExpandoObjectConverterTests.cs" />
@@ -122,10 +124,15 @@
     <Compile Include="Converters\VersionConverterTests.cs" />
     <Compile Include="JsonArrayAttributeTests.cs" />
     <Compile Include="ExceptionTests.cs" />
+    <Compile Include="JsonTextReaderTests\ExceptionHandlingAsyncTests.cs" />
     <Compile Include="JsonTextReaderTests\ExceptionHandlingTests.cs" />
+    <Compile Include="JsonTextReaderTests\FloatAsyncTests.cs" />
     <Compile Include="JsonTextReaderTests\FloatTests.cs" />
+    <Compile Include="JsonTextReaderTests\MiscAsyncTests.cs" />
     <Compile Include="JsonTextReaderTests\MiscTests.cs" />
+    <Compile Include="JsonTextReaderTests\ParseAsyncTests.cs" />
     <Compile Include="JsonTextReaderTests\ParseTests.cs" />
+    <Compile Include="JsonTextReaderTests\ReadAsyncTests.cs" />
     <Compile Include="JsonTextReaderTests\ReadTests.cs" />
     <Compile Include="JsonValidatingReaderTests.cs" />
     <Compile Include="Linq\ComponentModel\BindingTests.cs" />
@@ -341,6 +348,7 @@
     <Compile Include="JsonConvertTest.cs" />
     <Compile Include="Converters\JavaScriptDateTimeConverterTests.cs" />
     <Compile Include="Serialization\JsonSerializerTest.cs" />
+    <Compile Include="JsonTextWriterAsyncTests.cs" />
     <Compile Include="JsonTextWriterTest.cs" />
     <Compile Include="Linq\JTokenReaderTest.cs" />
     <Compile Include="Linq\JTokenWriterTest.cs" />

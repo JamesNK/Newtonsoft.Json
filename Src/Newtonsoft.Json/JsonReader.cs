@@ -43,7 +43,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Represents a reader that provides fast, non-cached, forward-only access to serialized JSON data.
     /// </summary>
-    public abstract class JsonReader : IDisposable
+    public abstract partial class JsonReader : IDisposable
     {
         /// <summary>
         /// Specifies the state of the reader.
@@ -583,21 +583,35 @@ namespace Newtonsoft.Json
 
             while (true)
             {
-                JsonToken t = GetContentToken();
-                switch (t)
+                if (!Read())
                 {
-                    case JsonToken.None:
-                        throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
-                    case JsonToken.Integer:
-                        buffer.Add(Convert.ToByte(Value, CultureInfo.InvariantCulture));
-                        break;
-                    case JsonToken.EndArray:
-                        byte[] d = buffer.ToArray();
-                        SetToken(JsonToken.Bytes, d, false);
-                        return d;
-                    default:
-                        throw JsonReaderException.Create(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
+                    SetToken(JsonToken.None);
                 }
+
+                if (ReadArrayElementIntoByteArrayReportDone(buffer))
+                {
+                    byte[] d = buffer.ToArray();
+                    SetToken(JsonToken.Bytes, d, false);
+                    return d;
+                }
+            }
+        }
+
+        private bool ReadArrayElementIntoByteArrayReportDone(List<byte> buffer)
+        {
+            switch (TokenType)
+            {
+                case JsonToken.None:
+                    throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
+                case JsonToken.Integer:
+                    buffer.Add(Convert.ToByte(Value, CultureInfo.InvariantCulture));
+                    return false;
+                case JsonToken.EndArray:
+                    return true;
+                case JsonToken.Comment:
+                    return false;
+                default:
+                    throw JsonReaderException.Create(this, "Unexpected token when reading bytes: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
             }
         }
 
