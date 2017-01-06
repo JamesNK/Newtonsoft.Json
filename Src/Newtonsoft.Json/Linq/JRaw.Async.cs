@@ -23,53 +23,35 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(NET20 || NET35 || NET40 || PORTABLE40)
+
 using System.Globalization;
 using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Newtonsoft.Json.Linq
 {
-    /// <summary>
-    /// Represents a raw JSON string.
-    /// </summary>
-    public partial class JRaw : JValue
+    public partial class JRaw
     {
         /// <summary>
-        /// Initializes a new instance of the <see cref="JRaw"/> class from another <see cref="JRaw"/> object.
-        /// </summary>
-        /// <param name="other">A <see cref="JRaw"/> object to copy from.</param>
-        public JRaw(JRaw other)
-            : base(other)
-        {
-        }
-
-        /// <summary>
-        /// Initializes a new instance of the <see cref="JRaw"/> class.
-        /// </summary>
-        /// <param name="rawJson">The raw json.</param>
-        public JRaw(object rawJson)
-            : base(rawJson, JTokenType.Raw)
-        {
-        }
-
-        /// <summary>
-        /// Creates an instance of <see cref="JRaw"/> with the content of the reader's current token.
+        /// Asynchronously creates an instance of <see cref="JRaw"/> with the content of the reader's current token.
         /// </summary>
         /// <param name="reader">The reader.</param>
-        /// <returns>An instance of <see cref="JRaw"/> with the content of the reader's current token.</returns>
-        public static JRaw Create(JsonReader reader)
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous creation. The <see cref="Task{TResult}.Result"/>
+        /// property returns an instance of <see cref="JRaw"/> with the content of the reader's current token.</returns>
+        public static async Task<JRaw> CreateAsync(JsonReader reader, CancellationToken cancellationToken = default(CancellationToken))
         {
             using (StringWriter sw = new StringWriter(CultureInfo.InvariantCulture))
             using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
             {
-                jsonWriter.WriteToken(reader);
+                await jsonWriter.WriteTokenSyncReadingAsync(reader, cancellationToken).ConfigureAwait(false);
 
                 return new JRaw(sw.ToString());
             }
         }
-
-        internal override JToken CloneToken()
-        {
-            return new JRaw(this);
-        }
     }
 }
+
+#endif
