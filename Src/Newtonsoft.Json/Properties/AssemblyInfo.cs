@@ -32,7 +32,7 @@ using System.Security;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-#if NETSTANDARD1_0
+#if NETSTANDARD1_0 
 [assembly: AssemblyTitle("Json.NET .NET Standard 1.0")]
 #elif NETSTANDARD1_1
 [assembly: AssemblyTitle("Json.NET .NET Standard 1.1")]
@@ -74,7 +74,7 @@ using System.Security;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_COM_ATTRIBUTES
 // Setting ComVisible to false makes the types in this assembly not visible 
 // to COM components. If you need to access a type in this assembly from
 // COM, set the ComVisible attribute to true on that type.

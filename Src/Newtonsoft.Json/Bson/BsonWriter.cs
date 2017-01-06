@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_NUMERICS
 using System.Numerics;
 #endif
 using System.Text;
@@ -234,7 +234,7 @@ namespace Newtonsoft.Json.Bson
         /// <param name="value">The <see cref="Object"/> value to write.</param>
         public override void WriteValue(object value)
         {
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (value is BigInteger)
             {
                 InternalWriteValue(JsonToken.Integer);
@@ -443,7 +443,7 @@ namespace Newtonsoft.Json.Bson
             AddValue(value, BsonType.Date);
         }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         /// <summary>
         /// Writes a <see cref="DateTimeOffset"/> value.
         /// </summary>

@@ -26,12 +26,12 @@
 using System;
 using System.Collections;
 using Newtonsoft.Json.Schema;
-#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
+#if HAVE_CONCURRENT_COLLECTIONS
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
 using System.ComponentModel;
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
 using System.Dynamic;
 #endif
 using System.Globalization;
@@ -44,7 +44,7 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
 using System.Runtime.CompilerServices;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -166,7 +166,7 @@ namespace Newtonsoft.Json.Serialization
         /// </value>
         public bool SerializeCompilerGeneratedMembers { get; set; }
 
-#if !(DOTNET || PORTABLE || PORTABLE40)
+#if HAVE_BINARY_SERIALIZATION
         /// <summary>
         /// Gets or sets a value indicating whether to ignore the <see cref="ISerializable"/> interface when serializing and deserializing types.
         /// </summary>
@@ -195,7 +195,7 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         public DefaultContractResolver()
         {
-#if !(DOTNET || PORTABLE || PORTABLE40)
+#if HAVE_BINARY_SERIALIZATION
             IgnoreSerializableAttribute = true;
 #endif
 
@@ -277,7 +277,7 @@ namespace Newtonsoft.Json.Serialization
         protected virtual List<MemberInfo> GetSerializableMembers(Type objectType)
         {
             bool ignoreSerializableAttribute;
-#if !(DOTNET || PORTABLE || PORTABLE40)
+#if HAVE_BINARY_SERIALIZATION
             ignoreSerializableAttribute = IgnoreSerializableAttribute;
 #else
             ignoreSerializableAttribute = true;
@@ -389,7 +389,7 @@ namespace Newtonsoft.Json.Serialization
             InitializeContract(contract);
 
             bool ignoreSerializableAttribute;
-#if !(DOTNET || PORTABLE || PORTABLE40)
+#if HAVE_BINARY_SERIALIZATION
             ignoreSerializableAttribute = IgnoreSerializableAttribute;
 #else
             ignoreSerializableAttribute = true;

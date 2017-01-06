@@ -152,7 +152,7 @@ namespace Newtonsoft.Json.Bson
 
                         ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(dateTime, false);
                     }
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                     else
                     {
                         DateTimeOffset dateTimeOffset = (DateTimeOffset)value.Value;

@@ -29,7 +29,7 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Text;
 using System.Collections;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 return true;
             }
-#if !(NET40 || NET35 || NET20 || PORTABLE40)
+#if HAVE_READ_ONLY_COLLECTIONS
             if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IReadOnlyDictionary<,>)))
             {
                 return true;

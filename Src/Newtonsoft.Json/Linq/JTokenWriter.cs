@@ -25,7 +25,7 @@
 
 using System;
 using System.Globalization;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_NUMERICS
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Utilities;

@@ -37,7 +37,7 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     public class BinaryConverter : JsonConverter
     {
-#if !NET20
+#if HAVE_LINQ
         private const string BinaryTypeName = "System.Data.Linq.Binary";
         private const string BinaryToArrayName = "ToArray";
         private ReflectionObject _reflectionObject;
@@ -64,7 +64,7 @@ namespace Newtonsoft.Json.Converters
 
         private byte[] GetByteArray(object value)
         {
-#if !(NET20)
+#if HAVE_LINQ
             if (value.GetType().AssignableToTypeName(BinaryTypeName))
             {
                 EnsureReflectionObject(value.GetType());
@@ -79,7 +79,7 @@ namespace Newtonsoft.Json.Converters
             throw new JsonSerializationException("Unexpected value type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
         }
 
-#if !NET20
+#if HAVE_LINQ
         private void EnsureReflectionObject(Type t)
         {
             if (_reflectionObject == null)
@@ -131,7 +131,7 @@ namespace Newtonsoft.Json.Converters
                 ? Nullable.GetUnderlyingType(objectType)
                 : objectType;
 
-#if !NET20
+#if HAVE_LINQ
             if (t.AssignableToTypeName(BinaryTypeName))
             {
                 EnsureReflectionObject(t);
@@ -181,7 +181,7 @@ namespace Newtonsoft.Json.Converters
         /// </returns>
         public override bool CanConvert(Type objectType)
         {
-#if !NET20
+#if HAVE_LINQ
             if (objectType.AssignableToTypeName(BinaryTypeName))
             {
                 return true;
