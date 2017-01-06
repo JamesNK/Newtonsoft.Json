@@ -67,12 +67,7 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public IEnumerator<T> GetEnumerator()
         {
-            if (_enumerable == null)
-            {
-                return Empty.GetEnumerator();
-            }
-
-            return _enumerable.GetEnumerator();
+            return (_enumerable ?? Empty).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
