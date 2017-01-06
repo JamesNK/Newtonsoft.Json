@@ -7312,6 +7312,36 @@ Path '', line 1, position 1.");
         }
 
         [Test]
+        public void SerializeNullableGuidCustomWriterOverridesNullableGuid()
+        {
+            NullableGuid ng = new NullableGuid {Id = Guid.Empty};
+            NullableGuidCountingJsonTextWriter writer = new NullableGuidCountingJsonTextWriter(new StreamWriter(Stream.Null));
+            JsonSerializer serializer = JsonSerializer.Create();
+            serializer.Serialize(writer, ng);
+            Assert.AreEqual(1, writer.NullableGuidCount);
+            MemoryTraceWriter traceWriter = new MemoryTraceWriter();
+            serializer.TraceWriter = traceWriter;
+            serializer.Serialize(writer, ng);
+            Assert.AreEqual(2, writer.NullableGuidCount);
+        }
+
+        private class NullableGuidCountingJsonTextWriter : JsonTextWriter
+        {
+            public NullableGuidCountingJsonTextWriter(TextWriter textWriter)
+                : base(textWriter)
+            {
+            }
+
+            public int NullableGuidCount { get; private set; }
+
+            public override void WriteValue(Guid? value)
+            {
+                base.WriteValue(value);
+                ++NullableGuidCount;
+            }
+        }
+
+        [Test]
         public void DeserializeGuid()
         {
             Item expected = new Item()
