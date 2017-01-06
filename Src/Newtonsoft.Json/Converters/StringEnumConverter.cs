@@ -227,7 +227,7 @@ namespace Newtonsoft.Json.Converters
                 return null;
             }
 
-            return EnumUtils.ParseEnumName(value, isNullable, t);
+            return EnumUtils.ParseEnumName(value, isNullable, !AllowIntegerValues, t);
         }
 
         /// <summary>
