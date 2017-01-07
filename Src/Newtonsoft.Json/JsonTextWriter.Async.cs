@@ -436,7 +436,7 @@ namespace Newtonsoft.Json
             return _safeAsync ? DoWriteStartConstructorAsync(name, cancellationToken) : base.WriteStartConstructorAsync(name, cancellationToken);
         }
 
-        private async Task DoWriteStartConstructorAsync(string name, CancellationToken cancellationToken)
+        internal async Task DoWriteStartConstructorAsync(string name, CancellationToken cancellationToken)
         {
             await InternalWriteStartAsync(JsonToken.StartConstructor, JsonContainerType.Constructor, cancellationToken).ConfigureAwait(false);
 
