@@ -86,7 +86,7 @@ namespace Newtonsoft.Json.Bson
         /// that finishes writing the document will write asynchronously. Derived classes will not write asynchronously.</remarks>
         public override Task WriteEndAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
-            return _safeAsync ? WriteEndInternalAsync(cancellationToken) : base.WriteEndAsync(cancellationToken);
+            return _safeAsync && Top == 1 ? WriteEndInternalAsync(cancellationToken) : base.WriteEndAsync(cancellationToken);
         }
 
         /// <summary>
@@ -100,7 +100,7 @@ namespace Newtonsoft.Json.Bson
         /// that finishes writing the document will write asynchronously. Derived classes will not write asynchronously.</remarks>
         public override Task WriteEndArrayAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            return _safeAsync ? InternalWriteEndAsync(JsonContainerType.Array, cancellationToken) : base.WriteEndArrayAsync(cancellationToken);
+            return _safeAsync && _root.Type == BsonType.Array ? InternalWriteEndAsync(JsonContainerType.Array, cancellationToken) : base.WriteEndArrayAsync(cancellationToken);
         }
 
         /// <summary>
@@ -114,7 +114,7 @@ namespace Newtonsoft.Json.Bson
         /// that finishes writing the document will write asynchronously. Derived classes will not write asynchronously.</remarks>
         public override Task WriteEndObjectAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            return _safeAsync ? InternalWriteEndAsync(JsonContainerType.Object, cancellationToken) : base.WriteEndObjectAsync(cancellationToken);
+            return _safeAsync && _root.Type == BsonType.Object ? InternalWriteEndAsync(JsonContainerType.Object, cancellationToken) : base.WriteEndObjectAsync(cancellationToken);
         }
 
         /// <summary>
@@ -127,9 +127,24 @@ namespace Newtonsoft.Json.Bson
         /// <see cref="CloseAsync"/> and the final <see cref="WriteEndAsync(JsonToken,CancellationToken)"/>,
         /// <see cref="WriteEndArrayAsync"/> or <see cref="WriteEndObjectAsync"/>
         /// that finishes writing the document will write asynchronously. Derived classes will not write asynchronously.</remarks>
-        public override async Task CloseAsync(CancellationToken cancellationToken = new CancellationToken())
+        public override Task CloseAsync(CancellationToken cancellationToken = new CancellationToken())
         {
-            while (Top > 0)
+            return _safeAsync ? DoCloseAsync(cancellationToken) : base.CloseAsync(cancellationToken);
+        }
+
+        private async Task DoCloseAsync(CancellationToken cancellationToken)
+        {
+            if (Top > 1)
+            {
+                cancellationToken.ThrowIfCancellationRequested();
+
+                do
+                {
+                    WriteEnd();
+                } while (Top > 1);
+            }
+
+            if (Top != 0)
             {
                 await WriteEndAsync(cancellationToken).ConfigureAwait(false);
             }
