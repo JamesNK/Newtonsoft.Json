@@ -157,7 +157,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             };
 
-#if !PORTABLE
+#if HAVE_ICONVERTIBLE
         private static readonly TypeInformation[] PrimitiveTypeCodes =
         {
             // need all of these. lookup against the index with TypeCode value
@@ -220,7 +220,7 @@ namespace Newtonsoft.Json.Utilities
             return PrimitiveTypeCode.Object;
         }
 
-#if !PORTABLE
+#if HAVE_ICONVERTIBLE
         public static TypeInformation GetTypeInformation(IConvertible convertable)
         {
             TypeInformation typeInformation = PrimitiveTypeCodes[(int)convertable.GetTypeCode()];
@@ -230,7 +230,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsConvertible(Type t)
         {
-#if !PORTABLE
+#if HAVE_ICONVERTIBLE
             return typeof(IConvertible).IsAssignableFrom(t);
 #else
             return (

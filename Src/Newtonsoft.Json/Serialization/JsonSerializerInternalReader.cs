@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
 using System.ComponentModel;
 using System.Dynamic;
 #endif
@@ -1900,7 +1900,7 @@ namespace Newtonsoft.Json.Serialization
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
             {
                 string parameters = string.Join(", ", contract.CreatorParameters.Select(p => p.PropertyName)
-#if NET20 || NET35
+#if !HAVE_STRING_JOIN_ENUMERABLE
                     .ToArray()
 #endif
                     );
@@ -2250,7 +2250,7 @@ namespace Newtonsoft.Json.Serialization
                 case ReadType.ReadAsDateTime:
                     reader.ReadAsDateTime();
                     break;
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                 case ReadType.ReadAsDateTimeOffset:
                     reader.ReadAsDateTimeOffset();
                     break;

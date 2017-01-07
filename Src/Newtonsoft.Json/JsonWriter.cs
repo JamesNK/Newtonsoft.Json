@@ -1578,7 +1578,7 @@ namespace Newtonsoft.Json
                 case PrimitiveTypeCode.Bytes:
                     writer.WriteValue((byte[])value);
                     break;
-#if !(PORTABLE || DOTNET)
+#if HAVE_ADO_NET
                 case PrimitiveTypeCode.DBNull:
                     writer.WriteNull();
                     break;

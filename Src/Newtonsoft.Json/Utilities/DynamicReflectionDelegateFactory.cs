@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(DOTNET || PORTABLE || PORTABLE40)
+#if HAVE_REFLECTION_EMIT
 using System;
 using System.Collections.Generic;
 #if !HAVE_LINQ

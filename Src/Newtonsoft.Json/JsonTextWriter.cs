@@ -196,7 +196,7 @@ namespace Newtonsoft.Json
 
             if (CloseOutput)
             {
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_STREAM_READER_WRITER_CLOSE
                 _writer?.Close();
 #else
                 _writer?.Dispose();
@@ -721,7 +721,7 @@ namespace Newtonsoft.Json
 
             string text = null;
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_CHAR_TO_STRING_WITH_CULTURE
             text = value.ToString("D", CultureInfo.InvariantCulture);
 #else
             text = value.ToString("D");
@@ -741,7 +741,7 @@ namespace Newtonsoft.Json
             InternalWriteValue(JsonToken.String);
 
             string text;
-#if (NET35 || NET20)
+#if !HAVE_CHAR_TO_STRING_WITH_CULTURE
             text = value.ToString();
 #else
             text = value.ToString(null, CultureInfo.InvariantCulture);

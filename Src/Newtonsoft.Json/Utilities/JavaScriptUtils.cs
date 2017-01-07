@@ -25,7 +25,7 @@
 
 using System;
 using System.IO;
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
 using System.Threading;
 using System.Threading.Tasks;
 #endif

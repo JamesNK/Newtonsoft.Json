@@ -1397,7 +1397,7 @@ namespace Newtonsoft.Json
                             case '9':
                                 await ParseNumberAsync(ReadType.Read, cancellationToken).ConfigureAwait(false);
                                 bool b;
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                                 if (Value is BigInteger)
                                 {
                                     b = (BigInteger)Value != 0;

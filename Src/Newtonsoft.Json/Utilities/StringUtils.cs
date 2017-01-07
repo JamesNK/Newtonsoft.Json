@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Globalization;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -169,7 +169,7 @@ namespace Newtonsoft.Json.Utilities
                 }
 
                 char c;
-#if !(DOTNET || PORTABLE)
+#if HAVE_CHAR_TO_STRING_WITH_CULTURE
                 c = char.ToLower(chars[i], CultureInfo.InvariantCulture);
 #else
                 c = char.ToLowerInvariant(chars[i]);
@@ -260,7 +260,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsHighSurrogate(char c)
         {
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_UNICODE_SURROGATE_DETECTION
             return char.IsHighSurrogate(c);
 #else
             return (c >= 55296 && c <= 56319);
@@ -269,7 +269,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsLowSurrogate(char c)
         {
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_UNICODE_SURROGATE_DETECTION
             return char.IsLowSurrogate(c);
 #else
             return (c >= 56320 && c <= 57343);

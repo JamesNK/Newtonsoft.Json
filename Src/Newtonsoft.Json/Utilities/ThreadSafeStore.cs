@@ -84,7 +84,7 @@ namespace Newtonsoft.Json.Utilities
                     Dictionary<TKey, TValue> newStore = new Dictionary<TKey, TValue>(_store);
                     newStore[key] = value;
 
-#if !(DOTNET || PORTABLE)
+#if HAVE_MEMORY_BARRIER
                     Thread.MemoryBarrier();
 #endif
                     _store = newStore;

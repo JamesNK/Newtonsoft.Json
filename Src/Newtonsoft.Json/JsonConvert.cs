@@ -366,7 +366,7 @@ namespace Newtonsoft.Json
         {
             string text;
             string qc;
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_CHAR_TO_STRING_WITH_CULTURE
             text = value.ToString("D", CultureInfo.InvariantCulture);
             qc = quoteChar.ToString(CultureInfo.InvariantCulture);
 #else
@@ -991,7 +991,7 @@ namespace Newtonsoft.Json
         #endregion
 
         #region Xml
-#if !(PORTABLE40 || PORTABLE || DOTNET)
+#if HAVE_BINARY_SERIALIZATION
         /// <summary>
         /// Serializes the <see cref="XmlNode"/> to a JSON string.
         /// </summary>

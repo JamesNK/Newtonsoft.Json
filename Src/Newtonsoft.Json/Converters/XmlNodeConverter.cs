@@ -24,7 +24,8 @@
 #endregion
 
 #if !PORTABLE40
-#if !(PORTABLE || NET20 || NET35) || NETSTANDARD1_1
+
+#if HAVE_NUMERICS
 using System.Numerics;
 #endif
 using System;
@@ -32,7 +33,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Xml;
 using Newtonsoft.Json.Serialization;
-#if !(NET20 || PORTABLE40)
+#if HAVE_XLINQ
 using System.Xml.Linq;
 #endif
 using Newtonsoft.Json.Utilities;
@@ -403,7 +404,7 @@ namespace Newtonsoft.Json.Converters
     #endregion
 
     #region XNodeWrappers
-#if !NET20
+#if HAVE_LINQ
     internal class XDeclarationWrapper : XObjectWrapper, IXmlDeclaration
     {
         internal XDeclaration Declaration { get; private set; }
@@ -1045,14 +1046,14 @@ namespace Newtonsoft.Json.Converters
 
         private IXmlNode WrapXml(object value)
         {
-#if !NET20
+#if HAVE_LINQ
             XObject xObject = value as XObject;
             if (xObject != null)
             {
                 return XContainerWrapper.WrapNode(xObject);
             }
 #endif
-#if !(DOTNET || PORTABLE)
+#if HAVE_XML_DOCUMENT
             XmlNode node = value as XmlNode;
             if (node != null)
             {
@@ -1428,7 +1429,7 @@ namespace Newtonsoft.Json.Converters
             IXmlDocument document = null;
             IXmlNode rootNode = null;
 
-#if !NET20
+#if HAVE_LINQ
             if (typeof(XObject).IsAssignableFrom(objectType))
             {
                 if (objectType != typeof(XDocument) && objectType != typeof(XElement))
@@ -1441,7 +1442,7 @@ namespace Newtonsoft.Json.Converters
                 rootNode = document;
             }
 #endif
-#if !(DOTNET || PORTABLE)
+#if HAVE_XML_DOCUMENT
             if (typeof(XmlNode).IsAssignableFrom(objectType))
             {
                 if (objectType != typeof(XmlDocument))
@@ -1480,7 +1481,7 @@ namespace Newtonsoft.Json.Converters
                 DeserializeNode(reader, document, manager, rootNode);
             }
 
-#if !NET20
+#if HAVE_LINQ
             if (objectType == typeof(XElement))
             {
                 XElement element = (XElement)document.DocumentElement.WrappedNode;
@@ -1653,7 +1654,7 @@ namespace Newtonsoft.Json.Converters
             }
             else if (reader.TokenType == JsonToken.Integer)
             {
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                 if (reader.Value is BigInteger)
                 {
                     return ((BigInteger)reader.Value).ToString(CultureInfo.InvariantCulture);
@@ -1681,7 +1682,7 @@ namespace Newtonsoft.Json.Converters
             }
             else if (reader.TokenType == JsonToken.Date)
             {
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                 if (reader.Value is DateTimeOffset)
                 {
                     return XmlConvert.ToString((DateTimeOffset)reader.Value);
@@ -1743,7 +1744,7 @@ namespace Newtonsoft.Json.Converters
         {
             element.SetAttributeNode(document.CreateAttribute("json:Array", JsonNamespaceUri, "true"));
 
-#if !NET20
+#if HAVE_LINQ
             // linq to xml doesn't automatically include prefixes via the namespace manager
             if (element is XElementWrapper)
             {
@@ -2065,13 +2066,13 @@ namespace Newtonsoft.Json.Converters
         /// </returns>
         public override bool CanConvert(Type valueType)
         {
-#if !NET20
+#if HAVE_LINQ
             if (typeof(XObject).IsAssignableFrom(valueType))
             {
                 return true;
             }
 #endif
-#if !(DOTNET || PORTABLE)
+#if HAVE_XML_DOCUMENT
             if (typeof(XmlNode).IsAssignableFrom(valueType))
             {
                 return true;

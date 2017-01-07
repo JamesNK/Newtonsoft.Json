@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20)
+#if HAVE_FSHARP_TYPES
 using System.Threading;
 using System;
 using System.Collections.Generic;
@@ -112,7 +112,7 @@ namespace Newtonsoft.Json.Utilities
 
                         _mapType = fsharpCoreAssembly.GetType("Microsoft.FSharp.Collections.FSharpMap`2");
 
-#if !(DOTNET || PORTABLE)
+#if HAVE_MEMORY_BARRIER
                         Thread.MemoryBarrier();
 #endif
                         _initialized = true;

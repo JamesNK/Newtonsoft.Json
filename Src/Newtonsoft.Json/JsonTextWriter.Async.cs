@@ -833,7 +833,7 @@ namespace Newtonsoft.Json
             await InternalWriteValueAsync(JsonToken.String, cancellationToken).ConfigureAwait(false);
 
             await _writer.WriteAsync(_quoteChar).ConfigureAwait(false);
-#if !(DOTNET || PORTABLE)
+#if HAVE_CHAR_TO_STRING_WITH_CULTURE
             await _writer.WriteAsync(value.ToString("D", CultureInfo.InvariantCulture), cancellationToken).ConfigureAwait(false);
 #else
             await _writer.WriteAsync(value.ToString("D"), cancellationToken).ConfigureAwait(false);

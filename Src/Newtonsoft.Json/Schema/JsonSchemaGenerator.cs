@@ -193,7 +193,7 @@ namespace Newtonsoft.Json.Schema
                 return containerAttribute.Description;
             }
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_ADO_NET
             DescriptionAttribute descriptionAttribute = ReflectionUtils.GetAttribute<DescriptionAttribute>(type);
             return descriptionAttribute?.Description;
 #else
