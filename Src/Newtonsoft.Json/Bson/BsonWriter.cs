@@ -253,7 +253,7 @@ namespace Newtonsoft.Json.Bson
         public override void WriteNull()
         {
             base.WriteNull();
-            AddValue(null, BsonType.Null);
+            AddToken(BsonEmpty.Null);
         }
 
         /// <summary>
@@ -262,7 +262,7 @@ namespace Newtonsoft.Json.Bson
         public override void WriteUndefined()
         {
             base.WriteUndefined();
-            AddValue(null, BsonType.Undefined);
+            AddToken(BsonEmpty.Undefined);
         }
 
         /// <summary>
@@ -272,14 +272,7 @@ namespace Newtonsoft.Json.Bson
         public override void WriteValue(string value)
         {
             base.WriteValue(value);
-            if (value == null)
-            {
-                AddValue(null, BsonType.Null);
-            }
-            else
-            {
-                AddToken(new BsonString(value, true));
-            }
+            AddToken(value == null ? BsonEmpty.Null : new BsonString(value, true));
         }
 
         /// <summary>
@@ -361,7 +354,7 @@ namespace Newtonsoft.Json.Bson
         public override void WriteValue(bool value)
         {
             base.WriteValue(value);
-            AddValue(value, BsonType.Boolean);
+            AddToken(value ? BsonBoolean.True : BsonBoolean.False);
         }
 
         /// <summary>
