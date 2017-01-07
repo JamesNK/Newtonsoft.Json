@@ -38,6 +38,7 @@ namespace Newtonsoft.Json.Bson
     internal class AsyncBinaryWriter : BinaryWriter
     {
         private static readonly byte[] TrueFalse = { 1, 0 };
+        private static readonly byte[] ByteValueBuffer = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18};
         private byte[] _buffer;
 
         public AsyncBinaryWriter(Stream stream)
@@ -83,14 +84,8 @@ namespace Newtonsoft.Json.Bson
 
         public Task WriteAsync(byte value, CancellationToken cancellationToken)
         {
-            byte[] buffer = Buffer;
-            buffer[0] = value;
-            return OutStream.WriteAsync(buffer, 0, 1, cancellationToken);
-        }
-
-        public Task WriteAsync(sbyte value, CancellationToken cancellationToken)
-        {
-            return WriteAsync((byte)value, cancellationToken);
+            Debug.Assert(value <= 18);
+            return OutStream.WriteAsync(ByteValueBuffer, value, 1, cancellationToken);
         }
 
         public Task WriteAsync(double value, CancellationToken cancellationToken)

@@ -134,7 +134,7 @@ namespace Newtonsoft.Json.Bson
             await _asyncWriter.WriteAsync(value.CalculatedSize, cancellationToken).ConfigureAwait(false);
             foreach (BsonProperty property in value)
             {
-                await _asyncWriter.WriteAsync((sbyte)property.Value.Type, cancellationToken).ConfigureAwait(false);
+                await _asyncWriter.WriteAsync((byte)property.Value.Type, cancellationToken).ConfigureAwait(false);
                 await WriteStringAsync((string)property.Name.Value, property.Name.ByteCount, null, cancellationToken).ConfigureAwait(false);
                 BsonType propertyType = property.Value.Type;
                 if (propertyType != BsonType.Null & propertyType != BsonType.Undefined)
@@ -152,7 +152,7 @@ namespace Newtonsoft.Json.Bson
             ulong index = 0;
             foreach (BsonToken c in value)
             {
-                await _asyncWriter.WriteAsync((sbyte)c.Type, cancellationToken).ConfigureAwait(false);
+                await _asyncWriter.WriteAsync((byte)c.Type, cancellationToken).ConfigureAwait(false);
                 await WriteStringAsync(index.ToString(CultureInfo.InvariantCulture), MathUtils.IntLength(index), null, cancellationToken).ConfigureAwait(false);
                 BsonType type = c.Type;
                 if (type != BsonType.Null & type != BsonType.Undefined)
