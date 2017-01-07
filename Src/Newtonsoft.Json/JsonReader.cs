@@ -510,29 +510,23 @@ namespace Newtonsoft.Json
         {
             JsonToken t = GetContentToken();
 
-            if (t == JsonToken.None)
-            {
-                return null;
-            }
-
-            if (TokenType == JsonToken.StartObject)
-            {
-                ReadIntoWrappedTypeObject();
-
-                byte[] data = ReadAsBytes();
-                ReaderReadAndAssert();
-
-                if (TokenType != JsonToken.EndObject)
-                {
-                    throw JsonReaderException.Create(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
-                }
-
-                SetToken(JsonToken.Bytes, data, false);
-                return data;
-            }
-
             switch (t)
             {
+                case JsonToken.StartObject:
+                {
+                    ReadIntoWrappedTypeObject();
+
+                    byte[] data = ReadAsBytes();
+                    ReaderReadAndAssert();
+
+                    if (TokenType != JsonToken.EndObject)
+                    {
+                        throw JsonReaderException.Create(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+                    }
+
+                    SetToken(JsonToken.Bytes, data, false);
+                    return data;
+                }
                 case JsonToken.String:
                 {
                     // attempt to convert possible base 64 or GUID string to bytes
@@ -558,6 +552,7 @@ namespace Newtonsoft.Json
                     SetToken(JsonToken.Bytes, data, false);
                     return data;
                 }
+                case JsonToken.None:
                 case JsonToken.Null:
                 case JsonToken.EndArray:
                     return null;
