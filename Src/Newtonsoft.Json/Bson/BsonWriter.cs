@@ -461,6 +461,12 @@ namespace Newtonsoft.Json.Bson
         /// <param name="value">The <see cref="Byte"/>[] value to write.</param>
         public override void WriteValue(byte[] value)
         {
+            if (value == null)
+            {
+                WriteNull();
+                return;
+            }
+
             base.WriteValue(value);
             AddToken(new BsonBinary(value, BsonBinaryType.Binary));
         }
@@ -491,6 +497,12 @@ namespace Newtonsoft.Json.Bson
         /// <param name="value">The <see cref="Uri"/> value to write.</param>
         public override void WriteValue(Uri value)
         {
+            if (value == null)
+            {
+                WriteNull();
+                return;
+            }
+
             base.WriteValue(value);
             AddToken(new BsonString(value.ToString(), true));
         }

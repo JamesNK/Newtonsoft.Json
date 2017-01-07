@@ -832,6 +832,56 @@ namespace Newtonsoft.Json.Tests.Bson
 
             Assert.IsFalse(reader.Read());
         }
+
+        [Test]
+        public void WriteUri()
+        {
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("uri0");
+            writer.WriteValue(new Uri("http://example.net/"));
+            writer.WritePropertyName("uri1");
+            writer.WriteValue(default(Uri));
+            writer.WriteEndObject();
+            ms.Seek(0, SeekOrigin.Begin);
+
+            BsonReader reader = new BsonReader(ms);
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual("http://example.net/", reader.ReadAsString());
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.IsNull(reader.ReadAsString());
+        }
+
+        [Test]
+        public void WriteByteArray()
+        {
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("array0");
+            writer.WriteValue(new byte[] {0, 1, 2, 3, 4, 5, 6, 7});
+            writer.WritePropertyName("array1");
+            writer.WriteValue(default(byte[]));
+            writer.WriteEndObject();
+            ms.Seek(0, SeekOrigin.Begin);
+
+            BsonReader reader = new BsonReader(ms);
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual(new byte[] {0, 1, 2, 3, 4, 5, 6, 7}, reader.ReadAsBytes());
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.IsNull(reader.ReadAsBytes());
+        }
 #endif
     }
 }
