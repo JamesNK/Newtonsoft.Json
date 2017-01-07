@@ -179,36 +179,46 @@ namespace Newtonsoft.Json.Bson
             await WriteStringAsync((string)value.Options.Value, value.Options.ByteCount, null, cancellationToken).ConfigureAwait(false);
         }
 
-        private async Task WriteStringAsync(string s, int byteCount, int? calculatedlengthPrefix, CancellationToken cancellationToken)
+        private Task WriteStringAsync(string s, int byteCount, int? calculatedlengthPrefix, CancellationToken cancellationToken)
         {
             if (calculatedlengthPrefix != null)
             {
-                await _asyncWriter.WriteAsync(calculatedlengthPrefix.GetValueOrDefault(), cancellationToken).ConfigureAwait(false);
+                return WritePrefixedStringAsync(s, byteCount, calculatedlengthPrefix.GetValueOrDefault(), cancellationToken);
             }
 
+            return WriteUtf8BytesAsync(s, byteCount, cancellationToken);
+        }
+
+        private async Task WritePrefixedStringAsync(string s, int byteCount, int calculatedlengthPrefix, CancellationToken cancellationToken)
+        {
+            await _asyncWriter.WriteAsync(calculatedlengthPrefix, cancellationToken).ConfigureAwait(false);
             await WriteUtf8BytesAsync(s, byteCount, cancellationToken).ConfigureAwait(false);
-            await _asyncWriter.WriteAsync((byte)0, cancellationToken).ConfigureAwait(false);
         }
 
         private Task WriteUtf8BytesAsync(string s, int byteCount, CancellationToken cancellationToken)
         {
             if (s == null)
             {
-                return AsyncUtils.CompletedTask;
+                return _asyncWriter.WriteAsync((byte)0, cancellationToken);
             }
 
-            if (byteCount <= 256)
+            if (byteCount <= 255)
             {
                 if (_largeByteBuffer == null)
                 {
                     _largeByteBuffer = new byte[256];
                 }
+                else
+                {
+                    _largeByteBuffer[byteCount] = 0;
+                }
 
                 Encoding.GetBytes(s, 0, s.Length, _largeByteBuffer, 0);
-                return _asyncWriter.WriteAsync(_largeByteBuffer, 0, byteCount, cancellationToken);
+                return _asyncWriter.WriteAsync(_largeByteBuffer, 0, byteCount + 1, cancellationToken);
             }
 
-            byte[] bytes = Encoding.GetBytes(s);
+            byte[] bytes = new byte[byteCount + 1];
+            Encoding.GetBytes(s, 0, s.Length, bytes, 0);
             return _asyncWriter.WriteAsync(bytes, cancellationToken);
         }
     }
