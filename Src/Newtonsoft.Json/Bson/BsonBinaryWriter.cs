@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Bson
 
         public void Close()
         {
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_STREAM_WRITER_CLOSE
             _writer.Close();
 #else
             _writer.Dispose();

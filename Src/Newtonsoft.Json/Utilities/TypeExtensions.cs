@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -98,7 +98,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static MethodInfo Method(this Delegate d)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return d.Method;
 #else
             return d.GetMethodInfo();
@@ -135,7 +135,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool ContainsGenericParameters(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.ContainsGenericParameters;
 #else
             return type.GetTypeInfo().ContainsGenericParameters;
@@ -144,7 +144,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsInterface(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.IsInterface;
 #else
             return type.GetTypeInfo().IsInterface;
@@ -153,7 +153,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsGenericType(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.IsGenericType;
 #else
             return type.GetTypeInfo().IsGenericType;
@@ -162,7 +162,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsGenericTypeDefinition(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.IsGenericTypeDefinition;
 #else
             return type.GetTypeInfo().IsGenericTypeDefinition;
@@ -171,7 +171,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static Type BaseType(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.BaseType;
 #else
             return type.GetTypeInfo().BaseType;
@@ -180,7 +180,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static Assembly Assembly(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.Assembly;
 #else
             return type.GetTypeInfo().Assembly;
@@ -189,7 +189,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsEnum(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.IsEnum;
 #else
             return type.GetTypeInfo().IsEnum;
@@ -198,7 +198,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsClass(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.IsClass;
 #else
             return type.GetTypeInfo().IsClass;
@@ -207,7 +207,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsSealed(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.IsSealed;
 #else
             return type.GetTypeInfo().IsSealed;
@@ -517,7 +517,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsAbstract(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.IsAbstract;
 #else
             return type.GetTypeInfo().IsAbstract;
@@ -526,7 +526,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsVisible(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.IsVisible;
 #else
             return type.GetTypeInfo().IsVisible;
@@ -535,7 +535,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsValueType(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.IsValueType;
 #else
             return type.GetTypeInfo().IsValueType;
@@ -544,7 +544,7 @@ namespace Newtonsoft.Json.Utilities
         
         public static bool IsPrimitive(this Type type)
         {
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             return type.IsPrimitive;
 #else
             return type.GetTypeInfo().IsPrimitive;

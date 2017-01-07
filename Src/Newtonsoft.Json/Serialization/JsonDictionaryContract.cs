@@ -30,7 +30,7 @@ using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
 
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
 
@@ -142,11 +142,11 @@ namespace Newtonsoft.Json.Serialization
                     CreatedType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
                 }
 
-#if !(NET40 || NET35 || NET20 || PORTABLE40)
+#if HAVE_READ_ONLY_COLLECTIONS
                 IsReadOnlyOrFixedSize = ReflectionUtils.InheritsGenericDefinition(underlyingType, typeof(ReadOnlyDictionary<,>));
 #endif
             }
-#if !(NET40 || NET35 || NET20 || PORTABLE40)
+#if HAVE_READ_ONLY_COLLECTIONS
             else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IReadOnlyDictionary<,>), out _genericCollectionDefinitionType))
             {
                 keyType = _genericCollectionDefinitionType.GetGenericArguments()[0];
@@ -177,7 +177,7 @@ namespace Newtonsoft.Json.Serialization
                     typeof(KeyValuePair<,>).MakeGenericType(keyType, valueType),
                     typeof(IDictionary<,>).MakeGenericType(keyType, valueType));
 
-#if !(NET35 || NET20)
+#if HAVE_FSHARP_TYPES
                 if (!HasParameterizedCreatorInternal && underlyingType.Name == FSharpUtils.FSharpMapTypeName)
                 {
                     FSharpUtils.EnsureInitialized(underlyingType.Assembly());
@@ -205,7 +205,7 @@ namespace Newtonsoft.Json.Serialization
             }
 #endif
 
-#if !(NET20 || NET35 || NET40)
+#if HAVE_IMMUTABLE_COLLECTIONS
             Type immutableCreatedType;
             ObjectConstructor<object> immutableParameterizedCreator;
             if (ImmutableCollectionsUtils.TryBuildImmutableForDictionaryContract(underlyingType, DictionaryKeyType, DictionaryValueType, out immutableCreatedType, out immutableParameterizedCreator))

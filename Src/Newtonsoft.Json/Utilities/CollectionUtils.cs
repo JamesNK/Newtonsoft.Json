@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-#if (NET20 || NET35 || PORTABLE40)
+#if !HAVE_COVARIANT_GENERICS
         public static void AddRange<T>(this IList<T> initial, IEnumerable collection)
         {
             ValidationUtils.ArgumentNotNull(initial, nameof(initial));

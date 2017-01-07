@@ -27,7 +27,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Threading;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;

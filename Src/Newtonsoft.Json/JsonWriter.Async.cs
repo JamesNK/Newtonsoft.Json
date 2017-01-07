@@ -23,13 +23,13 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
 
 using System;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_NUMERICS
 using System.Numerics;
 #endif
 using System.Threading.Tasks;
@@ -613,7 +613,7 @@ namespace Newtonsoft.Json
                 case JsonToken.Integer:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
                     return
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                         value is BigInteger ? WriteValueAsync((BigInteger)value, cancellationToken) :
 #endif
                         WriteValueAsync(Convert.ToInt64(value, CultureInfo.InvariantCulture), cancellationToken);
@@ -1629,7 +1629,7 @@ namespace Newtonsoft.Json
                     return writer.WriteValueAsync((TimeSpan)value, cancellationToken);
                 case PrimitiveTypeCode.TimeSpanNullable:
                     return writer.WriteValueAsync(value == null ? (TimeSpan?)null : (TimeSpan)value, cancellationToken);
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                 case PrimitiveTypeCode.BigInteger:
 
                     // this will call to WriteValueAsync(object)
@@ -1650,7 +1650,7 @@ namespace Newtonsoft.Json
                     return writer.WriteNullAsync(cancellationToken);
 #endif
                 default:
-#if !PORTABLE
+#if HAVE_ICONVERTIBLE
                     IConvertible convertable = value as IConvertible;
                     if (convertable != null)
                     {

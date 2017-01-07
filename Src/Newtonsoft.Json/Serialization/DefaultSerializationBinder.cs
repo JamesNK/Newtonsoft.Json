@@ -70,7 +70,7 @@ namespace Newtonsoft.Json.Serialization
                 assembly = Assembly.Load(assemblyName);
 #endif
 
-#if !(PORTABLE40 || PORTABLE || DOTNET)
+#if HAVE_APP_DOMAIN
                 if (assembly == null)
                 {
                     // will find assemblies loaded with Assembly.LoadFile outside of the main directory
@@ -199,7 +199,7 @@ namespace Newtonsoft.Json.Serialization
 #endif
         void BindToName(Type serializedType, out string assemblyName, out string typeName)
         {
-#if (DOTNET || PORTABLE)
+#if !HAVE_FULL_REFLECTION
             assemblyName = serializedType.GetTypeInfo().Assembly.FullName;
             typeName = serializedType.FullName;
 #else
