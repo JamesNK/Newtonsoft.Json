@@ -31,7 +31,7 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Bson
 {
-    internal class BsonBinaryWriter
+    internal partial class BsonBinaryWriter
     {
         private static readonly Encoding Encoding = new UTF8Encoding(false);
 
@@ -44,6 +44,9 @@ namespace Newtonsoft.Json.Bson
         public BsonBinaryWriter(BinaryWriter writer)
         {
             DateTimeKindHandling = DateTimeKind.Utc;
+#if !(NET20 || NET35 || NET40 || PORTABLE40)
+            _asyncWriter = writer as AsyncBinaryWriter;
+#endif
             _writer = writer;
         }
 

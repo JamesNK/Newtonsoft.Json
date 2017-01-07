@@ -48,12 +48,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Bson\AsyncBinaryWriter.cs" />
     <Compile Include="Bson\BsonBinaryType.cs" />
+    <Compile Include="Bson\BsonBinaryWriter.Async.cs" />
     <Compile Include="Bson\BsonBinaryWriter.cs" />
     <Compile Include="Bson\BsonObjectId.cs" />
     <Compile Include="Bson\BsonReader.cs" />
     <Compile Include="Bson\BsonToken.cs" />
     <Compile Include="Bson\BsonType.cs" />
+    <Compile Include="Bson\BsonWriter.Async.cs" />
     <Compile Include="Bson\BsonWriter.cs" />
     <Compile Include="ConstructorHandling.cs" />
     <Compile Include="Converters\BinaryConverter.cs" />
