@@ -111,7 +111,6 @@ namespace Newtonsoft.Json.Converters
                 throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected EndConstructor, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
 
-#if HAVE_NULLABLE
             Type t = (ReflectionUtils.IsNullableType(objectType))
                 ? Nullable.GetUnderlyingType(objectType)
                 : objectType;
@@ -119,7 +118,6 @@ namespace Newtonsoft.Json.Converters
             {
                 return new DateTimeOffset(d);
             }
-#endif
 
             return d;
         }

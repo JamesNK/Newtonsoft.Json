@@ -124,11 +124,9 @@ namespace Newtonsoft.Json.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             bool nullable = ReflectionUtils.IsNullableType(objectType);
-#if HAVE_NULLABLE
             Type t = (nullable)
                 ? Nullable.GetUnderlyingType(objectType)
                 : objectType;
-#endif
 
             if (reader.TokenType == JsonToken.Null)
             {
