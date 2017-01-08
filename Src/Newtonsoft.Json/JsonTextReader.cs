@@ -146,7 +146,7 @@ namespace Newtonsoft.Json
                     byte[] data;
                     if (_stringReference.Length == 0)
                     {
-                        data = new byte[0];
+                        data = CollectionUtils.ArrayEmpty<byte>();
                     }
                     else if (_stringReference.Length == 36 && ConvertUtils.TryConvertGuid(_stringReference.ToString(), out g))
                     {

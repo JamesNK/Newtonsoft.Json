@@ -37,7 +37,7 @@ namespace Newtonsoft.Json.Utilities
     {
         public virtual IEnumerable<string> GetDynamicMemberNames(T instance)
         {
-            return new string[0];
+            return CollectionUtils.ArrayEmpty<string>();
         }
 
         public virtual bool TryBinaryOperation(T instance, BinaryOperationBinder binder, object arg, out object result)

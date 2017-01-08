@@ -745,7 +745,7 @@ namespace Newtonsoft.Json.Serialization
 
             bool hasWrittenMetadataObject = WriteStartArray(writer, values, contract, member, collectionContract, containerProperty);
 
-            SerializeMultidimensionalArray(writer, values, contract, member, writer.Top, new int[0]);
+            SerializeMultidimensionalArray(writer, values, contract, member, writer.Top, CollectionUtils.ArrayEmpty<int>());
 
             if (hasWrittenMetadataObject)
             {
