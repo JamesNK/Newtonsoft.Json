@@ -114,12 +114,14 @@ namespace Newtonsoft.Json.Converters
             Type t = (ReflectionUtils.IsNullableType(objectType))
                 ? Nullable.GetUnderlyingType(objectType)
                 : objectType;
+#if HAVE_DATE_TIME_OFFSET
             if (t == typeof(DateTimeOffset))
             {
                 return new DateTimeOffset(d);
             }
+#endif
 
-            return d;
+			return d;
         }
     }
 }
