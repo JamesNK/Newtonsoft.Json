@@ -154,9 +154,9 @@ namespace Newtonsoft.Json.Serialization
             }
 
             JsonConverter converter =
-                ((member != null) ? member.Converter : null) ??
-                ((containerProperty != null) ? containerProperty.ItemConverter : null) ??
-                ((containerContract != null) ? containerContract.ItemConverter : null) ??
+                member?.Converter ??
+                containerProperty?.ItemConverter ??
+                containerContract?.ItemConverter ??
                 valueContract.Converter ??
                 Serializer.GetMatchingConverter(valueContract.UnderlyingType) ??
                 valueContract.InternalConverter;
@@ -554,7 +554,7 @@ namespace Newtonsoft.Json.Serialization
                     if (memberValue == null)
                     {
                         JsonObjectContract objectContract = contract as JsonObjectContract;
-                        Required resolvedRequired = property._required ?? ((objectContract != null) ? objectContract.ItemRequired : null) ?? Required.Default;
+                        Required resolvedRequired = property._required ?? objectContract?.ItemRequired ?? Required.Default;
                         if (resolvedRequired == Required.Always)
                         {
                             throw JsonSerializationException.Create(null, writer.ContainerPath, "Cannot write a null value for property '{0}'. Property requires a value.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName), null);
@@ -1000,9 +1000,9 @@ namespace Newtonsoft.Json.Serialization
         private bool ShouldWriteType(TypeNameHandling typeNameHandlingFlag, JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerProperty)
         {
             TypeNameHandling resolvedTypeNameHandling =
-                ((member != null) ? member.TypeNameHandling : null)
-                ?? ((containerProperty != null) ? containerProperty.ItemTypeNameHandling : null)
-                ?? ((containerContract != null) ? containerContract.ItemTypeNameHandling : null)
+                member?.TypeNameHandling
+                ?? containerProperty?.ItemTypeNameHandling
+                ?? containerContract?.ItemTypeNameHandling
                 ?? Serializer._typeNameHandling;
 
             if (HasFlag(resolvedTypeNameHandling, typeNameHandlingFlag))

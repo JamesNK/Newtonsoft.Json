@@ -59,13 +59,13 @@ namespace Newtonsoft.Json.Converters
             string keyName = (string)_reflectionObject.GetValue(value, KeyPropertyName);
             object keyValue = _reflectionObject.GetValue(value, ValuePropertyName);
 
-            Type keyValueType = (keyValue != null) ? keyValue.GetType() : null;
+            Type keyValueType = keyValue?.GetType();
 
             writer.WriteStartObject();
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(KeyPropertyName) : KeyPropertyName);
             writer.WriteValue(keyName);
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(TypePropertyName) : TypePropertyName);
-            writer.WriteValue((keyValueType != null) ? keyValueType.FullName : null);
+            writer.WriteValue(keyValueType?.FullName);
 
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(ValuePropertyName) : ValuePropertyName);
 

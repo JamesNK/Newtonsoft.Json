@@ -528,7 +528,7 @@ namespace Newtonsoft.Json
                     WritePropertyName(value.ToString());
                     break;
                 case JsonToken.Comment:
-                    WriteComment((value != null) ? value.ToString() : null);
+                    WriteComment(value?.ToString());
                     break;
                 case JsonToken.Integer:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
@@ -599,7 +599,7 @@ namespace Newtonsoft.Json
                     }
                     break;
                 case JsonToken.Raw:
-                    WriteRawValue((value != null) ? value.ToString() : null);
+                    WriteRawValue(value?.ToString());
                     break;
                 case JsonToken.Bytes:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));

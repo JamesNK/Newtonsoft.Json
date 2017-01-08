@@ -99,7 +99,7 @@ namespace Newtonsoft.Json.Serialization
                     && string.Equals(reader.Value.ToString(), JsonTypeReflector.IdPropertyName, StringComparison.Ordinal))
                 {
                     reader.ReadAndAssert();
-                    id = (reader.Value != null) ? reader.Value.ToString() : null;
+                    id = reader.Value?.ToString();
                     reader.ReadAndAssert();
                 }
 
@@ -705,7 +705,7 @@ namespace Newtonsoft.Json.Serialization
                                 throw JsonSerializationException.Create(reader, "JSON reference {0} property must have a string or null value.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName));
                             }
 
-                            string reference = (reader.Value != null) ? reader.Value.ToString() : null;
+                            string reference = reader.Value?.ToString();
 
                             reader.ReadAndAssert();
 
@@ -745,7 +745,7 @@ namespace Newtonsoft.Json.Serialization
                         {
                             reader.ReadAndAssert();
 
-                            id = (reader.Value != null) ? reader.Value.ToString() : null;
+                            id = reader.Value?.ToString();
 
                             reader.ReadAndAssert();
                             metadataProperty = true;
@@ -771,9 +771,9 @@ namespace Newtonsoft.Json.Serialization
         private void ResolveTypeName(JsonReader reader, ref Type objectType, ref JsonContract contract, JsonProperty member, JsonContainerContract containerContract, JsonProperty containerMember, string qualifiedTypeName)
         {
             TypeNameHandling resolvedTypeNameHandling =
-                ((member != null) ? member.TypeNameHandling : null)
-                ?? ((containerContract != null) ? containerContract.ItemTypeNameHandling : null)
-                ?? ((containerMember != null) ? containerMember.ItemTypeNameHandling : null)
+                member?.TypeNameHandling
+                ?? containerContract?.ItemTypeNameHandling
+                ?? containerMember?.ItemTypeNameHandling
                 ?? Serializer._typeNameHandling;
 
             if (resolvedTypeNameHandling != TypeNameHandling.None)

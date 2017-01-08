@@ -422,7 +422,7 @@ namespace Newtonsoft.Json.Linq
             {
                 if (operation == ExpressionType.Add || operation == ExpressionType.AddAssign)
                 {
-                    result = ((objA != null) ? objA.ToString() : null) + ((objB != null) ? objB.ToString() : null);
+                    result = objA?.ToString() + objB?.ToString();
                     return true;
                 }
             }
@@ -711,8 +711,8 @@ namespace Newtonsoft.Json.Linq
             get { return _value; }
             set
             {
-                Type currentType = (_value != null) ? _value.GetType() : null;
-                Type newType = (value != null) ? value.GetType() : null;
+                Type currentType = _value?.GetType();
+                Type newType = value?.GetType();
 
                 if (currentType != newType)
                 {
@@ -743,10 +743,10 @@ namespace Newtonsoft.Json.Linq
             switch (_valueType)
             {
                 case JTokenType.Comment:
-                    writer.WriteComment((_value != null) ? _value.ToString() : null);
+                    writer.WriteComment(_value?.ToString());
                     return;
                 case JTokenType.Raw:
-                    writer.WriteRawValue((_value != null) ? _value.ToString() : null);
+                    writer.WriteRawValue(_value?.ToString());
                     return;
                 case JTokenType.Null:
                     writer.WriteNull();
@@ -797,7 +797,7 @@ namespace Newtonsoft.Json.Linq
                     }
                     return;
                 case JTokenType.String:
-                    writer.WriteValue((_value != null) ? _value.ToString() : null);
+                    writer.WriteValue(_value?.ToString());
                     return;
                 case JTokenType.Boolean:
                     writer.WriteValue(Convert.ToBoolean(_value, CultureInfo.InvariantCulture));
@@ -870,18 +870,7 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            JValue otherValue = obj as JValue;
-            if (otherValue != null)
-            {
-                return Equals(otherValue);
-            }
-
-            return base.Equals(obj);
+            return Equals(obj as JValue);
         }
 
         /// <summary>
