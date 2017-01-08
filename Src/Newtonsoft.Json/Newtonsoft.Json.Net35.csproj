@@ -44,6 +44,8 @@
     <BootstrapperEnabled>true</BootstrapperEnabled>
     <TargetFrameworkProfile>
     </TargetFrameworkProfile>
+    <DefineConstants>NET35;HAVE_ADO_NET;HAVE_APP_DOMAIN;HAVE_BINARY_SERIALIZATION;HAVE_CAS;HAVE_CHAR_TO_STRING_WITH_CULTURE;HAVE_COMPONENTMODEL;HAVE_DATA_CONTRACTS;HAVE_DATE_TIME_OFFSET;HAVE_ENTITY_FRAMEWORK;HAVE_FULL_REFLECTION;HAVE_HASHSET;HAVE_ICLONEABLE;HAVE_ICONVERTIBLE;HAVE_INOTIFY_PROPERTY_CHANGING;HAVE_LINQ;HAVE_MEMORY_BARRIER;HAVE_NULLABLE;HAVE_REFLECTION;HAVE_REFLECTION_EMIT;HAVE_STREAM_READER_WRITER_CLOSE;HAVE_TIME_ZONE_INFO;HAVE_TRACE_WRITER;HAVE_UNICODE_SURROGATE_DETECTION;HAVE_XLINQ;HAVE_XML_DOCUMENT</DefineConstants>
+    <DefineConstants Condition="'(SignAssembly)' == 'true'">SIGNED;$(DefineConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -51,7 +53,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Net35\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Net35\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;NET35</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Net35\Newtonsoft.Json.xml</DocumentationFile>
@@ -66,7 +68,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Net35\</OutputPath>
     <IntermediateOutputPath>obj\Release\Net35\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NET35</DefineConstants>
+    <DefineConstants>TRACE;CODE_ANALYSIS;$(DefineConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Net35\Newtonsoft.Json.xml</DocumentationFile>
