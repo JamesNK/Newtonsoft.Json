@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-#if HAVE_NUMERICS
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Reflection;

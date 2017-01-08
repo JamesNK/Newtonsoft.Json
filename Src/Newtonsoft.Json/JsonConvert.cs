@@ -26,7 +26,7 @@
 using System;
 using System.IO;
 using System.Globalization;
-#if HAVE_NUMERICS
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 #if HAVE_TPL

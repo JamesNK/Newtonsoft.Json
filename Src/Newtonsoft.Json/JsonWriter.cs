@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-#if HAVE_NUMERICS
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Utilities;
