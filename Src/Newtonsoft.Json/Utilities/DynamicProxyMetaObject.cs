@@ -178,9 +178,9 @@ namespace Newtonsoft.Json.Utilities
 
         private static readonly Expression[] NoArgs = new Expression[0];
 
-        private static Expression[] GetArgs(params DynamicMetaObject[] args)
+        private static IEnumerable<Expression> GetArgs(params DynamicMetaObject[] args)
         {
-            return args.Select(arg => Expression.Convert(arg.Expression, typeof(object))).ToArray();
+            return args.Select(arg => Expression.Convert(arg.Expression, typeof(object)));
         }
 
         private static Expression[] GetArgArray(DynamicMetaObject[] args)
@@ -211,7 +211,7 @@ namespace Newtonsoft.Json.Utilities
         /// Helper method for generating a MetaObject which calls a
         /// specific method on Dynamic that returns a result
         /// </summary>
-        private DynamicMetaObject CallMethodWithResult(string methodName, DynamicMetaObjectBinder binder, Expression[] args, Fallback fallback, Fallback fallbackInvoke = null)
+        private DynamicMetaObject CallMethodWithResult(string methodName, DynamicMetaObjectBinder binder, IEnumerable<Expression> args, Fallback fallback, Fallback fallbackInvoke = null)
         {
             //
             // First, call fallback to do default binding
@@ -233,7 +233,7 @@ namespace Newtonsoft.Json.Utilities
             return _dontFallbackFirst ? callDynamic : fallback(callDynamic);
         }
 
-        private DynamicMetaObject BuildCallMethodWithResult(string methodName, DynamicMetaObjectBinder binder, Expression[] args, DynamicMetaObject fallbackResult, Fallback fallbackInvoke)
+        private DynamicMetaObject BuildCallMethodWithResult(string methodName, DynamicMetaObjectBinder binder, IEnumerable<Expression> args, DynamicMetaObject fallbackResult, Fallback fallbackInvoke)
         {
             //
             // Build a new expression like:
@@ -291,7 +291,7 @@ namespace Newtonsoft.Json.Utilities
         /// specific method on Dynamic, but uses one of the arguments for
         /// the result.
         /// </summary>
-        private DynamicMetaObject CallMethodReturnLast(string methodName, DynamicMetaObjectBinder binder, Expression[] args, Fallback fallback)
+        private DynamicMetaObject CallMethodReturnLast(string methodName, DynamicMetaObjectBinder binder, IEnumerable<Expression> args, Fallback fallback)
         {
             //
             // First, call fallback to do default binding
@@ -312,7 +312,7 @@ namespace Newtonsoft.Json.Utilities
             callArgs.Add(Expression.Convert(Expression, typeof(T)));
             callArgs.Add(Constant(binder));
             callArgs.AddRange(args);
-            callArgs[args.Length + 1] = Expression.Assign(result, callArgs[args.Length + 1]);
+            callArgs[callArgs.Count - 1] = Expression.Assign(result, callArgs[callArgs.Count - 1]);
 
             DynamicMetaObject callDynamic = new DynamicMetaObject(
                 Expression.Block(
