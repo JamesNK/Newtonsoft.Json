@@ -2365,7 +2365,7 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         protected virtual DynamicMetaObject GetMetaObject(Expression parameter)
         {
-            return new DynamicProxyMetaObject<JToken>(parameter, this, new DynamicProxy<JToken>(), true);
+            return new DynamicProxyMetaObject<JToken>(parameter, this, new DynamicProxy<JToken>());
         }
 
         /// <summary>

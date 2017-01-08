@@ -29,20 +29,17 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Reflection;
 
 namespace Newtonsoft.Json.Utilities
 {
     internal sealed class DynamicProxyMetaObject<T> : DynamicMetaObject
     {
         private readonly DynamicProxy<T> _proxy;
-        private readonly bool _dontFallbackFirst;
 
-        internal DynamicProxyMetaObject(Expression expression, T value, DynamicProxy<T> proxy, bool dontFallbackFirst)
+        internal DynamicProxyMetaObject(Expression expression, T value, DynamicProxy<T> proxy)
             : base(expression, BindingRestrictions.Empty, value)
         {
             _proxy = proxy;
-            _dontFallbackFirst = dontFallbackFirst;
         }
 
         private bool IsOverridden(string method)
@@ -103,7 +100,7 @@ namespace Newtonsoft.Json.Utilities
             //
             Fallback fallback = e => binder.FallbackInvokeMember(this, args, e);
 
-            DynamicMetaObject call = BuildCallMethodWithResult(
+            return BuildCallMethodWithResult(
                 "TryInvokeMember",
                 binder,
                 GetArgArray(args),
@@ -116,8 +113,6 @@ namespace Newtonsoft.Json.Utilities
                     ),
                 null
                 );
-
-            return _dontFallbackFirst ? call : fallback(call);
         }
 
         public override DynamicMetaObject BindCreateInstance(CreateInstanceBinder binder, DynamicMetaObject[] args)
@@ -214,18 +209,7 @@ namespace Newtonsoft.Json.Utilities
             //
             DynamicMetaObject fallbackResult = fallback(null);
 
-            DynamicMetaObject callDynamic = BuildCallMethodWithResult(methodName, binder, args, fallbackResult, fallbackInvoke);
-
-            //
-            // Now, call fallback again using our new MO as the error
-            // When we do this, one of two things can happen:
-            //   1. Binding will succeed, and it will ignore our call to
-            //      the dynamic method, OR
-            //   2. Binding will fail, and it will use the MO we created
-            //      above.
-            //
-
-            return _dontFallbackFirst ? callDynamic : fallback(callDynamic);
+            return BuildCallMethodWithResult(methodName, binder, args, fallbackResult, fallbackInvoke);
         }
 
         private DynamicMetaObject BuildCallMethodWithResult(string methodName, DynamicMetaObjectBinder binder, IEnumerable<Expression> args, DynamicMetaObject fallbackResult, Fallback fallbackInvoke)
@@ -309,7 +293,7 @@ namespace Newtonsoft.Json.Utilities
             callArgs.AddRange(args);
             callArgs[callArgs.Count - 1] = Expression.Assign(result, callArgs[callArgs.Count - 1]);
 
-            DynamicMetaObject callDynamic = new DynamicMetaObject(
+            return new DynamicMetaObject(
                 Expression.Block(
                     new[] { result },
                     Expression.Condition(
@@ -325,16 +309,6 @@ namespace Newtonsoft.Json.Utilities
                     ),
                 GetRestrictions().Merge(fallbackResult.Restrictions)
                 );
-
-            //
-            // Now, call fallback again using our new MO as the error
-            // When we do this, one of two things can happen:
-            //   1. Binding will succeed, and it will ignore our call to
-            //      the dynamic method, OR
-            //   2. Binding will fail, and it will use the MO we created
-            //      above.
-            //
-            return _dontFallbackFirst ? callDynamic : fallback(callDynamic);
         }
 
         /// <summary>
@@ -359,7 +333,7 @@ namespace Newtonsoft.Json.Utilities
             // Build a new expression like:
             //   if (TryDeleteMember(payload)) { } else { fallbackResult }
             //
-            DynamicMetaObject callDynamic = new DynamicMetaObject(
+            return new DynamicMetaObject(
                 Expression.Condition(
                     Expression.Call(
                         Expression.Constant(_proxy),
@@ -372,16 +346,6 @@ namespace Newtonsoft.Json.Utilities
                     ),
                 GetRestrictions().Merge(fallbackResult.Restrictions)
                 );
-
-            //
-            // Now, call fallback again using our new MO as the error
-            // When we do this, one of two things can happen:
-            //   1. Binding will succeed, and it will ignore our call to
-            //      the dynamic method, OR
-            //   2. Binding will fail, and it will use the MO we created
-            //      above.
-            //
-            return _dontFallbackFirst ? callDynamic : fallback(callDynamic);
         }
 
         /// <summary>
