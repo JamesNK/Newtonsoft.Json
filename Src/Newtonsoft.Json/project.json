@@ -101,10 +101,9 @@
     "netstandard1.0": {
       "buildOptions": {
         "define": [
-          "DOTNET",
           "NETSTANDARD1_0",
+          "PORTABLE",
           "HAVE_ASYNC",
-          "HAVE_CONCURRENT_COLLECTIONS",
           "HAVE_COVARIANT_GENERICS",
           "HAVE_DATA_CONTRACTS",
           "HAVE_DATE_TIME_OFFSET",
@@ -113,10 +112,8 @@
           "HAVE_FSHARP_TYPES",
           "HAVE_GUID_TRY_PARSE",
           "HAVE_HASHSET",
-          "HAVE_ICONVERTIBLE",
           "HAVE_IMMUTABLE_COLLECTIONS",
           "HAVE_INOTIFY_COLLECTION_CHANGED",
-          "HAVE_INOTIFY_PROPERTY_CHANGING",
           "HAVE_LINQ",
           "HAVE_READ_ONLY_COLLECTIONS",
           "HAVE_STRING_JOIN_ENUMERABLE",
@@ -157,11 +154,10 @@
     "netstandard1.1": {
       "buildOptions": {
         "define": [
-          "DOTNET",
           "NETSTANDARD1_1",
+          "PORTABLE",
           "HAVE_ASYNC",
           "HAVE_BIG_INTEGER",
-          "HAVE_CONCURRENT_COLLECTIONS",
           "HAVE_COVARIANT_GENERICS",
           "HAVE_DATA_CONTRACTS",
           "HAVE_DATE_TIME_OFFSET",
@@ -170,10 +166,8 @@
           "HAVE_FSHARP_TYPES",
           "HAVE_GUID_TRY_PARSE",
           "HAVE_HASHSET",
-          "HAVE_ICONVERTIBLE",
           "HAVE_IMMUTABLE_COLLECTIONS",
           "HAVE_INOTIFY_COLLECTION_CHANGED",
-          "HAVE_INOTIFY_PROPERTY_CHANGING",
           "HAVE_LINQ",
           "HAVE_READ_ONLY_COLLECTIONS",
           "HAVE_STRING_JOIN_ENUMERABLE",
