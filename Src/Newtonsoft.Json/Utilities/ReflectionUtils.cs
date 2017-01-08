@@ -950,8 +950,8 @@ namespace Newtonsoft.Json.Utilities
                 while ((targetType = targetType.BaseType()) != null)
                 {
                     // filter out protected fields
-                    IEnumerable<MemberInfo> childPrivateFields =
-                        targetType.GetFields(nonPublicBindingAttr).Where(f => f.IsPrivate).Cast<MemberInfo>();
+                    IEnumerable<FieldInfo> childPrivateFields =
+                        targetType.GetFields(nonPublicBindingAttr).Where(f => f.IsPrivate);
 
                     initialFields.AddRange(childPrivateFields);
                 }
