@@ -871,18 +871,7 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            JValue otherValue = obj as JValue;
-            if (otherValue != null)
-            {
-                return Equals(otherValue);
-            }
-
-            return base.Equals(obj);
+            return Equals(obj as JValue);
         }
 
         /// <summary>
