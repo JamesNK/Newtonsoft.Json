@@ -649,7 +649,7 @@ namespace Newtonsoft.Json.Utilities
 
         private static object EnsureTypeAssignable(object value, Type initialType, Type targetType)
         {
-            Type valueType = (value != null) ? value.GetType() : null;
+            Type valueType = value?.GetType();
 
             if (value != null)
             {
@@ -672,7 +672,7 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
 
-            throw new ArgumentException("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, (initialType != null) ? initialType.ToString() : "{null}", targetType));
+            throw new ArgumentException("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialType?.ToString() ?? "{null}", targetType));
         }
 
 #if !(DOTNET || PORTABLE40 || PORTABLE)

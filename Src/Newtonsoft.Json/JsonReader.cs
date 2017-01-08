@@ -271,7 +271,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual Type ValueType
         {
-            get { return (_value != null) ? _value.GetType() : null; }
+            get { return _value?.GetType(); }
         }
 
         /// <summary>

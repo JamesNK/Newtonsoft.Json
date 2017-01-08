@@ -240,7 +240,7 @@ namespace Newtonsoft.Json.Linq
 
         private string SafeToString(object value)
         {
-            return (value != null) ? value.ToString() : null;
+            return value?.ToString();
         }
 
         bool IJsonLineInfo.HasLineInfo()
