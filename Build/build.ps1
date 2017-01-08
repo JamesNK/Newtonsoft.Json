@@ -359,6 +359,8 @@ function Update-Project {
 
   $json.version = GetNuGetVersion
 
+  write-host $json
+
   ConvertTo-Json $json -Depth 10 | Set-Content $projectPath
 }
 
