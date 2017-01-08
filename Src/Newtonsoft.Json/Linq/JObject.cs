@@ -322,7 +322,7 @@ namespace Newtonsoft.Json.Linq
 
                 JProperty property = Property(propertyName);
 
-                return (property != null) ? property.Value : null;
+                return property?.Value;
             }
             set
             {

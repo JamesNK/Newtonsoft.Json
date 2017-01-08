@@ -1650,7 +1650,7 @@ namespace Newtonsoft.Json.Converters
         {
             if (reader.TokenType == JsonToken.String)
             {
-                return (reader.Value != null) ? reader.Value.ToString() : null;
+                return reader.Value?.ToString();
             }
             else if (reader.TokenType == JsonToken.Integer)
             {
@@ -1838,7 +1838,7 @@ namespace Newtonsoft.Json.Converters
                                                     throw JsonSerializationException.Create(reader, "Unexpected JsonToken: " + reader.TokenType);
                                                 }
 
-                                                attributeValue = (reader.Value != null) ? reader.Value.ToString() : null;
+                                                attributeValue = reader.Value?.ToString();
                                                 attributeNameValues.Add(jsonPrefix + ":" + attributeName, attributeValue);
                                                 break;
                                             default:

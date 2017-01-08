@@ -1490,16 +1490,39 @@ namespace Newtonsoft.Json.Serialization
                 property.Order = propertyAttribute._order;
                 property.DefaultValueHandling = propertyAttribute._defaultValueHandling;
                 hasMemberAttribute = true;
+                property.NullValueHandling = propertyAttribute._nullValueHandling;
+                property.ReferenceLoopHandling = propertyAttribute._referenceLoopHandling;
+                property.ObjectCreationHandling = propertyAttribute._objectCreationHandling;
+                property.TypeNameHandling = propertyAttribute._typeNameHandling;
+                property.IsReference = propertyAttribute._isReference;
+
+                property.ItemIsReference = propertyAttribute._itemIsReference;
+                property.ItemConverter = propertyAttribute.ItemConverterType != null ? JsonTypeReflector.CreateJsonConverterInstance(propertyAttribute.ItemConverterType, propertyAttribute.ItemConverterParameters) : null;
+                property.ItemReferenceLoopHandling = propertyAttribute._itemReferenceLoopHandling;
+                property.ItemTypeNameHandling = propertyAttribute._itemTypeNameHandling;
             }
-#if HAVE_DATA_CONTRACTS
-            else if (dataMemberAttribute != null)
+            else
             {
-                property._required = (dataMemberAttribute.IsRequired) ? Required.AllowNull : Required.Default;
-                property.Order = (dataMemberAttribute.Order != -1) ? (int?)dataMemberAttribute.Order : null;
-                property.DefaultValueHandling = (!dataMemberAttribute.EmitDefaultValue) ? (DefaultValueHandling?)DefaultValueHandling.Ignore : null;
-                hasMemberAttribute = true;
-            }
+                property.NullValueHandling = null;
+                property.ReferenceLoopHandling = null;
+                property.ObjectCreationHandling = null;
+                property.TypeNameHandling = null;
+                property.IsReference = null;
+                property.ItemIsReference = null;
+                property.ItemConverter = null;
+                property.ItemReferenceLoopHandling = null;
+                property.ItemTypeNameHandling = null;
+#if HAVE_DATA_CONTRACTS
+                if (dataMemberAttribute != null)
+                {
+                    property._required = (dataMemberAttribute.IsRequired) ? Required.AllowNull : Required.Default;
+                    property.Order = (dataMemberAttribute.Order != -1) ? (int?)dataMemberAttribute.Order : null;
+                    property.DefaultValueHandling = (!dataMemberAttribute.EmitDefaultValue) ? (DefaultValueHandling?)DefaultValueHandling.Ignore : null;
+                    hasMemberAttribute = true;
+                }
 #endif
+            }
+
             if (requiredAttribute != null)
             {
                 property._required = Required.Always;
@@ -1544,20 +1567,6 @@ namespace Newtonsoft.Json.Serialization
             {
                 property.DefaultValue = defaultValueAttribute.Value;
             }
-
-            property.NullValueHandling = (propertyAttribute != null) ? propertyAttribute._nullValueHandling : null;
-            property.ReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._referenceLoopHandling : null;
-            property.ObjectCreationHandling = (propertyAttribute != null) ? propertyAttribute._objectCreationHandling : null;
-            property.TypeNameHandling = (propertyAttribute != null) ? propertyAttribute._typeNameHandling : null;
-            property.IsReference = (propertyAttribute != null) ? propertyAttribute._isReference : null;
-
-            property.ItemIsReference = (propertyAttribute != null) ? propertyAttribute._itemIsReference : null;
-            property.ItemConverter =
-                (propertyAttribute?.ItemConverterType != null)
-                    ? JsonTypeReflector.CreateJsonConverterInstance(propertyAttribute.ItemConverterType, propertyAttribute.ItemConverterParameters)
-                    : null;
-            property.ItemReferenceLoopHandling = (propertyAttribute != null) ? propertyAttribute._itemReferenceLoopHandling : null;
-            property.ItemTypeNameHandling = (propertyAttribute != null) ? propertyAttribute._itemTypeNameHandling : null;
 
             allowNonPublicAccess = false;
 #pragma warning disable 618
