@@ -142,7 +142,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static Type GetObjectType(object v)
         {
-            return (v != null) ? v.GetType() : null;
+            return v?.GetType();
         }
 
         public static string GetTypeName(Type t, TypeNameAssemblyFormatHandling assemblyFormat, ISerializationBinder binder)
@@ -735,7 +735,7 @@ namespace Newtonsoft.Json.Utilities
         {
             T[] attributes = GetAttributes<T>(attributeProvider, inherit);
 
-            return (attributes != null) ? attributes.FirstOrDefault() : null;
+            return attributes?.FirstOrDefault();
         }
 
 #if !(DOTNET || PORTABLE)
