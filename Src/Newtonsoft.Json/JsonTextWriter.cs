@@ -741,7 +741,7 @@ namespace Newtonsoft.Json
             InternalWriteValue(JsonToken.String);
 
             string text;
-#if !HAVE_CHAR_TO_STRING_WITH_CULTURE
+#if !HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE
             text = value.ToString();
 #else
             text = value.ToString(null, CultureInfo.InvariantCulture);
