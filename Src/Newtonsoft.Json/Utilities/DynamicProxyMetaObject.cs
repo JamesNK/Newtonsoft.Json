@@ -170,7 +170,11 @@ namespace Newtonsoft.Json.Utilities
 
         private static IEnumerable<Expression> GetArgs(params DynamicMetaObject[] args)
         {
-            return args.Select(arg => Expression.Convert(arg.Expression, typeof(object)));
+            return args.Select(arg =>
+            {
+                Expression exp = arg.Expression;
+                return exp.Type.IsValueType() ? Expression.Convert(exp, typeof(object)) : exp;
+            });
         }
 
         private static Expression[] GetArgArray(DynamicMetaObject[] args)
@@ -180,10 +184,11 @@ namespace Newtonsoft.Json.Utilities
 
         private static Expression[] GetArgArray(DynamicMetaObject[] args, DynamicMetaObject value)
         {
-            return new Expression[]
+            var exp = value.Expression;
+            return new[]
             {
                 Expression.NewArrayInit(typeof(object), GetArgs(args)),
-                Expression.Convert(value.Expression, typeof(object))
+                exp.Type.IsValueType() ? Expression.Convert(exp, typeof(object)) : exp
             };
         }
 
