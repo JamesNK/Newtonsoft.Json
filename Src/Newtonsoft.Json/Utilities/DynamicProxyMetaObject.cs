@@ -45,11 +45,6 @@ namespace Newtonsoft.Json.Utilities
             _dontFallbackFirst = dontFallbackFirst;
         }
 
-        private new T Value
-        {
-            get { return (T)base.Value; }
-        }
-
         private bool IsOverridden(string method)
         {
             return ReflectionUtils.IsMethodOverridden(_proxy.GetType(), typeof(DynamicProxy<T>), method);
@@ -402,7 +397,7 @@ namespace Newtonsoft.Json.Utilities
 
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            return _proxy.GetDynamicMemberNames(Value);
+            return _proxy.GetDynamicMemberNames((T)Value);
         }
 
         // It is okay to throw NotSupported from this binder. This object
