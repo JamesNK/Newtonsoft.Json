@@ -31,9 +31,8 @@ using System.Globalization;
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
-#if HAVE_BIG_INTEGER
+#if HAVE_NUMERICS
 using System.Numerics;
-
 #endif
 
 namespace Newtonsoft.Json.Linq
