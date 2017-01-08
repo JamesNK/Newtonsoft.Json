@@ -350,18 +350,24 @@ function Update-Project {
     [string] $sign
   )
 
-  $file = switch($sign) { $true { $signKeyPath } default { $null } }
-  $signed = switch($sign) { $true { ";SIGNED" } default { "" } }
-  $constants = "CODE_ANALYSIS;TRACE;$signed"
-  $json = (Get-Content $projectPath) -join "`n" | ConvertFrom-Json
-  $options = @{"warningsAsErrors" = $true; "xmlDoc" = $true; "keyFile" = $file; "define" = ($constants -split ";") }
-  Add-Member -InputObject $json -MemberType NoteProperty -Name "buildOptions" -Value $options -Force
+  try
+  {
+    $file = switch($sign) { $true { $signKeyPath } default { $null } }
+    $signed = switch($sign) { $true { ";SIGNED" } default { "" } }
+    $constants = "CODE_ANALYSIS;TRACE;$signed"
+    $json = (Get-Content $projectPath) -join "`n" | ConvertFrom-Json
+    $options = @{"warningsAsErrors" = $true; "xmlDoc" = $true; "keyFile" = $file; "define" = ($constants -split ";") }
+    Add-Member -InputObject $json -MemberType NoteProperty -Name "buildOptions" -Value $options -Force
 
-  $json.version = GetNuGetVersion
-
-  write-host $json
-
-  ConvertTo-Json $json -Depth 10 | Set-Content $projectPath
+    $json.version = GetNuGetVersion
+    
+    ConvertTo-Json $json -Depth 10 | Set-Content $projectPath
+  }
+  catch [System.Exception]
+  {
+    write-host $_.Exception.ToString()
+    throw
+  }
 }
 
 function Execute-Command($command) {
