@@ -324,7 +324,6 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
         private static int FirstCharToEscape(string s, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling)
         {
             for (int i = 0; i != s.Length; i++)
@@ -357,6 +356,7 @@ namespace Newtonsoft.Json.Utilities
             return -1;
         }
 
+#if !(NET20 || NET35 || NET40 || PORTABLE40)
         public static Task WriteEscapedJavaScriptStringAsync(TextWriter writer, string s, char delimiter, bool appendDelimiters, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (appendDelimiters)
