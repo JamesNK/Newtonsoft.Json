@@ -15,6 +15,7 @@
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
     <DefineConstants>PORTABLE;HAVE_ASYNC;HAVE_COVARIANT_GENERICS;HAVE_DATA_CONTRACTS;HAVE_DATE_TIME_OFFSET;HAVE_DYNAMIC;HAVE_EXPRESSIONS;HAVE_FSHARP_TYPES;HAVE_GUID_TRY_PARSE;HAVE_IMMUTABLE_COLLECTIONS;HAVE_LINQ;HAVE_READ_ONLY_COLLECTIONS;HAVE_REFLECTION_BINDER;HAVE_STRING_JOIN_WITH_ENUMERABLE;HAVE_TIME_SPAN_PARSE_WITH_CULTURE;HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE;HAVE_TIME_ZONE_INFO;HAVE_TPL;HAVE_VERSION_TRY_PARSE;HAVE_XLINQ;HAVE_INOTIFY_COLLECTION_CHANGED</DefineConstants>
     <DefineConstants Condition="'(SignAssembly)' == 'true'">SIGNED;$(DefineConstants)</DefineConstants>
+    <DefineConstants>PORTABLE;HAVE_ASYNC;HAVE_COVARIANT_GENERICS;HAVE_DATA_CONTRACTS;HAVE_DATE_TIME_OFFSET;HAVE_DYNAMIC;HAVE_EXPRESSIONS;HAVE_FSHARP_TYPES;HAVE_GUID_TRY_PARSE;HAVE_IMMUTABLE_COLLECTIONS;HAVE_LINQ;HAVE_READ_ONLY_COLLECTIONS;HAVE_REFLECTION_BINDER;HAVE_STRING_JOIN_ENUMERABLE;HAVE_TIME_SPAN_PARSE_WITH_CULTURE;HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE;HAVE_TIME_ZONE_INFO;HAVE_TPL;HAVE_VERSION_TRY_PARSE;HAVE_XLINQ;HAVE_INOTIFY_COLLECTION_CHANGED</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,7 +23,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Portable\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Portable\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;$(DefineConstants)</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;$(DefineConstants);$(AdditionalConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
@@ -33,7 +34,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Portable\</OutputPath>
     <IntermediateOutputPath>obj\Release\Portable\</IntermediateOutputPath>
-    <DefineConstants>TRACE;CODE_ANALYSIS;$(DefineConstants)</DefineConstants><ErrorReport>prompt</ErrorReport>
+    <DefineConstants>TRACE;CODE_ANALYSIS;$(DefineConstants);$(AdditionalConstants)</DefineConstants><ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Portable\Newtonsoft.Json.xml</DocumentationFile>
     <RunCodeAnalysis>true</RunCodeAnalysis>

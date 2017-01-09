@@ -20,6 +20,7 @@
     <OldToolsVersion>4.0</OldToolsVersion>
     <DefineConstants>PORTABLE40;HAVE_DATA_CONTRACTS;HAVE_DATE_TIME_OFFSET;HAVE_DB_NULL_TYPE;HAVE_FSHARP_TYPES;HAVE_FULL_REFLECTION;HAVE_GUID_TRY_PARSE;HAVE_ICONVERTIBLE;HAVE_IMMUTABLE_COLLECTIONS;HAVE_LINQ;HAVE_MEMORY_BARRIER;HAVE_STRING_JOIN_WITH_ENUMERABLE;HAVE_TIME_SPAN_PARSE_WITH_CULTURE;HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE;HAVE_TIME_ZONE_INFO;HAVE_VERSION_TRY_PARSE</DefineConstants>
     <DefineConstants Condition="'(SignAssembly)' == 'true'">SIGNED;$(DefineConstants)</DefineConstants>
+    <DefineConstants>PORTABLE40;HAVE_DATA_CONTRACTS;HAVE_DATE_TIME_OFFSET;HAVE_DB_NULL_TYPE;HAVE_FSHARP_TYPES;HAVE_FULL_REFLECTION;HAVE_GUID_TRY_PARSE;HAVE_ICONVERTIBLE;HAVE_IMMUTABLE_COLLECTIONS;HAVE_LINQ;HAVE_MEMORY_BARRIER;HAVE_STRING_JOIN_ENUMERABLE;HAVE_TIME_SPAN_PARSE_WITH_CULTURE;HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE;HAVE_TIME_ZONE_INFO;HAVE_VERSION_TRY_PARSE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -27,7 +28,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Portable40\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Portable40\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;$(DefineConstants)</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;$(DefineConstants);$(AdditionalConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <RunCodeAnalysis>true</RunCodeAnalysis>
@@ -38,7 +39,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Portable40\</OutputPath>
     <IntermediateOutputPath>obj\Release\Portable40\</IntermediateOutputPath>
-    <DefineConstants>TRACE;CODE_ANALYSIS;$(DefineConstants)</DefineConstants>
+    <DefineConstants>TRACE;CODE_ANALYSIS;$(DefineConstants);$(AdditionalConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Portable40\Newtonsoft.Json.xml</DocumentationFile>
