@@ -90,7 +90,7 @@ namespace Newtonsoft.Json.Utilities
 #if !(PORTABLE40 || PORTABLE)
             EmptyTypes = Type.EmptyTypes;
 #else
-            EmptyTypes = new Type[0];
+            EmptyTypes = CollectionUtils.ArrayEmpty<Type>();
 #endif
         }
 

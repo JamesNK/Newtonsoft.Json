@@ -538,7 +538,7 @@ namespace Newtonsoft.Json
                     Guid g;
                     if (s.Length == 0)
                     {
-                        data = new byte[0];
+                        data = CollectionUtils.ArrayEmpty<byte>();
                     }
                     else if (ConvertUtils.TryConvertGuid(s, out g))
                     {

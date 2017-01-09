@@ -88,7 +88,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 return JPath.Evaluate(pathFilters, root, t, false);
             }
 
-            return new JToken[0];
+            return CollectionUtils.ArrayEmpty<JToken>();
         }
 
         public override bool IsMatch(JToken root, JToken t)

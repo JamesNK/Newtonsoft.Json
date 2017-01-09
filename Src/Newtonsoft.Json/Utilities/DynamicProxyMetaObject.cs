@@ -166,7 +166,7 @@ namespace Newtonsoft.Json.Utilities
 
         private delegate DynamicMetaObject Fallback(DynamicMetaObject errorSuggestion);
 
-        private static readonly Expression[] NoArgs = new Expression[0];
+        private static Expression[] NoArgs => CollectionUtils.ArrayEmpty<Expression>();
 
         private static IEnumerable<Expression> GetArgs(params DynamicMetaObject[] args)
         {
