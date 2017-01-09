@@ -468,7 +468,7 @@ namespace Newtonsoft.Json.Schema
                 case PrimitiveTypeCode.Empty:
                 case PrimitiveTypeCode.Object:
                     return schemaType | JsonSchemaType.String;
-#if !(DOTNET || PORTABLE)
+#if HAVE_DB_NULL_TYPE
                 case PrimitiveTypeCode.DBNull:
                     return schemaType | JsonSchemaType.Null;
 #endif

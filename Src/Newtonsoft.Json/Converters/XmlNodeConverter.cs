@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !PORTABLE40
+#if (HAVE_XML_DOCUMENT || HAVE_XLINQ)
 
 #if HAVE_BIG_INTEGER
 using System.Numerics;
@@ -1744,7 +1744,7 @@ namespace Newtonsoft.Json.Converters
         {
             element.SetAttributeNode(document.CreateAttribute("json:Array", JsonNamespaceUri, "true"));
 
-#if HAVE_LINQ
+#if HAVE_XLINQ
             // linq to xml doesn't automatically include prefixes via the namespace manager
             if (element is XElementWrapper)
             {
