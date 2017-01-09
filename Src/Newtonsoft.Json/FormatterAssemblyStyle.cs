@@ -1,5 +1,5 @@
 ﻿
-#if DOTNET || PORTABLE40 || PORTABLE
+#if !HAVE_BINARY_SERIALIZATION
 
 namespace System.Runtime.Serialization.Formatters
 {
