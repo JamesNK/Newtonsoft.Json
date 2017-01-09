@@ -49,30 +49,22 @@ namespace Newtonsoft.Json.Linq
                 return WriteToAsync(task, writer, cancellationToken, converters);
             }
 
-            JToken value = Value;
-            if (value != null)
-            {
-                return value.WriteToAsync(writer, cancellationToken, converters);
-            }
-            else
-            {
-                return writer.WriteNullAsync(cancellationToken);
-            }
+            return WriteValueAsync(writer, cancellationToken, converters);
         }
 
         private async Task WriteToAsync(Task task, JsonWriter writer, CancellationToken cancellationToken, params JsonConverter[] converters)
         {
             await task.ConfigureAwait(false);
 
+            await WriteValueAsync(writer, cancellationToken, converters);
+        }
+
+        private Task WriteValueAsync(JsonWriter writer, CancellationToken cancellationToken, JsonConverter[] converters)
+        {
             JToken value = Value;
-            if (value != null)
-            {
-                await value.WriteToAsync(writer, cancellationToken, converters).ConfigureAwait(false);
-            }
-            else
-            {
-                await writer.WriteNullAsync(cancellationToken).ConfigureAwait(false);
-            }
+            return value != null
+                ? value.WriteToAsync(writer, cancellationToken, converters)
+                : writer.WriteNullAsync(cancellationToken);
         }
 
         /// <summary>
