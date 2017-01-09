@@ -30,6 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 #endif
 using System.Collections.Generic;
+using System.Diagnostics;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -181,137 +182,158 @@ namespace Newtonsoft.Json.Utilities
                 writer.Write(delimiter);
             }
 
-            if (s != null)
+            if (!string.IsNullOrEmpty(s))
             {
-                int lastWritePosition = 0;
-
-                for (int i = 0; i < s.Length; i++)
+                int lastWritePosition = FirstCharToEscape(s, charEscapeFlags, stringEscapeHandling);
+                if (lastWritePosition == -1)
                 {
-                    char c = s[i];
-
-                    if (c < charEscapeFlags.Length && !charEscapeFlags[c])
-                    {
-                        continue;
-                    }
-
-                    string escapedValue;
-
-                    switch (c)
-                    {
-                        case '\t':
-                            escapedValue = @"\t";
-                            break;
-                        case '\n':
-                            escapedValue = @"\n";
-                            break;
-                        case '\r':
-                            escapedValue = @"\r";
-                            break;
-                        case '\f':
-                            escapedValue = @"\f";
-                            break;
-                        case '\b':
-                            escapedValue = @"\b";
-                            break;
-                        case '\\':
-                            escapedValue = @"\\";
-                            break;
-                        case '\u0085': // Next Line
-                            escapedValue = @"\u0085";
-                            break;
-                        case '\u2028': // Line Separator
-                            escapedValue = @"\u2028";
-                            break;
-                        case '\u2029': // Paragraph Separator
-                            escapedValue = @"\u2029";
-                            break;
-                        default:
-                            if (c < charEscapeFlags.Length || stringEscapeHandling == StringEscapeHandling.EscapeNonAscii)
-                            {
-                                if (c == '\'' && stringEscapeHandling != StringEscapeHandling.EscapeHtml)
-                                {
-                                    escapedValue = @"\'";
-                                }
-                                else if (c == '"' && stringEscapeHandling != StringEscapeHandling.EscapeHtml)
-                                {
-                                    escapedValue = @"\""";
-                                }
-                                else
-                                {
-                                    if (writeBuffer == null || writeBuffer.Length < UnicodeTextLength)
-                                    {
-                                        writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, UnicodeTextLength, writeBuffer);
-                                    }
-
-                                    StringUtils.ToCharAsUnicode(c, writeBuffer);
-
-                                    // slightly hacky but it saves multiple conditions in if test
-                                    escapedValue = EscapedUnicodeText;
-                                }
-                            }
-                            else
-                            {
-                                escapedValue = null;
-                            }
-                            break;
-                    }
-
-                    if (escapedValue == null)
-                    {
-                        continue;
-                    }
-
-                    bool isEscapedUnicodeText = string.Equals(escapedValue, EscapedUnicodeText);
-
-                    if (i > lastWritePosition)
-                    {
-                        int length = i - lastWritePosition + ((isEscapedUnicodeText) ? UnicodeTextLength : 0);
-                        int start = (isEscapedUnicodeText) ? UnicodeTextLength : 0;
-
-                        if (writeBuffer == null || writeBuffer.Length < length)
-                        {
-                            char[] newBuffer = BufferUtils.RentBuffer(bufferPool, length);
-
-                            // the unicode text is already in the buffer
-                            // copy it over when creating new buffer
-                            if (isEscapedUnicodeText)
-                            {
-                                Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
-                            }
-
-                            BufferUtils.ReturnBuffer(bufferPool, writeBuffer);
-
-                            writeBuffer = newBuffer;
-                        }
-
-                        s.CopyTo(lastWritePosition, writeBuffer, start, length - start);
-
-                        // write unchanged chars before writing escaped text
-                        writer.Write(writeBuffer, start, length - start);
-                    }
-
-                    lastWritePosition = i + 1;
-                    if (!isEscapedUnicodeText)
-                    {
-                        writer.Write(escapedValue);
-                    }
-                    else
-                    {
-                        writer.Write(writeBuffer, 0, UnicodeTextLength);
-                    }
-                }
-
-                if (lastWritePosition == 0)
-                {
-                    // no escaped text, write entire string
                     writer.Write(s);
                 }
                 else
                 {
-                    int length = WriteEscapedStringThroughBuffer(s, lastWritePosition, bufferPool, ref writeBuffer);
+                    if (lastWritePosition != 0)
+                    {
+                        if (writeBuffer == null || writeBuffer.Length < lastWritePosition)
+                        {
+                            writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, lastWritePosition, writeBuffer);
+                        }
 
-                    // write remaining text
-                    writer.Write(writeBuffer, 0, length);
+                        // write unchanged chars at start of text.
+                        s.CopyTo(0, writeBuffer, 0, lastWritePosition);
+                        writer.Write(writeBuffer, 0, lastWritePosition);
+                    }
+
+                    int length;
+                    for (int i = lastWritePosition; i < s.Length; i++)
+                    {
+                        char c = s[i];
+
+                        if (c < charEscapeFlags.Length && !charEscapeFlags[c])
+                        {
+                            continue;
+                        }
+
+                        string escapedValue;
+
+                        switch (c)
+                        {
+                            case '\t':
+                                escapedValue = @"\t";
+                                break;
+                            case '\n':
+                                escapedValue = @"\n";
+                                break;
+                            case '\r':
+                                escapedValue = @"\r";
+                                break;
+                            case '\f':
+                                escapedValue = @"\f";
+                                break;
+                            case '\b':
+                                escapedValue = @"\b";
+                                break;
+                            case '\\':
+                                escapedValue = @"\\";
+                                break;
+                            case '\u0085': // Next Line
+                                escapedValue = @"\u0085";
+                                break;
+                            case '\u2028': // Line Separator
+                                escapedValue = @"\u2028";
+                                break;
+                            case '\u2029': // Paragraph Separator
+                                escapedValue = @"\u2029";
+                                break;
+                            default:
+                                if (c < charEscapeFlags.Length || stringEscapeHandling == StringEscapeHandling.EscapeNonAscii)
+                                {
+                                    if (c == '\'' && stringEscapeHandling != StringEscapeHandling.EscapeHtml)
+                                    {
+                                        escapedValue = @"\'";
+                                    }
+                                    else if (c == '"' && stringEscapeHandling != StringEscapeHandling.EscapeHtml)
+                                    {
+                                        escapedValue = @"\""";
+                                    }
+                                    else
+                                    {
+                                        if (writeBuffer == null || writeBuffer.Length < UnicodeTextLength)
+                                        {
+                                            writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, UnicodeTextLength, writeBuffer);
+                                        }
+
+                                        StringUtils.ToCharAsUnicode(c, writeBuffer);
+
+                                        // slightly hacky but it saves multiple conditions in if test
+                                        escapedValue = EscapedUnicodeText;
+                                    }
+                                }
+                                else
+                                {
+                                    escapedValue = null;
+                                }
+                                break;
+                        }
+
+                        if (escapedValue == null)
+                        {
+                            continue;
+                        }
+
+                        bool isEscapedUnicodeText = string.Equals(escapedValue, EscapedUnicodeText);
+
+                        if (i > lastWritePosition)
+                        {
+                            length = i - lastWritePosition + ((isEscapedUnicodeText) ? UnicodeTextLength : 0);
+                            int start = (isEscapedUnicodeText) ? UnicodeTextLength : 0;
+
+                            if (writeBuffer == null || writeBuffer.Length < length)
+                            {
+                                char[] newBuffer = BufferUtils.RentBuffer(bufferPool, length);
+
+                                // the unicode text is already in the buffer
+                                // copy it over when creating new buffer
+                                if (isEscapedUnicodeText)
+                                {
+                                    Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
+                                }
+
+                                BufferUtils.ReturnBuffer(bufferPool, writeBuffer);
+
+                                writeBuffer = newBuffer;
+                            }
+
+                            s.CopyTo(lastWritePosition, writeBuffer, start, length - start);
+
+                            // write unchanged chars before writing escaped text
+                            writer.Write(writeBuffer, start, length - start);
+                        }
+
+                        lastWritePosition = i + 1;
+                        if (!isEscapedUnicodeText)
+                        {
+                            writer.Write(escapedValue);
+                        }
+                        else
+                        {
+                            writer.Write(writeBuffer, 0, UnicodeTextLength);
+                        }
+                    }
+
+                    Debug.Assert(lastWritePosition != 0);
+                    length = s.Length - lastWritePosition;
+                    if (length > 0)
+                    {
+                        if (writeBuffer == null || writeBuffer.Length < length)
+                        {
+                            writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, length, writeBuffer);
+                        }
+
+                        s.CopyTo(lastWritePosition, writeBuffer, 0, length);
+
+                        // write remaining text
+                        writer.Write(writeBuffer, 0, length);
+                    }
                 }
             }
 
@@ -320,20 +342,6 @@ namespace Newtonsoft.Json.Utilities
             {
                 writer.Write(delimiter);
             }
-        }
-
-        private static int WriteEscapedStringThroughBuffer(string s, int lastWritePosition, IArrayPool<char> bufferPool, ref char[] writeBuffer)
-        {
-            int length = s.Length - lastWritePosition;
-
-            if (writeBuffer == null || writeBuffer.Length < length)
-            {
-                writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, length, writeBuffer);
-            }
-
-            s.CopyTo(lastWritePosition, writeBuffer, 0, length);
-
-            return length;
         }
 
         public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters, StringEscapeHandling stringEscapeHandling)
