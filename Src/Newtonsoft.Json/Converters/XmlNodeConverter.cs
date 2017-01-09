@@ -41,7 +41,7 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json.Converters
 {
     #region XmlNodeWrappers
-#if !DOTNET && !PORTABLE && !PORTABLE40
+#if HAVE_XML_DOCUMENT
     internal class XmlDocumentWrapper : XmlNodeWrapper, IXmlDocument
     {
         private readonly XmlDocument _document;
@@ -404,7 +404,7 @@ namespace Newtonsoft.Json.Converters
     #endregion
 
     #region XNodeWrappers
-#if HAVE_LINQ
+#if HAVE_XLINQ
     internal class XDeclarationWrapper : XObjectWrapper, IXmlDeclaration
     {
         internal XDeclaration Declaration { get; private set; }
@@ -1046,7 +1046,7 @@ namespace Newtonsoft.Json.Converters
 
         private IXmlNode WrapXml(object value)
         {
-#if HAVE_LINQ
+#if HAVE_XLINQ
             XObject xObject = value as XObject;
             if (xObject != null)
             {
@@ -1429,7 +1429,7 @@ namespace Newtonsoft.Json.Converters
             IXmlDocument document = null;
             IXmlNode rootNode = null;
 
-#if HAVE_LINQ
+#if HAVE_XLINQ
             if (typeof(XObject).IsAssignableFrom(objectType))
             {
                 if (objectType != typeof(XDocument) && objectType != typeof(XElement))
@@ -1481,7 +1481,7 @@ namespace Newtonsoft.Json.Converters
                 DeserializeNode(reader, document, manager, rootNode);
             }
 
-#if HAVE_LINQ
+#if HAVE_XLINQ
             if (objectType == typeof(XElement))
             {
                 XElement element = (XElement)document.DocumentElement.WrappedNode;
@@ -2066,7 +2066,7 @@ namespace Newtonsoft.Json.Converters
         /// </returns>
         public override bool CanConvert(Type valueType)
         {
-#if HAVE_LINQ
+#if HAVE_XLINQ
             if (typeof(XObject).IsAssignableFrom(valueType))
             {
                 return true;

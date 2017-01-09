@@ -51,7 +51,27 @@
     ".NETPortable,Version=v4.5,Profile=Profile259": {
       "buildOptions": {
         "define": [
-          "PORTABLE"
+          "PORTABLE",
+          "HAVE_ASYNC",
+          "HAVE_COVARIANT_GENERICS",
+          "HAVE_DATA_CONTRACTS",
+          "HAVE_DATE_TIME_OFFSET",
+          "HAVE_DYNAMIC",
+          "HAVE_EXPRESSIONS",
+          "HAVE_FSHARP_TYPES",
+          "HAVE_GUID_TRY_PARSE",
+          "HAVE_IMMUTABLE_COLLECTIONS",
+          "HAVE_LINQ",
+          "HAVE_READ_ONLY_COLLECTIONS",
+          "HAVE_REFLECTION_BINDER",
+          "HAVE_STRING_JOIN_ENUMERABLE",
+          "HAVE_TIME_SPAN_PARSE_WITH_CULTURE",
+          "HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE",
+          "HAVE_TIME_ZONE_INFO",
+          "HAVE_TPL",
+          "HAVE_VERSION_TRY_PARSE",
+          "HAVE_XLINQ",
+          "HAVE_INOTIFY_COLLECTION_CHANGED"
         ]
       },
       "frameworkAssemblies": {
@@ -87,8 +107,22 @@
     ".NETPortable,Version=v4.0,Profile=Profile328": {
       "buildOptions": {
         "define": [
-          "PORTABLE40"
-        ]
+          "PORTABLE40",
+          "HAVE_DATA_CONTRACTS",
+          "HAVE_DATE_TIME_OFFSET",
+          "HAVE_FSHARP_TYPES",
+          "HAVE_FULL_REFLECTION",
+          "HAVE_GUID_TRY_PARSE",
+          "HAVE_ICONVERTIBLE",
+          "HAVE_IMMUTABLE_COLLECTIONS",
+          "HAVE_LINQ",
+          "HAVE_MEMORY_BARRIER",
+          "HAVE_STRING_JOIN_ENUMERABLE",
+          "HAVE_TIME_SPAN_PARSE_WITH_CULTURE",
+          "HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE",
+          "HAVE_TIME_ZONE_INFO",
+          "HAVE_VERSION_TRY_PARSE"
+        ]      
       },
       "frameworkAssemblies": {
         "mscorlib": "",
@@ -116,6 +150,7 @@
           "HAVE_INOTIFY_COLLECTION_CHANGED",
           "HAVE_LINQ",
           "HAVE_READ_ONLY_COLLECTIONS",
+		  "HAVE_REFLECTION_BINDER",
           "HAVE_STRING_JOIN_ENUMERABLE",
           "HAVE_TIME_SPAN_PARSE_WITH_CULTURE",
           "HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE",
@@ -170,6 +205,7 @@
           "HAVE_INOTIFY_COLLECTION_CHANGED",
           "HAVE_LINQ",
           "HAVE_READ_ONLY_COLLECTIONS",
+		  "HAVE_REFLECTION_BINDER",
           "HAVE_STRING_JOIN_ENUMERABLE",
           "HAVE_TIME_SPAN_PARSE_WITH_CULTURE",
           "HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE",

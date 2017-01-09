@@ -11,7 +11,7 @@
   $buildNuGet = $true
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
-  $netCliVersion = "1.0.0-preview2-1-003182"
+  $netCliVersion = "1.0.0-preview3-003171"
   $nugetUrl = "http://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
   
   $baseDir  = resolve-path ..
@@ -350,24 +350,16 @@ function Update-Project {
     [string] $sign
   )
 
-  try
-  {
     $file = switch($sign) { $true { $signKeyPath } default { $null } }
     $signed = switch($sign) { $true { ";SIGNED" } default { "" } }
-    $constants = "CODE_ANALYSIS;TRACE;$signed"
+    $constants = "CODE_ANALYSIS;TRACE$signed"
     $json = (Get-Content $projectPath) -join "`n" | ConvertFrom-Json
     $options = @{"warningsAsErrors" = $true; "xmlDoc" = $true; "keyFile" = $file; "define" = ($constants -split ";") }
     Add-Member -InputObject $json -MemberType NoteProperty -Name "buildOptions" -Value $options -Force
 
     $json.version = GetNuGetVersion
     
-    ConvertTo-Json $json -Depth 10 | Set-Content $projectPath
-  }
-  catch [System.Exception]
-  {
-    write-host $_.Exception.ToString()
-    throw
-  }
+    ConvertTo-Json $json -Depth 10 | Set-Content $projectPath  
 }
 
 function Execute-Command($command) {
