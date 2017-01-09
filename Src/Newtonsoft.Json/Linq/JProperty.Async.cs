@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Linq
         {
             await task.ConfigureAwait(false);
 
-            await WriteValueAsync(writer, cancellationToken, converters);
+            await WriteValueAsync(writer, cancellationToken, converters).ConfigureAwait(false);
         }
 
         private Task WriteValueAsync(JsonWriter writer, CancellationToken cancellationToken, JsonConverter[] converters)
