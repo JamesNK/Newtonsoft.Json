@@ -47,7 +47,7 @@ namespace Newtonsoft.Json.Linq
 
             for (int i = 0; i < _properties.Count; i++)
             {
-                await _properties[i].WriteToAsync(writer, converters).ConfigureAwait(false);
+                await _properties[i].WriteToAsync(writer, cancellationToken, converters).ConfigureAwait(false);
             }
 
             await writer.WriteEndObjectAsync(cancellationToken).ConfigureAwait(false);
