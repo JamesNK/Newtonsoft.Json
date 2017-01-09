@@ -147,6 +147,40 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
+        public void TokenWriteTo()
+        {
+            JObject o = JObject.Parse(JsonText);
+
+            TimeOperation<JObject>(() =>
+            {
+                for (int i = 0; i < Iterations; i++)
+                {
+                    StringWriter sw = new StringWriter();
+                    o.WriteTo(new JsonTextWriter(sw));
+                }
+
+                return o;
+            }, "TokenWriteTo");
+        }
+
+        [Test]
+        public async Task TokenWriteToAsync()
+        {
+            JObject o = JObject.Parse(JsonText);
+
+            await TimeOperationAsync<JObject>(async () =>
+            {
+                for (int i = 0; i < Iterations; i++)
+                {
+                    StringWriter sw = new StringWriter();
+                    await o.WriteToAsync(new JsonTextWriter(sw));
+                }
+
+                return o;
+            }, "TokenWriteTo");
+        }
+
+        [Test]
         public void ReadLargeJson()
         {
             for (int i = 0; i < 10; i++)
@@ -317,6 +351,24 @@ namespace Newtonsoft.Json.Tests
             timed.Start();
 
             T result = operation();
+
+            Console.WriteLine(name);
+            Console.WriteLine("{0} ms", timed.ElapsedMilliseconds);
+
+            timed.Stop();
+
+            return result;
+        }
+
+        private async Task<T> TimeOperationAsync<T>(Func<Task<T>> operation, string name)
+        {
+            // warm up
+            await operation();
+
+            Stopwatch timed = new Stopwatch();
+            timed.Start();
+
+            T result = await operation();
 
             Console.WriteLine(name);
             Console.WriteLine("{0} ms", timed.ElapsedMilliseconds);

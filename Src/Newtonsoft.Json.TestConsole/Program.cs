@@ -53,7 +53,7 @@ namespace Newtonsoft.Json.TestConsole
             //t.DeserializeLargeJson();
 
             //PerformanceTests t = new PerformanceTests();
-            SerializeJsonAsync();
+            TokenWriteToAsync();
             //t.Iterations = 50000;
             //t.BenchmarkDeserializeMethod<TestClass>(PerformanceTests.SerializeMethod.JsonNet, PerformanceTests.JsonText);
 
@@ -94,6 +94,13 @@ namespace Newtonsoft.Json.TestConsole
             {
                 p = last.Path;
             }
+        }
+
+        public static void TokenWriteToAsync()
+        {
+            PerformanceTests t = new PerformanceTests();
+            t.Iterations = 50000;
+            t.TokenWriteToAsync().Wait();
         }
 
         public static void SerializeJsonAsync()
