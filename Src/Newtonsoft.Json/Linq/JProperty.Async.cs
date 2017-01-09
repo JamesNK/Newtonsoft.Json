@@ -41,9 +41,28 @@ namespace Newtonsoft.Json.Linq
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous write operation.</returns>
-        public override async Task WriteToAsync(JsonWriter writer, CancellationToken cancellationToken, params JsonConverter[] converters)
+        public override Task WriteToAsync(JsonWriter writer, CancellationToken cancellationToken, params JsonConverter[] converters)
         {
-            await writer.WritePropertyNameAsync(_name, cancellationToken).ConfigureAwait(false);
+            Task task = writer.WritePropertyNameAsync(_name, cancellationToken);
+            if (!task.IsCompleted)
+            {
+                return WriteToAsync(task, writer, cancellationToken, converters);
+            }
+
+            JToken value = Value;
+            if (value != null)
+            {
+                return value.WriteToAsync(writer, cancellationToken, converters);
+            }
+            else
+            {
+                return writer.WriteNullAsync(cancellationToken);
+            }
+        }
+
+        private async Task WriteToAsync(Task task, JsonWriter writer, CancellationToken cancellationToken, params JsonConverter[] converters)
+        {
+            await task.ConfigureAwait(false);
 
             JToken value = Value;
             if (value != null)
