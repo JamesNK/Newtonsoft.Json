@@ -30,6 +30,7 @@ using System.Threading;
 using System.Threading.Tasks;
 #endif
 using System.Collections.Generic;
+using System.Diagnostics;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -140,6 +141,189 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
+        public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters,
+            bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, IArrayPool<char> bufferPool, ref char[] writeBuffer)
+        {
+            // leading delimiter
+            if (appendDelimiters)
+            {
+                writer.Write(delimiter);
+            }
+
+            if (!string.IsNullOrEmpty(s))
+            {
+                int lastWritePosition = FirstCharToEscape(s, charEscapeFlags, stringEscapeHandling);
+                if (lastWritePosition == -1)
+                {
+                    writer.Write(s);
+                }
+                else
+                {
+                    if (lastWritePosition != 0)
+                    {
+                        if (writeBuffer == null || writeBuffer.Length < lastWritePosition)
+                        {
+                            writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, lastWritePosition, writeBuffer);
+                        }
+
+                        // write unchanged chars at start of text.
+                        s.CopyTo(0, writeBuffer, 0, lastWritePosition);
+                        writer.Write(writeBuffer, 0, lastWritePosition);
+                    }
+
+                    int length;
+                    for (int i = lastWritePosition; i < s.Length; i++)
+                    {
+                        char c = s[i];
+
+                        if (c < charEscapeFlags.Length && !charEscapeFlags[c])
+                        {
+                            continue;
+                        }
+
+                        string escapedValue;
+
+                        switch (c)
+                        {
+                            case '\t':
+                                escapedValue = @"\t";
+                                break;
+                            case '\n':
+                                escapedValue = @"\n";
+                                break;
+                            case '\r':
+                                escapedValue = @"\r";
+                                break;
+                            case '\f':
+                                escapedValue = @"\f";
+                                break;
+                            case '\b':
+                                escapedValue = @"\b";
+                                break;
+                            case '\\':
+                                escapedValue = @"\\";
+                                break;
+                            case '\u0085': // Next Line
+                                escapedValue = @"\u0085";
+                                break;
+                            case '\u2028': // Line Separator
+                                escapedValue = @"\u2028";
+                                break;
+                            case '\u2029': // Paragraph Separator
+                                escapedValue = @"\u2029";
+                                break;
+                            default:
+                                if (c < charEscapeFlags.Length || stringEscapeHandling == StringEscapeHandling.EscapeNonAscii)
+                                {
+                                    if (c == '\'' && stringEscapeHandling != StringEscapeHandling.EscapeHtml)
+                                    {
+                                        escapedValue = @"\'";
+                                    }
+                                    else if (c == '"' && stringEscapeHandling != StringEscapeHandling.EscapeHtml)
+                                    {
+                                        escapedValue = @"\""";
+                                    }
+                                    else
+                                    {
+                                        if (writeBuffer == null || writeBuffer.Length < UnicodeTextLength)
+                                        {
+                                            writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, UnicodeTextLength, writeBuffer);
+                                        }
+
+                                        StringUtils.ToCharAsUnicode(c, writeBuffer);
+
+                                        // slightly hacky but it saves multiple conditions in if test
+                                        escapedValue = EscapedUnicodeText;
+                                    }
+                                }
+                                else
+                                {
+                                    escapedValue = null;
+                                }
+                                break;
+                        }
+
+                        if (escapedValue == null)
+                        {
+                            continue;
+                        }
+
+                        bool isEscapedUnicodeText = string.Equals(escapedValue, EscapedUnicodeText);
+
+                        if (i > lastWritePosition)
+                        {
+                            length = i - lastWritePosition + ((isEscapedUnicodeText) ? UnicodeTextLength : 0);
+                            int start = (isEscapedUnicodeText) ? UnicodeTextLength : 0;
+
+                            if (writeBuffer == null || writeBuffer.Length < length)
+                            {
+                                char[] newBuffer = BufferUtils.RentBuffer(bufferPool, length);
+
+                                // the unicode text is already in the buffer
+                                // copy it over when creating new buffer
+                                if (isEscapedUnicodeText)
+                                {
+                                    Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
+                                }
+
+                                BufferUtils.ReturnBuffer(bufferPool, writeBuffer);
+
+                                writeBuffer = newBuffer;
+                            }
+
+                            s.CopyTo(lastWritePosition, writeBuffer, start, length - start);
+
+                            // write unchanged chars before writing escaped text
+                            writer.Write(writeBuffer, start, length - start);
+                        }
+
+                        lastWritePosition = i + 1;
+                        if (!isEscapedUnicodeText)
+                        {
+                            writer.Write(escapedValue);
+                        }
+                        else
+                        {
+                            writer.Write(writeBuffer, 0, UnicodeTextLength);
+                        }
+                    }
+
+                    Debug.Assert(lastWritePosition != 0);
+                    length = s.Length - lastWritePosition;
+                    if (length > 0)
+                    {
+                        if (writeBuffer == null || writeBuffer.Length < length)
+                        {
+                            writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, length, writeBuffer);
+                        }
+
+                        s.CopyTo(lastWritePosition, writeBuffer, 0, length);
+
+                        // write remaining text
+                        writer.Write(writeBuffer, 0, length);
+                    }
+                }
+            }
+
+            // trailing delimiter
+            if (appendDelimiters)
+            {
+                writer.Write(delimiter);
+            }
+        }
+
+        public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters, StringEscapeHandling stringEscapeHandling)
+        {
+            bool[] charEscapeFlags = GetCharEscapeFlags(stringEscapeHandling, delimiter);
+
+            using (StringWriter w = StringUtils.CreateStringWriter(value?.Length ?? 16))
+            {
+                char[] buffer = null;
+                WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters, charEscapeFlags, stringEscapeHandling, null, ref buffer);
+                return w.ToString();
+            }
+        }
+        
         private static int FirstCharToEscape(string s, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling)
         {
             for (int i = 0; i != s.Length; i++)
@@ -172,186 +356,14 @@ namespace Newtonsoft.Json.Utilities
             return -1;
         }
 
-        public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters,
-            bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, IArrayPool<char> bufferPool, ref char[] writeBuffer)
-        {
-            // leading delimiter
-            if (appendDelimiters)
-            {
-                writer.Write(delimiter);
-            }
-
-            if (s != null)
-            {
-                int lastWritePosition = 0;
-
-                for (int i = 0; i < s.Length; i++)
-                {
-                    char c = s[i];
-
-                    if (c < charEscapeFlags.Length && !charEscapeFlags[c])
-                    {
-                        continue;
-                    }
-
-                    string escapedValue;
-
-                    switch (c)
-                    {
-                        case '\t':
-                            escapedValue = @"\t";
-                            break;
-                        case '\n':
-                            escapedValue = @"\n";
-                            break;
-                        case '\r':
-                            escapedValue = @"\r";
-                            break;
-                        case '\f':
-                            escapedValue = @"\f";
-                            break;
-                        case '\b':
-                            escapedValue = @"\b";
-                            break;
-                        case '\\':
-                            escapedValue = @"\\";
-                            break;
-                        case '\u0085': // Next Line
-                            escapedValue = @"\u0085";
-                            break;
-                        case '\u2028': // Line Separator
-                            escapedValue = @"\u2028";
-                            break;
-                        case '\u2029': // Paragraph Separator
-                            escapedValue = @"\u2029";
-                            break;
-                        default:
-                            if (c < charEscapeFlags.Length || stringEscapeHandling == StringEscapeHandling.EscapeNonAscii)
-                            {
-                                if (c == '\'' && stringEscapeHandling != StringEscapeHandling.EscapeHtml)
-                                {
-                                    escapedValue = @"\'";
-                                }
-                                else if (c == '"' && stringEscapeHandling != StringEscapeHandling.EscapeHtml)
-                                {
-                                    escapedValue = @"\""";
-                                }
-                                else
-                                {
-                                    if (writeBuffer == null || writeBuffer.Length < UnicodeTextLength)
-                                    {
-                                        writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, UnicodeTextLength, writeBuffer);
-                                    }
-
-                                    StringUtils.ToCharAsUnicode(c, writeBuffer);
-
-                                    // slightly hacky but it saves multiple conditions in if test
-                                    escapedValue = EscapedUnicodeText;
-                                }
-                            }
-                            else
-                            {
-                                escapedValue = null;
-                            }
-                            break;
-                    }
-
-                    if (escapedValue == null)
-                    {
-                        continue;
-                    }
-
-                    bool isEscapedUnicodeText = string.Equals(escapedValue, EscapedUnicodeText);
-
-                    if (i > lastWritePosition)
-                    {
-                        int length = i - lastWritePosition + ((isEscapedUnicodeText) ? UnicodeTextLength : 0);
-                        int start = (isEscapedUnicodeText) ? UnicodeTextLength : 0;
-
-                        if (writeBuffer == null || writeBuffer.Length < length)
-                        {
-                            char[] newBuffer = BufferUtils.RentBuffer(bufferPool, length);
-
-                            // the unicode text is already in the buffer
-                            // copy it over when creating new buffer
-                            if (isEscapedUnicodeText)
-                            {
-                                Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
-                            }
-
-                            BufferUtils.ReturnBuffer(bufferPool, writeBuffer);
-
-                            writeBuffer = newBuffer;
-                        }
-
-                        s.CopyTo(lastWritePosition, writeBuffer, start, length - start);
-
-                        // write unchanged chars before writing escaped text
-                        writer.Write(writeBuffer, start, length - start);
-                    }
-
-                    lastWritePosition = i + 1;
-                    if (!isEscapedUnicodeText)
-                    {
-                        writer.Write(escapedValue);
-                    }
-                    else
-                    {
-                        writer.Write(writeBuffer, 0, UnicodeTextLength);
-                    }
-                }
-
-                if (lastWritePosition == 0)
-                {
-                    // no escaped text, write entire string
-                    writer.Write(s);
-                }
-                else
-                {
-                    int length = WriteEscapedStringThroughBuffer(s, lastWritePosition, bufferPool, ref writeBuffer);
-
-                    // write remaining text
-                    writer.Write(writeBuffer, 0, length);
-                }
-            }
-
-            // trailing delimiter
-            if (appendDelimiters)
-            {
-                writer.Write(delimiter);
-            }
-        }
-
-        private static int WriteEscapedStringThroughBuffer(string s, int lastWritePosition, IArrayPool<char> bufferPool, ref char[] writeBuffer)
-        {
-            int length = s.Length - lastWritePosition;
-
-            if (writeBuffer == null || writeBuffer.Length < length)
-            {
-                writeBuffer = BufferUtils.EnsureBufferSize(bufferPool, length, writeBuffer);
-            }
-
-            s.CopyTo(lastWritePosition, writeBuffer, 0, length);
-
-            return length;
-        }
-
-        public static string ToEscapedJavaScriptString(string value, char delimiter, bool appendDelimiters, StringEscapeHandling stringEscapeHandling)
-        {
-            bool[] charEscapeFlags = GetCharEscapeFlags(stringEscapeHandling, delimiter);
-
-            using (StringWriter w = StringUtils.CreateStringWriter(value?.Length ?? 16))
-            {
-                char[] buffer = null;
-                WriteEscapedJavaScriptString(w, value, delimiter, appendDelimiters, charEscapeFlags, stringEscapeHandling, null, ref buffer);
-                return w.ToString();
-            }
-        }
-
 #if HAVE_ASYNC
-
         public static Task WriteEscapedJavaScriptStringAsync(TextWriter writer, string s, char delimiter, bool appendDelimiters, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken = default(CancellationToken))
         {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return cancellationToken.FromCanceled();
+            }
+
             if (appendDelimiters)
             {
                 return WriteEscapedJavaScriptStringWithDelimitersAsync(writer, s, delimiter, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
@@ -365,10 +377,31 @@ namespace Newtonsoft.Json.Utilities
             return WriteEscapedJavaScriptStringWithoutDelimitersAsync(writer, s, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
         }
 
-        private static async Task WriteEscapedJavaScriptStringWithDelimitersAsync(TextWriter writer, string s, char delimiter,
+        private static Task WriteEscapedJavaScriptStringWithDelimitersAsync(TextWriter writer, string s, char delimiter,
             bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken)
         {
-            await writer.WriteAsync(delimiter).ConfigureAwait(false);
+            Task task = writer.WriteAsync(delimiter, cancellationToken);
+            if (!task.IsCompleted)
+            {
+                return WriteEscapedJavaScriptStringWithDelimitersAsync(task, writer, s, delimiter, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
+            }
+
+            if (!string.IsNullOrEmpty(s))
+            {
+                task = WriteEscapedJavaScriptStringWithoutDelimitersAsync(writer, s, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
+                if (!task.IsCompleted)
+                {
+                    return WriteCharAsync(task, writer, delimiter, cancellationToken);
+                }
+            }
+
+            return writer.WriteAsync(delimiter, cancellationToken);
+        }
+
+        private static async Task WriteEscapedJavaScriptStringWithDelimitersAsync(Task task, TextWriter writer, string s, char delimiter,
+            bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken)
+        {
+            await task.ConfigureAwait(false);
 
             if (!string.IsNullOrEmpty(s))
             {
@@ -376,6 +409,12 @@ namespace Newtonsoft.Json.Utilities
             }
 
             await writer.WriteAsync(delimiter).ConfigureAwait(false);
+        }
+
+        public static async Task WriteCharAsync(Task task, TextWriter writer, char c, CancellationToken cancellationToken)
+        {
+            await task.ConfigureAwait(false);
+            await writer.WriteAsync(c, cancellationToken).ConfigureAwait(false);
         }
 
         private static Task WriteEscapedJavaScriptStringWithoutDelimitersAsync(
@@ -521,8 +560,6 @@ namespace Newtonsoft.Json.Utilities
                 await writer.WriteAsync(writeBuffer, 0, length, cancellationToken).ConfigureAwait(false);
             }
         }
-
 #endif
-
     }
 }

@@ -90,7 +90,7 @@ namespace Newtonsoft.Json.Utilities
 #if !(PORTABLE40 || PORTABLE)
             EmptyTypes = Type.EmptyTypes;
 #else
-            EmptyTypes = new Type[0];
+            EmptyTypes = CollectionUtils.ArrayEmpty<Type>();
 #endif
         }
 
@@ -950,8 +950,8 @@ namespace Newtonsoft.Json.Utilities
                 while ((targetType = targetType.BaseType()) != null)
                 {
                     // filter out protected fields
-                    IEnumerable<MemberInfo> childPrivateFields =
-                        targetType.GetFields(nonPublicBindingAttr).Where(f => f.IsPrivate).Cast<MemberInfo>();
+                    IEnumerable<FieldInfo> childPrivateFields =
+                        targetType.GetFields(nonPublicBindingAttr).Where(f => f.IsPrivate);
 
                     initialFields.AddRange(childPrivateFields);
                 }

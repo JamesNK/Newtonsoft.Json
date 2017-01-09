@@ -204,6 +204,31 @@ namespace Newtonsoft.Json
         {
             return cancellationToken.CancelIfRequestedAsync<string>() ?? Task.FromResult(ReadAsString());
         }
+
+        internal async Task<bool> ReadAndMoveToContentAsync(CancellationToken cancellationToken)
+        {
+            return await ReadAsync(cancellationToken).ConfigureAwait(false) && await MoveToContentAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        internal async Task<bool> MoveToContentAsync(CancellationToken cancellationToken)
+        {
+            while (true)
+            {
+                switch (TokenType)
+                {
+                    case JsonToken.None:
+                    case JsonToken.Comment:
+                        if (!await ReadAsync(cancellationToken).ConfigureAwait(false))
+                        {
+                            return false;
+                        }
+
+                        break;
+                    default:
+                        return true;
+                }
+            }
+        }
     }
 }
 

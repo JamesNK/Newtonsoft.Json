@@ -26,7 +26,6 @@
 #if HAVE_ASYNC
 
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
 #if HAVE_BIG_INTEGER
@@ -696,6 +695,30 @@ namespace Newtonsoft.Json
                 // stop if we have reached the end of the token being read
                 initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)
                 && writeChildren
+                && await reader.ReadAsync(cancellationToken).ConfigureAwait(false));
+        }
+
+        // For internal use, when we know the writer does not offer true async support (e.g. when backed
+        // by a StringWriter) and therefore async write methods are always in practice just a less efficient
+        // path through the sync version.
+        internal async Task WriteTokenSyncReadingAsync(JsonReader reader, CancellationToken cancellationToken)
+        {
+            int initialDepth = CalculateWriteTokenDepth(reader);
+
+            do
+            {
+                // write a JValue date when the constructor is for a date
+                if (reader.TokenType == JsonToken.StartConstructor && string.Equals(reader.Value.ToString(), "Date", StringComparison.Ordinal))
+                {
+                    WriteConstructorDate(reader);
+                }
+                else
+                {
+                    WriteToken(reader.TokenType, reader.Value);
+                }
+            } while (
+                // stop if we have reached the end of the token being read
+                initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)
                 && await reader.ReadAsync(cancellationToken).ConfigureAwait(false));
         }
 

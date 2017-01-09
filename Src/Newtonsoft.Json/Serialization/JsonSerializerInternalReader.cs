@@ -2274,7 +2274,7 @@ namespace Newtonsoft.Json.Serialization
                     return CreateObjectUsingCreatorWithParameters(reader, objectContract, containerMember, objectContract.OverrideCreator, id);
                 }
 
-                newObject = objectContract.OverrideCreator(new object[0]);
+                newObject = objectContract.OverrideCreator(CollectionUtils.ArrayEmpty<object>());
             }
             else if (objectContract.DefaultCreator != null &&
                      (!objectContract.DefaultCreatorNonPublic || Serializer._constructorHandling == ConstructorHandling.AllowNonPublicDefaultConstructor || objectContract.ParameterizedCreator == null))

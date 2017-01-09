@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 #if HAVE_DYNAMIC
@@ -40,7 +41,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents a value in JSON (string, integer, date, etc).
     /// </summary>
-    public class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
+    public partial class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
 #if HAVE_ICONVERTIBLE
         , IConvertible
 #endif
@@ -247,15 +248,15 @@ namespace Newtonsoft.Json.Linq
 
         internal static int Compare(JTokenType valueType, object objA, object objB)
         {
-            if (objA == null && objB == null)
+            if (objA == objB)
             {
                 return 0;
             }
-            if (objA != null && objB == null)
+            if (objB == null)
             {
                 return 1;
             }
-            if (objA == null && objB != null)
+            if (objA == null)
             {
                 return -1;
             }
@@ -349,21 +350,14 @@ namespace Newtonsoft.Json.Linq
                     }
 #endif
                 case JTokenType.Bytes:
-                    if (!(objB is byte[]))
+                    byte[] bytes2 = objB as byte[];
+                    if (bytes2 == null)
                     {
                         throw new ArgumentException("Object must be of type byte[].");
                     }
 
                     byte[] bytes1 = objA as byte[];
-                    byte[] bytes2 = objB as byte[];
-                    if (bytes1 == null)
-                    {
-                        return -1;
-                    }
-                    if (bytes2 == null)
-                    {
-                        return 1;
-                    }
+                    Debug.Assert(bytes1 != null);
 
                     return MiscellaneousUtils.ByteArrayCompare(bytes1, bytes2);
                 case JTokenType.Guid:
@@ -377,13 +371,13 @@ namespace Newtonsoft.Json.Linq
 
                     return guid1.CompareTo(guid2);
                 case JTokenType.Uri:
-                    if (!(objB is Uri))
+                    Uri uri2 = objB as Uri;
+                    if (uri2 == null)
                     {
                         throw new ArgumentException("Object must be of type Uri.");
                     }
 
                     Uri uri1 = (Uri)objA;
-                    Uri uri2 = (Uri)objB;
 
                     return Comparer<string>.Default.Compare(uri1.ToString(), uri2.ToString());
                 case JTokenType.TimeSpan:
@@ -397,7 +391,7 @@ namespace Newtonsoft.Json.Linq
 
                     return ts1.CompareTo(ts2);
                 default:
-                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException("valueType", valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, valueType));
+                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException(nameof(valueType), valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, valueType));
             }
         }
 
@@ -828,7 +822,7 @@ namespace Newtonsoft.Json.Linq
                     return;
             }
 
-            throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", _valueType, "Unexpected token type.");
+            throw MiscellaneousUtils.CreateArgumentOutOfRangeException(nameof(Type), _valueType, "Unexpected token type.");
         }
 
         internal override int GetDeepHashCode()
@@ -965,7 +959,7 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         protected override DynamicMetaObject GetMetaObject(Expression parameter)
         {
-            return new DynamicProxyMetaObject<JValue>(parameter, this, new JValueDynamicProxy(), true);
+            return new DynamicProxyMetaObject<JValue>(parameter, this, new JValueDynamicProxy());
         }
 
         private class JValueDynamicProxy : DynamicProxy<JValue>

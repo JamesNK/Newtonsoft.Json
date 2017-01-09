@@ -70,8 +70,8 @@ namespace Newtonsoft.Json.Tests
 #if DEBUG
         public int Iterations = 1;
 #else
-        //public int Iterations = 100;
-        public int Iterations = 10000;
+        public int Iterations = 100;
+        //public int Iterations = 10000;
 #endif
 
         #region Data
@@ -144,6 +144,40 @@ namespace Newtonsoft.Json.Tests
             TestClass test = CreateSerializationObject();
 
             await BenchmarkSerializeMethodAsync(SerializeMethod.JsonNetManualAsync, test);
+        }
+
+        [Test]
+        public void TokenWriteTo()
+        {
+            JObject o = JObject.Parse(JsonText);
+
+            TimeOperation<JObject>(() =>
+            {
+                for (int i = 0; i < Iterations; i++)
+                {
+                    StringWriter sw = new StringWriter();
+                    o.WriteTo(new JsonTextWriter(sw));
+                }
+
+                return o;
+            }, "TokenWriteTo");
+        }
+
+        [Test]
+        public async Task TokenWriteToAsync()
+        {
+            JObject o = JObject.Parse(JsonText);
+
+            await TimeOperationAsync<JObject>(async () =>
+            {
+                for (int i = 0; i < Iterations; i++)
+                {
+                    StringWriter sw = new StringWriter();
+                    await o.WriteToAsync(new JsonTextWriter(sw));
+                }
+
+                return o;
+            }, "TokenWriteTo");
         }
 
         [Test]
@@ -317,6 +351,24 @@ namespace Newtonsoft.Json.Tests
             timed.Start();
 
             T result = operation();
+
+            Console.WriteLine(name);
+            Console.WriteLine("{0} ms", timed.ElapsedMilliseconds);
+
+            timed.Stop();
+
+            return result;
+        }
+
+        private async Task<T> TimeOperationAsync<T>(Func<Task<T>> operation, string name)
+        {
+            // warm up
+            await operation();
+
+            Stopwatch timed = new Stopwatch();
+            timed.Start();
+
+            T result = await operation();
 
             Console.WriteLine(name);
             Console.WriteLine("{0} ms", timed.ElapsedMilliseconds);
