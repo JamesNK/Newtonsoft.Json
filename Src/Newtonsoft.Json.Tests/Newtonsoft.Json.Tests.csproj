@@ -232,6 +232,14 @@
     <Compile Include="JsonTextReaderTests\ParseAsyncTests.cs" />
     <Compile Include="JsonTextReaderTests\ReadAsyncTests.cs" />
     <Compile Include="JsonTextWriterAsyncTests.cs" />
+    <Compile Include="Linq\JConstructorAsyncTests.cs" />
+    <Compile Include="Linq\JObjectAsyncTests.cs" />
+    <Compile Include="Linq\JPropertyAsyncTests.cs" />
+    <Compile Include="Linq\JTokenAsyncTests.cs" />
+    <Compile Include="Linq\JTokenReaderAsyncTests.cs" />
+    <Compile Include="Linq\JTokenWriterAsyncTests.cs" />
+    <Compile Include="Linq\JValueAsyncTests.cs" />
+    <Compile Include="Linq\LinqToJsonAsyncTests.cs" />
     <Compile Include="TestObjects\JsonReaderStubWithIsClosed.cs" />
     <Compile Include="TestObjects\JsonTextReaderTests\FakeArrayPool.cs" />
     <Compile Include="JsonTextReaderTests\FloatTests.cs" />
