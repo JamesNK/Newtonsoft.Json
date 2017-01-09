@@ -140,38 +140,6 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
-        private static int FirstCharToEscape(string s, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling)
-        {
-            for (int i = 0; i != s.Length; i++)
-            {
-                char c = s[i];
-
-                if (c < charEscapeFlags.Length)
-                {
-                    if (charEscapeFlags[c])
-                    {
-                        return i;
-                    }
-                }
-                else if (stringEscapeHandling == StringEscapeHandling.EscapeNonAscii)
-                {
-                    return i;
-                }
-                else
-                {
-                    switch (c)
-                    {
-                        case '\u0085':
-                        case '\u2028':
-                        case '\u2029':
-                            return i;
-                    }
-                }
-            }
-
-            return -1;
-        }
-
         public static void WriteEscapedJavaScriptString(TextWriter writer, string s, char delimiter, bool appendDelimiters,
             bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, IArrayPool<char> bufferPool, ref char[] writeBuffer)
         {
@@ -349,6 +317,37 @@ namespace Newtonsoft.Json.Utilities
         }
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
+        private static int FirstCharToEscape(string s, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling)
+        {
+            for (int i = 0; i != s.Length; i++)
+            {
+                char c = s[i];
+
+                if (c < charEscapeFlags.Length)
+                {
+                    if (charEscapeFlags[c])
+                    {
+                        return i;
+                    }
+                }
+                else if (stringEscapeHandling == StringEscapeHandling.EscapeNonAscii)
+                {
+                    return i;
+                }
+                else
+                {
+                    switch (c)
+                    {
+                        case '\u0085':
+                        case '\u2028':
+                        case '\u2029':
+                            return i;
+                    }
+                }
+            }
+
+            return -1;
+        }
 
         public static Task WriteEscapedJavaScriptStringAsync(TextWriter writer, string s, char delimiter, bool appendDelimiters, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -521,8 +520,6 @@ namespace Newtonsoft.Json.Utilities
                 await writer.WriteAsync(writeBuffer, 0, length, cancellationToken).ConfigureAwait(false);
             }
         }
-
 #endif
-
     }
 }

@@ -392,7 +392,7 @@ namespace Newtonsoft.Json.Linq
 
                     return ts1.CompareTo(ts2);
                 default:
-                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException("valueType", valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, valueType));
+                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException(nameof(valueType), valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, valueType));
             }
         }
 
@@ -823,7 +823,7 @@ namespace Newtonsoft.Json.Linq
                     return;
             }
 
-            throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", _valueType, "Unexpected token type.");
+            throw MiscellaneousUtils.CreateArgumentOutOfRangeException(nameof(Type), _valueType, "Unexpected token type.");
         }
 
         internal override int GetDeepHashCode()

@@ -70,8 +70,8 @@ namespace Newtonsoft.Json.Tests
 #if DEBUG
         public int Iterations = 1;
 #else
-        //public int Iterations = 100;
-        public int Iterations = 10000;
+        public int Iterations = 100;
+        //public int Iterations = 10000;
 #endif
 
         #region Data
