@@ -314,9 +314,26 @@ namespace Newtonsoft.Json
             return _safeAsync ? DoWritePropertyNameAsync(name, cancellationToken) : base.WritePropertyNameAsync(name, cancellationToken);
         }
 
-        internal async Task DoWritePropertyNameAsync(string name, CancellationToken cancellationToken)
+        internal Task DoWritePropertyNameAsync(string name, CancellationToken cancellationToken)
         {
-            await InternalWritePropertyNameAsync(name, cancellationToken).ConfigureAwait(false);
+            Task task = InternalWritePropertyNameAsync(name, cancellationToken);
+            if (!task.IsCompleted)
+            {
+                return DoWritePropertyNameAsync(task, name, cancellationToken);
+            }
+
+            task = WriteEscapedStringAsync(name, _quoteName, cancellationToken);
+            if (!task.IsCompleted)
+            {
+                return JavaScriptUtils.WriteCharAsync(task, _writer, ':', cancellationToken);
+            }
+
+            return _writer.WriteAsync(':', cancellationToken);
+        }
+
+        private async Task DoWritePropertyNameAsync(Task task, string name, CancellationToken cancellationToken)
+        {
+            await task.ConfigureAwait(false);
 
             await WriteEscapedStringAsync(name, _quoteName, cancellationToken).ConfigureAwait(false);
 
