@@ -1015,7 +1015,7 @@ namespace Newtonsoft.Json.Utilities
             /// <param name="val">Mantissa</param>
             /// <param name="scale">Exponent</param>
             /// <remarks>
-            /// Adoption of native function NumberToDouble() from coreclr sources, 
+            /// Adoption of native function NumberToDouble() from coreclr sources,
             /// see https://github.com/dotnet/coreclr/blob/master/src/classlibnative/bcltype/number.cpp#L451
             /// </remarks>
             public static double PackDouble(bool negative, ulong val, int scale)
@@ -1265,7 +1265,7 @@ namespace Newtonsoft.Json.Utilities
                         }
                         if (i == numDecimalStart)
                         {
-                            // E follows decimal point		
+                            // E follows decimal point
                             return ParseResult.Invalid;
                         }
                         i++;
@@ -1292,7 +1292,7 @@ namespace Newtonsoft.Json.Utilities
                                 break;
                         }
 
-                        // parse 3 digit 
+                        // parse 3 digit
                         for (; i < end; i++)
                         {
                             c = chars[i];

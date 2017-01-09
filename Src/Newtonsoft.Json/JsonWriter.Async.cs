@@ -1645,7 +1645,7 @@ namespace Newtonsoft.Json
                     return writer.WriteValueAsync((string)value, cancellationToken);
                 case PrimitiveTypeCode.Bytes:
                     return writer.WriteValueAsync((byte[])value, cancellationToken);
-#if HAVE_ADO_NET
+#if HAVE_DB_NULL_TYPE
                 case PrimitiveTypeCode.DBNull:
                     return writer.WriteNullAsync(cancellationToken);
 #endif

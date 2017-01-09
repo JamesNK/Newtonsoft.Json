@@ -496,7 +496,7 @@ namespace Newtonsoft.Json
                     return ToString((DateTime)value);
                 case PrimitiveTypeCode.Decimal:
                     return ToString((decimal)value);
-#if HAVE_ADO_NET
+#if HAVE_DB_NULL_TYPE
                 case PrimitiveTypeCode.DBNull:
                     return Null;
 #endif

@@ -110,6 +110,7 @@
           "PORTABLE40",
           "HAVE_DATA_CONTRACTS",
           "HAVE_DATE_TIME_OFFSET",
+          "HAVE_DB_NULL_TYPE",
           "HAVE_FSHARP_TYPES",
           "HAVE_FULL_REFLECTION",
           "HAVE_GUID_TRY_PARSE",
