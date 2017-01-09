@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 #if !(NET35 || NET20 || PORTABLE40)
@@ -248,15 +249,15 @@ namespace Newtonsoft.Json.Linq
 
         internal static int Compare(JTokenType valueType, object objA, object objB)
         {
-            if (objA == null && objB == null)
+            if (objA == objB)
             {
                 return 0;
             }
-            if (objA != null && objB == null)
+            if (objB == null)
             {
                 return 1;
             }
-            if (objA == null && objB != null)
+            if (objA == null)
             {
                 return -1;
             }
@@ -350,21 +351,14 @@ namespace Newtonsoft.Json.Linq
                     }
 #endif
                 case JTokenType.Bytes:
-                    if (!(objB is byte[]))
+                    byte[] bytes2 = objB as byte[];
+                    if (bytes2 == null)
                     {
                         throw new ArgumentException("Object must be of type byte[].");
                     }
 
                     byte[] bytes1 = objA as byte[];
-                    byte[] bytes2 = objB as byte[];
-                    if (bytes1 == null)
-                    {
-                        return -1;
-                    }
-                    if (bytes2 == null)
-                    {
-                        return 1;
-                    }
+                    Debug.Assert(bytes1 != null);
 
                     return MiscellaneousUtils.ByteArrayCompare(bytes1, bytes2);
                 case JTokenType.Guid:
@@ -378,13 +372,13 @@ namespace Newtonsoft.Json.Linq
 
                     return guid1.CompareTo(guid2);
                 case JTokenType.Uri:
-                    if (!(objB is Uri))
+                    Uri uri2 = objB as Uri;
+                    if (uri2 == null)
                     {
                         throw new ArgumentException("Object must be of type Uri.");
                     }
 
                     Uri uri1 = (Uri)objA;
-                    Uri uri2 = (Uri)objB;
 
                     return Comparer<string>.Default.Compare(uri1.ToString(), uri2.ToString());
                 case JTokenType.TimeSpan:
