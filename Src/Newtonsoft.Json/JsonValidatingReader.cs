@@ -714,7 +714,7 @@ namespace Newtonsoft.Json
             {
                 IEnumerable<string> unmatchedRequiredProperties = requiredProperties.Where(kv => !kv.Value).Select(kv => kv.Key);
                 RaiseError("Required properties are missing from object: {0}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", unmatchedRequiredProperties
-#if !HAVE_STRING_JOIN_ENUMERABLE
+#if !HAVE_STRING_JOIN_WITH_ENUMERABLE
                     .ToArray()
 #endif
                     )), schema);

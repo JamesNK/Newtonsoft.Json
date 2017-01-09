@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     if (errorWhenNoMatch)
                     {
                         throw new JsonException("Properties {0} not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", Names.Select(n => "'" + n + "'")
-#if !HAVE_STRING_JOIN_ENUMERABLE
+#if !HAVE_STRING_JOIN_WITH_ENUMERABLE
                             .ToArray()
 #endif
                             ), t.GetType().Name));

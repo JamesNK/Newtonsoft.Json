@@ -46,7 +46,7 @@ namespace Newtonsoft.Json.Linq
     /// Represents a token that can contain other tokens.
     /// </summary>
     public abstract partial class JContainer : JToken, IList<JToken>
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
         , ITypedList, IBindingList
 #endif
         , IList
@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Linq
         , INotifyCollectionChanged
 #endif
     {
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
         internal ListChangedEventHandler _listChanged;
         internal AddingNewEventHandler _addingNew;
 
@@ -132,7 +132,7 @@ namespace Newtonsoft.Json.Linq
             return new List<JToken>();
         }
 
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
         /// <summary>
         /// Raises the <see cref="AddingNew"/> event.
         /// </summary>
@@ -384,7 +384,7 @@ namespace Newtonsoft.Json.Linq
 
             children.Insert(index, item);
 
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
             if (_listChanged != null)
             {
                 OnListChanged(new ListChangedEventArgs(ListChangedType.ItemAdded, index));
@@ -432,7 +432,7 @@ namespace Newtonsoft.Json.Linq
 
             children.RemoveAt(index);
 
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
             if (_listChanged != null)
             {
                 OnListChanged(new ListChangedEventArgs(ListChangedType.ItemDeleted, index));
@@ -512,7 +512,7 @@ namespace Newtonsoft.Json.Linq
             existing.Previous = null;
             existing.Next = null;
 
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
             if (_listChanged != null)
             {
                 OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, index));
@@ -541,7 +541,7 @@ namespace Newtonsoft.Json.Linq
 
             children.Clear();
 
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
             if (_listChanged != null)
             {
                 OnListChanged(new ListChangedEventArgs(ListChangedType.Reset, -1));
@@ -875,7 +875,7 @@ namespace Newtonsoft.Json.Linq
             return hashCode;
         }
 
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
         string ITypedList.GetListName(PropertyDescriptor[] listAccessors)
         {
             return string.Empty;
@@ -1048,7 +1048,7 @@ namespace Newtonsoft.Json.Linq
         #endregion
 
         #region IBindingList Members
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
         void IBindingList.AddIndex(PropertyDescriptor property)
         {
         }
@@ -1151,7 +1151,7 @@ namespace Newtonsoft.Json.Linq
                     }
                     break;
                 case MergeArrayHandling.Union:
-#if HAVE_HASHSET
+#if HAVE_HASH_SET
                     HashSet<JToken> items = new HashSet<JToken>(target, EqualityComparer);
 
                     foreach (JToken item in content)

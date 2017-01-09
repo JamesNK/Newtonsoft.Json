@@ -1900,7 +1900,7 @@ namespace Newtonsoft.Json.Serialization
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
             {
                 string parameters = string.Join(", ", contract.CreatorParameters.Select(p => p.PropertyName)
-#if !HAVE_STRING_JOIN_ENUMERABLE
+#if !HAVE_STRING_JOIN_WITH_ENUMERABLE
                     .ToArray()
 #endif
                     );

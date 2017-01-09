@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
 using System;
 using System.ComponentModel;
 

@@ -53,7 +53,7 @@ namespace Newtonsoft.Json.Linq
     ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
     /// </example>
     public partial class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
         , ICustomTypeDescriptor
 #endif
 #if HAVE_INOTIFY_PROPERTY_CHANGING
@@ -208,7 +208,7 @@ namespace Newtonsoft.Json.Linq
         internal void InternalPropertyChanged(JProperty childProperty)
         {
             OnPropertyChanged(childProperty.Name);
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
             if (_listChanged != null)
             {
                 OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, IndexOfItem(childProperty)));
@@ -716,7 +716,7 @@ namespace Newtonsoft.Json.Linq
         }
 #endif
 
-#if HAVE_COMPONENTMODEL
+#if HAVE_COMPONENT_MODEL
         // include custom type descriptor on JObject rather than use a provider because the properties are specific to a type
 
         #region ICustomTypeDescriptor
