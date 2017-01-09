@@ -800,7 +800,7 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         protected override DynamicMetaObject GetMetaObject(Expression parameter)
         {
-            return new DynamicProxyMetaObject<JObject>(parameter, this, new JObjectDynamicProxy(), true);
+            return new DynamicProxyMetaObject<JObject>(parameter, this, new JObjectDynamicProxy());
         }
 
         private class JObjectDynamicProxy : DynamicProxy<JObject>

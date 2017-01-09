@@ -966,7 +966,7 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         protected override DynamicMetaObject GetMetaObject(Expression parameter)
         {
-            return new DynamicProxyMetaObject<JValue>(parameter, this, new JValueDynamicProxy(), true);
+            return new DynamicProxyMetaObject<JValue>(parameter, this, new JValueDynamicProxy());
         }
 
         private class JValueDynamicProxy : DynamicProxy<JValue>
