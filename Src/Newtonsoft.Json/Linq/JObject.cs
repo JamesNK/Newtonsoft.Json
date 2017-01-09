@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Linq
     /// <example>
     ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
     /// </example>
-    public class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
+    public partial class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
 #if HAVE_COMPONENTMODEL
         , ICustomTypeDescriptor
 #endif
@@ -800,7 +800,7 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         protected override DynamicMetaObject GetMetaObject(Expression parameter)
         {
-            return new DynamicProxyMetaObject<JObject>(parameter, this, new JObjectDynamicProxy(), true);
+            return new DynamicProxyMetaObject<JObject>(parameter, this, new JObjectDynamicProxy());
         }
 
         private class JObjectDynamicProxy : DynamicProxy<JObject>

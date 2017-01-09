@@ -158,7 +158,7 @@ namespace Newtonsoft.Json.Utilities
 
         public override DynamicMetaObject FallbackGetMember(DynamicMetaObject target, DynamicMetaObject errorSuggestion)
         {
-            DynamicMetaObject retMetaObject = _innerBinder.Bind(target, new DynamicMetaObject[] { });
+            DynamicMetaObject retMetaObject = _innerBinder.Bind(target, CollectionUtils.ArrayEmpty<DynamicMetaObject>());
 
             NoThrowExpressionVisitor noThrowVisitor = new NoThrowExpressionVisitor();
             Expression resultExpression = noThrowVisitor.Visit(retMetaObject.Expression);
