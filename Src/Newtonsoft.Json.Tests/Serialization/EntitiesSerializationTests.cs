@@ -450,7 +450,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(new DateTime(2000, 12, 10, 10, 50, 0, DateTimeKind.Utc), newKey.EntityKeyValues[4].Value);
         }
 
-        private Folder CreateEntitiesTestData()
+        private static Folder CreateEntitiesTestData()
         {
             Folder folder = new Folder();
             folder.FolderId = new Guid("A4E8BA80-EB24-4591-BB1C-62D3AD83701E");

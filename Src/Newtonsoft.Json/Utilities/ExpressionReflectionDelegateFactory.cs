@@ -83,7 +83,7 @@ namespace Newtonsoft.Json.Utilities
             public bool IsOut;
         }
 
-        private Expression BuildMethodCall(MethodBase method, Type type, ParameterExpression targetParameterExpression, ParameterExpression argsParameterExpression)
+        private static Expression BuildMethodCall(MethodBase method, Type type, ParameterExpression targetParameterExpression, ParameterExpression argsParameterExpression)
         {
             ParameterInfo[] parametersInfo = method.GetParameters();
 
@@ -343,11 +343,11 @@ namespace Newtonsoft.Json.Utilities
             Action<T, object> compiled = (Action<T, object>)lambdaExpression.Compile();
             return compiled;
         }
-        
-        private Expression EnsureCastExpression(Expression expression, Type targetType, bool allowWidening = false)
+
+        private static Expression EnsureCastExpression(Expression expression, Type targetType, bool allowWidening = false)
         {
             Type expressionType = expression.Type;
-            
+
             // check if a cast or conversion is required
             if (expressionType == targetType || (!expressionType.IsValueType() && targetType.IsAssignableFrom(expressionType)))
             {

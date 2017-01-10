@@ -71,7 +71,7 @@ namespace Newtonsoft.Json.Tests.Documentation
 
     public class Logger
     {
-        public void Log(LogEventInfo logEvent)
+        public static void Log(LogEventInfo logEvent)
         {
         }
     }
@@ -111,7 +111,7 @@ namespace Newtonsoft.Json.Tests.Documentation
                 Logger.Log(logEvent);
             }
 
-            private LogLevel GetLogLevel(TraceLevel level)
+            private static LogLevel GetLogLevel(TraceLevel level)
             {
                 switch (level)
                 {

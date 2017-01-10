@@ -148,7 +148,7 @@ namespace Newtonsoft.Json.Converters
             throw JsonSerializationException.Create(reader, "Unexpected object type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, objectType));
         }
 
-        private byte[] ReadByteArray(JsonReader reader)
+        private static byte[] ReadByteArray(JsonReader reader)
         {
             List<byte> byteList = new List<byte>();
 

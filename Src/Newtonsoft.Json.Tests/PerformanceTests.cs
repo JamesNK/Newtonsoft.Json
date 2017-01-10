@@ -342,7 +342,7 @@ namespace Newtonsoft.Json.Tests
         }
 #endif
 
-        private T TimeOperation<T>(Func<T> operation, string name)
+        private static T TimeOperation<T>(Func<T> operation, string name)
         {
             // warm up
             operation();
@@ -751,7 +751,7 @@ If attributes are not mentioned, default values are used in each case.
             Console.WriteLine();
         }
 
-        private TestClass CreateSerializationObject()
+        private static TestClass CreateSerializationObject()
         {
             TestClass test = new TestClass();
 
@@ -788,14 +788,14 @@ If attributes are not mentioned, default values are used in each case.
             };
         }
 
-        public string SerializeWebExtensions(object value)
+        public static string SerializeWebExtensions(object value)
         {
             JavaScriptSerializer ser = new JavaScriptSerializer();
 
             return ser.Serialize(value);
         }
 
-        public string SerializeDataContractJson(object value)
+        public static string SerializeDataContractJson(object value)
         {
             DataContractJsonSerializer dataContractSerializer
                 = new DataContractJsonSerializer(value.GetType());
@@ -811,7 +811,7 @@ If attributes are not mentioned, default values are used in each case.
             }
         }
 
-        public string SerializeDataContract(object value)
+        public static string SerializeDataContract(object value)
         {
             DataContractSerializer dataContractSerializer
                 = new DataContractSerializer(value.GetType());
@@ -1041,14 +1041,13 @@ If attributes are not mentioned, default values are used in each case.
             return json;
         }
 
-        private string SerializeBinaryFormatter(object value)
+        private static string SerializeBinaryFormatter(object value)
         {
-            string json;
             MemoryStream ms = new MemoryStream(Buffer);
             BinaryFormatter formatter = new BinaryFormatter();
             formatter.Serialize(ms, value);
 
-            json = "Bytes = " + ms.Position;
+            string json = "Bytes = " + ms.Position;
             //json = BitConverter.ToString(ms.ToArray(), 0, (int)ms.Position);
             return json;
         }
@@ -1295,14 +1294,14 @@ If attributes are not mentioned, default values are used in each case.
             return (T)serializer.Deserialize(new BsonReader(new MemoryStream(bson)), type);
         }
 
-        public T DeserializeWebExtensions<T>(string json)
+        public static T DeserializeWebExtensions<T>(string json)
         {
             JavaScriptSerializer ser = new JavaScriptSerializer { MaxJsonLength = int.MaxValue };
 
             return ser.Deserialize<T>(json);
         }
 
-        public T DeserializeDataContractJson<T>(string json)
+        public static T DeserializeDataContractJson<T>(string json)
         {
             DataContractJsonSerializer dataContractSerializer = new DataContractJsonSerializer(typeof(T));
 
@@ -1357,7 +1356,7 @@ If attributes are not mentioned, default values are used in each case.
             }
         }
 
-        private T DeserializeDataContract<T>(string xml)
+        private static T DeserializeDataContract<T>(string xml)
         {
             MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(xml));
 
@@ -1365,7 +1364,7 @@ If attributes are not mentioned, default values are used in each case.
             return (T)serializer.ReadObject(ms);
         }
 
-        private T DeserializeBinaryFormatter<T>(byte[] bytes)
+        private static T DeserializeBinaryFormatter<T>(byte[] bytes)
         {
             BinaryFormatter formatter = new BinaryFormatter();
             return (T)formatter.Deserialize(new MemoryStream(bytes));

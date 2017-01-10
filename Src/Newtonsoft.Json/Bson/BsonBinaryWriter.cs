@@ -225,12 +225,12 @@ namespace Newtonsoft.Json.Bson
             }
         }
 
-        private int CalculateSize(int stringByteCount)
+        private static int CalculateSize(int stringByteCount)
         {
             return stringByteCount + 1;
         }
 
-        private int CalculateSizeWithLength(int stringByteCount, bool includeSize)
+        private static int CalculateSizeWithLength(int stringByteCount, bool includeSize)
         {
             int baseSize = (includeSize)
                 ? 5 // size bytes + terminator

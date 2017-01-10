@@ -124,7 +124,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             public IList<string> Categories { get; set; }
         }
 
-        private List<Post> GetPosts()
+        private static List<Post> GetPosts()
         {
             return new List<Post>();
         }

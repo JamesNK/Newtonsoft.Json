@@ -88,7 +88,7 @@ namespace Newtonsoft.Json.Schema
             return schema;
         }
 
-        private string UnescapeReference(string reference)
+        private static string UnescapeReference(string reference)
         {
             return Uri.UnescapeDataString(reference).Replace("~1", "/").Replace("~0", "~");
         }
@@ -450,7 +450,7 @@ namespace Newtonsoft.Json.Schema
             }
         }
 
-        private JsonSchemaType? ProcessType(JToken token)
+        private static JsonSchemaType? ProcessType(JToken token)
         {
             switch (token.Type)
             {

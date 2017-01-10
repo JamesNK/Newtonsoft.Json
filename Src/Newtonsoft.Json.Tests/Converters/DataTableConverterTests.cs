@@ -558,7 +558,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
         public class DataTableConverterTest : DataTableConverter
         {
-            protected DataTable CreateTable()
+            protected static DataTable CreateTable()
             {
                 CustomDataTable table = new CustomDataTable();
                 table.Columns.Add("timeCol", typeof(DateTime));
@@ -583,7 +583,7 @@ namespace Newtonsoft.Json.Tests.Converters
                 }
             }
 
-            private void OnError(object sender, Json.Serialization.ErrorEventArgs e)
+            private static void OnError(object sender, Json.Serialization.ErrorEventArgs e)
             {
                 e.ErrorContext.Handled = true;
             }

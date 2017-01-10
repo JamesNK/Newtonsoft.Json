@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
                 Logger.Log(logEvent);
             }
 
-            private LogLevel GetLogLevel(TraceLevel level)
+            private static LogLevel GetLogLevel(TraceLevel level)
             {
                 switch (level)
                 {

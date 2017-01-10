@@ -1529,7 +1529,7 @@ namespace Newtonsoft.Json
             return true;
         }
 
-        private bool ValidIdentifierChar(char value)
+        private static bool ValidIdentifierChar(char value)
         {
             return (char.IsLetterOrDigit(value) || value == '_' || value == '$');
         }

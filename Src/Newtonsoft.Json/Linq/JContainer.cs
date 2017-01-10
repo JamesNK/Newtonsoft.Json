@@ -318,7 +318,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        internal bool IsMultiContent(object content)
+        internal static bool IsMultiContent(object content)
         {
             return (content is IEnumerable && !(content is string) && !(content is JToken) && !(content is byte[]));
         }
@@ -943,7 +943,7 @@ namespace Newtonsoft.Json.Linq
         }
         #endregion
 
-        private JToken EnsureValue(object value)
+        private static JToken EnsureValue(object value)
         {
             if (value == null)
             {

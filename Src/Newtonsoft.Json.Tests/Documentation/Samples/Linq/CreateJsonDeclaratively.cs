@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
         }
         #endregion
 
-        private List<Post> GetPosts()
+        private static List<Post> GetPosts()
         {
             return new List<Post>
             {

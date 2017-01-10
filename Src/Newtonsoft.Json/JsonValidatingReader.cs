@@ -95,7 +95,7 @@ namespace Newtonsoft.Json
                 }
             }
 
-            private IEnumerable<string> GetRequiredProperties(JsonSchemaModel schema)
+            private static IEnumerable<string> GetRequiredProperties(JsonSchemaModel schema)
             {
                 if (schema?.Properties == null)
                 {
@@ -991,7 +991,7 @@ namespace Newtonsoft.Json
             _currentScope.CurrentPropertyName = propertyName;
         }
 
-        private bool IsPropertyDefinied(JsonSchemaModel schema, string propertyName)
+        private static bool IsPropertyDefinied(JsonSchemaModel schema, string propertyName)
         {
             if (schema.Properties != null && schema.Properties.ContainsKey(propertyName))
             {
