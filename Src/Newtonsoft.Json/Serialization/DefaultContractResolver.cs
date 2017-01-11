@@ -1544,7 +1544,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 bool hasIgnoreDataMemberAttribute = false;
 
-#if HAVE_DATA_CONTRACTS
+#if HAVE_IGNORE_DATA_MEMBER_ATTRIBUTE
                 hasIgnoreDataMemberAttribute = (JsonTypeReflector.GetAttribute<IgnoreDataMemberAttribute>(attributeProvider) != null);
 #endif
 
