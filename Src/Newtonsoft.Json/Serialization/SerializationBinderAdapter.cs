@@ -44,7 +44,7 @@ namespace Newtonsoft.Json.Serialization
 
         public void BindToName(Type serializedType, out string assemblyName, out string typeName)
         {
-#if !(NET35 || NET20)
+#if HAVE_SERIALIZATION_BINDER_BIND_TO_NAME
             SerializationBinder.BindToName(serializedType, out assemblyName, out typeName);
 #else
             assemblyName = null;

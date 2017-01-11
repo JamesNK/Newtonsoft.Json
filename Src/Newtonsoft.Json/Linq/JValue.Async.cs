@@ -23,11 +23,11 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
 
 using System;
 using System.Globalization;
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Threading;
@@ -84,7 +84,7 @@ namespace Newtonsoft.Json.Linq
                         return writer.WriteValueAsync((ulong)_value, cancellationToken);
                     }
 
-#if !(PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                     if (_value is BigInteger)
                     {
                         return writer.WriteValueAsync((BigInteger)_value, cancellationToken);

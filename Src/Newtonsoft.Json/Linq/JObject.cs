@@ -25,23 +25,22 @@
 
 using System;
 using System.Collections.Generic;
+#if HAVE_INOTIFY_COLLECTION_CHANGED
 using System.Collections.ObjectModel;
-#if !PORTABLE40
 using System.Collections.Specialized;
 #endif
 using System.ComponentModel;
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
 using System.IO;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
-
 #endif
 
 namespace Newtonsoft.Json.Linq
@@ -53,10 +52,10 @@ namespace Newtonsoft.Json.Linq
     ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
     /// </example>
     public partial class JObject : JContainer, IDictionary<string, JToken>, INotifyPropertyChanged
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_COMPONENT_MODEL
         , ICustomTypeDescriptor
 #endif
-#if !(NET20 || PORTABLE40 || PORTABLE)
+#if HAVE_INOTIFY_PROPERTY_CHANGING
         , INotifyPropertyChanging
 #endif
     {
@@ -76,7 +75,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
-#if !(NET20 || PORTABLE || PORTABLE40)
+#if HAVE_INOTIFY_PROPERTY_CHANGING
         /// <summary>
         /// Occurs when a property value is changing.
         /// </summary>
@@ -208,13 +207,13 @@ namespace Newtonsoft.Json.Linq
         internal void InternalPropertyChanged(JProperty childProperty)
         {
             OnPropertyChanged(childProperty.Name);
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_COMPONENT_MODEL
             if (_listChanged != null)
             {
                 OnListChanged(new ListChangedEventArgs(ListChangedType.ItemChanged, IndexOfItem(childProperty)));
             }
 #endif
-#if !(NET20 || NET35 || PORTABLE40)
+#if HAVE_INOTIFY_COLLECTION_CHANGED
             if (_collectionChanged != null)
             {
                 OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Replace, childProperty, childProperty, IndexOfItem(childProperty)));
@@ -224,7 +223,7 @@ namespace Newtonsoft.Json.Linq
 
         internal void InternalPropertyChanging(JProperty childProperty)
         {
-#if !(NET20 || PORTABLE40 || PORTABLE)
+#if HAVE_INOTIFY_PROPERTY_CHANGING
             OnPropertyChanging(childProperty.Name);
 #endif
         }
@@ -333,7 +332,7 @@ namespace Newtonsoft.Json.Linq
                 }
                 else
                 {
-#if !(NET20 || PORTABLE40 || PORTABLE)
+#if HAVE_INOTIFY_PROPERTY_CHANGING
                     OnPropertyChanging(propertyName);
 #endif
                     Add(new JProperty(propertyName, value));
@@ -705,7 +704,7 @@ namespace Newtonsoft.Json.Linq
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-#if !(PORTABLE40 || PORTABLE || NET20)
+#if HAVE_INOTIFY_PROPERTY_CHANGING
         /// <summary>
         /// Raises the <see cref="PropertyChanging"/> event with the provided arguments.
         /// </summary>
@@ -716,7 +715,7 @@ namespace Newtonsoft.Json.Linq
         }
 #endif
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_COMPONENT_MODEL
         // include custom type descriptor on JObject rather than use a provider because the properties are specific to a type
 
         #region ICustomTypeDescriptor
@@ -790,7 +789,7 @@ namespace Newtonsoft.Json.Linq
 
 #endif
 
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC                            
         /// <summary>
         /// Returns the <see cref="DynamicMetaObject"/> responsible for binding operations performed on this object.
         /// </summary>

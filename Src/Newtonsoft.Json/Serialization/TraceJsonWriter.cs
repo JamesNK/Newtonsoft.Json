@@ -1,8 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Text;
@@ -156,7 +156,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         public override void WriteValue(DateTimeOffset value)
         {
             _textWriter.WriteValue(value);
@@ -177,7 +177,6 @@ namespace Newtonsoft.Json.Serialization
                 base.WriteUndefined();
             }
         }
-
 #endif
 
         public override void WriteValue(double value)
@@ -301,7 +300,7 @@ namespace Newtonsoft.Json.Serialization
 
         public override void WriteValue(object value)
         {
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (value is BigInteger)
             {
                 _textWriter.WriteValue(value);

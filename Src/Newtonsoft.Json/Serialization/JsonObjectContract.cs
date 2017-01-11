@@ -214,8 +214,8 @@ namespace Newtonsoft.Json.Serialization
             Properties = new JsonPropertyCollection(UnderlyingType);
         }
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
-#if !(NET20 || NET35)
+#if HAVE_BINARY_SERIALIZATION
+#if HAVE_SECURITY_SAFE_CRITICAL_ATTRIBUTE
         [SecuritySafeCritical]
 #endif
         internal object GetUninitializedObject()

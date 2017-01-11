@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -208,7 +208,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 case JTokenType.Date:
                     using (StringWriter writer = StringUtils.CreateStringWriter(64))
                     {
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                         if (value.Value is DateTimeOffset)
                         {
                             DateTimeUtils.WriteDateTimeOffsetString(writer, (DateTimeOffset)value.Value, DateFormatHandling.IsoDateFormat, null, CultureInfo.InvariantCulture);

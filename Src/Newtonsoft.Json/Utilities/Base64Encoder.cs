@@ -25,7 +25,7 @@
 
 using System;
 using System.IO;
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
 using System.Threading;
 using System.Threading.Tasks;
 #endif
@@ -156,7 +156,7 @@ namespace Newtonsoft.Json.Utilities
             _writer.Write(chars, index, count);
         }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
 
         public async Task EncodeAsync(byte[] buffer, int index, int count, CancellationToken cancellationToken)
         {

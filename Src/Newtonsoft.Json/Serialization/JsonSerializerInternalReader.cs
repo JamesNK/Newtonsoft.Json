@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -27,20 +27,20 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
 using System.ComponentModel;
 using System.Dynamic;
 #endif
 using System.Diagnostics;
 using System.Globalization;
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -319,7 +319,7 @@ namespace Newtonsoft.Json.Serialization
                         return EnsureType(reader, constructorName, CultureInfo.InvariantCulture, contract, objectType);
                     case JsonToken.Null:
                     case JsonToken.Undefined:
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_ADO_NET
                         if (objectType == typeof(DBNull))
                         {
                             return DBNull.Value;
@@ -351,10 +351,10 @@ namespace Newtonsoft.Json.Serialization
             {
                 case JsonContractType.Object:
                 case JsonContractType.Dictionary:
-#if !(DOTNET || PORTABLE || PORTABLE40)
+#if HAVE_BINARY_SERIALIZATION
                 case JsonContractType.Serializable:
 #endif
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
                 case JsonContractType.Dynamic:
 #endif
                     return @"JSON object (e.g. {""name"":""value""})";
@@ -563,12 +563,12 @@ namespace Newtonsoft.Json.Serialization
 
                     return targetDictionary;
                 }
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
                 case JsonContractType.Dynamic:
                     JsonDynamicContract dynamicContract = (JsonDynamicContract)contract;
                     return CreateDynamic(reader, dynamicContract, member, id);
 #endif
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_BINARY_SERIALIZATION
                 case JsonContractType.Serializable:
                     JsonISerializableContract serializableContract = (JsonISerializableContract)contract;
                     return CreateISerializable(reader, serializableContract, member, id);
@@ -801,7 +801,7 @@ namespace Newtonsoft.Json.Serialization
                 }
 
                 if (objectType != null
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
                     && objectType != typeof(IDynamicMetaObjectProvider)
 #endif
                     && !objectType.IsAssignableFrom(specifiedType))
@@ -924,7 +924,7 @@ namespace Newtonsoft.Json.Serialization
         private bool HasNoDefinedType(JsonContract contract)
         {
             return (contract == null || contract.UnderlyingType == typeof(object) || contract.ContractType == JsonContractType.Linq
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
                     || contract.UnderlyingType == typeof(IDynamicMetaObjectProvider)
 #endif
                 );
@@ -966,7 +966,7 @@ namespace Newtonsoft.Json.Serialization
                             }
                         }
 
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                         if (value is BigInteger)
                         {
                             return ConvertUtils.FromBigInteger((BigInteger)value, contract.NonNullableUnderlyingType);
@@ -1356,7 +1356,7 @@ namespace Newtonsoft.Json.Serialization
                                         }
                                         break;
                                     }
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                                     case PrimitiveTypeCode.DateTimeOffset:
                                     case PrimitiveTypeCode.DateTimeOffsetNullable:
                                     {
@@ -1676,7 +1676,7 @@ namespace Newtonsoft.Json.Serialization
             return underlyingList;
         }
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_BINARY_SERIALIZATION
         private object CreateISerializable(JsonReader reader, JsonISerializableContract contract, JsonProperty member, string id)
         {
             Type objectType = contract.UnderlyingType;
@@ -1766,7 +1766,7 @@ namespace Newtonsoft.Json.Serialization
         }
 #endif
 
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
         private object CreateDynamic(JsonReader reader, JsonDynamicContract contract, JsonProperty member, string id)
         {
             IDynamicMetaObjectProvider newObject;
@@ -1900,7 +1900,7 @@ namespace Newtonsoft.Json.Serialization
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
             {
                 string parameters = string.Join(", ", contract.CreatorParameters.Select(p => p.PropertyName)
-#if NET20 || NET35
+#if !HAVE_STRING_JOIN_WITH_ENUMERABLE
                     .ToArray()
 #endif
                     );
@@ -2250,7 +2250,7 @@ namespace Newtonsoft.Json.Serialization
                 case ReadType.ReadAsDateTime:
                     reader.ReadAsDateTime();
                     break;
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                 case ReadType.ReadAsDateTimeOffset:
                     reader.ReadAsDateTimeOffset();
                     break;

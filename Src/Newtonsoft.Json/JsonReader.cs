@@ -27,12 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -193,7 +193,7 @@ namespace Newtonsoft.Json
             set
             {
                 if (value < DateParseHandling.None ||
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                     value > DateParseHandling.DateTimeOffset
 #else
                     value > DateParseHandling.DateTime
@@ -629,7 +629,7 @@ namespace Newtonsoft.Json
                     if (!(Value is double))
                     {
                         double d;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                         if (Value is BigInteger)
                         {
                             d = (double)(BigInteger)Value;
@@ -689,7 +689,7 @@ namespace Newtonsoft.Json
                 case JsonToken.Integer:
                 case JsonToken.Float:
                     bool b;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                     if (Value is BigInteger)
                     {
                         b = (BigInteger)Value != 0;
@@ -796,7 +796,7 @@ namespace Newtonsoft.Json
                 case JsonToken.EndArray:
                     return null;
                 case JsonToken.Date:
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                     if (Value is DateTimeOffset)
                     {
                         SetToken(JsonToken.Date, ((DateTimeOffset)Value).DateTime, false);
@@ -838,7 +838,7 @@ namespace Newtonsoft.Json
             throw JsonReaderException.Create(this, "Could not convert string to DateTime: {0}.".FormatWith(CultureInfo.InvariantCulture, s));
         }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         /// <summary>
         /// Reads the next JSON token from the source as a <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/>.
         /// </summary>

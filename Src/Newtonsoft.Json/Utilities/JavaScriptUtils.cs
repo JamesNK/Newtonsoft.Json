@@ -25,13 +25,13 @@
 
 using System;
 using System.IO;
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
 using System.Threading;
 using System.Threading.Tasks;
 #endif
 using System.Collections.Generic;
 using System.Diagnostics;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -323,7 +323,7 @@ namespace Newtonsoft.Json.Utilities
                 return w.ToString();
             }
         }
-
+        
         private static int FirstCharToEscape(string s, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling)
         {
             for (int i = 0; i != s.Length; i++)
@@ -356,7 +356,7 @@ namespace Newtonsoft.Json.Utilities
             return -1;
         }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
         public static Task WriteEscapedJavaScriptStringAsync(TextWriter writer, string s, char delimiter, bool appendDelimiters, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)

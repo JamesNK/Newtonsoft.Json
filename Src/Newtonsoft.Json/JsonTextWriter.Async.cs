@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
 
 using System;
 using System.Globalization;
 using System.Threading;
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Threading.Tasks;
@@ -40,7 +40,7 @@ namespace Newtonsoft.Json
     {
         // It's not safe to perform the async methods here in a derived class as if the synchronous equivalent
         // has been overriden then the asychronous method will no longer be doing the same operation.
-#if !(NET20 || NET35 || NET40 || PORTABLE40) // Double-check this isn't included inappropriately.
+#if HAVE_ASYNC // Double-check this isn't included inappropriately.
         private readonly bool _safeAsync;
 #endif
 
@@ -882,7 +882,7 @@ namespace Newtonsoft.Json
             await InternalWriteValueAsync(JsonToken.String, cancellationToken).ConfigureAwait(false);
 
             await _writer.WriteAsync(_quoteChar).ConfigureAwait(false);
-#if !(DOTNET || PORTABLE)
+#if HAVE_CHAR_TO_STRING_WITH_CULTURE
             await _writer.WriteAsync(value.ToString("D", CultureInfo.InvariantCulture), cancellationToken).ConfigureAwait(false);
 #else
             await _writer.WriteAsync(value.ToString("D"), cancellationToken).ConfigureAwait(false);
@@ -970,7 +970,7 @@ namespace Newtonsoft.Json
             return value == null ? DoWriteNullAsync(cancellationToken) : WriteIntegerValueAsync(value.GetValueOrDefault(), cancellationToken);
         }
 
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
         internal Task WriteValueAsync(BigInteger value, CancellationToken cancellationToken)
         {
             return WriteValueInternalAsync(JsonToken.Integer, value.ToString(CultureInfo.InvariantCulture), cancellationToken);
@@ -993,7 +993,7 @@ namespace Newtonsoft.Json
                 {
                     return WriteNullAsync(cancellationToken);
                 }
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                 if (value is BigInteger)
                 {
                     return WriteValueAsync((BigInteger)value, cancellationToken);

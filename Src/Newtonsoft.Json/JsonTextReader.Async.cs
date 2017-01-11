@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
 
 using System;
 using System.Globalization;
 using System.Threading;
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Threading.Tasks;
@@ -41,7 +41,7 @@ namespace Newtonsoft.Json
     {
         // It's not safe to perform the async methods here in a derived class as if the synchronous equivalent
         // has been overriden then the asychronous method will no longer be doing the same operation
-#if !(NET20 || NET35 || NET40 || PORTABLE40) // Double-check this isn't included inappropriately.
+#if HAVE_ASYNC // Double-check this isn't included inappropriately.
         private readonly bool _safeAsync;
 #endif
 
@@ -1397,7 +1397,7 @@ namespace Newtonsoft.Json
                             case '9':
                                 await ParseNumberAsync(ReadType.Read, cancellationToken).ConfigureAwait(false);
                                 bool b;
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                                 if (Value is BigInteger)
                                 {
                                     b = (BigInteger)Value != 0;

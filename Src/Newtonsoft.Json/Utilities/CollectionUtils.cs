@@ -30,13 +30,13 @@ using System.Reflection;
 using System.Text;
 using System.Collections;
 using System.Diagnostics;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
 using System.Globalization;
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_METHOD_IMPL_ATTRIBUTE
 using System.Runtime.CompilerServices;
 #endif
 using Newtonsoft.Json.Serialization;
@@ -84,7 +84,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-#if (NET20 || NET35 || PORTABLE40)
+#if !HAVE_COVARIANT_GENERICS
         public static void AddRange<T>(this IList<T> initial, IEnumerable collection)
         {
             ValidationUtils.ArgumentNotNull(initial, nameof(initial));
@@ -106,7 +106,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 return true;
             }
-#if !(NET40 || NET35 || NET20 || PORTABLE40)
+#if HAVE_READ_ONLY_COLLECTIONS
             if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IReadOnlyDictionary<,>)))
             {
                 return true;
@@ -357,7 +357,7 @@ namespace Newtonsoft.Json.Utilities
         // pretty much guaranteed to be inlined, giving us fast access of that cached
         // array. With 4.5 and up we use AggressiveInlining just to be sure, so it's
         // effectively the same as calling Array.Empty<T> even when not available.
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_METHOD_IMPL_ATTRIBUTE
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
 #endif
         public static T[] ArrayEmpty<T>()

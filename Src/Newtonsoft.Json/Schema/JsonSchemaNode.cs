@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -76,7 +76,7 @@ namespace Newtonsoft.Json.Schema
         public static string GetId(IEnumerable<JsonSchema> schemata)
         {
             return string.Join("-", schemata.Select(s => s.InternalId).OrderBy(id => id, StringComparer.Ordinal)
-#if NET20 || NET35
+#if !HAVE_STRING_JOIN_WITH_ENUMERABLE
                     .ToArray()
 #endif
                 );

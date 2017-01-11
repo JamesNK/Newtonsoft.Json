@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_ENTITY_FRAMEWORK
 using System;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;

@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Reflection;
@@ -34,7 +34,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -87,7 +87,7 @@ namespace Newtonsoft.Json.Utilities
 
         static ReflectionUtils()
         {
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_EMPTY_TYPES
             EmptyTypes = Type.EmptyTypes;
 #else
             EmptyTypes = CollectionUtils.ArrayEmpty<Type>();
@@ -1106,13 +1106,13 @@ namespace Newtonsoft.Json.Utilities
                     return 0m;
                 case PrimitiveTypeCode.DateTime:
                     return new DateTime();
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                 case PrimitiveTypeCode.BigInteger:
                     return new BigInteger();
 #endif
                 case PrimitiveTypeCode.Guid:
                     return new Guid();
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                 case PrimitiveTypeCode.DateTimeOffset:
                     return new DateTimeOffset();
 #endif

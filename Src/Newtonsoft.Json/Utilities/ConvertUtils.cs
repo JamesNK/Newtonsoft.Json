@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -27,17 +27,17 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.ComponentModel;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_ADO_NET
 using System.Data.SqlTypes;
 
 #endif
@@ -135,7 +135,7 @@ namespace Newtonsoft.Json.Utilities
                 { typeof(double?), PrimitiveTypeCode.DoubleNullable },
                 { typeof(DateTime), PrimitiveTypeCode.DateTime },
                 { typeof(DateTime?), PrimitiveTypeCode.DateTimeNullable },
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                 { typeof(DateTimeOffset), PrimitiveTypeCode.DateTimeOffset },
                 { typeof(DateTimeOffset?), PrimitiveTypeCode.DateTimeOffsetNullable },
 #endif
@@ -145,19 +145,19 @@ namespace Newtonsoft.Json.Utilities
                 { typeof(Guid?), PrimitiveTypeCode.GuidNullable },
                 { typeof(TimeSpan), PrimitiveTypeCode.TimeSpan },
                 { typeof(TimeSpan?), PrimitiveTypeCode.TimeSpanNullable },
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                 { typeof(BigInteger), PrimitiveTypeCode.BigInteger },
                 { typeof(BigInteger?), PrimitiveTypeCode.BigIntegerNullable },
 #endif
                 { typeof(Uri), PrimitiveTypeCode.Uri },
                 { typeof(string), PrimitiveTypeCode.String },
                 { typeof(byte[]), PrimitiveTypeCode.Bytes },
-#if !(PORTABLE || PORTABLE40 || DOTNET)
+#if HAVE_ADO_NET
                 { typeof(DBNull), PrimitiveTypeCode.DBNull }
 #endif
             };
 
-#if !PORTABLE
+#if HAVE_ICONVERTIBLE
         private static readonly TypeInformation[] PrimitiveTypeCodes =
         {
             // need all of these. lookup against the index with TypeCode value
@@ -220,7 +220,7 @@ namespace Newtonsoft.Json.Utilities
             return PrimitiveTypeCode.Object;
         }
 
-#if !PORTABLE
+#if HAVE_ICONVERTIBLE
         public static TypeInformation GetTypeInformation(IConvertible convertable)
         {
             TypeInformation typeInformation = PrimitiveTypeCodes[(int)convertable.GetTypeCode()];
@@ -230,7 +230,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsConvertible(Type t)
         {
-#if !PORTABLE
+#if HAVE_ICONVERTIBLE
             return typeof(IConvertible).IsAssignableFrom(t);
 #else
             return (
@@ -241,7 +241,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static TimeSpan ParseTimeSpan(string input)
         {
-#if !(NET35 || NET20)
+#if HAVE_TIME_SPAN_PARSE_WITH_CULTURE
             return TimeSpan.Parse(input, CultureInfo.InvariantCulture);
 #else
             return TimeSpan.Parse(input);
@@ -311,7 +311,7 @@ namespace Newtonsoft.Json.Utilities
             return o => call(null, o);
         }
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
         internal static BigInteger ToBigInteger(object value)
         {
             if (value is BigInteger)
@@ -484,7 +484,7 @@ namespace Newtonsoft.Json.Utilities
                 return ConvertResult.Success;
             }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
             if (initialValue is DateTime && targetType == typeof(DateTimeOffset))
             {
                 value = new DateTimeOffset((DateTime)initialValue);
@@ -546,7 +546,7 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (targetType == typeof(BigInteger))
             {
                 value = ToBigInteger(initialValue);
@@ -559,7 +559,7 @@ namespace Newtonsoft.Json.Utilities
             }
 #endif
 
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_COMPONENT_MODEL
             // see if source or target types have a TypeConverter that converts between the two
             TypeConverter toConverter = GetConverter(initialType);
 
@@ -577,7 +577,7 @@ namespace Newtonsoft.Json.Utilities
                 return ConvertResult.Success;
             }
 #endif
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_ADO_NET
             // handle DBNull and INullable
             if (initialValue == DBNull.Value)
             {
@@ -592,7 +592,7 @@ namespace Newtonsoft.Json.Utilities
                 return ConvertResult.CannotConvertNull;
             }
 #endif
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_ADO_NET
             INullable nullable = initialValue as INullable;
             if (nullable != null)
             {
@@ -675,7 +675,7 @@ namespace Newtonsoft.Json.Utilities
             throw new ArgumentException("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialType?.ToString() ?? "{null}", targetType));
         }
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_ADO_NET
         public static object ToValue(INullable nullableValue)
         {
             if (nullableValue == null)
@@ -707,7 +707,7 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_COMPONENT_MODEL
         internal static TypeConverter GetConverter(Type t)
         {
             return JsonTypeReflector.GetTypeConverter(t);
@@ -716,7 +716,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool VersionTryParse(string input, out Version result)
         {
-#if !(NET20 || NET35)
+#if HAVE_VERSION_TRY_PARSE
             return Version.TryParse(input, out result);
 #else
     // improve failure performance with regex?
@@ -1015,7 +1015,7 @@ namespace Newtonsoft.Json.Utilities
             /// <param name="val">Mantissa</param>
             /// <param name="scale">Exponent</param>
             /// <remarks>
-            /// Adoption of native function NumberToDouble() from coreclr sources, 
+            /// Adoption of native function NumberToDouble() from coreclr sources,
             /// see https://github.com/dotnet/coreclr/blob/master/src/classlibnative/bcltype/number.cpp#L451
             /// </remarks>
             public static double PackDouble(bool negative, ulong val, int scale)
@@ -1265,7 +1265,7 @@ namespace Newtonsoft.Json.Utilities
                         }
                         if (i == numDecimalStart)
                         {
-                            // E follows decimal point		
+                            // E follows decimal point
                             return ParseResult.Invalid;
                         }
                         i++;
@@ -1292,7 +1292,7 @@ namespace Newtonsoft.Json.Utilities
                                 break;
                         }
 
-                        // parse 3 digit 
+                        // parse 3 digit
                         for (; i < end; i++)
                         {
                             c = chars[i];
@@ -1367,7 +1367,7 @@ namespace Newtonsoft.Json.Utilities
         public static bool TryConvertGuid(string s, out Guid g)
         {
             // GUID has to have format 00000000-0000-0000-0000-000000000000
-#if NET20 || NET35
+#if !HAVE_GUID_TRY_PARSE
             if (s == null)
             {
                 throw new ArgumentNullException("s");
