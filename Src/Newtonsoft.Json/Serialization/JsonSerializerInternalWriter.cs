@@ -1128,6 +1128,12 @@ namespace Newtonsoft.Json.Serialization
         private string GetPropertyName(JsonWriter writer, object name, JsonContract contract, out bool escape)
         {
             string propertyName;
+            
+            if (contract.Converter?.CanConvertToString == true)
+            {
+                escape = true;
+                return contract.Converter.ConvertToString(name);
+            }
 
             if (contract.ContractType == JsonContractType.Primitive)
             {

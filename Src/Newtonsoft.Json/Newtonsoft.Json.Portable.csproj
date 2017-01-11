@@ -101,6 +101,7 @@
     <Compile Include="JsonSerializer.cs" />
     <Compile Include="JsonSerializerSettings.cs" />
     <Compile Include="JsonTextReader.Async.cs" />
+    <Compile Include="JsonStringConverter.cs" />
     <Compile Include="JsonTextReader.cs" />
     <Compile Include="JsonTextWriter.Async.cs" />
     <Compile Include="JsonWriter.Async.cs" />
