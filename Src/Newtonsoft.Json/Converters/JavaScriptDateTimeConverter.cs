@@ -120,8 +120,7 @@ namespace Newtonsoft.Json.Converters
                 return new DateTimeOffset(d);
             }
 #endif
-
-			return d;
+            return d;
         }
     }
 }

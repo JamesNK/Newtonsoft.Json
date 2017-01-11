@@ -87,7 +87,7 @@ namespace Newtonsoft.Json.Utilities
 
         static ReflectionUtils()
         {
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_EMPTY_TYPES
             EmptyTypes = Type.EmptyTypes;
 #else
             EmptyTypes = CollectionUtils.ArrayEmpty<Type>();

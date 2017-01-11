@@ -559,7 +559,7 @@ namespace Newtonsoft.Json.Utilities
             }
 #endif
 
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_COMPONENT_MODEL
             // see if source or target types have a TypeConverter that converts between the two
             TypeConverter toConverter = GetConverter(initialType);
 
@@ -707,7 +707,7 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_COMPONENT_MODEL
         internal static TypeConverter GetConverter(Type t)
         {
             return JsonTypeReflector.GetTypeConverter(t);

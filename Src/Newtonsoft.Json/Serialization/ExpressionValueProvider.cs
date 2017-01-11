@@ -24,6 +24,7 @@
 #endregion
 
 #if !(NET20 || NET35)
+
 using System;
 using System.Collections.Generic;
 #if !HAVE_LINQ

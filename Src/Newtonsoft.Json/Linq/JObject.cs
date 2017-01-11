@@ -25,8 +25,8 @@
 
 using System;
 using System.Collections.Generic;
+#if HAVE_INOTIFY_COLLECTION_CHANGED
 using System.Collections.ObjectModel;
-#if !PORTABLE40
 using System.Collections.Specialized;
 #endif
 using System.ComponentModel;
@@ -41,7 +41,6 @@ using System.Globalization;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
-
 #endif
 
 namespace Newtonsoft.Json.Linq
@@ -705,7 +704,7 @@ namespace Newtonsoft.Json.Linq
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
-#if !(PORTABLE40 || PORTABLE || NET20)
+#if HAVE_INOTIFY_PROPERTY_CHANGING
         /// <summary>
         /// Raises the <see cref="PropertyChanging"/> event with the provided arguments.
         /// </summary>

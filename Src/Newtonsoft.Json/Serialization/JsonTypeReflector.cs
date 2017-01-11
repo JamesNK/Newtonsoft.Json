@@ -245,7 +245,7 @@ namespace Newtonsoft.Json.Serialization
             };
         }
 
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_COMPONENT_MODEL
         public static TypeConverter GetTypeConverter(Type type)
         {
             return TypeDescriptor.GetConverter(type);
@@ -397,7 +397,7 @@ namespace Newtonsoft.Json.Serialization
 
         public static bool DynamicCodeGeneration
         {
-#if !(NET20 || NET35 || PORTABLE)
+#if HAVE_SECURITY_SAFE_CRITICAL_ATTRIBUTE
             [SecuritySafeCritical]
 #endif
                 get

@@ -229,7 +229,7 @@ namespace Newtonsoft.Json.Utilities
                     }
 
                     char c;
-#if !(DOTNET || PORTABLE)
+#if HAVE_CHAR_TO_LOWER_WITH_CULTURE
                     c = char.ToLower(s[i], CultureInfo.InvariantCulture);
 #else
                     c = char.ToLowerInvariant(s[i]);

@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !PORTABLE40
+#if HAVE_INOTIFY_COLLECTION_CHANGED
 using System.Collections.Specialized;
 #endif
 using System.Threading;
@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Linq
         protected abstract IList<JToken> ChildrenTokens { get; }
 
         private object _syncRoot;
-#if !(PORTABLE40)
+#if (HAVE_COMPONENT_MODEL || HAVE_INOTIFY_COLLECTION_CHANGED)
         private bool _busy;
 #endif
 
@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Linq
 
         internal void CheckReentrancy()
         {
-#if !(PORTABLE40)
+#if (HAVE_COMPONENT_MODEL || HAVE_INOTIFY_COLLECTION_CHANGED)
             if (_busy)
             {
                 throw new InvalidOperationException("Cannot change {0} during a collection change event.".FormatWith(CultureInfo.InvariantCulture, GetType()));
