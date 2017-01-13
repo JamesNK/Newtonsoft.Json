@@ -27,7 +27,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Utilities;
@@ -210,19 +209,31 @@ namespace Newtonsoft.Json
             return await ReadAsync(cancellationToken).ConfigureAwait(false) && await MoveToContentAsync(cancellationToken).ConfigureAwait(false);
         }
 
-        internal async Task<bool> MoveToContentAsync(CancellationToken cancellationToken)
+        internal Task<bool> MoveToContentAsync(CancellationToken cancellationToken)
+        {
+            switch (TokenType)
+            {
+                case JsonToken.None:
+                case JsonToken.Comment:
+                    return MoveToContentFromNonContentAsync(cancellationToken);
+                default:
+                    return AsyncUtils.True;
+            }
+        }
+
+        private async Task<bool> MoveToContentFromNonContentAsync(CancellationToken cancellationToken)
         {
             while (true)
             {
+                if (!await ReadAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    return false;
+                }
+
                 switch (TokenType)
                 {
                     case JsonToken.None:
                     case JsonToken.Comment:
-                        if (!await ReadAsync(cancellationToken).ConfigureAwait(false))
-                        {
-                            return false;
-                        }
-
                         break;
                     default:
                         return true;
