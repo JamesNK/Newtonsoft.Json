@@ -404,7 +404,7 @@ namespace Newtonsoft.Json
                     case State.Finished:
                         if (EnsureChars(0, false))
                         {
-                            EatWhitespace(false);
+                            EatWhitespace();
                             if (_isEndOfFile)
                             {
                                 SetToken(JsonToken.None);
@@ -1018,7 +1018,7 @@ namespace Newtonsoft.Json
         {
             if (EnsureChars(0, false))
             {
-                EatWhitespace(false);
+                EatWhitespace();
                 if (_isEndOfFile)
                 {
                     return;
@@ -1513,7 +1513,7 @@ namespace Newtonsoft.Json
                 propertyName = _stringReference.ToString();
             }
 
-            EatWhitespace(false);
+            EatWhitespace();
 
             if (_chars[_charPos] != ':')
             {
@@ -1727,11 +1727,9 @@ namespace Newtonsoft.Json
             OnNewLine(_charPos);
         }
 
-        private bool EatWhitespace(bool oneOrMore)
+        private void EatWhitespace()
         {
-            bool finished = false;
-            bool ateWhitespace = false;
-            while (!finished)
+            while (true)
             {
                 char currentChar = _chars[_charPos];
 
@@ -1742,7 +1740,7 @@ namespace Newtonsoft.Json
                         {
                             if (ReadData(false) == 0)
                             {
-                                finished = true;
+                                return;
                             }
                         }
                         else
@@ -1759,25 +1757,22 @@ namespace Newtonsoft.Json
                     default:
                         if (currentChar == ' ' || char.IsWhiteSpace(currentChar))
                         {
-                            ateWhitespace = true;
                             _charPos++;
                         }
                         else
                         {
-                            finished = true;
+                            return;
                         }
                         break;
                 }
             }
-
-            return (!oneOrMore || ateWhitespace);
         }
 
         private void ParseConstructor()
         {
             if (MatchValueWithTrailingSeparator("new"))
             {
-                EatWhitespace(false);
+                EatWhitespace();
 
                 int initialPosition = _charPos;
                 int endPosition;
@@ -1837,7 +1832,7 @@ namespace Newtonsoft.Json
                 _stringReference = new StringReference(_chars, initialPosition, endPosition - initialPosition);
                 string constructorName = _stringReference.ToString();
 
-                EatWhitespace(false);
+                EatWhitespace();
 
                 if (_chars[_charPos] != '(')
                 {

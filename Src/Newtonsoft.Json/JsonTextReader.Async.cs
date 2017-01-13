@@ -58,59 +58,125 @@ namespace Newtonsoft.Json
             return _safeAsync ? DoReadAsync(cancellationToken) : base.ReadAsync(cancellationToken);
         }
 
-        internal async Task<bool> DoReadAsync(CancellationToken cancellationToken)
+        internal Task<bool> DoReadAsync(CancellationToken cancellationToken)
         {
             EnsureBuffer();
-
-            while (true)
+            switch (_currentState)
             {
-                switch (_currentState)
-                {
-                    case State.Start:
-                    case State.Property:
-                    case State.Array:
-                    case State.ArrayStart:
-                    case State.Constructor:
-                    case State.ConstructorStart:
-                        return await ParseValueAsync(cancellationToken).ConfigureAwait(false);
-                    case State.Object:
-                    case State.ObjectStart:
-                        return await ParseObjectAsync(cancellationToken).ConfigureAwait(false);
-                    case State.PostValue:
+                case State.Start:
+                case State.Property:
+                case State.Array:
+                case State.ArrayStart:
+                case State.Constructor:
+                case State.ConstructorStart:
+                    return ParseValueAsync(cancellationToken);
+                case State.Object:
+                case State.ObjectStart:
+                    return ParseObjectAsync(cancellationToken);
+                case State.PostValue:
+                    return LoopReadAsync(cancellationToken);
+                case State.Finished:
+                    return ReadFromFinishedAsync(cancellationToken);
+                default:
+                    throw JsonReaderException.Create(this, "Unexpected state: {0}.".FormatWith(CultureInfo.InvariantCulture, CurrentState));
+            }
+        }
 
-                        // returns true if it hits
-                        // end of object or array
-                        if (await ParsePostValueAsync(cancellationToken).ConfigureAwait(false))
+        private async Task<bool> LoopReadAsync(CancellationToken cancellationToken)
+        {
+            while (_currentState == State.PostValue)
+            {
+                char currentChar = _chars[_charPos];
+
+                switch (currentChar)
+                {
+                    case '\0':
+                        if (_charsUsed == _charPos)
                         {
-                            return true;
+                            if (await ReadDataAsync(false, cancellationToken).ConfigureAwait(false) == 0)
+                            {
+                                _currentState = State.Finished;
+                            }
+                        }
+                        else
+                        {
+                            _charPos++;
                         }
 
                         break;
-                    case State.Finished:
-                        if (await EnsureCharsAsync(0, false, cancellationToken).ConfigureAwait(false))
+                    case '}':
+                        _charPos++;
+                        SetToken(JsonToken.EndObject);
+                        return true;
+                    case ']':
+                        _charPos++;
+                        SetToken(JsonToken.EndArray);
+                        return true;
+                    case ')':
+                        _charPos++;
+                        SetToken(JsonToken.EndConstructor);
+                        return true;
+                    case '/':
+                        await ParseCommentAsync(true, cancellationToken).ConfigureAwait(false);
+                        return true;
+                    case ',':
+                        _charPos++;
+
+                        // finished parsing
+                        SetStateBasedOnCurrent();
+                        break;
+                    case ' ':
+                    case StringUtils.Tab:
+
+                        // eat
+                        _charPos++;
+                        break;
+                    case StringUtils.CarriageReturn:
+                        await ProcessCarriageReturnAsync(false, cancellationToken).ConfigureAwait(false);
+                        break;
+                    case StringUtils.LineFeed:
+                        ProcessLineFeed();
+                        break;
+                    default:
+                        if (char.IsWhiteSpace(currentChar))
                         {
-                            await EatWhitespaceAsync(false, cancellationToken).ConfigureAwait(false);
-                            if (_isEndOfFile)
-                            {
-                                SetToken(JsonToken.None);
-                                return false;
-                            }
-
-                            if (_chars[_charPos] == '/')
-                            {
-                                await ParseCommentAsync(true, cancellationToken).ConfigureAwait(false);
-                                return true;
-                            }
-
-                            throw JsonReaderException.Create(this, "Additional text encountered after finished reading JSON content: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
+                            // eat
+                            _charPos++;
+                        }
+                        else
+                        {
+                            throw JsonReaderException.Create(this, "After parsing a value an unexpected character was encountered: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                         }
 
-                        SetToken(JsonToken.None);
-                        return false;
-                    default:
-                        throw JsonReaderException.Create(this, "Unexpected state: {0}.".FormatWith(CultureInfo.InvariantCulture, CurrentState));
+                        break;
                 }
             }
+
+            return await DoReadAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        private async Task<bool> ReadFromFinishedAsync(CancellationToken cancellationToken)
+        {
+            if (await EnsureCharsAsync(0, false, cancellationToken).ConfigureAwait(false))
+            {
+                await EatWhitespaceAsync(cancellationToken).ConfigureAwait(false);
+                if (_isEndOfFile)
+                {
+                    SetToken(JsonToken.None);
+                    return false;
+                }
+
+                if (_chars[_charPos] == '/')
+                {
+                    await ParseCommentAsync(true, cancellationToken).ConfigureAwait(false);
+                    return true;
+                }
+
+                throw JsonReaderException.Create(this, "Additional text encountered after finished reading JSON content: {0}.".FormatWith(CultureInfo.InvariantCulture, _chars[_charPos]));
+            }
+
+            SetToken(JsonToken.None);
+            return false;
         }
 
         private Task<int> ReadDataAsync(bool append, CancellationToken cancellationToken)
@@ -631,7 +697,7 @@ namespace Newtonsoft.Json
             }
         }
 
-        private async Task<bool> ParsePostValueAsync(CancellationToken cancellationToken)
+        private async Task EatWhitespaceAsync(CancellationToken cancellationToken)
         {
             while (true)
             {
@@ -644,81 +710,7 @@ namespace Newtonsoft.Json
                         {
                             if (await ReadDataAsync(false, cancellationToken).ConfigureAwait(false) == 0)
                             {
-                                _currentState = State.Finished;
-                                return false;
-                            }
-                        }
-                        else
-                        {
-                            _charPos++;
-                        }
-
-                        break;
-                    case '}':
-                        _charPos++;
-                        SetToken(JsonToken.EndObject);
-                        return true;
-                    case ']':
-                        _charPos++;
-                        SetToken(JsonToken.EndArray);
-                        return true;
-                    case ')':
-                        _charPos++;
-                        SetToken(JsonToken.EndConstructor);
-                        return true;
-                    case '/':
-                        await ParseCommentAsync(true, cancellationToken).ConfigureAwait(false);
-                        return true;
-                    case ',':
-                        _charPos++;
-
-                        // finished parsing
-                        SetStateBasedOnCurrent();
-                        return false;
-                    case ' ':
-                    case StringUtils.Tab:
-
-                        // eat
-                        _charPos++;
-                        break;
-                    case StringUtils.CarriageReturn:
-                        await ProcessCarriageReturnAsync(false, cancellationToken).ConfigureAwait(false);
-                        break;
-                    case StringUtils.LineFeed:
-                        ProcessLineFeed();
-                        break;
-                    default:
-                        if (char.IsWhiteSpace(currentChar))
-                        {
-                            // eat
-                            _charPos++;
-                        }
-                        else
-                        {
-                            throw JsonReaderException.Create(this, "After parsing a value an unexpected character was encountered: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
-                        }
-
-                        break;
-                }
-            }
-        }
-
-        private async Task<bool> EatWhitespaceAsync(bool oneOrMore, CancellationToken cancellationToken)
-        {
-            bool finished = false;
-            bool ateWhitespace = false;
-            while (!finished)
-            {
-                char currentChar = _chars[_charPos];
-
-                switch (currentChar)
-                {
-                    case '\0':
-                        if (_charsUsed == _charPos)
-                        {
-                            if (await ReadDataAsync(false, cancellationToken).ConfigureAwait(false) == 0)
-                            {
-                                finished = true;
+                                return;
                             }
                         }
                         else
@@ -735,18 +727,15 @@ namespace Newtonsoft.Json
                     default:
                         if (currentChar == ' ' || char.IsWhiteSpace(currentChar))
                         {
-                            ateWhitespace = true;
                             _charPos++;
                         }
                         else
                         {
-                            finished = true;
+                            return;
                         }
                         break;
                 }
             }
-
-            return !oneOrMore || ateWhitespace;
         }
 
         private async Task ParseStringAsync(char quote, ReadType readType, CancellationToken cancellationToken)
@@ -811,7 +800,7 @@ namespace Newtonsoft.Json
         {
             if (await MatchValueWithTrailingSeparatorAsync("new", cancellationToken).ConfigureAwait(false))
             {
-                await EatWhitespaceAsync(false, cancellationToken).ConfigureAwait(false);
+                await EatWhitespaceAsync(cancellationToken).ConfigureAwait(false);
 
                 int initialPosition = _charPos;
                 int endPosition;
@@ -871,7 +860,7 @@ namespace Newtonsoft.Json
                 _stringReference = new StringReference(_chars, initialPosition, endPosition - initialPosition);
                 string constructorName = _stringReference.ToString();
 
-                EatWhitespace(false);
+                await EatWhitespaceAsync(cancellationToken).ConfigureAwait(false);
 
                 if (_chars[_charPos] != '(')
                 {
@@ -958,7 +947,7 @@ namespace Newtonsoft.Json
                 propertyName = _stringReference.ToString();
             }
 
-            await EatWhitespaceAsync(false, cancellationToken).ConfigureAwait(false);
+            await EatWhitespaceAsync(cancellationToken).ConfigureAwait(false);
 
             if (_chars[_charPos] != ':')
             {
@@ -1079,9 +1068,10 @@ namespace Newtonsoft.Json
         {
             if (await EnsureCharsAsync(0, false, cancellationToken).ConfigureAwait(false))
             {
-                await EatWhitespaceAsync(false, cancellationToken).ConfigureAwait(false);
+                await EatWhitespaceAsync(cancellationToken).ConfigureAwait(false);
                 if (_isEndOfFile)
                 {
+                    SetToken(JsonToken.None);
                     return;
                 }
 
