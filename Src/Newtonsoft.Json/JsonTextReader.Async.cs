@@ -490,16 +490,27 @@ namespace Newtonsoft.Json
             }
         }
 
-        private async Task ProcessCarriageReturnAsync(bool append, CancellationToken cancellationToken)
+        private Task ProcessCarriageReturnAsync(bool append, CancellationToken cancellationToken)
         {
             _charPos++;
 
-            if (await EnsureCharsAsync(1, append, cancellationToken).ConfigureAwait(false) && _chars[_charPos] == StringUtils.LineFeed)
+            Task<bool> task = EnsureCharsAsync(1, append, cancellationToken);
+            switch (task.Status)
             {
-                _charPos++;
+                case TaskStatus.RanToCompletion:
+                    SetNewLine(task.Result);
+                    return AsyncUtils.CompletedTask;
+                case TaskStatus.Canceled:
+                case TaskStatus.Faulted:
+                    return task;
             }
 
-            OnNewLine(_charPos);
+            return ProcessCarriageReturnAsync(task);
+        }
+
+        private async Task ProcessCarriageReturnAsync(Task<bool> task)
+        {
+            SetNewLine(await task.ConfigureAwait(false));
         }
 
         private async Task<char> ParseUnicodeAsync(CancellationToken cancellationToken)
