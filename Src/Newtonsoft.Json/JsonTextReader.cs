@@ -120,6 +120,16 @@ namespace Newtonsoft.Json
             }
         }
 
+        private void SetNewLine(bool hasNextChar)
+        {
+            if (hasNextChar && _chars[_charPos] == StringUtils.LineFeed)
+            {
+                _charPos++;
+            }
+
+            OnNewLine(_charPos);
+        }
+
         private void OnNewLine(int pos)
         {
             _lineNumber++;
@@ -1719,12 +1729,7 @@ namespace Newtonsoft.Json
         {
             _charPos++;
 
-            if (EnsureChars(1, append) && _chars[_charPos] == StringUtils.LineFeed)
-            {
-                _charPos++;
-            }
-
-            OnNewLine(_charPos);
+            SetNewLine(EnsureChars(1, append));
         }
 
         private void EatWhitespace()
