@@ -1605,33 +1605,34 @@ namespace Newtonsoft.Json.Converters
                 }
             }
 
-            if (reader.TokenType == JsonToken.String
-                || reader.TokenType == JsonToken.Integer
-                || reader.TokenType == JsonToken.Float
-                || reader.TokenType == JsonToken.Boolean
-                || reader.TokenType == JsonToken.Date)
+            switch (reader.TokenType)
             {
-                string text = ConvertTokenToXmlValue(reader);
-                if (text != null)
-                {
-                    element.AppendChild(document.CreateTextNode(text));
-                }
-            }
-            else if (reader.TokenType == JsonToken.Null)
-            {
-                // empty element. do nothing
-            }
-            else
-            {
-                // finished element will have no children to deserialize
-                if (reader.TokenType != JsonToken.EndObject)
-                {
+                case JsonToken.String:
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                case JsonToken.Boolean:
+                case JsonToken.Date:
+                    string text = ConvertTokenToXmlValue(reader);
+                    if (text != null)
+                    {
+                        element.AppendChild(document.CreateTextNode(text));
+                    }
+                    break;
+                case JsonToken.Null:
+
+                    // empty element. do nothing
+                    break;
+                case JsonToken.EndObject:
+
+                    // finished element will have no children to deserialize
+                    manager.RemoveNamespace(string.Empty, manager.DefaultNamespace);
+                    break;
+                default:
                     manager.PushScope();
                     DeserializeNode(reader, document, manager, element);
                     manager.PopScope();
-                }
-
-                manager.RemoveNamespace(string.Empty, manager.DefaultNamespace);
+                    manager.RemoveNamespace(string.Empty, manager.DefaultNamespace);
+                    break;
             }
         }
 
@@ -1654,61 +1655,50 @@ namespace Newtonsoft.Json.Converters
 
         private string ConvertTokenToXmlValue(JsonReader reader)
         {
-            if (reader.TokenType == JsonToken.String)
+            switch (reader.TokenType)
             {
-                return reader.Value?.ToString();
-            }
-            else if (reader.TokenType == JsonToken.Integer)
-            {
+                case JsonToken.String:
+                    return reader.Value?.ToString();
+                case JsonToken.Integer:
 #if HAVE_BIG_INTEGER
-                if (reader.Value is BigInteger)
-                {
-                    return ((BigInteger)reader.Value).ToString(CultureInfo.InvariantCulture);
-                }
+                    if (reader.Value is BigInteger)
+                    {
+                        return ((BigInteger)reader.Value).ToString(CultureInfo.InvariantCulture);
+                    }
 #endif
+                    return XmlConvert.ToString(Convert.ToInt64(reader.Value, CultureInfo.InvariantCulture));
+                case JsonToken.Float:
+                    if (reader.Value is decimal)
+                    {
+                        return XmlConvert.ToString((decimal)reader.Value);
+                    }
 
-                return XmlConvert.ToString(Convert.ToInt64(reader.Value, CultureInfo.InvariantCulture));
-            }
-            else if (reader.TokenType == JsonToken.Float)
-            {
-                if (reader.Value is decimal)
-                {
-                    return XmlConvert.ToString((decimal)reader.Value);
-                }
-                if (reader.Value is float)
-                {
-                    return XmlConvert.ToString((float)reader.Value);
-                }
+                    if (reader.Value is float)
+                    {
+                        return XmlConvert.ToString((float)reader.Value);
+                    }
 
-                return XmlConvert.ToString(Convert.ToDouble(reader.Value, CultureInfo.InvariantCulture));
-            }
-            else if (reader.TokenType == JsonToken.Boolean)
-            {
-                return XmlConvert.ToString(Convert.ToBoolean(reader.Value, CultureInfo.InvariantCulture));
-            }
-            else if (reader.TokenType == JsonToken.Date)
-            {
+                    return XmlConvert.ToString(Convert.ToDouble(reader.Value, CultureInfo.InvariantCulture));
+                case JsonToken.Boolean:
+                    return XmlConvert.ToString(Convert.ToBoolean(reader.Value, CultureInfo.InvariantCulture));
+                case JsonToken.Date:
 #if HAVE_DATE_TIME_OFFSET
-                if (reader.Value is DateTimeOffset)
-                {
-                    return XmlConvert.ToString((DateTimeOffset)reader.Value);
-                }
-#endif
+                    if (reader.Value is DateTimeOffset)
+                    {
+                        return XmlConvert.ToString((DateTimeOffset)reader.Value);
+                    }
 
-                DateTime d = Convert.ToDateTime(reader.Value, CultureInfo.InvariantCulture);
-#if !PORTABLE
-                return XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind));
-#else
-                return XmlConvert.ToString(d, DateTimeUtils.ToDateTimeFormat(d.Kind));
 #endif
-            }
-            else if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
-            else
-            {
-                throw JsonSerializationException.Create(reader, "Cannot get an XML string value from token type '{0}'.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+                    DateTime d = Convert.ToDateTime(reader.Value, CultureInfo.InvariantCulture);
+#if !PORTABLE
+                    return XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind));
+#else
+                    return XmlConvert.ToString(d, DateTimeUtils.ToDateTimeFormat(d.Kind));
+#endif
+                case JsonToken.Null:
+                    return null;
+                default:
+                    throw JsonSerializationException.Create(reader, "Cannot get an XML string value from token type '{0}'.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
         }
 
@@ -2018,7 +2008,7 @@ namespace Newtonsoft.Json.Converters
                         {
                             DeserializeValue(reader, document, manager, propertyName, currentNode);
                         }
-                        break;
+                        continue;
                     case JsonToken.StartConstructor:
                         string constructorName = reader.Value.ToString();
 
@@ -2036,7 +2026,7 @@ namespace Newtonsoft.Json.Converters
                     default:
                         throw JsonSerializationException.Create(reader, "Unexpected JsonToken when deserializing node: " + reader.TokenType);
                 }
-            } while (reader.TokenType == JsonToken.PropertyName || reader.Read());
+            } while (reader.Read());
             // don't read if current token is a property. token was already read when parsing element attributes
         }
 
