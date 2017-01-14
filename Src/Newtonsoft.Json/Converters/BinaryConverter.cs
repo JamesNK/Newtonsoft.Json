@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Converters
 #if HAVE_LINQ
         private const string BinaryTypeName = "System.Data.Linq.Binary";
         private const string BinaryToArrayName = "ToArray";
-        private ReflectionObject _reflectionObject;
+        private static ReflectionObject _reflectionObject;
 #endif
 
         /// <summary>
@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Converters
         private byte[] GetByteArray(object value)
         {
 #if HAVE_LINQ
-            if (value.GetType().AssignableToTypeName(BinaryTypeName))
+            if (value.GetType().FullName == BinaryTypeName)
             {
                 EnsureReflectionObject(value.GetType());
                 return (byte[])_reflectionObject.GetValue(value, BinaryToArrayName);
@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Converters
         }
 
 #if HAVE_LINQ
-        private void EnsureReflectionObject(Type t)
+        private static void EnsureReflectionObject(Type t)
         {
             if (_reflectionObject == null)
             {
@@ -132,7 +132,7 @@ namespace Newtonsoft.Json.Converters
                 : objectType;
 
 #if HAVE_LINQ
-            if (t.AssignableToTypeName(BinaryTypeName))
+            if (t.FullName == BinaryTypeName)
             {
                 EnsureReflectionObject(t);
 
@@ -182,7 +182,7 @@ namespace Newtonsoft.Json.Converters
         public override bool CanConvert(Type objectType)
         {
 #if HAVE_LINQ
-            if (objectType.AssignableToTypeName(BinaryTypeName))
+            if (objectType.FullName == BinaryTypeName)
             {
                 return true;
             }
