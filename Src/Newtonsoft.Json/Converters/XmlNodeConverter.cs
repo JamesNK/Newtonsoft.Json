@@ -1768,11 +1768,10 @@ namespace Newtonsoft.Json.Converters
             }
 
             Dictionary<string, string> attributeNameValues = null;
-            bool finishedAttributes = false;
-            bool finishedElement = false;
+            bool finished = false;
 
             // read properties until first non-attribute is encountered
-            while (!finishedAttributes && !finishedElement && reader.Read())
+            while (!finished && reader.Read())
             {
                 switch (reader.TokenType)
                 {
@@ -1836,7 +1835,7 @@ namespace Newtonsoft.Json.Converters
                                             // special case $values, it will have a non-primitive value
                                             if (attributeName == JsonTypeReflector.ArrayValuesPropertyName)
                                             {
-                                                finishedAttributes = true;
+                                                finished = true;
                                                 break;
                                             }
 
@@ -1857,24 +1856,24 @@ namespace Newtonsoft.Json.Converters
                                             attributeNameValues.Add(jsonPrefix + ":" + attributeName, attributeValue);
                                             break;
                                         default:
-                                            finishedAttributes = true;
+                                            finished = true;
                                             break;
                                     }
                                     break;
                                 default:
-                                    finishedAttributes = true;
+                                    finished = true;
                                     break;
                             }
                         }
                         else
                         {
-                            finishedAttributes = true;
+                            finished = true;
                         }
 
                         break;
                     case JsonToken.EndObject:
                     case JsonToken.Comment:
-                        finishedElement = true;
+                        finished = true;
                         break;
                     default:
                         throw JsonSerializationException.Create(reader, "Unexpected JsonToken: " + reader.TokenType);
