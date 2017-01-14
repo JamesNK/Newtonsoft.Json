@@ -1425,9 +1425,14 @@ namespace Newtonsoft.Json.Converters
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            if (reader.TokenType == JsonToken.Null)
+            switch (reader.TokenType)
             {
-                return null;
+                case JsonToken.Null:
+                    return null;
+                case JsonToken.StartObject:
+                    break;
+                default:
+                    throw new JsonSerializationException("XmlNodeConverter can only convert JSON that begins with an object.");
             }
 
             XmlNamespaceManager manager = new XmlNamespaceManager(new NameTable());
@@ -1467,11 +1472,6 @@ namespace Newtonsoft.Json.Converters
             if (document == null || rootNode == null)
             {
                 throw new JsonSerializationException("Unexpected type when converting XML: " + objectType);
-            }
-
-            if (reader.TokenType != JsonToken.StartObject)
-            {
-                throw new JsonSerializationException("XmlNodeConverter can only convert JSON that begins with an object.");
             }
 
             if (!string.IsNullOrEmpty(DeserializeRootElementName))
