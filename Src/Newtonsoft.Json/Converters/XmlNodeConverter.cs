@@ -1177,6 +1177,11 @@ namespace Newtonsoft.Json.Converters
 
         private void SerializeGroupedNodes(JsonWriter writer, IXmlNode node, XmlNamespaceManager manager, bool writePropertyName)
         {
+            if (node.ChildNodes.Count == 0)
+            {
+                return;
+            }
+
             // group nodes together by name
             Dictionary<string, List<IXmlNode>> nodesGroupedByName = new Dictionary<string, List<IXmlNode>>();
 
