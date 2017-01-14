@@ -1591,17 +1591,18 @@ namespace Newtonsoft.Json.Converters
 
             currentNode.AppendChild(element);
 
-            // add attributes to newly created element
-            foreach (KeyValuePair<string, string> nameValue in attributeNameValues)
+            if (attributeNameValues != null)
             {
-                string encodedName = XmlConvert.EncodeName(nameValue.Key);
-                string attributePrefix = MiscellaneousUtils.GetPrefix(nameValue.Key);
+                // add attributes to newly created element
+                foreach (KeyValuePair<string, string> nameValue in attributeNameValues)
+                {
+                    string encodedName = XmlConvert.EncodeName(nameValue.Key);
+                    string attributePrefix = MiscellaneousUtils.GetPrefix(nameValue.Key);
 
-                IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix))
-                    ? document.CreateAttribute(encodedName, manager.LookupNamespace(attributePrefix) ?? string.Empty, nameValue.Value)
-                    : document.CreateAttribute(encodedName, nameValue.Value);
+                    IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix)) ? document.CreateAttribute(encodedName, manager.LookupNamespace(attributePrefix) ?? string.Empty, nameValue.Value) : document.CreateAttribute(encodedName, nameValue.Value);
 
-                element.SetAttributeNode(attribute);
+                    element.SetAttributeNode(attribute);
+                }
             }
 
             if (reader.TokenType == JsonToken.String
@@ -1763,114 +1764,130 @@ namespace Newtonsoft.Json.Converters
 
         private Dictionary<string, string> ReadAttributeElements(JsonReader reader, XmlNamespaceManager manager)
         {
-            Dictionary<string, string> attributeNameValues = new Dictionary<string, string>();
+            // a string token means the element only has a single text child
+            switch (reader.TokenType)
+            {
+                case JsonToken.String:
+                case JsonToken.Null:
+                case JsonToken.Boolean:
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                case JsonToken.Date:
+                case JsonToken.StartConstructor:
+                    return null;
+            }
+
+            Dictionary<string, string> attributeNameValues = null;
             bool finishedAttributes = false;
             bool finishedElement = false;
 
-            // a string token means the element only has a single text child
-            if (reader.TokenType != JsonToken.String
-                && reader.TokenType != JsonToken.Null
-                && reader.TokenType != JsonToken.Boolean
-                && reader.TokenType != JsonToken.Integer
-                && reader.TokenType != JsonToken.Float
-                && reader.TokenType != JsonToken.Date
-                && reader.TokenType != JsonToken.StartConstructor)
+            // read properties until first non-attribute is encountered
+            while (!finishedAttributes && !finishedElement && reader.Read())
             {
-                // read properties until first non-attribute is encountered
-                while (!finishedAttributes && !finishedElement && reader.Read())
+                switch (reader.TokenType)
                 {
-                    switch (reader.TokenType)
-                    {
-                        case JsonToken.PropertyName:
-                            string attributeName = reader.Value.ToString();
+                    case JsonToken.PropertyName:
+                        string attributeName = reader.Value.ToString();
 
-                            if (!string.IsNullOrEmpty(attributeName))
+                        if (!string.IsNullOrEmpty(attributeName))
+                        {
+                            char firstChar = attributeName[0];
+                            string attributeValue;
+
+                            switch (firstChar)
                             {
-                                char firstChar = attributeName[0];
-                                string attributeValue;
+                                case '@':
+                                    if (attributeNameValues == null)
+                                    {
+                                        attributeNameValues = new Dictionary<string, string>();
+                                    }
 
-                                switch (firstChar)
-                                {
-                                    case '@':
-                                        attributeName = attributeName.Substring(1);
-                                        reader.Read();
-                                        attributeValue = ConvertTokenToXmlValue(reader);
-                                        attributeNameValues.Add(attributeName, attributeValue);
+                                    attributeName = attributeName.Substring(1);
+                                    reader.Read();
+                                    attributeValue = ConvertTokenToXmlValue(reader);
+                                    attributeNameValues.Add(attributeName, attributeValue);
 
-                                        string namespacePrefix;
-                                        if (IsNamespaceAttribute(attributeName, out namespacePrefix))
-                                        {
-                                            manager.AddNamespace(namespacePrefix, attributeValue);
-                                        }
-                                        break;
-                                    case '$':
-                                        switch (attributeName)
-                                        {
-                                            case JsonTypeReflector.ArrayValuesPropertyName:
-                                            case JsonTypeReflector.IdPropertyName:
-                                            case JsonTypeReflector.RefPropertyName:
-                                            case JsonTypeReflector.TypePropertyName:
-                                            case JsonTypeReflector.ValuePropertyName:
-                                                // check that JsonNamespaceUri is in scope
-                                                // if it isn't then add it to document and namespace manager
-                                                string jsonPrefix = manager.LookupPrefix(JsonNamespaceUri);
-                                                if (jsonPrefix == null)
+                                    string namespacePrefix;
+                                    if (IsNamespaceAttribute(attributeName, out namespacePrefix))
+                                    {
+                                        manager.AddNamespace(namespacePrefix, attributeValue);
+                                    }
+                                    break;
+                                case '$':
+                                    switch (attributeName)
+                                    {
+                                        case JsonTypeReflector.ArrayValuesPropertyName:
+                                        case JsonTypeReflector.IdPropertyName:
+                                        case JsonTypeReflector.RefPropertyName:
+                                        case JsonTypeReflector.TypePropertyName:
+                                        case JsonTypeReflector.ValuePropertyName:
+                                            // check that JsonNamespaceUri is in scope
+                                            // if it isn't then add it to document and namespace manager
+                                            string jsonPrefix = manager.LookupPrefix(JsonNamespaceUri);
+                                            if (jsonPrefix == null)
+                                            {
+                                                if (attributeNameValues == null)
                                                 {
-                                                    // ensure that the prefix used is free
-                                                    int? i = null;
-                                                    while (manager.LookupNamespace("json" + i) != null)
-                                                    {
-                                                        i = i.GetValueOrDefault() + 1;
-                                                    }
-                                                    jsonPrefix = "json" + i;
-
-                                                    attributeNameValues.Add("xmlns:" + jsonPrefix, JsonNamespaceUri);
-                                                    manager.AddNamespace(jsonPrefix, JsonNamespaceUri);
+                                                    attributeNameValues = new Dictionary<string, string>();
                                                 }
 
-                                                // special case $values, it will have a non-primitive value
-                                                if (attributeName == JsonTypeReflector.ArrayValuesPropertyName)
+                                                // ensure that the prefix used is free
+                                                int? i = null;
+                                                while (manager.LookupNamespace("json" + i) != null)
                                                 {
-                                                    finishedAttributes = true;
-                                                    break;
+                                                    i = i.GetValueOrDefault() + 1;
                                                 }
+                                                jsonPrefix = "json" + i;
 
-                                                attributeName = attributeName.Substring(1);
-                                                reader.Read();
+                                                attributeNameValues.Add("xmlns:" + jsonPrefix, JsonNamespaceUri);
+                                                manager.AddNamespace(jsonPrefix, JsonNamespaceUri);
+                                            }
 
-                                                if (!JsonTokenUtils.IsPrimitiveToken(reader.TokenType))
-                                                {
-                                                    throw JsonSerializationException.Create(reader, "Unexpected JsonToken: " + reader.TokenType);
-                                                }
-
-                                                attributeValue = reader.Value?.ToString();
-                                                attributeNameValues.Add(jsonPrefix + ":" + attributeName, attributeValue);
-                                                break;
-                                            default:
+                                            // special case $values, it will have a non-primitive value
+                                            if (attributeName == JsonTypeReflector.ArrayValuesPropertyName)
+                                            {
                                                 finishedAttributes = true;
                                                 break;
-                                        }
-                                        break;
-                                    default:
-                                        finishedAttributes = true;
-                                        break;
-                                }
-                            }
-                            else
-                            {
-                                finishedAttributes = true;
-                            }
+                                            }
 
-                            break;
-                        case JsonToken.EndObject:
-                            finishedElement = true;
-                            break;
-                        case JsonToken.Comment:
-                            finishedElement = true;
-                            break;
-                        default:
-                            throw JsonSerializationException.Create(reader, "Unexpected JsonToken: " + reader.TokenType);
-                    }
+                                            attributeName = attributeName.Substring(1);
+                                            reader.Read();
+
+                                            if (!JsonTokenUtils.IsPrimitiveToken(reader.TokenType))
+                                            {
+                                                throw JsonSerializationException.Create(reader, "Unexpected JsonToken: " + reader.TokenType);
+                                            }
+
+                                            if (attributeNameValues == null)
+                                            {
+                                                attributeNameValues = new Dictionary<string, string>();
+                                            }
+
+                                            attributeValue = reader.Value?.ToString();
+                                            attributeNameValues.Add(jsonPrefix + ":" + attributeName, attributeValue);
+                                            break;
+                                        default:
+                                            finishedAttributes = true;
+                                            break;
+                                    }
+                                    break;
+                                default:
+                                    finishedAttributes = true;
+                                    break;
+                            }
+                        }
+                        else
+                        {
+                            finishedAttributes = true;
+                        }
+
+                        break;
+                    case JsonToken.EndObject:
+                    case JsonToken.Comment:
+                        finishedElement = true;
+                        break;
+                    default:
+                        throw JsonSerializationException.Create(reader, "Unexpected JsonToken: " + reader.TokenType);
                 }
             }
 
