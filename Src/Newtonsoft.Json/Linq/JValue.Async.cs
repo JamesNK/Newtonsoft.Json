@@ -61,9 +61,9 @@ namespace Newtonsoft.Json.Linq
             switch (_valueType)
             {
                 case JTokenType.Comment:
-                    return writer.WriteCommentAsync(_value != null ? _value.ToString() : null, cancellationToken);
+                    return writer.WriteCommentAsync(_value?.ToString(), cancellationToken);
                 case JTokenType.Raw:
-                    return writer.WriteRawValueAsync(_value != null ? _value.ToString() : null, cancellationToken);
+                    return writer.WriteRawValueAsync(_value?.ToString(), cancellationToken);
                 case JTokenType.Null:
                     return writer.WriteNullAsync(cancellationToken);
                 case JTokenType.Undefined:
@@ -110,7 +110,7 @@ namespace Newtonsoft.Json.Linq
 
                     return writer.WriteValueAsync(Convert.ToDouble(_value, CultureInfo.InvariantCulture), cancellationToken);
                 case JTokenType.String:
-                    return writer.WriteValueAsync(_value != null ? _value.ToString() : null, cancellationToken);
+                    return writer.WriteValueAsync(_value?.ToString(), cancellationToken);
                 case JTokenType.Boolean:
                     return writer.WriteValueAsync(Convert.ToBoolean(_value, CultureInfo.InvariantCulture), cancellationToken);
                 case JTokenType.Date:
