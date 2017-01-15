@@ -381,29 +381,17 @@ namespace Newtonsoft.Json.Utilities
             bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken)
         {
             Task task = writer.WriteAsync(delimiter, cancellationToken);
-            switch (task.Status)
+            if (task.Status != TaskStatus.RanToCompletion)
             {
-                case TaskStatus.Canceled:
-                case TaskStatus.Faulted:
-                    return task;
-                case TaskStatus.RanToCompletion:
-                    // Completed synchronously (or very fast!), continue within this rather
-                    // that the default branch which uses async
-                    break;
-                default:
-                    return WriteEscapedJavaScriptStringWithDelimitersAsync(task, writer, s, delimiter, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
+                return WriteEscapedJavaScriptStringWithDelimitersAsync(task, writer, s, delimiter, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
             }
 
             if (!string.IsNullOrEmpty(s))
             {
                 task = WriteEscapedJavaScriptStringWithoutDelimitersAsync(writer, s, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
-                switch (task.Status)
+                if (task.Status == TaskStatus.RanToCompletion)
                 {
-                    case TaskStatus.Canceled:
-                    case TaskStatus.Faulted:
-                        return task;
-                    case TaskStatus.RanToCompletion:
-                        return writer.WriteAsync(delimiter, cancellationToken);
+                    return writer.WriteAsync(delimiter, cancellationToken);
                 }
             }
 
