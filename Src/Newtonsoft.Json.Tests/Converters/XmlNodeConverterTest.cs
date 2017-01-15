@@ -2746,6 +2746,47 @@ namespace Newtonsoft.Json.Tests.Converters
 
 #if !NET20
         [Test]
+        public void Serialize_XDocument_NoRoot()
+        {
+            XDocument d = new XDocument();
+
+            string json = JsonConvert.SerializeXNode(d);
+
+            Assert.AreEqual(@"{}", json);
+        }
+
+        [Test]
+        public void Deserialize_XDocument_NoRoot()
+        {
+            XDocument d = JsonConvert.DeserializeXNode(@"{}");
+
+            Assert.AreEqual(null, d.Root);
+            Assert.AreEqual(null, d.Declaration);
+        }
+
+        [Test]
+        public void Serialize_XDocument_NoRootWithDeclaration()
+        {
+            XDocument d = new XDocument();
+            d.Declaration = new XDeclaration("Version!", "Encoding!", "Standalone!");
+
+            string json = JsonConvert.SerializeXNode(d);
+
+            Assert.AreEqual(@"{""?xml"":{""@version"":""Version!"",""@encoding"":""Encoding!"",""@standalone"":""Standalone!""}}", json);
+        }
+
+        [Test]
+        public void Deserialize_XDocument_NoRootWithDeclaration()
+        {
+            XDocument d = JsonConvert.DeserializeXNode(@"{""?xml"":{""@version"":""Version!"",""@encoding"":""Encoding!"",""@standalone"":""Standalone!""}}");
+
+            Assert.AreEqual(null, d.Root);
+            Assert.AreEqual("Version!", d.Declaration.Version);
+            Assert.AreEqual("Encoding!", d.Declaration.Encoding);
+            Assert.AreEqual("Standalone!", d.Declaration.Standalone);
+        }
+
+        [Test]
         public void DateTimeToXml_Unspecified()
         {
             string json = @"{""CreatedDate"": ""2014-01-23T00:00:00""}";

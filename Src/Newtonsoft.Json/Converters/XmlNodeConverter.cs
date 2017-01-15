@@ -258,15 +258,27 @@ namespace Newtonsoft.Json.Converters
                 // cache results to prevent multiple reads which kills perf in large documents
                 if (_childNodes == null)
                 {
-                    _childNodes = new List<IXmlNode>(_node.ChildNodes.Count);
-                    foreach (XmlNode childNode in _node.ChildNodes)
+                    if (!_node.HasChildNodes)
                     {
-                        _childNodes.Add(WrapNode(childNode));
+                        _childNodes = XmlNodeConverter.EmptyChildNodes;
+                    }
+                    else
+                    {
+                        _childNodes = new List<IXmlNode>(_node.ChildNodes.Count);
+                        foreach (XmlNode childNode in _node.ChildNodes)
+                        {
+                            _childNodes.Add(WrapNode(childNode));
+                        }
                     }
                 }
 
                 return _childNodes;
             }
+        }
+
+        protected virtual bool HasChildNodes
+        {
+            get { return _node.HasChildNodes; }
         }
 
         internal static IXmlNode WrapNode(XmlNode node)
@@ -288,23 +300,39 @@ namespace Newtonsoft.Json.Converters
         {
             get
             {
-                if (_node.Attributes == null)
-                {
-                    return null;
-                }
-
                 // attributes is read multiple times
                 // cache results to prevent multiple reads which kills perf in large documents
                 if (_attributes == null)
                 {
-                    _attributes = new List<IXmlNode>(_node.Attributes.Count);
-                    foreach (XmlAttribute attribute in _node.Attributes)
+                    if (!HasAttributes)
                     {
-                        _attributes.Add(WrapNode(attribute));
+                        _attributes = XmlNodeConverter.EmptyChildNodes;
+                    }
+                    else
+                    {
+                        _attributes = new List<IXmlNode>(_node.Attributes.Count);
+                        foreach (XmlAttribute attribute in _node.Attributes)
+                        {
+                            _attributes.Add(WrapNode(attribute));
+                        }
                     }
                 }
 
                 return _attributes;
+            }
+        }
+
+        private bool HasAttributes
+        {
+            get
+            {
+                XmlElement element = _node as XmlElement;
+                if (element != null)
+                {
+                    return element.HasAttributes;
+                }
+
+                return _node.Attributes?.Count > 0;
             }
         }
 
@@ -491,13 +519,25 @@ namespace Newtonsoft.Json.Converters
             get
             {
                 List<IXmlNode> childNodes = base.ChildNodes;
-
-                if (Document.Declaration != null && childNodes[0].NodeType != XmlNodeType.XmlDeclaration)
+                if (Document.Declaration != null && (childNodes.Count == 0 || childNodes[0].NodeType != XmlNodeType.XmlDeclaration))
                 {
                     childNodes.Insert(0, new XDeclarationWrapper(Document.Declaration));
                 }
 
                 return childNodes;
+            }
+        }
+
+        protected override bool HasChildNodes
+        {
+            get
+            {
+                if (base.HasChildNodes)
+                {
+                    return true;
+                }
+
+                return Document.Declaration != null;
             }
         }
 
@@ -701,14 +741,31 @@ namespace Newtonsoft.Json.Converters
                 // cache results to prevent multiple reads which kills perf in large documents
                 if (_childNodes == null)
                 {
-                    _childNodes = new List<IXmlNode>();
-                    foreach (XNode node in Container.Nodes())
+                    if (!HasChildNodes)
                     {
-                        _childNodes.Add(WrapNode(node));
+                        _childNodes = XmlNodeConverter.EmptyChildNodes;
+                    }
+                    else
+                    {
+                        _childNodes = new List<IXmlNode>();
+                        foreach (XNode node in Container.Nodes())
+                        {
+                            _childNodes.Add(WrapNode(node));
+                        }
                     }
                 }
 
                 return _childNodes;
+            }
+        }
+
+        protected virtual bool HasChildNodes
+        {
+            get
+            {
+                // use last node for performance
+                // container linked list starts with lastnode
+                return Container.LastNode != null;
             }
         }
 
@@ -789,7 +846,6 @@ namespace Newtonsoft.Json.Converters
 
     internal class XObjectWrapper : IXmlNode
     {
-        private static readonly List<IXmlNode> EmptyChildNodes = new List<IXmlNode>();
         private readonly XObject _xmlObject;
 
         public XObjectWrapper(XObject xmlObject)
@@ -814,12 +870,12 @@ namespace Newtonsoft.Json.Converters
 
         public virtual List<IXmlNode> ChildNodes
         {
-            get { return EmptyChildNodes; }
+            get { return XmlNodeConverter.EmptyChildNodes; }
         }
 
         public virtual List<IXmlNode> Attributes
         {
-            get { return null; }
+            get { return XmlNodeConverter.EmptyChildNodes; }
         }
 
         public virtual IXmlNode ParentNode
@@ -915,38 +971,59 @@ namespace Newtonsoft.Json.Converters
                 // cache results to prevent multiple reads which kills perf in large documents
                 if (_attributes == null)
                 {
-                    _attributes = new List<IXmlNode>();
-                    foreach (XAttribute attribute in Element.Attributes())
+                    if (!Element.HasAttributes && !HasImplicitNamespaceAttribute(NamespaceUri))
                     {
-                        _attributes.Add(new XAttributeWrapper(attribute));
+                        _attributes = XmlNodeConverter.EmptyChildNodes;
                     }
-
-                    // ensure elements created with a namespace but no namespace attribute are converted correctly
-                    // e.g. new XElement("{http://example.com}MyElement");
-                    string namespaceUri = NamespaceUri;
-                    if (!string.IsNullOrEmpty(namespaceUri) && namespaceUri != ParentNode?.NamespaceUri)
+                    else
                     {
-                        if (string.IsNullOrEmpty(GetPrefixOfNamespace(namespaceUri)))
+                        _attributes = new List<IXmlNode>();
+                        foreach (XAttribute attribute in Element.Attributes())
                         {
-                            bool namespaceDeclared = false;
-                            foreach (IXmlNode attribute in _attributes)
-                            {
-                                if (attribute.LocalName == "xmlns" && string.IsNullOrEmpty(attribute.NamespaceUri) && attribute.Value == namespaceUri)
-                                {
-                                    namespaceDeclared = true;
-                                }
-                            }
+                            _attributes.Add(new XAttributeWrapper(attribute));
+                        }
 
-                            if (!namespaceDeclared)
-                            {
-                                _attributes.Insert(0, new XAttributeWrapper(new XAttribute("xmlns", namespaceUri)));
-                            }
+                        // ensure elements created with a namespace but no namespace attribute are converted correctly
+                        // e.g. new XElement("{http://example.com}MyElement");
+                        string namespaceUri = NamespaceUri;
+                        if (HasImplicitNamespaceAttribute(namespaceUri))
+                        {
+                            _attributes.Insert(0, new XAttributeWrapper(new XAttribute("xmlns", namespaceUri)));
                         }
                     }
                 }
 
                 return _attributes;
             }
+        }
+
+        private bool HasImplicitNamespaceAttribute(string namespaceUri)
+        {
+            if (!string.IsNullOrEmpty(namespaceUri) && namespaceUri != ParentNode?.NamespaceUri)
+            {
+                if (string.IsNullOrEmpty(GetPrefixOfNamespace(namespaceUri)))
+                {
+                    bool namespaceDeclared = false;
+
+                    if (Element.HasAttributes)
+                    {
+                        foreach (XAttribute attribute in Element.Attributes())
+                        {
+                            if (attribute.Name.LocalName == "xmlns" && string.IsNullOrEmpty(attribute.Name.NamespaceName) && attribute.Value == namespaceUri)
+                            {
+                                namespaceDeclared = true;
+                            }
+                        }
+                    }
+
+                    if (!namespaceDeclared)
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
         }
 
         public override IXmlNode AppendChild(IXmlNode newChild)
@@ -990,6 +1067,8 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     public class XmlNodeConverter : JsonConverter
     {
+        internal static readonly List<IXmlNode> EmptyChildNodes = new List<IXmlNode>();
+
         private const string TextName = "#text";
         private const string CommentName = "#comment";
         private const string CDataName = "#cdata-section";
@@ -1161,14 +1240,11 @@ namespace Newtonsoft.Json.Converters
 
         private bool IsArray(IXmlNode node)
         {
-            if (node.Attributes != null)
+            foreach (IXmlNode attribute in node.Attributes)
             {
-                foreach (IXmlNode attribute in node.Attributes)
+                if (attribute.LocalName == "Array" && attribute.NamespaceUri == JsonNamespaceUri)
                 {
-                    if (attribute.LocalName == "Array" && attribute.NamespaceUri == JsonNamespaceUri)
-                    {
-                        return XmlConvert.ToBoolean(attribute.Value);
-                    }
+                    return XmlConvert.ToBoolean(attribute.Value);
                 }
             }
 
@@ -1282,7 +1358,7 @@ namespace Newtonsoft.Json.Converters
                             // write elements with a single text child as a name value pair
                             writer.WriteValue(node.ChildNodes[0].Value);
                         }
-                        else if (node.ChildNodes.Count == 0 && CollectionUtils.IsNullOrEmpty(node.Attributes))
+                        else if (node.ChildNodes.Count == 0 && node.Attributes.Count == 0)
                         {
                             IXmlElement element = (IXmlElement)node;
 
