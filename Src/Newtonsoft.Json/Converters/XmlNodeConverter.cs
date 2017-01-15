@@ -1253,67 +1253,118 @@ namespace Newtonsoft.Json.Converters
 
         private void SerializeGroupedNodes(JsonWriter writer, IXmlNode node, XmlNamespaceManager manager, bool writePropertyName)
         {
-            if (node.ChildNodes.Count == 0)
+            switch (node.ChildNodes.Count)
             {
-                return;
-            }
-
-            // group nodes together by name
-            Dictionary<string, List<IXmlNode>> nodesGroupedByName = new Dictionary<string, List<IXmlNode>>();
-
-            for (int i = 0; i < node.ChildNodes.Count; i++)
-            {
-                IXmlNode childNode = node.ChildNodes[i];
-                string nodeName = GetPropertyName(childNode, manager);
-
-                List<IXmlNode> nodes;
-                if (!nodesGroupedByName.TryGetValue(nodeName, out nodes))
+                case 0:
                 {
-                    nodes = new List<IXmlNode>();
-                    nodesGroupedByName.Add(nodeName, nodes);
+                    // nothing to serialize
+                    break;
                 }
-
-                nodes.Add(childNode);
-            }
-
-            // loop through grouped nodes. write single name instances as normal,
-            // write multiple names together in an array
-            foreach (KeyValuePair<string, List<IXmlNode>> nodeNameGroup in nodesGroupedByName)
-            {
-                List<IXmlNode> groupedNodes = nodeNameGroup.Value;
-                bool writeArray;
-
-                if (groupedNodes.Count == 1)
+                case 1:
                 {
-                    writeArray = IsArray(groupedNodes[0]);
+                    // avoid grouping when there is only one node
+                    string nodeName = GetPropertyName(node.ChildNodes[0], manager);
+                    WriteGroupedNodes(writer, manager, writePropertyName, node.ChildNodes, nodeName);
+                    break;
                 }
-                else
+                default:
                 {
-                    writeArray = true;
-                }
+                    // check whether nodes have the same name
+                    // if they don't then group into dictionary together by name
+                    Dictionary<string, List<IXmlNode>> nodesGroupedByName = null;
 
-                if (!writeArray)
-                {
-                    SerializeNode(writer, groupedNodes[0], manager, writePropertyName);
-                }
-                else
-                {
-                    string elementNames = nodeNameGroup.Key;
+                    string nodeName = null;
 
-                    if (writePropertyName)
+                    for (int i = 0; i < node.ChildNodes.Count; i++)
                     {
-                        writer.WritePropertyName(elementNames);
+                        IXmlNode childNode = node.ChildNodes[i];
+                        string currentNodeName = GetPropertyName(childNode, manager);
+
+                        if (nodesGroupedByName == null)
+                        {
+                            if (nodeName == null)
+                            {
+                                nodeName = currentNodeName;
+                            }
+                            else if (currentNodeName == nodeName)
+                            {
+                                // current node name matches others
+                            }
+                            else
+                            {
+                                nodesGroupedByName = new Dictionary<string, List<IXmlNode>>();
+                                List<IXmlNode> nodes = new List<IXmlNode>(i);
+                                for (int j = 0; j < i; j++)
+                                {
+                                    nodes.Add(node.ChildNodes[j]);
+                                }
+                                nodesGroupedByName.Add(nodeName, nodes);
+                                nodesGroupedByName.Add(currentNodeName, new List<IXmlNode> { childNode });
+                            }
+                        }
+                        else
+                        {
+                            List<IXmlNode> nodes;
+                            if (!nodesGroupedByName.TryGetValue(currentNodeName, out nodes))
+                            {
+                                nodes = new List<IXmlNode>();
+                                nodesGroupedByName.Add(currentNodeName, nodes);
+                            }
+
+                            nodes.Add(childNode);
+                        }
                     }
 
-                    writer.WriteStartArray();
-
-                    for (int i = 0; i < groupedNodes.Count; i++)
+                    if (nodesGroupedByName == null)
                     {
-                        SerializeNode(writer, groupedNodes[i], manager, false);
+                        WriteGroupedNodes(writer, manager, writePropertyName, node.ChildNodes, nodeName);
                     }
-
-                    writer.WriteEndArray();
+                    else
+                    {
+                        // loop through grouped nodes. write single name instances as normal,
+                        // write multiple names together in an array
+                        foreach (KeyValuePair<string, List<IXmlNode>> nodeNameGroup in nodesGroupedByName)
+                        {
+                            WriteGroupedNodes(writer, manager, writePropertyName, nodeNameGroup.Value, nodeNameGroup.Key);
+                        }
+                    }
+                    break;
                 }
+            }
+        }
+
+        private void WriteGroupedNodes(JsonWriter writer, XmlNamespaceManager manager, bool writePropertyName, List<IXmlNode> groupedNodes, string elementNames)
+        {
+            bool writeArray;
+
+            if (groupedNodes.Count == 1)
+            {
+                writeArray = IsArray(groupedNodes[0]);
+            }
+            else
+            {
+                writeArray = true;
+            }
+
+            if (!writeArray)
+            {
+                SerializeNode(writer, groupedNodes[0], manager, writePropertyName);
+            }
+            else
+            {
+                if (writePropertyName)
+                {
+                    writer.WritePropertyName(elementNames);
+                }
+
+                writer.WriteStartArray();
+
+                for (int i = 0; i < groupedNodes.Count; i++)
+                {
+                    SerializeNode(writer, groupedNodes[i], manager, false);
+                }
+
+                writer.WriteEndArray();
             }
         }
 
