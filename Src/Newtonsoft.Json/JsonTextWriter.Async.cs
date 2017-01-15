@@ -186,13 +186,9 @@ namespace Newtonsoft.Json
         private Task WriteValueInternalAsync(JsonToken token, string value, CancellationToken cancellationToken)
         {
             Task task = InternalWriteValueAsync(token, cancellationToken);
-            switch (task.Status)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
-                case TaskStatus.Canceled:
-                case TaskStatus.Faulted:
-                    return task;
-                case TaskStatus.RanToCompletion:
-                    return _writer.WriteAsync(value, cancellationToken);
+                return _writer.WriteAsync(value, cancellationToken);
             }
 
             return WriteValueInternalAsync(task, value, cancellationToken);
@@ -270,13 +266,9 @@ namespace Newtonsoft.Json
         private Task WriteIntegerValueAsync(ulong uvalue, bool negative, CancellationToken cancellationToken)
         {
             Task task = InternalWriteValueAsync(JsonToken.Integer, cancellationToken);
-            switch (task.Status)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
-                case TaskStatus.Canceled:
-                case TaskStatus.Faulted:
-                    return task;
-                case TaskStatus.RanToCompletion:
-                    return WriteDigitsAsync(uvalue, negative, cancellationToken);
+                return WriteDigitsAsync(uvalue, negative, cancellationToken);
             }
 
             return WriteIntegerValueAsync(task, uvalue, negative, cancellationToken);
@@ -325,27 +317,15 @@ namespace Newtonsoft.Json
         internal Task DoWritePropertyNameAsync(string name, CancellationToken cancellationToken)
         {
             Task task = InternalWritePropertyNameAsync(name, cancellationToken);
-            switch (task.Status)
+            if (task.Status != TaskStatus.RanToCompletion)
             {
-                case TaskStatus.Canceled:
-                case TaskStatus.Faulted:
-                    return task;
-                case TaskStatus.RanToCompletion:
-                    // Completed synchronously (or very fast!), continue within this rather
-                    // that the default branch which uses async
-                    break;
-                default:
-                    return DoWritePropertyNameAsync(task, name, cancellationToken);
+                return DoWritePropertyNameAsync(task, name, cancellationToken);
             }
 
             task = WriteEscapedStringAsync(name, _quoteName, cancellationToken);
-            switch (task.Status)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
-                case TaskStatus.Canceled:
-                case TaskStatus.Faulted:
-                    return task;
-                case TaskStatus.RanToCompletion:
-                    return _writer.WriteAsync(':', cancellationToken);
+                return _writer.WriteAsync(':', cancellationToken);
             }
 
             return JavaScriptUtils.WriteCharAsync(task, _writer, ':', cancellationToken);
@@ -415,13 +395,9 @@ namespace Newtonsoft.Json
         internal Task DoWriteStartArrayAsync(CancellationToken cancellationToken)
         {
             Task task = InternalWriteStartAsync(JsonToken.StartArray, JsonContainerType.Array, cancellationToken);
-            switch (task.Status)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
-                case TaskStatus.Canceled:
-                case TaskStatus.Faulted:
-                    return task;
-                case TaskStatus.RanToCompletion:
-                    return _writer.WriteAsync('[', cancellationToken);
+                return _writer.WriteAsync('[', cancellationToken);
             }
 
             return DoWriteStartArrayAsync(task, cancellationToken);
@@ -449,13 +425,9 @@ namespace Newtonsoft.Json
         internal Task DoWriteStartObjectAsync(CancellationToken cancellationToken)
         {
             Task task = InternalWriteStartAsync(JsonToken.StartObject, JsonContainerType.Object, cancellationToken);
-            switch (task.Status)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
-                case TaskStatus.Canceled:
-                case TaskStatus.Faulted:
-                    return task;
-                case TaskStatus.RanToCompletion:
-                    return _writer.WriteAsync('{', cancellationToken);
+                return _writer.WriteAsync('{', cancellationToken);
             }
 
             return DoWriteStartObjectAsync(task, cancellationToken);
@@ -505,13 +477,9 @@ namespace Newtonsoft.Json
         internal Task DoWriteUndefinedAsync(CancellationToken cancellationToken)
         {
             Task task = InternalWriteValueAsync(JsonToken.Undefined, cancellationToken);
-            switch (task.Status)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
-                case TaskStatus.Canceled:
-                case TaskStatus.Faulted:
-                    return task;
-                case TaskStatus.RanToCompletion:
-                    return _writer.WriteAsync(JsonConvert.Undefined, cancellationToken);
+                return _writer.WriteAsync(JsonConvert.Undefined, cancellationToken);
             }
 
             return DoWriteUndefinedAsync(task, cancellationToken);
@@ -1086,13 +1054,9 @@ namespace Newtonsoft.Json
         internal Task DoWriteValueAsync(string value, CancellationToken cancellationToken)
         {
             Task task = InternalWriteValueAsync(JsonToken.String, cancellationToken);
-            switch (task.Status)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
-                case TaskStatus.Canceled:
-                case TaskStatus.Faulted:
-                    return task;
-                case TaskStatus.RanToCompletion:
-                    return value == null ? _writer.WriteAsync(JsonConvert.Null, cancellationToken) : WriteEscapedStringAsync(value, true, cancellationToken);
+                return value == null ? _writer.WriteAsync(JsonConvert.Null, cancellationToken) : WriteEscapedStringAsync(value, true, cancellationToken);
             }
 
             return DoWriteValueAsync(task, value, cancellationToken);
@@ -1225,13 +1189,9 @@ namespace Newtonsoft.Json
         internal Task WriteValueNotNullAsync(Uri value, CancellationToken cancellationToken)
         {
             Task task = InternalWriteValueAsync(JsonToken.String, cancellationToken);
-            switch (task.Status)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
-                case TaskStatus.Canceled:
-                case TaskStatus.Faulted:
-                    return task;
-                case TaskStatus.RanToCompletion:
-                    return WriteEscapedStringAsync(value.OriginalString, true, cancellationToken);
+                return WriteEscapedStringAsync(value.OriginalString, true, cancellationToken);
             }
 
             return WriteValueNotNullAsync(task, value, cancellationToken);
@@ -1350,13 +1310,9 @@ namespace Newtonsoft.Json
         {
             UpdateScopeWithFinishedValue();
             Task task = AutoCompleteAsync(JsonToken.Undefined, cancellationToken);
-            switch (task.Status)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
-                case TaskStatus.Canceled:
-                case TaskStatus.Faulted:
-                    return task;
-                case TaskStatus.RanToCompletion:
-                    return WriteRawAsync(json, cancellationToken);
+                return WriteRawAsync(json, cancellationToken);
             }
 
             return DoWriteRawValueAsync(task, json, cancellationToken);

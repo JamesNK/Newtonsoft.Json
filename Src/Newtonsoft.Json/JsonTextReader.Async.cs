@@ -495,14 +495,10 @@ namespace Newtonsoft.Json
             _charPos++;
 
             Task<bool> task = EnsureCharsAsync(1, append, cancellationToken);
-            switch (task.Status)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
-                case TaskStatus.RanToCompletion:
-                    SetNewLine(task.Result);
-                    return AsyncUtils.CompletedTask;
-                case TaskStatus.Canceled:
-                case TaskStatus.Faulted:
-                    return task;
+                SetNewLine(task.Result);
+                return AsyncUtils.CompletedTask;
             }
 
             return ProcessCarriageReturnAsync(task);
