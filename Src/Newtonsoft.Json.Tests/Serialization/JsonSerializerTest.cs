@@ -8153,6 +8153,53 @@ Path '', line 1, position 1.");
             ExceptionAssert.Throws<JsonReaderException>(() => { s.Deserialize<Dictionary<string, int>>(new JsonTextReader(new StringReader(json))); }, "Additional text encountered after finished reading JSON content: {. Path '', line 1, position 7.");
         }
 
+        [Test]
+        public void CheckAdditionalContentJustComment()
+        {
+            string json = "{one:1} // This is just a comment";
+
+            JsonSerializerSettings settings = new JsonSerializerSettings {CheckAdditionalContent = true};
+            JsonSerializer s = JsonSerializer.Create(settings);
+            IDictionary<string, int> o = s.Deserialize<Dictionary<string, int>>(new JsonTextReader(new StringReader(json)));
+
+            Assert.IsNotNull(o);
+            Assert.AreEqual(1, o["one"]);
+        }
+
+        [Test]
+        public void CheckAdditionalContentJustMultipleComments()
+        {
+            string json = @"{one:1} // This is just a comment
+/* This is just a comment
+over multiple
+lines.*/
+
+// This is just another comment.";
+
+            JsonSerializerSettings settings = new JsonSerializerSettings {CheckAdditionalContent = true};
+            JsonSerializer s = JsonSerializer.Create(settings);
+            IDictionary<string, int> o = s.Deserialize<Dictionary<string, int>>(new JsonTextReader(new StringReader(json)));
+
+            Assert.IsNotNull(o);
+            Assert.AreEqual(1, o["one"]);
+        }
+
+        [Test]
+        public void CheckAdditionalContentCommentsThenAnotherObject()
+        {
+            string json = @"{one:1} // This is just a comment
+/* This is just a comment
+over multiple
+lines.*/
+
+// This is just another comment. But here comes an empty object.
+{}";
+
+            JsonSerializerSettings settings = new JsonSerializerSettings { CheckAdditionalContent = true };
+            JsonSerializer s = JsonSerializer.Create(settings);
+            ExceptionAssert.Throws<JsonReaderException>(() => { s.Deserialize<Dictionary<string, int>>(new JsonTextReader(new StringReader(json))); }, "Additional text encountered after finished reading JSON content: {. Path '', line 7, position 0.");
+        }
+
 #if !(PORTABLE || DNXCORE50 || PORTABLE40)
         [Test]
         public void DeserializeException()
