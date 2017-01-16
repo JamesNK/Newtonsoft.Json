@@ -8,6 +8,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Allows users to control class loading and mandate what class to load.
     /// </summary>
+    [Obsolete("SerializationBinder is obsolete. Use ISerializationBinder instead.")]
     public abstract class SerializationBinder
     {
         /// <summary>
