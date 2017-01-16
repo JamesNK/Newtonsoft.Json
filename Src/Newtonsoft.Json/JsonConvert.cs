@@ -962,13 +962,13 @@ namespace Newtonsoft.Json
             {
                 jsonSerializer.Populate(jsonReader, target);
 
-                if (settings.CheckAdditionalContent)
+                if (settings != null && settings.CheckAdditionalContent)
                 {
                     while (jsonReader.Read())
                     {
                         if (jsonReader.TokenType != JsonToken.Comment)
                         {
-                            throw new JsonSerializationException("Additional text found in JSON string after finishing deserializing object.");
+                            throw JsonSerializationException.Create(jsonReader, "Additional text found in JSON string after finishing deserializing object.");
                         }
                     }
                 }
