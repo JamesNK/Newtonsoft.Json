@@ -426,9 +426,12 @@ namespace Newtonsoft.Json.Linq
             {
                 JObject o = Load(reader, settings);
 
-                if (reader.Read() && reader.TokenType != JsonToken.Comment)
+                while (reader.Read())
                 {
-                    throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
+                    if (reader.TokenType != JsonToken.Comment)
+                    {
+                        throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
+                    }
                 }
 
                 return o;
