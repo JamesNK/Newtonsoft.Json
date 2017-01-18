@@ -1,5 +1,5 @@
 ﻿
-#if !HAVE_BINARY_SERIALIZATION
+#if !HAVE_SERIALIZATION_FORMATTERS
 
 namespace System.Runtime.Serialization.Formatters
 {

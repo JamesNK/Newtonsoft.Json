@@ -34,7 +34,7 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(PORTABLE || DNXCORE50)
+#if !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
     [Serializable]
     public class AnswerFilterModel
     {

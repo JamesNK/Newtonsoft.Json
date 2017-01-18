@@ -223,7 +223,7 @@ namespace Newtonsoft.Json.Tests
             Assert.IsTrue(ms.CanRead);
         }
 
-#if !(PORTABLE)
+#if !(PORTABLE) || NETSTANDARD1_3
         [Test]
         public void WriteIConvertable()
         {
@@ -1712,7 +1712,7 @@ null//comment
         }
     }
 
-#if !(PORTABLE)
+#if !(PORTABLE) || NETSTANDARD1_3
     public struct ConvertibleInt : IConvertible
     {
         private readonly int _value;

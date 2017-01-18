@@ -647,7 +647,7 @@ namespace Newtonsoft.Json.Serialization
 
         private ConstructorInfo GetParameterizedConstructor(Type objectType)
         {
-#if PORTABLE
+#if !HAVE_FULL_REFLECTION
             IEnumerable<ConstructorInfo> constructors = objectType.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
             IEnumerator<ConstructorInfo> en = constructors.GetEnumerator();
             if (en.MoveNext())
@@ -1362,7 +1362,7 @@ namespace Newtonsoft.Json.Serialization
             // warning - this method use to cause errors with Intellitrace. Retest in VS Ultimate after changes
             IValueProvider valueProvider;
 
-#if !(PORTABLE40 || PORTABLE || DOTNET)
+#if HAVE_REFLECTION_EMIT
             if (DynamicCodeGeneration)
             {
                 valueProvider = new DynamicValueProvider(member);

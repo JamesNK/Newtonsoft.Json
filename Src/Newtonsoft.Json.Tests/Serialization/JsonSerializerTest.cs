@@ -1558,7 +1558,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(TypeNameHandling.All, serializerProxy.TypeNameHandling);
         }
 
-#if !(PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD1_3
         [Test]
         public void DeserializeISerializableIConvertible()
         {
@@ -4893,7 +4893,7 @@ Path '', line 1, position 1.");
             Assert.AreEqual("value", newModelStateDictionary["key"]);
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3
         public class ISerializableTestObject : ISerializable
         {
             internal string _stringValue;
@@ -5007,6 +5007,8 @@ Path '', line 1, position 1.");
             }
         }
 
+// Cannot ensure full trust on NetStandard 1.3
+#if !NETSTANDARD1_3
         [Test]
         public void SerializeISerializableInPartialTrust()
         {
@@ -5047,6 +5049,7 @@ Path '', line 1, position 1.");
                 JsonTypeReflector.SetFullyTrusted(true);
             }
         }
+#endif
 #endif
 
         [Test]
@@ -6075,7 +6078,7 @@ Path '', line 1, position 1.");
             Assert.AreEqual(meh.IDontWork, "meh");
         }
 
-#if !(NET20 || DNXCORE50)
+#if !(NET20 || DNXCORE50) || NETSTANDARD1_3
         [DataContract]
         public struct StructISerializable : ISerializable
         {
@@ -7209,7 +7212,7 @@ Path '', line 1, position 1.");
             }, "Error converting value {null} to type 'System.Int32'. Path '[3]', line 5, position 6.");
         }
 
-#if !(PORTABLE)
+#if !(PORTABLE) || NETSTANDARD1_3
         public class ConvertableIntTestClass
         {
             public ConvertibleInt Integer { get; set; }
@@ -7992,7 +7995,7 @@ Path '', line 1, position 1.");
             Assert.AreEqual("", s);
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3
         [Test]
         public void SerializeAndDeserializeWithAttributes()
         {
@@ -8718,7 +8721,7 @@ lines.*/
         }
 #endif
 
-#if !(DNXCORE50)
+#if !(DNXCORE50) || NETSTANDARD1_3
         [Serializable]
 #endif
         [DataContract]
@@ -8747,7 +8750,7 @@ lines.*/
 
             Assert.AreEqual(@"{""First"":""One"",""Second"":2}", json);
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3
             DefaultContractResolver r = new DefaultContractResolver();
             r.IgnoreSerializableAttribute = false;
 
@@ -8863,7 +8866,7 @@ lines.*/
             Assert.AreEqual(1234567890.123456m, d);
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3
         [Test]
         public void DontSerializeStaticFields()
         {
@@ -9184,7 +9187,7 @@ lines.*/
             ParticipantEntity deserializedProduct = JsonConvert.DeserializeObject<ParticipantEntity>(json);
         }
 
-#if !(PORTABLE)
+#if !(PORTABLE) || NETSTANDARD1_3
         public class ConvertibleId : IConvertible
         {
             public int Value;
@@ -9696,7 +9699,7 @@ lines.*/
             Assert.AreEqual("derived", d.DerivedProperty);
         }
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3
         [Test]
         public void DeserializeNullableUnsignedLong()
         {
