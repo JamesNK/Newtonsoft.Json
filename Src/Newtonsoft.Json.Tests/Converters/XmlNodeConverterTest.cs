@@ -2913,6 +2913,47 @@ namespace Newtonsoft.Json.Tests.Converters
             var deserialized = JsonConvert.DeserializeObject<XDocument>(json);
             Assert.AreEqual(@"<MyElement xmlns=""http://example.com"" />", deserialized.ToString());
         }
+
+        public class Model
+        {
+            public XElement Document { get; set; }
+        }
+
+        [Test]
+        public void DeserializeDateInElementText()
+        {
+            Model model = new Model();
+            model.Document = new XElement("Value", new XAttribute("foo", "bar"))
+            {
+                Value = "2001-01-01T11:11:11"
+            };
+
+            var serializer = JsonSerializer.Create(new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter>(new[] { new XmlNodeConverter() })
+            });
+
+            var json = new StringBuilder(1024);
+
+            using (var stringWriter = new StringWriter(json, CultureInfo.InvariantCulture))
+            using (var jsonWriter = new JsonTextWriter(stringWriter))
+            {
+                jsonWriter.Formatting = Formatting.None;
+                serializer.Serialize(jsonWriter, model);
+
+                Assert.AreEqual(@"{""Document"":{""Value"":{""@foo"":""bar"",""#text"":""2001-01-01T11:11:11""}}}", json.ToString());
+            }
+
+            using (var stringReader = new StringReader(json.ToString()))
+            using (var jsonReader = new JsonTextReader(stringReader))
+            {
+                var document = (XDocument)serializer.Deserialize(jsonReader, typeof(XDocument));
+
+                StringAssert.AreEqual(@"<Document>
+  <Value foo=""bar"">2001-01-01T11:11:11</Value>
+</Document>", document.ToString());
+            }
+        }
 #endif
     }
 }

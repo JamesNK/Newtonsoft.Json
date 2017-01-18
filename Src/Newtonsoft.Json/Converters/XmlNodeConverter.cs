@@ -1680,16 +1680,16 @@ namespace Newtonsoft.Json.Converters
             switch (propertyName)
             {
                 case TextName:
-                    currentNode.AppendChild(document.CreateTextNode(reader.Value.ToString()));
+                    currentNode.AppendChild(document.CreateTextNode(ConvertTokenToXmlValue(reader)));
                     break;
                 case CDataName:
-                    currentNode.AppendChild(document.CreateCDataSection(reader.Value.ToString()));
+                    currentNode.AppendChild(document.CreateCDataSection(ConvertTokenToXmlValue(reader)));
                     break;
                 case WhitespaceName:
-                    currentNode.AppendChild(document.CreateWhitespace(reader.Value.ToString()));
+                    currentNode.AppendChild(document.CreateWhitespace(ConvertTokenToXmlValue(reader)));
                     break;
                 case SignificantWhitespaceName:
-                    currentNode.AppendChild(document.CreateSignificantWhitespace(reader.Value.ToString()));
+                    currentNode.AppendChild(document.CreateSignificantWhitespace(ConvertTokenToXmlValue(reader)));
                     break;
                 default:
                     // processing instructions and the xml declaration start with ?
@@ -2072,15 +2072,15 @@ namespace Newtonsoft.Json.Converters
                     {
                         case "@version":
                             reader.Read();
-                            version = reader.Value.ToString();
+                            version = ConvertTokenToXmlValue(reader);
                             break;
                         case "@encoding":
                             reader.Read();
-                            encoding = reader.Value.ToString();
+                            encoding = ConvertTokenToXmlValue(reader);
                             break;
                         case "@standalone":
                             reader.Read();
-                            standalone = reader.Value.ToString();
+                            standalone = ConvertTokenToXmlValue(reader);
                             break;
                         default:
                             throw JsonSerializationException.Create(reader, "Unexpected property name encountered while deserializing XmlDeclaration: " + reader.Value);
@@ -2092,7 +2092,7 @@ namespace Newtonsoft.Json.Converters
             }
             else
             {
-                IXmlNode instruction = document.CreateProcessingInstruction(propertyName.Substring(1), reader.Value.ToString());
+                IXmlNode instruction = document.CreateProcessingInstruction(propertyName.Substring(1), ConvertTokenToXmlValue(reader));
                 currentNode.AppendChild(instruction);
             }
         }
@@ -2109,19 +2109,19 @@ namespace Newtonsoft.Json.Converters
                 {
                     case "@name":
                         reader.Read();
-                        name = reader.Value.ToString();
+                        name = ConvertTokenToXmlValue(reader);
                         break;
                     case "@public":
                         reader.Read();
-                        publicId = reader.Value.ToString();
+                        publicId = ConvertTokenToXmlValue(reader);
                         break;
                     case "@system":
                         reader.Read();
-                        systemId = reader.Value.ToString();
+                        systemId = ConvertTokenToXmlValue(reader);
                         break;
                     case "@internalSubset":
                         reader.Read();
-                        internalSubset = reader.Value.ToString();
+                        internalSubset = ConvertTokenToXmlValue(reader);
                         break;
                     default:
                         throw JsonSerializationException.Create(reader, "Unexpected property name encountered while deserializing XmlDeclaration: " + reader.Value);
