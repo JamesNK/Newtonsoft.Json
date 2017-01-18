@@ -173,7 +173,7 @@ namespace Newtonsoft.Json.Serialization
                     {
                         if (reader.TokenType != JsonToken.Comment)
                         {
-                            throw new JsonSerializationException("Additional text found in JSON string after finishing deserializing object.");
+                            throw JsonSerializationException.Create(reader, "Additional text found in JSON string after finishing deserializing object.");
                         }
                     }
                 }

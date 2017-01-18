@@ -8253,7 +8253,52 @@ lines.*/
                 reader.Read();
 
                 serializer.Deserialize(reader, typeof(MyType));
-            }, "Additional text found in JSON string after finishing deserializing object.");
+            }, "Additional text found in JSON string after finishing deserializing object. Path '[1]', line 1, position 5.");
+        }
+
+        [Test]
+        public void AdditionalContentAfterFinishCheckNotRequested()
+        {
+            string json = @"{ ""MyProperty"":{""Key"":""Value""}} A bunch of junk at the end of the json";
+
+            JsonSerializer serializer = new JsonSerializer();
+
+            var reader = new JsonTextReader(new StringReader(json));
+
+            MyType mt = (MyType)serializer.Deserialize(reader, typeof(MyType));
+            Assert.AreEqual(1, mt.MyProperty.Count);
+        }
+
+        [Test]
+        public void AdditionalContentAfterCommentsCheckNotRequested()
+        {
+            string json = @"{ ""MyProperty"":{""Key"":""Value""}} /*this is a comment */
+// this is also a comment
+This is just junk, though.";
+
+            JsonSerializer serializer = new JsonSerializer();
+
+            var reader = new JsonTextReader(new StringReader(json));
+
+            MyType mt = (MyType)serializer.Deserialize(reader, typeof(MyType));
+            Assert.AreEqual(1, mt.MyProperty.Count);
+        }
+
+        [Test]
+        public void AdditionalContentAfterComments()
+        {
+            string json = @"[{ ""MyProperty"":{""Key"":""Value""}} /*this is a comment */
+// this is also a comment
+,{}";
+
+            JsonSerializer serializer = new JsonSerializer();
+            serializer.CheckAdditionalContent = true;
+            var reader = new JsonTextReader(new StringReader(json));
+            reader.Read();
+            reader.Read();
+
+            ExceptionAssert.Throws<JsonSerializationException>(() => serializer.Deserialize(reader, typeof(MyType)),
+                "Additional text found in JSON string after finishing deserializing object. Path '[1]', line 3, position 2.");
         }
 
         [Test]
