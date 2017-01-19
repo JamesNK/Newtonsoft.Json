@@ -1,5 +1,5 @@
 ﻿
-#if NET20
+#if !HAVE_LINQ
 
 #region License, Terms and Author(s)
 //

@@ -29,12 +29,16 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using System.Text;
 using System.Collections;
-#if NET20
+using System.Diagnostics;
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
 using System.Globalization;
+#if HAVE_METHOD_IMPL_ATTRIBUTE
+using System.Runtime.CompilerServices;
+#endif
 using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
@@ -80,7 +84,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-#if (NET20 || NET35 || PORTABLE40)
+#if !HAVE_COVARIANT_GENERICS
         public static void AddRange<T>(this IList<T> initial, IEnumerable collection)
         {
             ValidationUtils.ArgumentNotNull(initial, nameof(initial));
@@ -102,7 +106,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 return true;
             }
-#if !(NET40 || NET35 || NET20 || PORTABLE40)
+#if HAVE_READ_ONLY_COLLECTIONS
             if (ReflectionUtils.ImplementsGenericDefinition(type, typeof(IReadOnlyDictionary<,>)))
             {
                 return true;
@@ -340,9 +344,30 @@ namespace Newtonsoft.Json.Utilities
             }
 
             Array multidimensionalArray = Array.CreateInstance(type, dimensions.ToArray());
-            CopyFromJaggedToMultidimensionalArray(values, multidimensionalArray, new int[0]);
+            CopyFromJaggedToMultidimensionalArray(values, multidimensionalArray, ArrayEmpty<int>());
 
             return multidimensionalArray;
+        }
+
+        // 4.6 has Array.Empty<T> to return a cached empty array. Lacking that in other
+        // frameworks, Enumerable.Empty<T> happens to be implemented as a cached empty
+        // array in all versions (in .NET Core the same instance as Array.Empty<T>).
+        // This includes the internal Linq bridge for 2.0.
+        // Since this method is simple and only 11 bytes long in a release build it's
+        // pretty much guaranteed to be inlined, giving us fast access of that cached
+        // array. With 4.5 and up we use AggressiveInlining just to be sure, so it's
+        // effectively the same as calling Array.Empty<T> even when not available.
+#if HAVE_METHOD_IMPL_ATTRIBUTE
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+#endif
+        public static T[] ArrayEmpty<T>()
+        {
+            T[] array = Enumerable.Empty<T>() as T[];
+            Debug.Assert(array != null);
+            // Defensively guard against a version of Linq where Enumerable.Empty<T> doesn't
+            // return an array, but throw in debug versions so a better strategy can be
+            // used if that ever happens.
+            return array ?? new T[0];
         }
     }
 }

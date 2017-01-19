@@ -70,8 +70,8 @@ namespace Newtonsoft.Json.Tests
 #if DEBUG
         public int Iterations = 1;
 #else
-        //public int Iterations = 100;
-        public int Iterations = 10000;
+        public int Iterations = 100;
+        //public int Iterations = 10000;
 #endif
 
         #region Data
@@ -86,6 +86,40 @@ namespace Newtonsoft.Json.Tests
 
         public const string JsonText =
             @"{""strings"":[null,""Markus egger ]><[, (2nd)"",null],""dictionary"":{""Val & asd1"":1,""Val2 & asd1"":3,""Val3 & asd1"":4},""Name"":""Rick"",""Now"":""\/Date(1262301136080+1300)\/"",""BigNumber"":34123123123.121,""Address1"":{""Street"":""fff Street"",""Phone"":""(503) 814-6335"",""Entered"":""\/Date(1264025536080+1300)\/""},""Addresses"":[{""Street"":""\u001farray<address"",""Phone"":""(503) 814-6335"",""Entered"":""\/Date(1262211136080+1300)\/""},{""Street"":""array 2 address"",""Phone"":""(503) 814-6335"",""Entered"":""\/Date(1262124736080+1300)\/""}]}";
+
+        public const string JsonIndentedText =
+            @"{
+  ""strings"": [
+    null,
+    ""Markus egger ]><[, (2nd)"",
+    null
+  ],
+  ""dictionary"": {
+    ""Val & asd1"": 1,
+    ""Val2 & asd1"": 3,
+    ""Val3 & asd1"": 4
+  },
+  ""Name"": ""Rick"",
+  ""Now"": ""/Date(1262301136080+1300)/"",
+  ""BigNumber"": 34123123123.121,
+  ""Address1"": {
+    ""Street"": ""fff Street"",
+    ""Phone"": ""(503) 814-6335"",
+    ""Entered"": ""/Date(1264025536080+1300)/""
+  },
+  ""Addresses"": [
+    {
+      ""Street"": ""\u001farray<address"",
+      ""Phone"": ""(503) 814-6335"",
+      ""Entered"": ""/Date(1262211136080+1300)/""
+    },
+    {
+      ""Street"": ""array 2 address"",
+      ""Phone"": ""(503) 814-6335"",
+      ""Entered"": ""/Date(1262124736080+1300)/""
+    }
+  ]
+}";
 
         private const string JsonIsoText =
             @"{""strings"":[null,""Markus egger ]><[, (2nd)"",null],""dictionary"":{""Val & asd1"":1,""Val2 & asd1"":3,""Val3 & asd1"":4},""Name"":""Rick"",""Now"":""2012-02-25T19:55:50.6095676+13:00"",""BigNumber"":34123123123.121,""Address1"":{""Street"":""fff Street"",""Phone"":""(503) 814-6335"",""Entered"":""2012-02-24T18:55:50.6095676+13:00""},""Addresses"":[{""Street"":""\u001farray<address"",""Phone"":""(503) 814-6335"",""Entered"":""2012-02-24T18:55:50.6095676+13:00""},{""Street"":""array 2 address"",""Phone"":""(503) 814-6335"",""Entered"":""2012-02-24T18:55:50.6095676+13:00""}]}";
@@ -144,6 +178,40 @@ namespace Newtonsoft.Json.Tests
             TestClass test = CreateSerializationObject();
 
             await BenchmarkSerializeMethodAsync(SerializeMethod.JsonNetManualAsync, test);
+        }
+
+        [Test]
+        public void TokenWriteTo()
+        {
+            JObject o = JObject.Parse(JsonText);
+
+            TimeOperation<JObject>(() =>
+            {
+                for (int i = 0; i < Iterations; i++)
+                {
+                    StringWriter sw = new StringWriter();
+                    o.WriteTo(new JsonTextWriter(sw));
+                }
+
+                return o;
+            }, "TokenWriteTo");
+        }
+
+        [Test]
+        public async Task TokenWriteToAsync()
+        {
+            JObject o = JObject.Parse(JsonText);
+
+            await TimeOperationAsync<JObject>(async () =>
+            {
+                for (int i = 0; i < Iterations; i++)
+                {
+                    StringWriter sw = new StringWriter();
+                    await o.WriteToAsync(new JsonTextWriter(sw));
+                }
+
+                return o;
+            }, "TokenWriteTo");
         }
 
         [Test]
@@ -206,7 +274,7 @@ namespace Newtonsoft.Json.Tests
         {
             var json = System.IO.File.ReadAllText("large.json");
 
-            BenchmarkDeserializeMethod<IList<RootObject>>(SerializeMethod.JsonNet, json, Iterations / 10, false);
+            BenchmarkDeserializeMethod<IList<RootObject>>(SerializeMethod.JsonNet, json, Math.Min(Iterations, 10), false);
         }
 
         [Test]
@@ -252,6 +320,12 @@ namespace Newtonsoft.Json.Tests
         public async Task DeserializeAsync()
         {
             await BenchmarkDeserializeMethodAsync<TestClass>(SerializeMethod.JsonNetManualAsync, JsonText);
+        }
+
+        [Test]
+        public async Task DeserializeIndentedAsync()
+        {
+            await BenchmarkDeserializeMethodAsync<TestClass>(SerializeMethod.JsonNetManualAsync, JsonIndentedText);
         }
 
         public void DeserializeTests<T>(string json)
@@ -317,6 +391,24 @@ namespace Newtonsoft.Json.Tests
             timed.Start();
 
             T result = operation();
+
+            Console.WriteLine(name);
+            Console.WriteLine("{0} ms", timed.ElapsedMilliseconds);
+
+            timed.Stop();
+
+            return result;
+        }
+
+        private async Task<T> TimeOperationAsync<T>(Func<Task<T>> operation, string name)
+        {
+            // warm up
+            await operation();
+
+            Stopwatch timed = new Stopwatch();
+            timed.Start();
+
+            T result = await operation();
 
             Console.WriteLine(name);
             Console.WriteLine("{0} ms", timed.ElapsedMilliseconds);

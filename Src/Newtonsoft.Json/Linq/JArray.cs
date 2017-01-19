@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Linq
     /// <example>
     ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParseArray" title="Parsing a JSON Array from Text" />
     /// </example>
-    public class JArray : JContainer, IList<JToken>
+    public partial class JArray : JContainer, IList<JToken>
     {
         private readonly List<JToken> _values = new List<JToken>();
 
@@ -176,9 +176,9 @@ namespace Newtonsoft.Json.Linq
             {
                 JArray a = Load(reader, settings);
 
-                if (reader.Read() && reader.TokenType != JsonToken.Comment)
+                while (reader.Read())
                 {
-                    throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
+                    // Any content encountered here other than a comment will throw in the reader.
                 }
 
                 return a;

@@ -2,6 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+#if !HAVE_LINQ
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
@@ -83,29 +88,34 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 return JPath.Evaluate(pathFilters, root, t, false);
             }
 
-            return new JToken[0];
+            return CollectionUtils.ArrayEmpty<JToken>();
         }
 
         public override bool IsMatch(JToken root, JToken t)
         {
-            IEnumerable<JToken> rightResults = GetResult(root, t, Right);
-            IEnumerable<JToken> leftResults = GetResult(root, t, Left);
-
-            foreach (JToken leftResult in leftResults)
+            if (Operator == QueryOperator.Exists)
             {
-                if (Operator == QueryOperator.Exists)
+                return GetResult(root, t, Left).Any();
+            }
+
+            using (IEnumerator<JToken> leftResults = GetResult(root, t, Left).GetEnumerator())
+            {
+                if (leftResults.MoveNext())
                 {
-                    return true;
-                }
-                else
-                {
-                    foreach (JToken rightResult in rightResults)
+                    IEnumerable<JToken> rightResultsEn = GetResult(root, t, Right);
+                    ICollection<JToken> rightResults = rightResultsEn as ICollection<JToken> ?? rightResultsEn.ToList();
+
+                    do
                     {
-                        if (MatchTokens(leftResult, rightResult))
+                        JToken leftResult = leftResults.Current;
+                        foreach (JToken rightResult in rightResults)
                         {
-                            return true;
+                            if (MatchTokens(leftResult, rightResult))
+                            {
+                                return true;
+                            }
                         }
-                    }
+                    } while (leftResults.MoveNext());
                 }
             }
 
@@ -198,7 +208,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 case JTokenType.Date:
                     using (StringWriter writer = StringUtils.CreateStringWriter(64))
                     {
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                         if (value.Value is DateTimeOffset)
                         {
                             DateTimeUtils.WriteDateTimeOffsetString(writer, (DateTimeOffset)value.Value, DateFormatHandling.IsoDateFormat, null, CultureInfo.InvariantCulture);

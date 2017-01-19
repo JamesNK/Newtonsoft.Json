@@ -33,7 +33,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// The exception thrown when an error occurs while writing JSON text.
     /// </summary>
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_BINARY_SERIALIZATION
     [Serializable]
 #endif
     public class JsonWriterException : JsonException
@@ -72,7 +72,7 @@ namespace Newtonsoft.Json
         {
         }
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_BINARY_SERIALIZATION
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonWriterException"/> class.
         /// </summary>

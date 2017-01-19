@@ -27,7 +27,7 @@ using System;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Globalization;
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Utilities;
@@ -42,7 +42,7 @@ namespace Newtonsoft.Json
         ReadAsString,
         ReadAsDecimal,
         ReadAsDateTime,
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         ReadAsDateTimeOffset,
 #endif
         ReadAsDouble,
@@ -83,7 +83,7 @@ namespace Newtonsoft.Json
             _reader = reader;
             _lineNumber = 1;
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
             _safeAsync = GetType() == typeof(JsonTextReader);
 #endif
         }
@@ -120,6 +120,16 @@ namespace Newtonsoft.Json
             }
         }
 
+        private void SetNewLine(bool hasNextChar)
+        {
+            if (hasNextChar && _chars[_charPos] == StringUtils.LineFeed)
+            {
+                _charPos++;
+            }
+
+            OnNewLine(_charPos);
+        }
+
         private void OnNewLine(int pos)
         {
             _lineNumber++;
@@ -146,7 +156,7 @@ namespace Newtonsoft.Json
                     byte[] data;
                     if (_stringReference.Length == 0)
                     {
-                        data = new byte[0];
+                        data = CollectionUtils.ArrayEmpty<byte>();
                     }
                     else if (_stringReference.Length == 36 && ConvertUtils.TryConvertGuid(_stringReference.ToString(), out g))
                     {
@@ -178,7 +188,7 @@ namespace Newtonsoft.Json
                         {
                             dateParseHandling = DateParseHandling.DateTime;
                         }
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                         else if (readType == ReadType.ReadAsDateTimeOffset)
                         {
                             dateParseHandling = DateParseHandling.DateTimeOffset;
@@ -198,7 +208,7 @@ namespace Newtonsoft.Json
                                 return;
                             }
                         }
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                         else
                         {
                             DateTimeOffset dt;
@@ -404,7 +414,7 @@ namespace Newtonsoft.Json
                     case State.Finished:
                         if (EnsureChars(0, false))
                         {
-                            EatWhitespace(false);
+                            EatWhitespace();
                             if (_isEndOfFile)
                             {
                                 SetToken(JsonToken.None);
@@ -694,7 +704,7 @@ namespace Newtonsoft.Json
                     }
 
                     return ReadDateTimeString((string)Value);
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                 case ReadType.ReadAsDateTimeOffset:
                     if (Value is DateTimeOffset)
                     {
@@ -764,7 +774,7 @@ namespace Newtonsoft.Json
                             case '9':
                                 ParseNumber(ReadType.Read);
                                 bool b;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                                 if (Value is BigInteger)
                                 {
                                     b = (BigInteger)Value != 0;
@@ -965,7 +975,7 @@ namespace Newtonsoft.Json
             }
         }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         /// <summary>
         /// Reads the next JSON token from the underlying <see cref="TextReader"/> as a <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/>.
         /// </summary>
@@ -1018,7 +1028,7 @@ namespace Newtonsoft.Json
         {
             if (EnsureChars(0, false))
             {
-                EatWhitespace(false);
+                EatWhitespace();
                 if (_isEndOfFile)
                 {
                     return;
@@ -1513,7 +1523,7 @@ namespace Newtonsoft.Json
                 propertyName = _stringReference.ToString();
             }
 
-            EatWhitespace(false);
+            EatWhitespace();
 
             if (_chars[_charPos] != ':')
             {
@@ -1719,19 +1729,12 @@ namespace Newtonsoft.Json
         {
             _charPos++;
 
-            if (EnsureChars(1, append) && _chars[_charPos] == StringUtils.LineFeed)
-            {
-                _charPos++;
-            }
-
-            OnNewLine(_charPos);
+            SetNewLine(EnsureChars(1, append));
         }
 
-        private bool EatWhitespace(bool oneOrMore)
+        private void EatWhitespace()
         {
-            bool finished = false;
-            bool ateWhitespace = false;
-            while (!finished)
+            while (true)
             {
                 char currentChar = _chars[_charPos];
 
@@ -1742,7 +1745,7 @@ namespace Newtonsoft.Json
                         {
                             if (ReadData(false) == 0)
                             {
-                                finished = true;
+                                return;
                             }
                         }
                         else
@@ -1759,25 +1762,22 @@ namespace Newtonsoft.Json
                     default:
                         if (currentChar == ' ' || char.IsWhiteSpace(currentChar))
                         {
-                            ateWhitespace = true;
                             _charPos++;
                         }
                         else
                         {
-                            finished = true;
+                            return;
                         }
                         break;
                 }
             }
-
-            return (!oneOrMore || ateWhitespace);
         }
 
         private void ParseConstructor()
         {
             if (MatchValueWithTrailingSeparator("new"))
             {
-                EatWhitespace(false);
+                EatWhitespace();
 
                 int initialPosition = _charPos;
                 int endPosition;
@@ -1837,7 +1837,7 @@ namespace Newtonsoft.Json
                 _stringReference = new StringReference(_chars, initialPosition, endPosition - initialPosition);
                 string constructorName = _stringReference.ToString();
 
-                EatWhitespace(false);
+                EatWhitespace();
 
                 if (_chars[_charPos] != '(')
                 {
@@ -2071,7 +2071,7 @@ namespace Newtonsoft.Json
                     }
                     else if (parseResult == ParseResult.Overflow)
                     {
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                         string number = _stringReference.ToString();
 
                         if (number.Length > MaximumJavascriptIntegerCharacterLength)
@@ -2132,7 +2132,7 @@ namespace Newtonsoft.Json
             return JsonReaderException.Create(this, message, ex);
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
         // By using the BigInteger type in a separate method,
         // the runtime can execute the ParseNumber even if 
         // the System.Numerics.BigInteger.Parse method is
@@ -2485,7 +2485,7 @@ namespace Newtonsoft.Json
 
             if (CloseInput)
             {
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_STREAM_READER_WRITER_CLOSE
                 _reader?.Close();
 #else
                 _reader?.Dispose();

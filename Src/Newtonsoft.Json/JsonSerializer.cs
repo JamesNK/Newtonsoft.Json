@@ -597,8 +597,7 @@ namespace Newtonsoft.Json
         public static JsonSerializer CreateDefault()
         {
             // copy static to local variable to avoid concurrency issues
-            Func<JsonSerializerSettings> defaultSettingsCreator = JsonConvert.DefaultSettings;
-            JsonSerializerSettings defaultSettings = (defaultSettingsCreator != null) ? defaultSettingsCreator() : null;
+            JsonSerializerSettings defaultSettings = JsonConvert.DefaultSettings?.Invoke();
 
             return Create(defaultSettings);
         }
