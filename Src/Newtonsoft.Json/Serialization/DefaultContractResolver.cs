@@ -1233,19 +1233,11 @@ namespace Newtonsoft.Json.Serialization
 
         internal static bool CanConvertToString(Type type)
         {
-#if HAVE_COMPONENT_MODEL
-            TypeConverter converter = ConvertUtils.GetConverter(type);
-
-            // use the objectType's TypeConverter if it has one and can convert to a string
-            if (converter != null
-                && !(converter is ComponentConverter)
-                && !(converter is ReferenceConverter)
-                && converter.GetType() != typeof(TypeConverter))
+#if HAVE_TYPE_DESCRIPTOR
+            TypeConverter converter;
+            if (JsonTypeReflector.CanTypeDescriptorConvertString(type, out converter))
             {
-                if (converter.CanConvertTo(typeof(string)))
-                {
-                    return true;
-                }
+                return true;
             }
 #endif
 

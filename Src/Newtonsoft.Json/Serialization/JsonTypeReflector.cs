@@ -69,6 +69,29 @@ namespace Newtonsoft.Json.Serialization
             return CachedAttributeGetter<T>.GetAttribute(attributeProvider);
         }
 
+#if HAVE_TYPE_DESCRIPTOR
+        public static bool CanTypeDescriptorConvertString(Type type, out TypeConverter typeConverter)
+        {
+            typeConverter = TypeDescriptor.GetConverter(type);
+
+            // use the objectType's TypeConverter if it has one and can convert to a string
+            if (typeConverter != null)
+            {
+                Type converterType = typeConverter.GetType();
+
+                if (converterType.FullName != "System.ComponentModel.ComponentConverter"
+                    && converterType.FullName != "System.ComponentModel.ReferenceConverter"
+                    && converterType != typeof(TypeConverter))
+                {
+                    return typeConverter.CanConvertTo(typeof(string));
+                }
+
+            }
+
+            return false;
+        }
+#endif
+
 #if HAVE_DATA_CONTRACTS
         public static DataContractAttribute GetDataContractAttribute(Type type)
         {
@@ -244,13 +267,6 @@ namespace Newtonsoft.Json.Serialization
                 }
             };
         }
-
-#if HAVE_COMPONENT_MODEL
-        public static TypeConverter GetTypeConverter(Type type)
-        {
-            return TypeDescriptor.GetConverter(type);
-        }
-#endif
 
 #if !(NET20 || DOTNET)
         private static Type GetAssociatedMetadataType(Type type)

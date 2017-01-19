@@ -9089,6 +9089,119 @@ This is just junk, though.";
         }
 #endif
 
+#if !(PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD1_0 || NETSTANDARD1_1
+        [Test]
+        public void SerializeDictionaryWithStructKey_Custom()
+        {
+            string json = JsonConvert.SerializeObject(
+                new Dictionary<TypeConverterSize, TypeConverterSize> { { new TypeConverterSize(1, 2), new TypeConverterSize(3, 4) } }
+            );
+
+            Assert.AreEqual(@"{""1, 2"":""3, 4""}", json);
+
+            Dictionary<TypeConverterSize, TypeConverterSize> d = JsonConvert.DeserializeObject<Dictionary<TypeConverterSize, TypeConverterSize>>(json);
+
+            Assert.AreEqual(new TypeConverterSize(1, 2), d.Keys.First());
+            Assert.AreEqual(new TypeConverterSize(3, 4), d.Values.First());
+        }
+
+        [TypeConverter(typeof(TypeConverterSizeConverter))]
+        public struct TypeConverterSize
+        {
+            public static readonly TypeConverterSize Empty;
+            private int _width;
+            private int _height;
+
+            public TypeConverterSize(int width, int height)
+            {
+                _width = width;
+                _height = height;
+            }
+
+            public int Width
+            {
+                get { return _width; }
+                set { _width = value; }
+            }
+
+            public int Height
+            {
+                get { return _height; }
+                set { _height = value; }
+            }
+        }
+
+        public class TypeConverterSizeConverter : TypeConverter
+        {
+            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+            {
+                return ((sourceType == typeof(string)) || base.CanConvertFrom(context, sourceType));
+            }
+
+            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+            {
+                return base.CanConvertTo(context, destinationType);
+            }
+
+            public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
+            {
+                string str = value as string;
+                if (str == null)
+                {
+                    return base.ConvertFrom(context, culture, value);
+                }
+                string str2 = str.Trim();
+                if (str2.Length == 0)
+                {
+                    return null;
+                }
+                if (culture == null)
+                {
+                    culture = CultureInfo.CurrentCulture;
+                }
+                string[] strArray = str2.Split(',');
+                int[] numArray = new int[strArray.Length];
+                TypeConverter converter = TypeDescriptor.GetConverter(typeof(int));
+                for (int i = 0; i < numArray.Length; i++)
+                {
+                    numArray[i] = (int)converter.ConvertFromString(context, culture, strArray[i]);
+                }
+                if (numArray.Length == 2)
+                {
+                    return new TypeConverterSize(numArray[0], numArray[1]);
+                }
+
+                throw new ArgumentException("Bad format.");
+            }
+
+            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
+            {
+                if (destinationType == null)
+                {
+                    throw new ArgumentNullException("destinationType");
+                }
+                if (value is TypeConverterSize)
+                {
+                    if (destinationType == typeof(string))
+                    {
+                        TypeConverterSize size = (TypeConverterSize)value;
+                        if (culture == null)
+                        {
+                            culture = CultureInfo.CurrentCulture;
+                        }
+                        TypeConverter converter = TypeDescriptor.GetConverter(typeof(int));
+                        string[] strArray = new string[2];
+                        int num = 0;
+                        strArray[num++] = converter.ConvertToString(context, culture, size.Width);
+                        strArray[num++] = converter.ConvertToString(context, culture, size.Height);
+                        return string.Join(", ", strArray);
+                    }
+                }
+                return base.ConvertTo(context, culture, value, destinationType);
+            }
+        }
+#endif
+
         [Test]
         public void DeserializeCustomReferenceResolver()
         {
