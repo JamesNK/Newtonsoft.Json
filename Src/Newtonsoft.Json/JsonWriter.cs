@@ -127,6 +127,14 @@ namespace Newtonsoft.Json
         public bool CloseOutput { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the JSON should be auto-completed when this writer is closed.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> to auto-complete the JSON when this writer is closed; otherwise <c>false</c>. The default is <c>true</c>.
+        /// </value>
+        public bool AutoCompleteOnClose { get; set; }
+
+        /// <summary>
         /// Gets the top.
         /// </summary>
         /// <value>The top.</value>
@@ -339,6 +347,7 @@ namespace Newtonsoft.Json
             _dateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
 
             CloseOutput = true;
+            AutoCompleteOnClose = true;
         }
 
         internal void UpdateScopeWithFinishedValue()
@@ -393,11 +402,15 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Closes this writer.
-        /// If <see cref="JsonWriter.CloseOutput"/> is set to <c>true</c>, the destination is also closed.
+        /// If <see cref="CloseOutput"/> is set to <c>true</c>, the destination is also closed.
+        /// If <see cref="AutoCompleteOnClose"/> is set to <c>true</c>, the JSON is auto-completed.
         /// </summary>
         public virtual void Close()
         {
-            AutoCompleteAll();
+            if (AutoCompleteOnClose)
+            {
+                AutoCompleteAll();
+            }
         }
 
         /// <summary>

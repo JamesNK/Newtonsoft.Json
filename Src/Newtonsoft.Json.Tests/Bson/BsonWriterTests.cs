@@ -882,6 +882,63 @@ namespace Newtonsoft.Json.Tests.Bson
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
             Assert.IsNull(reader.ReadAsBytes());
         }
+
+        [Test]
+        public void WriteEndOnProperty()
+        {
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("Blah");
+            writer.WriteEnd();
+
+            Assert.AreEqual("0B-00-00-00-0A-42-6C-61-68-00-00", (BitConverter.ToString(ms.ToArray())));
+        }
+
+        [Test]
+        public void WriteEndOnProperty_Close()
+        {
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("Blah");
+            writer.Close();
+
+            Assert.AreEqual("0B-00-00-00-0A-42-6C-61-68-00-00", (BitConverter.ToString(ms.ToArray())));
+        }
+
+        [Test]
+        public void WriteEndOnProperty_Dispose()
+        {
+            MemoryStream ms = new MemoryStream();
+            using (BsonWriter writer = new BsonWriter(ms))
+            {
+                writer.WriteStartObject();
+                writer.WritePropertyName("Blah");
+            }
+
+            Assert.AreEqual("0B-00-00-00-0A-42-6C-61-68-00-00", (BitConverter.ToString(ms.ToArray())));
+        }
+
+        [Test]
+        public void AutoCompleteOnClose_False()
+        {
+            MemoryStream ms = new MemoryStream();
+            using (BsonWriter writer = new BsonWriter(ms))
+            {
+                writer.AutoCompleteOnClose = false;
+
+                writer.WriteStartObject();
+                writer.WritePropertyName("Blah");
+
+                writer.Flush();
+            }
+
+            // nothing is written because a BSON document needs to be completed before it can be written
+            Assert.AreEqual(string.Empty, (BitConverter.ToString(ms.ToArray())));
+        }
 #endif
     }
 }

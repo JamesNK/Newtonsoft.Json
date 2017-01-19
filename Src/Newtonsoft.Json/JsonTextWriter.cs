@@ -178,6 +178,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Closes this writer.
         /// If <see cref="JsonWriter.CloseOutput"/> is set to <c>true</c>, the underlying <see cref="TextWriter"/> is also closed.
+        /// If <see cref="JsonWriter.AutoCompleteOnClose"/> is set to <c>true</c>, the JSON is auto-completed.
         /// </summary>
         public override void Close()
         {

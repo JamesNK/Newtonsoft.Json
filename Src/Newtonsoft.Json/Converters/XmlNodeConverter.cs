@@ -1652,8 +1652,6 @@ namespace Newtonsoft.Json.Converters
 
             if (!string.IsNullOrEmpty(DeserializeRootElementName))
             {
-                //rootNode = document.CreateElement(DeserializeRootElementName);
-                //document.AppendChild(rootNode);
                 ReadElement(reader, document, rootNode, DeserializeRootElementName, manager);
             }
             else

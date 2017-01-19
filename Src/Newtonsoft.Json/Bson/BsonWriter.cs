@@ -172,6 +172,7 @@ namespace Newtonsoft.Json.Bson
         /// <summary>
         /// Closes this writer.
         /// If <see cref="JsonWriter.CloseOutput"/> is set to <c>true</c>, the underlying <see cref="Stream"/> is also closed.
+        /// If <see cref="JsonWriter.AutoCompleteOnClose"/> is set to <c>true</c>, the JSON is auto-completed.
         /// </summary>
         public override void Close()
         {
