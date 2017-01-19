@@ -36,9 +36,9 @@ namespace Newtonsoft.Json.Serialization
     /// The default serialization binder used when resolving and loading classes from type names.
     /// </summary>
     public class DefaultSerializationBinder :
-#pragma warning disable CS0618 // Type or member is obsolete
+#pragma warning disable 618
         SerializationBinder,
-#pragma warning restore CS0618 // Type or member is obsolete
+#pragma warning restore 618
         ISerializationBinder
     {
         internal static readonly DefaultSerializationBinder Instance = new DefaultSerializationBinder();

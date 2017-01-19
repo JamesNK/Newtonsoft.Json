@@ -87,6 +87,40 @@ namespace Newtonsoft.Json.Tests
         public const string JsonText =
             @"{""strings"":[null,""Markus egger ]><[, (2nd)"",null],""dictionary"":{""Val & asd1"":1,""Val2 & asd1"":3,""Val3 & asd1"":4},""Name"":""Rick"",""Now"":""\/Date(1262301136080+1300)\/"",""BigNumber"":34123123123.121,""Address1"":{""Street"":""fff Street"",""Phone"":""(503) 814-6335"",""Entered"":""\/Date(1264025536080+1300)\/""},""Addresses"":[{""Street"":""\u001farray<address"",""Phone"":""(503) 814-6335"",""Entered"":""\/Date(1262211136080+1300)\/""},{""Street"":""array 2 address"",""Phone"":""(503) 814-6335"",""Entered"":""\/Date(1262124736080+1300)\/""}]}";
 
+        public const string JsonIndentedText =
+            @"{
+  ""strings"": [
+    null,
+    ""Markus egger ]><[, (2nd)"",
+    null
+  ],
+  ""dictionary"": {
+    ""Val & asd1"": 1,
+    ""Val2 & asd1"": 3,
+    ""Val3 & asd1"": 4
+  },
+  ""Name"": ""Rick"",
+  ""Now"": ""/Date(1262301136080+1300)/"",
+  ""BigNumber"": 34123123123.121,
+  ""Address1"": {
+    ""Street"": ""fff Street"",
+    ""Phone"": ""(503) 814-6335"",
+    ""Entered"": ""/Date(1264025536080+1300)/""
+  },
+  ""Addresses"": [
+    {
+      ""Street"": ""\u001farray<address"",
+      ""Phone"": ""(503) 814-6335"",
+      ""Entered"": ""/Date(1262211136080+1300)/""
+    },
+    {
+      ""Street"": ""array 2 address"",
+      ""Phone"": ""(503) 814-6335"",
+      ""Entered"": ""/Date(1262124736080+1300)/""
+    }
+  ]
+}";
+
         private const string JsonIsoText =
             @"{""strings"":[null,""Markus egger ]><[, (2nd)"",null],""dictionary"":{""Val & asd1"":1,""Val2 & asd1"":3,""Val3 & asd1"":4},""Name"":""Rick"",""Now"":""2012-02-25T19:55:50.6095676+13:00"",""BigNumber"":34123123123.121,""Address1"":{""Street"":""fff Street"",""Phone"":""(503) 814-6335"",""Entered"":""2012-02-24T18:55:50.6095676+13:00""},""Addresses"":[{""Street"":""\u001farray<address"",""Phone"":""(503) 814-6335"",""Entered"":""2012-02-24T18:55:50.6095676+13:00""},{""Street"":""array 2 address"",""Phone"":""(503) 814-6335"",""Entered"":""2012-02-24T18:55:50.6095676+13:00""}]}";
 
@@ -286,6 +320,12 @@ namespace Newtonsoft.Json.Tests
         public async Task DeserializeAsync()
         {
             await BenchmarkDeserializeMethodAsync<TestClass>(SerializeMethod.JsonNetManualAsync, JsonText);
+        }
+
+        [Test]
+        public async Task DeserializeIndentedAsync()
+        {
+            await BenchmarkDeserializeMethodAsync<TestClass>(SerializeMethod.JsonNetManualAsync, JsonIndentedText);
         }
 
         public void DeserializeTests<T>(string json)
