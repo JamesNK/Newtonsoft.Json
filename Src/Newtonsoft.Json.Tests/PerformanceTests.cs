@@ -274,7 +274,7 @@ namespace Newtonsoft.Json.Tests
         {
             var json = System.IO.File.ReadAllText("large.json");
 
-            BenchmarkDeserializeMethod<IList<RootObject>>(SerializeMethod.JsonNet, json, Iterations / 10, false);
+            BenchmarkDeserializeMethod<IList<RootObject>>(SerializeMethod.JsonNet, json, Math.Min(Iterations, 10), false);
         }
 
         [Test]

@@ -379,19 +379,12 @@ namespace Newtonsoft.Json.Serialization
 
         internal static bool TryConvertToString(object value, Type type, out string s)
         {
-#if HAVE_COMPONENT_MODEL
-            TypeConverter converter = ConvertUtils.GetConverter(type);
-
-            // use the objectType's TypeConverter if it has one and can convert to a string
-            if (converter != null
-                && !(converter is ComponentConverter)
-                && converter.GetType() != typeof(TypeConverter))
+#if HAVE_TYPE_DESCRIPTOR
+            TypeConverter converter;
+            if (JsonTypeReflector.CanTypeDescriptorConvertString(type, out converter))
             {
-                if (converter.CanConvertTo(typeof(string)))
-                {
-                    s = converter.ConvertToInvariantString(value);
-                    return true;
-                }
+                s = converter.ConvertToInvariantString(value);
+                return true;
             }
 #endif
 

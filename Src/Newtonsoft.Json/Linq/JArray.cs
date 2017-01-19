@@ -176,9 +176,9 @@ namespace Newtonsoft.Json.Linq
             {
                 JArray a = Load(reader, settings);
 
-                if (reader.Read() && reader.TokenType != JsonToken.Comment)
+                while (reader.Read())
                 {
-                    throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
+                    // Any content encountered here other than a comment will throw in the reader.
                 }
 
                 return a;

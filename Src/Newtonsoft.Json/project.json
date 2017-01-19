@@ -172,6 +172,7 @@
           "HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE",
           "HAVE_TIME_ZONE_INFO",
           "HAVE_TPL",
+          "HAVE_TYPE_DESCRIPTOR",
           "HAVE_UNICODE_SURROGATE_DETECTION",
           "HAVE_VARIANT_TYPE_PARAMETERS",
           "HAVE_VERSION_TRY_PARSE",
@@ -181,6 +182,7 @@
       "dependencies": {
         "Microsoft.CSharp": "4.0.1",
         "System.Collections": "4.0.11",
+        "System.ComponentModel.TypeConverter": "4.1.0",
         "System.Diagnostics.Debug": "4.0.11",
         "System.Dynamic.Runtime": "4.0.11",
         "System.Globalization": "4.0.11",
@@ -232,6 +234,7 @@
           "HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE",
           "HAVE_TIME_ZONE_INFO",
           "HAVE_TPL",
+          "HAVE_TYPE_DESCRIPTOR",
           "HAVE_UNICODE_SURROGATE_DETECTION",
           "HAVE_VARIANT_TYPE_PARAMETERS",
           "HAVE_VERSION_TRY_PARSE",
@@ -241,6 +244,7 @@
       "dependencies": {
         "Microsoft.CSharp": "4.0.1",
         "System.Collections": "4.0.11",
+        "System.ComponentModel.TypeConverter": "4.1.0",
         "System.Diagnostics.Debug": "4.0.11",
         "System.Dynamic.Runtime": "4.0.11",
         "System.Globalization": "4.0.11",

@@ -559,9 +559,9 @@ namespace Newtonsoft.Json.Utilities
             }
 #endif
 
-#if HAVE_COMPONENT_MODEL
+#if HAVE_TYPE_DESCRIPTOR
             // see if source or target types have a TypeConverter that converts between the two
-            TypeConverter toConverter = GetConverter(initialType);
+            TypeConverter toConverter = TypeDescriptor.GetConverter(initialType);
 
             if (toConverter != null && toConverter.CanConvertTo(targetType))
             {
@@ -569,7 +569,7 @@ namespace Newtonsoft.Json.Utilities
                 return ConvertResult.Success;
             }
 
-            TypeConverter fromConverter = GetConverter(targetType);
+            TypeConverter fromConverter = TypeDescriptor.GetConverter(targetType);
 
             if (fromConverter != null && fromConverter.CanConvertFrom(initialType))
             {
@@ -707,19 +707,12 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
-#if HAVE_COMPONENT_MODEL
-        internal static TypeConverter GetConverter(Type t)
-        {
-            return JsonTypeReflector.GetTypeConverter(t);
-        }
-#endif
-
         public static bool VersionTryParse(string input, out Version result)
         {
 #if HAVE_VERSION_TRY_PARSE
             return Version.TryParse(input, out result);
 #else
-    // improve failure performance with regex?
+            // improve failure performance with regex?
             try
             {
                 result = new Version(input);
