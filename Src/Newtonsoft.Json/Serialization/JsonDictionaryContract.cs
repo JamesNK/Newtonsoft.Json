@@ -42,17 +42,6 @@ namespace Newtonsoft.Json.Serialization
     public class JsonDictionaryContract : JsonContainerContract
     {
         /// <summary>
-        /// Gets or sets the property name resolver.
-        /// </summary>
-        /// <value>The property name resolver.</value>
-        [Obsolete("PropertyNameResolver is obsolete. Use DictionaryKeyResolver instead.")]
-        public Func<string, string> PropertyNameResolver
-        {
-            get { return DictionaryKeyResolver; }
-            set { DictionaryKeyResolver = value; }
-        }
-
-        /// <summary>
         /// Gets or sets the dictionary key resolver.
         /// </summary>
         /// <value>The dictionary key resolver.</value>

@@ -260,15 +260,7 @@ namespace Newtonsoft.Json.Schema
             }
 
             JsonContract contract = ContractResolver.ResolveContract(type);
-            JsonConverter converter;
-            if ((converter = contract.Converter) != null || (converter = contract.InternalConverter) != null)
-            {
-                JsonSchema converterSchema = converter.GetSchema();
-                if (converterSchema != null)
-                {
-                    return converterSchema;
-                }
-            }
+            JsonConverter converter = contract.Converter ?? contract.InternalConverter;
 
             Push(new TypeSchema(type, new JsonSchema()));
 
