@@ -279,6 +279,7 @@ namespace Newtonsoft.Json.Tests.Utilities
         {
             int value;
             Assert.IsFalse(ConvertUtils.TryHexTextToInt("-100".ToCharArray(), 0, 4, out value));
+            Assert.IsFalse(ConvertUtils.TryHexTextToInt("000g".ToCharArray(), 0, 4, out value));
             Assert.IsFalse(ConvertUtils.TryHexTextToInt(" ssd".ToCharArray(), 0, 4, out value));
             Assert.IsFalse(ConvertUtils.TryHexTextToInt("000:".ToCharArray(), 0, 4, out value));
             Assert.IsFalse(ConvertUtils.TryHexTextToInt("000G".ToCharArray(), 0, 4, out value));
