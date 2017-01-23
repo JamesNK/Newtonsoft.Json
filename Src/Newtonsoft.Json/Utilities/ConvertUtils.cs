@@ -1381,34 +1381,37 @@ namespace Newtonsoft.Json.Utilities
 #endif
         }
 
-        public static int HexTextToInt(char[] text, int start, int end)
+        public static bool TryHexTextToInt(char[] text, int start, int end, out int value)
         {
-            int value = 0;
+            value = 0;
+
             for (int i = start; i < end; i++)
             {
-                value += HexCharToInt(text[i]) << ((end - 1 - i) * 4);
-            }
-            return value;
-        }
+                char ch = text[i];
+                int chValue;
 
-        private static int HexCharToInt(char ch)
-        {
-            if (ch <= 57 && ch >= 48)
-            {
-                return ch - 48;
+                if (ch <= 57 && ch >= 48)
+                {
+                    chValue = ch - 48;
+                }
+                else if (ch <= 70 && ch >= 65)
+                {
+                    chValue = ch - 55;
+                }
+                else if (ch <= 102 && ch >= 97)
+                {
+                    chValue = ch - 87;
+                }
+                else
+                {
+                    value = 0;
+                    return false;
+                }
+
+                value += chValue << ((end - 1 - i) * 4);
             }
 
-            if (ch <= 70 && ch >= 65)
-            {
-                return ch - 55;
-            }
-
-            if (ch <= 102 && ch >= 97)
-            {
-                return ch - 87;
-            }
-
-            throw new FormatException("Invalid hex character: " + ch);
+            return true;
         }
     }
 }

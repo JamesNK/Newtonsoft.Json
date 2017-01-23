@@ -983,6 +983,19 @@ null//comment
 
             Assert.IsFalse(await r.ReadAsync());
         }
+
+        [Test]
+        public async Task InvalidUnicodeSequence()
+        {
+            string json1 = @"{'prop':'\u123!'}";
+
+            JsonTextReader r = new JsonTextReader(new StringReader(json1));
+
+            Assert.IsTrue(await r.ReadAsync());
+            Assert.IsTrue(await r.ReadAsync());
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => { await r.ReadAsync(); }, @"Invalid Unicode escape sequence: \u123!. Path 'prop', line 1, position 11.");
+        }
 #endif
     }
 }

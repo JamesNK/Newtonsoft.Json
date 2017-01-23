@@ -1029,5 +1029,18 @@ null//comment
             GC.WaitForPendingFinalizers();
             Assert.AreEqual(1, UnmanagedResourceFakingJsonReader.DisposalCalls);
         }
+
+        [Test]
+        public void InvalidUnicodeSequence()
+        {
+            string json1 = @"{'prop':'\u123!'}";
+
+            JsonTextReader r = new JsonTextReader(new StringReader(json1));
+
+            Assert.IsTrue(r.Read());
+            Assert.IsTrue(r.Read());
+
+            ExceptionAssert.Throws<JsonReaderException>(() => { r.Read(); }, @"Invalid Unicode escape sequence: \u123!. Path 'prop', line 1, position 11.");
+        }
     }
 }

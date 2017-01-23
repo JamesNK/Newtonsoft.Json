@@ -1261,13 +1261,21 @@ namespace Newtonsoft.Json
         {
             if (enoughChars)
             {
-                char hexChar = Convert.ToChar(ConvertUtils.HexTextToInt(_chars, _charPos, _charPos + 4));
-                _charPos += 4;
-                return hexChar;
+                int value;
+                if (ConvertUtils.TryHexTextToInt(_chars, _charPos, _charPos + 4, out value))
+                {
+                    char hexChar = Convert.ToChar(value);
+                    _charPos += 4;
+                    return hexChar;
+                }
+                else
+                {
+                    throw JsonReaderException.Create(this, @"Invalid Unicode escape sequence: \u{0}.".FormatWith(CultureInfo.InvariantCulture, new string(_chars, _charPos, 4)));
+                }
             }
             else
             {
-                throw JsonReaderException.Create(this, "Unexpected end while parsing Unicode character.");
+                throw JsonReaderException.Create(this, "Unexpected end while parsing Unicode escape sequence.");
             }
         }
 
