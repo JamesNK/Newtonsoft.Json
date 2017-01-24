@@ -269,25 +269,28 @@ namespace Newtonsoft.Json.Tests.Utilities
         [Test]
         public void HexParseOffset()
         {
-            int value = ConvertUtils.HexTextToInt("!0000".ToCharArray(), 1, 5);
+            int value;
+            Assert.IsTrue(ConvertUtils.TryHexTextToInt("!0000".ToCharArray(), 1, 5, out value));
             Assert.AreEqual(0, value);
         }
 
         [Test]
         public void HexParseError()
         {
-            ExceptionAssert.Throws<FormatException>(() => { ConvertUtils.HexTextToInt("-100".ToCharArray(), 0, 4); }, "Invalid hex character: -");
-            ExceptionAssert.Throws<FormatException>(() => { ConvertUtils.HexTextToInt("000g".ToCharArray(), 0, 4); }, "Invalid hex character: g");
-            ExceptionAssert.Throws<FormatException>(() => { ConvertUtils.HexTextToInt(" ssd".ToCharArray(), 0, 4); }, "Invalid hex character:  ");
-            ExceptionAssert.Throws<FormatException>(() => { ConvertUtils.HexTextToInt("000:".ToCharArray(), 0, 4); }, "Invalid hex character: :");
-            ExceptionAssert.Throws<FormatException>(() => { ConvertUtils.HexTextToInt("000G".ToCharArray(), 0, 4); }, "Invalid hex character: G");
+            int value;
+            Assert.IsFalse(ConvertUtils.TryHexTextToInt("-100".ToCharArray(), 0, 4, out value));
+            Assert.IsFalse(ConvertUtils.TryHexTextToInt("000g".ToCharArray(), 0, 4, out value));
+            Assert.IsFalse(ConvertUtils.TryHexTextToInt(" ssd".ToCharArray(), 0, 4, out value));
+            Assert.IsFalse(ConvertUtils.TryHexTextToInt("000:".ToCharArray(), 0, 4, out value));
+            Assert.IsFalse(ConvertUtils.TryHexTextToInt("000G".ToCharArray(), 0, 4, out value));
         }
 
         private void HexParseSame(string text)
         {
             int v1 = int.Parse(text, NumberStyles.HexNumber, CultureInfo.InvariantCulture);
 
-            int v2 = ConvertUtils.HexTextToInt(text.ToCharArray(), 0, 4);
+            int v2;
+            Assert.IsTrue(ConvertUtils.TryHexTextToInt(text.ToCharArray(), 0, 4, out v2));
 
             Assert.AreEqual(v1, v2, "Invalid result when parsing hex text: " + text);
         }

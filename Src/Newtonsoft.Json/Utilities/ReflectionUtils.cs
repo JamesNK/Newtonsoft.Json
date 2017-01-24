@@ -25,7 +25,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Reflection;
@@ -34,7 +34,7 @@ using System.Globalization;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters;
 using System.Text;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -87,10 +87,10 @@ namespace Newtonsoft.Json.Utilities
 
         static ReflectionUtils()
         {
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_EMPTY_TYPES
             EmptyTypes = Type.EmptyTypes;
 #else
-            EmptyTypes = new Type[0];
+            EmptyTypes = CollectionUtils.ArrayEmpty<Type>();
 #endif
         }
 
@@ -142,7 +142,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static Type GetObjectType(object v)
         {
-            return (v != null) ? v.GetType() : null;
+            return v?.GetType();
         }
 
         public static string GetTypeName(Type t, TypeNameAssemblyFormatHandling assemblyFormat, ISerializationBinder binder)
@@ -735,7 +735,7 @@ namespace Newtonsoft.Json.Utilities
         {
             T[] attributes = GetAttributes<T>(attributeProvider, inherit);
 
-            return (attributes != null) ? attributes.FirstOrDefault() : null;
+            return attributes?.FirstOrDefault();
         }
 
 #if !(DOTNET || PORTABLE)
@@ -866,8 +866,8 @@ namespace Newtonsoft.Json.Utilities
 
             if (assemblyDelimiterIndex != null)
             {
-                typeName = fullyQualifiedTypeName.Substring(0, assemblyDelimiterIndex.GetValueOrDefault()).Trim();
-                assemblyName = fullyQualifiedTypeName.Substring(assemblyDelimiterIndex.GetValueOrDefault() + 1, fullyQualifiedTypeName.Length - assemblyDelimiterIndex.GetValueOrDefault() - 1).Trim();
+                typeName = fullyQualifiedTypeName.Trim(0, assemblyDelimiterIndex.GetValueOrDefault());
+                assemblyName = fullyQualifiedTypeName.Trim(assemblyDelimiterIndex.GetValueOrDefault() + 1, fullyQualifiedTypeName.Length - assemblyDelimiterIndex.GetValueOrDefault() - 1);
             }
             else
             {
@@ -950,8 +950,8 @@ namespace Newtonsoft.Json.Utilities
                 while ((targetType = targetType.BaseType()) != null)
                 {
                     // filter out protected fields
-                    IEnumerable<MemberInfo> childPrivateFields =
-                        targetType.GetFields(nonPublicBindingAttr).Where(f => f.IsPrivate).Cast<MemberInfo>();
+                    IEnumerable<FieldInfo> childPrivateFields =
+                        targetType.GetFields(nonPublicBindingAttr).Where(f => f.IsPrivate);
 
                     initialFields.AddRange(childPrivateFields);
                 }
@@ -1106,13 +1106,13 @@ namespace Newtonsoft.Json.Utilities
                     return 0m;
                 case PrimitiveTypeCode.DateTime:
                     return new DateTime();
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                 case PrimitiveTypeCode.BigInteger:
                     return new BigInteger();
 #endif
                 case PrimitiveTypeCode.Guid:
                     return new Guid();
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                 case PrimitiveTypeCode.DateTimeOffset:
                     return new DateTimeOffset();
 #endif

@@ -2746,6 +2746,47 @@ namespace Newtonsoft.Json.Tests.Converters
 
 #if !NET20
         [Test]
+        public void Serialize_XDocument_NoRoot()
+        {
+            XDocument d = new XDocument();
+
+            string json = JsonConvert.SerializeXNode(d);
+
+            Assert.AreEqual(@"{}", json);
+        }
+
+        [Test]
+        public void Deserialize_XDocument_NoRoot()
+        {
+            XDocument d = JsonConvert.DeserializeXNode(@"{}");
+
+            Assert.AreEqual(null, d.Root);
+            Assert.AreEqual(null, d.Declaration);
+        }
+
+        [Test]
+        public void Serialize_XDocument_NoRootWithDeclaration()
+        {
+            XDocument d = new XDocument();
+            d.Declaration = new XDeclaration("Version!", "Encoding!", "Standalone!");
+
+            string json = JsonConvert.SerializeXNode(d);
+
+            Assert.AreEqual(@"{""?xml"":{""@version"":""Version!"",""@encoding"":""Encoding!"",""@standalone"":""Standalone!""}}", json);
+        }
+
+        [Test]
+        public void Deserialize_XDocument_NoRootWithDeclaration()
+        {
+            XDocument d = JsonConvert.DeserializeXNode(@"{""?xml"":{""@version"":""Version!"",""@encoding"":""Encoding!"",""@standalone"":""Standalone!""}}");
+
+            Assert.AreEqual(null, d.Root);
+            Assert.AreEqual("Version!", d.Declaration.Version);
+            Assert.AreEqual("Encoding!", d.Declaration.Encoding);
+            Assert.AreEqual("Standalone!", d.Declaration.Standalone);
+        }
+
+        [Test]
         public void DateTimeToXml_Unspecified()
         {
             string json = @"{""CreatedDate"": ""2014-01-23T00:00:00""}";
@@ -2871,6 +2912,47 @@ namespace Newtonsoft.Json.Tests.Converters
 
             var deserialized = JsonConvert.DeserializeObject<XDocument>(json);
             Assert.AreEqual(@"<MyElement xmlns=""http://example.com"" />", deserialized.ToString());
+        }
+
+        public class Model
+        {
+            public XElement Document { get; set; }
+        }
+
+        [Test]
+        public void DeserializeDateInElementText()
+        {
+            Model model = new Model();
+            model.Document = new XElement("Value", new XAttribute("foo", "bar"))
+            {
+                Value = "2001-01-01T11:11:11"
+            };
+
+            var serializer = JsonSerializer.Create(new JsonSerializerSettings
+            {
+                Converters = new List<JsonConverter>(new[] { new XmlNodeConverter() })
+            });
+
+            var json = new StringBuilder(1024);
+
+            using (var stringWriter = new StringWriter(json, CultureInfo.InvariantCulture))
+            using (var jsonWriter = new JsonTextWriter(stringWriter))
+            {
+                jsonWriter.Formatting = Formatting.None;
+                serializer.Serialize(jsonWriter, model);
+
+                Assert.AreEqual(@"{""Document"":{""Value"":{""@foo"":""bar"",""#text"":""2001-01-01T11:11:11""}}}", json.ToString());
+            }
+
+            using (var stringReader = new StringReader(json.ToString()))
+            using (var jsonReader = new JsonTextReader(stringReader))
+            {
+                var document = (XDocument)serializer.Deserialize(jsonReader, typeof(XDocument));
+
+                StringAssert.AreEqual(@"<Document>
+  <Value foo=""bar"">2001-01-01T11:11:11</Value>
+</Document>", document.ToString());
+            }
         }
 #endif
     }

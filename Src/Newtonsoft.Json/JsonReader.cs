@@ -27,12 +27,12 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Globalization;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -193,7 +193,7 @@ namespace Newtonsoft.Json
             set
             {
                 if (value < DateParseHandling.None ||
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                     value > DateParseHandling.DateTimeOffset
 #else
                     value > DateParseHandling.DateTime
@@ -271,7 +271,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual Type ValueType
         {
-            get { return (_value != null) ? _value.GetType() : null; }
+            get { return _value?.GetType(); }
         }
 
         /// <summary>
@@ -510,29 +510,23 @@ namespace Newtonsoft.Json
         {
             JsonToken t = GetContentToken();
 
-            if (t == JsonToken.None)
-            {
-                return null;
-            }
-
-            if (TokenType == JsonToken.StartObject)
-            {
-                ReadIntoWrappedTypeObject();
-
-                byte[] data = ReadAsBytes();
-                ReaderReadAndAssert();
-
-                if (TokenType != JsonToken.EndObject)
-                {
-                    throw JsonReaderException.Create(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
-                }
-
-                SetToken(JsonToken.Bytes, data, false);
-                return data;
-            }
-
             switch (t)
             {
+                case JsonToken.StartObject:
+                {
+                    ReadIntoWrappedTypeObject();
+
+                    byte[] data = ReadAsBytes();
+                    ReaderReadAndAssert();
+
+                    if (TokenType != JsonToken.EndObject)
+                    {
+                        throw JsonReaderException.Create(this, "Error reading bytes. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
+                    }
+
+                    SetToken(JsonToken.Bytes, data, false);
+                    return data;
+                }
                 case JsonToken.String:
                 {
                     // attempt to convert possible base 64 or GUID string to bytes
@@ -544,7 +538,7 @@ namespace Newtonsoft.Json
                     Guid g;
                     if (s.Length == 0)
                     {
-                        data = new byte[0];
+                        data = CollectionUtils.ArrayEmpty<byte>();
                     }
                     else if (ConvertUtils.TryConvertGuid(s, out g))
                     {
@@ -558,6 +552,7 @@ namespace Newtonsoft.Json
                     SetToken(JsonToken.Bytes, data, false);
                     return data;
                 }
+                case JsonToken.None:
                 case JsonToken.Null:
                 case JsonToken.EndArray:
                     return null;
@@ -634,7 +629,7 @@ namespace Newtonsoft.Json
                     if (!(Value is double))
                     {
                         double d;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                         if (Value is BigInteger)
                         {
                             d = (double)(BigInteger)Value;
@@ -694,7 +689,7 @@ namespace Newtonsoft.Json
                 case JsonToken.Integer:
                 case JsonToken.Float:
                     bool b;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                     if (Value is BigInteger)
                     {
                         b = (BigInteger)Value != 0;
@@ -801,7 +796,7 @@ namespace Newtonsoft.Json
                 case JsonToken.EndArray:
                     return null;
                 case JsonToken.Date:
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                     if (Value is DateTimeOffset)
                     {
                         SetToken(JsonToken.Date, ((DateTimeOffset)Value).DateTime, false);
@@ -843,7 +838,7 @@ namespace Newtonsoft.Json
             throw JsonReaderException.Create(this, "Could not convert string to DateTime: {0}.".FormatWith(CultureInfo.InvariantCulture, s));
         }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         /// <summary>
         /// Reads the next JSON token from the source as a <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/>.
         /// </summary>

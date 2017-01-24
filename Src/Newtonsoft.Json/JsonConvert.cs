@@ -26,10 +26,10 @@
 using System;
 using System.IO;
 using System.Globalization;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
-#if !(NET20 || NET35 || PORTABLE40)
+#if HAVE_TPL
 using System.Threading.Tasks;
 #endif
 using Newtonsoft.Json.Linq;
@@ -38,7 +38,7 @@ using System.Xml;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Text;
-#if !(NET20 || PORTABLE40)
+#if HAVE_XLINQ
 using System.Xml.Linq;
 
 #endif
@@ -127,7 +127,7 @@ namespace Newtonsoft.Json
             }
         }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         /// <summary>
         /// Converts the <see cref="DateTimeOffset"/> to its JSON string representation.
         /// </summary>
@@ -238,7 +238,7 @@ namespace Newtonsoft.Json
             return value.ToString(null, CultureInfo.InvariantCulture);
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
         private static string ToStringInternal(BigInteger value)
         {
             return value.ToString(null, CultureInfo.InvariantCulture);
@@ -366,7 +366,7 @@ namespace Newtonsoft.Json
         {
             string text;
             string qc;
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_CHAR_TO_STRING_WITH_CULTURE
             text = value.ToString("D", CultureInfo.InvariantCulture);
             qc = quoteChar.ToString(CultureInfo.InvariantCulture);
 #else
@@ -496,11 +496,11 @@ namespace Newtonsoft.Json
                     return ToString((DateTime)value);
                 case PrimitiveTypeCode.Decimal:
                     return ToString((decimal)value);
-#if !(DOTNET || PORTABLE)
+#if HAVE_DB_NULL_TYPE_CODE
                 case PrimitiveTypeCode.DBNull:
                     return Null;
 #endif
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                 case PrimitiveTypeCode.DateTimeOffset:
                     return ToString((DateTimeOffset)value);
 #endif
@@ -510,7 +510,7 @@ namespace Newtonsoft.Json
                     return ToString((Uri)value);
                 case PrimitiveTypeCode.TimeSpan:
                     return ToString((TimeSpan)value);
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                 case PrimitiveTypeCode.BigInteger:
                     return ToStringInternal((BigInteger)value);
 #endif
@@ -661,7 +661,7 @@ namespace Newtonsoft.Json
             return sw.ToString();
         }
 
-#if !(NET20 || NET35 || PORTABLE40)
+#if HAVE_TPL
         /// <summary>
         /// Asynchronously serializes the specified object to a JSON string.
         /// Serialization will happen on a new thread.
@@ -864,7 +864,7 @@ namespace Newtonsoft.Json
             }
         }
 
-#if !(NET20 || NET35 || PORTABLE40)
+#if HAVE_TPL
         /// <summary>
         /// Asynchronously deserializes the JSON to the specified .NET type.
         /// Deserialization will happen on a new thread.
@@ -962,14 +962,20 @@ namespace Newtonsoft.Json
             {
                 jsonSerializer.Populate(jsonReader, target);
 
-                if (jsonReader.Read() && jsonReader.TokenType != JsonToken.Comment)
+                if (settings != null && settings.CheckAdditionalContent)
                 {
-                    throw new JsonSerializationException("Additional text found in JSON string after finishing deserializing object.");
+                    while (jsonReader.Read())
+                    {
+                        if (jsonReader.TokenType != JsonToken.Comment)
+                        {
+                            throw JsonSerializationException.Create(jsonReader, "Additional text found in JSON string after finishing deserializing object.");
+                        }
+                    }
                 }
             }
         }
 
-#if !(NET20 || NET35 || PORTABLE40)
+#if HAVE_TPL
         /// <summary>
         /// Asynchronously populates the object with values from the JSON string using <see cref="JsonSerializerSettings"/>.
         /// </summary>
@@ -991,7 +997,7 @@ namespace Newtonsoft.Json
         #endregion
 
         #region Xml
-#if !(PORTABLE40 || PORTABLE || DOTNET)
+#if HAVE_BINARY_SERIALIZATION
         /// <summary>
         /// Serializes the <see cref="XmlNode"/> to a JSON string.
         /// </summary>
@@ -1071,7 +1077,7 @@ namespace Newtonsoft.Json
         }
 #endif
 
-#if !NET20 && !PORTABLE40
+#if HAVE_XLINQ
         /// <summary>
         /// Serializes the <see cref="XNode"/> to a JSON string.
         /// </summary>

@@ -23,11 +23,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Utilities;
@@ -203,6 +202,43 @@ namespace Newtonsoft.Json
         public virtual Task<string> ReadAsStringAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             return cancellationToken.CancelIfRequestedAsync<string>() ?? Task.FromResult(ReadAsString());
+        }
+
+        internal async Task<bool> ReadAndMoveToContentAsync(CancellationToken cancellationToken)
+        {
+            return await ReadAsync(cancellationToken).ConfigureAwait(false) && await MoveToContentAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        internal Task<bool> MoveToContentAsync(CancellationToken cancellationToken)
+        {
+            switch (TokenType)
+            {
+                case JsonToken.None:
+                case JsonToken.Comment:
+                    return MoveToContentFromNonContentAsync(cancellationToken);
+                default:
+                    return AsyncUtils.True;
+            }
+        }
+
+        private async Task<bool> MoveToContentFromNonContentAsync(CancellationToken cancellationToken)
+        {
+            while (true)
+            {
+                if (!await ReadAsync(cancellationToken).ConfigureAwait(false))
+                {
+                    return false;
+                }
+
+                switch (TokenType)
+                {
+                    case JsonToken.None:
+                    case JsonToken.Comment:
+                        break;
+                    default:
+                        return true;
+                }
+            }
         }
     }
 }

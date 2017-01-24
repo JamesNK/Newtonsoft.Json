@@ -39,15 +39,11 @@ namespace Newtonsoft.Json.Utilities
     {
         public static bool ValueEquals(object objA, object objB)
         {
-            if (objA == null && objB == null)
+            if (objA == objB)
             {
                 return true;
             }
-            if (objA != null && objB == null)
-            {
-                return false;
-            }
-            if (objA == null && objB != null)
+            if (objA == null || objB == null)
             {
                 return false;
             }

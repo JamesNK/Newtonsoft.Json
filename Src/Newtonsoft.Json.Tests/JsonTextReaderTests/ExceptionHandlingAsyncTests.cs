@@ -76,7 +76,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
         {
             JsonReader reader = new JsonTextReader(new StringReader(@"'h\u123"));
 
-            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => { await reader.ReadAsync(); }, "Unexpected end while parsing Unicode character. Path '', line 1, position 4.");
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => { await reader.ReadAsync(); }, "Unexpected end while parsing Unicode escape sequence. Path '', line 1, position 4.");
         }
 
         [Test]

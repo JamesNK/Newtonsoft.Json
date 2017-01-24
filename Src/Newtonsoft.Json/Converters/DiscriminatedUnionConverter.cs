@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20)
+#if HAVE_FSHARP_TYPES
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -248,7 +248,7 @@ namespace Newtonsoft.Json.Converters
             // all fsharp objects have CompilationMappingAttribute
             // get the fsharp assembly from the attribute and initialize latebound methods
             object[] attributes;
-#if !(DOTNET || PORTABLE)
+#if HAVE_FULL_REFLECTION
             attributes = objectType.GetCustomAttributes(true);
 #else
             attributes = objectType.GetTypeInfo().GetCustomAttributes(true).ToArray();

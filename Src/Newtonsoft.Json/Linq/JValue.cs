@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -25,15 +25,15 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
-
 #endif
 
 namespace Newtonsoft.Json.Linq
@@ -41,8 +41,8 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents a value in JSON (string, integer, date, etc).
     /// </summary>
-    public class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
-#if !PORTABLE
+    public partial class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
+#if HAVE_ICONVERTIBLE
         , IConvertible
 #endif
     {
@@ -128,7 +128,7 @@ namespace Newtonsoft.Json.Linq
         {
         }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         /// <summary>
         /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
         /// </summary>
@@ -219,7 +219,7 @@ namespace Newtonsoft.Json.Linq
             get { return false; }
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
         private static int CompareBigInteger(BigInteger i1, object i2)
         {
             int result = i1.CompareTo(ConvertUtils.ToBigInteger(i2));
@@ -248,15 +248,15 @@ namespace Newtonsoft.Json.Linq
 
         internal static int Compare(JTokenType valueType, object objA, object objB)
         {
-            if (objA == null && objB == null)
+            if (objA == objB)
             {
                 return 0;
             }
-            if (objA != null && objB == null)
+            if (objB == null)
             {
                 return 1;
             }
-            if (objA == null && objB != null)
+            if (objA == null)
             {
                 return -1;
             }
@@ -264,7 +264,7 @@ namespace Newtonsoft.Json.Linq
             switch (valueType)
             {
                 case JTokenType.Integer:
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                     if (objA is BigInteger)
                     {
                         return CompareBigInteger((BigInteger)objA, objB);
@@ -287,7 +287,7 @@ namespace Newtonsoft.Json.Linq
                         return Convert.ToInt64(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToInt64(objB, CultureInfo.InvariantCulture));
                     }
                 case JTokenType.Float:
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                     if (objA is BigInteger)
                     {
                         return CompareBigInteger((BigInteger)objA, objB);
@@ -311,14 +311,14 @@ namespace Newtonsoft.Json.Linq
 
                     return b1.CompareTo(b2);
                 case JTokenType.Date:
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                     if (objA is DateTime)
                     {
 #endif
                         DateTime date1 = (DateTime)objA;
                         DateTime date2;
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                         if (objB is DateTimeOffset)
                         {
                             date2 = ((DateTimeOffset)objB).DateTime;
@@ -330,7 +330,7 @@ namespace Newtonsoft.Json.Linq
                         }
 
                         return date1.CompareTo(date2);
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                     }
                     else
                     {
@@ -350,21 +350,14 @@ namespace Newtonsoft.Json.Linq
                     }
 #endif
                 case JTokenType.Bytes:
-                    if (!(objB is byte[]))
+                    byte[] bytes2 = objB as byte[];
+                    if (bytes2 == null)
                     {
                         throw new ArgumentException("Object must be of type byte[].");
                     }
 
                     byte[] bytes1 = objA as byte[];
-                    byte[] bytes2 = objB as byte[];
-                    if (bytes1 == null)
-                    {
-                        return -1;
-                    }
-                    if (bytes2 == null)
-                    {
-                        return 1;
-                    }
+                    Debug.Assert(bytes1 != null);
 
                     return MiscellaneousUtils.ByteArrayCompare(bytes1, bytes2);
                 case JTokenType.Guid:
@@ -378,13 +371,13 @@ namespace Newtonsoft.Json.Linq
 
                     return guid1.CompareTo(guid2);
                 case JTokenType.Uri:
-                    if (!(objB is Uri))
+                    Uri uri2 = objB as Uri;
+                    if (uri2 == null)
                     {
                         throw new ArgumentException("Object must be of type Uri.");
                     }
 
                     Uri uri1 = (Uri)objA;
-                    Uri uri2 = (Uri)objB;
 
                     return Comparer<string>.Default.Compare(uri1.ToString(), uri2.ToString());
                 case JTokenType.TimeSpan:
@@ -398,7 +391,7 @@ namespace Newtonsoft.Json.Linq
 
                     return ts1.CompareTo(ts2);
                 default:
-                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException("valueType", valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, valueType));
+                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException(nameof(valueType), valueType, "Unexpected value type: {0}".FormatWith(CultureInfo.InvariantCulture, valueType));
             }
         }
 
@@ -416,19 +409,19 @@ namespace Newtonsoft.Json.Linq
             return d1.CompareTo(d2);
         }
 
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_EXPRESSIONS
         private static bool Operation(ExpressionType operation, object objA, object objB, out object result)
         {
             if (objA is string || objB is string)
             {
                 if (operation == ExpressionType.Add || operation == ExpressionType.AddAssign)
                 {
-                    result = ((objA != null) ? objA.ToString() : null) + ((objB != null) ? objB.ToString() : null);
+                    result = objA?.ToString() + objB?.ToString();
                     return true;
                 }
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (objA is BigInteger || objB is BigInteger)
             {
                 if (objA == null || objB == null)
@@ -613,7 +606,7 @@ namespace Newtonsoft.Json.Linq
             {
                 return JTokenType.Null;
             }
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_ADO_NET
             else if (value == DBNull.Value)
             {
                 return JTokenType.Null;
@@ -632,7 +625,7 @@ namespace Newtonsoft.Json.Linq
             {
                 return JTokenType.Integer;
             }
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             else if (value is BigInteger)
             {
                 return JTokenType.Integer;
@@ -646,7 +639,7 @@ namespace Newtonsoft.Json.Linq
             {
                 return JTokenType.Date;
             }
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
             else if (value is DateTimeOffset)
             {
                 return JTokenType.Date;
@@ -712,8 +705,8 @@ namespace Newtonsoft.Json.Linq
             get { return _value; }
             set
             {
-                Type currentType = (_value != null) ? _value.GetType() : null;
-                Type newType = (value != null) ? value.GetType() : null;
+                Type currentType = _value?.GetType();
+                Type newType = value?.GetType();
 
                 if (currentType != newType)
                 {
@@ -744,10 +737,10 @@ namespace Newtonsoft.Json.Linq
             switch (_valueType)
             {
                 case JTokenType.Comment:
-                    writer.WriteComment((_value != null) ? _value.ToString() : null);
+                    writer.WriteComment(_value?.ToString());
                     return;
                 case JTokenType.Raw:
-                    writer.WriteRawValue((_value != null) ? _value.ToString() : null);
+                    writer.WriteRawValue(_value?.ToString());
                     return;
                 case JTokenType.Null:
                     writer.WriteNull();
@@ -768,7 +761,7 @@ namespace Newtonsoft.Json.Linq
                     {
                         writer.WriteValue((ulong)_value);
                     }
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                     else if (_value is BigInteger)
                     {
                         writer.WriteValue((BigInteger)_value);
@@ -798,13 +791,13 @@ namespace Newtonsoft.Json.Linq
                     }
                     return;
                 case JTokenType.String:
-                    writer.WriteValue((_value != null) ? _value.ToString() : null);
+                    writer.WriteValue(_value?.ToString());
                     return;
                 case JTokenType.Boolean:
                     writer.WriteValue(Convert.ToBoolean(_value, CultureInfo.InvariantCulture));
                     return;
                 case JTokenType.Date:
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                     if (_value is DateTimeOffset)
                     {
                         writer.WriteValue((DateTimeOffset)_value);
@@ -829,7 +822,7 @@ namespace Newtonsoft.Json.Linq
                     return;
             }
 
-            throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", _valueType, "Unexpected token type.");
+            throw MiscellaneousUtils.CreateArgumentOutOfRangeException(nameof(Type), _valueType, "Unexpected token type.");
         }
 
         internal override int GetDeepHashCode()
@@ -871,18 +864,7 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj == null)
-            {
-                return false;
-            }
-
-            JValue otherValue = obj as JValue;
-            if (otherValue != null)
-            {
-                return Equals(otherValue);
-            }
-
-            return base.Equals(obj);
+            return Equals(obj as JValue);
         }
 
         /// <summary>
@@ -967,7 +949,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
         /// <summary>
         /// Returns the <see cref="DynamicMetaObject"/> responsible for binding operations performed on this object.
         /// </summary>
@@ -977,7 +959,7 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         protected override DynamicMetaObject GetMetaObject(Expression parameter)
         {
-            return new DynamicProxyMetaObject<JValue>(parameter, this, new JValueDynamicProxy(), true);
+            return new DynamicProxyMetaObject<JValue>(parameter, this, new JValueDynamicProxy());
         }
 
         private class JValueDynamicProxy : DynamicProxy<JValue>
@@ -1090,7 +1072,7 @@ namespace Newtonsoft.Json.Linq
             return Compare(_valueType, _value, obj._value);
         }
 
-#if !PORTABLE
+#if HAVE_ICONVERTIBLE
         TypeCode IConvertible.GetTypeCode()
         {
             if (_value == null)

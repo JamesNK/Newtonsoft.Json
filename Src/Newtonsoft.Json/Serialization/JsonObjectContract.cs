@@ -59,15 +59,6 @@ namespace Newtonsoft.Json.Serialization
         public JsonPropertyCollection Properties { get; private set; }
 
         /// <summary>
-        /// Gets the constructor parameters required for any non-default constructor.
-        /// </summary>
-        [Obsolete("ConstructorParameters is obsolete. Use CreatorParameters instead.")]
-        public JsonPropertyCollection ConstructorParameters
-        {
-            get { return CreatorParameters; }
-        }
-
-        /// <summary>
         /// Gets a collection of <see cref="JsonProperty"/> instances that define the parameters used with <see cref="JsonObjectContract.OverrideCreator"/>.
         /// </summary>
         public JsonPropertyCollection CreatorParameters
@@ -84,38 +75,6 @@ namespace Newtonsoft.Json.Serialization
         }
 
         /// <summary>
-        /// Gets or sets the override constructor used to create the object.
-        /// This is set when a constructor is marked up using
-        /// <see cref="JsonConstructorAttribute"/>.
-        /// </summary>
-        /// <value>The override constructor.</value>
-        [Obsolete("OverrideConstructor is obsolete. Use OverrideCreator instead.")]
-        public ConstructorInfo OverrideConstructor
-        {
-            get { return _overrideConstructor; }
-            set
-            {
-                _overrideConstructor = value;
-                _overrideCreator = (value != null) ? JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(value) : null;
-            }
-        }
-
-        /// <summary>
-        /// Gets or sets the parametrized constructor used to create the object.
-        /// </summary>
-        /// <value>The parametrized constructor.</value>
-        [Obsolete("ParametrizedConstructor is obsolete. Use OverrideCreator instead.")]
-        public ConstructorInfo ParametrizedConstructor
-        {
-            get { return _parametrizedConstructor; }
-            set
-            {
-                _parametrizedConstructor = value;
-                _parameterizedCreator = (value != null) ? JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(value) : null;
-            }
-        }
-
-        /// <summary>
         /// Gets or sets the function used to create the object. When set this function will override <see cref="JsonContract.DefaultCreator"/>.
         /// This function is called with a collection of arguments which are defined by the <see cref="JsonObjectContract.CreatorParameters"/> collection.
         /// </summary>
@@ -123,16 +82,13 @@ namespace Newtonsoft.Json.Serialization
         public ObjectConstructor<object> OverrideCreator
         {
             get { return _overrideCreator; }
-            set
-            {
-                _overrideCreator = value;
-                _overrideConstructor = null;
-            }
+            set { _overrideCreator = value; }
         }
 
         internal ObjectConstructor<object> ParameterizedCreator
         {
             get { return _parameterizedCreator; }
+            set { _parameterizedCreator = value; }
         }
 
         /// <summary>
@@ -166,8 +122,6 @@ namespace Newtonsoft.Json.Serialization
 
         internal bool ExtensionDataIsJToken;
         private bool? _hasRequiredOrDefaultValueProperties;
-        private ConstructorInfo _parametrizedConstructor;
-        private ConstructorInfo _overrideConstructor;
         private ObjectConstructor<object> _overrideCreator;
         private ObjectConstructor<object> _parameterizedCreator;
         private JsonPropertyCollection _creatorParameters;
@@ -214,8 +168,8 @@ namespace Newtonsoft.Json.Serialization
             Properties = new JsonPropertyCollection(UnderlyingType);
         }
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
-#if !(NET20 || NET35)
+#if HAVE_BINARY_SERIALIZATION
+#if HAVE_SECURITY_SAFE_CRITICAL_ATTRIBUTE
         [SecuritySafeCritical]
 #endif
         internal object GetUninitializedObject()

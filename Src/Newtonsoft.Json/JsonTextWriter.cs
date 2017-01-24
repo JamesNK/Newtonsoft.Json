@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Text;
@@ -162,7 +162,7 @@ namespace Newtonsoft.Json
 
             UpdateCharEscapeFlags();
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
             _safeAsync = GetType() == typeof(JsonTextWriter);
 #endif
         }
@@ -178,6 +178,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Closes this writer.
         /// If <see cref="JsonWriter.CloseOutput"/> is set to <c>true</c>, the underlying <see cref="TextWriter"/> is also closed.
+        /// If <see cref="JsonWriter.AutoCompleteOnClose"/> is set to <c>true</c>, the JSON is auto-completed.
         /// </summary>
         public override void Close()
         {
@@ -196,7 +197,7 @@ namespace Newtonsoft.Json
 
             if (CloseOutput)
             {
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_STREAM_READER_WRITER_CLOSE
                 _writer?.Close();
 #else
                 _writer?.Dispose();
@@ -388,7 +389,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The <see cref="Object"/> value to write.</param>
         public override void WriteValue(object value)
         {
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (value is BigInteger)
             {
                 InternalWriteValue(JsonToken.Integer);
@@ -676,7 +677,7 @@ namespace Newtonsoft.Json
             }
         }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         /// <summary>
         /// Writes a <see cref="DateTimeOffset"/> value.
         /// </summary>
@@ -721,7 +722,7 @@ namespace Newtonsoft.Json
 
             string text = null;
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_CHAR_TO_STRING_WITH_CULTURE
             text = value.ToString("D", CultureInfo.InvariantCulture);
 #else
             text = value.ToString("D");
@@ -741,7 +742,7 @@ namespace Newtonsoft.Json
             InternalWriteValue(JsonToken.String);
 
             string text;
-#if (NET35 || NET20)
+#if !HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE
             text = value.ToString();
 #else
             text = value.ToString(null, CultureInfo.InvariantCulture);

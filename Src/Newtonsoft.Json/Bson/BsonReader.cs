@@ -232,7 +232,7 @@ namespace Newtonsoft.Json.Bson
 
             if (CloseInput)
             {
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_STREAM_READER_WRITER_CLOSE
                 _reader?.Close();
 #else
                 _reader?.Dispose();

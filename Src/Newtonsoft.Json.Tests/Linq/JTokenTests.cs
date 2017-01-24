@@ -1264,5 +1264,30 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(2, (int)o["prop"][1]);
             Assert.AreEqual(3, (int)o["prop"][2]);
         }
+
+        [Test]
+        public void Parse_ExcessiveContentJustComments()
+        {
+            string json = @"{'prop':[1,2,3]}/*comment*/
+//Another comment.";
+
+            JToken o = JToken.Parse(json);
+
+            Assert.AreEqual(3, o["prop"].Count());
+            Assert.AreEqual(1, (int)o["prop"][0]);
+            Assert.AreEqual(2, (int)o["prop"][1]);
+            Assert.AreEqual(3, (int)o["prop"][2]);
+        }
+
+        [Test]
+        public void Parse_ExcessiveContent()
+        {
+            string json = @"{'prop':[1,2,3]}/*comment*/
+//Another comment.
+{}";
+
+            ExceptionAssert.Throws<JsonReaderException>(() => JToken.Parse(json),
+                "Additional text encountered after finished reading JSON content: {. Path '', line 3, position 0.");
+        }
     }
 }

@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Globalization;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -169,7 +169,7 @@ namespace Newtonsoft.Json.Utilities
                 }
 
                 char c;
-#if !(DOTNET || PORTABLE)
+#if HAVE_CHAR_TO_STRING_WITH_CULTURE
                 c = char.ToLower(chars[i], CultureInfo.InvariantCulture);
 #else
                 c = char.ToLowerInvariant(chars[i]);
@@ -229,7 +229,7 @@ namespace Newtonsoft.Json.Utilities
                     }
 
                     char c;
-#if !(DOTNET || PORTABLE)
+#if HAVE_CHAR_TO_LOWER_WITH_CULTURE
                     c = char.ToLower(s[i], CultureInfo.InvariantCulture);
 #else
                     c = char.ToLowerInvariant(s[i]);
@@ -260,7 +260,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsHighSurrogate(char c)
         {
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_UNICODE_SURROGATE_DETECTION
             return char.IsHighSurrogate(c);
 #else
             return (c >= 55296 && c <= 56319);
@@ -269,7 +269,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsLowSurrogate(char c)
         {
-#if !(PORTABLE40 || PORTABLE)
+#if HAVE_UNICODE_SURROGATE_DETECTION
             return char.IsLowSurrogate(c);
 #else
             return (c >= 56320 && c <= 57343);
@@ -284,6 +284,44 @@ namespace Newtonsoft.Json.Utilities
         public static bool EndsWith(this string source, char value)
         {
             return (source.Length > 0 && source[source.Length - 1] == value);
+        }
+
+        public static string Trim(this string s, int start, int length)
+        {
+            // References: https://referencesource.microsoft.com/#mscorlib/system/string.cs,2691
+            // https://referencesource.microsoft.com/#mscorlib/system/string.cs,1226
+            if (s == null)
+            {
+                throw new ArgumentNullException();
+            }
+            if (start < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(start));
+            }
+            if (length < 0)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length));
+            }
+            int end = start + length - 1;
+            if (end >= s.Length)
+            {
+                throw new ArgumentOutOfRangeException(nameof(length));
+            }
+            for (; start < end; start++)
+            {
+                if (!char.IsWhiteSpace(s[start]))
+                {
+                    break;
+                }
+            }
+            for (; end >= start; end--)
+            {
+                if (!char.IsWhiteSpace(s[end]))
+                {
+                    break;
+                }
+            }
+            return s.Substring(start, end - start + 1);
         }
     }
 }

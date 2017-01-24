@@ -24,6 +24,7 @@
 #endregion
 
 #if !(NET20 || NET35)
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -87,40 +88,45 @@ namespace Newtonsoft.Json.Utilities
         {
             ParameterInfo[] parametersInfo = method.GetParameters();
 
-            Expression[] argsExpression = new Expression[parametersInfo.Length];
-            IList<ByRefParameter> refParameterMap = new List<ByRefParameter>();
-
-            for (int i = 0; i < parametersInfo.Length; i++)
+            Expression[] argsExpression;
+            IList<ByRefParameter> refParameterMap;
+            if (parametersInfo.Length == 0)
             {
-                ParameterInfo parameter = parametersInfo[i];
-                Type parameterType = parameter.ParameterType;
-                bool isByRef = false;
-                if (parameterType.IsByRef)
+                argsExpression = CollectionUtils.ArrayEmpty<Expression>();
+                refParameterMap = CollectionUtils.ArrayEmpty<ByRefParameter>();
+            }
+            else
+            {
+                argsExpression = new Expression[parametersInfo.Length];
+                refParameterMap = new List<ByRefParameter>();
+
+                for (int i = 0; i < parametersInfo.Length; i++)
                 {
-                    parameterType = parameterType.GetElementType();
-                    isByRef = true;
-                }
-
-                Expression indexExpression = Expression.Constant(i);
-
-                Expression paramAccessorExpression = Expression.ArrayIndex(argsParameterExpression, indexExpression);
-
-                Expression argExpression = EnsureCastExpression(paramAccessorExpression, parameterType, !isByRef);
-
-                if (isByRef)
-                {
-                    ParameterExpression variable = Expression.Variable(parameterType);
-                    refParameterMap.Add(new ByRefParameter
+                    ParameterInfo parameter = parametersInfo[i];
+                    Type parameterType = parameter.ParameterType;
+                    bool isByRef = false;
+                    if (parameterType.IsByRef)
                     {
-                        Value = argExpression,
-                        Variable = variable,
-                        IsOut = parameter.IsOut
-                    });
+                        parameterType = parameterType.GetElementType();
+                        isByRef = true;
+                    }
 
-                    argExpression = variable;
+                    Expression indexExpression = Expression.Constant(i);
+
+                    Expression paramAccessorExpression = Expression.ArrayIndex(argsParameterExpression, indexExpression);
+
+                    Expression argExpression = EnsureCastExpression(paramAccessorExpression, parameterType, !isByRef);
+
+                    if (isByRef)
+                    {
+                        ParameterExpression variable = Expression.Variable(parameterType);
+                        refParameterMap.Add(new ByRefParameter {Value = argExpression, Variable = variable, IsOut = parameter.IsOut});
+
+                        argExpression = variable;
+                    }
+
+                    argsExpression[i] = argExpression;
                 }
-
-                argsExpression[i] = argExpression;
             }
 
             Expression callExpression;

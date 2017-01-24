@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
 
 using System;
 using System.Globalization;
 using System.Threading;
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Threading.Tasks;
@@ -40,7 +40,7 @@ namespace Newtonsoft.Json
     {
         // It's not safe to perform the async methods here in a derived class as if the synchronous equivalent
         // has been overriden then the asychronous method will no longer be doing the same operation.
-#if !(NET20 || NET35 || NET40 || PORTABLE40) // Double-check this isn't included inappropriately.
+#if HAVE_ASYNC // Double-check this isn't included inappropriately.
         private readonly bool _safeAsync;
 #endif
 
@@ -186,7 +186,7 @@ namespace Newtonsoft.Json
         private Task WriteValueInternalAsync(JsonToken token, string value, CancellationToken cancellationToken)
         {
             Task task = InternalWriteValueAsync(token, cancellationToken);
-            if (task.IsCompleted)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
                 return _writer.WriteAsync(value, cancellationToken);
             }
@@ -266,7 +266,7 @@ namespace Newtonsoft.Json
         private Task WriteIntegerValueAsync(ulong uvalue, bool negative, CancellationToken cancellationToken)
         {
             Task task = InternalWriteValueAsync(JsonToken.Integer, cancellationToken);
-            if (task.IsCompleted)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
                 return WriteDigitsAsync(uvalue, negative, cancellationToken);
             }
@@ -314,9 +314,26 @@ namespace Newtonsoft.Json
             return _safeAsync ? DoWritePropertyNameAsync(name, cancellationToken) : base.WritePropertyNameAsync(name, cancellationToken);
         }
 
-        internal async Task DoWritePropertyNameAsync(string name, CancellationToken cancellationToken)
+        internal Task DoWritePropertyNameAsync(string name, CancellationToken cancellationToken)
         {
-            await InternalWritePropertyNameAsync(name, cancellationToken).ConfigureAwait(false);
+            Task task = InternalWritePropertyNameAsync(name, cancellationToken);
+            if (task.Status != TaskStatus.RanToCompletion)
+            {
+                return DoWritePropertyNameAsync(task, name, cancellationToken);
+            }
+
+            task = WriteEscapedStringAsync(name, _quoteName, cancellationToken);
+            if (task.Status == TaskStatus.RanToCompletion)
+            {
+                return _writer.WriteAsync(':', cancellationToken);
+            }
+
+            return JavaScriptUtils.WriteCharAsync(task, _writer, ':', cancellationToken);
+        }
+
+        private async Task DoWritePropertyNameAsync(Task task, string name, CancellationToken cancellationToken)
+        {
+            await task.ConfigureAwait(false);
 
             await WriteEscapedStringAsync(name, _quoteName, cancellationToken).ConfigureAwait(false);
 
@@ -378,7 +395,7 @@ namespace Newtonsoft.Json
         internal Task DoWriteStartArrayAsync(CancellationToken cancellationToken)
         {
             Task task = InternalWriteStartAsync(JsonToken.StartArray, JsonContainerType.Array, cancellationToken);
-            if (task.IsCompleted)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
                 return _writer.WriteAsync('[', cancellationToken);
             }
@@ -408,7 +425,7 @@ namespace Newtonsoft.Json
         internal Task DoWriteStartObjectAsync(CancellationToken cancellationToken)
         {
             Task task = InternalWriteStartAsync(JsonToken.StartObject, JsonContainerType.Object, cancellationToken);
-            if (task.IsCompleted)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
                 return _writer.WriteAsync('{', cancellationToken);
             }
@@ -436,7 +453,7 @@ namespace Newtonsoft.Json
             return _safeAsync ? DoWriteStartConstructorAsync(name, cancellationToken) : base.WriteStartConstructorAsync(name, cancellationToken);
         }
 
-        private async Task DoWriteStartConstructorAsync(string name, CancellationToken cancellationToken)
+        internal async Task DoWriteStartConstructorAsync(string name, CancellationToken cancellationToken)
         {
             await InternalWriteStartAsync(JsonToken.StartConstructor, JsonContainerType.Constructor, cancellationToken).ConfigureAwait(false);
 
@@ -460,7 +477,7 @@ namespace Newtonsoft.Json
         internal Task DoWriteUndefinedAsync(CancellationToken cancellationToken)
         {
             Task task = InternalWriteValueAsync(JsonToken.Undefined, cancellationToken);
-            if (task.IsCompleted)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
                 return _writer.WriteAsync(JsonConvert.Undefined, cancellationToken);
             }
@@ -833,7 +850,7 @@ namespace Newtonsoft.Json
             await InternalWriteValueAsync(JsonToken.String, cancellationToken).ConfigureAwait(false);
 
             await _writer.WriteAsync(_quoteChar).ConfigureAwait(false);
-#if !(DOTNET || PORTABLE)
+#if HAVE_CHAR_TO_STRING_WITH_CULTURE
             await _writer.WriteAsync(value.ToString("D", CultureInfo.InvariantCulture), cancellationToken).ConfigureAwait(false);
 #else
             await _writer.WriteAsync(value.ToString("D"), cancellationToken).ConfigureAwait(false);
@@ -921,7 +938,7 @@ namespace Newtonsoft.Json
             return value == null ? DoWriteNullAsync(cancellationToken) : WriteIntegerValueAsync(value.GetValueOrDefault(), cancellationToken);
         }
 
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
         internal Task WriteValueAsync(BigInteger value, CancellationToken cancellationToken)
         {
             return WriteValueInternalAsync(JsonToken.Integer, value.ToString(CultureInfo.InvariantCulture), cancellationToken);
@@ -944,7 +961,7 @@ namespace Newtonsoft.Json
                 {
                     return WriteNullAsync(cancellationToken);
                 }
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                 if (value is BigInteger)
                 {
                     return WriteValueAsync((BigInteger)value, cancellationToken);
@@ -1037,7 +1054,7 @@ namespace Newtonsoft.Json
         internal Task DoWriteValueAsync(string value, CancellationToken cancellationToken)
         {
             Task task = InternalWriteValueAsync(JsonToken.String, cancellationToken);
-            if (task.IsCompleted)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
                 return value == null ? _writer.WriteAsync(JsonConvert.Null, cancellationToken) : WriteEscapedStringAsync(value, true, cancellationToken);
             }
@@ -1172,7 +1189,7 @@ namespace Newtonsoft.Json
         internal Task WriteValueNotNullAsync(Uri value, CancellationToken cancellationToken)
         {
             Task task = InternalWriteValueAsync(JsonToken.String, cancellationToken);
-            if (task.IsCompleted)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
                 return WriteEscapedStringAsync(value.OriginalString, true, cancellationToken);
             }
@@ -1293,7 +1310,7 @@ namespace Newtonsoft.Json
         {
             UpdateScopeWithFinishedValue();
             Task task = AutoCompleteAsync(JsonToken.Undefined, cancellationToken);
-            if (task.IsCompleted)
+            if (task.Status == TaskStatus.RanToCompletion)
             {
                 return WriteRawAsync(json, cancellationToken);
             }
