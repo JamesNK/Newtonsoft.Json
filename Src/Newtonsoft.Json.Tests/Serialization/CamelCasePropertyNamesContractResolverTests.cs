@@ -45,6 +45,18 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class CamelCasePropertyNamesContractResolverTests : TestFixtureBase
     {
         [Test]
+        public void EnsureContractsShared()
+        {
+            CamelCasePropertyNamesContractResolver resolver1 = new CamelCasePropertyNamesContractResolver();
+            var contract1 = resolver1.ResolveContract(typeof(CamelCasePropertyNamesContractResolverTests));
+
+            CamelCasePropertyNamesContractResolver resolver2 = new CamelCasePropertyNamesContractResolver();
+            var contract2 = resolver1.ResolveContract(typeof(CamelCasePropertyNamesContractResolverTests));
+
+            Assert.IsTrue(ReferenceEquals(contract1, contract2));
+        }
+
+        [Test]
         public void JsonConvertSerializerSettings()
         {
             Person person = new Person();

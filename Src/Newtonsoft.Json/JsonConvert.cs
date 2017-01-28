@@ -29,9 +29,6 @@ using System.Globalization;
 #if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
-#if HAVE_TPL
-using System.Threading.Tasks;
-#endif
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using System.Xml;
@@ -660,54 +657,6 @@ namespace Newtonsoft.Json
 
             return sw.ToString();
         }
-
-#if HAVE_TPL
-        /// <summary>
-        /// Asynchronously serializes the specified object to a JSON string.
-        /// Serialization will happen on a new thread.
-        /// </summary>
-        /// <param name="value">The object to serialize.</param>
-        /// <returns>
-        /// A task that represents the asynchronous serialization operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
-        /// </returns>
-        [ObsoleteAttribute("SerializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to serialize JSON asynchronously: Task.Factory.StartNew(() => JsonConvert.SerializeObject(value))")]
-        public static Task<string> SerializeObjectAsync(object value)
-        {
-            return SerializeObjectAsync(value, Formatting.None, null);
-        }
-
-        /// <summary>
-        /// Asynchronously serializes the specified object to a JSON string using formatting.
-        /// Serialization will happen on a new thread.
-        /// </summary>
-        /// <param name="value">The object to serialize.</param>
-        /// <param name="formatting">Indicates how the output should be formatted.</param>
-        /// <returns>
-        /// A task that represents the asynchronous serialization operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
-        /// </returns>
-        [ObsoleteAttribute("SerializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to serialize JSON asynchronously: Task.Factory.StartNew(() => JsonConvert.SerializeObject(value, formatting))")]
-        public static Task<string> SerializeObjectAsync(object value, Formatting formatting)
-        {
-            return SerializeObjectAsync(value, formatting, null);
-        }
-
-        /// <summary>
-        /// Asynchronously serializes the specified object to a JSON string using formatting and a collection of <see cref="JsonConverter"/>.
-        /// Serialization will happen on a new thread.
-        /// </summary>
-        /// <param name="value">The object to serialize.</param>
-        /// <param name="formatting">Indicates how the output should be formatted.</param>
-        /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
-        /// If this is <c>null</c>, default serialization settings will be used.</param>
-        /// <returns>
-        /// A task that represents the asynchronous serialization operation. The value of the <c>TResult</c> parameter contains a JSON string representation of the object.
-        /// </returns>
-        [ObsoleteAttribute("SerializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to serialize JSON asynchronously: Task.Factory.StartNew(() => JsonConvert.SerializeObject(value, formatting, settings))")]
-        public static Task<string> SerializeObjectAsync(object value, Formatting formatting, JsonSerializerSettings settings)
-        {
-            return Task.Factory.StartNew(() => SerializeObject(value, formatting, settings));
-        }
-#endif
         #endregion
 
         #region Deserialize
@@ -863,75 +812,6 @@ namespace Newtonsoft.Json
                 return jsonSerializer.Deserialize(reader, type);
             }
         }
-
-#if HAVE_TPL
-        /// <summary>
-        /// Asynchronously deserializes the JSON to the specified .NET type.
-        /// Deserialization will happen on a new thread.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
-        /// <param name="value">The JSON to deserialize.</param>
-        /// <returns>
-        /// A task that represents the asynchronous deserialization operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
-        /// </returns>
-        [ObsoleteAttribute("DeserializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to deserialize JSON asynchronously: Task.Factory.StartNew(() => JsonConvert.DeserializeObject<T>(value))")]
-        public static Task<T> DeserializeObjectAsync<T>(string value)
-        {
-            return DeserializeObjectAsync<T>(value, null);
-        }
-
-        /// <summary>
-        /// Asynchronously deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
-        /// Deserialization will happen on a new thread.
-        /// </summary>
-        /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
-        /// <param name="value">The JSON to deserialize.</param>
-        /// <param name="settings">
-        /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
-        /// If this is <c>null</c>, default serialization settings will be used.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous deserialization operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
-        /// </returns>
-        [ObsoleteAttribute("DeserializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to deserialize JSON asynchronously: Task.Factory.StartNew(() => JsonConvert.DeserializeObject<T>(value, settings))")]
-        public static Task<T> DeserializeObjectAsync<T>(string value, JsonSerializerSettings settings)
-        {
-            return Task.Factory.StartNew(() => DeserializeObject<T>(value, settings));
-        }
-
-        /// <summary>
-        /// Asynchronously deserializes the JSON to the specified .NET type.
-        /// Deserialization will happen on a new thread.
-        /// </summary>
-        /// <param name="value">The JSON to deserialize.</param>
-        /// <returns>
-        /// A task that represents the asynchronous deserialization operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
-        /// </returns>
-        [ObsoleteAttribute("DeserializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to deserialize JSON asynchronously: Task.Factory.StartNew(() => JsonConvert.DeserializeObject(value))")]
-        public static Task<object> DeserializeObjectAsync(string value)
-        {
-            return DeserializeObjectAsync(value, null, null);
-        }
-
-        /// <summary>
-        /// Asynchronously deserializes the JSON to the specified .NET type using <see cref="JsonSerializerSettings"/>.
-        /// Deserialization will happen on a new thread.
-        /// </summary>
-        /// <param name="value">The JSON to deserialize.</param>
-        /// <param name="type">The type of the object to deserialize to.</param>
-        /// <param name="settings">
-        /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
-        /// If this is <c>null</c>, default serialization settings will be used.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous deserialization operation. The value of the <c>TResult</c> parameter contains the deserialized object from the JSON string.
-        /// </returns>
-        [ObsoleteAttribute("DeserializeObjectAsync is obsolete. Use the Task.Factory.StartNew method to deserialize JSON asynchronously: Task.Factory.StartNew(() => JsonConvert.DeserializeObject(value, type, settings))")]
-        public static Task<object> DeserializeObjectAsync(string value, Type type, JsonSerializerSettings settings)
-        {
-            return Task.Factory.StartNew(() => DeserializeObject(value, type, settings));
-        }
-#endif
         #endregion
 
         #region Populate
@@ -974,26 +854,6 @@ namespace Newtonsoft.Json
                 }
             }
         }
-
-#if HAVE_TPL
-        /// <summary>
-        /// Asynchronously populates the object with values from the JSON string using <see cref="JsonSerializerSettings"/>.
-        /// </summary>
-        /// <param name="value">The JSON to populate values from.</param>
-        /// <param name="target">The target object to populate values onto.</param>
-        /// <param name="settings">
-        /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
-        /// If this is <c>null</c>, default serialization settings will be used.
-        /// </param>
-        /// <returns>
-        /// A task that represents the asynchronous population operation.
-        /// </returns>
-        [ObsoleteAttribute("PopulateObjectAsync is obsolete. Use the Task.Factory.StartNew method to populate an object with JSON values asynchronously: Task.Factory.StartNew(() => JsonConvert.PopulateObject(value, target, settings))")]
-        public static Task PopulateObjectAsync(string value, object target, JsonSerializerSettings settings)
-        {
-            return Task.Factory.StartNew(() => PopulateObject(value, target, settings));
-        }
-#endif
         #endregion
 
         #region Xml

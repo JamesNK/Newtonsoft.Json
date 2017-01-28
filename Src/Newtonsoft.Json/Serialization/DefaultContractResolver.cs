@@ -53,57 +53,12 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Serialization
 {
-    internal struct ResolverContractKey : IEquatable<ResolverContractKey>
-    {
-        private readonly Type _resolverType;
-        private readonly Type _contractType;
-
-        public ResolverContractKey(Type resolverType, Type contractType)
-        {
-            _resolverType = resolverType;
-            _contractType = contractType;
-        }
-
-        public override int GetHashCode()
-        {
-            return _resolverType.GetHashCode() ^ _contractType.GetHashCode();
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is ResolverContractKey))
-            {
-                return false;
-            }
-
-            return Equals((ResolverContractKey)obj);
-        }
-
-        public bool Equals(ResolverContractKey other)
-        {
-            return (_resolverType == other._resolverType && _contractType == other._contractType);
-        }
-    }
-
-    internal class DefaultContractResolverState
-    {
-        public Dictionary<ResolverContractKey, JsonContract> ContractCache;
-        public PropertyNameTable NameTable = new PropertyNameTable();
-    }
-
     /// <summary>
     /// Used by <see cref="JsonSerializer"/> to resolve a <see cref="JsonContract"/> for a given <see cref="System.Type"/>.
     /// </summary>
     public class DefaultContractResolver : IContractResolver
     {
-#pragma warning disable 612,618
-        private static readonly IContractResolver _instance = new DefaultContractResolver(true);
-#pragma warning restore 612,618
-
-        internal static IContractResolver Instance
-        {
-            get { return _instance; }
-        }
+        internal static readonly IContractResolver Instance = new DefaultContractResolver();
 
         private static readonly JsonConverter[] BuiltInConverters =
         {
@@ -129,11 +84,10 @@ namespace Newtonsoft.Json.Serialization
             new RegexConverter()
         };
 
-        private static readonly object TypeContractCacheLock = new object();
+        private readonly object _typeContractCacheLock = new object();
+        internal readonly PropertyNameTable NameTable = new PropertyNameTable();
 
-        private static readonly DefaultContractResolverState _sharedState = new DefaultContractResolverState();
-        private readonly DefaultContractResolverState _instanceState = new DefaultContractResolverState();
-        private readonly bool _sharedCache;
+        private Dictionary<Type, JsonContract> _contractCache;
 
         /// <summary>
         /// Gets a value indicating whether members are being get and set using dynamic code generation.
@@ -152,7 +106,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the default members search flags.
         /// </summary>
         /// <value>The default members search flags.</value>
-        [ObsoleteAttribute("DefaultMembersSearchFlags is obsolete. To modify the members serialized inherit from DefaultContractResolver and override the GetSerializableMembers method instead.")]
+        [Obsolete("DefaultMembersSearchFlags is obsolete. To modify the members serialized inherit from DefaultContractResolver and override the GetSerializableMembers method instead.")]
         public BindingFlags DefaultMembersSearchFlags { get; set; }
 #else
         private BindingFlags DefaultMembersSearchFlags;
@@ -205,34 +159,6 @@ namespace Newtonsoft.Json.Serialization
         }
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DefaultContractResolver"/> class.
-        /// </summary>
-        /// <param name="shareCache">
-        /// If set to <c>true</c> the <see cref="DefaultContractResolver"/> will use a cached shared with other resolvers of the same type.
-        /// Sharing the cache will significantly improve performance with multiple resolver instances because expensive reflection will only
-        /// happen once. This setting can cause unexpected behavior if different instances of the resolver are suppose to produce different
-        /// results. When set to <c>false</c> it is highly recommended to reuse <see cref="DefaultContractResolver"/> instances with the <see cref="JsonSerializer"/>.
-        /// </param>
-        [ObsoleteAttribute("DefaultContractResolver(bool) is obsolete. Use the parameterless constructor and cache instances of the contract resolver within your application for optimal performance.")]
-        public DefaultContractResolver(bool shareCache)
-            : this()
-        {
-            _sharedCache = shareCache;
-        }
-
-        internal DefaultContractResolverState GetState()
-        {
-            if (_sharedCache)
-            {
-                return _sharedState;
-            }
-            else
-            {
-                return _instanceState;
-            }
-        }
-
-        /// <summary>
         /// Resolves the contract for a given type.
         /// </summary>
         /// <param name="type">The type to resolve a contract for.</param>
@@ -244,25 +170,22 @@ namespace Newtonsoft.Json.Serialization
                 throw new ArgumentNullException(nameof(type));
             }
 
-            DefaultContractResolverState state = GetState();
-
             JsonContract contract;
-            ResolverContractKey key = new ResolverContractKey(GetType(), type);
-            Dictionary<ResolverContractKey, JsonContract> cache = state.ContractCache;
-            if (cache == null || !cache.TryGetValue(key, out contract))
+            Dictionary<Type, JsonContract> cache = _contractCache;
+            if (cache == null || !cache.TryGetValue(type, out contract))
             {
                 contract = CreateContract(type);
 
                 // avoid the possibility of modifying the cache dictionary while another thread is accessing it
-                lock (TypeContractCacheLock)
+                lock (_typeContractCacheLock)
                 {
-                    cache = state.ContractCache;
-                    Dictionary<ResolverContractKey, JsonContract> updatedCache = (cache != null)
-                        ? new Dictionary<ResolverContractKey, JsonContract>(cache)
-                        : new Dictionary<ResolverContractKey, JsonContract>();
-                    updatedCache[key] = contract;
+                    cache = _contractCache;
+                    Dictionary<Type, JsonContract> updatedCache = (cache != null)
+                        ? new Dictionary<Type, JsonContract>(cache)
+                        : new Dictionary<Type, JsonContract>();
+                    updatedCache[type] = contract;
 
-                    state.ContractCache = updatedCache;
+                    _contractCache = updatedCache;
                 }
             }
 
@@ -1324,12 +1247,10 @@ namespace Newtonsoft.Json.Serialization
 
                 if (property != null)
                 {
-                    DefaultContractResolverState state = GetState();
-
                     // nametable is not thread-safe for multiple writers
-                    lock (state.NameTable)
+                    lock (NameTable)
                     {
-                        property.PropertyName = state.NameTable.Add(property.PropertyName);
+                        property.PropertyName = NameTable.Add(property.PropertyName);
                     }
 
                     properties.AddProperty(property);
