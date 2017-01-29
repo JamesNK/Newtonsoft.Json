@@ -85,7 +85,7 @@ namespace Newtonsoft.Json.Serialization
         };
 
         private readonly object _typeContractCacheLock = new object();
-        internal readonly PropertyNameTable NameTable = new PropertyNameTable();
+        private readonly PropertyNameTable _nameTable = new PropertyNameTable();
 
         private Dictionary<Type, JsonContract> _contractCache;
 
@@ -1239,6 +1239,8 @@ namespace Newtonsoft.Json.Serialization
                 throw new JsonSerializationException("Null collection of serializable members returned.");
             }
 
+            PropertyNameTable nameTable = GetNameTable();
+
             JsonPropertyCollection properties = new JsonPropertyCollection(type);
 
             foreach (MemberInfo member in members)
@@ -1248,9 +1250,9 @@ namespace Newtonsoft.Json.Serialization
                 if (property != null)
                 {
                     // nametable is not thread-safe for multiple writers
-                    lock (NameTable)
+                    lock (nameTable)
                     {
-                        property.PropertyName = NameTable.Add(property.PropertyName);
+                        property.PropertyName = nameTable.Add(property.PropertyName);
                     }
 
                     properties.AddProperty(property);
@@ -1259,6 +1261,11 @@ namespace Newtonsoft.Json.Serialization
 
             IList<JsonProperty> orderedProperties = properties.OrderBy(p => p.Order ?? -1).ToList();
             return orderedProperties;
+        }
+
+        internal virtual PropertyNameTable GetNameTable()
+        {
+            return _nameTable;
         }
 
         /// <summary>

@@ -951,7 +951,7 @@ namespace Newtonsoft.Json
                 DefaultContractResolver resolver = _contractResolver as DefaultContractResolver;
                 if (resolver != null)
                 {
-                    textReader.NameTable = resolver.NameTable;
+                    textReader.NameTable = resolver.GetNameTable();
                 }
             }
         }
