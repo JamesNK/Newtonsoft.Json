@@ -43,7 +43,6 @@ using Newtonsoft.Json.Tests.Serialization;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
-
 #endif
 
 namespace Newtonsoft.Json.Tests.Utilities
@@ -101,7 +100,7 @@ namespace Newtonsoft.Json.Tests.Utilities
                 Person p = new Person();
                 p.Name = "Hi";
 
-                Func<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateGet<object>(typeof(Movie).GetProperty("Name"));
+                var setter = DynamicReflectionDelegateFactory.Instance.CreateGet<object>(typeof(Movie).GetProperty("Name"));
 
                 setter(p);
             }, "Unable to cast object of type 'Newtonsoft.Json.Tests.TestObjects.Organization.Person' to type 'Newtonsoft.Json.Tests.TestObjects.Movie'.");
@@ -115,7 +114,7 @@ namespace Newtonsoft.Json.Tests.Utilities
                 Person p = new Person();
                 Movie m = new Movie();
 
-                Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
+                var setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
 
                 setter(m, "Hi");
 
@@ -134,7 +133,7 @@ namespace Newtonsoft.Json.Tests.Utilities
             {
                 object structTest = new StructTest();
 
-                Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(StructTest).GetProperty("StringProperty"));
+                var setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(StructTest).GetProperty("StringProperty"));
 
                 setter(structTest, "Hi");
 
@@ -151,7 +150,7 @@ namespace Newtonsoft.Json.Tests.Utilities
             {
                 Movie m = new Movie();
 
-                Action<object, object> setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
+                var setter = DynamicReflectionDelegateFactory.Instance.CreateSet<object>(typeof(Movie).GetProperty("Name"));
 
                 setter(m, new Version("1.1.1.1"));
             }, "Unable to cast object of type 'System.Version' to type 'System.String'.");
@@ -194,11 +193,11 @@ namespace Newtonsoft.Json.Tests.Utilities
         [Test]
         public void ConstructorStruct()
         {
-            Func<object> creator1 = DynamicReflectionDelegateFactory.Instance.CreateDefaultConstructor<object>(typeof(MyStruct));
+            var creator1 = DynamicReflectionDelegateFactory.Instance.CreateDefaultConstructor<object>(typeof(MyStruct));
             MyStruct myStruct1 = (MyStruct)creator1.Invoke();
             Assert.AreEqual(0, myStruct1.IntProperty);
 
-            Func<MyStruct> creator2 = DynamicReflectionDelegateFactory.Instance.CreateDefaultConstructor<MyStruct>(typeof(MyStruct));
+            var creator2 = DynamicReflectionDelegateFactory.Instance.CreateDefaultConstructor<MyStruct>(typeof(MyStruct));
             MyStruct myStruct2 = creator2.Invoke();
             Assert.AreEqual(0, myStruct2.IntProperty);
         }

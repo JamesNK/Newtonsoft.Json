@@ -1026,7 +1026,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
 #if !DNXCORE50
         [Test]
-        [Ignore]
+        [Ignore("Probably not a Json.NET issue")]
         public async Task ReadFromNetworkStreamAsync()
         {
             const int port = 11999;
