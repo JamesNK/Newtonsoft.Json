@@ -226,7 +226,7 @@ namespace Newtonsoft.Json
         /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
         /// </summary>
         /// <value>The reference resolver.</value>
-        [ObsoleteAttribute("ReferenceResolver property is obsolete. Use the ReferenceResolverProvider property to set the IReferenceResolver: settings.ReferenceResolverProvider = () => resolver")]
+        [Obsolete("ReferenceResolver property is obsolete. Use the ReferenceResolverProvider property to set the IReferenceResolver: settings.ReferenceResolverProvider = () => resolver")]
         public IReferenceResolver ReferenceResolver
         {
             get

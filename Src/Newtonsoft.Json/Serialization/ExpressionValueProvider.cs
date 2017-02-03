@@ -24,9 +24,10 @@
 #endregion
 
 #if !(NET20 || NET35)
+
 using System;
 using System.Collections.Generic;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
 using System.Text;

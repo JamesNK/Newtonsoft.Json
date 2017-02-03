@@ -138,7 +138,9 @@ namespace Newtonsoft.Json.Tests
         public static void Fail(string message = null, params object[] args)
         {
             if (message != null)
+            {
                 message = message.FormatWith(CultureInfo.InvariantCulture, args);
+            }
 
             XAssert.True(false, message);
         }
@@ -313,14 +315,16 @@ namespace Newtonsoft.Json.Tests
             Assert.Contains(value, collection, message);
 #else
             if (!collection.Cast<object>().Any(i => i.Equals(value)))
+            {
                 throw new Exception(message ?? "Value not found in collection.");
+            }
 #endif
         }
     }
 
     public static class StringAssert
     {
-        private readonly static Regex Regex = new Regex(@"\r\n|\n\r|\n|\r", RegexOptions.CultureInvariant);
+        private static readonly Regex Regex = new Regex(@"\r\n|\n\r|\n|\r", RegexOptions.CultureInvariant);
 
         public static void AreEqual(string expected, string actual)
         {

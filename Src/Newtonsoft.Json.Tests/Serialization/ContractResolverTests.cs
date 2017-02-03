@@ -55,9 +55,6 @@ namespace Newtonsoft.Json.Tests.Serialization
         private readonly char _startingWithChar;
 
         public DynamicContractResolver(char startingWithChar)
-#pragma warning disable 612,618
-            : base(false)
-#pragma warning restore 612,618
         {
             _startingWithChar = startingWithChar;
         }
@@ -442,15 +439,10 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.IsNull(contract.DefaultCreator);
             Assert.IsNotNull(contract.ParameterizedCreator);
-#pragma warning disable 618
-            Assert.AreEqual(contract.ParametrizedConstructor, typeof(PublicParameterizedConstructorWithPropertyNameConflictWithAttribute).GetConstructor(new[] { typeof(string) }));
-#pragma warning restore 618
             Assert.AreEqual(1, contract.CreatorParameters.Count);
             Assert.AreEqual("name", contract.CreatorParameters[0].PropertyName);
 
-#pragma warning disable 618
-            contract.ParametrizedConstructor = null;
-#pragma warning restore 618
+            contract.ParameterizedCreator = null;
             Assert.IsNull(contract.ParameterizedCreator);
         }
 
@@ -462,16 +454,11 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.IsNull(contract.DefaultCreator);
             Assert.IsNotNull(contract.OverrideCreator);
-#pragma warning disable 618
-            Assert.AreEqual(contract.OverrideConstructor, typeof(MultipleParametrizedConstructorsJsonConstructor).GetConstructor(new[] { typeof(string), typeof(int) }));
-#pragma warning restore 618
             Assert.AreEqual(2, contract.CreatorParameters.Count);
             Assert.AreEqual("Value", contract.CreatorParameters[0].PropertyName);
             Assert.AreEqual("Age", contract.CreatorParameters[1].PropertyName);
 
-#pragma warning disable 618
-            contract.OverrideConstructor = null;
-#pragma warning restore 618
+            contract.OverrideCreator = null;
             Assert.IsNull(contract.OverrideCreator);
         }
 
@@ -488,9 +475,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 ensureCustomCreatorCalled = true;
                 return new MultipleParametrizedConstructorsJsonConstructor((string)args[0], (int)args[1]);
             };
-#pragma warning disable 618
-            Assert.IsNull(contract.OverrideConstructor);
-#pragma warning restore 618
+            Assert.IsNotNull(contract.OverrideCreator);
 
             var o = JsonConvert.DeserializeObject<MultipleParametrizedConstructorsJsonConstructor>("{Value:'value!', Age:1}", new JsonSerializerSettings
             {

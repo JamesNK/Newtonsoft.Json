@@ -557,6 +557,31 @@ Parameter name: index");
         }
 
         [Test]
+        public void Parse_ExcessiveContentJustComments()
+        {
+            string json = @"[1,2,3]/*comment*/
+//Another comment.";
+
+            JArray a = JArray.Parse(json);
+
+            Assert.AreEqual(3, a.Count);
+            Assert.AreEqual(1, (int)a[0]);
+            Assert.AreEqual(2, (int)a[1]);
+            Assert.AreEqual(3, (int)a[2]);
+        }
+
+        [Test]
+        public void Parse_ExcessiveContent()
+        {
+            string json = @"[1,2,3]/*comment*/
+//Another comment.
+[]";
+
+            ExceptionAssert.Throws<JsonReaderException>(() => JArray.Parse(json),
+                "Additional text encountered after finished reading JSON content: [. Path '', line 3, position 0.");
+        }
+
+        [Test]
         public void Parse_LineInfo()
         {
             string json = "[1,2,3]";

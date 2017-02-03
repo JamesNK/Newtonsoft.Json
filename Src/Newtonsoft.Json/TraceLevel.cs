@@ -1,5 +1,5 @@
 ﻿
-#if (DOTNET || PORTABLE40 || PORTABLE)
+#if !HAVE_TRACE_WRITER
 using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json

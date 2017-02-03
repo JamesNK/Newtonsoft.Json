@@ -42,6 +42,8 @@
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <DefineConstants>NET20;HAVE_ADO_NET;HAVE_APP_DOMAIN;HAVE_BINARY_SERIALIZATION;HAVE_CAS;HAVE_CHAR_TO_LOWER_WITH_CULTURE;HAVE_CHAR_TO_STRING_WITH_CULTURE;HAVE_COM_ATTRIBUTES;HAVE_COMPONENT_MODEL;HAVE_DB_NULL_TYPE_CODE;HAVE_EMPTY_TYPES;HAVE_FULL_REFLECTION;HAVE_ICLONEABLE;HAVE_ICONVERTIBLE;HAVE_MEMORY_BARRIER;
+    HAVE_NON_SERIALIZED_ATTRIBUTE;HAVE_REFLECTION_EMIT;HAVE_STREAM_READER_WRITER_CLOSE;HAVE_TRACE_WRITER;HAVE_TYPE_DESCRIPTOR;HAVE_UNICODE_SURROGATE_DETECTION;HAVE_XML_DOCUMENT</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -49,7 +51,7 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug\Net20\</OutputPath>
     <IntermediateOutputPath>obj\Debug\Net20\</IntermediateOutputPath>
-    <DefineConstants>TRACE;DEBUG;NET20</DefineConstants>
+    <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;$(DefineConstants);$(AdditionalConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Debug\Net20\Newtonsoft.Json.xml</DocumentationFile>
@@ -63,7 +65,7 @@
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\Net20\</OutputPath>
     <IntermediateOutputPath>obj\Release\Net20\</IntermediateOutputPath>
-    <DefineConstants>TRACE;NET20</DefineConstants>
+    <DefineConstants>TRACE;CODE_ANALYSIS;$(DefineConstants);$(AdditionalConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <DocumentationFile>bin\Release\Net20\Newtonsoft.Json.xml</DocumentationFile>

@@ -29,11 +29,11 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Reflection;
 using System.Security;
-#if !(DOTNET || PORTABLE || PORTABLE40)
+#if HAVE_CAS
 using System.Security.Permissions;
 #endif
 using Newtonsoft.Json.Utilities;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -69,7 +69,30 @@ namespace Newtonsoft.Json.Serialization
             return CachedAttributeGetter<T>.GetAttribute(attributeProvider);
         }
 
-#if !NET20
+#if HAVE_TYPE_DESCRIPTOR
+        public static bool CanTypeDescriptorConvertString(Type type, out TypeConverter typeConverter)
+        {
+            typeConverter = TypeDescriptor.GetConverter(type);
+
+            // use the objectType's TypeConverter if it has one and can convert to a string
+            if (typeConverter != null)
+            {
+                Type converterType = typeConverter.GetType();
+
+                if (converterType.FullName != "System.ComponentModel.ComponentConverter"
+                    && converterType.FullName != "System.ComponentModel.ReferenceConverter"
+                    && converterType != typeof(TypeConverter))
+                {
+                    return typeConverter.CanConvertTo(typeof(string));
+                }
+
+            }
+
+            return false;
+        }
+#endif
+
+#if HAVE_DATA_CONTRACTS
         public static DataContractAttribute GetDataContractAttribute(Type type)
         {
             // DataContractAttribute does not have inheritance
@@ -133,7 +156,7 @@ namespace Newtonsoft.Json.Serialization
                 return objectAttribute.MemberSerialization;
             }
 
-#if !NET20
+#if HAVE_DATA_CONTRACTS
             DataContractAttribute dataContractAttribute = GetDataContractAttribute(objectType);
             if (dataContractAttribute != null)
             {
@@ -141,7 +164,7 @@ namespace Newtonsoft.Json.Serialization
             }
 #endif
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_BINARY_SERIALIZATION
             if (!ignoreSerializableAttribute)
             {
                 SerializableAttribute serializableAttribute = GetCachedAttribute<SerializableAttribute>(objectType);
@@ -244,13 +267,6 @@ namespace Newtonsoft.Json.Serialization
                 }
             };
         }
-
-#if !(PORTABLE40 || PORTABLE)
-        public static TypeConverter GetTypeConverter(Type type)
-        {
-            return TypeDescriptor.GetConverter(type);
-        }
-#endif
 
 #if !(NET20 || DOTNET)
         private static Type GetAssociatedMetadataType(Type type)
@@ -397,14 +413,14 @@ namespace Newtonsoft.Json.Serialization
 
         public static bool DynamicCodeGeneration
         {
-#if !(NET20 || NET35 || PORTABLE)
+#if HAVE_SECURITY_SAFE_CRITICAL_ATTRIBUTE
             [SecuritySafeCritical]
 #endif
                 get
             {
                 if (_dynamicCodeGeneration == null)
                 {
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_CAS
                     try
                     {
                         new ReflectionPermission(ReflectionPermissionFlag.MemberAccess).Demand();

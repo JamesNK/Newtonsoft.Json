@@ -140,7 +140,7 @@ namespace Newtonsoft.Json.Linq
                 case JTokenType.Property:
                     return null;
                 default:
-                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException("Type", c.Type, "Unexpected JContainer type.");
+                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException(nameof(c.Type), c.Type, "Unexpected JContainer type.");
             }
         }
 
@@ -234,13 +234,13 @@ namespace Newtonsoft.Json.Linq
                     SetToken(JsonToken.String, SafeToString(((JValue)token).Value));
                     break;
                 default:
-                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException("Type", token.Type, "Unexpected JTokenType.");
+                    throw MiscellaneousUtils.CreateArgumentOutOfRangeException(nameof(token.Type), token.Type, "Unexpected JTokenType.");
             }
         }
 
         private string SafeToString(object value)
         {
-            return (value != null) ? value.ToString() : null;
+            return value?.ToString();
         }
 
         bool IJsonLineInfo.HasLineInfo()

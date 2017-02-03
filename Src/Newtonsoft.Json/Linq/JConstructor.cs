@@ -34,7 +34,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents a JSON constructor.
     /// </summary>
-    public class JConstructor : JContainer
+    public partial class JConstructor : JContainer
     {
         private string _name;
         private readonly List<JToken> _values = new List<JToken>();
@@ -164,9 +164,10 @@ namespace Newtonsoft.Json.Linq
         {
             writer.WriteStartConstructor(_name);
 
-            foreach (JToken token in Children())
+            int count = _values.Count;
+            for (int i = 0; i < count; i++)
             {
-                token.WriteTo(writer, converters);
+                _values[i].WriteTo(writer, converters);
             }
 
             writer.WriteEndConstructor();

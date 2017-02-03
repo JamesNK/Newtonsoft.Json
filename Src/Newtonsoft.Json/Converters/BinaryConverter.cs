@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+#if HAVE_BINARY_SERIALIZATION
 using System;
 using System.Data.SqlTypes;
 using System.Globalization;
@@ -37,10 +37,10 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     public class BinaryConverter : JsonConverter
     {
-#if !NET20
+#if HAVE_LINQ
         private const string BinaryTypeName = "System.Data.Linq.Binary";
         private const string BinaryToArrayName = "ToArray";
-        private ReflectionObject _reflectionObject;
+        private static ReflectionObject _reflectionObject;
 #endif
 
         /// <summary>
@@ -64,8 +64,8 @@ namespace Newtonsoft.Json.Converters
 
         private byte[] GetByteArray(object value)
         {
-#if !(NET20)
-            if (value.GetType().AssignableToTypeName(BinaryTypeName))
+#if HAVE_LINQ
+            if (value.GetType().FullName == BinaryTypeName)
             {
                 EnsureReflectionObject(value.GetType());
                 return (byte[])_reflectionObject.GetValue(value, BinaryToArrayName);
@@ -79,8 +79,8 @@ namespace Newtonsoft.Json.Converters
             throw new JsonSerializationException("Unexpected value type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
         }
 
-#if !NET20
-        private void EnsureReflectionObject(Type t)
+#if HAVE_LINQ
+        private static void EnsureReflectionObject(Type t)
         {
             if (_reflectionObject == null)
             {
@@ -131,8 +131,8 @@ namespace Newtonsoft.Json.Converters
                 ? Nullable.GetUnderlyingType(objectType)
                 : objectType;
 
-#if !NET20
-            if (t.AssignableToTypeName(BinaryTypeName))
+#if HAVE_LINQ
+            if (t.FullName == BinaryTypeName)
             {
                 EnsureReflectionObject(t);
 
@@ -181,8 +181,8 @@ namespace Newtonsoft.Json.Converters
         /// </returns>
         public override bool CanConvert(Type objectType)
         {
-#if !NET20
-            if (objectType.AssignableToTypeName(BinaryTypeName))
+#if HAVE_LINQ
+            if (objectType.FullName == BinaryTypeName)
             {
                 return true;
             }

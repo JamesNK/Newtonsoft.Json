@@ -26,12 +26,12 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq.JsonPath;
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
 using System.Dynamic;
 using System.Linq.Expressions;
 #endif
 using System.IO;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Text;
@@ -39,7 +39,7 @@ using Newtonsoft.Json.Utilities;
 using System.Diagnostics;
 using System.Globalization;
 using System.Collections;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -51,11 +51,11 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents an abstract JSON token.
     /// </summary>
-    public abstract class JToken : IJEnumerable<JToken>, IJsonLineInfo
-#if !(DOTNET || PORTABLE40 || PORTABLE)
+    public abstract partial class JToken : IJEnumerable<JToken>, IJsonLineInfo
+#if HAVE_ICLONEABLE
         , ICloneable
 #endif
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
         , IDynamicMetaObjectProvider
 #endif
     {
@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Linq
 
         private static readonly JTokenType[] BooleanTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
         private static readonly JTokenType[] NumberTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean };
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
         private static readonly JTokenType[] BigIntegerTypes = new[] { JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean, JTokenType.Bytes };
 #endif
         private static readonly JTokenType[] StringTypes = new[] { JTokenType.Date, JTokenType.Integer, JTokenType.Float, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Boolean, JTokenType.Bytes, JTokenType.Guid, JTokenType.TimeSpan, JTokenType.Uri };
@@ -492,7 +492,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Boolean.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return Convert.ToBoolean((int)(BigInteger)v.Value);
@@ -502,7 +502,7 @@ namespace Newtonsoft.Json.Linq
             return Convert.ToBoolean(v.Value, CultureInfo.InvariantCulture);
         }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         /// <summary>
         /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.DateTimeOffset"/>.
         /// </summary>
@@ -548,7 +548,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Boolean.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return Convert.ToBoolean((int)(BigInteger)v.Value);
@@ -571,7 +571,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Int64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (long)(BigInteger)v.Value;
@@ -599,7 +599,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to DateTime.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
             if (v.Value is DateTimeOffset)
             {
                 return ((DateTimeOffset)v.Value).DateTime;
@@ -609,7 +609,7 @@ namespace Newtonsoft.Json.Linq
             return (v.Value != null) ? (DateTime?)Convert.ToDateTime(v.Value, CultureInfo.InvariantCulture) : null;
         }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         /// <summary>
         /// Performs an explicit conversion from <see cref="JToken"/> to <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/>.
         /// </summary>
@@ -665,7 +665,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Decimal.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (decimal?)(BigInteger)v.Value;
@@ -693,7 +693,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Double.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (double?)(BigInteger)v.Value;
@@ -721,7 +721,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Char.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (char?)(BigInteger)v.Value;
@@ -744,7 +744,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Int32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (int)(BigInteger)v.Value;
@@ -767,7 +767,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Int16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (short)(BigInteger)v.Value;
@@ -791,7 +791,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to UInt16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (ushort)(BigInteger)v.Value;
@@ -815,7 +815,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Char.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (char)(BigInteger)v.Value;
@@ -838,7 +838,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Byte.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (byte)(BigInteger)v.Value;
@@ -862,7 +862,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to SByte.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (sbyte)(BigInteger)v.Value;
@@ -890,7 +890,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Int32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (int?)(BigInteger)v.Value;
@@ -918,7 +918,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Int16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (short?)(BigInteger)v.Value;
@@ -947,7 +947,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to UInt16.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (ushort?)(BigInteger)v.Value;
@@ -975,7 +975,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Byte.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (byte?)(BigInteger)v.Value;
@@ -1004,7 +1004,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to SByte.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (sbyte?)(BigInteger)v.Value;
@@ -1027,7 +1027,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to DateTime.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
             if (v.Value is DateTimeOffset)
             {
                 return ((DateTimeOffset)v.Value).DateTime;
@@ -1055,7 +1055,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Int64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (long?)(BigInteger)v.Value;
@@ -1083,7 +1083,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Single.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (float?)(BigInteger)v.Value;
@@ -1106,7 +1106,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Decimal.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (decimal)(BigInteger)v.Value;
@@ -1135,7 +1135,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to UInt32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (uint?)(BigInteger)v.Value;
@@ -1164,7 +1164,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to UInt64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (ulong?)(BigInteger)v.Value;
@@ -1187,7 +1187,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Double.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (double)(BigInteger)v.Value;
@@ -1210,7 +1210,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to Single.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (float)(BigInteger)v.Value;
@@ -1249,7 +1249,7 @@ namespace Newtonsoft.Json.Linq
                 return Convert.ToBase64String(bytes);
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return ((BigInteger)v.Value).ToString(CultureInfo.InvariantCulture);
@@ -1273,7 +1273,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to UInt32.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (uint)(BigInteger)v.Value;
@@ -1297,7 +1297,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to UInt64.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return (ulong)(BigInteger)v.Value;
@@ -1329,7 +1329,7 @@ namespace Newtonsoft.Json.Linq
             {
                 return Convert.FromBase64String(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
             }
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
             if (v.Value is BigInteger)
             {
                 return ((BigInteger)v.Value).ToByteArray();
@@ -1467,7 +1467,7 @@ namespace Newtonsoft.Json.Linq
             return (v.Value is Uri) ? (Uri)v.Value : new Uri(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
         private static BigInteger ToBigInteger(JToken value)
         {
             JValue v = EnsureValue(value);
@@ -1508,7 +1508,7 @@ namespace Newtonsoft.Json.Linq
             return new JValue(value);
         }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         /// <summary>
         /// Performs an implicit conversion from <see cref="DateTimeOffset"/> to <see cref="JToken"/>.
         /// </summary>
@@ -1592,7 +1592,7 @@ namespace Newtonsoft.Json.Linq
             return new JValue(value);
         }
 
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
         /// <summary>
         /// Performs an implicit conversion from <see cref="Nullable{T}"/> of <see cref="DateTimeOffset"/> to <see cref="JToken"/>.
         /// </summary>
@@ -2028,7 +2028,7 @@ namespace Newtonsoft.Json.Linq
                         return (DateTime?)this;
                     case PrimitiveTypeCode.DateTime:
                         return (DateTime)this;
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
                     case PrimitiveTypeCode.DateTimeOffsetNullable:
                         return (DateTimeOffset?)this;
                     case PrimitiveTypeCode.DateTimeOffset:
@@ -2046,7 +2046,7 @@ namespace Newtonsoft.Json.Linq
                         return (TimeSpan?)this;
                     case PrimitiveTypeCode.TimeSpan:
                         return (TimeSpan)this;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                     case PrimitiveTypeCode.BigIntegerNullable:
                         return ToBigIntegerNullable(this);
                     case PrimitiveTypeCode.BigInteger:
@@ -2187,10 +2187,11 @@ namespace Newtonsoft.Json.Linq
             {
                 JToken t = Load(reader, settings);
 
-                if (reader.Read() && reader.TokenType != JsonToken.Comment)
+                while (reader.Read())
                 {
-                    throw JsonReaderException.Create(reader, "Additional text found in JSON string after parsing content.");
+                    // Any content encountered here other than a comment will throw in the reader.
                 }
+
 
                 return t;
             }
@@ -2355,7 +2356,7 @@ namespace Newtonsoft.Json.Linq
             return p.Evaluate(this, this, errorWhenNoMatch);
         }
 
-#if !(NET35 || NET20 || PORTABLE40)
+#if HAVE_DYNAMIC
         /// <summary>
         /// Returns the <see cref="DynamicMetaObject"/> responsible for binding operations performed on this object.
         /// </summary>
@@ -2365,7 +2366,7 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         protected virtual DynamicMetaObject GetMetaObject(Expression parameter)
         {
-            return new DynamicProxyMetaObject<JToken>(parameter, this, new DynamicProxy<JToken>(), true);
+            return new DynamicProxyMetaObject<JToken>(parameter, this, new DynamicProxy<JToken>());
         }
 
         /// <summary>
@@ -2381,7 +2382,7 @@ namespace Newtonsoft.Json.Linq
         }
 #endif
 
-#if !(DOTNET || PORTABLE || PORTABLE40)
+#if HAVE_ICLONEABLE
         object ICloneable.Clone()
         {
             return DeepClone();

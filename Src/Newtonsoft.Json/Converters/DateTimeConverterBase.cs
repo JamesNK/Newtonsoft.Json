@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Converters
             {
                 return true;
             }
-#if !NET20
+#if HAVE_DATE_TIME_OFFSET
             if (objectType == typeof(DateTimeOffset) || objectType == typeof(DateTimeOffset?))
             {
                 return true;

@@ -832,6 +832,113 @@ namespace Newtonsoft.Json.Tests.Bson
 
             Assert.IsFalse(reader.Read());
         }
+
+        [Test]
+        public void WriteUri()
+        {
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("uri0");
+            writer.WriteValue(new Uri("http://example.net/"));
+            writer.WritePropertyName("uri1");
+            writer.WriteValue(default(Uri));
+            writer.WriteEndObject();
+            ms.Seek(0, SeekOrigin.Begin);
+
+            BsonReader reader = new BsonReader(ms);
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual("http://example.net/", reader.ReadAsString());
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.IsNull(reader.ReadAsString());
+        }
+
+        [Test]
+        public void WriteByteArray()
+        {
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("array0");
+            writer.WriteValue(new byte[] {0, 1, 2, 3, 4, 5, 6, 7});
+            writer.WritePropertyName("array1");
+            writer.WriteValue(default(byte[]));
+            writer.WriteEndObject();
+            ms.Seek(0, SeekOrigin.Begin);
+
+            BsonReader reader = new BsonReader(ms);
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual(new byte[] {0, 1, 2, 3, 4, 5, 6, 7}, reader.ReadAsBytes());
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.IsNull(reader.ReadAsBytes());
+        }
+
+        [Test]
+        public void WriteEndOnProperty()
+        {
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("Blah");
+            writer.WriteEnd();
+
+            Assert.AreEqual("0B-00-00-00-0A-42-6C-61-68-00-00", (BitConverter.ToString(ms.ToArray())));
+        }
+
+        [Test]
+        public void WriteEndOnProperty_Close()
+        {
+            MemoryStream ms = new MemoryStream();
+            BsonWriter writer = new BsonWriter(ms);
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("Blah");
+            writer.Close();
+
+            Assert.AreEqual("0B-00-00-00-0A-42-6C-61-68-00-00", (BitConverter.ToString(ms.ToArray())));
+        }
+
+        [Test]
+        public void WriteEndOnProperty_Dispose()
+        {
+            MemoryStream ms = new MemoryStream();
+            using (BsonWriter writer = new BsonWriter(ms))
+            {
+                writer.WriteStartObject();
+                writer.WritePropertyName("Blah");
+            }
+
+            Assert.AreEqual("0B-00-00-00-0A-42-6C-61-68-00-00", (BitConverter.ToString(ms.ToArray())));
+        }
+
+        [Test]
+        public void AutoCompleteOnClose_False()
+        {
+            MemoryStream ms = new MemoryStream();
+            using (BsonWriter writer = new BsonWriter(ms))
+            {
+                writer.AutoCompleteOnClose = false;
+
+                writer.WriteStartObject();
+                writer.WritePropertyName("Blah");
+
+                writer.Flush();
+            }
+
+            // nothing is written because a BSON document needs to be completed before it can be written
+            Assert.AreEqual(string.Empty, (BitConverter.ToString(ms.ToArray())));
+        }
 #endif
     }
 }

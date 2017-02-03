@@ -309,10 +309,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             // Verify contract is properly finding our callback
             var resolver = new DefaultContractResolver().ResolveContract(typeof(FooEvent));
 
-#pragma warning disable 612,618
-            Debug.Assert(resolver.OnError != null);
-            Debug.Assert(resolver.OnError == typeof(FooEvent).GetMethod("OnError", BindingFlags.Instance | BindingFlags.NonPublic));
-#pragma warning restore 612,618
+            Assert.AreEqual(resolver.OnErrorCallbacks.Count, 1);
 
             var serializer = JsonSerializer.Create(new JsonSerializerSettings
             {
@@ -325,7 +322,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             var foo = serializer.Deserialize<FooEvent>(new JsonTextReader(new StringReader("{ Id: 25 }")));
 
             // When fixed, this would pass.
-            Debug.Assert(foo.Identifier == 25);
+            Assert.AreEqual(25, foo.Identifier);
         }
 #endif
 

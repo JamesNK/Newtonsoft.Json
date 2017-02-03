@@ -31,7 +31,7 @@ using System.Globalization;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
-#if NET20
+#if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
@@ -167,7 +167,7 @@ namespace Newtonsoft.Json.Serialization
                     CreatedType = typeof(List<>).MakeGenericType(CollectionItemType);
                 }
 
-#if !(NET20 || NET35)
+#if HAVE_ISET
                 if (ReflectionUtils.IsGenericDefinition(underlyingType, typeof(ISet<>)))
                 {
                     CreatedType = typeof(HashSet<>).MakeGenericType(CollectionItemType);
@@ -178,7 +178,7 @@ namespace Newtonsoft.Json.Serialization
                 canDeserialize = true;
                 ShouldCreateWrapper = true;
             }
-#if !(NET40 || NET35 || NET20 || PORTABLE40)
+#if HAVE_READ_ONLY_COLLECTIONS
             else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IReadOnlyCollection<>), out tempCollectionType))
             {
                 CollectionItemType = tempCollectionType.GetGenericArguments()[0];
@@ -191,6 +191,11 @@ namespace Newtonsoft.Json.Serialization
 
                 _genericCollectionDefinitionType = typeof(List<>).MakeGenericType(CollectionItemType);
                 _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(CreatedType, CollectionItemType);
+
+#if HAVE_FSHARP_TYPES
+                StoreFSharpListCreatorIfNecessary(underlyingType);
+#endif
+
                 IsReadOnlyOrFixedSize = true;
                 canDeserialize = HasParameterizedCreatorInternal;
             }
@@ -206,12 +211,8 @@ namespace Newtonsoft.Json.Serialization
 
                 _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(underlyingType, CollectionItemType);
 
-#if !(NET35 || NET20)
-                if (!HasParameterizedCreatorInternal && underlyingType.Name == FSharpUtils.FSharpListTypeName)
-                {
-                    FSharpUtils.EnsureInitialized(underlyingType.Assembly());
-                    _parameterizedCreator = FSharpUtils.CreateSeq(CollectionItemType);
-                }
+#if HAVE_FSHARP_TYPES
+                StoreFSharpListCreatorIfNecessary(underlyingType);
 #endif
 
                 if (underlyingType.IsGenericType() && underlyingType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
@@ -253,7 +254,7 @@ namespace Newtonsoft.Json.Serialization
             }
 #endif
 
-#if !(NET20 || NET35 || NET40)
+#if HAVE_IMMUTABLE_COLLECTIONS
             Type immutableCreatedType;
             ObjectConstructor<object> immutableParameterizedCreator;
             if (ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(underlyingType, CollectionItemType, out immutableCreatedType, out immutableParameterizedCreator))
@@ -306,5 +307,16 @@ namespace Newtonsoft.Json.Serialization
 
             return (IList)_genericTemporaryCollectionCreator();
         }
+
+#if HAVE_FSHARP_TYPES
+        private void StoreFSharpListCreatorIfNecessary(Type underlyingType)
+        {
+            if (!HasParameterizedCreatorInternal && underlyingType.Name == FSharpUtils.FSharpListTypeName)
+            {
+                FSharpUtils.EnsureInitialized(underlyingType.Assembly());
+                _parameterizedCreator = FSharpUtils.CreateSeq(CollectionItemType);
+            }
+        }
+#endif
     }
 }

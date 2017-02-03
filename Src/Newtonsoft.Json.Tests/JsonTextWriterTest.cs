@@ -1310,6 +1310,51 @@ _____'propertyName': NaN,
             Assert.AreEqual("{'Blah':null}", sw.ToString());
         }
 
+        [Test]
+        public void WriteEndOnProperty_Close()
+        {
+            StringWriter sw = new StringWriter();
+            JsonTextWriter writer = new JsonTextWriter(sw);
+            writer.QuoteChar = '\'';
+
+            writer.WriteStartObject();
+            writer.WritePropertyName("Blah");
+            writer.Close();
+
+            Assert.AreEqual("{'Blah':null}", sw.ToString());
+        }
+
+        [Test]
+        public void WriteEndOnProperty_Dispose()
+        {
+            StringWriter sw = new StringWriter();
+            using (JsonTextWriter writer = new JsonTextWriter(sw))
+            {
+                writer.QuoteChar = '\'';
+
+                writer.WriteStartObject();
+                writer.WritePropertyName("Blah");
+            }
+
+            Assert.AreEqual("{'Blah':null}", sw.ToString());
+        }
+
+        [Test]
+        public void AutoCompleteOnClose_False()
+        {
+            StringWriter sw = new StringWriter();
+            using (JsonTextWriter writer = new JsonTextWriter(sw))
+            {
+                writer.AutoCompleteOnClose = false;
+                writer.QuoteChar = '\'';
+
+                writer.WriteStartObject();
+                writer.WritePropertyName("Blah");
+            }
+
+            Assert.AreEqual("{'Blah':", sw.ToString());
+        }
+
 #if !NET20
         [Test]
         public void QuoteChar()

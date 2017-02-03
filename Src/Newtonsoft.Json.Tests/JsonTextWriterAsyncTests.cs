@@ -1770,6 +1770,68 @@ null//comment
             Assert.IsTrue(writer.WriteValueAsync(default(ushort?), token).IsCanceled);
             Assert.IsTrue(writer.WriteWhitespaceAsync(" ", token).IsCanceled);
         }
+
+        [Test]
+        public async Task FailureOnStartWriteProperty()
+        {
+            JsonTextWriter writer = new JsonTextWriter(new ThrowingWriter(' '));
+            writer.Formatting = Formatting.Indented;
+            await writer.WriteStartObjectAsync();
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(async () => await writer.WritePropertyNameAsync("aa"));
+        }
+
+
+        [Test]
+        public async Task FailureOnStartWriteObject()
+        {
+            JsonTextWriter writer = new JsonTextWriter(new ThrowingWriter('{'));
+            await ExceptionAssert.ThrowsAsync<InvalidOperationException>(async () => await writer.WriteStartObjectAsync());
+        }
+
+        public class ThrowingWriter : TextWriter
+        {
+            // allergic to certain characters, this null-stream writer throws on any attempt to write them.
+
+            private char[] _singleCharBuffer = new char[1];
+
+            public ThrowingWriter(params char[] throwChars)
+            {
+                ThrowChars = throwChars;
+            }
+
+            public char[] ThrowChars { get; set; }
+
+            public override Encoding Encoding => Encoding.UTF8;
+
+            public override Task WriteAsync(char value)
+            {
+                _singleCharBuffer[0] = value;
+                return WriteAsync(_singleCharBuffer, 0, 1);
+            }
+
+            public override Task WriteAsync(char[] buffer, int index, int count)
+            {
+                if (buffer.Skip(index).Take(count).Any(c => ThrowChars.Contains(c)))
+                {
+                    // Pre-4.6 equivalent to .FromException()
+                    TaskCompletionSource<bool> tcs = new TaskCompletionSource<bool>();
+                    tcs.SetException(new InvalidOperationException());
+                    return tcs.Task;
+                }
+
+                return Task.Delay(0);
+            }
+
+            public override Task WriteAsync(string value)
+            {
+                return WriteAsync(value.ToCharArray(), 0, value.Length);
+            }
+
+            public override void Write(char value)
+            {
+                throw new NotImplementedException();
+            }
+        }
     }
 
     public class CustomAsyncJsonTextWriter : CustomJsonTextWriter

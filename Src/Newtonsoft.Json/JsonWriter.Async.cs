@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,13 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if HAVE_ASYNC
 
 using System;
-using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Threading.Tasks;
@@ -613,7 +612,7 @@ namespace Newtonsoft.Json
                 case JsonToken.Integer:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
                     return
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                         value is BigInteger ? WriteValueAsync((BigInteger)value, cancellationToken) :
 #endif
                         WriteValueAsync(Convert.ToInt64(value, CultureInfo.InvariantCulture), cancellationToken);
@@ -696,6 +695,30 @@ namespace Newtonsoft.Json
                 // stop if we have reached the end of the token being read
                 initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)
                 && writeChildren
+                && await reader.ReadAsync(cancellationToken).ConfigureAwait(false));
+        }
+
+        // For internal use, when we know the writer does not offer true async support (e.g. when backed
+        // by a StringWriter) and therefore async write methods are always in practice just a less efficient
+        // path through the sync version.
+        internal async Task WriteTokenSyncReadingAsync(JsonReader reader, CancellationToken cancellationToken)
+        {
+            int initialDepth = CalculateWriteTokenDepth(reader);
+
+            do
+            {
+                // write a JValue date when the constructor is for a date
+                if (reader.TokenType == JsonToken.StartConstructor && string.Equals(reader.Value.ToString(), "Date", StringComparison.Ordinal))
+                {
+                    WriteConstructorDate(reader);
+                }
+                else
+                {
+                    WriteToken(reader.TokenType, reader.Value);
+                }
+            } while (
+                // stop if we have reached the end of the token being read
+                initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)
                 && await reader.ReadAsync(cancellationToken).ConfigureAwait(false));
         }
 
@@ -1629,7 +1652,7 @@ namespace Newtonsoft.Json
                     return writer.WriteValueAsync((TimeSpan)value, cancellationToken);
                 case PrimitiveTypeCode.TimeSpanNullable:
                     return writer.WriteValueAsync(value == null ? (TimeSpan?)null : (TimeSpan)value, cancellationToken);
-#if !PORTABLE || NETSTANDARD1_1
+#if HAVE_BIG_INTEGER
                 case PrimitiveTypeCode.BigInteger:
 
                     // this will call to WriteValueAsync(object)
@@ -1645,12 +1668,12 @@ namespace Newtonsoft.Json
                     return writer.WriteValueAsync((string)value, cancellationToken);
                 case PrimitiveTypeCode.Bytes:
                     return writer.WriteValueAsync((byte[])value, cancellationToken);
-#if !(PORTABLE || DOTNET)
+#if HAVE_DB_NULL_TYPE_CODE
                 case PrimitiveTypeCode.DBNull:
                     return writer.WriteNullAsync(cancellationToken);
 #endif
                 default:
-#if !PORTABLE
+#if HAVE_ICONVERTIBLE
                     IConvertible convertable = value as IConvertible;
                     if (convertable != null)
                     {

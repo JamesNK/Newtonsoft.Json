@@ -51,7 +51,31 @@
     ".NETPortable,Version=v4.5,Profile=Profile259": {
       "buildOptions": {
         "define": [
-          "PORTABLE"
+          "PORTABLE",
+          "HAVE_ASYNC",
+          "HAVE_COVARIANT_GENERICS",
+          "HAVE_DATA_CONTRACTS",
+          "HAVE_DATE_TIME_OFFSET",
+          "HAVE_DYNAMIC",
+          "HAVE_EXPRESSIONS",
+          "HAVE_FSHARP_TYPES",
+          "HAVE_GUID_TRY_PARSE",
+          "HAVE_IGNORE_DATA_MEMBER_ATTRIBUTE",
+          "HAVE_IMMUTABLE_COLLECTIONS",
+          "HAVE_ISET",
+          "HAVE_LINQ",
+          "HAVE_METHOD_IMPL_ATTRIBUTE",
+          "HAVE_READ_ONLY_COLLECTIONS",
+          "HAVE_REFLECTION_BINDER",
+          "HAVE_SERIALIZATION_BINDER_BIND_TO_NAME",
+          "HAVE_STRING_JOIN_WITH_ENUMERABLE",
+          "HAVE_TIME_SPAN_PARSE_WITH_CULTURE",
+          "HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE",
+          "HAVE_TIME_ZONE_INFO",
+          "HAVE_VARIANT_TYPE_PARAMETERS",
+          "HAVE_VERSION_TRY_PARSE",
+          "HAVE_XLINQ",
+          "HAVE_INOTIFY_COLLECTION_CHANGED"
         ]
       },
       "frameworkAssemblies": {
@@ -87,8 +111,29 @@
     ".NETPortable,Version=v4.0,Profile=Profile328": {
       "buildOptions": {
         "define": [
-          "PORTABLE40"
-        ]
+          "PORTABLE40",
+          "HAVE_CHAR_TO_LOWER_WITH_CULTURE",
+          "HAVE_DATA_CONTRACTS",
+          "HAVE_DATE_TIME_OFFSET",
+          "HAVE_DB_NULL_TYPE_CODE",
+          "HAVE_FSHARP_TYPES",
+          "HAVE_FULL_REFLECTION",
+          "HAVE_GUID_TRY_PARSE",
+          "HAVE_ICONVERTIBLE",
+          "HAVE_IGNORE_DATA_MEMBER_ATTRIBUTE",
+          "HAVE_IMMUTABLE_COLLECTIONS",
+          "HAVE_ISET",
+          "HAVE_LINQ",
+          "HAVE_MEMORY_BARRIER",
+          "HAVE_SECURITY_SAFE_CRITICAL_ATTRIBUTE",
+          "HAVE_SERIALIZATION_BINDER_BIND_TO_NAME",
+          "HAVE_STRING_JOIN_WITH_ENUMERABLE",
+          "HAVE_TIME_SPAN_PARSE_WITH_CULTURE",
+          "HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE",
+          "HAVE_TIME_ZONE_INFO",
+          "HAVE_VARIANT_TYPE_PARAMETERS",
+          "HAVE_VERSION_TRY_PARSE"
+        ]      
       },
       "frameworkAssemblies": {
         "mscorlib": "",
@@ -102,12 +147,40 @@
       "buildOptions": {
         "define": [
           "NETSTANDARD1_0",
-          "PORTABLE"
+          "PORTABLE",
+          "HAVE_ASYNC",
+          "HAVE_COVARIANT_GENERICS",
+          "HAVE_DATA_CONTRACTS",
+          "HAVE_DATE_TIME_OFFSET",
+          "HAVE_DYNAMIC",
+          "HAVE_EXPRESSIONS",
+          "HAVE_FSHARP_TYPES",
+          "HAVE_GUID_TRY_PARSE",
+          "HAVE_HASH_SET",
+          "HAVE_IGNORE_DATA_MEMBER_ATTRIBUTE",
+          "HAVE_IMMUTABLE_COLLECTIONS",
+          "HAVE_INOTIFY_COLLECTION_CHANGED",
+          "HAVE_ISET",
+          "HAVE_LINQ",
+          "HAVE_METHOD_IMPL_ATTRIBUTE",
+          "HAVE_READ_ONLY_COLLECTIONS",
+          "HAVE_REFLECTION_BINDER",
+          "HAVE_SERIALIZATION_BINDER_BIND_TO_NAME",
+          "HAVE_STRING_JOIN_WITH_ENUMERABLE",
+          "HAVE_TIME_SPAN_PARSE_WITH_CULTURE",
+          "HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE",
+          "HAVE_TIME_ZONE_INFO",
+          "HAVE_TYPE_DESCRIPTOR",
+          "HAVE_UNICODE_SURROGATE_DETECTION",
+          "HAVE_VARIANT_TYPE_PARAMETERS",
+          "HAVE_VERSION_TRY_PARSE",
+          "HAVE_XLINQ"
         ]
       },
       "dependencies": {
         "Microsoft.CSharp": "4.0.1",
         "System.Collections": "4.0.11",
+        "System.ComponentModel.TypeConverter": "4.1.0",
         "System.Diagnostics.Debug": "4.0.11",
         "System.Dynamic.Runtime": "4.0.11",
         "System.Globalization": "4.0.11",
@@ -134,12 +207,41 @@
       "buildOptions": {
         "define": [
           "NETSTANDARD1_1",
-          "PORTABLE"
+          "PORTABLE",
+          "HAVE_ASYNC",
+          "HAVE_BIG_INTEGER",
+          "HAVE_COVARIANT_GENERICS",
+          "HAVE_DATA_CONTRACTS",
+          "HAVE_DATE_TIME_OFFSET",
+          "HAVE_DYNAMIC",
+          "HAVE_EXPRESSIONS",
+          "HAVE_FSHARP_TYPES",
+          "HAVE_GUID_TRY_PARSE",
+          "HAVE_HASH_SET",
+          "HAVE_IGNORE_DATA_MEMBER_ATTRIBUTE",
+          "HAVE_IMMUTABLE_COLLECTIONS",
+          "HAVE_INOTIFY_COLLECTION_CHANGED",
+          "HAVE_ISET",
+          "HAVE_LINQ",
+          "HAVE_METHOD_IMPL_ATTRIBUTE",
+          "HAVE_READ_ONLY_COLLECTIONS",
+          "HAVE_REFLECTION_BINDER",
+          "HAVE_SERIALIZATION_BINDER_BIND_TO_NAME",
+          "HAVE_STRING_JOIN_WITH_ENUMERABLE",
+          "HAVE_TIME_SPAN_PARSE_WITH_CULTURE",
+          "HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE",
+          "HAVE_TIME_ZONE_INFO",
+          "HAVE_TYPE_DESCRIPTOR",
+          "HAVE_UNICODE_SURROGATE_DETECTION",
+          "HAVE_VARIANT_TYPE_PARAMETERS",
+          "HAVE_VERSION_TRY_PARSE",
+          "HAVE_XLINQ"
         ]
       },
       "dependencies": {
         "Microsoft.CSharp": "4.0.1",
         "System.Collections": "4.0.11",
+        "System.ComponentModel.TypeConverter": "4.1.0",
         "System.Diagnostics.Debug": "4.0.11",
         "System.Dynamic.Runtime": "4.0.11",
         "System.Globalization": "4.0.11",
