@@ -1388,8 +1388,7 @@ namespace Newtonsoft.Json.Utilities
             ulong mantissa = 0UL;
             int mantissaDigits = 0;
             int exponentFromMantissa = 0;
-            bool checkForRounding = true;
-            bool roundUp = false;
+            bool? roundUp = null;
             bool? storeOnly28Digits = null;
             for (; i < end; i++)
             {
@@ -1514,10 +1513,9 @@ namespace Newtonsoft.Json.Utilities
                         }
                         else
                         {
-                            if (checkForRounding)
+                            if (!roundUp.HasValue)
                             {
                                 roundUp = c >= '5';
-                                checkForRounding = false;
                             }
                             ++exponentFromMantissa;
                         }
@@ -1555,7 +1553,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                if (roundUp && exponent >= -28)
+                if (roundUp == true && exponent >= -28)
                 {
                     ++value;
                 }
@@ -1564,7 +1562,7 @@ namespace Newtonsoft.Json.Utilities
                     if (mantissaDigits + exponent + 28 <= 0)
                     {
                         value = 0M;
-                        return ParseResult.Success; // value is 0
+                        return ParseResult.Success;
                     }
                     if (exponent >= -28)
                     {
@@ -1572,8 +1570,9 @@ namespace Newtonsoft.Json.Utilities
                     }
                     else
                     {
-                        value /= DecimalFactors[27];
-                        value /= DecimalFactors[-exponent - 29];
+                        decimal[] decimalFactors = DecimalFactors;
+                        value /= decimalFactors[27];
+                        value /= decimalFactors[-exponent - 29];
                     }
                 }
             }
@@ -1597,7 +1596,7 @@ namespace Newtonsoft.Json.Utilities
                 {
                     decimalFactors = new decimal[28];
                     decimal last = 1M;
-                    for (var i = 0; i < decimalFactors.Length; ++i)
+                    for (int i = 0; i < decimalFactors.Length; ++i)
                     {
                         decimalFactors[i] = last *= 10M;
                     }
