@@ -119,6 +119,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
                 "After parsing a value an unexpected character was encountered: '. Path '[0]', line 1, position 24.");
         }
 
+#if !NET20
         [Test]
         public void ReadAsDateTimeOffset_MissingComma()
         {
@@ -132,6 +133,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
                 () => reader.ReadAsDateTimeOffset(),
                 "After parsing a value an unexpected character was encountered: '. Path '[0]', line 1, position 24.");
         }
+#endif
 
         [Test]
         public void ReadAsString_MissingComma()
