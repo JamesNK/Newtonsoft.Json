@@ -62,6 +62,106 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
     public class ExceptionHandlingTests : TestFixtureBase
     {
         [Test]
+        public void ReadAsBytes_MissingComma()
+        {
+            byte[] data = Encoding.UTF8.GetBytes("Hello world");
+
+            string json = @"['" + Convert.ToBase64String(data) + "' '" + Convert.ToBase64String(data) + @"']";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(reader.Read());
+            CollectionAssert.AreEquivalent(data, reader.ReadAsBytes());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => reader.ReadAsBytes(),
+                "After parsing a value an unexpected character was encountered: '. Path '[0]', line 1, position 20.");
+        }
+
+        [Test]
+        public void ReadAsInt32_MissingComma()
+        {
+            string json = "[0 1 2]";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(0, (int)reader.ReadAsInt32());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => reader.ReadAsInt32(),
+                "After parsing a value an unexpected character was encountered: 1. Path '[0]', line 1, position 3.");
+        }
+
+        [Test]
+        public void ReadAsBoolean_MissingComma()
+        {
+            string json = "[true false true]";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(true, (bool)reader.ReadAsBoolean());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => reader.ReadAsBoolean(),
+                "After parsing a value an unexpected character was encountered: f. Path '[0]', line 1, position 6.");
+        }
+
+        [Test]
+        public void ReadAsDateTime_MissingComma()
+        {
+            string json = "['2017-02-04T00:00:00Z' '2018-02-04T00:00:00Z' '2019-02-04T00:00:00Z']";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(new DateTime(2017, 2, 4, 0, 0, 0, DateTimeKind.Utc), (DateTime)reader.ReadAsDateTime());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => reader.ReadAsDateTime(),
+                "After parsing a value an unexpected character was encountered: '. Path '[0]', line 1, position 24.");
+        }
+
+        [Test]
+        public void ReadAsDateTimeOffset_MissingComma()
+        {
+            string json = "['2017-02-04T00:00:00Z' '2018-02-04T00:00:00Z' '2019-02-04T00:00:00Z']";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(new DateTimeOffset(2017, 2, 4, 0, 0, 0, TimeSpan.Zero), (DateTimeOffset)reader.ReadAsDateTimeOffset());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => reader.ReadAsDateTimeOffset(),
+                "After parsing a value an unexpected character was encountered: '. Path '[0]', line 1, position 24.");
+        }
+
+        [Test]
+        public void ReadAsString_MissingComma()
+        {
+            string json = "['2017-02-04T00:00:00Z' '2018-02-04T00:00:00Z' '2019-02-04T00:00:00Z']";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual("2017-02-04T00:00:00Z", reader.ReadAsString());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => reader.ReadAsString(),
+                "After parsing a value an unexpected character was encountered: '. Path '[0]', line 1, position 24.");
+        }
+
+        [Test]
+        public void Read_MissingComma()
+        {
+            string json = "[0 1 2]";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => reader.Read(),
+                "After parsing a value an unexpected character was encountered: 1. Path '[0]', line 1, position 3.");
+        }
+
+        [Test]
         public void UnexpectedEndAfterReadingN()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader("n"));

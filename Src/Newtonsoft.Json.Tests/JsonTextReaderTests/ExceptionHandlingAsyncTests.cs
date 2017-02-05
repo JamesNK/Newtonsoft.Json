@@ -51,6 +51,106 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
     public class ExceptionHandlingAsyncTests : TestFixtureBase
     {
         [Test]
+        public async Task ReadAsBytes_MissingCommaAsync()
+        {
+            byte[] data = Encoding.UTF8.GetBytes("Hello world");
+
+            string json = @"['" + Convert.ToBase64String(data) + "' '" + Convert.ToBase64String(data) + @"']";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(await reader.ReadAsync());
+            CollectionAssert.AreEquivalent(data, await reader.ReadAsBytesAsync());
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(
+                () => reader.ReadAsBytesAsync(),
+                "After parsing a value an unexpected character was encountered: '. Path '[0]', line 1, position 20.");
+        }
+
+        [Test]
+        public async Task ReadAsInt32_MissingCommaAsync()
+        {
+            string json = "[0 1 2]";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(0, (int)await reader.ReadAsInt32Async());
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(
+                () => reader.ReadAsInt32Async(),
+                "After parsing a value an unexpected character was encountered: 1. Path '[0]', line 1, position 3.");
+        }
+
+        [Test]
+        public async Task ReadAsBoolean_MissingCommaAsync()
+        {
+            string json = "[true false true]";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(true, (bool)await reader.ReadAsBooleanAsync());
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(
+                () => reader.ReadAsBooleanAsync(),
+                "After parsing a value an unexpected character was encountered: f. Path '[0]', line 1, position 6.");
+        }
+
+        [Test]
+        public async Task ReadAsDateTime_MissingCommaAsync()
+        {
+            string json = "['2017-02-04T00:00:00Z' '2018-02-04T00:00:00Z' '2019-02-04T00:00:00Z']";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(new DateTime(2017, 2, 4, 0, 0, 0, DateTimeKind.Utc), (DateTime)await reader.ReadAsDateTimeAsync());
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(
+                () => reader.ReadAsDateTimeAsync(),
+                "After parsing a value an unexpected character was encountered: '. Path '[0]', line 1, position 24.");
+        }
+
+        [Test]
+        public async Task ReadAsDateTimeOffset_MissingCommaAsync()
+        {
+            string json = "['2017-02-04T00:00:00Z' '2018-02-04T00:00:00Z' '2019-02-04T00:00:00Z']";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(new DateTimeOffset(2017, 2, 4, 0, 0, 0, TimeSpan.Zero), (DateTimeOffset)await reader.ReadAsDateTimeOffsetAsync());
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(
+                () => reader.ReadAsDateTimeOffsetAsync(),
+                "After parsing a value an unexpected character was encountered: '. Path '[0]', line 1, position 24.");
+        }
+
+        [Test]
+        public async Task ReadAsString_MissingCommaAsync()
+        {
+            string json = "['2017-02-04T00:00:00Z' '2018-02-04T00:00:00Z' '2019-02-04T00:00:00Z']";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual("2017-02-04T00:00:00Z", await reader.ReadAsStringAsync());
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(
+                () => reader.ReadAsStringAsync(),
+                "After parsing a value an unexpected character was encountered: '. Path '[0]', line 1, position 24.");
+        }
+
+        [Test]
+        public async Task Read_MissingCommaAsync()
+        {
+            string json = "[0 1 2]";
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.IsTrue(await reader.ReadAsync());
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(
+                () => reader.ReadAsync(),
+                "After parsing a value an unexpected character was encountered: 1. Path '[0]', line 1, position 3.");
+        }
+
+        [Test]
         public async Task UnexpectedEndAfterReadingNAsync()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader("n"));
