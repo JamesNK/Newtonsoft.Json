@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json.Converters;
@@ -51,6 +52,32 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class SerializationErrorHandlingTests : TestFixtureBase
     {
+        public class MyClass1
+        {
+            [JsonProperty("myint")]
+            public int MyInt { get; set; }
+            [JsonProperty("Mybool")]
+            public bool Mybool { get; set; }
+        }
+
+        [Test]
+        public void ErrorDeserializingIntegerInObject()
+        {
+            var errors = new List<string>();
+            var json = "{\"myint\":3554860000,\"Mybool\":false}";
+            var i = JsonConvert.DeserializeObject<MyClass1>(json, new JsonSerializerSettings
+            {
+                Error = delegate (object sender, Newtonsoft.Json.Serialization.ErrorEventArgs args)
+                {
+                    errors.Add(args.ErrorContext.Error.Message);
+                    args.ErrorContext.Handled = true;
+                }
+            });
+
+            Assert.AreEqual(1, errors.Count);
+            Assert.AreEqual("JSON integer 3554860000 is too large or small for an Int32. Path 'myint', line 1, position 19.", errors[0]);
+        }
+
         [Test]
         public void ErrorDeserializingListHandled()
         {
