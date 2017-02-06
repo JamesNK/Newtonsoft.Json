@@ -61,30 +61,56 @@ namespace Newtonsoft.Json
         internal Task<bool> DoReadAsync(CancellationToken cancellationToken)
         {
             EnsureBuffer();
-            switch (_currentState)
+
+            while (true)
             {
-                case State.Start:
-                case State.Property:
-                case State.Array:
-                case State.ArrayStart:
-                case State.Constructor:
-                case State.ConstructorStart:
-                    return ParseValueAsync(cancellationToken);
-                case State.Object:
-                case State.ObjectStart:
-                    return ParseObjectAsync(cancellationToken);
-                case State.PostValue:
-                    return LoopReadAsync(cancellationToken);
-                case State.Finished:
-                    return ReadFromFinishedAsync(cancellationToken);
-                default:
-                    throw JsonReaderException.Create(this, "Unexpected state: {0}.".FormatWith(CultureInfo.InvariantCulture, CurrentState));
+                switch (_currentState)
+                {
+                    case State.Start:
+                    case State.Property:
+                    case State.Array:
+                    case State.ArrayStart:
+                    case State.Constructor:
+                    case State.ConstructorStart:
+                        return ParseValueAsync(cancellationToken);
+                    case State.Object:
+                    case State.ObjectStart:
+                        return ParseObjectAsync(cancellationToken);
+                    case State.PostValue:
+                        Task<bool> task = ParsePostValueAsync(false, cancellationToken);
+                        if (task.Status == TaskStatus.RanToCompletion)
+                        {
+                            if (task.Result)
+                            {
+                                return AsyncUtils.True;
+                            }
+                        }
+                        else
+                        {
+                            return DoReadAsync(task, cancellationToken);
+                        }
+                        break;
+                    case State.Finished:
+                        return ReadFromFinishedAsync(cancellationToken);
+                    default:
+                        throw JsonReaderException.Create(this, "Unexpected state: {0}.".FormatWith(CultureInfo.InvariantCulture, CurrentState));
+                }
             }
         }
 
-        private async Task<bool> LoopReadAsync(CancellationToken cancellationToken)
+        private async Task<bool> DoReadAsync(Task<bool> task, CancellationToken cancellationToken)
         {
-            while (_currentState == State.PostValue)
+            bool result = await task.ConfigureAwait(false);
+            if (result)
+            {
+                return true;
+            }
+            return await DoReadAsync(cancellationToken).ConfigureAwait(false);
+        }
+
+        private async Task<bool> ParsePostValueAsync(bool ignoreComments, CancellationToken cancellationToken)
+        {
+            while (true)
             {
                 char currentChar = _chars[_charPos];
 
@@ -96,6 +122,7 @@ namespace Newtonsoft.Json
                             if (await ReadDataAsync(false, cancellationToken).ConfigureAwait(false) == 0)
                             {
                                 _currentState = State.Finished;
+                                return false;
                             }
                         }
                         else
@@ -117,14 +144,18 @@ namespace Newtonsoft.Json
                         SetToken(JsonToken.EndConstructor);
                         return true;
                     case '/':
-                        await ParseCommentAsync(true, cancellationToken).ConfigureAwait(false);
-                        return true;
+                        await ParseCommentAsync(!ignoreComments, cancellationToken).ConfigureAwait(false);
+                        if (!ignoreComments)
+                        {
+                            return true;
+                        }
+                        break;
                     case ',':
                         _charPos++;
 
                         // finished parsing
                         SetStateBasedOnCurrent();
-                        break;
+                        return false;
                     case ' ':
                     case StringUtils.Tab:
 
@@ -151,8 +182,6 @@ namespace Newtonsoft.Json
                         break;
                 }
             }
-
-            return await DoReadAsync(cancellationToken).ConfigureAwait(false);
         }
 
         private async Task<bool> ReadFromFinishedAsync(CancellationToken cancellationToken)
@@ -1101,13 +1130,18 @@ namespace Newtonsoft.Json
 
             switch (_currentState)
             {
+                case State.PostValue:
+                    if (await ParsePostValueAsync(true, cancellationToken))
+                    {
+                        return null;
+                    }
+                    goto case State.Start;
                 case State.Start:
                 case State.Property:
                 case State.Array:
                 case State.ArrayStart:
                 case State.Constructor:
                 case State.ConstructorStart:
-                case State.PostValue:
                     while (true)
                     {
                         char currentChar = _chars[_charPos];
@@ -1231,13 +1265,18 @@ namespace Newtonsoft.Json
 
             switch (_currentState)
             {
+                case State.PostValue:
+                    if (await ParsePostValueAsync(true, cancellationToken))
+                    {
+                        return null;
+                    }
+                    goto case State.Start;
                 case State.Start:
                 case State.Property:
                 case State.Array:
                 case State.ArrayStart:
                 case State.Constructor:
                 case State.ConstructorStart:
-                case State.PostValue:
                     while (true)
                     {
                         char currentChar = _chars[_charPos];
@@ -1352,13 +1391,18 @@ namespace Newtonsoft.Json
 
             switch (_currentState)
             {
+                case State.PostValue:
+                    if (await ParsePostValueAsync(true, cancellationToken))
+                    {
+                        return null;
+                    }
+                    goto case State.Start;
                 case State.Start:
                 case State.Property:
                 case State.Array:
                 case State.ArrayStart:
                 case State.Constructor:
                 case State.ConstructorStart:
-                case State.PostValue:
                     while (true)
                     {
                         char currentChar = _chars[_charPos];
@@ -1483,13 +1527,18 @@ namespace Newtonsoft.Json
 
             switch (_currentState)
             {
+                case State.PostValue:
+                    if (await ParsePostValueAsync(true, cancellationToken))
+                    {
+                        return null;
+                    }
+                    goto case State.Start;
                 case State.Start:
                 case State.Property:
                 case State.Array:
                 case State.ArrayStart:
                 case State.Constructor:
                 case State.ConstructorStart:
-                case State.PostValue:
                     while (true)
                     {
                         char currentChar = _chars[_charPos];
