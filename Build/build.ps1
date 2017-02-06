@@ -130,6 +130,11 @@ task Package -depends Build {
       }
     }
   
+    # C++/CLI support
+    robocopy "$buildDir" $workingDir\NuGet\lib\native _._ /NFL /NDL /NJS /NC /NS /NP /XO | Out-Default
+    robocopy "$buildDir" $workingDir\NuGet\build *.targets /NFL /NDL /NJS /NC /NS /NP /XO | Out-Default
+
+	# Source code
     robocopy $workingSourceDir $workingDir\NuGet\src *.cs /S /NFL /NDL /NJS /NC /NS /NP /XD Newtonsoft.Json.Tests Newtonsoft.Json.TestConsole obj .vs artifacts | Out-Default
 
     Write-Host "Building NuGet package with ID $packageId and version $nugetVersion" -ForegroundColor Green
