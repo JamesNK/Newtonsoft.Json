@@ -46,6 +46,48 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class DefaultValueHandlingTests : TestFixtureBase
     {
+        private class DefaultValueWithConstructorAndRename
+        {
+            public const string DefaultText = "...";
+
+            [DefaultValue(DefaultText)]
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.Populate)]
+            public readonly string Text;
+
+            public DefaultValueWithConstructorAndRename(string text = DefaultText)
+            {
+                Text = text;
+            }
+        }
+
+        [Test]
+        public void DefaultValueWithConstructorAndRenameTest()
+        {
+            DefaultValueWithConstructorAndRename myObject = JsonConvert.DeserializeObject<DefaultValueWithConstructorAndRename>("{}");
+            Assert.AreEqual(DefaultValueWithConstructorAndRename.DefaultText, myObject.Text);
+        }
+
+        private class DefaultValueWithConstructor
+        {
+            public const string DefaultText = "...";
+
+            [DefaultValue(DefaultText)]
+            [JsonProperty(PropertyName = "myText", DefaultValueHandling = DefaultValueHandling.Populate)]
+            public readonly string Text;
+
+            public DefaultValueWithConstructor([JsonProperty(PropertyName = "myText")]string text = DefaultText)
+            {
+                Text = text;
+            }
+        }
+
+        [Test]
+        public void DefaultValueWithConstructorTest()
+        {
+            DefaultValueWithConstructor myObject = JsonConvert.DeserializeObject<DefaultValueWithConstructor>("{}");
+            Assert.AreEqual(DefaultValueWithConstructor.DefaultText, myObject.Text);
+        }
+
         public class MyClass
         {
             [JsonIgnore]
