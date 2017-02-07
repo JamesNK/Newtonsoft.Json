@@ -66,7 +66,7 @@ task Build -depends Clean {
   Write-Host
   Update-AssemblyInfoFiles $workingSourceDir ($majorVersion + '.0.0') $version
 
-  Update-Project $workingSourceDir\Newtonsoft.Json\project.json $signAssemblies
+  #Update-Project $workingSourceDir\Newtonsoft.Json\project.json $signAssemblies
 
   foreach ($build in $builds)
   {
@@ -142,7 +142,7 @@ task Package -depends Build {
       Set-Location "$workingSourceDir\Newtonsoft.Json"
 
       exec { dotnet --version | Out-Default }
-      exec { dotnet pack $workingSourceDir\Newtonsoft.Json\project.json -c Release | Out-Default }
+      exec { dotnet pack $workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.Dotnet.csproj -c Release | Out-Default }
     }
     finally
     {
@@ -188,7 +188,7 @@ task Deploy -depends Package {
 # Run tests on deployed files
 task Test -depends Deploy {
 
-  Update-Project $workingSourceDir\Newtonsoft.Json\project.json $false
+  #Update-Project $workingSourceDir\Newtonsoft.Json\project.json $false
 
   foreach ($build in $builds)
   {
@@ -229,7 +229,7 @@ function NetCliBuild($build)
 {
   $name = $build.Name
   $framework = $build.NuGetDir
-  $projectPath = "$workingSourceDir\Newtonsoft.Json\project.json"
+  $projectPath = "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.Dotnet.csproj"
 
   exec { .\Tools\Dotnet\dotnet-install.ps1 -Version $netCliVersion | Out-Default }
 
@@ -266,12 +266,12 @@ function NetCliTests($build)
 
     Write-Host -ForegroundColor Green "Restoring packages for $name"
     Write-Host
-    exec { dotnet restore "$workingSourceDir\Newtonsoft.Json.Tests\project.json" | Out-Default }
+    exec { dotnet restore "$workingSourceDir\Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.Dotnet.csproj" | Out-Default }
 
     Write-Host -ForegroundColor Green "Ensuring test project builds for $name"
     Write-Host
 
-    exec { dotnet test "$workingSourceDir\Newtonsoft.Json.Tests\project.json" -f netcoreapp1.0 -c Release -parallel none | Out-Default }
+    exec { dotnet test "$workingSourceDir\Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.Dotnet.csproj" -f netcoreapp1.0 -c Release -parallel none | Out-Default }
   }
   finally
   {
