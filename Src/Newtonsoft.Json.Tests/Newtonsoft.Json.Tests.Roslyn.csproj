@@ -6,7 +6,7 @@
     </ItemGroup>
   </Target>  
   <PropertyGroup>
-    <TargetFrameworks>netcoreapp1.0</TargetFrameworks>
+    <TargetFrameworks>net45;net40;net35;net20;netcoreapp1.0</TargetFrameworks>
     <!--<TargetFrameworks>net45;net40;net35;net20;netcoreapp1.0</TargetFrameworks>-->
     <VersionPrefix>10.0.1</VersionPrefix>
     <Authors>James Newton-King</Authors>
@@ -16,6 +16,24 @@
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
   </PropertyGroup>
   <ItemGroup>
+    <None Include="large.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Schema\Specs\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="SpaceShipV2.bson">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="bunny_pancake.jpg">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="large_sample.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="PoisonText.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Roslyn.csproj" />
     <PackageReference Include="NUnit" Version="3.6.0" />
   </ItemGroup>

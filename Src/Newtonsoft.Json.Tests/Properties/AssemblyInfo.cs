@@ -50,6 +50,10 @@ using System.Security;
 [assembly: AssemblyTitle("Json.NET Tests")]
 #endif
 
+#if DNXCORE50
+[assembly: Xunit.CollectionBehavior(DisableTestParallelization = true)]
+#endif
+
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("Newtonsoft")]
