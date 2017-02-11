@@ -59,60 +59,63 @@ namespace Newtonsoft.Json.Tests.Converters
     [TestFixture]
     public class VersionConverterTests : TestFixtureBase
     {
-        private void SerializeVersionClass(string version1, string version2)
+        internal static class VersionHelperClass
         {
-            VersionClass versionClass = new VersionClass(version1, version2);
+            internal static void SerializeVersionClass(string version1, string version2)
+            {
+                VersionClass versionClass = new VersionClass(version1, version2);
 
-            string json = JsonConvert.SerializeObject(versionClass, Formatting.Indented, new VersionConverter());
+                string json = JsonConvert.SerializeObject(versionClass, Formatting.Indented, new VersionConverter());
 
-            string expectedJson = string.Format(@"{{
+                string expectedJson = string.Format(@"{{
   ""StringProperty1"": ""StringProperty1"",
   ""Version1"": ""{0}"",
   ""Version2"": ""{1}"",
   ""StringProperty2"": ""StringProperty2""
 }}", version1, version2);
 
-            StringAssert.AreEqual(expectedJson, json);
+                StringAssert.AreEqual(expectedJson, json);
+            }
+
+            internal static void DeserializeVersionClass(string version1, string version2)
+            {
+                string json = string.Format(@"{{""StringProperty1"": ""StringProperty1"", ""Version1"": ""{0}"", ""Version2"": ""{1}"", ""StringProperty2"": ""StringProperty2""}}", version1, version2);
+                Version expectedVersion1 = new Version(version1);
+                Version expectedVersion2 = new Version(version2);
+
+                VersionClass versionClass = JsonConvert.DeserializeObject<VersionClass>(json, new VersionConverter());
+
+                Assert.AreEqual("StringProperty1", versionClass.StringProperty1);
+                Assert.AreEqual(expectedVersion1, versionClass.Version1);
+                Assert.AreEqual(expectedVersion2, versionClass.Version2);
+                Assert.AreEqual("StringProperty2", versionClass.StringProperty2);
+            }
         }
 
         [Test]
         public void SerializeVersionClass()
         {
-            SerializeVersionClass("1.0.0.0", "2.0.0.0");
-            SerializeVersionClass("1.2.0.0", "2.3.0.0");
-            SerializeVersionClass("1.2.3.0", "2.3.4.0");
-            SerializeVersionClass("1.2.3.4", "2.3.4.5");
+            VersionHelperClass.SerializeVersionClass("1.0.0.0", "2.0.0.0");
+            VersionHelperClass.SerializeVersionClass("1.2.0.0", "2.3.0.0");
+            VersionHelperClass.SerializeVersionClass("1.2.3.0", "2.3.4.0");
+            VersionHelperClass.SerializeVersionClass("1.2.3.4", "2.3.4.5");
 
-            SerializeVersionClass("1.2", "2.3");
-            SerializeVersionClass("1.2.3", "2.3.4");
-            SerializeVersionClass("1.2.3.4", "2.3.4.5");
-        }
-
-        private void DeserializeVersionClass(string version1, string version2)
-        {
-            string json = string.Format(@"{{""StringProperty1"": ""StringProperty1"", ""Version1"": ""{0}"", ""Version2"": ""{1}"", ""StringProperty2"": ""StringProperty2""}}", version1, version2);
-            Version expectedVersion1 = new Version(version1);
-            Version expectedVersion2 = new Version(version2);
-
-            VersionClass versionClass = JsonConvert.DeserializeObject<VersionClass>(json, new VersionConverter());
-
-            Assert.AreEqual("StringProperty1", versionClass.StringProperty1);
-            Assert.AreEqual(expectedVersion1, versionClass.Version1);
-            Assert.AreEqual(expectedVersion2, versionClass.Version2);
-            Assert.AreEqual("StringProperty2", versionClass.StringProperty2);
+            VersionHelperClass.SerializeVersionClass("1.2", "2.3");
+            VersionHelperClass.SerializeVersionClass("1.2.3", "2.3.4");
+            VersionHelperClass.SerializeVersionClass("1.2.3.4", "2.3.4.5");
         }
 
         [Test]
         public void DeserializeVersionClass()
         {
-            DeserializeVersionClass("1.0.0.0", "2.0.0.0");
-            DeserializeVersionClass("1.2.0.0", "2.3.0.0");
-            DeserializeVersionClass("1.2.3.0", "2.3.4.0");
-            DeserializeVersionClass("1.2.3.4", "2.3.4.5");
+            VersionHelperClass.DeserializeVersionClass("1.0.0.0", "2.0.0.0");
+            VersionHelperClass.DeserializeVersionClass("1.2.0.0", "2.3.0.0");
+            VersionHelperClass.DeserializeVersionClass("1.2.3.0", "2.3.4.0");
+            VersionHelperClass.DeserializeVersionClass("1.2.3.4", "2.3.4.5");
 
-            DeserializeVersionClass("1.2", "2.3");
-            DeserializeVersionClass("1.2.3", "2.3.4");
-            DeserializeVersionClass("1.2.3.4", "2.3.4.5");
+            VersionHelperClass.DeserializeVersionClass("1.2", "2.3");
+            VersionHelperClass.DeserializeVersionClass("1.2.3", "2.3.4");
+            VersionHelperClass.DeserializeVersionClass("1.2.3.4", "2.3.4.5");
         }
 
         [Test]
