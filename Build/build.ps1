@@ -14,6 +14,7 @@
   $netCliVersion = "1.0.0-rc4-004771"
   $nugetUrl = "http://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
   $msbuild15 = "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin\msbuild.exe"
+  $msbuild15Enabled = $false
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -25,12 +26,12 @@
   $workingSourceDir = "$workingDir\Src"
   $nugetPath = "$buildDir\nuget.exe"
   $builds = @(
-    @{Name = "Newtonsoft.Json.Roslyn"; TestsName = "Newtonsoft.Json.Tests.Roslyn"; BuildFunction = "NetCliBuild"; TestsFunction = "NetCliTests"; NuGetDir = "netstandard1.0,netstandard1.1"; Framework=$null},
-    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net45"; Framework="net-4.0"},
-    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "portable-net45+win8+wpa81+wp8"; Framework="net-4.0"},
-    @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net40"; Framework="net-4.0"},
-    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net35"; Framework="net-2.0"},
-    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net20"; Framework="net-2.0"}
+    @{Name = "Newtonsoft.Json.Roslyn"; TestsName = "Newtonsoft.Json.Tests.Roslyn"; BuildFunction = "NetCliBuild"; TestsFunction = "NetCliTests"; NuGetDir = "netstandard1.0,netstandard1.1"; Framework=$null; Enabled=$msbuild15Enabled},
+    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net45"; Framework="net-4.0"; Enabled=$true},
+    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "portable-net45+win8+wpa81+wp8"; Framework="net-4.0"; Enabled=$true},
+    @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net40"; Framework="net-4.0"; Enabled=$true},
+    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net35"; Framework="net-2.0"; Enabled=$true},
+    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net20"; Framework="net-2.0"; Enabled=$true}
   )
 }
 
@@ -68,13 +69,18 @@ task Build -depends Clean {
   foreach ($build in $builds)
   {
     $name = $build.Name
+    $enabled = $build.Enabled
     if ($name -ne $null)
     {
       Write-Host -ForegroundColor Green "Building " $name
       Write-Host -ForegroundColor Green "Signed " $signAssemblies
       Write-Host -ForegroundColor Green "Key " $signKeyPath
+      Write-Host -ForegroundColor Green "Enabled " $enabled
 
-      & $build.BuildFunction $build
+      if ($enabled)
+      {
+        & $build.BuildFunction $build
+      }
     }
   }
 }
@@ -85,10 +91,14 @@ task Package -depends Build {
   {
     $name = $build.TestsName
     $finalDirs = $build.NuGetDir.Split(",")
-        
-    foreach ($finalDir in $finalDirs)
+    $enabled = $build.Enabled
+
+    if ($enabled)
     {
-      robocopy "$workingSourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\Package\Bin\$finalDir *.dll *.pdb *.xml /NFL /NDL /NJS /NC /NS /NP /XO /XF *.CodeAnalysisLog.xml | Out-Default
+      foreach ($finalDir in $finalDirs)
+      {
+        robocopy "$workingSourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\Package\Bin\$finalDir *.dll *.pdb *.xml /NFL /NDL /NJS /NC /NS /NP /XO /XF *.CodeAnalysisLog.xml | Out-Default
+      }
     }
   }
   
@@ -117,7 +127,7 @@ task Package -depends Build {
     
     foreach ($build in $builds)
     {
-      if ($build.NuGetDir)
+      if ($build.Enabled -and $build.NuGetDir)
       {
         $name = $build.TestsName
         $frameworkDirs = $build.NuGetDir.Split(",")
@@ -191,7 +201,7 @@ task Test -depends Deploy {
 
   foreach ($build in $builds)
   {
-    if ($build.TestsFunction -ne $null)
+    if ($build.Enabled -and $build.TestsFunction -ne $null)
     {
       & $build.TestsFunction $build
     }
@@ -247,7 +257,7 @@ function NetCliBuild($build)
     Write-Host -ForegroundColor Green "Building $projectPath $framework"
     Write-Host
 
-    exec { & $msbuild15 "/t:Build" "/p:Configuration=Release" $projectPath | Out-Default }
+    exec { & $msbuild15 "/t:Build" "/p:Configuration=Release"/p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:AdditionalConstants=$additionalConstants" $projectPath | Out-Default }
   }
   finally
   {
