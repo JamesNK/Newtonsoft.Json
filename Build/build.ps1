@@ -13,8 +13,6 @@
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $netCliVersion = "1.0.0-rc4-004771"
   $nugetUrl = "http://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-  $msbuild15 = "C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\MSBuild\15.0\Bin\msbuild.exe"
-  $msbuild15Enabled = $false
   
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -26,7 +24,7 @@
   $workingSourceDir = "$workingDir\Src"
   $nugetPath = "$buildDir\nuget.exe"
   $builds = @(
-    @{Name = "Newtonsoft.Json.Roslyn"; TestsName = "Newtonsoft.Json.Tests.Roslyn"; BuildFunction = "NetCliBuild"; TestsFunction = "NetCliTests"; NuGetDir = "netstandard1.0,netstandard1.1"; Framework=$null; Enabled=$msbuild15Enabled},
+    @{Name = "Newtonsoft.Json.Roslyn"; TestsName = "Newtonsoft.Json.Tests.Roslyn"; BuildFunction = "NetCliBuild"; TestsFunction = "NetCliTests"; NuGetDir = "netstandard1.0"; Framework=$null; Enabled=$true},
     @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net45"; Framework="net-4.0"; Enabled=$true},
     @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "portable-net45+win8+wpa81+wp8"; Framework="net-4.0"; Enabled=$true},
     @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net40"; Framework="net-4.0"; Enabled=$true},
@@ -228,7 +226,8 @@ function MSBuildBuild($build)
 
 function EnsureNuGetExists()
 {
-  if (!(Test-Path $nugetPath)) {
+  if (!(Test-Path $nugetPath))
+  {
     Write-Host "Couldn't find nuget.exe. Downloading from $nugetUrl to $nugetPath"
     (New-Object System.Net.WebClient).DownloadFile($nugetUrl, $nugetPath)
   }
@@ -240,6 +239,7 @@ function NetCliBuild($build)
   $framework = $build.NuGetDir
   $projectPath = "$workingSourceDir\Newtonsoft.Json.Roslyn.sln"
   $location = "$workingSourceDir\Newtonsoft.Json"
+  $additionalConstants = switch($signAssemblies) { $true { "SIGNED" } default { "" } }
 
   exec { .\Tools\Dotnet\dotnet-install.ps1 -Version $netCliVersion | Out-Default }
 
@@ -252,12 +252,12 @@ function NetCliBuild($build)
     Write-Host -ForegroundColor Green "Restoring packages for $name"
     Write-Host
 
-    exec { & $msbuild15 "/t:Restore" "/p:Configuration=Release" $projectPath | Out-Default }
+    exec { dotnet restore $projectPath "/p:DotnetOnly=true" }
 
-    Write-Host -ForegroundColor Green "Building $projectPath $framework"
+    Write-Host -ForegroundColor Green "Building for $name"
     Write-Host
 
-    exec { & $msbuild15 "/t:Build" "/p:Configuration=Release"/p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:AdditionalConstants=$additionalConstants" $projectPath | Out-Default }
+    exec { dotnet build $projectPath "/p:DotnetOnly=true" "/p:Configuration=Release" "/p:AssemblyOriginatorKeyFile=$signKeyPath" "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:AdditionalConstants=$additionalConstants" }
   }
   finally
   {
