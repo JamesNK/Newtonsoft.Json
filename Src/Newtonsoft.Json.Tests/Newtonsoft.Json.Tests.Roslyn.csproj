@@ -52,7 +52,7 @@
     <Reference Include="System.Data.DataSetExtensions" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
-    <DefineConstants>NET45</DefineConstants>
+    <DefineConstants>NET45;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net40'">
     <PackageReference Include="FSharp.Core" Version="4.0.1.7-alpha" />
@@ -65,7 +65,7 @@
     <Reference Include="System.Data.DataSetExtensions" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
-    <DefineConstants>NET40</DefineConstants>
+    <DefineConstants>NET40;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net35'">
     <Reference Include="System.Web" />
@@ -76,13 +76,13 @@
     <Reference Include="System.Data.DataSetExtensions" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net35'">
-    <DefineConstants>NET35</DefineConstants>
+    <DefineConstants>NET35;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net20'">
     <Reference Include="System.Web" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net20'">
-    <DefineConstants>NET20</DefineConstants>
+    <DefineConstants>NET20;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp1.0'">
     <PackageReference Include="FSharp.Core" Version="4.0.1.7-alpha" />
@@ -95,6 +95,6 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-*" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp1.0'">
-    <DefineConstants>NETSTANDARD1_0;DNXCORE50;PORTABLE</DefineConstants>
+    <DefineConstants>NETSTANDARD1_0;DNXCORE50;PORTABLE;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 </Project>
