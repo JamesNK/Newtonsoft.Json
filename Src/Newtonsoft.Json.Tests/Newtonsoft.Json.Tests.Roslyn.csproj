@@ -14,6 +14,8 @@
     <Copyright>Copyright © James Newton-King 2008</Copyright>
     <AssemblyName>Newtonsoft.Json.Tests</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <!-- Workaround for https://github.com/nunit/nunit3-vs-adapter/issues/296 -->
+    <DebugType Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'netcoreapp1.0'">Full</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <None Include="large.json">
@@ -35,7 +37,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Roslyn.csproj" />
-    <PackageReference Include="NUnit" Version="3.6.0" />
   </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net45'">
     <PackageReference Include="Autofac" Version="4.0.0-rc2-240" />
@@ -53,6 +54,10 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
     <DefineConstants>NET45;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
+  <ItemGroup Condition="'$(TargetFramework)'!='netcoreapp1.0'">
+    <PackageReference Include="NUnit" Version="3.6.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
+  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net40'">
     <PackageReference Include="FSharp.Core" Version="4.0.1.7-alpha" />
     <Reference Include="Microsoft.CSharp" />
@@ -92,6 +97,9 @@
     <PackageReference Include="xunit" Version="2.2.0-*" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0-beta5-build1225" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-*" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp1.0'">
     <DefineConstants>NETSTANDARD1_1;DNXCORE50;PORTABLE;$(AdditionalConstants)</DefineConstants>
