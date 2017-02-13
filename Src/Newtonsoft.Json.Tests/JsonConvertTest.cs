@@ -885,9 +885,11 @@ namespace Newtonsoft.Json.Tests
         {
             Console.WriteLine(name);
 
-            DateTimeResult result = new DateTimeResult();
+            DateTimeResult result = new DateTimeResult()
+            {
+                IsoDateRoundtrip = TestDateTimeFormat(value, DateFormatHandling.IsoDateFormat, DateTimeZoneHandling.RoundtripKind)
+            };
 
-            result.IsoDateRoundtrip = TestDateTimeFormat(value, DateFormatHandling.IsoDateFormat, DateTimeZoneHandling.RoundtripKind);
             if (value is DateTime)
             {
                 result.IsoDateLocal = TestDateTimeFormat(value, DateFormatHandling.IsoDateFormat, DateTimeZoneHandling.Local);
@@ -1052,10 +1054,12 @@ namespace Newtonsoft.Json.Tests
             var now = DateTimeOffset.Now;
             var dict = new Dictionary<string, object> { { "foo", now } };
 
-            var settings = new JsonSerializerSettings();
-            settings.DateFormatHandling = DateFormatHandling.IsoDateFormat;
-            settings.DateParseHandling = DateParseHandling.DateTimeOffset;
-            settings.DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
+            var settings = new JsonSerializerSettings()
+            {
+                DateFormatHandling = DateFormatHandling.IsoDateFormat,
+                DateParseHandling = DateParseHandling.DateTimeOffset,
+                DateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind
+            };
             var json = JsonConvert.SerializeObject(dict, settings);
 
             var newDict = new Dictionary<string, object>();
@@ -1101,9 +1105,10 @@ namespace Newtonsoft.Json.Tests
             DateTime dt = DateTime.MaxValue;
 
             StringWriter sw = new StringWriter();
-            JsonTextWriter writer = new JsonTextWriter(sw);
-            writer.DateFormatHandling = DateFormatHandling.MicrosoftDateFormat;
-
+            JsonTextWriter writer = new JsonTextWriter(sw)
+            {
+                DateFormatHandling = DateFormatHandling.MicrosoftDateFormat
+            };
             writer.WriteValue(dt);
             writer.Flush();
         }
