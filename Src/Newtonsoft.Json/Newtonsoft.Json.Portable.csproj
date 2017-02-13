@@ -19,8 +19,8 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\Portable\</OutputPath>
-    <IntermediateOutputPath>obj\Debug\Portable\</IntermediateOutputPath>
+    <OutputPath>bin\Debug\portable-net45+win8+wpa81+wp8\</OutputPath>
+    <IntermediateOutputPath>obj\Debug\portable-net45+win8+wpa81+wp8\</IntermediateOutputPath>
     <DefineConstants>TRACE;DEBUG;CODE_ANALYSIS;$(DefineConstants);$(AdditionalConstants)</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,11 +30,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release\Portable\</OutputPath>
-    <IntermediateOutputPath>obj\Release\Portable\</IntermediateOutputPath>
-    <DefineConstants>TRACE;CODE_ANALYSIS;$(DefineConstants);$(AdditionalConstants)</DefineConstants><ErrorReport>prompt</ErrorReport>
+    <OutputPath>bin\Release\portable-net45+win8+wpa81+wp8\</OutputPath>
+    <IntermediateOutputPath>obj\Release\portable-net45+win8+wpa81+wp8\</IntermediateOutputPath>
+    <DefineConstants>TRACE;CODE_ANALYSIS;$(DefineConstants);$(AdditionalConstants)</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DocumentationFile>bin\Release\Portable\Newtonsoft.Json.xml</DocumentationFile>
+    <DocumentationFile>bin\Release\portable-net45+win8+wpa81+wp8\Newtonsoft.Json.xml</DocumentationFile>
     <RunCodeAnalysis>true</RunCodeAnalysis>
     <CodeAnalysisRuleSet>Newtonsoft.Json.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>

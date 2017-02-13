@@ -24,7 +24,7 @@
   $workingSourceDir = "$workingDir\Src"
   $nugetPath = "$buildDir\nuget.exe"
   $builds = @(
-    @{Name = "Newtonsoft.Json.Roslyn"; TestsName = "Newtonsoft.Json.Tests.Roslyn"; BuildFunction = "NetCliBuild"; TestsFunction = "NetCliTests"; NuGetDir = "netstandard1.0"; Framework=$null; Enabled=$true},
+    @{Name = "Newtonsoft.Json.Roslyn"; TestsName = "Newtonsoft.Json.Tests.Roslyn"; BuildFunction = "NetCliBuild"; TestsFunction = "NetCliTests"; NuGetDir = "netstandard1.0,netstandard1.1"; Framework=$null; Enabled=$true},
     @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net45"; Framework="net-4.0"; Enabled=$true},
     @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "portable-net45+win8+wpa81+wp8"; Framework="net-4.0"; Enabled=$true},
     @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net40"; Framework="net-4.0"; Enabled=$true},
@@ -144,18 +144,6 @@ task Package -depends Build {
 
     exec { & $nugetPath pack $nuspecPath -Symbols }
 
-    try
-    {
-      Set-Location "$workingSourceDir\Newtonsoft.Json"
-
-      exec { dotnet --version | Out-Default }
-      #exec { dotnet pack $workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.Dotnet.csproj -c Release | Out-Default }
-    }
-    finally
-    {
-      Set-Location $baseDir
-    }
-
     move -Path .\*.nupkg -Destination $workingDir\NuGet
   }
 
@@ -194,8 +182,6 @@ task Deploy -depends Package {
 
 # Run tests on deployed files
 task Test -depends Deploy {
-
-  #Update-Project $workingSourceDir\Newtonsoft.Json\project.json $false
 
   foreach ($build in $builds)
   {

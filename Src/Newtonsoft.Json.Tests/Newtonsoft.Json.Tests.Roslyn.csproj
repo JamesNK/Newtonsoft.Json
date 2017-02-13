@@ -94,6 +94,6 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-*" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp1.0'">
-    <DefineConstants>NETSTANDARD1_0;DNXCORE50;PORTABLE;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>NETSTANDARD1_1;DNXCORE50;PORTABLE;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 </Project>
