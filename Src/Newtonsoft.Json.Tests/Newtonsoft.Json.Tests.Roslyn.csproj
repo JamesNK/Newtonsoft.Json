@@ -38,6 +38,10 @@
     </None>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Roslyn.csproj" />
   </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)'!='netcoreapp1.0'">
+    <PackageReference Include="NUnit" Version="3.6.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
+  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net45'">
     <PackageReference Include="Autofac" Version="4.0.0-rc2-240" />
     <PackageReference Include="FSharp.Core" Version="4.0.1.7-alpha" />    
@@ -54,10 +58,6 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
     <DefineConstants>NET45;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)'!='netcoreapp1.0'">
-    <PackageReference Include="NUnit" Version="3.6.0" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
-  </ItemGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net40'">
     <PackageReference Include="FSharp.Core" Version="4.0.1.7-alpha" />
     <Reference Include="Microsoft.CSharp" />
