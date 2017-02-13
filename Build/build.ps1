@@ -282,7 +282,8 @@ function NetCliTests($build)
     Write-Host -ForegroundColor Green "Ensuring test project builds for $name"
     Write-Host
 
-    exec { dotnet test $projectPath -f netcoreapp1.0 -c Release | Out-Default }
+    exec { dotnet test $projectPath -f netcoreapp1.0 -c Release -l trx | Out-Default }
+    copy-item -Path "$location\TestResults\*.trx" -Destination $workingDir
   }
   finally
   {
