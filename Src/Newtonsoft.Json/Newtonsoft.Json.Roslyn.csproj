@@ -1,5 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-16"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks Condition="'$(DotnetOnly)'==''">net45;net40;net35;net20;netstandard1.0;portable-net45+win8+wpa81+wp8</TargetFrameworks>
     <TargetFrameworks Condition="'$(DotnetOnly)'=='true'">netstandard1.0</TargetFrameworks>
