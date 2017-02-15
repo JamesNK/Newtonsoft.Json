@@ -1162,6 +1162,32 @@ namespace Newtonsoft.Json.Tests.Converters
   }
 }";
             StringAssert.AreEqual(expected, arrayJsonText);
+
+            arrayXml = @"<root>
+			  <person id=""1"">
+				  <name>Alan</name>
+				  <url>http://www.google.com</url>
+				  <role json:Array=""true"" xmlns:json=""http://james.newtonking.com/projects/json"">Admin</role>
+			  </person>
+			</root>";
+
+            arrayDoc = new XmlDocument();
+            arrayDoc.LoadXml(arrayXml);
+
+            arrayJsonText = SerializeXmlNode(arrayDoc);
+            expected = @"{
+  ""root"": {
+    ""person"": {
+      ""@id"": ""1"",
+      ""name"": ""Alan"",
+      ""url"": ""http://www.google.com"",
+      ""role"": [
+        ""Admin""
+      ]
+    }
+  }
+}";
+            StringAssert.AreEqual(expected, arrayJsonText);
         }
 
         [Test]
