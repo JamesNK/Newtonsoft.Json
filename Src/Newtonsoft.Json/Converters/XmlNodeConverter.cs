@@ -2232,34 +2232,17 @@ namespace Newtonsoft.Json.Converters
         {
             foreach (IXmlNode xmlNode in c)
             {
-#if HAVE_XML_DOCUMENT
-                // ignores the attribute if it is the declaration of namespace "JsonNamespaceUri"
-                var xmlAttribute = xmlNode.WrappedNode as XmlAttribute;
-
-                if (xmlAttribute != null &&
-                    xmlAttribute.Prefix.Equals("xmlns", StringComparison.OrdinalIgnoreCase) && 
-                    xmlAttribute.Value == JsonNamespaceUri)
+                if (xmlNode.NamespaceUri == JsonNamespaceUri)
                 {
                     continue;
                 }
-#endif
 
-#if HAVE_XLINQ
-                // ignores the attribute if it is the declaration of namespace "JsonNamespaceUri"
-                var xAttribute = xmlNode.WrappedNode as XAttribute;
-
-                if (xAttribute != null &&
-                    xAttribute.IsNamespaceDeclaration &&
-                    xAttribute.Value == JsonNamespaceUri)
+                if (xmlNode.NamespaceUri == "http://www.w3.org/2000/xmlns/" && xmlNode.Value == JsonNamespaceUri)
                 {
                     continue;
                 }
-#endif
 
-                if (xmlNode.NamespaceUri != JsonNamespaceUri)
-                {
-                    return true;
-                }
+                return true;
             }
 
             return false;
