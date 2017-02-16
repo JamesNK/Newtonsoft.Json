@@ -1,13 +1,13 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <Target Name="WorkAroundPackageAndProjectReferenceConflict" BeforeTargets="ResolveLockFileReferences">
     <ItemGroup>
+      <!-- Required for https://github.com/dotnet/roslyn-project-system/issues/1386 -->
       <ResolvedCompileFileDefinitions Remove="@(ResolvedCompileFileDefinitions)" Condition="'%(ResolvedCompileFileDefinitions.Filename)' == 'Newtonsoft.Json'" />
     </ItemGroup>
   </Target>  
   <PropertyGroup>
     <TargetFrameworks Condition="'$(DotnetOnly)'==''">net45;net40;net35;net20;netcoreapp1.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(DotnetOnly)'=='true'">netcoreapp1.0</TargetFrameworks>
-    <!--<TargetFrameworks>net45;net40;net35;net20;netcoreapp1.0</TargetFrameworks>-->
     <VersionPrefix>10.0.1</VersionPrefix>
     <Authors>James Newton-King</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
@@ -38,11 +38,9 @@
     </None>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Roslyn.csproj" />
   </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'!='netcoreapp1.0'">
+  <ItemGroup Condition="'$(TargetFramework)'=='net45'">
     <PackageReference Include="NUnit" Version="3.6.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
-  </ItemGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='net45'">
     <PackageReference Include="Autofac" Version="4.0.0-rc2-240" />
     <PackageReference Include="FSharp.Core" Version="4.0.1.7-alpha" />    
     <PackageReference Include="System.Buffers" Version="4.0.0" />
@@ -59,6 +57,8 @@
     <DefineConstants>NET45;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net40'">
+    <PackageReference Include="NUnit" Version="3.6.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
     <PackageReference Include="FSharp.Core" Version="4.0.1.7-alpha" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web" />
@@ -72,6 +72,8 @@
     <DefineConstants>NET40;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net35'">
+    <PackageReference Include="NUnit" Version="3.6.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
     <Reference Include="System.Web" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Data.Entity" />
@@ -83,6 +85,8 @@
     <DefineConstants>NET35;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)'=='net20'">
+    <PackageReference Include="NUnit" Version="3.6.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net20'">
@@ -99,6 +103,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0-*" />
   </ItemGroup>
   <ItemGroup>
+    <!-- Tracking for removal https://github.com/Microsoft/vstest/issues/472 -->
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp1.0'">

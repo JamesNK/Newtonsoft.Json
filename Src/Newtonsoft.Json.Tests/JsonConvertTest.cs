@@ -949,11 +949,7 @@ namespace Newtonsoft.Json.Tests
             if (timeZoneHandling == DateTimeZoneHandling.RoundtripKind)
             {
                 T parsed = JsonConvert.DeserializeObject<T>(date);
-                try
-                {
-                    Assert.AreEqual(value, parsed);
-                }
-                catch (Exception)
+                if (!value.Equals(parsed))
                 {
                     long valueTicks = GetTicks(value);
                     long parsedTicks = GetTicks(parsed);

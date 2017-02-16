@@ -72,7 +72,7 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.AreEqual(jsonSchemaSpecTest.IsValid, v, jsonSchemaSpecTest.TestCaseDescription + " - " + jsonSchemaSpecTest.TestDescription + " - errors: " + string.Join(", ", errorMessages));
         }
 
-        public IList<JsonSchemaSpecTest> GetSpecTestDetails()
+        public static IList<JsonSchemaSpecTest> GetSpecTestDetails()
         {
             IList<JsonSchemaSpecTest> specTests = new List<JsonSchemaSpecTest>();
 
