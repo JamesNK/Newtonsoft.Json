@@ -764,6 +764,47 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("Name!", c2.Name);
         }
 
+#if !(NET20 || NET35)
+        [Test]
+        public void SerializeValueTuple()
+        {
+            ValueTuple<int, int, string> t = ValueTuple.Create(1, 2, "string");
+
+            string json = JsonConvert.SerializeObject(t, Formatting.Indented);
+
+            StringAssert.AreEqual(@"{
+  ""Item1"": 1,
+  ""Item2"": 2,
+  ""Item3"": ""string""
+}", json);
+
+            ValueTuple<int, int, string> t2 = JsonConvert.DeserializeObject<ValueTuple<int, int, string>>(json);
+
+            Assert.AreEqual(1, t2.Item1);
+            Assert.AreEqual(2, t2.Item2);
+            Assert.AreEqual("string", t2.Item3);
+        }
+#endif
+
+        [Test]
+        public void DeserializeStructWithConstructorAttribute()
+        {
+            ImmutableStructWithConstructorAttribute result = JsonConvert.DeserializeObject<ImmutableStructWithConstructorAttribute>("{ \"Value\": \"working\" }");
+
+            Assert.AreEqual("working", result.Value);
+        }
+
+        public struct ImmutableStructWithConstructorAttribute
+        {
+            [JsonConstructor]
+            public ImmutableStructWithConstructorAttribute(string value)
+            {
+                Value = value;
+            }
+
+            public string Value { get; }
+        }
+
 #if !(DNXCORE50 || NET20)
         [MetadataType(typeof(CustomerValidation))]
         public partial class CustomerWithMetadataType
@@ -780,9 +821,10 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void SerializeMetadataType()
         {
-            CustomerWithMetadataType c = new CustomerWithMetadataType();
-            c.UpdatedBy_Id = Guid.NewGuid();
-
+            CustomerWithMetadataType c = new CustomerWithMetadataType()
+            {
+                UpdatedBy_Id = Guid.NewGuid()
+            };
             string json = JsonConvert.SerializeObject(c);
 
             Assert.AreEqual("{}", json);
@@ -841,9 +883,14 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void SerializeMetadataType2()
         {
-            FaqItem c = new FaqItem();
-            c.FaqId = 1;
-            c.Sections.Add(new FaqSection());
+            FaqItem c = new FaqItem()
+            {
+                FaqId = 1,
+                Sections =
+                {
+                    new FaqSection()
+                }
+            };
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
@@ -4734,11 +4781,12 @@ Path '', line 1, position 1.");
         [Test]
         public void DataContractJsonSerializerTest()
         {
-            DataContractJsonSerializerTestClass c = new DataContractJsonSerializerTestClass();
-            c.TimeSpanProperty = new TimeSpan(200, 20, 59, 30, 900);
-            c.GuidProperty = new Guid("66143115-BE2A-4a59-AF0A-348E1EA15B1E");
-            c.AnimalProperty = new Human() { Ethnicity = "European" };
-
+            DataContractJsonSerializerTestClass c = new DataContractJsonSerializerTestClass()
+            {
+                TimeSpanProperty = new TimeSpan(200, 20, 59, 30, 900),
+                GuidProperty = new Guid("66143115-BE2A-4a59-AF0A-348E1EA15B1E"),
+                AnimalProperty = new Human() { Ethnicity = "European" }
+            };
             MemoryStream ms = new MemoryStream();
             DataContractJsonSerializer serializer = new DataContractJsonSerializer(
                 typeof(DataContractJsonSerializerTestClass),
@@ -5833,9 +5881,10 @@ Path '', line 1, position 1.");
 
             Assert.AreEqual("{\"Offset\":\"2000-01-01T00:00:00+06:00\"}", serializeObject);
 
-            JsonTextReader reader = new JsonTextReader(new StringReader(serializeObject));
-            reader.DateParseHandling = DateParseHandling.None;
-
+            JsonTextReader reader = new JsonTextReader(new StringReader(serializeObject))
+            {
+                DateParseHandling = DateParseHandling.None
+            };
             JsonSerializer serializer = new JsonSerializer();
 
             var deserializeObject = serializer.Deserialize<TimeZoneOffsetObject>(reader);
@@ -6124,13 +6173,16 @@ Path '', line 1, position 1.");
         [Test]
         public void DeserializeNullableStruct()
         {
-            NullableStructPropertyClass nullableStructPropertyClass = new NullableStructPropertyClass();
-            nullableStructPropertyClass.Foo1 = new StructISerializable() { Name = "foo 1" };
-            nullableStructPropertyClass.Foo2 = new StructISerializable() { Name = "foo 2" };
-
-            NullableStructPropertyClass barWithNull = new NullableStructPropertyClass();
-            barWithNull.Foo1 = new StructISerializable() { Name = "foo 1" };
-            barWithNull.Foo2 = null;
+            NullableStructPropertyClass nullableStructPropertyClass = new NullableStructPropertyClass()
+            {
+                Foo1 = new StructISerializable() { Name = "foo 1" },
+                Foo2 = new StructISerializable() { Name = "foo 2" }
+            };
+            NullableStructPropertyClass barWithNull = new NullableStructPropertyClass()
+            {
+                Foo1 = new StructISerializable() { Name = "foo 1" },
+                Foo2 = null
+            };
 
             //throws error on deserialization because bar1.Foo2 is of type Foo?
             string s = JsonConvert.SerializeObject(nullableStructPropertyClass);
@@ -7603,11 +7655,13 @@ Path '', line 1, position 1.");
         [Test]
         public void MetroBlogPost()
         {
-            Product product = new Product();
-            product.Name = "Apple";
-            product.ExpiryDate = new DateTime(2012, 4, 1);
-            product.Price = 3.99M;
-            product.Sizes = new[] { "Small", "Medium", "Large" };
+            Product product = new Product()
+            {
+                Name = "Apple",
+                ExpiryDate = new DateTime(2012, 4, 1),
+                Price = 3.99M,
+                Sizes = new[] { "Small", "Medium", "Large" }
+            };
 
             string json = JsonConvert.SerializeObject(product);
             //{

@@ -1,7 +1,8 @@
 ﻿{
   "dependencies": {
     "NUnit": "2.6.2",
-    "FSharp.Core": "4.0.0.1"
+    "FSharp.Core": "4.0.0.1",
+    "System.ValueTuple": "4.3.0"
   },
   "frameworks": {
     "net40": {}

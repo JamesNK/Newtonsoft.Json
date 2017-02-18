@@ -61,6 +61,37 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class TypeNameHandlingTests : TestFixtureBase
     {
+#if !(NET20 || NET35)
+        [Test]
+        public void SerializeValueTupleWithTypeName()
+        {
+            string tupleRef = ReflectionUtils.GetTypeName(typeof(ValueTuple<int, int, string>), TypeNameAssemblyFormatHandling.Simple, null);
+
+            ValueTuple<int, int, string> t = ValueTuple.Create(1, 2, "string");
+
+            string json = JsonConvert.SerializeObject(t, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            });
+
+            StringAssert.AreEqual(@"{
+  ""$type"": """ + tupleRef + @""",
+  ""Item1"": 1,
+  ""Item2"": 2,
+  ""Item3"": ""string""
+}", json);
+
+            ValueTuple<int, int, string> t2 = (ValueTuple<int, int, string>)JsonConvert.DeserializeObject(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            });
+
+            Assert.AreEqual(1, t2.Item1);
+            Assert.AreEqual(2, t2.Item2);
+            Assert.AreEqual("string", t2.Item3);
+        }
+#endif
+
 #if !(NET20 || NET35 || NET40)
         public class KnownAutoTypes
         {

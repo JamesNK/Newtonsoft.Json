@@ -6,6 +6,7 @@ namespace System.Runtime.Serialization.Formatters
     /// <summary>
     /// Indicates the method that will be used during deserialization for locating and loading assemblies.
     /// </summary>
+    [Obsolete("FormatterAssemblyStyle is obsolete. Use TypeNameAssemblyFormatHandling instead.")]
     public enum FormatterAssemblyStyle
     {
         /// <summary>
