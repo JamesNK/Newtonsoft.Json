@@ -46,19 +46,19 @@ namespace Newtonsoft.Json.Schema
         /// Gets the line number indicating where the error occurred.
         /// </summary>
         /// <value>The line number indicating where the error occurred.</value>
-        public int LineNumber { get; private set; }
+        public int LineNumber { get; }
 
         /// <summary>
         /// Gets the line position indicating where the error occurred.
         /// </summary>
         /// <value>The line position indicating where the error occurred.</value>
-        public int LinePosition { get; private set; }
+        public int LinePosition { get; }
 
         /// <summary>
         /// Gets the path to the JSON where the error occurred.
         /// </summary>
         /// <value>The path to the JSON where the error occurred.</value>
-        public string Path { get; private set; }
+        public string Path { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonSchemaException"/> class.

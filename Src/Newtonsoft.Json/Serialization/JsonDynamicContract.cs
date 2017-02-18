@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets the object's properties.
         /// </summary>
         /// <value>The object's properties.</value>
-        public JsonPropertyCollection Properties { get; private set; }
+        public JsonPropertyCollection Properties { get; }
 
         /// <summary>
         /// Gets or sets the property name resolver.

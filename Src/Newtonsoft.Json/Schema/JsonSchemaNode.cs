@@ -38,11 +38,11 @@ namespace Newtonsoft.Json.Schema
     [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
     internal class JsonSchemaNode
     {
-        public string Id { get; private set; }
-        public ReadOnlyCollection<JsonSchema> Schemas { get; private set; }
-        public Dictionary<string, JsonSchemaNode> Properties { get; private set; }
-        public Dictionary<string, JsonSchemaNode> PatternProperties { get; private set; }
-        public List<JsonSchemaNode> Items { get; private set; }
+        public string Id { get; }
+        public ReadOnlyCollection<JsonSchema> Schemas { get; }
+        public Dictionary<string, JsonSchemaNode> Properties { get; }
+        public Dictionary<string, JsonSchemaNode> PatternProperties { get; }
+        public List<JsonSchemaNode> Items { get; }
         public JsonSchemaNode AdditionalProperties { get; set; }
         public JsonSchemaNode AdditionalItems { get; set; }
 

@@ -238,7 +238,7 @@ namespace Newtonsoft.Json.Bson
 #if HAVE_BIG_INTEGER
             if (value is BigInteger)
             {
-                InternalWriteValue(JsonToken.Integer);
+                SetWriteState(JsonToken.Integer, null);
                 AddToken(new BsonBinary(((BigInteger)value).ToByteArray(), BsonBinaryType.Binary));
             }
             else
@@ -516,8 +516,7 @@ namespace Newtonsoft.Json.Bson
             }
 
             // hack to update the writer state
-            UpdateScopeWithFinishedValue();
-            AutoComplete(JsonToken.Undefined);
+            SetWriteState(JsonToken.Undefined, null);
             AddValue(value, BsonType.Oid);
         }
 
@@ -531,8 +530,7 @@ namespace Newtonsoft.Json.Bson
             ValidationUtils.ArgumentNotNull(pattern, nameof(pattern));
 
             // hack to update the writer state
-            UpdateScopeWithFinishedValue();
-            AutoComplete(JsonToken.Undefined);
+            SetWriteState(JsonToken.Undefined, null);
             AddToken(new BsonRegex(pattern, options));
         }
     }

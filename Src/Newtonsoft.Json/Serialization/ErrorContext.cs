@@ -46,25 +46,25 @@ namespace Newtonsoft.Json.Serialization
         /// Gets the error.
         /// </summary>
         /// <value>The error.</value>
-        public Exception Error { get; private set; }
+        public Exception Error { get; }
 
         /// <summary>
         /// Gets the original object that caused the error.
         /// </summary>
         /// <value>The original object that caused the error.</value>
-        public object OriginalObject { get; private set; }
+        public object OriginalObject { get; }
 
         /// <summary>
         /// Gets the member that caused the error.
         /// </summary>
         /// <value>The member that caused the error.</value>
-        public object Member { get; private set; }
+        public object Member { get; }
 
         /// <summary>
         /// Gets the path of the JSON location where the error occurred.
         /// </summary>
         /// <value>The path of the JSON location where the error occurred.</value>
-        public string Path { get; private set; }
+        public string Path { get; }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="ErrorContext"/> is handled.

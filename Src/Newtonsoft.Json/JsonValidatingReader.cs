@@ -62,8 +62,8 @@ namespace Newtonsoft.Json
 
             public string CurrentPropertyName { get; set; }
             public int ArrayItemCount { get; set; }
-            public bool IsUniqueArray { get; set; }
-            public IList<JToken> UniqueArrayItems { get; set; }
+            public bool IsUniqueArray { get; }
+            public IList<JToken> UniqueArrayItems { get; }
             public JTokenWriter CurrentItemWriter { get; set; }
 
             public IList<JsonSchemaModel> Schemas

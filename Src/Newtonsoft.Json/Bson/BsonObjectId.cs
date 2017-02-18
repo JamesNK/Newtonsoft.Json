@@ -37,7 +37,7 @@ namespace Newtonsoft.Json.Bson
         /// Gets or sets the value of the Oid.
         /// </summary>
         /// <value>The value of the Oid.</value>
-        public byte[] Value { get; private set; }
+        public byte[] Value { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="BsonObjectId"/> class.

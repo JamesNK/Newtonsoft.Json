@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets the underlying type for the contract.
         /// </summary>
         /// <value>The underlying type for the contract.</value>
-        public Type UnderlyingType { get; private set; }
+        public Type UnderlyingType { get; }
 
         /// <summary>
         /// Gets or sets the type created during deserialization.

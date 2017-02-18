@@ -77,8 +77,8 @@ namespace Newtonsoft.Json.Schema
 
         private class TypeSchema
         {
-            public Type Type { get; private set; }
-            public JsonSchema Schema { get; private set; }
+            public Type Type { get; }
+            public JsonSchema Schema { get; }
 
             public TypeSchema(Type type, JsonSchema schema)
             {

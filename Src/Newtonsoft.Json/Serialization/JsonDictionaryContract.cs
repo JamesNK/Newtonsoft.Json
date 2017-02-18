@@ -51,13 +51,13 @@ namespace Newtonsoft.Json.Serialization
         /// Gets the <see cref="System.Type"/> of the dictionary keys.
         /// </summary>
         /// <value>The <see cref="System.Type"/> of the dictionary keys.</value>
-        public Type DictionaryKeyType { get; private set; }
+        public Type DictionaryKeyType { get; }
 
         /// <summary>
         /// Gets the <see cref="System.Type"/> of the dictionary values.
         /// </summary>
         /// <value>The <see cref="System.Type"/> of the dictionary values.</value>
-        public Type DictionaryValueType { get; private set; }
+        public Type DictionaryValueType { get; }
 
         internal JsonContract KeyContract { get; set; }
 
@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Serialization
 
         private Func<object> _genericTemporaryDictionaryCreator;
 
-        internal bool ShouldCreateWrapper { get; private set; }
+        internal bool ShouldCreateWrapper { get; }
 
         private readonly ConstructorInfo _parameterizedConstructor;
 
