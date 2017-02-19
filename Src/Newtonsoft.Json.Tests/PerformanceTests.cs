@@ -684,6 +684,7 @@ If attributes are not mentioned, default values are used in each case.
                 return Encoding.UTF8.GetBytes(json);
             }, "Json.NET");
 
+#pragma warning disable 618
             byte[] bsonBytes = TimeOperation(() =>
             {
                 MemoryStream ms = null;
@@ -699,6 +700,7 @@ If attributes are not mentioned, default values are used in each case.
 
                 return ms.ToArray();
             }, "Json.NET BSON");
+#pragma warning restore 618
 
             byte[] xmlBytes = TimeOperation(() =>
             {
@@ -1051,6 +1053,7 @@ If attributes are not mentioned, default values are used in each case.
                         }
                         break;
                     }
+#pragma warning disable 618
                 case SerializeMethod.JsonNetBinary:
                     {
                         MemoryStream ms = new MemoryStream(Buffer);
@@ -1062,6 +1065,7 @@ If attributes are not mentioned, default values are used in each case.
                         json = "Bytes = " + ms.Position;
                         break;
                     }
+#pragma warning restore 618
                 case SerializeMethod.JavaScriptSerializer:
                     json = SerializeWebExtensions(value);
                     break;
@@ -1323,6 +1327,7 @@ If attributes are not mentioned, default values are used in each case.
             return a;
         }
 
+#pragma warning disable 618
         public T DeserializeJsonNetBinary<T>(byte[] bson)
         {
             Type type = typeof(T);
@@ -1334,6 +1339,7 @@ If attributes are not mentioned, default values are used in each case.
 
             return (T)serializer.Deserialize(new BsonReader(new MemoryStream(bson)), type);
         }
+#pragma warning restore 618
 
         public T DeserializeWebExtensions<T>(string json)
         {

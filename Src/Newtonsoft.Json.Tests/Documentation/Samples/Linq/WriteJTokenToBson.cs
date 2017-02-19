@@ -43,6 +43,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
     [TestFixture]
     public class WriteJTokenToBson : TestFixtureBase
     {
+#pragma warning disable 618
         [Test]
         public void Example()
         {
@@ -67,5 +68,6 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 
             Assert.AreEqual("KQAAAAJuYW1lMQAHAAAAdmFsdWUxAAJuYW1lMgAHAAAAdmFsdWUyAAA=", data);
         }
+#pragma warning restore 618
     }
 }

@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#pragma warning disable 618
 using System;
 using System.Collections.Generic;
 #if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_1
@@ -942,3 +943,4 @@ namespace Newtonsoft.Json.Tests.Bson
 #endif
     }
 }
+#pragma warning restore 618

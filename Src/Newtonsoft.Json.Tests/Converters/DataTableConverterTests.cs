@@ -274,6 +274,7 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(t1.TableName, t2.TableName);
         }
 
+#pragma warning disable 618
         [Test]
         public void RoundtripBsonBytes()
         {
@@ -314,6 +315,7 @@ namespace Newtonsoft.Json.Tests.Converters
             CollectionAssert.AreEquivalent(Encoding.UTF8.GetBytes("Hello world!"), (byte[])dr1["data"]);
             Assert.AreEqual(g, (Guid)dr1["id"]);
         }
+#pragma warning restore 618
 
         [Test]
         public void SerializeDataTableWithNull()

@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#pragma warning disable 618
 using System.IO;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Utilities;
@@ -85,3 +86,4 @@ namespace Newtonsoft.Json.Tests.Converters
         }
     }
 }
+#pragma warning restore 618

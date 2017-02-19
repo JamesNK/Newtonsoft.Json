@@ -114,6 +114,7 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture, r.Regex.Options);
         }
 
+#pragma warning disable 618
         [Test]
         public void SerializeToBson()
         {
@@ -130,19 +131,6 @@ namespace Newtonsoft.Json.Tests.Converters
             string bson = BytesToHex(ms.ToArray());
 
             Assert.AreEqual(expected, bson);
-        }
-
-        [Test]
-        public void DeserializeFromText()
-        {
-            string json = @"{
-  ""Pattern"": ""abc"",
-  ""Options"": 513
-}";
-
-            Regex newRegex = JsonConvert.DeserializeObject<Regex>(json, new RegexConverter());
-            Assert.AreEqual("abc", newRegex.ToString());
-            Assert.AreEqual(RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, newRegex.Options);
         }
 
         [Test]
@@ -208,6 +196,20 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual("/", c.Regex.ToString());
             Assert.AreEqual(RegexOptions.IgnoreCase | RegexOptions.Singleline | RegexOptions.Multiline | RegexOptions.ExplicitCapture, c.Regex.Options);
+        }
+#pragma warning restore 618
+
+        [Test]
+        public void DeserializeFromText()
+        {
+            string json = @"{
+  ""Pattern"": ""abc"",
+  ""Options"": 513
+}";
+
+            Regex newRegex = JsonConvert.DeserializeObject<Regex>(json, new RegexConverter());
+            Assert.AreEqual("abc", newRegex.ToString());
+            Assert.AreEqual(RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, newRegex.Options);
         }
 
         [Test]

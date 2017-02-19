@@ -49,11 +49,13 @@ namespace Newtonsoft.Json.Converters
         {
             Regex regex = (Regex)value;
 
+#pragma warning disable 618
             BsonWriter bsonWriter = writer as BsonWriter;
             if (bsonWriter != null)
             {
                 WriteBson(bsonWriter, regex);
             }
+#pragma warning restore 618
             else
             {
                 WriteJson(writer, regex, serializer);
@@ -65,6 +67,7 @@ namespace Newtonsoft.Json.Converters
             return ((options & flag) == flag);
         }
 
+#pragma warning disable 618
         private void WriteBson(BsonWriter writer, Regex regex)
         {
             // Regular expression - The first cstring is the regex pattern, the second
@@ -100,6 +103,7 @@ namespace Newtonsoft.Json.Converters
 
             writer.WriteRegex(regex.ToString(), options);
         }
+#pragma warning restore 618
 
         private void WriteJson(JsonWriter writer, Regex regex, JsonSerializer serializer)
         {

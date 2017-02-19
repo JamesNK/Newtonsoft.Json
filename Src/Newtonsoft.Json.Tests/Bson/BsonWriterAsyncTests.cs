@@ -23,8 +23,8 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#pragma warning disable 618
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
-
 using System;
 #if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_1
 using System.Numerics;
@@ -539,3 +539,4 @@ namespace Newtonsoft.Json.Tests.Bson
 }
 
 #endif
+#pragma warning restore 618

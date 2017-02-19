@@ -23,8 +23,8 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#pragma warning disable 618
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
-
 using System;
 using System.Collections.Generic;
 using System.Globalization;
@@ -200,9 +200,7 @@ namespace Newtonsoft.Json.Tests.Bson
             byte[] data = HexToBytes("8C-00-00-00-12-30-00-FF-FF-FF-FF-FF-FF-FF-7F-12-31-00-FF-FF-FF-FF-FF-FF-FF-7F-10-32-00-FF-FF-FF-7F-10-33-00-FF-FF-FF-7F-10-34-00-FF-00-00-00-10-35-00-7F-00-00-00-02-36-00-02-00-00-00-61-00-01-37-00-00-00-00-00-00-00-F0-45-01-38-00-FF-FF-FF-FF-FF-FF-EF-7F-01-39-00-00-00-00-E0-FF-FF-EF-47-08-31-30-00-01-05-31-31-00-05-00-00-00-02-00-01-02-03-04-09-31-32-00-40-C5-E2-BA-E3-00-00-00-09-31-33-00-40-C5-E2-BA-E3-00-00-00-00");
             MemoryStream ms = new MemoryStream(data);
             BsonReader reader = new BsonReader(ms);
-#pragma warning disable 612,618
             reader.JsonNet35BinaryCompatibility = true;
-#pragma warning restore 612,618
             reader.ReadRootValueAsArray = true;
             reader.DateTimeKindHandling = DateTimeKind.Utc;
 
@@ -409,9 +407,7 @@ namespace Newtonsoft.Json.Tests.Bson
 
             MemoryStream ms = new MemoryStream(data);
             BsonReader reader = new BsonReader(ms, true, DateTimeKind.Utc);
-#pragma warning disable 612,618
             reader.JsonNet35BinaryCompatibility = true;
-#pragma warning restore 612,618
 
             Assert.AreEqual(true, reader.ReadRootValueAsArray);
             Assert.AreEqual(DateTimeKind.Utc, reader.DateTimeKindHandling);
@@ -1344,3 +1340,4 @@ namespace Newtonsoft.Json.Tests.Bson
 }
 
 #endif
+#pragma warning restore 618

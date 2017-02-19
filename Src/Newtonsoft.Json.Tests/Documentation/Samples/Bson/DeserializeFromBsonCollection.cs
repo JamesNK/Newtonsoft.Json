@@ -50,6 +50,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
         }
         #endregion
 
+#pragma warning disable 618
         [Test]
         public void Example()
         {
@@ -73,6 +74,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
                 // Easter
             }
             #endregion
+#pragma warning restore 618
         }
     }
 }

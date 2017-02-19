@@ -51,6 +51,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
         }
         #endregion
 
+#pragma warning disable 618
         [Test]
         public void Example()
         {
@@ -76,5 +77,6 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
 
             Assert.AreEqual("MQAAAAJOYW1lAA8AAABNb3ZpZSBQcmVtaWVyZQAJU3RhcnREYXRlAED982M8AQAAAA==", data);
         }
+#pragma warning restore 618
     }
 }

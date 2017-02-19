@@ -43,6 +43,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
     [TestFixture]
     public class ReadJTokenFromBson : TestFixtureBase
     {
+#pragma warning disable 618
         [Test]
         public void Example()
         {
@@ -64,5 +65,6 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 
             Assert.AreEqual("value1", value);
         }
+#pragma warning restore 618
     }
 }

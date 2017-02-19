@@ -7771,6 +7771,7 @@ Path '', line 1, position 1.");
             public DateTimeOffset Foo { get; set; }
         }
 
+#pragma warning disable 618
         [Test]
         public void TokenFromBson()
         {
@@ -7794,6 +7795,7 @@ Path '', line 1, position 1.");
   ""2000-01-02T03:04:05+06:00""
 ]", a.ToString());
         }
+#pragma warning restore 618
 
         [Test]
         public void ObjectRequiredDeserializeMissing()
