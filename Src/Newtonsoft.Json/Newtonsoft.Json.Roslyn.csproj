@@ -19,7 +19,6 @@
     <PackageLicenseUrl>https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/JamesNK/Newtonsoft.Json</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
-    <WarningsAsErrors>true</WarningsAsErrors>
     <AssemblyName>Newtonsoft.Json</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
