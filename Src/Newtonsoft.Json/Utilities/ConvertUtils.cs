@@ -1515,7 +1515,7 @@ namespace Newtonsoft.Json.Utilities
                         {
                             if (!roundUp.HasValue)
                             {
-                                roundUp = c >= decimalMaxValueLo1;
+                                roundUp = c >= '5';
                             }
                             ++exponentFromMantissa;
                         }
