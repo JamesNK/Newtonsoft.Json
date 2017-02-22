@@ -1360,7 +1360,10 @@ namespace Newtonsoft.Json.Utilities
         public static ParseResult DecimalTryParse(char[] chars, int start, int length, out decimal value)
         {
             value = 0M;
-            const decimal decimalOverflowValue = 7922816251426433759354395033M;
+            const decimal decimalMaxValueHi28 = 7922816251426433759354395033M;
+            const ulong decimalMaxValueHi19 =   7922816251426433759UL;
+            const ulong decimalMaxValueLo9 =                       354395033UL;
+            const char decimalMaxValueLo1 =                                '5';
 
             if (length == 0)
             {
@@ -1385,7 +1388,8 @@ namespace Newtonsoft.Json.Utilities
             int numDecimalStart = end;
             int numDecimalEnd = end;
             int exponent = 0;
-            ulong mantissa = 0UL;
+            ulong hi19 = 0UL;
+            ulong lo10 = 0UL;
             int mantissaDigits = 0;
             int exponentFromMantissa = 0;
             bool? roundUp = null;
@@ -1495,19 +1499,15 @@ namespace Newtonsoft.Json.Utilities
                             }
                         }
 
-                        if (mantissaDigits < 29 && (mantissaDigits != 28 || !(storeOnly28Digits ?? (storeOnly28Digits = (value > decimalOverflowValue || (value == decimalOverflowValue && c > '5'))).GetValueOrDefault())))
+                        if (mantissaDigits < 29 && (mantissaDigits != 28 || !(storeOnly28Digits ?? (storeOnly28Digits = (hi19 > decimalMaxValueHi19 || (hi19 == decimalMaxValueHi19 && (lo10 > decimalMaxValueLo9 || (lo10 == decimalMaxValueLo9 && c > decimalMaxValueLo1))))).GetValueOrDefault())))
                         {
                             if (mantissaDigits < 19)
                             {
-                                mantissa = (mantissa * 10UL) + (ulong)(c - '0');
+                                hi19 = (hi19 * 10UL) + (ulong)(c - '0');
                             }
                             else 
                             {
-                                if (mantissaDigits == 19)
-                                {
-                                    value = mantissa;
-                                }
-                                value = (value * 10M) + (c - '0');
+                                lo10 = (lo10 * 10UL) + (ulong)(c - '0');
                             }
                             ++mantissaDigits;
                         }
@@ -1515,7 +1515,7 @@ namespace Newtonsoft.Json.Utilities
                         {
                             if (!roundUp.HasValue)
                             {
-                                roundUp = c >= '5';
+                                roundUp = c >= decimalMaxValueLo1;
                             }
                             ++exponentFromMantissa;
                         }
@@ -1530,7 +1530,11 @@ namespace Newtonsoft.Json.Utilities
 
             if (mantissaDigits <= 19)
             {
-                value = mantissa;
+                value = hi19;
+            }
+            else
+            {
+                value = (hi19 * DecimalFactors[mantissaDigits - 20]) + lo10;
             }
 
             if (exponent > 0)
@@ -1540,16 +1544,22 @@ namespace Newtonsoft.Json.Utilities
                 {
                     return ParseResult.Overflow;
                 }
-
-                if (exponent > 1)
+                if (mantissaDigits == 29)
                 {
-                    value *= DecimalFactors[exponent - 2];
+                    if (exponent > 1)
+                    {
+                        value *= DecimalFactors[exponent - 2];
+                        if (value > decimalMaxValueHi28)
+                        {
+                            return ParseResult.Overflow;
+                        }
+                    }
+                    value *= 10M;
                 }
-                if (mantissaDigits == 29 && value > decimalOverflowValue)
+                else
                 {
-                    return ParseResult.Overflow;
+                    value *= DecimalFactors[exponent - 1];
                 }
-                value *= 10M;
             }
             else
             {
@@ -1579,7 +1589,7 @@ namespace Newtonsoft.Json.Utilities
 
             if (isNegative)
             {
-                value *= -1M;
+                value = -value;
             }
 
             return ParseResult.Success;
