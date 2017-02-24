@@ -1357,6 +1357,265 @@ namespace Newtonsoft.Json.Utilities
             return double.IsInfinity(value) ? ParseResult.Overflow : ParseResult.Success;
         }
 
+        public static ParseResult DecimalTryParse(char[] chars, int start, int length, out decimal value)
+        {
+            value = 0M;
+            const decimal decimalMaxValueHi28 = 7922816251426433759354395033M;
+            const ulong decimalMaxValueHi19 =   7922816251426433759UL;
+            const ulong decimalMaxValueLo9 =                       354395033UL;
+            const char decimalMaxValueLo1 =                                '5';
+
+            if (length == 0)
+            {
+                return ParseResult.Invalid;
+            }
+
+            bool isNegative = (chars[start] == '-');
+            if (isNegative)
+            {
+                // text just a negative sign
+                if (length == 1)
+                {
+                    return ParseResult.Invalid;
+                }
+
+                start++;
+                length--;
+            }
+
+            int i = start;
+            int end = start + length;
+            int numDecimalStart = end;
+            int numDecimalEnd = end;
+            int exponent = 0;
+            ulong hi19 = 0UL;
+            ulong lo10 = 0UL;
+            int mantissaDigits = 0;
+            int exponentFromMantissa = 0;
+            bool? roundUp = null;
+            bool? storeOnly28Digits = null;
+            for (; i < end; i++)
+            {
+                char c = chars[i];
+                switch (c)
+                {
+                    case '.':
+                        if (i == start)
+                        {
+                            return ParseResult.Invalid;
+                        }
+                        if (i + 1 == end)
+                        {
+                            return ParseResult.Invalid;
+                        }
+
+                        if (numDecimalStart != end)
+                        {
+                            // multiple decimal points
+                            return ParseResult.Invalid;
+                        }
+
+                        numDecimalStart = i + 1;
+                        break;
+                    case 'e':
+                    case 'E':
+                        if (i == start)
+                        {
+                            return ParseResult.Invalid;
+                        }
+                        if (i == numDecimalStart)
+                        {
+                            // E follows decimal point		
+                            return ParseResult.Invalid;
+                        }
+                        i++;
+                        if (i == end)
+                        {
+                            return ParseResult.Invalid;
+                        }
+
+                        if (numDecimalStart < end)
+                        {
+                            numDecimalEnd = i - 1;
+                        }
+
+                        c = chars[i];
+                        bool exponentNegative = false;
+                        switch (c)
+                        {
+                            case '-':
+                                exponentNegative = true;
+                                i++;
+                                break;
+                            case '+':
+                                i++;
+                                break;
+                        }
+
+                        // parse 3 digit 
+                        for (; i < end; i++)
+                        {
+                            c = chars[i];
+                            if (c < '0' || c > '9')
+                            {
+                                return ParseResult.Invalid;
+                            }
+
+                            int newExponent = (10 * exponent) + (c - '0');
+                            // stops updating exponent when overflowing
+                            if (exponent < newExponent)
+                            {
+                                exponent = newExponent;
+                            }
+                        }
+
+                        if (exponentNegative)
+                        {
+                            exponent = -exponent;
+                        }
+                        break;
+                    default:
+                        if (c < '0' || c > '9')
+                        {
+                            return ParseResult.Invalid;
+                        }
+
+                        if (i == start && c == '0')
+                        {
+                            i++;
+                            if (i != end)
+                            {
+                                c = chars[i];
+                                if (c == '.')
+                                {
+                                    goto case '.';
+                                }
+                                if (c == 'e' || c == 'E')
+                                {
+                                    goto case 'E';
+                                }
+
+                                return ParseResult.Invalid;
+                            }
+                        }
+
+                        if (mantissaDigits < 29 && (mantissaDigits != 28 || !(storeOnly28Digits ?? (storeOnly28Digits = (hi19 > decimalMaxValueHi19 || (hi19 == decimalMaxValueHi19 && (lo10 > decimalMaxValueLo9 || (lo10 == decimalMaxValueLo9 && c > decimalMaxValueLo1))))).GetValueOrDefault())))
+                        {
+                            if (mantissaDigits < 19)
+                            {
+                                hi19 = (hi19 * 10UL) + (ulong)(c - '0');
+                            }
+                            else 
+                            {
+                                lo10 = (lo10 * 10UL) + (ulong)(c - '0');
+                            }
+                            ++mantissaDigits;
+                        }
+                        else
+                        {
+                            if (!roundUp.HasValue)
+                            {
+                                roundUp = c >= '5';
+                            }
+                            ++exponentFromMantissa;
+                        }
+                        break;
+                }
+            }
+
+            exponent += exponentFromMantissa;
+
+            // correct the decimal point
+            exponent -= (numDecimalEnd - numDecimalStart);
+
+            if (mantissaDigits <= 19)
+            {
+                value = hi19;
+            }
+            else
+            {
+                value = (hi19 * DecimalFactors[mantissaDigits - 20]) + lo10;
+            }
+
+            if (exponent > 0)
+            {
+                mantissaDigits += exponent;
+                if (mantissaDigits > 29)
+                {
+                    return ParseResult.Overflow;
+                }
+                if (mantissaDigits == 29)
+                {
+                    if (exponent > 1)
+                    {
+                        value *= DecimalFactors[exponent - 2];
+                        if (value > decimalMaxValueHi28)
+                        {
+                            return ParseResult.Overflow;
+                        }
+                    }
+                    value *= 10M;
+                }
+                else
+                {
+                    value *= DecimalFactors[exponent - 1];
+                }
+            }
+            else
+            {
+                if (roundUp == true && exponent >= -28)
+                {
+                    ++value;
+                }
+                if (exponent < 0)
+                {
+                    if (mantissaDigits + exponent + 28 <= 0)
+                    {
+                        value = 0M;
+                        return ParseResult.Success;
+                    }
+                    if (exponent >= -28)
+                    {
+                        value /= DecimalFactors[-exponent - 1];
+                    }
+                    else
+                    {
+                        decimal[] decimalFactors = DecimalFactors;
+                        value /= decimalFactors[27];
+                        value /= decimalFactors[-exponent - 29];
+                    }
+                }
+            }
+
+            if (isNegative)
+            {
+                value = -value;
+            }
+
+            return ParseResult.Success;
+        }
+
+        private static decimal[] _decimalFactors;
+
+        private static decimal[] DecimalFactors
+        {
+            get
+            {
+                decimal[] decimalFactors = _decimalFactors;
+                if (decimalFactors == null)
+                {
+                    decimalFactors = new decimal[28];
+                    decimal last = 1M;
+                    for (int i = 0; i < decimalFactors.Length; ++i)
+                    {
+                        decimalFactors[i] = last *= 10M;
+                    }
+                    _decimalFactors = decimalFactors;
+                }
+                return decimalFactors;
+            }
+        }
+
         public static bool TryConvertGuid(string s, out Guid g)
         {
             // GUID has to have format 00000000-0000-0000-0000-000000000000

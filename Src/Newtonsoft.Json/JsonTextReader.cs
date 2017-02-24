@@ -2019,10 +2019,9 @@ namespace Newtonsoft.Json
                 }
                 else
                 {
-                    string number = _stringReference.ToString();
-
                     decimal value;
-                    if (decimal.TryParse(number, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out value))
+                    ParseResult parseResult = ConvertUtils.DecimalTryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out value);
+                    if (parseResult == ParseResult.Success)
                     {
                         numberValue = value;
                     }
@@ -2123,18 +2122,17 @@ namespace Newtonsoft.Json
                     }
                     else
                     {
-                        string number = _stringReference.ToString();
-
                         if (_floatParseHandling == FloatParseHandling.Decimal)
                         {
                             decimal d;
-                            if (decimal.TryParse(number, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out d))
+                            parseResult = ConvertUtils.DecimalTryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out d);
+                            if (parseResult == ParseResult.Success)
                             {
                                 numberValue = d;
                             }
                             else
                             {
-                                throw ThrowReaderError("Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, number));
+                                throw ThrowReaderError("Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                             }
                         }
                         else
@@ -2147,7 +2145,7 @@ namespace Newtonsoft.Json
                             }
                             else
                             {
-                                throw ThrowReaderError("Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, number));
+                                throw ThrowReaderError("Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                             }
                         }
 

@@ -158,6 +158,82 @@ namespace Newtonsoft.Json.Tests.Utilities
             AssertDoubleTryParse("4.94065645841247E+555", ParseResult.Overflow, null);
         }
 
+        private void AssertDecimalTryParse(string s, ParseResult expectedResult, decimal? expectedValue)
+        {
+            decimal d;
+            char[] c = s.ToCharArray();
+            ParseResult result = ConvertUtils.DecimalTryParse(c, 0, c.Length, out d);
+
+            decimal d2;
+            bool result2 = decimal.TryParse(s, NumberStyles.Float, CultureInfo.InvariantCulture, out d2)
+                && !s.StartsWith(".")
+                && !s.EndsWith(".")
+                && !(s.StartsWith("0") && s.Length > 1 && !s.StartsWith("0.") && !s.StartsWith("0e", StringComparison.OrdinalIgnoreCase))
+                && !(s.StartsWith("-0") && s.Length > 2 && !s.StartsWith("-0.") && !s.StartsWith("-0e", StringComparison.OrdinalIgnoreCase))
+                && s.IndexOf(".e", StringComparison.OrdinalIgnoreCase) == -1;
+
+            Assert.AreEqual(expectedResult, result);
+            Assert.AreEqual(expectedResult == ParseResult.Success, result2);
+
+            if (result2)
+            {
+                Assert.IsTrue(expectedValue.HasValue);
+
+                Assert.AreEqual(expectedValue.Value, d, "Input string: " + s);
+
+                Assert.AreEqual(expectedValue.Value, d2, "DecimalTryParse result is not equal to decimal.Parse. Input string: " + s);
+            }
+        }
+
+        [Test]
+        public void DecimalTryParse()
+        {
+            AssertDecimalTryParse("1", ParseResult.Success, 1M);
+            AssertDecimalTryParse("1E1", ParseResult.Success, 10M);
+            AssertDecimalTryParse("1E28", ParseResult.Success, 10000000000000000000000000000M);
+
+            AssertDecimalTryParse("1.2345678901234567890123456789", ParseResult.Success, 1.2345678901234567890123456789M);
+
+            AssertDecimalTryParse(decimal.MaxValue.ToString(), ParseResult.Success, decimal.MaxValue);
+            AssertDecimalTryParse(decimal.MinValue.ToString(), ParseResult.Success, decimal.MinValue);
+
+            AssertDecimalTryParse("12345678901234567890123456789", ParseResult.Success, 12345678901234567890123456789M);
+            AssertDecimalTryParse("12345678901234567890123456789.4", ParseResult.Success, 12345678901234567890123456789M);
+            AssertDecimalTryParse("12345678901234567890123456789.5", ParseResult.Success, 12345678901234567890123456790M);
+            AssertDecimalTryParse("-12345678901234567890123456789", ParseResult.Success, -12345678901234567890123456789M);
+            AssertDecimalTryParse("-12345678901234567890123456789.4", ParseResult.Success, -12345678901234567890123456789M);
+            AssertDecimalTryParse("-12345678901234567890123456789.5", ParseResult.Success, -12345678901234567890123456790M);
+
+            AssertDecimalTryParse("1.2345678901234567890123456789e-25", ParseResult.Success, 0.0000000000000000000000001235M);
+            AssertDecimalTryParse("1.2345678901234567890123456789e-26", ParseResult.Success, 0.0000000000000000000000000123M);
+            AssertDecimalTryParse("1.2345678901234567890123456789e-28", ParseResult.Success, 0.0000000000000000000000000001M);
+            AssertDecimalTryParse("1.2345678901234567890123456789e-29", ParseResult.Success, 0M);
+            AssertDecimalTryParse("1E-999", ParseResult.Success, 0M);
+
+            AssertDecimalTryParse("1E+29", ParseResult.Overflow, null);
+            AssertDecimalTryParse("-1E+29", ParseResult.Overflow, null);
+
+            AssertDecimalTryParse("01E28", ParseResult.Invalid, null);
+            AssertDecimalTryParse("-01E28", ParseResult.Invalid, null);
+            AssertDecimalTryParse("1.", ParseResult.Invalid, null);
+            AssertDecimalTryParse("0.", ParseResult.Invalid, null);
+            AssertDecimalTryParse(".1E23", ParseResult.Invalid, null);
+            AssertDecimalTryParse("1..1E23", ParseResult.Invalid, null);
+            AssertDecimalTryParse("1.E23", ParseResult.Invalid, null);
+            AssertDecimalTryParse("1E2.3", ParseResult.Invalid, null);
+            AssertDecimalTryParse("1EE-10", ParseResult.Invalid, null);
+            AssertDecimalTryParse("1E-1-0", ParseResult.Invalid, null);
+            AssertDecimalTryParse("1-E10", ParseResult.Invalid, null);
+            AssertDecimalTryParse("", ParseResult.Invalid, null);
+            AssertDecimalTryParse("5.1231231E", ParseResult.Invalid, null);
+            AssertDecimalTryParse("1E+23i", ParseResult.Invalid, null);
+            AssertDecimalTryParse("1EE+23", ParseResult.Invalid, null);
+            AssertDecimalTryParse("1E++23", ParseResult.Invalid, null);
+            AssertDecimalTryParse("1E--23", ParseResult.Invalid, null);
+            AssertDecimalTryParse("E23", ParseResult.Invalid, null);
+            AssertDecimalTryParse("00", ParseResult.Invalid, null);
+        }
+
         [Test]
         public void Int64TryParse()
         {
