@@ -295,7 +295,6 @@
     <Compile Include="Linq\JValueTests.cs" />
     <Compile Include="Linq\LinqToJsonTest.cs" />
     <Compile Include="Linq\MergeTests.cs" />
-    <Compile Include="PerformanceTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Schema\ExtensionsTests.cs" />
     <Compile Include="Schema\JsonSchemaBuilderTests.cs" />
