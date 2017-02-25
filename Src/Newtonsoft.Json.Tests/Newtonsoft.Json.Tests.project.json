@@ -1,6 +1,7 @@
 ﻿{
   "dependencies": {
     "Autofac": "4.0.0-rc2-240",
+    "BenchmarkDotNet": "0.10.2",
     "FSharp.Core": "4.0.0.1",
     "NUnit": "2.6.2",
     "System.Buffers": "4.0.0",

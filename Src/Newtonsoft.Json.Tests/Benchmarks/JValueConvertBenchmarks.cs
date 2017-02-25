@@ -24,20 +24,41 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using BenchmarkDotNet.Running;
-using Newtonsoft.Json.Tests.Benchmarks;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using BenchmarkDotNet.Attributes;
+using Newtonsoft.Json.Linq;
 
-namespace Newtonsoft.Json.TestConsole
+namespace Newtonsoft.Json.Tests.Benchmarks
 {
-    public class Program
+    public class JValueConvertBenchmarks
     {
-        public static void Main(string[] args)
-        {
-            string version = FileVersionInfo.GetVersionInfo(typeof(JsonConvert).Assembly.Location).FileVersion;
-            Console.WriteLine("Json.NET Version: " + version);
+        private static readonly JValue StringJValue = new JValue("String!");
 
-            new BenchmarkSwitcher(new [] { typeof(SerializeBenchmarks), typeof(DeserializeBenchmarks) }).Run(new[] { "*" });
+        [Benchmark]
+        public string JTokenToObjectFast()
+        {
+            return (string)StringJValue.ToObject(typeof(string));
+        }
+
+        [Benchmark]
+        public string JTokenToObjectWithSerializer()
+        {
+            return (string)StringJValue.ToObject(typeof(string), new JsonSerializer());
+        }
+
+        [Benchmark]
+        public string JTokenToObjectConvert()
+        {
+            return StringJValue.Value<string>();
+        }
+
+        [Benchmark]
+        public string JTokenToObjectCast()
+        {
+            return (string)StringJValue;
         }
     }
 }

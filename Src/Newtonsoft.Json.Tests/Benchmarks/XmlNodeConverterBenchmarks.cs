@@ -24,20 +24,42 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using BenchmarkDotNet.Running;
-using Newtonsoft.Json.Tests.Benchmarks;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml;
+using System.Xml.Linq;
+using BenchmarkDotNet.Attributes;
+using Newtonsoft.Json.Linq;
 
-namespace Newtonsoft.Json.TestConsole
+namespace Newtonsoft.Json.Tests.Benchmarks
 {
-    public class Program
+    public class XmlNodeConverterBenchmarks
     {
-        public static void Main(string[] args)
+        [Benchmark]
+        public void ConvertXmlNode()
         {
-            string version = FileVersionInfo.GetVersionInfo(typeof(JsonConvert).Assembly.Location).FileVersion;
-            Console.WriteLine("Json.NET Version: " + version);
+            XmlDocument doc = new XmlDocument();
+            using (FileStream file = System.IO.File.OpenRead("large_sample.xml"))
+            {
+                doc.Load(file);
+            }
 
-            new BenchmarkSwitcher(new [] { typeof(SerializeBenchmarks), typeof(DeserializeBenchmarks) }).Run(new[] { "*" });
+            JsonConvert.SerializeXmlNode(doc);
+        }
+
+        [Benchmark]
+        public void ConvertXNode()
+        {
+            XDocument doc;
+            using (FileStream file = System.IO.File.OpenRead("large_sample.xml"))
+            {
+                doc = XDocument.Load(file);
+            }
+
+            JsonConvert.SerializeXNode(doc);
         }
     }
 }

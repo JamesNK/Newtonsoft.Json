@@ -24,20 +24,31 @@
 #endregion
 
 using System;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
 using BenchmarkDotNet.Running;
-using Newtonsoft.Json.Tests.Benchmarks;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 
-namespace Newtonsoft.Json.TestConsole
+#endif
+
+namespace Newtonsoft.Json.Tests.Benchmarks
 {
-    public class Program
+    [TestFixture]
+    public class Runner : TestFixtureBase
     {
-        public static void Main(string[] args)
+        [Test]
+        [Ignore("Don't run with other unit tests")]
+        public void RunBenchmarks()
         {
-            string version = FileVersionInfo.GetVersionInfo(typeof(JsonConvert).Assembly.Location).FileVersion;
-            Console.WriteLine("Json.NET Version: " + version);
-
-            new BenchmarkSwitcher(new [] { typeof(SerializeBenchmarks), typeof(DeserializeBenchmarks) }).Run(new[] { "*" });
+            new BenchmarkSwitcher(typeof(Runner).GetTypeInfo().Assembly).Run(new []{ "*" });
         }
     }
 }

@@ -1361,9 +1361,9 @@ namespace Newtonsoft.Json.Utilities
         {
             value = 0M;
             const decimal decimalMaxValueHi28 = 7922816251426433759354395033M;
-            const ulong decimalMaxValueHi19 =   7922816251426433759UL;
-            const ulong decimalMaxValueLo9 =                       354395033UL;
-            const char decimalMaxValueLo1 =                                '5';
+            const ulong decimalMaxValueHi19 = 7922816251426433759UL;
+            const ulong decimalMaxValueLo9 = 354395033UL;
+            const char decimalMaxValueLo1 = '5';
 
             if (length == 0)
             {
@@ -1505,7 +1505,7 @@ namespace Newtonsoft.Json.Utilities
                             {
                                 hi19 = (hi19 * 10UL) + (ulong)(c - '0');
                             }
-                            else 
+                            else
                             {
                                 lo10 = (lo10 * 10UL) + (ulong)(c - '0');
                             }

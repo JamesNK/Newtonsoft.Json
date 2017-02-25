@@ -23,21 +23,25 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-using System.Diagnostics;
+using System.IO;
+using BenchmarkDotNet.Attributes;
 using BenchmarkDotNet.Running;
-using Newtonsoft.Json.Tests.Benchmarks;
 
-namespace Newtonsoft.Json.TestConsole
+namespace Newtonsoft.Json.Tests.Benchmarks
 {
-    public class Program
+    public class JsonTextWriterBenchmarks
     {
-        public static void Main(string[] args)
-        {
-            string version = FileVersionInfo.GetVersionInfo(typeof(JsonConvert).Assembly.Location).FileVersion;
-            Console.WriteLine("Json.NET Version: " + version);
+        private static readonly string UnicodeCharsString = (new string('\0', 30));
 
-            new BenchmarkSwitcher(new [] { typeof(SerializeBenchmarks), typeof(DeserializeBenchmarks) }).Run(new[] { "*" });
+        [Benchmark]
+        public string SerializeUnicodeChars()
+        {
+            StringWriter sw = new StringWriter();
+            JsonTextWriter jsonTextWriter = new JsonTextWriter(sw);
+            jsonTextWriter.WriteValue(UnicodeCharsString);
+            jsonTextWriter.Flush();
+
+            return sw.ToString();
         }
     }
 }

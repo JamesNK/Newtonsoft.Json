@@ -24,20 +24,39 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using BenchmarkDotNet.Running;
-using Newtonsoft.Json.Tests.Benchmarks;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Xml;
+using BenchmarkDotNet.Attributes;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Tests.TestObjects;
 
-namespace Newtonsoft.Json.TestConsole
+namespace Newtonsoft.Json.Tests.Benchmarks
 {
-    public class Program
+    public class SerializeBenchmarks
     {
-        public static void Main(string[] args)
-        {
-            string version = FileVersionInfo.GetVersionInfo(typeof(JsonConvert).Assembly.Location).FileVersion;
-            Console.WriteLine("Json.NET Version: " + version);
+        private static readonly IList<RootObject> LargeCollection;
 
-            new BenchmarkSwitcher(new [] { typeof(SerializeBenchmarks), typeof(DeserializeBenchmarks) }).Run(new[] { "*" });
+        static SerializeBenchmarks()
+        {
+            string json = System.IO.File.ReadAllText("large.json");
+
+            LargeCollection = JsonConvert.DeserializeObject<IList<RootObject>>(json);
+        }
+
+        [Benchmark]
+        public void SerializeLargeJsonFile()
+        {
+            using (StreamWriter file = System.IO.File.CreateText("largewrite.json"))
+            {
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Formatting = Formatting.Indented;
+                serializer.Serialize(file, LargeCollection);
+            }
         }
     }
 }

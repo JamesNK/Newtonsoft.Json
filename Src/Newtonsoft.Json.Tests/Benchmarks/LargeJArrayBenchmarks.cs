@@ -24,20 +24,51 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using BenchmarkDotNet.Running;
-using Newtonsoft.Json.Tests.Benchmarks;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using BenchmarkDotNet.Attributes;
+using Newtonsoft.Json.Linq;
 
-namespace Newtonsoft.Json.TestConsole
+namespace Newtonsoft.Json.Tests.Benchmarks
 {
-    public class Program
+    public class LargeJArrayBenchmarks
     {
-        public static void Main(string[] args)
-        {
-            string version = FileVersionInfo.GetVersionInfo(typeof(JsonConvert).Assembly.Location).FileVersion;
-            Console.WriteLine("Json.NET Version: " + version);
+        private JArray _largeJArraySample;
 
-            new BenchmarkSwitcher(new [] { typeof(SerializeBenchmarks), typeof(DeserializeBenchmarks) }).Run(new[] { "*" });
+        [Setup]
+        public void SetupData()
+        {
+            _largeJArraySample = new JArray();
+            for (int i = 0; i < 100000; i++)
+            {
+                _largeJArraySample.Add(i);
+            }
+        }
+
+        [Benchmark]
+        public string JTokenPathFirstItem()
+        {
+            JToken first = _largeJArraySample.First;
+
+            return first.Path;
+        }
+
+        [Benchmark]
+        public string JTokenPathLastItem()
+        {
+            JToken last = _largeJArraySample.Last;
+
+            return last.Path;
+        }
+
+        [Benchmark]
+        public void AddPerformance()
+        {
+            _largeJArraySample.Add(1);
+            _largeJArraySample.RemoveAt(_largeJArraySample.Count - 1);
         }
     }
 }

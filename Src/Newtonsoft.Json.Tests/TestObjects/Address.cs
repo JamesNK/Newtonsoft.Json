@@ -24,20 +24,42 @@
 #endregion
 
 using System;
-using System.Diagnostics;
-using BenchmarkDotNet.Running;
-using Newtonsoft.Json.Tests.Benchmarks;
+using System.Globalization;
+using System.Runtime.Serialization;
 
-namespace Newtonsoft.Json.TestConsole
+namespace Newtonsoft.Json.Tests.TestObjects
 {
-    public class Program
+#if !(NET20 || DNXCORE50)
+    [Serializable]
+    [DataContract]
+    public class Address
     {
-        public static void Main(string[] args)
+        [DataMember]
+        public string Street
         {
-            string version = FileVersionInfo.GetVersionInfo(typeof(JsonConvert).Assembly.Location).FileVersion;
-            Console.WriteLine("Json.NET Version: " + version);
-
-            new BenchmarkSwitcher(new [] { typeof(SerializeBenchmarks), typeof(DeserializeBenchmarks) }).Run(new[] { "*" });
+            get { return _street; }
+            set { _street = value; }
         }
+
+        private string _street = "32 Kaiea";
+
+        [DataMember]
+        public string Phone
+        {
+            get { return _Phone; }
+            set { _Phone = value; }
+        }
+
+        private string _Phone = "(503) 814-6335";
+
+        [DataMember]
+        public DateTime Entered
+        {
+            get { return _Entered; }
+            set { _Entered = value; }
+        }
+
+        private DateTime _Entered = DateTime.Parse("01/01/2007", CultureInfo.CurrentCulture.DateTimeFormat);
     }
+#endif
 }

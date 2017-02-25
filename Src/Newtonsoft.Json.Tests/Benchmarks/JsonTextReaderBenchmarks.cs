@@ -23,21 +23,46 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-using System.Diagnostics;
-using BenchmarkDotNet.Running;
-using Newtonsoft.Json.Tests.Benchmarks;
+using System.IO;
+using System.Linq;
+using System.Xml;
+using BenchmarkDotNet.Attributes;
+using Newtonsoft.Json.Linq;
 
-namespace Newtonsoft.Json.TestConsole
+namespace Newtonsoft.Json.Tests.Benchmarks
 {
-    public class Program
+    public class JsonTextReaderBenchmarks
     {
-        public static void Main(string[] args)
-        {
-            string version = FileVersionInfo.GetVersionInfo(typeof(JsonConvert).Assembly.Location).FileVersion;
-            Console.WriteLine("Json.NET Version: " + version);
+        private static readonly string FloatArrayJson;
 
-            new BenchmarkSwitcher(new [] { typeof(SerializeBenchmarks), typeof(DeserializeBenchmarks) }).Run(new[] { "*" });
+        static JsonTextReaderBenchmarks()
+        {
+            FloatArrayJson = new JArray(Enumerable.Range(0, 5000).Select(i => i * 1.1m)).ToString(Formatting.None);
+        }
+
+        [Benchmark]
+        public void ReadLargeJson()
+        {
+            using (StreamReader fs = System.IO.File.OpenText("large.json"))
+            using (JsonTextReader jsonTextReader = new JsonTextReader(fs))
+            {
+                while (jsonTextReader.Read())
+                {
+                }
+            }
+        }
+
+        [Benchmark]
+        public void ReadAsDecimal()
+        {
+            using (JsonTextReader jsonTextReader = new JsonTextReader(new StringReader(FloatArrayJson)))
+            {
+                jsonTextReader.Read();
+
+                while (jsonTextReader.ReadAsDecimal() != null)
+                {
+                }
+            }
         }
     }
 }

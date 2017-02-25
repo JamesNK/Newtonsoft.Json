@@ -234,7 +234,7 @@ namespace Newtonsoft.Json.Tests
             return hex;
         }
 
-        protected byte[] HexToBytes(string hex)
+        public static byte[] HexToBytes(string hex)
         {
             string fixedHex = hex.Replace("-", string.Empty);
 

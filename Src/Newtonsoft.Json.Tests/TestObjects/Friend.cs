@@ -1,4 +1,6 @@
-﻿#region License
+﻿using System.Linq;
+using System.Text;
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,21 +25,11 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-using System.Diagnostics;
-using BenchmarkDotNet.Running;
-using Newtonsoft.Json.Tests.Benchmarks;
-
-namespace Newtonsoft.Json.TestConsole
+namespace Newtonsoft.Json.Tests.TestObjects
 {
-    public class Program
+    public class Friend
     {
-        public static void Main(string[] args)
-        {
-            string version = FileVersionInfo.GetVersionInfo(typeof(JsonConvert).Assembly.Location).FileVersion;
-            Console.WriteLine("Json.NET Version: " + version);
-
-            new BenchmarkSwitcher(new [] { typeof(SerializeBenchmarks), typeof(DeserializeBenchmarks) }).Run(new[] { "*" });
-        }
+        public int id { get; set; }
+        public string name { get; set; }
     }
 }

@@ -49,6 +49,19 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Benchmarks\BenchmarkConstants.cs" />
+    <Compile Include="Benchmarks\SerializeBenchmarks.cs" />
+    <Compile Include="Benchmarks\XmlNodeConverterBenchmarks.cs" />
+    <Compile Include="Benchmarks\JsonTextWriterBenchmarks.cs" />
+    <Compile Include="Benchmarks\JsonTextReaderBenchmarks.cs" />
+    <Compile Include="Benchmarks\SerializeComparisonBenchmarks.cs" />
+    <Compile Include="Benchmarks\DeserializeComparisonBenchmarks.cs" />
+    <Compile Include="Benchmarks\DeserializeBenchmarks.cs" />
+    <Compile Include="Benchmarks\JValueConvertBenchmarks.cs" />
+    <Compile Include="Benchmarks\LargeJArrayBenchmarks.cs" />
+    <Compile Include="Benchmarks\JTokenBenchmarks.cs" />
+    <Compile Include="Benchmarks\LowLevelBenchmarks.cs" />
+    <Compile Include="Benchmarks\Runner.cs" />
     <Compile Include="Bson\BsonReaderAsyncTests.cs" />
     <Compile Include="Bson\BsonReaderTests.cs" />
     <Compile Include="Bson\BsonWriterAsyncTests.cs" />
@@ -240,6 +253,8 @@
     <Compile Include="Linq\JTokenWriterAsyncTests.cs" />
     <Compile Include="Linq\JValueAsyncTests.cs" />
     <Compile Include="Linq\LinqToJsonAsyncTests.cs" />
+    <Compile Include="TestObjects\Address.cs" />
+    <Compile Include="TestObjects\Friend.cs" />
     <Compile Include="TestObjects\JsonReaderStubWithIsClosed.cs" />
     <Compile Include="TestObjects\JsonTextReaderTests\FakeArrayPool.cs" />
     <Compile Include="JsonTextReaderTests\FloatTests.cs" />
@@ -456,6 +471,7 @@
     <Compile Include="TestObjects\RoleTransfer.cs" />
     <Compile Include="TestObjects\RoleTransferDirection.cs" />
     <Compile Include="TestObjects\RoleTransferOperation.cs" />
+    <Compile Include="TestObjects\RootObject.cs" />
     <Compile Include="TestObjects\SearchResult.cs" />
     <Compile Include="TestObjects\SelectListItem.cs" />
     <Compile Include="TestObjects\SerializationEventTestDictionary.cs" />
@@ -477,6 +493,7 @@
     <Compile Include="TestObjects\SubKlass.cs" />
     <Compile Include="TestObjects\SuperKlass.cs" />
     <Compile Include="TestObjects\GeometricForms\Tags.cs" />
+    <Compile Include="TestObjects\TestClass.cs" />
     <Compile Include="TestObjects\TestComponent.cs" />
     <Compile Include="TestObjects\TestComponentSimple.cs" />
     <Compile Include="TestObjects\TestObject.cs" />
