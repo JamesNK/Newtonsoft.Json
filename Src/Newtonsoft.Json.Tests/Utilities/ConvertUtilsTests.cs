@@ -188,14 +188,19 @@ namespace Newtonsoft.Json.Tests.Utilities
         [Test]
         public void DecimalTryParse()
         {
+            AssertDecimalTryParse("0", ParseResult.Success, 0M);
+            AssertDecimalTryParse("-0", ParseResult.Success, 0M);
             AssertDecimalTryParse("1", ParseResult.Success, 1M);
+            AssertDecimalTryParse("-1", ParseResult.Success, -1M);
             AssertDecimalTryParse("1E1", ParseResult.Success, 10M);
             AssertDecimalTryParse("1E28", ParseResult.Success, 10000000000000000000000000000M);
 
             AssertDecimalTryParse("1.2345678901234567890123456789", ParseResult.Success, 1.2345678901234567890123456789M);
+            AssertDecimalTryParse("1.0000000000000000000000000001", ParseResult.Success, 1.0000000000000000000000000001M);
+            AssertDecimalTryParse("-1.0000000000000000000000000001", ParseResult.Success, -1.0000000000000000000000000001M);
 
-            AssertDecimalTryParse(decimal.MaxValue.ToString(), ParseResult.Success, decimal.MaxValue);
-            AssertDecimalTryParse(decimal.MinValue.ToString(), ParseResult.Success, decimal.MinValue);
+            AssertDecimalTryParse(decimal.MaxValue.ToString(CultureInfo.InvariantCulture), ParseResult.Success, decimal.MaxValue);
+            AssertDecimalTryParse(decimal.MinValue.ToString(CultureInfo.InvariantCulture), ParseResult.Success, decimal.MinValue);
 
             AssertDecimalTryParse("12345678901234567890123456789", ParseResult.Success, 12345678901234567890123456789M);
             AssertDecimalTryParse("12345678901234567890123456789.4", ParseResult.Success, 12345678901234567890123456789M);
@@ -210,9 +215,19 @@ namespace Newtonsoft.Json.Tests.Utilities
             AssertDecimalTryParse("1.2345678901234567890123456789e-29", ParseResult.Success, 0M);
             AssertDecimalTryParse("1E-999", ParseResult.Success, 0M);
 
+            for (decimal i = -100; i < 100; i += 0.1m)
+            {
+                AssertDecimalTryParse(i.ToString(CultureInfo.InvariantCulture), ParseResult.Success, i);
+            }
+
             AssertDecimalTryParse("1E+29", ParseResult.Overflow, null);
             AssertDecimalTryParse("-1E+29", ParseResult.Overflow, null);
 
+            AssertDecimalTryParse("1-1", ParseResult.Invalid, null);
+            AssertDecimalTryParse("1-", ParseResult.Invalid, null);
+            AssertDecimalTryParse("--1", ParseResult.Invalid, null);
+            AssertDecimalTryParse("-", ParseResult.Invalid, null);
+            AssertDecimalTryParse(".", ParseResult.Invalid, null);
             AssertDecimalTryParse("01E28", ParseResult.Invalid, null);
             AssertDecimalTryParse("-01E28", ParseResult.Invalid, null);
             AssertDecimalTryParse("1.", ParseResult.Invalid, null);
