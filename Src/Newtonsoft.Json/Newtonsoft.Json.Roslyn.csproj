@@ -36,24 +36,42 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net20'">
     <DefineConstants>NET20;HAVE_ADO_NET;HAVE_APP_DOMAIN;HAVE_BINARY_SERIALIZATION;HAVE_CAS;HAVE_CHAR_TO_LOWER_WITH_CULTURE;HAVE_CHAR_TO_STRING_WITH_CULTURE;HAVE_COM_ATTRIBUTES;HAVE_COMPONENT_MODEL;HAVE_DB_NULL_TYPE_CODE;HAVE_EMPTY_TYPES;HAVE_FULL_REFLECTION;HAVE_ICLONEABLE;HAVE_ICONVERTIBLE;HAVE_MEMORY_BARRIER;HAVE_NON_SERIALIZED_ATTRIBUTE;HAVE_REFLECTION_EMIT;HAVE_STREAM_READER_WRITER_CLOSE;HAVE_TRACE_WRITER;HAVE_TYPE_DESCRIPTOR;HAVE_UNICODE_SURROGATE_DETECTION;HAVE_XML_DOCUMENT;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.0' OR '$(TargetFramework)' == 'netstandard1.1'">
     <PackageReference Include="Microsoft.CSharp" Version="4.0.1" />
+    <PackageReference Include="System.Collections" Version="4.0.11" />
     <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.1.0" />
+    <PackageReference Include="System.Diagnostics.Debug" Version="4.0.11" />
     <PackageReference Include="System.Dynamic.Runtime" Version="4.0.11" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.1.1" />    
+    <PackageReference Include="System.Globalization" Version="4.0.11" />
+    <PackageReference Include="System.IO" Version="4.1.0" />
+    <PackageReference Include="System.Linq" Version="4.1.0" />
+    <PackageReference Include="System.Linq.Expressions" Version="4.1.0" />
+    <PackageReference Include="System.ObjectModel" Version="4.0.12" />
+    <PackageReference Include="System.Reflection" Version="4.1.0" />
+    <PackageReference Include="System.Reflection.Extensions" Version="4.0.1" />
+    <PackageReference Include="System.Resources.ResourceManager" Version="4.0.1" />
+    <PackageReference Include="System.Runtime" Version="4.1.0" />
+    <PackageReference Include="System.Runtime.Extensions" Version="4.1.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.1.1" />
+    <PackageReference Include="System.Text.Encoding" Version="4.0.11" />
+    <PackageReference Include="System.Text.Encoding.Extensions" Version="4.0.11" />
+    <PackageReference Include="System.Text.RegularExpressions" Version="4.1.0" />
+    <PackageReference Include="System.Threading" Version="4.0.11" />
+    <PackageReference Include="System.Threading.Tasks" Version="4.0.11" />
+    <PackageReference Include="System.Xml.ReaderWriter" Version="4.0.11" />
+    <PackageReference Include="System.Xml.XDocument" Version="4.0.11" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.0'">
     <AssemblyTitle>Json.NET .NET Standard 1.0</AssemblyTitle>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
     <DefineConstants>NETSTANDARD1_0;PORTABLE;HAVE_ASYNC;HAVE_COVARIANT_GENERICS;HAVE_DATA_CONTRACTS;HAVE_DATE_TIME_OFFSET;HAVE_DYNAMIC;HAVE_EXPRESSIONS;HAVE_FSHARP_TYPES;HAVE_GUID_TRY_PARSE;HAVE_HASH_SET;HAVE_IGNORE_DATA_MEMBER_ATTRIBUTE;HAVE_IMMUTABLE_COLLECTIONS;HAVE_INOTIFY_COLLECTION_CHANGED;HAVE_ISET;HAVE_LINQ;HAVE_METHOD_IMPL_ATTRIBUTE;HAVE_READ_ONLY_COLLECTIONS;HAVE_REFLECTION_BINDER;HAVE_SERIALIZATION_BINDER_BIND_TO_NAME;HAVE_STRING_JOIN_WITH_ENUMERABLE;HAVE_TIME_SPAN_PARSE_WITH_CULTURE;HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE;HAVE_TIME_ZONE_INFO;HAVE_TYPE_DESCRIPTOR;HAVE_UNICODE_SURROGATE_DETECTION;HAVE_VARIANT_TYPE_PARAMETERS;HAVE_VERSION_TRY_PARSE;HAVE_XLINQ;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <ItemGroup Condition="'$(TargetFramework)' == 'netstandard1.1'">
-    <PackageReference Include="Microsoft.CSharp" Version="4.0.1" />
-    <PackageReference Include="System.ComponentModel.TypeConverter" Version="4.1.0" />
-    <PackageReference Include="System.Dynamic.Runtime" Version="4.0.11" />
-    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.1.1" />
+    <PackageReference Include="System.Runtime.Numerics" Version="4.0.1" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'netstandard1.1'">
     <AssemblyTitle>Json.NET .NET Standard 1.1</AssemblyTitle>
+    <DisableImplicitFrameworkReferences>true</DisableImplicitFrameworkReferences>
     <DefineConstants>NETSTANDARD1_1;PORTABLE;HAVE_ASYNC;HAVE_BIG_INTEGER;HAVE_COVARIANT_GENERICS;HAVE_DATA_CONTRACTS;HAVE_DATE_TIME_OFFSET;HAVE_DYNAMIC;HAVE_EXPRESSIONS;HAVE_FSHARP_TYPES;HAVE_GUID_TRY_PARSE;HAVE_HASH_SET;HAVE_IGNORE_DATA_MEMBER_ATTRIBUTE;HAVE_IMMUTABLE_COLLECTIONS;HAVE_INOTIFY_COLLECTION_CHANGED;HAVE_ISET;HAVE_LINQ;HAVE_METHOD_IMPL_ATTRIBUTE;HAVE_READ_ONLY_COLLECTIONS;HAVE_REFLECTION_BINDER;HAVE_SERIALIZATION_BINDER_BIND_TO_NAME;HAVE_STRING_JOIN_WITH_ENUMERABLE;HAVE_TIME_SPAN_PARSE_WITH_CULTURE;HAVE_TIME_SPAN_TO_STRING_WITH_CULTURE;HAVE_TIME_ZONE_INFO;HAVE_TYPE_DESCRIPTOR;HAVE_UNICODE_SURROGATE_DETECTION;HAVE_VARIANT_TYPE_PARAMETERS;HAVE_VERSION_TRY_PARSE;HAVE_XLINQ;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition="'$(TargetFramework)' == 'portable-net45+win8+wpa81+wp8'">
