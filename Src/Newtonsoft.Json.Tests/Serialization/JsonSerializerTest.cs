@@ -96,6 +96,48 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+        public struct ImmutableStruct
+        {
+            public ImmutableStruct(string value)
+            {
+                Value = value;
+                Value2 = 0;
+            }
+
+            public string Value { get; }
+            public int Value2 { get; set; }
+        }
+
+        [Test]
+        public void DeserializeImmutableStruct()
+        {
+            var result = JsonConvert.DeserializeObject<ImmutableStruct>("{ \"Value\": \"working\", \"Value2\": 2 }");
+
+            Assert.AreEqual("working", result.Value);
+            Assert.AreEqual(2, result.Value2);
+        }
+
+        public struct AlmostImmutableStruct
+        {
+            public AlmostImmutableStruct(string value, int value2)
+            {
+                Value = value;
+                Value2 = value2;
+            }
+
+            public string Value { get; }
+            public int Value2 { get; set; }
+        }
+
+        [Test]
+        public void DeserializeAlmostImmutableStruct()
+        {
+            var result = JsonConvert.DeserializeObject<AlmostImmutableStruct>("{ \"Value\": \"working\", \"Value2\": 2 }");
+
+            Assert.AreEqual(null, result.Value);
+            Assert.AreEqual(2, result.Value2);
+        }
+
         public class ErroringClass
         {
             public DateTime Tags { get; set; }
