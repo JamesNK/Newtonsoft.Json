@@ -50,6 +50,7 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
+using System.Collections;
 
 #endif
 
@@ -1629,6 +1630,114 @@ namespace Newtonsoft.Json.Tests
 
         public class NonGenericChildClass : GenericIntermediateClass<int>
         {
+        }
+
+        [Test]
+        public void ShouldNotPopulateReadOnlyEnumerableObjectWithNonDefaultConstructor()
+        {
+            object actual = JsonConvert.DeserializeObject<HasReadOnlyEnumerableObject>("{\"foo\":{}}");
+            Assert.NotNull(actual);
+        }
+
+        [Test]
+        public void ShouldNotPopulateReadOnlyEnumerableObjectWithDefaultConstructor()
+        {
+            object actual = JsonConvert.DeserializeObject<HasReadOnlyEnumerableObjectAndDefaultConstructor>("{\"foo\":{}}");
+            Assert.NotNull(actual);
+        }
+
+        [Test]
+        public void ShouldNotPopulateContructorArgumentEnumerableObject()
+        {
+            object actual = JsonConvert.DeserializeObject<AcceptsEnumerableObjectToConstructor>("{\"foo\":{}}");
+            Assert.NotNull(actual);
+        }
+
+        [Test]
+        public void ShouldNotPopulateEnumerableObjectProperty()
+        {
+            object actual = JsonConvert.DeserializeObject<HasEnumerableObject>("{\"foo\":{}}");
+            Assert.NotNull(actual);
+        }
+
+        public sealed class HasReadOnlyEnumerableObject
+        {
+            [JsonProperty("foo")]
+            public EnumerableWithConverter Foo { get; } = new EnumerableWithConverter();
+
+            [JsonConstructor]
+            public HasReadOnlyEnumerableObject([JsonProperty("bar")] int bar)
+            {
+
+            }
+        }
+
+        public sealed class HasReadOnlyEnumerableObjectAndDefaultConstructor
+        {
+            [JsonProperty("foo")]
+            public EnumerableWithConverter Foo { get; } = new EnumerableWithConverter();
+
+            [JsonConstructor]
+            public HasReadOnlyEnumerableObjectAndDefaultConstructor()
+            {
+
+            }
+        }
+
+        public sealed class AcceptsEnumerableObjectToConstructor
+        {
+            [JsonConstructor]
+            public AcceptsEnumerableObjectToConstructor
+            (
+                [JsonProperty("foo")] EnumerableWithConverter foo,
+                [JsonProperty("bar")] int bar
+            )
+            {
+
+            }
+        }
+
+        public sealed class HasEnumerableObject
+        {
+            [JsonProperty("foo")]
+            public EnumerableWithConverter Foo { get; set; } = new EnumerableWithConverter();
+
+            [JsonConstructor]
+            public HasEnumerableObject([JsonProperty("bar")] int bar)
+            {
+
+            }
+        }
+
+        [JsonConverter(typeof(Converter))]
+        public sealed class EnumerableWithConverter : IEnumerable<int>
+        {
+            public sealed class Converter : JsonConverter
+            {
+                public override bool CanConvert(Type objectType)
+                    => objectType == typeof(Foo);
+
+                public override object ReadJson
+                    (JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+                {
+                    reader.Skip();
+                    return new EnumerableWithConverter();
+                }
+
+                public override void WriteJson
+                    (JsonWriter writer, object value, JsonSerializer serializer)
+                {
+                    writer.WriteStartObject();
+                    writer.WriteEndObject();
+                }
+            }
+
+            public IEnumerator<int> GetEnumerator()
+            {
+                yield break;
+            }
+
+            IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
         }
     }
 }
