@@ -109,12 +109,35 @@ namespace Newtonsoft.Json.Tests.Serialization
 #if !NET20
         [DataMember(Name = "CustomerAddress1")]
 #endif
-            public string AddressLine1 { get; set; }
+        public string AddressLine1 { get; set; }
     }
 
     [TestFixture]
     public class ContractResolverTests : TestFixtureBase
     {
+#if !(PORTABLE) || NETSTANDARD1_1
+        [Test]
+        public void ResolveSerializableContract()
+        {
+            DefaultContractResolver contractResolver = new DefaultContractResolver();
+            JsonContract contract = contractResolver.ResolveContract(typeof(ISerializableTestObject));
+
+            Assert.AreEqual(JsonContractType.Serializable, contract.ContractType);
+        }
+
+        [Test]
+        public void ResolveObjectContractWithFieldsSerialization()
+        {
+            DefaultContractResolver contractResolver = new DefaultContractResolver
+            {
+                IgnoreSerializableAttribute = false
+            };
+            JsonObjectContract contract = (JsonObjectContract)contractResolver.ResolveContract(typeof(AnswerFilterModel));
+
+            Assert.AreEqual(MemberSerialization.Fields, contract.MemberSerialization);
+        }
+#endif
+
         [Test]
         public void JsonPropertyDefaultValue()
         {

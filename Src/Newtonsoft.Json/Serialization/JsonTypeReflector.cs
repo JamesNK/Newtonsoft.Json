@@ -165,13 +165,9 @@ namespace Newtonsoft.Json.Serialization
 #endif
 
 #if HAVE_BINARY_SERIALIZATION
-            if (!ignoreSerializableAttribute)
+            if (!ignoreSerializableAttribute && IsSerializable(objectType))
             {
-                SerializableAttribute serializableAttribute = GetCachedAttribute<SerializableAttribute>(objectType);
-                if (serializableAttribute != null)
-                {
-                    return MemberSerialization.Fields;
-                }
+                return MemberSerialization.Fields;
             }
 #endif
 
@@ -382,6 +378,40 @@ namespace Newtonsoft.Json.Serialization
             return null;
         }
 
+#if HAVE_NON_SERIALIZED_ATTRIBUTE
+        public static bool IsNonSerializable(object provider)
+        {
+#if HAVE_FULL_REFLECTION
+            return (GetCachedAttribute<NonSerializedAttribute>(provider) != null);
+#else
+            FieldInfo fieldInfo = provider as FieldInfo;
+            if (fieldInfo != null && (fieldInfo.Attributes & FieldAttributes.NotSerialized) == FieldAttributes.NotSerialized)
+            {
+                return true;
+            }
+
+            return false;
+#endif
+        }
+#endif
+
+#if HAVE_BINARY_SERIALIZATION
+        public static bool IsSerializable(object provider)
+        {
+#if HAVE_FULL_REFLECTION
+            return (GetCachedAttribute<SerializableAttribute>(provider) != null);
+#else
+            Type type = provider as Type;
+            if (type != null && (type.GetTypeInfo().Attributes & TypeAttributes.Serializable) == TypeAttributes.Serializable)
+            {
+                return true;
+            }
+
+            return false;
+#endif
+        }
+#endif
+
         public static T GetAttribute<T>(object provider) where T : Attribute
         {
             Type type = provider as Type;
@@ -400,7 +430,7 @@ namespace Newtonsoft.Json.Serialization
         }
 
 #if DEBUG
-        internal static void SetFullyTrusted(bool fullyTrusted)
+        internal static void SetFullyTrusted(bool? fullyTrusted)
         {
             _fullyTrusted = fullyTrusted;
         }
@@ -450,7 +480,7 @@ namespace Newtonsoft.Json.Serialization
                 if (_fullyTrusted == null)
                 {
 #if (DOTNET || PORTABLE || PORTABLE40)
-                    _fullyTrusted = false;
+                    _fullyTrusted = true;
 #elif !(NET20 || NET35 || PORTABLE40)
                     AppDomain appDomain = AppDomain.CurrentDomain;
 

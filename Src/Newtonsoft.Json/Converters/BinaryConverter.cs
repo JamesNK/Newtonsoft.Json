@@ -23,12 +23,14 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if HAVE_BINARY_SERIALIZATION
+#if HAVE_LINQ || HAVE_ADO_NET
 using System;
-using System.Data.SqlTypes;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using System.Collections.Generic;
+#if HAVE_ADO_NET
+using System.Data.SqlTypes;
+#endif
 
 namespace Newtonsoft.Json.Converters
 {
@@ -71,10 +73,12 @@ namespace Newtonsoft.Json.Converters
                 return (byte[])_reflectionObject.GetValue(value, BinaryToArrayName);
             }
 #endif
+#if HAVE_ADO_NET
             if (value is SqlBinary)
             {
                 return ((SqlBinary)value).Value;
             }
+#endif
 
             throw new JsonSerializationException("Unexpected value type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
         }
@@ -140,10 +144,12 @@ namespace Newtonsoft.Json.Converters
             }
 #endif
 
+#if HAVE_ADO_NET
             if (t == typeof(SqlBinary))
             {
                 return new SqlBinary(data);
             }
+#endif
 
             throw JsonSerializationException.Create(reader, "Unexpected object type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, objectType));
         }
@@ -187,11 +193,12 @@ namespace Newtonsoft.Json.Converters
                 return true;
             }
 #endif
-
+#if HAVE_ADO_NET
             if (objectType == typeof(SqlBinary) || objectType == typeof(SqlBinary?))
             {
                 return true;
             }
+#endif
 
             return false;
         }

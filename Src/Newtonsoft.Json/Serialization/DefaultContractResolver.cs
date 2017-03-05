@@ -355,7 +355,7 @@ namespace Newtonsoft.Json.Serialization
                 }
                 else if (contract.MemberSerialization == MemberSerialization.Fields)
                 {
-#if HAVE_CAS
+#if HAVE_BINARY_FORMATTER
                     // mimic DataContractSerializer behaviour when populating fields by overriding default creator to create an uninitialized object
                     // note that this is only possible when the application is fully trusted so fall back to using the default constructor (if available) in partial trust
                     if (JsonTypeReflector.FullyTrusted)
@@ -1505,7 +1505,7 @@ namespace Newtonsoft.Json.Serialization
                     // automatically ignore extension data dictionary property if it is public
                 || JsonTypeReflector.GetAttribute<JsonExtensionDataAttribute>(attributeProvider) != null
 #if HAVE_NON_SERIALIZED_ATTRIBUTE
-                || JsonTypeReflector.GetAttribute<NonSerializedAttribute>(attributeProvider) != null
+                || JsonTypeReflector.IsNonSerializable(attributeProvider)
 #endif
                 ;
 

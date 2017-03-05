@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Schema
     /// JSON Schema validation has been moved to its own package. See <see href="http://www.newtonsoft.com/jsonschema">http://www.newtonsoft.com/jsonschema</see> for more details.
     /// </note>
     /// </summary>
-#if HAVE_BINARY_SERIALIZATION
+#if HAVE_BINARY_EXCEPTION_SERIALIZATION
     [Serializable]
 #endif
     [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
@@ -88,7 +88,7 @@ namespace Newtonsoft.Json.Schema
         {
         }
 
-#if HAVE_BINARY_SERIALIZATION
+#if HAVE_BINARY_EXCEPTION_SERIALIZATION
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonSchemaException"/> class.
         /// </summary>

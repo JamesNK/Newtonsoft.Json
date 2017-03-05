@@ -239,7 +239,6 @@ namespace Newtonsoft.Json.Tests.Linq
 
             Assert.AreEqual(5, (int)a[1].Previous);
             Assert.AreEqual(2, a[2].BeforeSelf().Count());
-            //Assert.AreEqual(2, a[2].AfterSelf().Count());
         }
 
         [Test]
@@ -316,6 +315,8 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(true, (bool)(new JValue(1.0)));
             Assert.AreEqual(true, (bool)(new JValue("true")));
             Assert.AreEqual(true, (bool)(new JValue(true)));
+            Assert.AreEqual(true, (bool)(new JValue(2)));
+            Assert.AreEqual(false, (bool)(new JValue(0)));
             Assert.AreEqual(1, (int)(new JValue(1)));
             Assert.AreEqual(1, (int)(new JValue(1.0)));
             Assert.AreEqual(1, (int)(new JValue("1")));

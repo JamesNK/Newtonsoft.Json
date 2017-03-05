@@ -35,7 +35,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// The exception thrown when an error occurs during JSON serialization or deserialization.
     /// </summary>
-#if HAVE_BINARY_SERIALIZATION
+#if HAVE_BINARY_EXCEPTION_SERIALIZATION
     [Serializable]
 #endif
     public class JsonException : Exception
@@ -68,7 +68,7 @@ namespace Newtonsoft.Json
         {
         }
 
-#if HAVE_BINARY_SERIALIZATION
+#if HAVE_BINARY_EXCEPTION_SERIALIZATION
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonException"/> class.
         /// </summary>
