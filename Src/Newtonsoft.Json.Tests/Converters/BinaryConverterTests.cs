@@ -55,7 +55,7 @@ namespace Newtonsoft.Json.Tests.Converters
             public byte[] NullByteArray { get; set; }
         }
 
-#if !(NET20 || PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(NET20 || PORTABLE || DNXCORE50)
         [Test]
         public void DeserializeBinaryClass()
         {
@@ -121,7 +121,7 @@ namespace Newtonsoft.Json.Tests.Converters
 }", json);
         }
 
-#if !(PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(PORTABLE || DNXCORE50)
         public class SqlBinaryClass
         {
             public SqlBinary SqlBinary { get; set; }

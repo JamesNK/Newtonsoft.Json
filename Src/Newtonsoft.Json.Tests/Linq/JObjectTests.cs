@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class JObjectTests : TestFixtureBase
     {
-#if !(NET35 || NET20 || PORTABLE40)
+#if !(NET35 || NET20)
         [Test]
         public void EmbedJValueStringInNewJObject()
         {
@@ -716,7 +716,7 @@ Parameter name: arrayIndex");
             Assert.AreEqual(p4, l[1]);
         }
 
-#if !(NET20 || PORTABLE || PORTABLE40)
+#if !(NET20 || PORTABLE)
         [Test]
         public void PropertyChanging()
         {
@@ -1259,7 +1259,7 @@ Parameter name: arrayIndex");
             }, "Can not add property Test3 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.");
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50)
         [Test]
         public void IBindingListSortDirection()
         {
@@ -1454,7 +1454,7 @@ Parameter name: arrayIndex");
         }
 #endif
 
-#if !(NET20 || NET35 || PORTABLE40)
+#if !(NET20 || NET35)
         [Test]
         public void CollectionChanged()
         {
@@ -1583,7 +1583,7 @@ Parameter name: arrayIndex");
             Assert.AreEqual("Name2", value);
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50)
         [Test]
         public void WriteObjectNullDBNullValue()
         {
@@ -1695,7 +1695,7 @@ Parameter name: arrayIndex");
             }, "Unexpected end of content while loading JObject. Path 'short.error.code', line 6, position 14.");
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50)
         [Test]
         public void GetProperties()
         {

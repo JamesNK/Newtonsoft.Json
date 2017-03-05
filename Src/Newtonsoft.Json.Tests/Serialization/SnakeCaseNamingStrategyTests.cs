@@ -159,7 +159,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
         }
 
-#if !(NET35 || NET20 || PORTABLE40)
+#if !(NET35 || NET20)
         [Test]
         public void DynamicSnakeCasePropertyNames()
         {

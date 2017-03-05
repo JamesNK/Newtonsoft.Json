@@ -27,7 +27,7 @@ using System.ComponentModel;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE)
     [TypeConverter(typeof(MyInterfaceConverter))]
     internal class ConsoleWriter : IMyInterface
     {

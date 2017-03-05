@@ -113,6 +113,6 @@
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp1.0'">
-    <DefineConstants>NETSTANDARD1_1;DNXCORE50;PORTABLE;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>NETSTANDARD1_3;DNXCORE50;PORTABLE;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 </Project>

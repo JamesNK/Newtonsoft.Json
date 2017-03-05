@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Newtonsoft.Json.Schema;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_3
 using System.Numerics;
 #endif
 using System.Runtime.Serialization;
@@ -607,7 +607,7 @@ namespace Newtonsoft.Json.Tests
             value = null;
             Assert.AreEqual("null", JsonConvert.ToString(value));
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50)
             value = DBNull.Value;
             Assert.AreEqual("null", JsonConvert.ToString(value));
 #endif
@@ -1109,7 +1109,7 @@ namespace Newtonsoft.Json.Tests
             writer.Flush();
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_1
+#if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_3
         [Test]
         public void IntegerLengthOverflows()
         {

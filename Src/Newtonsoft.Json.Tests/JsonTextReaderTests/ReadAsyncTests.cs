@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if !(NET20 || NET35 || NET40)
 
 using System;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
-#if !PORTABLE || NETSTANDARD1_1
+#if !PORTABLE || NETSTANDARD1_3
 using System.Numerics;
 #endif
 using System.Text;
@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 #endif
     public class ReadAsyncTests : TestFixtureBase
     {
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || NET35 || NET20)
         [Test]
         public async Task ReadAsBooleanAsync()
         {
@@ -1173,7 +1173,7 @@ second line
 third line", jsonTextReader.Value);
         }
 
-#if !PORTABLE || NETSTANDARD1_1
+#if !PORTABLE || NETSTANDARD1_3
         [Test]
         public async Task ReadBigIntegerAsync()
         {

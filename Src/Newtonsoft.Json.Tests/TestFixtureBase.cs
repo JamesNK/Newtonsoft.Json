@@ -45,7 +45,7 @@ using NUnit.Framework;
 #endif
 using Newtonsoft.Json.Utilities;
 using System.Collections;
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if !(NET20 || NET35 || NET40)
 using System.Threading.Tasks;
 #endif
 #if NET20
@@ -388,7 +388,7 @@ namespace Newtonsoft.Json.Tests
             }
         }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
+#if !(NET20 || NET35 || NET40)
         public static async Task<TException> ThrowsAsync<TException>(Func<Task> action, params string[] possibleMessages)
             where TException : Exception
         {

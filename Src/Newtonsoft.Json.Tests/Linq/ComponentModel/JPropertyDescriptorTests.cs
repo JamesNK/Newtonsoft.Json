@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(PORTABLE || DNXCORE50)
 using NUnit.Framework;
 using Newtonsoft.Json.Linq;
 

@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || PORTABLE40)
+#if !(NET35 || NET20)
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(dynamicObject.ChildObject.Text, d.ChildObject.Text);
         }
 
-#if !(PORTABLE || PORTABLE40)
+#if !(PORTABLE)
         [Test]
         public void SerializeDynamicObjectWithObjectTracking()
         {

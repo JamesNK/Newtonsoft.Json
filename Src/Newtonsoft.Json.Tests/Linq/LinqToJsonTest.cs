@@ -1185,7 +1185,7 @@ keyword such as type of business.""
             Assert.AreEqual(new DateTime(2000, 10, 15, 5, 5, 5, DateTimeKind.Utc), d);
         }
 
-#if !(NET20 || NET35 || PORTABLE40)
+#if !(NET20 || NET35)
         [Test]
         public void CovariantIJEnumerable()
         {

@@ -27,7 +27,7 @@ using System;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Runtime.Serialization;
-#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE)
 using System.Collections.Concurrent;
 #endif
 using System.Collections.Generic;
@@ -54,7 +54,7 @@ using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
 #endif
-#if !NET20 && !PORTABLE40
+#if !NET20
 using System.Xml.Linq;
 #endif
 
@@ -353,7 +353,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE)
         public class SomeObject
         {
             public string Text1 { get; set; }
@@ -640,7 +640,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("string!", l[0]);
         }
 
-#if !(NET40 || NET35 || NET20 || PORTABLE40)
+#if !(NET40 || NET35 || NET20)
         [Test]
         public void DeserializeReadOnlyListInterface()
         {
@@ -995,7 +995,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(3, v2["Third"]);
         }
 
-#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE)
         [Test]
         public void DeserializeConcurrentDictionary()
         {
@@ -1073,7 +1073,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<IList<KeyValuePair<string, IList<string>>>>(json); }, "Cannot convert null value to KeyValuePair. Path '[0]', line 1, position 6.");
         }
 
-#if !(NET40 || NET35 || NET20 || PORTABLE40)
+#if !(NET40 || NET35 || NET20)
         public class PopulateReadOnlyTestClass
         {
             public IList<int> NonReadOnlyList { get; set; }
@@ -1916,7 +1916,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("Product 1", p1.Name);
         }
 
-#if !(NET40 || NET35 || NET20 || PORTABLE40)
+#if !(NET40 || NET35 || NET20)
         [Test]
         public void ReadOnlyIntegerList()
         {
@@ -1966,7 +1966,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             }, "Unable to find a constructor to use for type Newtonsoft.Json.Tests.Serialization.ReadOnlyCollectionWithArrayArgument`1[System.Double]. Path '', line 1, position 1.");
         }
 
-#if !NET20 && !PORTABLE40
+#if !NET20
         [Test]
         public void NonDefaultConstructor_DuplicateKeyInDictionary_Replace()
         {
@@ -2085,7 +2085,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
     }
 
-#if !NET20 && !PORTABLE40
+#if !NET20
     public class CASResponce
     {
         //<?xml version='1.0' encoding='iso-8859-1' ?>
@@ -2389,7 +2389,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
     }
 
-#if !(NET40 || NET35 || NET20 || PORTABLE40)
+#if !(NET40 || NET35 || NET20)
     public class ReadOnlyIntegerList : IReadOnlyCollection<int>
     {
         private readonly List<int> _list;

@@ -93,7 +93,7 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.IsTrue(o.IsValid(schema));
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50)
         [Test]
         public void Generate_DefaultValueAttributeTestClass()
         {
@@ -312,7 +312,7 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.IsTrue(v.IsValid(schema));
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_1
+#if !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
         [Test]
         public void GenerateSchemaForISerializable()
         {
@@ -327,7 +327,7 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 #endif
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50)
         [Test]
         public void GenerateSchemaForDBNull()
         {
@@ -340,7 +340,7 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 #endif
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_1
+#if !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
         public class CustomDirectoryInfoMapper : DefaultContractResolver
         {
             public CustomDirectoryInfoMapper()
@@ -479,7 +479,7 @@ namespace Newtonsoft.Json.Tests.Schema
             generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
             generator.ContractResolver = new CamelCasePropertyNamesContractResolver()
             {
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_1
+#if !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
                 IgnoreSerializableAttribute = true
 #endif
             };
@@ -524,7 +524,7 @@ namespace Newtonsoft.Json.Tests.Schema
 }", json);
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_1
+#if !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
         [Test]
         public void GenerateSchemaSerializable()
         {
@@ -837,7 +837,7 @@ namespace Newtonsoft.Json.Tests.Schema
     {
     }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_1
+#if !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
     [Serializable]
     public sealed class SerializableTestObject
     {

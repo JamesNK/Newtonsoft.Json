@@ -30,7 +30,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 using System.Linq;
 #endif
 using System.Text;
-#if !(DNXCORE50 || PORTABLE40)
+#if !(DNXCORE50)
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Tests.Serialization;
@@ -2698,7 +2698,7 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(@"<root><b xmlns=""http://www.example.com/ns"">Asd</b><c>AAA</c><test>adad</test></root>", xmlBack.OuterXml);
         }
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_1
+#if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_3
         [Test]
         public void DeserializeBigInteger()
         {
