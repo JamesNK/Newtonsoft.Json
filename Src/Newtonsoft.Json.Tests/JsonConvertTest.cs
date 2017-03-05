@@ -24,7 +24,9 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using Newtonsoft.Json.Schema;
@@ -50,7 +52,6 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
-using System.Collections;
 
 #endif
 
@@ -1636,29 +1637,50 @@ namespace Newtonsoft.Json.Tests
         public void ShouldNotPopulateReadOnlyEnumerableObjectWithNonDefaultConstructor()
         {
             object actual = JsonConvert.DeserializeObject<HasReadOnlyEnumerableObject>("{\"foo\":{}}");
-            Assert.NotNull(actual);
+            Assert.IsNotNull(actual);
         }
 
         [Test]
         public void ShouldNotPopulateReadOnlyEnumerableObjectWithDefaultConstructor()
         {
             object actual = JsonConvert.DeserializeObject<HasReadOnlyEnumerableObjectAndDefaultConstructor>("{\"foo\":{}}");
-            Assert.NotNull(actual);
+            Assert.IsNotNull(actual);
         }
 
         [Test]
         public void ShouldNotPopulateContructorArgumentEnumerableObject()
         {
             object actual = JsonConvert.DeserializeObject<AcceptsEnumerableObjectToConstructor>("{\"foo\":{}}");
-            Assert.NotNull(actual);
+            Assert.IsNotNull(actual);
         }
 
         [Test]
         public void ShouldNotPopulateEnumerableObjectProperty()
         {
             object actual = JsonConvert.DeserializeObject<HasEnumerableObject>("{\"foo\":{}}");
-            Assert.NotNull(actual);
+            Assert.IsNotNull(actual);
         }
+
+#if !(NET40 || NET35 || NET20)
+        [Test]
+        public void ShouldNotPopulateReadOnlyDictionaryObjectWithNonDefaultConstructor()
+        {
+            object actual = JsonConvert.DeserializeObject<HasReadOnlyDictionary>("{\"foo\":{'key':'value'}}");
+            Assert.IsNotNull(actual);
+        }
+
+        public sealed class HasReadOnlyDictionary
+        {
+            [JsonProperty("foo")]
+            public IReadOnlyDictionary<string, string> Foo { get; } = new ReadOnlyDictionary<string, string>(new Dictionary<string, string>());
+
+            [JsonConstructor]
+            public HasReadOnlyDictionary([JsonProperty("bar")] int bar)
+            {
+
+            }
+        }
+#endif
 
         public sealed class HasReadOnlyEnumerableObject
         {

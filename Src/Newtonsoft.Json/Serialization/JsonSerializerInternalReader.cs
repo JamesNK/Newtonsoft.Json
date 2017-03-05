@@ -2032,15 +2032,18 @@ namespace Newtonsoft.Json.Serialization
                     {
                         JsonArrayContract propertyArrayContract = (JsonArrayContract)propertyContract;
 
-                        object createdObjectCollection = property.ValueProvider.GetValue(createdObject);
-                        if (createdObjectCollection != null)
+                        if (propertyArrayContract.CanDeserialize)
                         {
-                            IWrappedCollection createdObjectCollectionWrapper = propertyArrayContract.CreateWrapper(createdObjectCollection);
-                            IWrappedCollection newValues = propertyArrayContract.CreateWrapper(value);
-
-                            foreach (object newValue in newValues)
+                            object createdObjectCollection = property.ValueProvider.GetValue(createdObject);
+                            if (createdObjectCollection != null)
                             {
-                                createdObjectCollectionWrapper.Add(newValue);
+                                IList createdObjectCollectionWrapper = (propertyArrayContract.ShouldCreateWrapper) ? propertyArrayContract.CreateWrapper(createdObjectCollection) : (IList)createdObjectCollection;
+                                IList newValues = (propertyArrayContract.ShouldCreateWrapper) ? propertyArrayContract.CreateWrapper(value) : (IList)value;
+
+                                foreach (object newValue in newValues)
+                                {
+                                    createdObjectCollectionWrapper.Add(newValue);
+                                }
                             }
                         }
                     }
@@ -2048,25 +2051,28 @@ namespace Newtonsoft.Json.Serialization
                     {
                         JsonDictionaryContract dictionaryContract = (JsonDictionaryContract)propertyContract;
 
-                        object createdObjectDictionary = property.ValueProvider.GetValue(createdObject);
-                        if (createdObjectDictionary != null)
+                        if (!dictionaryContract.IsReadOnlyOrFixedSize)
                         {
-                            IDictionary targetDictionary = (dictionaryContract.ShouldCreateWrapper) ? dictionaryContract.CreateWrapper(createdObjectDictionary) : (IDictionary)createdObjectDictionary;
-                            IDictionary newValues = (dictionaryContract.ShouldCreateWrapper) ? dictionaryContract.CreateWrapper(value) : (IDictionary)value;
+                            object createdObjectDictionary = property.ValueProvider.GetValue(createdObject);
+                            if (createdObjectDictionary != null)
+                            {
+                                IDictionary targetDictionary = (dictionaryContract.ShouldCreateWrapper) ? dictionaryContract.CreateWrapper(createdObjectDictionary) : (IDictionary)createdObjectDictionary;
+                                IDictionary newValues = (dictionaryContract.ShouldCreateWrapper) ? dictionaryContract.CreateWrapper(value) : (IDictionary)value;
 
-                            // Manual use of IDictionaryEnumerator instead of foreach to avoid DictionaryEntry box allocations.
-                            IDictionaryEnumerator e = newValues.GetEnumerator();
-                            try
-                            {
-                                while (e.MoveNext())
+                                // Manual use of IDictionaryEnumerator instead of foreach to avoid DictionaryEntry box allocations.
+                                IDictionaryEnumerator e = newValues.GetEnumerator();
+                                try
                                 {
-                                    DictionaryEntry entry = e.Entry;
-                                    targetDictionary[entry.Key] = entry.Value;
+                                    while (e.MoveNext())
+                                    {
+                                        DictionaryEntry entry = e.Entry;
+                                        targetDictionary[entry.Key] = entry.Value;
+                                    }
                                 }
-                            }
-                            finally
-                            {
-                                (e as IDisposable)?.Dispose();
+                                finally
+                                {
+                                    (e as IDisposable)?.Dispose();
+                                }
                             }
                         }
                     }
