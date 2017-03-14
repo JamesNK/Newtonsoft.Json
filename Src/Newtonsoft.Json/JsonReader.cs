@@ -965,7 +965,13 @@ namespace Newtonsoft.Json
             SetToken(newToken, value, true);
         }
 
-        internal void SetToken(JsonToken newToken, object value, bool updateIndex)
+        /// <summary>
+        /// Sets the current token and value.
+        /// </summary>
+        /// <param name="newToken">The new token.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="updateIndex">A flag indicating whether the position index inside an array should be updated.</param>
+        protected void SetToken(JsonToken newToken, object value, bool updateIndex)
         {
             _tokenType = newToken;
             _value = value;
