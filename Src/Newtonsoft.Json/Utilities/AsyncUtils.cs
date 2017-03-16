@@ -81,12 +81,6 @@ namespace Newtonsoft.Json.Utilities
             return cancellationToken.IsCancellationRequested ? FromCanceled(cancellationToken) : writer.WriteAsync(value);
         }
 
-        public static Task WriteAsync(this TextWriter writer, char[] value, CancellationToken cancellationToken)
-        {
-            Debug.Assert(writer != null);
-            return cancellationToken.IsCancellationRequested ? FromCanceled(cancellationToken) : writer.WriteAsync(value);
-        }
-
         public static Task WriteAsync(this TextWriter writer, char[] value, int start, int count, CancellationToken cancellationToken)
         {
             Debug.Assert(writer != null);
