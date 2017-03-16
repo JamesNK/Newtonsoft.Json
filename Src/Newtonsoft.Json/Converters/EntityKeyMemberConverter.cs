@@ -149,7 +149,7 @@ namespace Newtonsoft.Json.Converters
         /// </returns>
         public override bool CanConvert(Type objectType)
         {
-            return objectType.AssignableToTypeName(EntityKeyMemberFullTypeName);
+            return objectType.AssignableToTypeName(EntityKeyMemberFullTypeName, false);
         }
     }
 }

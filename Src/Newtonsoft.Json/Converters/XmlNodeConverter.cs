@@ -37,6 +37,7 @@ using Newtonsoft.Json.Serialization;
 using System.Xml.Linq;
 #endif
 using Newtonsoft.Json.Utilities;
+using System.Runtime.CompilerServices;
 
 namespace Newtonsoft.Json.Converters
 {
@@ -82,10 +83,12 @@ namespace Newtonsoft.Json.Converters
             return new XmlDeclarationWrapper(_document.CreateXmlDeclaration(version, encoding, standalone));
         }
 
+#if HAVE_XML_DOCUMENT_TYPE
         public IXmlNode CreateXmlDocumentType(string name, string publicId, string systemId, string internalSubset)
         {
             return new XmlDocumentTypeWrapper(_document.CreateDocumentType(name, publicId, systemId, null));
         }
+#endif
 
         public IXmlNode CreateProcessingInstruction(string target, string data)
         {
@@ -188,6 +191,7 @@ namespace Newtonsoft.Json.Converters
         }
     }
 
+#if HAVE_XML_DOCUMENT_TYPE
     internal class XmlDocumentTypeWrapper : XmlNodeWrapper, IXmlDocumentType
     {
         private readonly XmlDocumentType _documentType;
@@ -223,6 +227,7 @@ namespace Newtonsoft.Json.Converters
             get { return "DOCTYPE"; }
         }
     }
+#endif
 
     internal class XmlNodeWrapper : IXmlNode
     {
@@ -289,8 +294,10 @@ namespace Newtonsoft.Json.Converters
                     return new XmlElementWrapper((XmlElement)node);
                 case XmlNodeType.XmlDeclaration:
                     return new XmlDeclarationWrapper((XmlDeclaration)node);
+#if HAVE_XML_DOCUMENT_TYPE
                 case XmlNodeType.DocumentType:
                     return new XmlDocumentTypeWrapper((XmlDocumentType)node);
+#endif
                 default:
                     return new XmlNodeWrapper(node);
             }
@@ -374,9 +381,9 @@ namespace Newtonsoft.Json.Converters
         }
     }
 #endif
-    #endregion
+#endregion
 
-    #region Interfaces
+#region Interfaces
     internal interface IXmlDocument : IXmlNode
     {
         IXmlNode CreateComment(string text);
@@ -385,7 +392,9 @@ namespace Newtonsoft.Json.Converters
         IXmlNode CreateWhitespace(string text);
         IXmlNode CreateSignificantWhitespace(string text);
         IXmlNode CreateXmlDeclaration(string version, string encoding, string standalone);
+#if HAVE_XML_DOCUMENT_TYPE
         IXmlNode CreateXmlDocumentType(string name, string publicId, string systemId, string internalSubset);
+#endif
         IXmlNode CreateProcessingInstruction(string target, string data);
         IXmlElement CreateElement(string elementName);
         IXmlElement CreateElement(string qualifiedName, string namespaceUri);
@@ -429,9 +438,9 @@ namespace Newtonsoft.Json.Converters
         string NamespaceUri { get; }
         object WrappedNode { get; }
     }
-    #endregion
+#endregion
 
-    #region XNodeWrappers
+#region XNodeWrappers
 #if HAVE_XLINQ
     internal class XDeclarationWrapper : XObjectWrapper, IXmlDeclaration
     {
@@ -1060,7 +1069,7 @@ namespace Newtonsoft.Json.Converters
         }
     }
 #endif
-    #endregion
+#endregion
 
     /// <summary>
     /// Converts XML to and from JSON.
@@ -1096,7 +1105,7 @@ namespace Newtonsoft.Json.Converters
         /// <value><c>true</c> if the JSON root object is omitted; otherwise, <c>false</c>.</value>
         public bool OmitRootObject { get; set; }
 
-        #region Writing
+#region Writing
         /// <summary>
         /// Writes the JSON representation of the object.
         /// </summary>
@@ -1588,9 +1597,9 @@ namespace Newtonsoft.Json.Converters
             }
             return true;
         }
-        #endregion
+#endregion
 
-        #region Reading
+#region Reading
         /// <summary>
         /// Reads the JSON representation of the object.
         /// </summary>
@@ -1637,15 +1646,17 @@ namespace Newtonsoft.Json.Converters
                 }
 
                 XmlDocument d = new XmlDocument();
+#if HAVE_XML_DOCUMENT_TYPE
                 // prevent http request when resolving any DTD references
                 d.XmlResolver = null;
+#endif
 
                 document = new XmlDocumentWrapper(d);
                 rootNode = document;
             }
 #endif
 
-            if (document == null || rootNode == null)
+                if (document == null || rootNode == null)
             {
                 throw new JsonSerializationException("Unexpected type when converting XML: " + objectType);
             }
@@ -1695,10 +1706,12 @@ namespace Newtonsoft.Json.Converters
                     {
                         CreateInstruction(reader, document, currentNode, propertyName);
                     }
+#if HAVE_XML_DOCUMENT_TYPE
                     else if (string.Equals(propertyName, "!DOCTYPE", StringComparison.OrdinalIgnoreCase))
                     {
                         CreateDocumentType(reader, document, currentNode);
                     }
+#endif
                     else
                     {
                         if (reader.TokenType == JsonToken.StartArray)
@@ -2095,6 +2108,7 @@ namespace Newtonsoft.Json.Converters
             }
         }
 
+#if HAVE_XML_DOCUMENT_TYPE
         private void CreateDocumentType(JsonReader reader, IXmlDocument document, IXmlNode currentNode)
         {
             string name = null;
@@ -2129,6 +2143,7 @@ namespace Newtonsoft.Json.Converters
             IXmlNode documentType = document.CreateXmlDocumentType(name, publicId, systemId, internalSubset);
             currentNode.AppendChild(documentType);
         }
+#endif
 
         private IXmlElement CreateElement(string elementName, IXmlDocument document, string elementPrefix, XmlNamespaceManager manager)
         {
@@ -2247,7 +2262,7 @@ namespace Newtonsoft.Json.Converters
 
             return false;
         }
-        #endregion
+#endregion
 
         /// <summary>
         /// Determines whether this instance can convert the specified value type.
@@ -2259,20 +2274,36 @@ namespace Newtonsoft.Json.Converters
         public override bool CanConvert(Type valueType)
         {
 #if HAVE_XLINQ
-            if (typeof(XObject).IsAssignableFrom(valueType))
+            if (valueType.AssignableToTypeName("System.Xml.Linq.XObject", false))
             {
-                return true;
+                return IsXObject(valueType);
             }
 #endif
 #if HAVE_XML_DOCUMENT
-            if (typeof(XmlNode).IsAssignableFrom(valueType))
+            if (valueType.AssignableToTypeName("System.Xml.XmlNode", false))
             {
-                return true;
+                return IsXmlNode(valueType);
             }
 #endif
 
             return false;
         }
+
+#if HAVE_XLINQ
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private bool IsXObject(Type valueType)
+        {
+            return typeof(XObject).IsAssignableFrom(valueType);
+        }
+#endif
+
+#if HAVE_XML_DOCUMENT
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private bool IsXmlNode(Type valueType)
+        {
+            return typeof(XmlNode).IsAssignableFrom(valueType);
+        }
+#endif
     }
 }
 

@@ -27,6 +27,7 @@ using System;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Bson;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Converters
@@ -224,6 +225,12 @@ namespace Newtonsoft.Json.Converters
         /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
         /// </returns>
         public override bool CanConvert(Type objectType)
+        {
+            return objectType.Name == nameof(Regex) && IsRegex(objectType);
+        }
+
+        [MethodImpl(MethodImplOptions.NoInlining)]
+        private bool IsRegex(Type objectType)
         {
             return (objectType == typeof(Regex));
         }
