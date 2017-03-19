@@ -18,6 +18,7 @@
     <DebugType Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'netcoreapp1.0'">Full</DebugType>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="**\*.orig" />
     <Compile Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'net45'" Remove="Benchmarks\**" />
     <None Include="large.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

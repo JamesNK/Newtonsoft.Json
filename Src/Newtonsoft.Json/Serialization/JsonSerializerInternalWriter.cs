@@ -1139,7 +1139,7 @@ namespace Newtonsoft.Json.Serialization
                     }
 #if HAVE_DATE_TIME_OFFSET
                     case PrimitiveTypeCode.DateTimeOffset:
-					case PrimitiveTypeCode.DateTimeOffsetNullable:
+                    case PrimitiveTypeCode.DateTimeOffsetNullable:
                     {
                         escape = false;
                         StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);

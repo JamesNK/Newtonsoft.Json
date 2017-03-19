@@ -612,10 +612,19 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             JsonSerializationException ex = ExceptionAssert.Throws<JsonSerializationException>(() =>
             {
-                JsonConvert.DeserializeObject<StoreColor>("\"1\"", new StringEnumConverter {AllowIntegerValues = false});
+                JsonConvert.DeserializeObject<StoreColor>("\"1\"", new StringEnumConverter { AllowIntegerValues = false });
             });
 
             Assert.AreEqual("Integer string '1' is not allowed.", ex.InnerException.Message);
+        }
+
+        [Test]
+        public void AllowIntegerValueAndNonNamedValue()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.SerializeObject((StoreColor)999, new StringEnumConverter { AllowIntegerValues = false });
+            }, "Integer value 999 is not allowed. Path ''.");
         }
 
         public enum EnumWithDifferentCases

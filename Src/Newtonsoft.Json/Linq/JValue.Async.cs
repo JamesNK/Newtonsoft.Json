@@ -130,7 +130,7 @@ namespace Newtonsoft.Json.Linq
                     return writer.WriteValueAsync((Uri)_value, cancellationToken);
             }
 
-            throw MiscellaneousUtils.CreateArgumentOutOfRangeException("TokenType", _valueType, "Unexpected token type.");
+            throw MiscellaneousUtils.CreateArgumentOutOfRangeException(nameof(Type), _valueType, "Unexpected token type.");
         }
     }
 }

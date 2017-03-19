@@ -1617,7 +1617,7 @@ namespace Newtonsoft.Json.Converters
                 case JsonToken.StartObject:
                     break;
                 default:
-                    throw new JsonSerializationException("XmlNodeConverter can only convert JSON that begins with an object.");
+                    throw JsonSerializationException.Create(reader, "XmlNodeConverter can only convert JSON that begins with an object.");
             }
 
             XmlNamespaceManager manager = new XmlNamespaceManager(new NameTable());
@@ -1629,7 +1629,7 @@ namespace Newtonsoft.Json.Converters
             {
                 if (objectType != typeof(XDocument) && objectType != typeof(XElement))
                 {
-                    throw new JsonSerializationException("XmlNodeConverter only supports deserializing XDocument or XElement.");
+                    throw JsonSerializationException.Create(reader, "XmlNodeConverter only supports deserializing XDocument or XElement.");
                 }
 
                 XDocument d = new XDocument();
@@ -1642,7 +1642,7 @@ namespace Newtonsoft.Json.Converters
             {
                 if (objectType != typeof(XmlDocument))
                 {
-                    throw new JsonSerializationException("XmlNodeConverter only supports deserializing XmlDocuments");
+                    throw JsonSerializationException.Create(reader, "XmlNodeConverter only supports deserializing XmlDocuments");
                 }
 
                 XmlDocument d = new XmlDocument();
@@ -1656,9 +1656,9 @@ namespace Newtonsoft.Json.Converters
             }
 #endif
 
-                if (document == null || rootNode == null)
+            if (document == null || rootNode == null)
             {
-                throw new JsonSerializationException("Unexpected type when converting XML: " + objectType);
+                throw JsonSerializationException.Create(reader, "Unexpected type when converting XML: " + objectType);
             }
 
             if (!string.IsNullOrEmpty(DeserializeRootElementName))

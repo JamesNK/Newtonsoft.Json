@@ -95,6 +95,11 @@ namespace Newtonsoft.Json.Converters
 
             if (char.IsNumber(enumName[0]) || enumName[0] == '-')
             {
+                if (!AllowIntegerValues)
+                {
+                    throw JsonSerializationException.Create(null, writer.ContainerPath, "Integer value {0} is not allowed.".FormatWith(CultureInfo.InvariantCulture, enumName), null);
+                }
+
                 // enum value has no name so write number
                 writer.WriteValue(value);
             }
