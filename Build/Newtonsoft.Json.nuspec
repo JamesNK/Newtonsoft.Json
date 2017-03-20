@@ -43,6 +43,7 @@
                 <dependency id="System.Threading.Tasks" version="4.3.0" />
                 <dependency id="System.Xml.ReaderWriter" version="4.3.0" />
                 <dependency id="System.Xml.XDocument" version="4.3.0" />
+                <dependency id="System.Xml.XmlDocument" version="4.3.0" />
             </group>
             <group targetFramework=".NETStandard1.0">
                 <dependency id="Microsoft.CSharp" version="4.3.0" />
@@ -68,7 +69,6 @@
                 <dependency id="System.Threading.Tasks" version="4.3.0" />
                 <dependency id="System.Xml.ReaderWriter" version="4.3.0" />
                 <dependency id="System.Xml.XDocument" version="4.3.0" />
-                <dependency id="System.Xml.XmlDocument" version="4.3.0" />
             </group>
         </dependencies>
     </metadata>
