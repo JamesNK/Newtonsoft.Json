@@ -58,7 +58,13 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     public class DefaultContractResolver : IContractResolver
     {
-        internal static readonly IContractResolver Instance = new DefaultContractResolver();
+        private static readonly IContractResolver _instance = new DefaultContractResolver();
+
+        // Json.NET Schema requires a property
+        internal static IContractResolver Instance
+        {
+            get { return _instance; }
+        }
 
         private static readonly JsonConverter[] BuiltInConverters =
         {
