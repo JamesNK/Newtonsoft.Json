@@ -2229,7 +2229,7 @@ namespace Newtonsoft.Json.Linq
 
         internal void SetLineInfo(IJsonLineInfo lineInfo, JsonLoadSettings settings)
         {
-            if (settings != null && settings.LineInfoHandling == LineInfoHandling.Load)
+            if (settings != null && settings.LineInfoHandling != LineInfoHandling.Load)
             {
                 return;
             }
