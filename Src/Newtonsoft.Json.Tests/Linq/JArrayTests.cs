@@ -586,15 +586,32 @@ Parameter name: index");
         {
             string json = "[1,2,3]";
 
-            JArray a = JArray.Parse(json, new JsonLoadSettings
+            JArray a = JArray.Parse(json, new JsonLoadSettings());
+
+            Assert.AreEqual(true, ((IJsonLineInfo)a).HasLineInfo());
+            Assert.AreEqual(true, ((IJsonLineInfo)a[0]).HasLineInfo());
+            Assert.AreEqual(true, ((IJsonLineInfo)a[1]).HasLineInfo());
+            Assert.AreEqual(true, ((IJsonLineInfo)a[2]).HasLineInfo());
+
+            a = JArray.Parse(json, new JsonLoadSettings
             {
-                LineInfoHandling = LineInfoHandling.Load
+                LineInfoHandling = LineInfoHandling.Ignore
             });
 
             Assert.AreEqual(false, ((IJsonLineInfo)a).HasLineInfo());
             Assert.AreEqual(false, ((IJsonLineInfo)a[0]).HasLineInfo());
             Assert.AreEqual(false, ((IJsonLineInfo)a[1]).HasLineInfo());
             Assert.AreEqual(false, ((IJsonLineInfo)a[2]).HasLineInfo());
+
+            a = JArray.Parse(json, new JsonLoadSettings
+            {
+                LineInfoHandling = LineInfoHandling.Load
+            });
+
+            Assert.AreEqual(true, ((IJsonLineInfo)a).HasLineInfo());
+            Assert.AreEqual(true, ((IJsonLineInfo)a[0]).HasLineInfo());
+            Assert.AreEqual(true, ((IJsonLineInfo)a[1]).HasLineInfo());
+            Assert.AreEqual(true, ((IJsonLineInfo)a[2]).HasLineInfo());
         }
     }
 }

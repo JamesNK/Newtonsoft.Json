@@ -11,6 +11,15 @@ namespace Newtonsoft.Json.Linq
         private LineInfoHandling _lineInfoHandling;
 
         /// <summary>
+        /// Initializes a new instance of the <see cref="JsonLoadSettings"/> class.
+        /// </summary>
+        public JsonLoadSettings()
+        {
+            _lineInfoHandling = LineInfoHandling.Load;
+            _commentHandling = CommentHandling.Ignore;
+        }
+
+        /// <summary>
         /// Gets or sets how JSON comments are handled when loading JSON.
         /// </summary>
         /// <value>The JSON comment handling.</value>
