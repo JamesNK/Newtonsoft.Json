@@ -34,6 +34,9 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
 using Newtonsoft.Json.Serialization;
+#if !(NET20 || NET35 || NET40)
+using System.Threading.Tasks;
+#endif
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -604,6 +607,29 @@ namespace Newtonsoft.Json.Tests
             }
 
             Assert.AreEqual(4, value.Count);
+        }
+#endif
+
+#if !(NET20 || NET35 || NET40 || PORTABLE || DNXCORE50)
+        [Test]
+        public async Task AsyncDemo()
+        {
+            JArray largeJson;
+
+            // read asynchronously from a file
+            using (TextReader textReader = new StreamReader(new FileStream(@"large.json", FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true)))
+            {
+                largeJson = await JArray.LoadAsync(new JsonTextReader(textReader));
+            }
+
+            JToken user = largeJson.SelectToken("$[?(@.name == 'Woodard Caldwell')]");
+            user["isActive"] = false;
+
+            // write asynchronously to a file
+            using (TextWriter textWriter = new StreamWriter(new FileStream(@"large.json", FileMode.Open, FileAccess.Write, FileShare.Write, 4096, true)))
+            {
+                await largeJson.WriteToAsync(new JsonTextWriter(textWriter));
+            }
         }
 #endif
     }

@@ -24,6 +24,10 @@
 #endregion
 
 using System;
+using System.IO;
+#if !(PORTABLE || DNXCORE50)
+using System.Runtime.Serialization.Formatters.Binary;
+#endif
 using Newtonsoft.Json.Schema;
 #if DNXCORE50
 using Xunit;
@@ -100,5 +104,18 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual("Inner!", exception.InnerException.Message);
         }
 #pragma warning restore 618
+
+#if !(PORTABLE || DNXCORE50)
+        [Test]
+        public void BinarySerializeException()
+        {
+            JsonReaderException exception = new JsonReaderException("message!");
+            using (var memoryStream = new MemoryStream())
+            {
+                var binaryFormatter = new BinaryFormatter();
+                binaryFormatter.Serialize(memoryStream, exception);
+            }
+        }
+#endif
     }
 }
