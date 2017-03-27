@@ -75,7 +75,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 ContractResolver = new DefaultContractResolver
                 {
-#if !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
+#if !(PORTABLE || DNXCORE50)
                     IgnoreSerializableAttribute = false
 #endif
                 }
@@ -84,7 +84,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(expected, json);
         }
 
-#if !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
+#if !(PORTABLE || DNXCORE50)
         [Test]
         public void SerializeInheritedType()
         {
@@ -114,7 +114,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
     }
 
-#if !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
+#if !(PORTABLE || DNXCORE50)
     [Serializable]
 #else
     [JsonObject(MemberSerialization.Fields)]

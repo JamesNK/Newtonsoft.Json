@@ -115,7 +115,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class ContractResolverTests : TestFixtureBase
     {
-#if !(PORTABLE) || NETSTANDARD1_3
+#if !(PORTABLE)
         [Test]
         public void ResolveSerializableContract()
         {

@@ -312,7 +312,7 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.IsTrue(v.IsValid(schema));
         }
 
-#if !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
+#if !(PORTABLE || DNXCORE50)
         [Test]
         public void GenerateSchemaForISerializable()
         {
@@ -479,7 +479,7 @@ namespace Newtonsoft.Json.Tests.Schema
             generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
             generator.ContractResolver = new CamelCasePropertyNamesContractResolver()
             {
-#if !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
+#if !(PORTABLE || DNXCORE50)
                 IgnoreSerializableAttribute = true
 #endif
             };
@@ -524,7 +524,7 @@ namespace Newtonsoft.Json.Tests.Schema
 }", json);
         }
 
-#if !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
+#if !(PORTABLE || DNXCORE50)
         [Test]
         public void GenerateSchemaSerializable()
         {
