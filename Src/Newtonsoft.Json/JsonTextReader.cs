@@ -2058,9 +2058,10 @@ namespace Newtonsoft.Json
                 }
                 else
                 {
+                    string number = _stringReference.ToString();
+
                     double value;
-                    ParseResult parseResult = ConvertUtils.DoubleTryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out value);
-                    if (parseResult == ParseResult.Success)
+                    if (double.TryParse(number, NumberStyles.Float, CultureInfo.InvariantCulture, out value))
                     {
                         numberValue = value;
                     }
@@ -2137,9 +2138,10 @@ namespace Newtonsoft.Json
                         }
                         else
                         {
+                            string number = _stringReference.ToString();
+
                             double d;
-                            parseResult = ConvertUtils.DoubleTryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out d);
-                            if (parseResult == ParseResult.Success)
+                            if (double.TryParse(number, NumberStyles.Float, CultureInfo.InvariantCulture, out d))
                             {
                                 numberValue = d;
                             }

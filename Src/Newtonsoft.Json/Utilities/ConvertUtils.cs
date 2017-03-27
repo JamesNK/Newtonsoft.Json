@@ -930,6 +930,7 @@ namespace Newtonsoft.Json.Utilities
             return ParseResult.Success;
         }
 
+#if HAS_CUSTOM_DOUBLE_PARSE
         private static class IEEE754
         {
             /// <summary>
@@ -1356,6 +1357,7 @@ namespace Newtonsoft.Json.Utilities
             value = IEEE754.PackDouble(isNegative, mantissa, exponent);
             return double.IsInfinity(value) ? ParseResult.Overflow : ParseResult.Success;
         }
+#endif
 
         public static ParseResult DecimalTryParse(char[] chars, int start, int length, out decimal value)
         {
