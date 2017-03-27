@@ -1354,7 +1354,7 @@ namespace Newtonsoft.Json.Utilities
             exponent -= (numDecimalEnd - numDecimalStart);
 
             value = IEEE754.PackDouble(isNegative, mantissa, exponent);
-            return double.IsInfinity(value) ? ParseResult.Overflow : ParseResult.Success;
+            return ParseResult.Success;
         }
 
         public static ParseResult DecimalTryParse(char[] chars, int start, int length, out decimal value)
