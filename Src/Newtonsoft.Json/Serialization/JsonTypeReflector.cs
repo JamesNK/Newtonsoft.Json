@@ -79,8 +79,9 @@ namespace Newtonsoft.Json.Serialization
             {
                 Type converterType = typeConverter.GetType();
 
-                if (converterType.FullName != "System.ComponentModel.ComponentConverter"
-                    && converterType.FullName != "System.ComponentModel.ReferenceConverter"
+                if (!string.Equals(converterType.FullName, "System.ComponentModel.ComponentConverter", StringComparison.Ordinal)
+                    && !string.Equals(converterType.FullName, "System.ComponentModel.ReferenceConverter", StringComparison.Ordinal)
+                    && !string.Equals(converterType.FullName, "System.Windows.Forms.Design.DataSourceConverter", StringComparison.Ordinal)
                     && converterType != typeof(TypeConverter))
                 {
                     return typeConverter.CanConvertTo(typeof(string));

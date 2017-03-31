@@ -96,6 +96,42 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
+        public class ListSourceTest : IListSource
+        {
+            private string str;
+
+            public string strprop
+            {
+                get { return str; }
+                set { str = value; }
+            }
+
+            [JsonIgnore]
+            public bool ContainsListCollection
+            {
+                get { return false; }
+            }
+
+            public IList GetList()
+            {
+                return new List<string>();
+            }
+        }
+
+        [Test]
+        public void ListSourceSerialize()
+        {
+            ListSourceTest c = new ListSourceTest();
+            c.strprop = "test";
+            string json = JsonConvert.SerializeObject(c);
+
+            Assert.AreEqual(@"{""strprop"":""test""}", json);
+
+            ListSourceTest c2 = JsonConvert.DeserializeObject<ListSourceTest>(json);
+
+            Assert.AreEqual("test", c2.strprop);
+        }
+
         public struct ImmutableStruct
         {
             public ImmutableStruct(string value)
