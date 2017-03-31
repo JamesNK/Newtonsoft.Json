@@ -66,6 +66,8 @@
     <Compile Include="Bson\BsonReaderTests.cs" />
     <Compile Include="Bson\BsonWriterAsyncTests.cs" />
     <Compile Include="Bson\BsonWriterTests.cs" />
+    <Compile Include="JsonEqualsConstraint.cs" />
+    <Compile Include="Converters\ArrayAndDictionaryConverterTests.cs" />
     <Compile Include="Converters\BinaryConverterTests.cs" />
     <Compile Include="Converters\CustomCreationConverterTests.cs" />
     <Compile Include="Converters\DataSetConverterTests.cs" />
@@ -235,6 +237,7 @@
       <DependentUpon>FileSystemEntityModel.edmx</DependentUpon>
     </Compile>
     <Compile Include="ExceptionTests.cs" />
+    <Compile Include="Js.cs" />
     <Compile Include="JsonArrayAttributeTests.cs" />
     <Compile Include="JsonConvertTest.cs" />
     <Compile Include="JsonTextReaderTests\ExceptionHandlingAsyncTests.cs" />
