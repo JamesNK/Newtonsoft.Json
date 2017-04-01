@@ -35,7 +35,7 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NET35 || NET20 || PORTABLE)
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
     internal class MyInterfaceConverter : TypeConverter
     {
         private readonly List<IMyInterface> _writers = new List<IMyInterface>

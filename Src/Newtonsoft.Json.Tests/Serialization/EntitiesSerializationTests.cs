@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || PORTABLE || DNXCORE50)
+#if !(NET35 || NET20 || PORTABLE || DNXCORE50 || PORTABLE40)
 using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;

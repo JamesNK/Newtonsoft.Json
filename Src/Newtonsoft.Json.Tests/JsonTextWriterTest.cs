@@ -134,7 +134,7 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(1, arrayPool.FreeArrays.Count);
         }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE || DNXCORE50)
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50)
         [Test]
         public void BufferErroringWithInvalidSize()
         {

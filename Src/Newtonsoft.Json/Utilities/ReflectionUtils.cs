@@ -43,7 +43,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
-#if (DOTNET || PORTABLE)
+#if (DOTNET || PORTABLE || PORTABLE40)
     internal enum MemberTypes
     {
         Property = 0,
@@ -790,11 +790,13 @@ namespace Newtonsoft.Json.Utilities
                 return (attributeType != null) ? Attribute.GetCustomAttributes(mi, attributeType, inherit) : Attribute.GetCustomAttributes(mi, inherit);
             }
 
+#if !PORTABLE40
             Module m = provider as Module;
             if (m != null)
             {
                 return (attributeType != null) ? Attribute.GetCustomAttributes(m, attributeType, inherit) : Attribute.GetCustomAttributes(m, inherit);
             }
+#endif
 
             ParameterInfo p = provider as ParameterInfo;
             if (p != null)
@@ -802,10 +804,14 @@ namespace Newtonsoft.Json.Utilities
                 return (attributeType != null) ? Attribute.GetCustomAttributes(p, attributeType, inherit) : Attribute.GetCustomAttributes(p, inherit);
             }
 
+#if !PORTABLE40
             ICustomAttributeProvider customAttributeProvider = (ICustomAttributeProvider)attributeProvider;
             object[] result = (attributeType != null) ? customAttributeProvider.GetCustomAttributes(attributeType, inherit) : customAttributeProvider.GetCustomAttributes(inherit);
 
             return (Attribute[])result;
+#else
+            throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));
+#endif
         }
 #else
         public static T[] GetAttributes<T>(object attributeProvider, bool inherit) where T : Attribute

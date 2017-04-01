@@ -107,7 +107,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static MemberTypes MemberType(this MemberInfo memberInfo)
         {
-#if !(DOTNET || PORTABLE)
+#if !(DOTNET || PORTABLE || PORTABLE40)
             return memberInfo.MemberType;
 #else
             if (memberInfo is PropertyInfo)
@@ -214,7 +214,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
         }
 
-#if (DOTNET || PORTABLE)
+#if (PORTABLE40 || DOTNET || PORTABLE)
         public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags, object placeholder1, Type propertyType, IList<Type> indexParameters, object placeholder2)
         {
             IEnumerable<PropertyInfo> propertyInfos = type.GetProperties(bindingFlags);

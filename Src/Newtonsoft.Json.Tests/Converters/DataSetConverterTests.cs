@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(PORTABLE || DNXCORE50)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40)
 using System;
 using Newtonsoft.Json.Converters;
 #if DNXCORE50

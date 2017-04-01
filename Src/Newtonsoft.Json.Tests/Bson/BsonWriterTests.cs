@@ -798,7 +798,7 @@ namespace Newtonsoft.Json.Tests.Bson
             Assert.AreEqual(c.AGuid, c2.AGuid.ToString());
         }
 
-#if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3
         [Test]
         public void WriteBigInteger()
         {

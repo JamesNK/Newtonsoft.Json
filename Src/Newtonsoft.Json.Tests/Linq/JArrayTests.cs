@@ -431,7 +431,7 @@ Parameter name: index");
             }
         }
 
-#if !(PORTABLE || DNXCORE50)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40)
         [Test]
         public void ITypedListGetItemProperties()
         {

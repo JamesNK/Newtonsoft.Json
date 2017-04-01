@@ -25,7 +25,7 @@
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NET35 || NET20 || PORTABLE)
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
     internal class TraceWriter : IMyInterface
     {
         public string Name

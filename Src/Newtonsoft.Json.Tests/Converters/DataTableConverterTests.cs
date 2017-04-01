@@ -28,7 +28,7 @@ using System.Text;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-#if !(PORTABLE || DNXCORE50)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40)
 using System;
 using System.Collections.Generic;
 #if DNXCORE50
@@ -486,7 +486,7 @@ namespace Newtonsoft.Json.Tests.Converters
             StringAssert.AreEqual(@"null", json);
         }
 
-#if !(NET20 || PORTABLE)
+#if !(NET20 || PORTABLE || PORTABLE40)
         [Test]
         public void DeserializedTypedDataTableWithConverter()
         {

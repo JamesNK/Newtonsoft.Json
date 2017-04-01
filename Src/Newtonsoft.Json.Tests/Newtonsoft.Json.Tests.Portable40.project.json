@@ -1,0 +1,12 @@
+﻿{
+  "dependencies": {
+    "FSharp.Core": "4.0.0.1",
+    "NUnit": "2.6.2"
+  },
+  "frameworks": {
+    "net40": {}
+  },
+  "runtimes": {
+    "win": {}
+  }
+}

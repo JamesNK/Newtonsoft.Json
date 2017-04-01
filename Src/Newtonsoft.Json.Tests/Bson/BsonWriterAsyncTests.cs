@@ -24,7 +24,7 @@
 #endregion
 
 #pragma warning disable 618
-#if !(NET20 || NET35 || NET40)
+#if !(NET20 || NET35 || NET40 || PORTABLE40)
 using System;
 #if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_3
 using System.Numerics;

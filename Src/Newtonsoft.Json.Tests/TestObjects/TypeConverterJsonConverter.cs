@@ -34,7 +34,7 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NET35 || NET20 || PORTABLE)
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
     internal class TypeConverterJsonConverter : JsonConverter
     {
         private TypeConverter GetConverter(Type type)

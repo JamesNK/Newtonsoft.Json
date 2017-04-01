@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = o.ToString();
         }
 
-#if !(PORTABLE)
+#if !(PORTABLE || PORTABLE40)
 #pragma warning disable 618
         [Test]
         public void MemberSearchFlags()
@@ -196,7 +196,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
         }
 
-#if !(NET35 || NET20)
+#if !(NET35 || NET20 || PORTABLE40)
         [Test]
         public void DynamicCamelCasePropertyNames()
         {

@@ -105,7 +105,7 @@ namespace Newtonsoft.Json.Tests
         }
 #pragma warning restore 618
 
-#if !(PORTABLE || DNXCORE50)
+#if !(PORTABLE || PORTABLE40 || DNXCORE50)
         [Test]
         public void BinarySerializeException()
         {

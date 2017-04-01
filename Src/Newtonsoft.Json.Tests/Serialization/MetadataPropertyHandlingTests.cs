@@ -339,7 +339,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsTrue(JToken.DeepEquals(t1, t2));
         }
 
-#if !(PORTABLE || DNXCORE50)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40)
         [Test]
         public void DeserializeGenericObjectListWithTypeName()
         {
