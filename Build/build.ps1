@@ -122,6 +122,7 @@ task Package -depends Build {
 
     New-Item -Path $workingDir\NuGet\tools -ItemType Directory
     Copy-Item -Path "$buildDir\install.ps1" -Destination $workingDir\NuGet\tools\install.ps1 -recurse
+    Copy-Item -Path "$baseDir\LICENSE.md" -Destination $workingDir\NuGet\LICENSE.md -recurse
     
     foreach ($build in $builds)
     {
