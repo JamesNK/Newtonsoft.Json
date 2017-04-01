@@ -2408,7 +2408,7 @@ namespace Newtonsoft.Json.Serialization
                         {
                             if (IsErrorHandled(newObject, contract, memberName, reader as IJsonLineInfo, reader.Path, ex))
                             {
-                                HandleError(reader, true, initialDepth);
+                                HandleError(reader, true, initialDepth - 1);
                             }
                             else
                             {

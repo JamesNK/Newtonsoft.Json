@@ -52,6 +52,54 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class SerializationErrorHandlingTests : TestFixtureBase
     {
+        [Test]
+        public void ErrorHandlingMetadata()
+        {
+            List<Exception> errors = new List<Exception>();
+
+            AAA a2 = JsonConvert.DeserializeObject<AAA>(@"{""MyTest"":{""$type"":""<Namespace>.JsonTest+MyTest2, <Assembly>""}}", new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Error = (object sender, Json.Serialization.ErrorEventArgs e) =>
+                {
+                    errors.Add(e.ErrorContext.Error);
+                    e.ErrorContext.Handled = true;
+                }
+            });
+
+            Assert.IsNotNull(a2);
+            Assert.AreEqual(1, errors.Count);
+            Assert.AreEqual("Error resolving type specified in JSON '<Namespace>.JsonTest+MyTest2, <Assembly>'. Path 'MyTest.$type', line 1, position 61.", errors[0].Message);
+        }
+
+        [Test]
+        public void ErrorHandlingMetadata_TopLevel()
+        {
+            List<Exception> errors = new List<Exception>();
+
+            JObject a2 = (JObject)JsonConvert.DeserializeObject(@"{""$type"":""<Namespace>.JsonTest+MyTest2, <Assembly>""}", new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                Error = (object sender, Json.Serialization.ErrorEventArgs e) =>
+                {
+                    errors.Add(e.ErrorContext.Error);
+                    e.ErrorContext.Handled = true;
+                }
+            });
+
+            Assert.IsNull(a2);
+            Assert.AreEqual(1, errors.Count);
+            Assert.AreEqual("Error resolving type specified in JSON '<Namespace>.JsonTest+MyTest2, <Assembly>'. Path '$type', line 1, position 51.", errors[0].Message);
+        }
+
+        public class AAA
+        {
+            public ITest MyTest { get; set; }
+        }
+
+        public interface ITest { }
+        public class MyTest : ITest { }
+
         public class MyClass1
         {
             [JsonProperty("myint")]
