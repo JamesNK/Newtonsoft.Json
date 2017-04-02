@@ -50,6 +50,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         [Test(Skip = "Don't run with other unit tests")]
 #else
         [Ignore("Don't run with other unit tests")]
+        [Test]
 #endif
         public void RunBenchmarks()
         {

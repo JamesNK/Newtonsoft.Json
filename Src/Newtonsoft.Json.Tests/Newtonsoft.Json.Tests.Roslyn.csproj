@@ -8,7 +8,6 @@
   <PropertyGroup>
     <TargetFrameworks Condition="'$(DotnetOnly)'==''">net45;net40;net35;net20;netcoreapp1.1</TargetFrameworks>
     <TargetFrameworks Condition="'$(DotnetOnly)'=='true'">netcoreapp1.1</TargetFrameworks>
-    <!--<TargetFrameworks>netcoreapp1.1</TargetFrameworks>-->
     <VersionPrefix>10.0.1</VersionPrefix>
     <Authors>James Newton-King</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
