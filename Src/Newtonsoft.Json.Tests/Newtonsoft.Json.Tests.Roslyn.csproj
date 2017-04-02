@@ -6,8 +6,9 @@
     </ItemGroup>
   </Target>  
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(DotnetOnly)'==''">net45;net40;net35;net20;netcoreapp1.0</TargetFrameworks>
-    <TargetFrameworks Condition="'$(DotnetOnly)'=='true'">netcoreapp1.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(DotnetOnly)'==''">net45;net40;net35;net20;netcoreapp1.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(DotnetOnly)'=='true'">netcoreapp1.1</TargetFrameworks>
+    <!--<TargetFrameworks>netcoreapp1.1</TargetFrameworks>-->
     <VersionPrefix>10.0.1</VersionPrefix>
     <Authors>James Newton-King</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
@@ -15,11 +16,10 @@
     <AssemblyName>Newtonsoft.Json.Tests</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <!-- Workaround for https://github.com/nunit/nunit3-vs-adapter/issues/296 -->
-    <DebugType Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'netcoreapp1.0'">Full</DebugType>
+    <DebugType Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'netcoreapp1.1'">Full</DebugType>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.orig" />
-    <Compile Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'net45'" Remove="Benchmarks\**" />
     <None Include="large.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
@@ -43,9 +43,9 @@
   <ItemGroup Condition="'$(TargetFramework)'=='net45'">
     <PackageReference Include="NUnit" Version="3.6.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
-    <PackageReference Include="Autofac" Version="4.0.0-rc2-240" />
+    <PackageReference Include="Autofac" Version="4.4.0" />
     <PackageReference Include="BenchmarkDotNet" Version="0.10.2" />
-    <PackageReference Include="FSharp.Core" Version="4.0.1.7-alpha" />    
+    <PackageReference Include="FSharp.Core" Version="4.1.2" />    
     <PackageReference Include="System.Buffers" Version="4.0.0" />
     <PackageReference Include="System.Collections.Immutable" Version="1.3.1" />
     <PackageReference Include="System.ValueTuple" Version="4.3.0" />
@@ -63,7 +63,7 @@
   <ItemGroup Condition="'$(TargetFramework)'=='net40'">
     <PackageReference Include="NUnit" Version="3.6.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
-    <PackageReference Include="FSharp.Core" Version="4.0.1.7-alpha" />
+    <PackageReference Include="FSharp.Core" Version="4.1.2" />
     <PackageReference Include="System.ValueTuple" Version="4.3.0" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web" />
@@ -97,8 +97,9 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net20'">
     <DefineConstants>NET20;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp1.0'">
-    <PackageReference Include="FSharp.Core" Version="4.1.0" />
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp1.1'">
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.2" />
+    <PackageReference Include="FSharp.Core" Version="4.1.2" />
     <PackageReference Include="System.ObjectModel" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
     <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
@@ -114,7 +115,7 @@
     <!-- Tracking for removal https://github.com/Microsoft/vstest/issues/472 -->
     <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
   </ItemGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp1.0'">
-    <DefineConstants>NETSTANDARD1_1;DNXCORE50;PORTABLE;$(AdditionalConstants)</DefineConstants>
+  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp1.1'">
+    <DefineConstants>NETSTANDARD1_3;DNXCORE50;PORTABLE;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 </Project>

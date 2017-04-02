@@ -23,6 +23,8 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40) || DNXCORE50
+
 namespace Newtonsoft.Json.Tests.Benchmarks
 {
     public static class BenchmarkConstants
@@ -77,3 +79,5 @@ namespace Newtonsoft.Json.Tests.Benchmarks
             @"{""strings"":[null,""Markus egger ]><[, (2nd)"",null],""dictionary"":{""Val & asd1"":1,""Val2 & asd1"":3,""Val3 & asd1"":4},""Name"":""Rick"",""Now"":""2012-02-25T19:55:50.6095676+13:00"",""BigNumber"":34123123123.121,""Address1"":{""Street"":""fff Street"",""Phone"":""(503) 814-6335"",""Entered"":""2012-02-24T18:55:50.6095676+13:00""},""Addresses"":[{""Street"":""\u001farray<address"",""Phone"":""(503) 814-6335"",""Entered"":""2012-02-24T18:55:50.6095676+13:00""},{""Street"":""array 2 address"",""Phone"":""(503) 814-6335"",""Entered"":""2012-02-24T18:55:50.6095676+13:00""}]}";
     }
 }
+
+#endif

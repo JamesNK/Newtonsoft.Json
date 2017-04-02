@@ -23,16 +23,20 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40) || DNXCORE50
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+#if (!DNXCORE50)
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Web.Script.Serialization;
+#endif
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
 using BenchmarkDotNet.Attributes;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
@@ -67,6 +71,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
             return (T)dataContractSerializer.ReadObject(ms);
         }
 
+#if (!DNXCORE50)
         [Benchmark]
         public TestClass BinaryFormatter()
         {
@@ -91,6 +96,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
 
             return ser.Deserialize<T>(json);
         }
+#endif
 
         [Benchmark]
         public TestClass DataContractJsonSerializer()
@@ -116,7 +122,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
             return DeserializeJsonNetManual(BenchmarkConstants.JsonText);
         }
 
-        #region DeserializeJsonNetManual
+#region DeserializeJsonNetManual
         private TestClass DeserializeJsonNetManual(string json)
         {
             TestClass c = new TestClass();
@@ -204,7 +210,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
             }
             return a;
         }
-        #endregion
+#endregion
 
         [Benchmark]
         public Task<TestClass> JsonNetManualAsync()
@@ -321,3 +327,5 @@ namespace Newtonsoft.Json.Tests.Benchmarks
 #pragma warning restore 618
     }
 }
+
+#endif

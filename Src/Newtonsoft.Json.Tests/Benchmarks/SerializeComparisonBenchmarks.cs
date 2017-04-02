@@ -23,16 +23,20 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40) || DNXCORE50
+
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Runtime.Serialization;
+#if (!DNXCORE50)
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Web.Script.Serialization;
+#endif
 using System.Runtime.Serialization.Json;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web.Script.Serialization;
 using BenchmarkDotNet.Attributes;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Linq;
@@ -91,6 +95,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
             }
         }
 
+#if (!DNXCORE50)
         [Benchmark]
         public byte[] BinaryFormatter()
         {
@@ -118,6 +123,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
 
             return ser.Serialize(value);
         }
+#endif
 
         [Benchmark]
         public string DataContractJsonSerializer()
@@ -152,7 +158,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
             return SerializeJsonNetLinq(TestClass);
         }
 
-        #region SerializeJsonNetManual
+#region SerializeJsonNetManual
         private string SerializeJsonNetLinq(TestClass c)
         {
             JObject o = new JObject(
@@ -174,7 +180,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
 
             return o.ToString(Formatting.None);
         }
-        #endregion
+#endregion
 
         [Benchmark]
         public string JsonNetManual()
@@ -182,7 +188,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
             return SerializeJsonNetManual(TestClass);
         }
 
-        #region SerializeJsonNetManual
+#region SerializeJsonNetManual
         private string SerializeJsonNetManual(TestClass c)
         {
             StringWriter sw = new StringWriter();
@@ -237,7 +243,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
             writer.Flush();
             return sw.ToString();
         }
-        #endregion
+#endregion
 
         [Benchmark]
         public Task<string> JsonNetManualAsync()
@@ -329,3 +335,5 @@ namespace Newtonsoft.Json.Tests.Benchmarks
 #pragma warning restore 618
     }
 }
+
+#endif

@@ -29,7 +29,7 @@ using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NET20 || DNXCORE50)
+#if !(NET20)
     [Serializable]
     [DataContract]
     public class TestClass

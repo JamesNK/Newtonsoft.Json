@@ -1,6 +1,6 @@
 ﻿{
   "dependencies": {
-    "NUnit": "2.6.2"
+    "NUnit": "3.6.0"
   },
   "frameworks": {
     "net20": {}

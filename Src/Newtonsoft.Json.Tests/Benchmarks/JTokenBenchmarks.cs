@@ -23,6 +23,8 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40) || DNXCORE50
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -95,3 +97,5 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         }
     }
 }
+
+#endif
