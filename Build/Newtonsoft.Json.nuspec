@@ -17,11 +17,11 @@
             <group targetFramework=".NETFramework3.5" />
             <group targetFramework=".NETFramework2.0" />
             <group targetFramework=".NETPortable4.5-Profile259" />
+            <group targetFramework=".NETPortable4.0-Profile328" />
             <group targetFramework=".NETStandard1.3">
                 <dependency id="Microsoft.CSharp" version="4.3.0" />
                 <dependency id="NETStandard.Library" version="1.6.1" />
                 <dependency id="System.ComponentModel.TypeConverter" version="4.3.0" />
-                <dependency id="System.Runtime.Numerics" version="4.3.0" />
                 <dependency id="System.Runtime.Serialization.Formatters" version="4.3.0" />
                 <dependency id="System.Runtime.Serialization.Primitives" version="4.3.0" />
                 <dependency id="System.Xml.XmlDocument" version="4.3.0" />
