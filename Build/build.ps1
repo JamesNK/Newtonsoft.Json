@@ -60,6 +60,7 @@ task Clean {
 
 # Build each solution, optionally signed
 task Build -depends Clean {
+  mkdir "$buildDir\Temp" -Force
   EnsureNuGetExists
   EnsureNuGetPacakge "vswhere" $vswherePath $vswhereVersion
   EnsureNuGetPacakge "NUnit.ConsoleRunner" $nunitConsolePath $nunitConsoleVersion
