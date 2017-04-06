@@ -1,8 +1,7 @@
 [Bb]in/
 [Oo]bj/
 [Ww]orking*/
-Build/runbuild.txt
-Build/nuget.exe
+Build/Temp/
 Doc/doc.shfbproj_*
 TestResults/
 AppPackages/
