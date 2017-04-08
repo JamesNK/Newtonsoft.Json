@@ -31,7 +31,7 @@
     @{Name = "Newtonsoft.Json.Roslyn"; TestsName = "Newtonsoft.Json.Tests.Roslyn"; BuildFunction = "NetCliBuild"; TestsFunction = "NetCliTests"; NuGetDir = "netstandard1.0,netstandard1.3"; TestDir = "netcoreapp1.0,netcoreapp1.1"; Framework=$null; Enabled=$true},
     @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "net45"; Framework="net-4.0"; Enabled=$true},
     @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "portable-net45+win8+wpa81+wp8"; TestDir = "net452"; Framework="net-4.0"; Enabled=$true},
-    @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "portable-net40+sl5+win8+wpa81+wp8"; TestDir = "net451";  Framework="net-4.0"; Enabled=$true},
+    @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "portable-net40+win8+wpa81+wp8+sl5"; TestDir = "net451";  Framework="net-4.0"; Enabled=$true},
     @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "net40"; Framework="net-4.0"; Enabled=$true},
     @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "net35"; Framework="net-2.0"; Enabled=$true},
     @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "net20"; Framework="net-2.0"; Enabled=$true}
@@ -116,7 +116,14 @@ task Package -depends Build {
     {
       foreach ($finalDir in $finalDirs)
       {
-        robocopy "$workingSourceDir\Newtonsoft.Json\bin\Release\$finalDir" $workingDir\Package\Bin\$finalDir *.dll *.pdb *.xml /NFL /NDL /NJS /NC /NS /NP /XO /XF *.CodeAnalysisLog.xml | Out-Default
+        $sourcePath = "$workingSourceDir\Newtonsoft.Json\bin\Release\$finalDir"
+
+        if (!(Test-Path -path $sourcePath))
+        {
+          throw "Could not find $sourcePath"
+        }
+
+        robocopy $sourcePath $workingDir\Package\Bin\$finalDir *.dll *.pdb *.xml /NFL /NDL /NJS /NC /NS /NP /XO /XF *.CodeAnalysisLog.xml | Out-Default
       }
     }
   }
