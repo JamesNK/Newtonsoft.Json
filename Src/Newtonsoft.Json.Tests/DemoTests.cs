@@ -617,7 +617,7 @@ namespace Newtonsoft.Json.Tests
             JArray largeJson;
 
             // read asynchronously from a file
-            using (TextReader textReader = new StreamReader(new FileStream(@"large.json", FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true)))
+            using (TextReader textReader = new StreamReader(new FileStream(ResolvePath(@"large.json"), FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true)))
             {
                 largeJson = await JArray.LoadAsync(new JsonTextReader(textReader));
             }
@@ -626,7 +626,7 @@ namespace Newtonsoft.Json.Tests
             user["isActive"] = false;
 
             // write asynchronously to a file
-            using (TextWriter textWriter = new StreamWriter(new FileStream(@"large.json", FileMode.Open, FileAccess.Write, FileShare.Write, 4096, true)))
+            using (TextWriter textWriter = new StreamWriter(new FileStream(ResolvePath(@"large.json"), FileMode.Open, FileAccess.Write, FileShare.Write, 4096, true)))
             {
                 await largeJson.WriteToAsync(new JsonTextWriter(textWriter));
             }

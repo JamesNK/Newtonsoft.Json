@@ -210,6 +210,15 @@ namespace Newtonsoft.Json.Tests
         }
 #endif
 
+        protected string ResolvePath(string path)
+        {
+#if !DNXCORE50
+            return Path.Combine(TestContext.CurrentContext.TestDirectory, path);
+#else
+            return path;
+#endif
+        }
+
         protected string GetOffset(DateTime d, DateFormatHandling dateFormatHandling)
         {
             char[] chars = new char[8];
