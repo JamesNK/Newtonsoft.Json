@@ -36,7 +36,7 @@ using NUnit.Framework;
 
 #endif
 
-#if !(DNXCORE50 || NET20)
+#if !(DNXCORE50 || NET20 || PORTABLE || PORTABLE40)
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Xml
 {

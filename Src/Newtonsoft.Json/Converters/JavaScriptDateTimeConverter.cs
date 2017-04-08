@@ -111,10 +111,10 @@ namespace Newtonsoft.Json.Converters
                 throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected EndConstructor, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
 
+#if HAVE_DATE_TIME_OFFSET
             Type t = (ReflectionUtils.IsNullableType(objectType))
                 ? Nullable.GetUnderlyingType(objectType)
                 : objectType;
-#if HAVE_DATE_TIME_OFFSET
             if (t == typeof(DateTimeOffset))
             {
                 return new DateTimeOffset(d);

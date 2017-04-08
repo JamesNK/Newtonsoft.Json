@@ -28,13 +28,13 @@
   $nunitConsoleVersion = "3.6.1"
   $nunitConsolePath = "$buildDir\Temp\NUnit.ConsoleRunner.$nunitConsoleVersion"
   $builds = @(
-    @{Name = "Newtonsoft.Json.Roslyn"; TestsName = "Newtonsoft.Json.Tests.Roslyn"; BuildFunction = "NetCliBuild"; TestsFunction = "NetCliTests"; NuGetDir = "netstandard1.0,netstandard1.3"; Framework=$null; Enabled=$true},
-    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net45"; Framework="net-4.0"; Enabled=$true},
-    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "portable-net45+win8+wpa81+wp8"; Framework="net-4.0"; Enabled=$true},
-    @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "portable-net40+sl5+win8+wpa81+wp8"; Framework="net-4.0"; Enabled=$true},
-    @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net40"; Framework="net-4.0"; Enabled=$true},
-    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net35"; Framework="net-2.0"; Enabled=$true},
-    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; BuildFunction = "MSBuildBuild"; TestsFunction = "NUnitTests"; NuGetDir = "net20"; Framework="net-2.0"; Enabled=$true}
+    @{Name = "Newtonsoft.Json.Roslyn"; TestsName = "Newtonsoft.Json.Tests.Roslyn"; BuildFunction = "NetCliBuild"; TestsFunction = "NetCliTests"; NuGetDir = "netstandard1.0,netstandard1.3"; TestDir = "netcoreapp1.0,netcoreapp1.1"; Framework=$null; Enabled=$true},
+    @{Name = "Newtonsoft.Json"; TestsName = "Newtonsoft.Json.Tests"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "net45"; Framework="net-4.0"; Enabled=$true},
+    @{Name = "Newtonsoft.Json.Portable"; TestsName = "Newtonsoft.Json.Tests.Portable"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "portable-net45+win8+wpa81+wp8"; TestDir = "net452"; Framework="net-4.0"; Enabled=$true},
+    @{Name = "Newtonsoft.Json.Portable40"; TestsName = "Newtonsoft.Json.Tests.Portable40"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "portable-net40+sl5+win8+wpa81+wp8"; TestDir = "net451";  Framework="net-4.0"; Enabled=$true},
+    @{Name = "Newtonsoft.Json.Net40"; TestsName = "Newtonsoft.Json.Tests.Net40"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "net40"; Framework="net-4.0"; Enabled=$true},
+    @{Name = "Newtonsoft.Json.Net35"; TestsName = "Newtonsoft.Json.Tests.Net35"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "net35"; Framework="net-2.0"; Enabled=$true},
+    @{Name = "Newtonsoft.Json.Net20"; TestsName = "Newtonsoft.Json.Tests.Net20"; BuildFunction = $null; TestsFunction = "NUnitTests"; NuGetDir = "net20"; Framework="net-2.0"; Enabled=$true}
   )
 }
 
@@ -70,10 +70,20 @@ task Build -depends Clean {
 
   Write-Host "Copying source to working source directory $workingSourceDir"
   robocopy $sourceDir $workingSourceDir /MIR /NP /XD bin obj TestResults AppPackages $packageDirs .vs artifacts /XF *.suo *.user *.lock.json | Out-Default
+  Copy-Item -Path $baseDir\LICENSE.md -Destination $workingDir\
+  mkdir "$workingDir\Build" -Force
+  Copy-Item -Path $buildDir\install.ps1 -Destination $workingDir\Build\
 
   Write-Host -ForegroundColor Green "Updating assembly version"
   Write-Host
   Update-AssemblyInfoFiles $workingSourceDir ($majorVersion + '.0.0') $version
+
+  $xml = [xml](Get-Content "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.Roslyn.csproj")
+  Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/PackageId" -value $packageId
+  Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/VersionPrefix" -value $majorWithReleaseVersion
+  Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/VersionSuffix" -value $nugetPrerelease
+
+  $xml.save("$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.Roslyn.csproj")
 
   foreach ($build in $builds)
   {
@@ -86,7 +96,7 @@ task Build -depends Clean {
       Write-Host -ForegroundColor Green "Key " $signKeyPath
       Write-Host -ForegroundColor Green "Enabled " $enabled
 
-      if ($enabled)
+      if ($enabled -and $build.BuildFunction)
       {
         & $build.BuildFunction $build
       }
@@ -113,50 +123,12 @@ task Package -depends Build {
   
   if ($buildNuGet)
   {
-    $nugetVersion = GetNuGetVersion
+    Write-Host -ForegroundColor Green "Creating NuGet package"
 
-    New-Item -Path $workingDir\NuGet -ItemType Directory
+    exec { & $script:msBuildPath "/t:pack" "/p:IncludeSource=true" "/p:Configuration=Release" "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.Roslyn.csproj" }
 
-    $nuspecPath = "$workingDir\NuGet\Newtonsoft.Json.nuspec"
-    Copy-Item -Path "$buildDir\Newtonsoft.Json.nuspec" -Destination $nuspecPath -recurse
-
-    Write-Host "Updating nuspec file at $nuspecPath" -ForegroundColor Green
-    Write-Host
-
-    $xml = [xml](Get-Content $nuspecPath)
-    Edit-XmlNodes -doc $xml -xpath "//*[local-name() = 'id']" -value $packageId
-    Edit-XmlNodes -doc $xml -xpath "//*[local-name() = 'version']" -value $nugetVersion
-
-    Write-Host $xml.OuterXml
-
-    $xml.save($nuspecPath)
-
-    New-Item -Path $workingDir\NuGet\tools -ItemType Directory
-    Copy-Item -Path "$buildDir\install.ps1" -Destination $workingDir\NuGet\tools\install.ps1 -recurse
-    Copy-Item -Path "$baseDir\LICENSE.md" -Destination $workingDir\NuGet\LICENSE.md -recurse
-    
-    foreach ($build in $builds)
-    {
-      if ($build.Enabled -and $build.NuGetDir)
-      {
-        $name = $build.TestsName
-        $frameworkDirs = $build.NuGetDir.Split(",")
-        
-        foreach ($frameworkDir in $frameworkDirs)
-        {
-          robocopy "$workingSourceDir\Newtonsoft.Json\bin\Release\$frameworkDir" $workingDir\NuGet\lib\$frameworkDir *.dll *.pdb *.xml /NFL /NDL /NJS /NC /NS /NP /XO /XF *.CodeAnalysisLog.xml | Out-Default
-        }
-      }
-    }
-  
-    robocopy $workingSourceDir $workingDir\NuGet\src *.cs /S /NFL /NDL /NJS /NC /NS /NP /XD Newtonsoft.Json.Tests Newtonsoft.Json.TestConsole obj .vs artifacts | Out-Default
-
-    Write-Host "Building NuGet package with ID $packageId and version $nugetVersion" -ForegroundColor Green
-    Write-Host
-
-    exec { & $nugetPath pack $nuspecPath -Symbols }
-
-    move -Path .\*.nupkg -Destination $workingDir\NuGet
+    mkdir $workingDir\NuGet
+    move -Path $workingSourceDir\Newtonsoft.Json\bin\Release\*.nupkg -Destination $workingDir\NuGet
   }
 
   Write-Host "Build documentation: $buildDocumentation"
@@ -204,24 +176,6 @@ task Test -depends Deploy {
   }
 }
 
-function MSBuildBuild($build)
-{
-  $name = $build.Name
-  $finalDir = $build.NuGetDir
-
-  Write-Host
-  Write-Host "Restoring $workingSourceDir\$name.sln" -ForegroundColor Green
-  [Environment]::SetEnvironmentVariable("EnableNuGetPackageRestore", "true", "Process")
-  exec { & $nugetPath update -self }
-  exec { & $nugetPath restore "$workingSourceDir\$name.sln" -verbosity detailed -configfile $workingSourceDir\nuget.config | Out-Default } "Error restoring $name"
-
-  $additionalConstants = switch($signAssemblies) { $true { "SIGNED" } default { "" } }
-
-  Write-Host
-  Write-Host "Building $workingSourceDir\$name.sln" -ForegroundColor Green
-  exec { & $script:msBuildPath "/t:Clean;Rebuild" /p:Configuration=Release "/p:CopyNuGetImplementations=true" "/p:Platform=Any CPU" "/p:PlatformTarget=AnyCPU" /p:OutputPath=bin\Release\$finalDir\ /p:AssemblyOriginatorKeyFile=$signKeyPath "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:AdditionalConstants=$additionalConstants" "$workingSourceDir\$name.sln" | Out-Default } "Error building $name"
-}
-
 function EnsureNuGetExists()
 {
   if (!(Test-Path $nugetPath))
@@ -252,7 +206,6 @@ function GetMsBuildPath()
 function NetCliBuild($build)
 {
   $name = $build.Name
-  $framework = $build.NuGetDir
   $projectPath = "$workingSourceDir\Newtonsoft.Json.Roslyn.sln"
   $additionalConstants = switch($signAssemblies) { $true { "SIGNED" } default { "" } }
 
@@ -272,24 +225,36 @@ function NetCliTests($build)
   $name = $build.TestsName
   $projectPath = "$workingSourceDir\Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.Roslyn.csproj"
   $location = "$workingSourceDir\Newtonsoft.Json.Tests"
+  $finalDirs = $build.TestDir.Split(",")
+  $enabled = $build.Enabled
 
   exec { .\Tools\Dotnet\dotnet-install.ps1 -Version $netCliVersion | Out-Default }
 
-  try
+  if ($enabled)
   {
-    Set-Location $location
+    try
+    {
+      Set-Location $location
 
-    exec { dotnet --version | Out-Default }
+      exec { dotnet --version | Out-Default }
 
-    Write-Host -ForegroundColor Green "Ensuring test project builds for $name"
-    Write-Host
+      Write-Host -ForegroundColor Green "Running tests for $name"
+      Write-Host
 
-    exec { dotnet test $projectPath -f netcoreapp1.1 -c Release -l trx | Out-Default }
-    copy-item -Path "$location\TestResults\*.trx" -Destination $workingDir
-  }
-  finally
-  {
-    Set-Location $baseDir
+      foreach ($finalDir in $finalDirs)
+      {
+        Write-Host -ForegroundColor Green "Test target $finalDir"
+        Write-Host
+
+        exec { dotnet test $projectPath -f $finalDir -c Release -l trx | Out-Default }
+        copy-item -Path "$location\TestResults\*.trx" -Destination $workingDir
+      }
+
+    }
+    finally
+    {
+      Set-Location $baseDir
+    }
   }
 }
 
@@ -297,37 +262,25 @@ function NUnitTests($build)
 {
   $name = $build.TestsName
   $finalDir = $build.NuGetDir
+  $testDir = if ($build.TestDir -ne $null) { $build.TestDir } else { $finalDir }
   $framework = $build.Framework
-  $testDir = "$workingDir\Deployed\Bin\$finalDir"
+  $testRunDir = "$workingDir\Deployed\Bin\$finalDir"
 
   Write-Host -ForegroundColor Green "Copying test assembly $name to deployed directory"
   Write-Host
-  robocopy "$workingSourceDir\Newtonsoft.Json.Tests\bin\Release\$finalDir" $workingDir\Deployed\Bin\$finalDir /MIR /NFL /NDL /NJS /NC /NS /NP /XO | Out-Default
-
-  Copy-Item -Path "$workingSourceDir\Newtonsoft.Json.Tests\bin\Release\$finalDir\Newtonsoft.Json.Tests.dll" -Destination $testDir
+  robocopy "$workingSourceDir\Newtonsoft.Json.Tests\bin\Release\$testDir" $testRunDir /MIR /NFL /NDL /NJS /NC /NS /NP /XO | Out-Default
 
   Write-Host -ForegroundColor Green "Running NUnit tests " $name
   Write-Host
   try
   {
-    Set-Location $testDir
-    exec { & $nunitConsolePath\tools\nunit3-console.exe "$testDir\Newtonsoft.Json.Tests.dll" --framework=$framework --result=$workingDir\$name.xml | Out-Default } "Error running $name tests"
+    Set-Location $testRunDir
+    exec { & $nunitConsolePath\tools\nunit3-console.exe "$testRunDir\Newtonsoft.Json.Tests.dll" --framework=$framework --result=$workingDir\$name.xml | Out-Default } "Error running $name tests"
   }
   finally
   {
     Set-Location $baseDir
   }
-}
-
-function GetNuGetVersion()
-{
-  $nugetVersion = $majorWithReleaseVersion
-  if ($nugetPrerelease -ne $null)
-  {
-    $nugetVersion = $nugetVersion + "-" + $nugetPrerelease
-  }
-
-  return $nugetVersion
 }
 
 function GetVersion($majorVersion)

@@ -124,10 +124,6 @@ namespace Newtonsoft.Json.Converters
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             bool nullable = ReflectionUtils.IsNullableType(objectType);
-            Type t = (nullable)
-                ? Nullable.GetUnderlyingType(objectType)
-                : objectType;
-
             if (reader.TokenType == JsonToken.Null)
             {
                 if (!ReflectionUtils.IsNullableType(objectType))
@@ -137,6 +133,12 @@ namespace Newtonsoft.Json.Converters
 
                 return null;
             }
+
+#if HAVE_DATE_TIME_OFFSET
+            Type t = (nullable)
+                ? Nullable.GetUnderlyingType(objectType)
+                : objectType;
+#endif
 
             if (reader.TokenType == JsonToken.Date)
             {

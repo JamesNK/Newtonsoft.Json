@@ -6,18 +6,19 @@
     </ItemGroup>
   </Target>  
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(DotnetOnly)'==''">net45;net40;net35;net20;netcoreapp1.1</TargetFrameworks>
-    <TargetFrameworks Condition="'$(DotnetOnly)'=='true'">netcoreapp1.1</TargetFrameworks>
-    <VersionPrefix>10.0.1</VersionPrefix>
+    <TargetFrameworks>net45;net451;net452;net40;net35;net20;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>
+    <VersionPrefix>1.0</VersionPrefix>
     <Authors>James Newton-King</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
     <Copyright>Copyright © James Newton-King 2008</Copyright>
     <AssemblyName>Newtonsoft.Json.Tests</AssemblyName>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
     <!-- Workaround for https://github.com/nunit/nunit3-vs-adapter/issues/296 -->
-    <DebugType Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'netcoreapp1.1'">Full</DebugType>
+    <DebugType Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'netcoreapp1.0' AND '$(TargetFramework)' != 'netcoreapp1.1'">Full</DebugType>
   </PropertyGroup>
   <ItemGroup>
+    <!-- Tracking for removal https://github.com/Microsoft/vstest/issues/472 -->
+    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
     <None Remove="**\*.orig" />
     <None Include="large.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -39,6 +40,7 @@
     </None>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.Roslyn.csproj" />
   </ItemGroup>
+  
   <ItemGroup Condition="'$(TargetFramework)'=='net45'">
     <PackageReference Include="NUnit" Version="3.6.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
@@ -57,8 +59,53 @@
     <Reference Include="System.Data.DataSetExtensions" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
-    <DefineConstants>NET45;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>NET45;HAVE_BENCHMARKS;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)'=='net451'">
+    <PackageReference Include="NUnit" Version="3.6.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
+    <PackageReference Include="Autofac" Version="4.4.0" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.2" />
+    <PackageReference Include="FSharp.Core" Version="4.1.2" />
+    <PackageReference Include="System.Buffers" Version="4.0.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.3.1" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Data.DataSetExtensions" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='net451'">
+    <ReferringTargetFrameworkForProjectReferences>.NETPortable,Version=v0.0,Profile=Profile328</ReferringTargetFrameworkForProjectReferences>
+    <DefineConstants>PORTABLE40;$(AdditionalConstants)</DefineConstants>
+  </PropertyGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)'=='net452'">
+    <PackageReference Include="NUnit" Version="3.6.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
+    <PackageReference Include="Autofac" Version="4.4.0" />
+    <PackageReference Include="BenchmarkDotNet" Version="0.10.2" />
+    <PackageReference Include="FSharp.Core" Version="4.1.2" />
+    <PackageReference Include="System.Buffers" Version="4.0.0" />
+    <PackageReference Include="System.Collections.Immutable" Version="1.3.1" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Data.Linq" />
+    <Reference Include="System.Data.Entity" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Data.DataSetExtensions" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='net452'">
+    <ReferringTargetFrameworkForProjectReferences>.NETPortable,Version=v0.0,Profile=Profile259</ReferringTargetFrameworkForProjectReferences>
+    <DefineConstants>PORTABLE;$(AdditionalConstants)</DefineConstants>
+  </PropertyGroup>
+  
   <ItemGroup Condition="'$(TargetFramework)'=='net40'">
     <PackageReference Include="NUnit" Version="3.6.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
@@ -75,6 +122,7 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
     <DefineConstants>NET40;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
+  
   <ItemGroup Condition="'$(TargetFramework)'=='net35'">
     <PackageReference Include="NUnit" Version="3.6.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
@@ -88,6 +136,7 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net35'">
     <DefineConstants>NET35;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
+  
   <ItemGroup Condition="'$(TargetFramework)'=='net20'">
     <PackageReference Include="NUnit" Version="3.6.0" />
     <PackageReference Include="NUnit3TestAdapter" Version="3.7.0" />
@@ -96,6 +145,7 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net20'">
     <DefineConstants>NET20;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
+  
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp1.1'">
     <PackageReference Include="BenchmarkDotNet" Version="0.10.2" />
     <PackageReference Include="FSharp.Core" Version="4.1.2" />
@@ -105,16 +155,29 @@
     <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
     <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
     <PackageReference Include="System.ValueTuple" Version="4.3.0" />    
-
     <PackageReference Include="xunit" Version="2.2.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
   </ItemGroup>
-  <ItemGroup>
-    <!-- Tracking for removal https://github.com/Microsoft/vstest/issues/472 -->
-    <Service Include="{82a7f48d-3b50-4b1e-b82e-3ada8210c358}" />
-  </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp1.1'">
-    <DefineConstants>NETSTANDARD1_3;DNXCORE50;PORTABLE;$(AdditionalConstants)</DefineConstants>
+    <ReferringTargetFrameworkForProjectReferences>.NETStandard,Version=v1.3</ReferringTargetFrameworkForProjectReferences>
+    <DefineConstants>NETSTANDARD1_3;DNXCORE50;PORTABLE;HAVE_BENCHMARKS;$(AdditionalConstants)</DefineConstants>
+  </PropertyGroup>
+  
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp1.0'">
+    <PackageReference Include="FSharp.Core" Version="4.1.2" />
+    <PackageReference Include="System.ObjectModel" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Xml" Version="4.3.0" />
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="4.3.0" />
+    <PackageReference Include="System.Xml.XmlSerializer" Version="4.3.0" />
+    <PackageReference Include="System.ValueTuple" Version="4.3.0" />
+    <PackageReference Include="xunit" Version="2.2.0" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.2.0" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.0.0" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp1.0'">
+    <ReferringTargetFrameworkForProjectReferences>.NETStandard,Version=v1.0</ReferringTargetFrameworkForProjectReferences>
+    <DefineConstants>NETSTANDARD1_0;DNXCORE50;PORTABLE;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 </Project>

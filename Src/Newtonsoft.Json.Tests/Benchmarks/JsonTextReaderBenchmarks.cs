@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40) || DNXCORE50
+#if HAVE_BENCHMARKS
 
 using System.IO;
 using System.Linq;
