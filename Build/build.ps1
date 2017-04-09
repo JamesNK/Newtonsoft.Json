@@ -248,7 +248,7 @@ function NUnitTests($build)
   Write-Host
   robocopy "$workingSourceDir\Newtonsoft.Json.Tests\bin\Release\$testDir" $testRunDir /MIR /NFL /NDL /NJS /NC /NS /NP /XO | Out-Default
 
-  Write-Host -ForegroundColor Green "Running NUnit tests " $testDir
+  Write-Host -ForegroundColor Green "Running NUnit tests $testDir"
   Write-Host
   try
   {
