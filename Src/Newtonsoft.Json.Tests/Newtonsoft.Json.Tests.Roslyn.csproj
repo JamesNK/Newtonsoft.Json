@@ -6,7 +6,8 @@
     </ItemGroup>
   </Target>  
   <PropertyGroup>
-    <TargetFrameworks>net45;net451;net452;net40;net35;net20;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TestFrameworks)'==''">net45;net451;net452;net40;net35;net20;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TestFrameworks)'!=''">$(TestFrameworks)</TargetFrameworks>
     <VersionPrefix>1.0</VersionPrefix>
     <Authors>James Newton-King</Authors>
     <NeutralLanguage>en-US</NeutralLanguage>
