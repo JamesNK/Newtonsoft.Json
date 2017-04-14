@@ -105,11 +105,6 @@ namespace Newtonsoft.Json.Linq
             JToken next = t.Next;
             if ((next == null || next == t) || t == t.Parent.Last)
             {
-                if (t.Parent == null)
-                {
-                    return ReadToEnd();
-                }
-
                 return SetEnd(t.Parent);
             }
             else
