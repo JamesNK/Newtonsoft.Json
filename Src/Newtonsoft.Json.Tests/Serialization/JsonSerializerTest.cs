@@ -7581,6 +7581,20 @@ Path '', line 1, position 1.");
             Assert.AreEqual(DateTimeKind.Local, c.Value.Kind);
         }
 
+        [Test]
+        public void DeserializeDateTimeOffsetAndDateTime()
+        {
+            string jsonIsoText =
+                @"{""DateTimeOffsetValue"":""2012-02-25T19:55:50.6095676+00:00"", ""DateTimeValue"":""2012-02-25T19:55:50.6095676+00:00""}";
+
+            DateTimeOffsetWrapper c = JsonConvert.DeserializeObject<DateTimeOffsetWrapper>(jsonIsoText);
+            DateTimeOffsetWrapper cISO = JsonConvert.DeserializeObject<DateTimeOffsetWrapper>(jsonIsoText, new IsoDateTimeConverter());
+            Assert.AreEqual(c.DateTimeOffsetValue, cISO.DateTimeOffsetValue); // Why would the iso date time converter change the offset? 
+            Assert.AreEqual(c.DateTimeValue, cISO.DateTimeValue);
+            Assert.AreEqual(c.DateTimeOffsetValue.DateTime, c.DateTimeValue);
+            Assert.AreEqual(DateTimeKind.Utc, c.DateTimeValue.Kind); // If the timezone is +00:00 why is the kind not set to utc?
+        }
+
 #if !NET20
         [Test]
         public void DeserializeUTC()
