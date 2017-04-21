@@ -917,6 +917,16 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void FailOnIncomplete()
+        {
+            string json = @"{'Row' : ";
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeXmlNode(json, "ROOT"),
+                "Unexpected end when reading JSON. Path 'Row', line 1, position 9.");
+        }
+
+        [Test]
         public void DocumentDeserialize()
         {
             string jsonText = @"{
