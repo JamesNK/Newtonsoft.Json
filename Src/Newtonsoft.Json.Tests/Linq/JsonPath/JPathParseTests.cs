@@ -203,6 +203,29 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void QueryTrue()
+        {
+            JPath path = new JPath("$.elements[?(true)]");
+            Assert.AreEqual(2, path.Filters.Count);
+            Assert.AreEqual("elements", ((FieldFilter)path.Filters[0]).Name);
+            Assert.AreEqual(QueryOperator.Exists, ((QueryFilter)path.Filters[1]).Expression.Operator);
+        }
+
+        [Test]
+        public void ScanQuery()
+        {
+            JPath path = new JPath("$.elements..[?(@.id=='AAA')]");
+            Assert.AreEqual(2, path.Filters.Count);
+            Assert.AreEqual("elements", ((FieldFilter)path.Filters[0]).Name);
+
+            BooleanQueryExpression expression = (BooleanQueryExpression)((QueryScanFilter) path.Filters[1]).Expression;
+
+            List<PathFilter> paths = (List<PathFilter>)expression.Left;
+
+            Assert.IsInstanceOf(typeof(FieldFilter), paths[0]);
+        }
+
+        [Test]
         public void WildcardScanWithRoot()
         {
             JPath path = new JPath("$..*");

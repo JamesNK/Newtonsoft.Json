@@ -52,6 +52,123 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     public class JPathExecuteTests : TestFixtureBase
     {
         [Test]
+        public void ScanFilter()
+        {
+            string json = @"{
+  ""elements"": [
+    {
+      ""id"": ""A"",
+      ""children"": [
+        {
+          ""id"": ""AA"",
+          ""children"": [
+            {
+              ""id"": ""AAA""
+            },
+            {
+              ""id"": ""AAB""
+            }
+          ]
+        },
+        {
+          ""id"": ""AB""
+        }
+      ]
+    },
+    {
+      ""id"": ""B"",
+      ""children"": []
+    }
+  ]
+}";
+
+            JObject models = JObject.Parse(json);
+
+            var results = models.SelectTokens("$.elements..[?(@.id=='AAA')]").ToList();
+
+            Assert.AreEqual(1, results.Count);
+            Assert.AreEqual(models["elements"][0]["children"][0]["children"][0], results[0]);
+        }
+
+        [Test]
+        public void FilterTrue()
+        {
+            string json = @"{
+  ""elements"": [
+    {
+      ""id"": ""A"",
+      ""children"": [
+        {
+          ""id"": ""AA"",
+          ""children"": [
+            {
+              ""id"": ""AAA""
+            },
+            {
+              ""id"": ""AAB""
+            }
+          ]
+        },
+        {
+          ""id"": ""AB""
+        }
+      ]
+    },
+    {
+      ""id"": ""B"",
+      ""children"": []
+    }
+  ]
+}";
+
+            JObject models = JObject.Parse(json);
+
+            var results = models.SelectTokens("$.elements[?(true)]").ToList();
+
+            Assert.AreEqual(2, results.Count);
+            Assert.AreEqual(results[0], models["elements"][0]);
+            Assert.AreEqual(results[1], models["elements"][1]);
+        }
+
+        [Test]
+        public void ScanFilterTrue()
+        {
+            string json = @"{
+  ""elements"": [
+    {
+      ""id"": ""A"",
+      ""children"": [
+        {
+          ""id"": ""AA"",
+          ""children"": [
+            {
+              ""id"": ""AAA""
+            },
+            {
+              ""id"": ""AAB""
+            }
+          ]
+        },
+        {
+          ""id"": ""AB""
+        }
+      ]
+    },
+    {
+      ""id"": ""B"",
+      ""children"": []
+    }
+  ]
+}";
+
+            JObject models = JObject.Parse(json);
+
+            var results = models.SelectTokens("$.elements..[?(true)]").ToList();
+
+            Assert.AreEqual(25, results.Count);
+        }
+
+        [Test]
         public void ScanQuoted()
         {
             string json = @"{
