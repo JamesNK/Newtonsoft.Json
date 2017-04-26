@@ -26,9 +26,6 @@
 using System;
 using System.Collections;
 using Newtonsoft.Json.Schema;
-#if HAVE_CONCURRENT_COLLECTIONS
-using System.Collections.Concurrent;
-#endif
 using System.Collections.Generic;
 using System.ComponentModel;
 #if HAVE_DYNAMIC
@@ -884,15 +881,33 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
+        private static bool IsConcurrentCollection(Type t)
+        {
+            if (t.IsGenericType())
+            {
+                Type definition = t.GetGenericTypeDefinition();
+
+                switch (definition.FullName)
+                {
+                    case "System.Collections.Concurrent.ConcurrentQueue`1":
+                    case "System.Collections.Concurrent.ConcurrentStack`1":
+                    case "System.Collections.Concurrent.ConcurrentBag`1":
+                    case "System.Collections.Concurrent.ConcurrentDictionary`2":
+                        return true;
+                }
+            }
+
+            return false;
+        }
+
         private static bool ShouldSkipDeserialized(Type t)
         {
-#if HAVE_CONCURRENT_COLLECTIONS
             // ConcurrentDictionary throws an error in its OnDeserialized so ignore - http://json.codeplex.com/discussions/257093
-            if (t.IsGenericType() && t.GetGenericTypeDefinition() == typeof(ConcurrentDictionary<,>))
+            if (IsConcurrentCollection(t))
             {
                 return true;
             }
-#endif
+
 #if HAVE_FSHARP_TYPES
             if (t.Name == FSharpUtils.FSharpSetTypeName || t.Name == FSharpUtils.FSharpMapTypeName)
             {
@@ -905,14 +920,13 @@ namespace Newtonsoft.Json.Serialization
 
         private static bool ShouldSkipSerializing(Type t)
         {
-#if HAVE_FSHARP_TYPES
-            if (t.Name == FSharpUtils.FSharpSetTypeName || t.Name == FSharpUtils.FSharpMapTypeName)
+            if (IsConcurrentCollection(t))
             {
                 return true;
             }
-#endif
-#if DOTNET
-            if (t.IsGenericType() && t.GetGenericTypeDefinition() == typeof(ConcurrentDictionary<,>))
+
+#if HAVE_FSHARP_TYPES
+            if (t.Name == FSharpUtils.FSharpSetTypeName || t.Name == FSharpUtils.FSharpMapTypeName)
             {
                 return true;
             }
