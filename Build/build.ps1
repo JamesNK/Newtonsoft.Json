@@ -32,7 +32,7 @@
   $builds = @(
     @{Framework = "netstandard1.3"; TestsFunction = "NetCliTests"; TestFramework = "netcoreapp1.1"; Enabled=$true},
     @{Framework = "netstandard1.0"; TestsFunction = "NetCliTests"; TestFramework = "netcoreapp1.0"; Enabled=$true},
-    @{Framework = "net45"; TestsFunction = "NUnitTests"; NUnitFramework="net-4.0"; Enabled=$true},
+    @{Framework = "net45"; TestsFunction = "NUnitTests"; TestFramework = "net46"; NUnitFramework="net-4.0"; Enabled=$true},
     @{Framework = "net40"; TestsFunction = "NUnitTests"; NUnitFramework="net-4.0"; Enabled=$true},
     @{Framework = "net35"; TestsFunction = "NUnitTests"; NUnitFramework="net-2.0"; Enabled=$true},
     @{Framework = "net20"; TestsFunction = "NUnitTests"; NUnitFramework="net-2.0"; Enabled=$true},
@@ -85,13 +85,13 @@ task Build -depends Clean {
   Write-Host
   Update-AssemblyInfoFiles $workingSourceDir ($majorVersion + '.0.0') $version
 
-  $xml = [xml](Get-Content "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.Roslyn.csproj")
+  $xml = [xml](Get-Content "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj")
   Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/PackageId" -value $packageId
   Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/VersionPrefix" -value $majorWithReleaseVersion
   Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/VersionSuffix" -value $nugetPrerelease
-  $xml.save("$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.Roslyn.csproj")
+  $xml.save("$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj")
 
-  $projectPath = "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.Roslyn.csproj"
+  $projectPath = "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj"
 
   NetCliBuild
 }
@@ -118,7 +118,7 @@ task Package -depends Build {
 
     $targetFrameworks = ($script:enabledBuilds | Select-Object @{Name="Framework";Expression={$_.Framework}} | select -expand Framework) -join ";"
 
-    exec { & $script:msBuildPath "/t:pack" "/p:IncludeSource=true" "/p:Configuration=Release" "/p:TargetFrameworks=`"$targetFrameworks`"" "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.Roslyn.csproj" }
+    exec { & $script:msBuildPath "/t:pack" "/p:IncludeSource=true" "/p:Configuration=Release" "/p:TargetFrameworks=`"$targetFrameworks`"" "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj" }
 
     mkdir $workingDir\NuGet
     move -Path $workingSourceDir\Newtonsoft.Json\bin\Release\*.nupkg -Destination $workingDir\NuGet
@@ -168,7 +168,7 @@ task Test -depends Deploy {
 
 function NetCliBuild()
 {
-  $projectPath = "$workingSourceDir\Newtonsoft.Json.Roslyn.sln"
+  $projectPath = "$workingSourceDir\Newtonsoft.Json.sln"
   $libraryFrameworks = ($script:enabledBuilds | Select-Object @{Name="Framework";Expression={$_.Framework}} | select -expand Framework) -join ";"
   $testFrameworks = ($script:enabledBuilds | Select-Object @{Name="Resolved";Expression={if ($_.TestFramework -ne $null) { $_.TestFramework } else { $_.Framework }}} | select -expand Resolved) -join ";"
 
@@ -214,7 +214,7 @@ function GetMsBuildPath()
 
 function NetCliTests($build)
 {
-  $projectPath = "$workingSourceDir\Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.Roslyn.csproj"
+  $projectPath = "$workingSourceDir\Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.csproj"
   $location = "$workingSourceDir\Newtonsoft.Json.Tests"
   $testDir = if ($build.TestFramework -ne $null) { $build.TestFramework } else { $build.Framework }
 

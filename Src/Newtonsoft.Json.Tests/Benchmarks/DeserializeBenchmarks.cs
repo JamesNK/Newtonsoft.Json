@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
 
         static DeserializeBenchmarks()
         {
-            LargeJsonText = System.IO.File.ReadAllText("large.json");
+            LargeJsonText = System.IO.File.ReadAllText(TestFixtureBase.ResolvePath("large.json"));
 
             FloatArrayJson = new JArray(Enumerable.Range(0, 5000).Select(i => i * 1.1m)).ToString(Formatting.None);
         }
@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         [Benchmark]
         public IList<RootObject> DeserializeLargeJsonFile()
         {
-            using (var jsonFile = System.IO.File.OpenText("large.json"))
+            using (var jsonFile = System.IO.File.OpenText(TestFixtureBase.ResolvePath("large.json")))
             using (JsonTextReader jsonTextReader = new JsonTextReader(jsonFile))
             {
                 JsonSerializer serializer = new JsonSerializer();

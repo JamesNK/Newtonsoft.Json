@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
 
         static SerializeBenchmarks()
         {
-            string json = System.IO.File.ReadAllText("large.json");
+            string json = System.IO.File.ReadAllText(TestFixtureBase.ResolvePath("large.json"));
 
             LargeCollection = JsonConvert.DeserializeObject<IList<RootObject>>(json);
         }
@@ -53,7 +53,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         [Benchmark]
         public void SerializeLargeJsonFile()
         {
-            using (StreamWriter file = System.IO.File.CreateText("largewrite.json"))
+            using (StreamWriter file = System.IO.File.CreateText(TestFixtureBase.ResolvePath("largewrite.json")))
             {
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Formatting = Formatting.Indented;

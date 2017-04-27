@@ -5,6 +5,7 @@ Build/Temp/
 Doc/doc.shfbproj_*
 TestResults/
 AppPackages/
+BenchmarkDotNet.Artifacts/
 *.suo
 *.user
 *.userprefs

@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         [Benchmark]
         public void ReadLargeJson()
         {
-            using (StreamReader fs = System.IO.File.OpenText("large.json"))
+            using (StreamReader fs = System.IO.File.OpenText(TestFixtureBase.ResolvePath("large.json")))
             using (JsonTextReader jsonTextReader = new JsonTextReader(fs))
             {
                 while (jsonTextReader.Read())
