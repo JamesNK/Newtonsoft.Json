@@ -81,14 +81,12 @@ task Build -depends Clean {
   mkdir "$workingDir\Build" -Force
   Copy-Item -Path $buildDir\install.ps1 -Destination $workingDir\Build\
 
-  Write-Host -ForegroundColor Green "Updating assembly version"
-  Write-Host
-  Update-AssemblyInfoFiles $workingSourceDir ($majorVersion + '.0.0') $version
-
   $xml = [xml](Get-Content "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj")
   Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/PackageId" -value $packageId
   Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/VersionPrefix" -value $majorWithReleaseVersion
   Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/VersionSuffix" -value $nugetPrerelease
+  Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/AssemblyVersion" -value ($majorVersion + '.0.0')
+  Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/FileVersion" -value $version
   $xml.save("$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj")
 
   $projectPath = "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj"
@@ -276,26 +274,6 @@ function GetVersion($majorVersion)
     $revision = "{0:00}{1:00}" -f $hour, $minute
     
     return $majorVersion + "." + $minor
-}
-
-function Update-AssemblyInfoFiles ([string] $workingSourceDir, [string] $assemblyVersionNumber, [string] $fileVersionNumber)
-{
-    $assemblyVersionPattern = 'AssemblyVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
-    $fileVersionPattern = 'AssemblyFileVersion\("[0-9]+(\.([0-9]+|\*)){1,3}"\)'
-    $assemblyVersion = 'AssemblyVersion("' + $assemblyVersionNumber + '")';
-    $fileVersion = 'AssemblyFileVersion("' + $fileVersionNumber + '")';
-    
-    Get-ChildItem -Path $workingSourceDir -r -filter AssemblyInfo.cs | ForEach-Object {
-        
-        $filename = $_.Directory.ToString() + '\' + $_.Name
-        Write-Host $filename
-        $filename + ' -> ' + $version
-    
-        (Get-Content $filename) | ForEach-Object {
-            % {$_ -replace $assemblyVersionPattern, $assemblyVersion } |
-            % {$_ -replace $fileVersionPattern, $fileVersion }
-        } | Set-Content $filename
-    }
 }
 
 function Edit-XmlNodes {

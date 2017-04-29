@@ -32,27 +32,13 @@ using System.Security;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-#if NETSTANDARD1_0 
-[assembly: AssemblyTitle("Json.NET .NET Standard 1.0")]
-#elif NETSTANDARD1_3
-[assembly: AssemblyTitle("Json.NET .NET Standard 1.3")]
-#elif PORTABLE40
-[assembly: AssemblyTitle("Json.NET Portable .NET 4.0")]
-#elif PORTABLE
-[assembly: AssemblyTitle("Json.NET Portable")]
-#elif DOTNET
-[assembly: AssemblyTitle("Json.NET .NET Platform")]
-#elif NET20
-[assembly: AssemblyTitle("Json.NET .NET 2.0")]
+#if NET20
 [assembly: AllowPartiallyTrustedCallers]
 #elif NET35
-[assembly: AssemblyTitle("Json.NET .NET 3.5")]
 [assembly: AllowPartiallyTrustedCallers]
 #elif NET40
-[assembly: AssemblyTitle("Json.NET .NET 4.0")]
 [assembly: AllowPartiallyTrustedCallers]
 #else
-[assembly: AssemblyTitle("Json.NET")]
 [assembly: AllowPartiallyTrustedCallers]
 #endif
 
@@ -66,11 +52,6 @@ using System.Security;
 #endif
 
 [assembly: InternalsVisibleTo("Newtonsoft.Json.Dynamic, PublicKey=0024000004800000940000000602000000240000525341310004000001000100cbd8d53b9d7de30f1f1278f636ec462cf9c254991291e66ebb157a885638a517887633b898ccbcf0d5c5ff7be85a6abe9e765d0ac7cd33c68dac67e7e64530e8222101109f154ab14a941c490ac155cd1d4fcba0fabb49016b4ef28593b015cab5937da31172f03f67d09edda404b88a60023f062ae71d0b2e4438b74cc11dc9")]
-[assembly: AssemblyDescription("Json.NET is a popular high-performance JSON framework for .NET")]
-[assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Newtonsoft")]
-[assembly: AssemblyProduct("Json.NET")]
-[assembly: AssemblyCopyright("Copyright © James Newton-King 2008")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -86,16 +67,4 @@ using System.Security;
 [assembly: Guid("9ca358aa-317b-4925-8ada-4a29e943a363")]
 #endif
 
-// Version information for an assembly consists of the following four values:
-//
-//      Major Version
-//      Minor Version 
-//      Build Number
-//      Revision
-//
-// You can specify all the values or you can default the Revision and Build Numbers 
-// by using the '*' as shown below:
-
-[assembly: AssemblyVersion("10.0.0.0")]
-[assembly: AssemblyFileVersion("10.0.0.0")]
 [assembly: CLSCompliant(true)]
