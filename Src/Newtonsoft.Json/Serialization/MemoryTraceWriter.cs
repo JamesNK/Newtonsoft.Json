@@ -13,6 +13,7 @@ namespace Newtonsoft.Json.Serialization
     public class MemoryTraceWriter : ITraceWriter
     {
         private readonly Queue<string> _traceMessages;
+        private readonly object _lock;
 
         /// <summary>
         /// Gets the <see cref="TraceLevel"/> that will be used to filter the trace messages passed to the writer.
@@ -31,6 +32,7 @@ namespace Newtonsoft.Json.Serialization
         {
             LevelFilter = TraceLevel.Verbose;
             _traceMessages = new Queue<string>();
+            _lock = new object();
         }
 
         /// <summary>
@@ -41,11 +43,6 @@ namespace Newtonsoft.Json.Serialization
         /// <param name="ex">The trace exception. This parameter is optional.</param>
         public void Trace(TraceLevel level, string message, Exception ex)
         {
-            if (_traceMessages.Count >= 1000)
-            {
-                _traceMessages.Dequeue();
-            }
-
             StringBuilder sb = new StringBuilder();
             sb.Append(DateTime.Now.ToString("yyyy'-'MM'-'dd'T'HH':'mm':'ss'.'fff", CultureInfo.InvariantCulture));
             sb.Append(" ");
@@ -53,7 +50,17 @@ namespace Newtonsoft.Json.Serialization
             sb.Append(" ");
             sb.Append(message);
 
-            _traceMessages.Enqueue(sb.ToString());
+            string s = sb.ToString();
+
+            lock (_lock)
+            {
+                if (_traceMessages.Count >= 1000)
+                {
+                    _traceMessages.Dequeue();
+                }
+
+                _traceMessages.Enqueue(s);
+            }
         }
 
         /// <summary>
@@ -73,18 +80,21 @@ namespace Newtonsoft.Json.Serialization
         /// </returns>
         public override string ToString()
         {
-            StringBuilder sb = new StringBuilder();
-            foreach (string traceMessage in _traceMessages)
+            lock (_lock)
             {
-                if (sb.Length > 0)
+                StringBuilder sb = new StringBuilder();
+                foreach (string traceMessage in _traceMessages)
                 {
-                    sb.AppendLine();
+                    if (sb.Length > 0)
+                    {
+                        sb.AppendLine();
+                    }
+
+                    sb.Append(traceMessage);
                 }
 
-                sb.Append(traceMessage);
+                return sb.ToString();
             }
-
-            return sb.ToString();
         }
     }
 }

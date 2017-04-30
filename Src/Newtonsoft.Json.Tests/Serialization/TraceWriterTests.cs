@@ -28,6 +28,9 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 using System.Linq;
 
 #endif
+#if !(NET20 || NET35 || NET40 || PORTABLE40 || PORTABLE) || DNXCORE50
+using System.Threading.Tasks;
+#endif
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -316,6 +319,63 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.IsTrue(traceMessages.First().EndsWith(" 6"));
             Assert.IsTrue(traceMessages.Last().EndsWith(" 1005"));
         }
+
+#if !(NET20 || NET35 || NET40 || PORTABLE40 || PORTABLE) || DNXCORE50
+        [Test]
+        public async Task MemoryTraceWriterThreadSafety_Trace()
+        {
+            List<Task> tasks = new List<Task>();
+
+            MemoryTraceWriter traceWriter = new MemoryTraceWriter();
+
+            for (int i = 0; i < 20; i++)
+            {
+                tasks.Add(Task.Run(() =>
+                {
+                    for (int j = 0; j < 1005; j++)
+                    {
+                        traceWriter.Trace(TraceLevel.Verbose, (j + 1).ToString(CultureInfo.InvariantCulture), null);
+                    }
+                }));
+            }
+
+            await Task.WhenAll(tasks);
+
+            IList<string> traceMessages = traceWriter.GetTraceMessages().ToList();
+
+            Assert.AreEqual(1000, traceMessages.Count);
+        }
+
+        [Test]
+        public async Task MemoryTraceWriterThreadSafety_ToString()
+        {
+            List<Task> tasks = new List<Task>();
+
+            MemoryTraceWriter traceWriter = new MemoryTraceWriter();
+
+            tasks.Add(Task.Run(() =>
+            {
+                for (int j = 0; j < 10005; j++)
+                {
+                    traceWriter.Trace(TraceLevel.Verbose, (j + 1).ToString(CultureInfo.InvariantCulture), null);
+                }
+            }));
+
+            string s = null;
+
+            tasks.Add(Task.Run(() =>
+            {
+                for (int j = 0; j < 10005; j++)
+                {
+                    s = traceWriter.ToString();
+                }
+            }));
+
+            await Task.WhenAll(tasks);
+
+            Assert.IsNotNull(s);
+        }
+#endif
 
         [Test]
         public void Serialize()
