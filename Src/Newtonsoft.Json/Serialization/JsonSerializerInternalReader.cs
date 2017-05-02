@@ -2523,7 +2523,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 try
                 {
-                    Required resolvedRequired = property.Ignored ? Required.Default : property._required  ?? contract.ItemRequired ?? Required.Default;
+                    Required resolvedRequired = property.Ignored ? Required.Default : property._required ?? contract.ItemRequired ?? Required.Default;
 
                     switch (presence)
                     {
