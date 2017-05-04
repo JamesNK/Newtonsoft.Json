@@ -12,7 +12,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
-            yield return root;
+            return new[] { root };
         }
     }
 }
