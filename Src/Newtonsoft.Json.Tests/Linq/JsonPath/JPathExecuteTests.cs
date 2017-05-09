@@ -52,6 +52,43 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     public class JPathExecuteTests : TestFixtureBase
     {
         [Test]
+        public void RecursiveWildcard()
+        {
+            string json = @"{
+    ""a"": [
+        {
+            ""id"": 1
+        }
+    ],
+    ""b"": [
+        {
+            ""id"": 2
+        },
+        {
+            ""id"": 3,
+            ""c"": {
+                ""id"": 4
+            }
+        }
+    ],
+    ""d"": [
+        {
+            ""id"": 5
+        }
+    ]
+}";
+
+            JObject models = JObject.Parse(json);
+
+            var results = models.SelectTokens("$.b..*.id").ToList();
+
+            Assert.AreEqual(3, results.Count);
+            Assert.AreEqual(2, (int)results[0]);
+            Assert.AreEqual(3, (int)results[1]);
+            Assert.AreEqual(4, (int)results[2]);
+        }
+
+        [Test]
         public void ScanFilter()
         {
             string json = @"{
