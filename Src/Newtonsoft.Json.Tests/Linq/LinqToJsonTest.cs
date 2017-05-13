@@ -52,6 +52,22 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class LinqToJsonTest : TestFixtureBase
     {
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3
+        public class DemoClass
+        {
+            public decimal maxValue;
+        }
+
+        [Test]
+        public void ToObjectDecimal()
+        {
+            var jArray = JArray.Parse("[{ maxValue:10000000000000000000 }]");
+            var list = jArray.ToObject<List<DemoClass>>();
+
+            Assert.AreEqual(10000000000000000000m, list[0].maxValue);
+        }
+#endif
+
         [Test]
         public void FromObjectGuid()
         {

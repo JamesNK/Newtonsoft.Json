@@ -751,7 +751,19 @@ namespace Newtonsoft.Json
                 case JsonToken.Float:
                     if (!(Value is decimal))
                     {
-                        SetToken(JsonToken.Float, Convert.ToDecimal(Value, CultureInfo.InvariantCulture), false);
+                        decimal d;
+#if HAVE_BIG_INTEGER
+                        if (Value is BigInteger)
+                        {
+                            d = (decimal)(BigInteger)Value;
+                        }
+                        else
+#endif
+                        {
+                            d = Convert.ToDecimal(Value, CultureInfo.InvariantCulture);
+                        }
+
+                        SetToken(JsonToken.Float, d, false);
                     }
 
                     return (decimal)Value;

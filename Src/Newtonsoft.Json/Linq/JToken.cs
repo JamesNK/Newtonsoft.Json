@@ -2114,16 +2114,25 @@ namespace Newtonsoft.Json.Linq
         {
             ValidationUtils.ArgumentNotNull(reader, nameof(reader));
 
+            bool hasContent;
             if (reader.TokenType == JsonToken.None)
             {
-                bool hasContent = (settings != null && settings.CommentHandling == CommentHandling.Ignore)
+                hasContent = (settings != null && settings.CommentHandling == CommentHandling.Ignore)
                     ? reader.ReadAndMoveToContent()
                     : reader.Read();
+            }
+            else if (reader.TokenType == JsonToken.Comment && settings?.CommentHandling == CommentHandling.Ignore)
+            {
+                hasContent = reader.ReadAndMoveToContent();
+            }
+            else
+            {
+                hasContent = true;
+            }
 
-                if (!hasContent)
-                {
-                    throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader.");
-                }
+            if (!hasContent)
+            {
+                throw JsonReaderException.Create(reader, "Error reading JToken from JsonReader.");
             }
 
             IJsonLineInfo lineInfo = reader as IJsonLineInfo;

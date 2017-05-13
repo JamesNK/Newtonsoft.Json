@@ -59,6 +59,18 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(10000000000000000000d, reader.ReadAsDouble());
             Assert.IsTrue(reader.Read());
         }
+
+        [Test]
+        public void ConvertBigIntegerToDecimal()
+        {
+            var jObject = JObject.Parse("{ maxValue:10000000000000000000}");
+
+            JsonReader reader = jObject.CreateReader();
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+            Assert.AreEqual(10000000000000000000m, reader.ReadAsDecimal());
+            Assert.IsTrue(reader.Read());
+        }
 #endif
 
         [Test]
