@@ -341,6 +341,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.IsTrue(JToken.DeepEquals(new JValue(5L), new JValue(5)));
             Assert.IsFalse(JToken.DeepEquals(new JValue(5M), new JValue(5)));
             Assert.IsTrue(JToken.DeepEquals(new JValue((ulong)long.MaxValue), new JValue(long.MaxValue)));
+            Assert.IsFalse(JToken.DeepEquals(new JValue(0.102410241024102424m), new JValue(0.102410241024102425m))); 
         }
 
         [Test]
