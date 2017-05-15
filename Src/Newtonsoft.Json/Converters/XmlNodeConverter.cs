@@ -1831,7 +1831,25 @@ namespace Newtonsoft.Json.Converters
             }
 
             string encodedName = XmlConvert.EncodeName(attributeName);
-            string attributeValue = reader.Value.ToString();
+            string attributeValue = "";
+
+            switch (reader.TokenType)
+            {
+                case JsonToken.String:
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                case JsonToken.Boolean:
+                case JsonToken.Date:
+                    attributeValue = ConvertTokenToXmlValue(reader);
+                    break;
+                case JsonToken.Null:
+
+                    // empty attribute. do nothing
+                    break;
+                default:
+                    attributeValue = reader.Value.ToString();
+                    break;
+            }
 
             IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix))
                 ? document.CreateAttribute(encodedName, manager.LookupNamespace(attributePrefix), attributeValue)
@@ -1840,7 +1858,7 @@ namespace Newtonsoft.Json.Converters
             ((IXmlElement)currentNode).SetAttributeNode(attribute);
         }
 
-        private string ConvertTokenToXmlValue(JsonReader reader)
+        private static string ConvertTokenToXmlValue(JsonReader reader)
         {
             switch (reader.TokenType)
             {
