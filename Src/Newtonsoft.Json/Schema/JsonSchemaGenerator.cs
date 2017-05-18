@@ -315,6 +315,7 @@ namespace Newtonsoft.Json.Schema
                             IList<EnumValue<long>> enumValues = EnumUtils.GetNamesAndValues<long>(type);
                             foreach (EnumValue<long> enumValue in enumValues)
                             {
+                                // TODO: On an enum decorated to be converted to a string, this should return a string, not an int. --asbjornu
                                 JToken value = JToken.FromObject(enumValue.Value);
 
                                 CurrentSchema.Enum.Add(value);
