@@ -146,7 +146,7 @@ namespace Newtonsoft.Json
         /// <value>
         /// <c>true</c> to close the source when this reader is closed; otherwise <c>false</c>. The default is <c>true</c>.
         /// </value>
-        public bool CloseInput { get; set; }
+        public virtual bool CloseInput { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether multiple pieces of JSON content can
