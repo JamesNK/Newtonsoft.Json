@@ -337,6 +337,9 @@ namespace Newtonsoft.Json.Schema
                     case JsonSchemaConstants.UniqueItemsPropertyName:
                         CurrentSchema.UniqueItems = (bool)property.Value;
                         break;
+                    default:
+                        ProcessExtraProperty(property.Key, property.Value);
+                        break;
                 }
             }
         }
@@ -474,6 +477,13 @@ namespace Newtonsoft.Json.Schema
                 default:
                     throw JsonException.Create(token, token.Path, "Expected array or JSON schema type string token, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
             }
+        }
+
+        private void ProcessExtraProperty(string name, JToken value)
+        {
+            if (CurrentSchema.ExtraProperties == null)
+                CurrentSchema.ExtraProperties = new Dictionary<string, JToken>();
+            CurrentSchema.ExtraProperties[name] = value;
         }
 
         internal static JsonSchemaType MapType(string type)
