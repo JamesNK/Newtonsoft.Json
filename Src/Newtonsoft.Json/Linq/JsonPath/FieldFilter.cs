@@ -38,6 +38,15 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 }
                 else
                 {
+                    var prop = t as JProperty;
+
+                    if (prop != null && prop.Name == Name)
+                    {
+                        var v = prop.Value as JValue;
+
+                        yield return v;
+                    }
+
                     if (errorWhenNoMatch)
                     {
                         throw new JsonException("Property '{0}' not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, Name ?? "*", t.GetType().Name));
