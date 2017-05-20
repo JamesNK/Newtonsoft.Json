@@ -136,6 +136,50 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 
         [Test]
+        public void RequiredArray() {
+            string json = @"{
+  ""properties"": {
+    ""firstProperty"": {
+      ""type"" : ""string""
+    },
+    ""secondProperty"": {
+      ""type"" : ""string""
+    },
+    ""thirdProperty"": {
+      ""type"" : ""string""
+    },
+  },
+  ""required"": [ ""firstProperty"", ""thirdProperty"" ]
+}";
+            JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+            JsonSchema schema = builder.Read(new JsonTextReader(new StringReader(json)));
+
+            Assert.IsTrue(schema.Properties["firstProperty"].Required.Value);
+            Assert.IsFalse(schema.Properties["secondProperty"].Required.HasValue);
+            Assert.IsTrue(schema.Properties["thirdProperty"].Required.Value);
+        }
+
+        [TestCase(@"{ ""required"": [ 1 ] }", TestName = "Array of incorrect type")]
+        [TestCase(@"{ ""required"": [ ] }", TestName = "Empty array")]
+        [TestCase(@"{ ""properties"" : {
+                        ""firstProperty"": {
+                          ""type"" : ""string""
+                        },
+                      },
+                      ""required"": [ ""firstProperty"", ""firstProperty"" ] }", TestName = "Array with duplicates")]
+        [TestCase(@"{ ""properties"" : {
+                        ""firstProperty"": {
+                          ""type"" : ""string""
+                        },
+                      },
+                      ""required"": [ ""secondProperty"" ] }", TestName = "Array with invalid property name")]
+        public void ShouldRejectInvalidRequiredArrayValues(string json) {
+            JsonSchemaBuilder builder = new JsonSchemaBuilder(new JsonSchemaResolver());
+
+            var exception = Assert.Throws<JsonException>(() => builder.Read(new JsonTextReader(new StringReader(json))));
+        }
+
+        [Test]
         public void ExclusiveMinimum_ExclusiveMaximum()
         {
             string json = @"{
