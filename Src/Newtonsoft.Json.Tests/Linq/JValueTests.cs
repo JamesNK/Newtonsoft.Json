@@ -41,6 +41,7 @@ using NUnit.Framework;
 #endif
 using Newtonsoft.Json.Linq;
 using System.Globalization;
+using System.Threading;
 #if NET20
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -741,6 +742,26 @@ namespace Newtonsoft.Json.Tests.Linq
   ""http://james.newtonking.com"",
   ""http://james.newtonking.com/install?v=7.0.1""
 ]", a.ToString());
+        }
+
+        [Test]
+        public void ToStringInvariantCulture()
+        {
+            var a = new JValue(5.6m);
+
+            var savedCulture = Thread.CurrentThread.CurrentCulture;
+            Thread.CurrentThread.CurrentCulture = new CultureInfo("en-Gb", true)
+            {
+                NumberFormat = new NumberFormatInfo
+                {
+                    NumberDecimalSeparator = ">>>"
+                }
+            };
+
+            string json = a.ToString();
+            Thread.CurrentThread.CurrentCulture = savedCulture;
+
+            StringAssert.AreEqual("5.6", json);
         }
 
 #if !NET20

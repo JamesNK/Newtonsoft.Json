@@ -896,7 +896,8 @@ namespace Newtonsoft.Json.Linq
                 return string.Empty;
             }
 
-            return _value.ToString();
+            var formattable = _value as IFormattable;
+            return formattable == null ? _value.ToString() : formattable.ToString(null, CultureInfo.InvariantCulture);
         }
 
         /// <summary>
