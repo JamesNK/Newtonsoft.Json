@@ -266,6 +266,29 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
+#if PORTABLE40
+        public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingFlags, object placeHolder1, IList<Type> parameterTypes, object placeHolder2)
+        {
+            var method = type.GetMethod(name, bindingFlags);
+            if (method != null)
+            {
+                var parameters = method.GetParameters();
+                if (parameters.Length != parameterTypes.Count)
+                {
+                    return null;
+                }
+                for (var i = 0; i < parameters.Length; ++i)
+                {
+                    if (parameters[i].ParameterType != parameterTypes[i])
+                    {
+                        return null;
+                    }
+                }
+            }
+            return method;
+        }
+#endif
+
 #if (DOTNET || PORTABLE)
         public static bool IsDefined(this Type type, Type attributeType, bool inherit)
         {

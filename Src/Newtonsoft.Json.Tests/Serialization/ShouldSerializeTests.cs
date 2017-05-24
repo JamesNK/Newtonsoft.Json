@@ -437,6 +437,28 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsTrue(traceWriter.GetTraceMessages().Any(m => m.EndsWith("Verbose ShouldDeserialize result for property 'Name' on Newtonsoft.Json.Tests.Serialization.ShouldDeserializeTestClass: False. Path 'Name'.")));
         }
 
+        [Test]
+        public void ShouldSerialize_NonPublicMethod()
+        {
+            ShouldSerializeNonPublicMethodClass c1 = new ShouldSerializeNonPublicMethodClass
+            {
+                Value = true
+            };
+
+            string json1 = JsonConvert.SerializeObject(c1, Formatting.Indented);
+            Assert.AreEqual(@"{
+  ""Value"": true
+}", json1);
+
+            ShouldSerializeNonPublicMethodClass c2 = new ShouldSerializeNonPublicMethodClass
+            {
+                Value = false
+            };
+
+            string json2 = JsonConvert.SerializeObject(c2, Formatting.Indented);
+            Assert.AreEqual("{}", json2);
+        }
+
         public class Employee
         {
             public string Name { get; set; }
@@ -651,5 +673,12 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             return HasName;
         }
+    }
+
+    public class ShouldSerializeNonPublicMethodClass
+    {
+        public bool Value { get; set; }
+
+        private bool ShouldSerializeValue() => Value;
     }
 }
