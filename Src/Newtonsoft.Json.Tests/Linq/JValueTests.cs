@@ -315,6 +315,16 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void RenameParentNull()
+        {
+            ExceptionAssert.Throws<InvalidOperationException>(() =>
+            {
+                JValue v = new JValue(true);
+                v.Rename("newPropertyName");
+            }, "The parent is missing.");
+        }
+
+        [Test]
         public void Root()
         {
             JValue v = new JValue(true);

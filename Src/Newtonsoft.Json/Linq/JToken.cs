@@ -2713,5 +2713,19 @@ namespace Newtonsoft.Json.Linq
                 }
             }
         }
+
+        /// <summary>
+        /// Renames the property name to given name
+        /// </summary>
+        /// <param name="newName"></param>
+        /// <exception cref="InvalidOperationException"></exception>
+        public void Rename(string newName)
+        {
+            var parent = Parent;
+            if (_parent == null)
+                throw new InvalidOperationException("The parent is missing.");
+            var newToken = new JProperty(newName, this);
+            parent.Replace(newToken);
+        }
     }
 }
