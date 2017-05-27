@@ -100,19 +100,23 @@ namespace Newtonsoft.Json.Converters
                 : objectType;
 
             ReflectionObject reflectionObject = ReflectionObjectPerType.Get(t);
+            JsonContract keyContract = serializer.ContractResolver.ResolveContract(reflectionObject.GetType(KeyName));
+            JsonContract valueContract = serializer.ContractResolver.ResolveContract(reflectionObject.GetType(ValueName));
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
                 string propertyName = reader.Value.ToString();
                 if (string.Equals(propertyName, KeyName, StringComparison.OrdinalIgnoreCase))
                 {
-                    reader.ReadAndAssert();
-                    key = serializer.Deserialize(reader, reflectionObject.GetType(KeyName));
+                    reader.ReadForTypeAndAssert(keyContract, false);
+
+                    key = serializer.Deserialize(reader, keyContract.UnderlyingType);
                 }
                 else if (string.Equals(propertyName, ValueName, StringComparison.OrdinalIgnoreCase))
                 {
-                    reader.ReadAndAssert();
-                    value = serializer.Deserialize(reader, reflectionObject.GetType(ValueName));
+                    reader.ReadForTypeAndAssert(valueContract, false);
+
+                    value = serializer.Deserialize(reader, valueContract.UnderlyingType);
                 }
                 else
                 {
