@@ -1627,7 +1627,11 @@ namespace Newtonsoft.Json.Converters
 #if HAVE_XLINQ
             if (typeof(XObject).IsAssignableFrom(objectType))
             {
-                if (objectType != typeof(XDocument) && objectType != typeof(XElement))
+                if (objectType != typeof(XContainer)
+                    && objectType != typeof(XDocument)
+                    && objectType != typeof(XElement)
+                    && objectType != typeof(XNode)
+                    && objectType != typeof(XObject))
                 {
                     throw JsonSerializationException.Create(reader, "XmlNodeConverter only supports deserializing XDocument or XElement.");
                 }
@@ -1640,7 +1644,8 @@ namespace Newtonsoft.Json.Converters
 #if HAVE_XML_DOCUMENT
             if (typeof(XmlNode).IsAssignableFrom(objectType))
             {
-                if (objectType != typeof(XmlDocument))
+                if (objectType != typeof(XmlDocument)
+                    && objectType != typeof(XmlNode))
                 {
                     throw JsonSerializationException.Create(reader, "XmlNodeConverter only supports deserializing XmlDocuments");
                 }
