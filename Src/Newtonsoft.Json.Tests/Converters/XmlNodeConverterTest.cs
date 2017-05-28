@@ -2117,7 +2117,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             try
             {
-                System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("ru");
+                System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("ru-RU");
 
                 // in russian culture value 12.27 will be written as 12,27
 
