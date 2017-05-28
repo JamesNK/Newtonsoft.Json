@@ -297,6 +297,10 @@ namespace Newtonsoft.Json.Linq
                         return -CompareBigInteger((BigInteger)objB, objA);
                     }
 #endif
+                    if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
+                    {
+                        return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
+                    }
                     return CompareFloat(objA, objB);
                 case JTokenType.Comment:
                 case JTokenType.String:
