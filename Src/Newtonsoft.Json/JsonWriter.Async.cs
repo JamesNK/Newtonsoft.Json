@@ -675,7 +675,7 @@ namespace Newtonsoft.Json
 
         internal virtual async Task WriteTokenAsync(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments, CancellationToken cancellationToken)
         {
-            int initialDepth = CalculateWriteTokenDepth(reader);
+            int initialDepth = CalculateWriteTokenInitialDepth(reader);
 
             do
             {
@@ -696,6 +696,11 @@ namespace Newtonsoft.Json
                 initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)
                 && writeChildren
                 && await reader.ReadAsync(cancellationToken).ConfigureAwait(false));
+
+            if (initialDepth < CalculateWriteTokenFinalDepth(reader))
+            {
+                throw JsonWriterException.Create(this, "Unexpected end when reading token.", null);
+            }
         }
 
         // For internal use, when we know the writer does not offer true async support (e.g. when backed
@@ -703,7 +708,7 @@ namespace Newtonsoft.Json
         // path through the sync version.
         internal async Task WriteTokenSyncReadingAsync(JsonReader reader, CancellationToken cancellationToken)
         {
-            int initialDepth = CalculateWriteTokenDepth(reader);
+            int initialDepth = CalculateWriteTokenInitialDepth(reader);
 
             do
             {
@@ -720,6 +725,11 @@ namespace Newtonsoft.Json
                 // stop if we have reached the end of the token being read
                 initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)
                 && await reader.ReadAsync(cancellationToken).ConfigureAwait(false));
+
+            if (initialDepth < CalculateWriteTokenFinalDepth(reader))
+            {
+                throw JsonWriterException.Create(this, "Unexpected end when reading token.", null);
+            }
         }
 
         private async Task WriteConstructorDateAsync(JsonReader reader, CancellationToken cancellationToken)

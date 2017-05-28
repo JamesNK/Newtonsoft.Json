@@ -641,7 +641,7 @@ namespace Newtonsoft.Json
 
         internal virtual void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
         {
-            int initialDepth = CalculateWriteTokenDepth(reader);
+            int initialDepth = CalculateWriteTokenInitialDepth(reader);
 
             do
             {
@@ -662,9 +662,14 @@ namespace Newtonsoft.Json
                 initialDepth - 1 < reader.Depth - (JsonTokenUtils.IsEndToken(reader.TokenType) ? 1 : 0)
                 && writeChildren
                 && reader.Read());
+
+            if (initialDepth < CalculateWriteTokenFinalDepth(reader))
+            {
+                throw JsonWriterException.Create(this, "Unexpected end when reading token.", null);
+            }
         }
 
-        private int CalculateWriteTokenDepth(JsonReader reader)
+        private int CalculateWriteTokenInitialDepth(JsonReader reader)
         {
             JsonToken type = reader.TokenType;
             if (type == JsonToken.None)
@@ -673,6 +678,17 @@ namespace Newtonsoft.Json
             }
 
             return JsonTokenUtils.IsStartToken(type) ? reader.Depth : reader.Depth + 1;
+        }
+
+        private int CalculateWriteTokenFinalDepth(JsonReader reader)
+        {
+            JsonToken type = reader.TokenType;
+            if (type == JsonToken.None)
+            {
+                return -1;
+            }
+
+            return JsonTokenUtils.IsEndToken(type) ? reader.Depth - 1 : reader.Depth;
         }
 
         private void WriteConstructorDate(JsonReader reader)
