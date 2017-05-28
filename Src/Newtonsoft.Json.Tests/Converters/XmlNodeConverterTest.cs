@@ -2110,6 +2110,42 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(@"﻿<?xml version=""1.0"" encoding=""utf-8""?><root booleanType=""true"" />", xmlString);
         }
 
+        [Test]
+        public void IgnoreCultureForTypedAttributes()
+        {
+            var originalCulture = System.Threading.Thread.CurrentThread.CurrentCulture;
+
+            try
+            {
+                System.Threading.Thread.CurrentThread.CurrentCulture = new CultureInfo("ru");
+
+                // in russian culture value 12.27 will be written as 12,27
+
+                var serializer = JsonSerializer.Create(new JsonSerializerSettings
+                {
+                    Converters = { new XmlNodeConverter() },
+                });
+
+                var json = new StringBuilder(@"{
+                    ""metrics"": {
+                        ""type"": ""CPULOAD"",
+                        ""@value"": 12.27
+                    }
+                }");
+
+                using (var stringReader = new StringReader(json.ToString()))
+                using (var jsonReader = new JsonTextReader(stringReader))
+                {
+                    var document = (XmlDocument)serializer.Deserialize(jsonReader, typeof(XmlDocument));
+                    StringAssert.AreEqual(@"<metrics value=""12.27""><type>CPULOAD</type></metrics>", document.OuterXml);
+                }
+            }
+            finally
+            {
+                System.Threading.Thread.CurrentThread.CurrentCulture = originalCulture;
+            }
+        }
+
         private static void JsonBodyToSoapXml(Stream json, Stream xml)
         {
             Newtonsoft.Json.JsonSerializerSettings settings = new Newtonsoft.Json.JsonSerializerSettings();
