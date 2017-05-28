@@ -1799,6 +1799,7 @@ namespace Newtonsoft.Json.Converters
                 case JsonToken.Float:
                 case JsonToken.Boolean:
                 case JsonToken.Date:
+                case JsonToken.Bytes:
                     string text = ConvertTokenToXmlValue(reader);
                     if (text != null)
                     {
@@ -1831,25 +1832,7 @@ namespace Newtonsoft.Json.Converters
             }
 
             string encodedName = XmlConvert.EncodeName(attributeName);
-            string attributeValue = "";
-
-            switch (reader.TokenType)
-            {
-                case JsonToken.String:
-                case JsonToken.Integer:
-                case JsonToken.Float:
-                case JsonToken.Boolean:
-                case JsonToken.Date:
-                    attributeValue = ConvertTokenToXmlValue(reader);
-                    break;
-                case JsonToken.Null:
-
-                    // empty attribute. do nothing
-                    break;
-                default:
-                    attributeValue = reader.Value.ToString();
-                    break;
-            }
+            string attributeValue = ConvertTokenToXmlValue(reader);
 
             IXmlNode attribute = (!string.IsNullOrEmpty(attributePrefix))
                 ? document.CreateAttribute(encodedName, manager.LookupNamespace(attributePrefix), attributeValue)
@@ -1900,6 +1883,8 @@ namespace Newtonsoft.Json.Converters
 #else
                     return XmlConvert.ToString(d, DateTimeUtils.ToDateTimeFormat(d.Kind));
 #endif
+                case JsonToken.Bytes:
+                    return Convert.ToBase64String((byte[])reader.Value);
                 case JsonToken.Null:
                     return null;
                 default:
@@ -1968,6 +1953,7 @@ namespace Newtonsoft.Json.Converters
                 case JsonToken.Integer:
                 case JsonToken.Float:
                 case JsonToken.Date:
+                case JsonToken.Bytes:
                 case JsonToken.StartConstructor:
                     return null;
             }

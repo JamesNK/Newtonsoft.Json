@@ -2146,6 +2146,71 @@ namespace Newtonsoft.Json.Tests.Converters
             }
         }
 
+        [Test]
+        public void NullAttributeValue()
+        {
+            var node = JsonConvert.DeserializeXmlNode(@"{
+                    ""metrics"": {
+                        ""type"": ""CPULOAD"",
+                        ""@value"": null
+                    }
+                }");
+
+            StringAssert.AreEqual(@"<metrics value=""""><type>CPULOAD</type></metrics>", node.OuterXml);
+        }
+
+        [Test]
+        public void NonStandardAttributeValues()
+        {
+            JObject o = new JObject
+            {
+                new JProperty("root", new JObject
+                {
+                    new JProperty("@uri", new JValue(new Uri("http://localhost/"))),
+                    new JProperty("@time_span", new JValue(TimeSpan.FromMinutes(1))),
+                    new JProperty("@bytes", new JValue(System.Text.Encoding.UTF8.GetBytes("Hello world")))
+                })
+            };
+
+            using (var jsonReader = o.CreateReader())
+            {
+                var serializer = JsonSerializer.Create(new JsonSerializerSettings
+                {
+                    Converters = { new XmlNodeConverter() },
+                });
+
+                var document = (XmlDocument)serializer.Deserialize(jsonReader, typeof(XmlDocument));
+
+                StringAssert.AreEqual(@"<root uri=""http://localhost/"" time_span=""00:01:00"" bytes=""SGVsbG8gd29ybGQ="" />", document.OuterXml);
+            }
+        }
+
+        [Test]
+        public void NonStandardElementsValues()
+        {
+            JObject o = new JObject
+            {
+                new JProperty("root", new JObject
+                {
+                    new JProperty("uri", new JValue(new Uri("http://localhost/"))),
+                    new JProperty("time_span", new JValue(TimeSpan.FromMinutes(1))),
+                    new JProperty("bytes", new JValue(System.Text.Encoding.UTF8.GetBytes("Hello world")))
+                })
+            };
+
+            using (var jsonReader = o.CreateReader())
+            {
+                var serializer = JsonSerializer.Create(new JsonSerializerSettings
+                {
+                    Converters = { new XmlNodeConverter() },
+                });
+
+                var document = (XmlDocument)serializer.Deserialize(jsonReader, typeof(XmlDocument));
+
+                StringAssert.AreEqual(@"<root><uri>http://localhost/</uri><time_span>00:01:00</time_span><bytes>SGVsbG8gd29ybGQ=</bytes></root>", document.OuterXml);
+            }
+        }
+
         private static void JsonBodyToSoapXml(Stream json, Stream xml)
         {
             Newtonsoft.Json.JsonSerializerSettings settings = new Newtonsoft.Json.JsonSerializerSettings();
