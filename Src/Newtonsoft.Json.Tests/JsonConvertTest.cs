@@ -536,7 +536,7 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void ToStringInvalid()
         {
-            ExceptionAssert.Throws<ArgumentException>(() => { JsonConvert.ToString(new Version(1, 0)); }, "Unsupported type: System.Version. Use the JsonSerializer class to get the object's JSON representation.");
+            ExceptionAssert.Throws<ArgumentException>(() => { JsonConvert.ToString(new Version(1, 0)); }, "Unsupported type: System.Version. Use the JsonSerializer class or the JsonConvert.SerializeObject method to get the object's JSON representation.");
         }
 
         [Test]
