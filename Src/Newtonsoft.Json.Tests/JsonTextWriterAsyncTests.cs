@@ -134,6 +134,12 @@ namespace Newtonsoft.Json.Tests
                 await writer.WritePropertyNameAsync("PropRaw");
                 await writer.WriteRawValueAsync("'raw string'");
 
+                await writer.WritePropertyNameAsync("PropObjectNull");
+                await writer.WriteValueAsync((object)null);
+
+                await writer.WritePropertyNameAsync("PropObjectBigInteger");
+                await writer.WriteValueAsync((object)System.Numerics.BigInteger.Parse("123456789012345678901234567890"));
+
                 await writer.WritePropertyNameAsync("PropUndefined");
                 await writer.WriteUndefinedAsync();
 
@@ -166,7 +172,32 @@ namespace Newtonsoft.Json.Tests
                 await writer.WriteEndObjectAsync();
             }
 
-            Console.WriteLine(sw.ToString());
+            StringAssert.AreEqual(@"{
+    ""PropByte"": 1,
+    ""PropSByte"": 2,
+    ""PropShort"": 3,
+    ""PropUInt"": 4,
+    ""PropUShort"": 5,
+    ""PropUri"": ""http://localhost/"",
+    ""PropRaw"": 'raw string',
+    ""PropObjectNull"": null,
+    ""PropObjectBigInteger"": 123456789012345678901234567890,
+    ""PropUndefined"": undefined,
+    ""PropEscaped \""name\"""": null,
+    ""PropUnescaped"": null,
+    ""PropArray"": [
+        ""string!""
+    ],
+    ""PropNested"": [
+        [
+            [
+                [
+                    []
+                ]
+            ]
+        ]
+    ]
+}", sw.ToString());
         }
 
         [Test]
