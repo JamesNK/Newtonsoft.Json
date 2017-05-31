@@ -48,6 +48,127 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public class JsonTextWriterAsyncTests : TestFixtureBase
     {
+        public class LazyStringWriter : StringWriter
+        {
+            public LazyStringWriter(IFormatProvider formatProvider) : base(formatProvider)
+            {
+            }
+
+            public override Task FlushAsync()
+            {
+                return DoDelay(base.FlushAsync());
+            }
+
+            public override Task WriteAsync(char value)
+            {
+                return DoDelay(base.WriteAsync(value));
+            }
+
+            public override Task WriteAsync(char[] buffer, int index, int count)
+            {
+                return DoDelay(base.WriteAsync(buffer, index, count));
+            }
+
+            public override Task WriteAsync(string value)
+            {
+                return DoDelay(base.WriteAsync(value));
+            }
+
+            public override Task WriteLineAsync()
+            {
+                return DoDelay(base.WriteLineAsync());
+            }
+
+            public override Task WriteLineAsync(char value)
+            {
+                return DoDelay(base.WriteLineAsync(value));
+            }
+
+            public override Task WriteLineAsync(char[] buffer, int index, int count)
+            {
+                return DoDelay(base.WriteLineAsync(buffer, index, count));
+            }
+
+            public override Task WriteLineAsync(string value)
+            {
+                return DoDelay(base.WriteLineAsync(value));
+            }
+
+            private async Task DoDelay(Task t)
+            {
+                await Task.Delay(TimeSpan.FromSeconds(0.01));
+                await t;
+            }
+        }
+
+        [Test]
+        public async Task WriteLazy()
+        {
+            LazyStringWriter sw = new LazyStringWriter(CultureInfo.InvariantCulture);
+
+            using (JsonTextWriter writer = new JsonTextWriter(sw))
+            {
+                writer.Indentation = 4;
+                writer.Formatting = Formatting.Indented;
+
+                await writer.WriteStartObjectAsync();
+
+                await writer.WritePropertyNameAsync("PropByte");
+                await writer.WriteValueAsync((byte)1);
+
+                await writer.WritePropertyNameAsync("PropSByte");
+                await writer.WriteValueAsync((sbyte)2);
+
+                await writer.WritePropertyNameAsync("PropShort");
+                await writer.WriteValueAsync((short)3);
+
+                await writer.WritePropertyNameAsync("PropUInt");
+                await writer.WriteValueAsync((uint)4);
+
+                await writer.WritePropertyNameAsync("PropUShort");
+                await writer.WriteValueAsync((ushort)5);
+
+                await writer.WritePropertyNameAsync("PropUri");
+                await writer.WriteValueAsync(new Uri("http://localhost/"));
+
+                await writer.WritePropertyNameAsync("PropRaw");
+                await writer.WriteRawValueAsync("'raw string'");
+
+                await writer.WritePropertyNameAsync("PropUndefined");
+                await writer.WriteUndefinedAsync();
+
+                await writer.WritePropertyNameAsync(@"PropEscaped ""name""", true);
+                await writer.WriteNullAsync();
+
+                await writer.WritePropertyNameAsync(@"PropUnescaped", false);
+                await writer.WriteNullAsync();
+
+                await writer.WritePropertyNameAsync("PropArray");
+                await writer.WriteStartArrayAsync();
+
+                await writer.WriteValueAsync("string!");
+
+                await writer.WriteEndArrayAsync();
+
+                await writer.WritePropertyNameAsync("PropNested");
+                await writer.WriteStartArrayAsync();
+                await writer.WriteStartArrayAsync();
+                await writer.WriteStartArrayAsync();
+                await writer.WriteStartArrayAsync();
+                await writer.WriteStartArrayAsync();
+
+                await writer.WriteEndArrayAsync();
+                await writer.WriteEndArrayAsync();
+                await writer.WriteEndArrayAsync();
+                await writer.WriteEndArrayAsync();
+                await writer.WriteEndArrayAsync();
+
+                await writer.WriteEndObjectAsync();
+            }
+
+            Console.WriteLine(sw.ToString());
+        }
+
         [Test]
         public async Task BufferTestAsync()
         {
