@@ -433,15 +433,24 @@ namespace Newtonsoft.Json.Linq
         /// <returns>The JSON for this token using the given formatting and converters.</returns>
         public string ToString(Formatting formatting, params JsonConverter[] converters)
         {
-            using (StringWriter sw = new StringWriter(CultureInfo.InvariantCulture))
+            string path = System.IO.Path.GetTempFileName();
+            FileInfo fileInfo = new FileInfo(path);
+            fileInfo.Attributes = FileAttributes.Temporary;
+            string t;
+            using (FileStream stream = File.OpenWrite(path))
             {
-                JsonTextWriter jw = new JsonTextWriter(sw);
-                jw.Formatting = formatting;
+                using (StreamWriter sw = new StreamWriter(stream))
+                {
+                    JsonTextWriter jw = new JsonTextWriter(sw);
+                    jw.Formatting = formatting;
 
-                WriteTo(jw, converters);
+                    WriteTo(jw, converters);
 
-                return sw.ToString();
+                    t = sw.ToString();
+                }
             }
+            System.IO.File.Delete(path);
+            return t;
         }
 
         private static JValue EnsureValue(JToken value)
