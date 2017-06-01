@@ -101,6 +101,7 @@ namespace Newtonsoft.Json.Tests
             }
         }
 
+#if !(NETSTANDARD1_0 || PORTABLE)
         [Test]
         public async Task WriteLazy()
         {
@@ -199,6 +200,7 @@ namespace Newtonsoft.Json.Tests
     ]
 }", sw.ToString());
         }
+#endif
 
         [Test]
         public async Task BufferTestAsync()
