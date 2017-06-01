@@ -1798,5 +1798,43 @@ namespace Newtonsoft.Json.Tests
             [JsonIgnore]
             public DateTime Expiration { get; set; }
         }
+
+        [Test]
+        public void TestGenericJsonConverterSerialize()
+        {
+            string json = JsonConvert.SerializeObject(new Value<bool>(true));
+            Assert.AreEqual("true", json);
+        }
+
+        [Test]
+        public void TestGenericJsonConverterDeserialize()
+        {
+            Value<bool> value = JsonConvert.DeserializeObject<Value<bool>>("true");
+            Assert.IsTrue(value);
+        }
+
+        [JsonConverter(typeof(ValueConverter<>))]
+        struct Value<T>
+        {
+            public static implicit operator T(Value<T> value) => value._value;
+
+            public static implicit operator Value<T>(T value) => new Value<T>(value);
+
+            private readonly T _value;
+
+            public Value(T value)
+            {
+                _value = value;
+            }
+        }
+
+        sealed class ValueConverter<T> : JsonConverter
+        {
+            public override bool CanConvert(Type objectType) => objectType == typeof(Value<T>);
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) => new Value<T>(serializer.Deserialize<T>(reader));
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => serializer.Serialize(writer, (T)(Value<T>)value, typeof(T));
+        }
     }
 }

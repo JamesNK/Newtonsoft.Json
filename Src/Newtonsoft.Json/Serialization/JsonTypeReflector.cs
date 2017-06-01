@@ -182,7 +182,17 @@ namespace Newtonsoft.Json.Serialization
 
             if (converterAttribute != null)
             {
-                Func<object[], object> creator = CreatorCache.Get(converterAttribute.ConverterType);
+                Type converterType = converterAttribute.ConverterType;
+                if (converterType.IsGenericTypeDefinition())
+                {
+                    Type type = attributeProvider as Type;
+                    if (type == null || !type.IsGenericType() || type.IsGenericTypeDefinition())
+                    {
+                        throw new InvalidOperationException("invalid json converter type");
+                    }
+                    converterType = converterType.MakeGenericType(type.GetGenericArguments());
+                }
+                Func<object[], object> creator = CreatorCache.Get(converterType);
                 if (creator != null)
                 {
                     return (JsonConverter)creator(converterAttribute.ConverterParameters);
