@@ -38,6 +38,7 @@ namespace Newtonsoft.Json.Utilities
         private readonly object _lock = new object();
         private Dictionary<TKey, TValue> _store;
         private readonly Func<TKey, TValue> _creator;
+        private int? _maxSize;
 
         public ThreadSafeStore(Func<TKey, TValue> creator)
         {
@@ -48,6 +49,11 @@ namespace Newtonsoft.Json.Utilities
 
             _creator = creator;
             _store = new Dictionary<TKey, TValue>();
+        }
+
+        public ThreadSafeStore(Func<TKey, TValue> creator, int maxSize) : this(creator)
+        {
+            _maxSize = maxSize;
         }
 
         public TValue Get(TKey key)
@@ -64,6 +70,11 @@ namespace Newtonsoft.Json.Utilities
         private TValue AddValue(TKey key)
         {
             TValue value = _creator(key);
+
+            if (_maxSize.HasValue && _store.Count >= _maxSize.Value)
+            {
+                return value;
+            }
 
             lock (_lock)
             {
