@@ -227,7 +227,7 @@ function NetCliTests($build)
     Write-Host -ForegroundColor Green "Running tests for $testDir"
     Write-Host
 
-    exec { dotnet test $projectPath -f $testDir -c Release -l trx | Out-Default }
+    exec { dotnet test $projectPath -f $testDir -c Release -l trx --no-build | Out-Default }
     copy-item -Path "$location\TestResults\*.trx" -Destination $workingDir
   }
   finally
