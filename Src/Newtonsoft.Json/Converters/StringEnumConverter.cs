@@ -58,6 +58,12 @@ namespace Newtonsoft.Json.Converters
         public bool AllowIntegerValues { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether whitespaces should be ignored when deserializing
+        /// </summary>
+        /// <value><c>true</c> if whitespaces are ignored; otherwise, <c>false</c></value>
+        public bool IgnoreWhitespace { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="StringEnumConverter"/> class.
         /// </summary>
         public StringEnumConverter()
@@ -142,7 +148,7 @@ namespace Newtonsoft.Json.Converters
                 {
                     string enumText = reader.Value.ToString();
 
-                    return EnumUtils.ParseEnumName(enumText, isNullable, !AllowIntegerValues, t);
+                    return EnumUtils.ParseEnumName(enumText, isNullable, !AllowIntegerValues, IgnoreWhitespace, t);
                 }
 
                 if (reader.TokenType == JsonToken.Integer)
