@@ -1844,6 +1844,50 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(42, value.Pair.Value);
         }
 
+        [Test]
+        public void TestGenericJsonConverterPropertyCollectionSerialize()
+        {
+            ClassWithKeyValuePairCollection<string, int> value = new ClassWithKeyValuePairCollection<string, int>
+            {
+                Collection = new[]
+                {
+                    new KeyValuePair<string, int>("First", 42),
+                    new KeyValuePair<string, int>("second", -100)
+                }
+            };
+            string json = JsonConvert.SerializeObject(value, Formatting.Indented);
+            Assert.AreEqual(@"{
+  ""Collection"": [
+    {
+      ""First"": 42
+    },
+    {
+      ""second"": -100
+    }
+  ]
+}", json);
+        }
+
+        [Test]
+        public void TestGenericJsonConverterPropertyCollectionDeserialize()
+        {
+            ClassWithKeyValuePairCollection<string, int> value = JsonConvert.DeserializeObject<ClassWithKeyValuePairCollection<string, int>>(@"{
+  ""Collection"": [
+    {
+      ""First"": 42
+    },
+    {
+      ""second"": -100
+    }
+  ]
+}");
+            Assert.AreEqual(2, value.Collection.Length);
+            Assert.AreEqual("First", value.Collection[0].Key);
+            Assert.AreEqual(42, value.Collection[0].Value);
+            Assert.AreEqual("second", value.Collection[1].Key);
+            Assert.AreEqual(-100, value.Collection[1].Value);
+        }
+
         [JsonConverter(typeof(ValueConverter<>))]
         struct Value<T>
         {
@@ -1866,6 +1910,12 @@ namespace Newtonsoft.Json.Tests
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) => new Value<T>(serializer.Deserialize<T>(reader));
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => serializer.Serialize(writer, (T)(Value<T>)value, typeof(T));
+        }
+
+        sealed class ClassWithKeyValuePairCollection<TKey, TValue>
+        {
+            [JsonProperty(ItemConverterType = typeof(KeyValuePairConverter<,>))]
+            public KeyValuePair<TKey, TValue>[] Collection { get; set; }
         }
 
         sealed class ClassWithKeyValuePair<TKey, TValue, TOther>
