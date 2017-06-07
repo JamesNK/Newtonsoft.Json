@@ -1800,17 +1800,48 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
-        public void TestGenericJsonConverterSerialize()
+        public void TestGenericJsonConverterTypeSerialize()
         {
-            string json = JsonConvert.SerializeObject(new Value<bool>(true));
+            string json = JsonConvert.SerializeObject(new Value<bool>(true), Formatting.Indented);
             Assert.AreEqual("true", json);
         }
 
         [Test]
-        public void TestGenericJsonConverterDeserialize()
+        public void TestGenericJsonConverterTypeDeserialize()
         {
             Value<bool> value = JsonConvert.DeserializeObject<Value<bool>>("true");
             Assert.IsTrue(value);
+        }
+
+        [Test]
+        public void TestGenericJsonConverterPropertySerialize()
+        {
+            ClassWithKeyValuePair<string, int, bool> value = new ClassWithKeyValuePair<string, int, bool>
+            {
+                Other = true,
+                Pair = new KeyValuePair<string, int>("PropertyName", 42)
+            };
+            string json = JsonConvert.SerializeObject(value, Formatting.Indented);
+            Assert.AreEqual(@"{
+  ""Other"": true,
+  ""Pair"": {
+    ""PropertyName"": 42
+  }
+}", json);
+        }
+
+        [Test]
+        public void TestGenericJsonConverterPropertyDeserialize()
+        {
+            ClassWithKeyValuePair<string, int, bool> value = JsonConvert.DeserializeObject<ClassWithKeyValuePair<string, int, bool>>(@"{
+  ""Other"": true,
+  ""Pair"": {
+    ""PropertyName"": 42
+  }
+}");
+            Assert.IsTrue(value.Other);
+            Assert.AreEqual("PropertyName", value.Pair.Key);
+            Assert.AreEqual(42, value.Pair.Value);
         }
 
         [JsonConverter(typeof(ValueConverter<>))]
@@ -1835,6 +1866,36 @@ namespace Newtonsoft.Json.Tests
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) => new Value<T>(serializer.Deserialize<T>(reader));
 
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => serializer.Serialize(writer, (T)(Value<T>)value, typeof(T));
+        }
+
+        sealed class ClassWithKeyValuePair<TKey, TValue, TOther>
+        {
+            public TOther Other { get; set; }
+
+            [JsonConverter(typeof(KeyValuePairConverter<,>))]
+            public KeyValuePair<TKey, TValue> Pair { get; set; }
+        }
+
+        sealed class KeyValuePairConverter<TKey, TValue> : JsonConverter
+        {
+            public override bool CanConvert(Type objectType) => objectType == typeof(KeyValuePair<TKey, TValue>);
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                Dictionary<TKey, TValue> dictionary = serializer.Deserialize<Dictionary<TKey, TValue>>(reader);
+                foreach (var pair in dictionary)
+                {
+                    return pair;
+                }
+                return null;
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                IDictionary<TKey, TValue> dictionary = new Dictionary<TKey, TValue>();
+                dictionary.Add((KeyValuePair<TKey, TValue>)value);
+                serializer.Serialize(writer, dictionary);
+            }
         }
     }
 }

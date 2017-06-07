@@ -186,6 +186,23 @@ namespace Newtonsoft.Json.Serialization
                 if (converterType.IsGenericTypeDefinition())
                 {
                     Type type = attributeProvider as Type;
+                    if (type == null)
+                    {
+                        PropertyInfo propertyInfo = attributeProvider as PropertyInfo;
+                        if (propertyInfo != null)
+                        {
+                            type = propertyInfo.PropertyType;
+                        }
+                        else
+                        {
+                            FieldInfo fieldInfo = attributeProvider as FieldInfo;
+                            if (fieldInfo != null)
+                            {
+                                type = fieldInfo.FieldType;
+                            }
+                        }
+                    }
+
                     if (type == null || !type.IsGenericType() || type.IsGenericTypeDefinition())
                     {
                         throw new InvalidOperationException("invalid json converter type");
