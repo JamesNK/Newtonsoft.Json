@@ -117,6 +117,17 @@ namespace Newtonsoft.Json
                     return adapter.SerializationBinder;
                 }
 
+                //Check if Default Binder was set
+                if (_serializationBinder.GetType().IsAssignableFrom(typeof(DefaultSerializationBinder)))
+                {
+                    adapter = new SerializationBinderAdapter(_serializationBinder as DefaultSerializationBinder);
+                }
+
+                if (adapter != null)
+                {
+                    return adapter.SerializationBinder;
+                }
+
                 throw new InvalidOperationException("Cannot get SerializationBinder because an ISerializationBinder was previously set.");
             }
             set

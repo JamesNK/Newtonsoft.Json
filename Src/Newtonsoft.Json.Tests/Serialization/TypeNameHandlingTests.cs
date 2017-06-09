@@ -55,6 +55,7 @@ using Newtonsoft.Json.Utilities;
 using System.Net;
 using System.Runtime.Serialization;
 using System.IO;
+using System.Reflection;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -883,7 +884,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             }
         }
 #endif
-
+        
         [Test]
         public void NewSerializeUsingCustomBinder()
         {
@@ -1317,6 +1318,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 #endif
 
 #if !(NET20 || NET35)
+
         [Test]
         public void SerializationBinderWithFullName()
         {
@@ -2122,6 +2124,48 @@ namespace Newtonsoft.Json.Tests.Serialization
             StringAssert.AreEqual("Hello!", objWithMessage.Message.Value.Value);
         }
 #endif
+
+
+#if !(NET20 || NET35)
+
+        [Test]
+        public void SerializerWithDefaultBinder()
+        {
+            var serializer = JsonSerializer.Create();
+#pragma warning disable CS0618
+            Assert.NotNull(serializer.Binder);
+            StringAssert.Equals(typeof(DefaultSerializationBinder).FullName, serializer.Binder.GetType().FullName);
+#pragma warning restore CS0618 // Type or member is obsolete
+            StringAssert.Equals(typeof(DefaultSerializationBinder).FullName, serializer.SerializationBinder.GetType().FullName);
+        }
+        
+        [Test]
+        public void ObsoleteBinderThrowsIfISerializationBinderSet()
+        {   
+            var serializer = JsonSerializer.Create(new JsonSerializerSettings() { SerializationBinder = new FancyBinder() });
+#pragma warning disable CS0618
+            Assert.Throws<InvalidOperationException>(() => { var foo = serializer.Binder; });
+#pragma warning restore CS0618 // Type or member is obsolete
+            StringAssert.Equals(typeof(FancyBinder).Name, serializer.SerializationBinder.GetType().Name);
+        }
+
+
+        public class FancyBinder : ISerializationBinder
+        {
+            string annotate = new string(':', 3);
+            public void BindToName(Type serializedType, out string assemblyName, out string typeName)
+            {
+                assemblyName = string.Format("FancyAssemblyName=>{0}", Assembly.GetAssembly(serializedType)?.GetName().Name);
+                typeName = string.Format("{0}{1}{0}", annotate, serializedType.Name);
+            }
+
+            public Type BindToType(string assemblyName, string typeName)
+            {
+                return null;
+            }
+        }
+#endif
+
     }
 
     public struct Message2
