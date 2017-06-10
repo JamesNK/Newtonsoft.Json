@@ -111,18 +111,13 @@ namespace Newtonsoft.Json
                     return null;
                 }
 
+                SerializationBinder legacySerializationBinder = _serializationBinder as SerializationBinder;
+                if (legacySerializationBinder != null)
+                {
+                    return legacySerializationBinder;
+                }
+
                 SerializationBinderAdapter adapter = _serializationBinder as SerializationBinderAdapter;
-                if (adapter != null)
-                {
-                    return adapter.SerializationBinder;
-                }
-
-                //Check if Default Binder was set
-                if (_serializationBinder.GetType().IsAssignableFrom(typeof(DefaultSerializationBinder)))
-                {
-                    adapter = new SerializationBinderAdapter(_serializationBinder as DefaultSerializationBinder);
-                }
-
                 if (adapter != null)
                 {
                     return adapter.SerializationBinder;
