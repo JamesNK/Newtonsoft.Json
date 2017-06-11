@@ -586,6 +586,10 @@ namespace Newtonsoft.Json.Tests.Converters
             e = JsonConvert.DeserializeObject<NumberNamesEnum>("\"3\"", converter);
 
             Assert.AreEqual(NumberNamesEnum.third, e);
+
+            e = JsonConvert.DeserializeObject<NumberNamesEnum>("\"-4\"", converter);
+
+            Assert.AreEqual(NumberNamesEnum.fourth, e);
         }
 
         [Test]
@@ -604,6 +608,10 @@ namespace Newtonsoft.Json.Tests.Converters
             e = JsonConvert.DeserializeObject<NumberNamesEnum>("\"3\"", converter);
 
             Assert.AreEqual(NumberNamesEnum.third, e);
+
+            e = JsonConvert.DeserializeObject<NumberNamesEnum>("\"-4\"", converter);
+
+            Assert.AreEqual(NumberNamesEnum.fourth, e);
         }
 #endif
 
@@ -616,6 +624,17 @@ namespace Newtonsoft.Json.Tests.Converters
             });
 
             Assert.AreEqual("Integer string '1' is not allowed.", ex.InnerException.Message);
+        }
+
+        [Test]
+        public void AllowIntegerValueAndNegativeStringNumber()
+        {
+            JsonSerializationException ex = ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<StoreColor>("\"-1\"", new StringEnumConverter { AllowIntegerValues = false });
+            });
+
+            Assert.AreEqual("Integer string '-1' is not allowed.", ex.InnerException.Message);
         }
 
         [Test]
@@ -714,7 +733,9 @@ namespace Newtonsoft.Json.Tests.Converters
         [EnumMember(Value = "1")]
         second,
         [EnumMember(Value = "3")]
-        third
+        third,
+        [EnumMember(Value = "-4")]
+        fourth
     }
 
     [DataContract]
