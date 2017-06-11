@@ -182,7 +182,17 @@ namespace Newtonsoft.Json.Serialization
 
             if (converterAttribute != null)
             {
-                Func<object[], object> creator = CreatorCache.Get(converterAttribute.ConverterType);
+                Type converterType = converterAttribute.ConverterType;
+                if (converterType.IsGenericTypeDefinition())
+                {
+                    Type type = (attributeProvider as Type) ?? (attributeProvider as PropertyInfo)?.PropertyType ?? (attributeProvider as FieldInfo)?.FieldType;
+                    if (type == null || !type.IsGenericType() || type.IsGenericTypeDefinition())
+                    {
+                        throw new InvalidOperationException("invalid json converter type");
+                    }
+                    converterType = converterType.MakeGenericType(type.GetGenericArguments());
+                }
+                Func<object[], object> creator = CreatorCache.Get(converterType);
                 if (creator != null)
                 {
                     return (JsonConverter)creator(converterAttribute.ConverterParameters);
@@ -198,8 +208,26 @@ namespace Newtonsoft.Json.Serialization
         /// <param name="converterType">The <see cref="JsonConverter"/> type to create.</param>
         /// <param name="converterArgs">Optional arguments to pass to an initializing constructor of the JsonConverter.
         /// If <c>null</c>, the default constructor is used.</param>
-        public static JsonConverter CreateJsonConverterInstance(Type converterType, object[] converterArgs)
+        /// <param name="collectionType">The collection type.</param>
+        public static JsonConverter CreateJsonConverterInstance(Type converterType, object[] converterArgs, Type collectionType)
         {
+            if (converterType.IsGenericTypeDefinition())
+            {
+                Type openIEnumerableType = typeof(IEnumerable<>);
+                foreach (Type interfaceType in collectionType.GetInterfaces())
+                {
+                    if (interfaceType.IsGenericType() && !interfaceType.IsGenericTypeDefinition() && interfaceType.GetGenericTypeDefinition() == openIEnumerableType)
+                    {
+                        Type itemType = interfaceType.GetGenericArguments()[0];
+                        if (!itemType.IsGenericType() || itemType.IsGenericTypeDefinition())
+                        {
+                            throw new InvalidOperationException("invalid json converter type");
+                        }
+                        converterType = converterType.MakeGenericType(itemType.GetGenericArguments());
+                        break;
+                    }
+                }
+            }
             Func<object[], object> converterCreator = CreatorCache.Get(converterType);
             return (JsonConverter)converterCreator(converterArgs);
         }
