@@ -638,6 +638,28 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void AllowIntegerValueAndPositiveStringNumber()
+        {
+            JsonSerializationException ex = ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<StoreColor>("\"+1\"", new StringEnumConverter { AllowIntegerValues = false });
+            });
+
+            Assert.AreEqual("Integer string '+1' is not allowed.", ex.InnerException.Message);
+        }
+
+        [Test]
+        public void AllowIntegerValueAndDash()
+        {
+            JsonSerializationException ex = ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<StoreColor>("\"-\"", new StringEnumConverter { AllowIntegerValues = false });
+            });
+
+            Assert.AreEqual("Requested value '-' was not found.", ex.InnerException.Message);
+        }
+
+        [Test]
         public void AllowIntegerValueAndNonNamedValue()
         {
             ExceptionAssert.Throws<JsonSerializationException>(() =>
