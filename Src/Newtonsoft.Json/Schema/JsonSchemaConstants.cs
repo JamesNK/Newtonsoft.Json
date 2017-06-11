@@ -49,7 +49,7 @@ namespace Newtonsoft.Json.Schema
         public const string MaximumLengthPropertyName = "maxLength";
         public const string MinimumLengthPropertyName = "minLength";
         public const string EnumPropertyName = "enum";
-        public const string ReadOnlyPropertyName = "readonly";
+        public const string ReadOnlyPropertyName = "readOnly";
         public const string TitlePropertyName = "title";
         public const string DescriptionPropertyName = "description";
         public const string FormatPropertyName = "format";
