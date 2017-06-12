@@ -185,12 +185,23 @@ namespace Newtonsoft.Json.Serialization
                 Type converterType = converterAttribute.ConverterType;
                 if (converterType.IsGenericTypeDefinition())
                 {
-                    Type type = (attributeProvider as Type) ?? (attributeProvider as PropertyInfo)?.PropertyType ?? (attributeProvider as FieldInfo)?.FieldType;
+                    Type type = (attributeProvider as Type)
+                        ?? (attributeProvider as PropertyInfo)?.PropertyType
+                        ?? (attributeProvider as FieldInfo)?.FieldType;
+
                     if (type == null || !type.IsGenericType() || type.IsGenericTypeDefinition())
                     {
-                        throw new InvalidOperationException("invalid json converter type");
+                        throw new JsonSerializationException("Could not create generic converter {0}. Converter was placed on type {1} that does not have type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, type));
                     }
-                    converterType = converterType.MakeGenericType(type.GetGenericArguments());
+
+                    Type[] converterGenericArguments = converterType.GetGenericArguments();
+                    Type[] typeGenericArguments = type.GetGenericArguments();
+                    if (converterGenericArguments.Length != typeGenericArguments.Length)
+                    {
+                        throw new JsonSerializationException("Could not create generic converter {0}. Converter was placed on type {1} that does not have a matching number of type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, type));
+                    }
+
+                    converterType = converterType.MakeGenericType(typeGenericArguments);
                 }
                 Func<object[], object> creator = CreatorCache.Get(converterType);
                 if (creator != null)
@@ -213,20 +224,29 @@ namespace Newtonsoft.Json.Serialization
         {
             if (converterType.IsGenericTypeDefinition())
             {
-                Type openIEnumerableType = typeof(IEnumerable<>);
-                foreach (Type interfaceType in collectionType.GetInterfaces())
+                Type collectionItemType;
+                if (CollectionUtils.IsDictionaryType(collectionType))
                 {
-                    if (interfaceType.IsGenericType() && !interfaceType.IsGenericTypeDefinition() && interfaceType.GetGenericTypeDefinition() == openIEnumerableType)
-                    {
-                        Type itemType = interfaceType.GetGenericArguments()[0];
-                        if (!itemType.IsGenericType() || itemType.IsGenericTypeDefinition())
-                        {
-                            throw new InvalidOperationException("invalid json converter type");
-                        }
-                        converterType = converterType.MakeGenericType(itemType.GetGenericArguments());
-                        break;
-                    }
+                    ReflectionUtils.GetDictionaryKeyValueTypes(collectionType, out Type _, out collectionItemType);
                 }
+                else
+                {
+                    collectionItemType = ReflectionUtils.GetCollectionItemType(collectionType);
+                }
+
+                if (!collectionItemType.IsGenericType() || collectionItemType.IsGenericTypeDefinition())
+                {
+                    throw new JsonSerializationException("Could not create generic converter {0}. Converter was specified for items in collection {1} and item type {2} that does not have type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, collectionType, collectionItemType));
+                }
+
+                Type[] converterGenericArguments = converterType.GetGenericArguments();
+                Type[] typeGenericArguments = collectionItemType.GetGenericArguments();
+                if (converterGenericArguments.Length != typeGenericArguments.Length)
+                {
+                    throw new JsonSerializationException("Could not create generic converter {0}. Converter was specified for items in collection {1} and item type {2} that does not have a matching number of type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, collectionType, collectionItemType));
+                }
+
+                converterType = converterType.MakeGenericType(typeGenericArguments);
             }
             Func<object[], object> converterCreator = CreatorCache.Get(converterType);
             return (JsonConverter)converterCreator(converterArgs);
