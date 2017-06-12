@@ -714,9 +714,9 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             DefaultContractResolver resolver = new DefaultContractResolver();
 
-            var contract = (JsonDictionaryContract)resolver.ResolveContract(typeof(DictionaryWithItemGenericConverter<int>));
+            var contract = (JsonDictionaryContract)resolver.ResolveContract(typeof(DictionaryWithItemGenericConverter<DateTime, int>));
 
-            Assert.IsInstanceOf(typeof(GenericType<int>), contract.ItemConverter);
+            Assert.IsInstanceOf(typeof(GenericConverter<int>), contract.ItemConverter);
         }
     }
 }

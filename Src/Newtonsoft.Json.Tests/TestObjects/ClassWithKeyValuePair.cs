@@ -53,7 +53,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
     }
 
     [JsonDictionary(ItemConverterType = typeof(GenericConverter<>))]
-    public sealed class DictionaryWithItemGenericConverter<T> : Dictionary<string, GenericConverter<T>>
+    public sealed class DictionaryWithItemGenericConverter<TKey, TInnerValue> : Dictionary<TKey, GenericType<TInnerValue>>
     {
     }
 }
