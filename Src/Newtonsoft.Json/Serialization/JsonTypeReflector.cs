@@ -185,17 +185,32 @@ namespace Newtonsoft.Json.Serialization
                 Type converterType = converterAttribute.ConverterType;
                 if (converterType.IsGenericTypeDefinition())
                 {
-                    Type type = (attributeProvider as Type)
-                        ?? (attributeProvider as PropertyInfo)?.PropertyType
-                        ?? (attributeProvider as FieldInfo)?.FieldType;
-
-                    if (type == null || !type.IsGenericType() || type.IsGenericTypeDefinition())
+                    Type type = attributeProvider as Type;
+                    Type[] typeGenericArguments = null;
+                    if (type == null)
                     {
-                        throw new JsonSerializationException("Could not create generic converter {0}. Converter was placed on type {1} that does not have type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, type));
+                        MemberInfo member = attributeProvider as MemberInfo;
+                        type = (member as PropertyInfo)?.PropertyType ?? (member as FieldInfo)?.FieldType;
+                        if (type != null)
+                        {
+                            Type genericTypeDefinitionMember = GetMembersGenericType(member);
+                            if (genericTypeDefinitionMember?.IsGenericParameter == true)
+                            {
+                                typeGenericArguments = new[] { type };
+                            }
+                        }
+                    }
+
+                    if (typeGenericArguments == null)
+                    {
+                        if (type == null || !type.IsGenericType() || type.IsGenericTypeDefinition())
+                        {
+                            throw new JsonSerializationException("Could not create generic converter {0}. Converter was placed on type {1} that does not have type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, type));
+                        }
+                        typeGenericArguments = type.GetGenericArguments();
                     }
 
                     Type[] converterGenericArguments = converterType.GetGenericArguments();
-                    Type[] typeGenericArguments = type.GetGenericArguments();
                     if (converterGenericArguments.Length != typeGenericArguments.Length)
                     {
                         throw new JsonSerializationException("Could not create generic converter {0}. Converter was placed on type {1} that does not have a matching number of type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, type));
@@ -214,33 +229,94 @@ namespace Newtonsoft.Json.Serialization
         }
 
         /// <summary>
+        /// Retrieves the type of the corresponding member of the declaring type's generic type definition.
+        /// </summary>
+        /// <param name="member"></param>
+        /// <returns></returns>
+        private static Type GetMembersGenericType(MemberInfo member)
+        {
+            Type declaringType = member.DeclaringType;
+            if (declaringType.IsGenericType() && !declaringType.IsGenericTypeDefinition())
+            {
+                Type genericDeclaringType = declaringType.GetGenericTypeDefinition();
+                return member.MemberType() == MemberTypes.Property ?
+                    genericDeclaringType.GetProperty(member.Name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).PropertyType :
+                    genericDeclaringType.GetField(member.Name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly).FieldType;
+            }
+            return null;
+        }
+
+        /// <summary>
         /// Lookup and create an instance of the <see cref="JsonConverter"/> type described by the argument.
         /// </summary>
         /// <param name="converterType">The <see cref="JsonConverter"/> type to create.</param>
         /// <param name="converterArgs">Optional arguments to pass to an initializing constructor of the JsonConverter.
         /// If <c>null</c>, the default constructor is used.</param>
         /// <param name="collectionType">The collection type.</param>
-        public static JsonConverter CreateJsonConverterInstance(Type converterType, object[] converterArgs, Type collectionType)
+        /// <param name="member">The type member.</param>
+        public static JsonConverter CreateJsonConverterInstance(Type converterType, object[] converterArgs, Type collectionType, MemberInfo member)
         {
             if (converterType.IsGenericTypeDefinition())
             {
                 Type collectionItemType;
+                Type[] typeGenericArguments = null;
                 if (CollectionUtils.IsDictionaryType(collectionType))
                 {
-                    ReflectionUtils.GetDictionaryKeyValueTypes(collectionType, out Type _, out collectionItemType);
+                    ReflectionUtils.GetDictionaryKeyValueTypes(collectionType, out _, out collectionItemType);
+                    if (member != null)
+                    {
+                        Type genericMemberType = GetMembersGenericType(member);
+                        if (genericMemberType != null)
+                        {
+                            ReflectionUtils.GetDictionaryKeyValueTypes(genericMemberType, out _, out Type genericCollectionItemType);
+                            if (genericCollectionItemType.IsGenericParameter)
+                            {
+                                typeGenericArguments = new[] { collectionItemType };
+                            }
+                        }
+                    }
+                    else if (collectionType.IsGenericType() && !collectionType.IsGenericTypeDefinition())
+                    {
+                        Type genericCollectionType = collectionType.GetGenericTypeDefinition();
+                        ReflectionUtils.GetDictionaryKeyValueTypes(genericCollectionType, out _, out Type genericCollectionItemType);
+                        if (genericCollectionItemType.IsGenericParameter)
+                        {
+                            typeGenericArguments = new[] { collectionItemType };
+                        }
+                    }
                 }
                 else
                 {
                     collectionItemType = ReflectionUtils.GetCollectionItemType(collectionType);
+                    if (member != null)
+                    {
+                        Type genericMemberType = GetMembersGenericType(member);
+                        if (genericMemberType != null && ReflectionUtils.GetCollectionItemType(genericMemberType).IsGenericParameter)
+                        {
+                            typeGenericArguments = new[] { collectionItemType };
+                        }
+                    }
+                    else if (collectionType.IsGenericType() && !collectionType.IsGenericTypeDefinition())
+                    {
+                        Type genericCollectionType = collectionType.GetGenericTypeDefinition();
+                        if (ReflectionUtils.GetCollectionItemType(genericCollectionType).IsGenericParameter)
+                        {
+                            typeGenericArguments = new[] { collectionItemType };
+                        }
+                    }
                 }
 
-                if (!collectionItemType.IsGenericType() || collectionItemType.IsGenericTypeDefinition())
+                if (typeGenericArguments == null)
                 {
-                    throw new JsonSerializationException("Could not create generic converter {0}. Converter was specified for items in collection {1} and item type {2} that does not have type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, collectionType, collectionItemType));
+                    if (!collectionItemType.IsGenericType() || collectionItemType.IsGenericTypeDefinition())
+                    {
+                        throw new JsonSerializationException("Could not create generic converter {0}. Converter was specified for items in collection {1} and item type {2} that does not have type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, collectionType, collectionItemType));
+                    }
+
+                    typeGenericArguments = collectionItemType.GetGenericArguments();
                 }
 
                 Type[] converterGenericArguments = converterType.GetGenericArguments();
-                Type[] typeGenericArguments = collectionItemType.GetGenericArguments();
                 if (converterGenericArguments.Length != typeGenericArguments.Length)
                 {
                     throw new JsonSerializationException("Could not create generic converter {0}. Converter was specified for items in collection {1} and item type {2} that does not have a matching number of type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, collectionType, collectionItemType));

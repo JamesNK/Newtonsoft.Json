@@ -718,5 +718,49 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.IsInstanceOf(typeof(GenericConverter<int>), contract.ItemConverter);
         }
+
+        [Test]
+        public void JsonConverterAttribute_GenericTypeProperty()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithGenericEnumProperty<ConsoleColor>));
+
+            var property = contract.Properties["EnumValue"];
+
+            Assert.IsInstanceOf(typeof(GenericEnumConverter<ConsoleColor>), property.Converter);
+        }
+
+        [Test]
+        public void JsonConverterAttribute_GenericTypeCollectionProperty()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithGenericEnumCollectionProperty<ConsoleColor>));
+
+            var property = contract.Properties["EnumValues"];
+
+            Assert.IsInstanceOf(typeof(GenericEnumConverter<ConsoleColor>), property.ItemConverter);
+        }
+
+        [Test]
+        public void JsonArrayAttributeEnumItemsConverter_GenericType()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            var contract = (JsonArrayContract)resolver.ResolveContract(typeof(ListWithEnumItemGenericConverter<ConsoleColor>));
+
+            Assert.IsInstanceOf(typeof(GenericEnumConverter<ConsoleColor>), contract.ItemConverter);
+        }
+
+        [Test]
+        public void JsonDictionaryAttributeEnumItemsConverter_GenericType()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            var contract = (JsonDictionaryContract)resolver.ResolveContract(typeof(DictionaryWithEnumItemGenericConverter<string, ConsoleColor>));
+
+            Assert.IsInstanceOf(typeof(GenericEnumConverter<ConsoleColor>), contract.ItemConverter);
+        }
     }
 }
