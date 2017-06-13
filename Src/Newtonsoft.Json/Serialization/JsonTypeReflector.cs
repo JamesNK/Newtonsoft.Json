@@ -193,8 +193,8 @@ namespace Newtonsoft.Json.Serialization
                         type = (member as PropertyInfo)?.PropertyType ?? (member as FieldInfo)?.FieldType;
                         if (type != null)
                         {
-                            Type genericTypeDefinitionMember = GetMembersGenericType(member);
-                            if (genericTypeDefinitionMember?.IsGenericParameter == true)
+                            Type genericMemberType = GetMembersGenericType(member);
+                            if (genericMemberType?.IsGenericParameter == true)
                             {
                                 typeGenericArguments = new[] { type };
                             }
