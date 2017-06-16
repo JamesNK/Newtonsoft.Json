@@ -24,6 +24,9 @@
 #endregion
 
 using System;
+#if HAVE_CONCURRENT_DICTIONARY
+using System.Collections.Concurrent;
+#endif
 using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
@@ -69,7 +72,7 @@ namespace Newtonsoft.Json.Serialization
     {
         private static readonly object TypeContractCacheLock = new object();
         private static readonly PropertyNameTable NameTable = new PropertyNameTable();
-        private static Dictionary<ResolverContractKey, JsonContract> _contractCache;
+        private static readonly ConcurrentDictionary<ResolverContractKey, JsonContract> _contractCache = new ConcurrentDictionary<ResolverContractKey, JsonContract>();
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CamelCasePropertyNamesContractResolver"/> class.
@@ -96,27 +99,8 @@ namespace Newtonsoft.Json.Serialization
             }
 
             // for backwards compadibility the CamelCasePropertyNamesContractResolver shares contracts between instances
-            JsonContract contract;
             ResolverContractKey key = new ResolverContractKey(GetType(), type);
-            Dictionary<ResolverContractKey, JsonContract> cache = _contractCache;
-            if (cache == null || !cache.TryGetValue(key, out contract))
-            {
-                contract = CreateContract(type);
-
-                // avoid the possibility of modifying the cache dictionary while another thread is accessing it
-                lock (TypeContractCacheLock)
-                {
-                    cache = _contractCache;
-                    Dictionary<ResolverContractKey, JsonContract> updatedCache = (cache != null)
-                        ? new Dictionary<ResolverContractKey, JsonContract>(cache)
-                        : new Dictionary<ResolverContractKey, JsonContract>();
-                    updatedCache[key] = contract;
-
-                    _contractCache = updatedCache;
-                }
-            }
-
-            return contract;
+            return _contractCache.GetOrAdd(key, k => CreateContract(type));
         }
 
         internal override PropertyNameTable GetNameTable()
