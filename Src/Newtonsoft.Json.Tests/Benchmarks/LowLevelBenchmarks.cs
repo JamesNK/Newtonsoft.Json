@@ -26,6 +26,7 @@
 #if HAVE_BENCHMARKS
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -41,6 +42,34 @@ namespace Newtonsoft.Json.Tests.Benchmarks
     {
         private const string FloatText = "123.123";
         private static readonly char[] FloatChars = FloatText.ToCharArray();
+
+        private static readonly Dictionary<string, object> NormalDictionary = new Dictionary<string, object>();
+
+        private static readonly ConcurrentDictionary<string, object> ConcurrentDictionary = new ConcurrentDictionary<string, object>();
+
+        static LowLevelBenchmarks()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                string key = i.ToString();
+                object value = new object();
+
+                NormalDictionary.Add(key, value);
+                ConcurrentDictionary.TryAdd(key, value);
+            }
+        }
+
+        [Benchmark]
+        public void DictionaryGet()
+        {
+            NormalDictionary.TryGetValue("one", out object _);
+        }
+
+        [Benchmark]
+        public void ConcurrentDictionaryGet()
+        {
+            ConcurrentDictionary.TryGetValue("one", out object _);
+        }
 
         [Benchmark]
         public void DecimalTryParseString()
