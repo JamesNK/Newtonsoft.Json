@@ -111,8 +111,7 @@ namespace Newtonsoft.Json
                     return null;
                 }
 
-                SerializationBinder legacySerializationBinder = _serializationBinder as SerializationBinder;
-                if (legacySerializationBinder != null)
+                if (_serializationBinder is SerializationBinder legacySerializationBinder)
                 {
                     return legacySerializationBinder;
                 }
@@ -132,7 +131,7 @@ namespace Newtonsoft.Json
                     throw new ArgumentNullException(nameof(value), "Serialization binder cannot be null.");
                 }
 
-                _serializationBinder = new SerializationBinderAdapter(value);
+                _serializationBinder = value as ISerializationBinder ?? new SerializationBinderAdapter(value);
             }
         }
 

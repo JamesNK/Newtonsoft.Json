@@ -1336,7 +1336,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(customBinder, serializer.Binder);
 #pragma warning restore CS0618 // Type or member is obsolete
 
-            Assert.IsInstanceOf(typeof(SerializationBinderAdapter), serializer.SerializationBinder);
+            Assert.IsInstanceOf(typeof(DefaultSerializationBinder), serializer.SerializationBinder);
 
             serializer.SerializationBinder = customBinder;
             Assert.AreEqual(customBinder, serializer.SerializationBinder);
@@ -1570,7 +1570,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(customBinder, serializerProxy.Binder);
 #pragma warning restore CS0618 // Type or member is obsolete
 
-            Assert.IsInstanceOf(typeof(SerializationBinderAdapter), serializerProxy.SerializationBinder);
+            Assert.IsInstanceOf(typeof(DefaultSerializationBinder), serializerProxy.SerializationBinder);
 
             serializerProxy.SerializationBinder = customBinder;
             Assert.AreEqual(customBinder, serializerProxy.SerializationBinder);
