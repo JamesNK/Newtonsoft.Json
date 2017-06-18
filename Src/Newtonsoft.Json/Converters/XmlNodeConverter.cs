@@ -1633,7 +1633,7 @@ namespace Newtonsoft.Json.Converters
                     && objectType != typeof(XNode)
                     && objectType != typeof(XObject))
                 {
-                    throw JsonSerializationException.Create(reader, "XmlNodeConverter only supports deserializing XDocument or XElement.");
+                    throw JsonSerializationException.Create(reader, "XmlNodeConverter only supports deserializing XDocument, XElement, XContainer, XNode or XObject.");
                 }
 
                 XDocument d = new XDocument();
@@ -1648,7 +1648,7 @@ namespace Newtonsoft.Json.Converters
                     && objectType != typeof(XmlElement)
                     && objectType != typeof(XmlNode))
                 {
-                    throw JsonSerializationException.Create(reader, "XmlNodeConverter only supports deserializing XmlDocument or XmlElement.");
+                    throw JsonSerializationException.Create(reader, "XmlNodeConverter only supports deserializing XmlDocument, XmlElement or XmlNode.");
                 }
 
                 XmlDocument d = new XmlDocument();
