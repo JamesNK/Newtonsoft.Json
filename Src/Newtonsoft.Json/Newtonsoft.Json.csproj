@@ -13,6 +13,7 @@
     <Copyright>Copyright © James Newton-King 2008</Copyright>
     <Summary>Json.NET is a popular high-performance JSON framework for .NET</Summary>
     <NeutralLanguage>en-US</NeutralLanguage>
+    <Title>Json.NET</Title>
     <PackageId>Newtonsoft.Json</PackageId>
     <PackageTags>json</PackageTags>
     <PackageIconUrl>http://www.newtonsoft.com/content/images/nugeticon.png</PackageIconUrl>
@@ -27,6 +28,7 @@
     <MinClientVersion>2.12</MinClientVersion>
   </PropertyGroup>
   <ItemGroup>
+    <None Remove="**\*.orig" />
     <None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
     <None Include="..\..\Build\install.ps1" Pack="true" PackagePath="tools\install.ps1" />
   </ItemGroup>
