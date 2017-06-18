@@ -2154,9 +2154,8 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void SetOldBinderAndSerializationBinderReturnsWrapper()
         {
-            var serializer = JsonSerializer.Create(new JsonSerializerSettings() { Binder = new OldBinder() });
-
 #pragma warning disable CS0618 // Type or member is obsolete
+            var serializer = JsonSerializer.Create(new JsonSerializerSettings() { Binder = new OldBinder() });
             Assert.IsInstanceOf(typeof(OldBinder), serializer.Binder);
 #pragma warning restore CS0618 // Type or member is obsolete
 
@@ -2182,6 +2181,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             }
         }
 
+#pragma warning disable CS0618 // Type or member is obsolete
         public class OldBinder : SerializationBinder
         {
             public override Type BindToType(string assemblyName, string typeName)
@@ -2189,6 +2189,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 return typeof(string);
             }
         }
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
     }
 
