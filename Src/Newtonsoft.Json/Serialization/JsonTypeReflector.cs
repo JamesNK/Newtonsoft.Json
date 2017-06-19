@@ -292,6 +292,17 @@ namespace Newtonsoft.Json.Serialization
 
                     return (Type)_metadataTypeAttributeReflectionObject.GetValue(attribute, metadataClassTypeName);
                 }
+                else if (string.Equals(attributeType.FullName, "Microsoft.AspNetCore.Mvc.ModelMetadataTypeAttribute", StringComparison.Ordinal))
+                {
+                    const string metadataClassTypeName = "MetadataType";
+
+                    if (_metadataTypeAttributeReflectionObject == null)
+                    {
+                        _metadataTypeAttributeReflectionObject = ReflectionObject.Create(attributeType, metadataClassTypeName);
+                    }
+
+                    return (Type)_metadataTypeAttributeReflectionObject.GetValue(attribute, metadataClassTypeName);
+                }
             }
 
             return null;
