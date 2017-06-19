@@ -65,7 +65,7 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net46'">
     <AssemblyTitle>Json.NET Tests</AssemblyTitle>
     <ReferringTargetFrameworkForProjectReferences>.NETFramework,Version=v4.5</ReferringTargetFrameworkForProjectReferences>
-    <DefineConstants>NET45;HAVE_BENCHMARKS;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>DEBUG;NETSTANDARD1_3</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net451'">
