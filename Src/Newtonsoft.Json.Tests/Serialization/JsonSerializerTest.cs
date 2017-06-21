@@ -1085,6 +1085,20 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("1", s[0]);
             Assert.AreEqual("2", s[1]);
         }
+
+        [Test]
+        public void SerializeObservableCollection()
+        {
+            ObservableCollection<string> c1 = new ObservableCollection<string> { "1", "2" };
+
+            string output = JsonConvert.SerializeObject(c1);
+            Assert.AreEqual("[\"1\",\"2\"]", output);
+
+            ObservableCollection<string> c2 = JsonConvert.DeserializeObject<ObservableCollection<string>>(output);
+            Assert.AreEqual(2, c2.Count);
+            Assert.AreEqual("1", c2[0]);
+            Assert.AreEqual("2", c2[1]);
+        }
 #endif
 
         [Test]
