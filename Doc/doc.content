@@ -92,7 +92,7 @@
       <Topic id="SerializeDateFormatString" visible="True" title="Serialize DateFormatString" />
       <Topic id="NamingStrategyCamelCase" visible="True" title="Camel case property names" />
       <Topic id="NamingStrategySnakeCase" visible="True" title="Snake case property names" />
-      <Topic id="NamingStrategySkipDictionaryKeys" visible="True" title="Configure NamingStrategy dictionary serialiation" />
+      <Topic id="NamingStrategySkipDictionaryKeys" visible="True" title="Configure NamingStrategy dictionary serialization" />
       <Topic id="NamingStrategySkipSpecifiedNames" visible="True" title="Configure NamingStrategy property name serialization" />
     </Topic>
     <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" title="LINQ to JSON">
