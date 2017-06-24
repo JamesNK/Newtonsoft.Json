@@ -62,13 +62,24 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         [Benchmark]
         public void DictionaryGet()
         {
-            NormalDictionary.TryGetValue("one", out object _);
+            NormalDictionary.TryGetValue("1", out object _);
         }
 
         [Benchmark]
         public void ConcurrentDictionaryGet()
         {
-            ConcurrentDictionary.TryGetValue("one", out object _);
+            ConcurrentDictionary.TryGetValue("1", out object _);
+        }
+
+        [Benchmark]
+        public void ConcurrentDictionaryGetOrCreate()
+        {
+            ConcurrentDictionary.GetOrAdd("1", Dummy);
+        }
+
+        private object Dummy(string arg)
+        {
+            throw new Exception("Should never get here.");
         }
 
         [Benchmark]

@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Serialization
         private readonly object _typeContractCacheLock = new object();
         private readonly PropertyNameTable _nameTable = new PropertyNameTable();
 
-        private readonly ConcurrentDictionary<Type, JsonContract> _contractCache = new ConcurrentDictionary<Type, JsonContract>();
+        private readonly ThreadSafeStore<Type, JsonContract> _contractCache;
 
         /// <summary>
         /// Gets a value indicating whether members are being get and set using dynamic code generation.
@@ -165,6 +165,8 @@ namespace Newtonsoft.Json.Serialization
 #pragma warning disable 618
             DefaultMembersSearchFlags = BindingFlags.Instance | BindingFlags.Public;
 #pragma warning restore 618
+
+            _contractCache = new ThreadSafeStore<Type, JsonContract>(CreateContract);
         }
 
         /// <summary>
@@ -179,7 +181,7 @@ namespace Newtonsoft.Json.Serialization
                 throw new ArgumentNullException(nameof(type));
             }
 
-            return _contractCache.GetOrAdd(type, CreateContract);
+            return _contractCache.Get(type);
         }
 
         /// <summary>
