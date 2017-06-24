@@ -868,7 +868,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private static bool IsConcurrentCollection(Type t)
+        private static bool IsConcurrentOrObservableCollection(Type t)
         {
             if (t.IsGenericType())
             {
@@ -880,6 +880,7 @@ namespace Newtonsoft.Json.Serialization
                     case "System.Collections.Concurrent.ConcurrentStack`1":
                     case "System.Collections.Concurrent.ConcurrentBag`1":
                     case "System.Collections.Concurrent.ConcurrentDictionary`2":
+                    case "System.Collections.ObjectModel.ObservableCollection`1":
                         return true;
                 }
             }
@@ -890,7 +891,7 @@ namespace Newtonsoft.Json.Serialization
         private static bool ShouldSkipDeserialized(Type t)
         {
             // ConcurrentDictionary throws an error in its OnDeserialized so ignore - http://json.codeplex.com/discussions/257093
-            if (IsConcurrentCollection(t))
+            if (IsConcurrentOrObservableCollection(t))
             {
                 return true;
             }
@@ -907,7 +908,7 @@ namespace Newtonsoft.Json.Serialization
 
         private static bool ShouldSkipSerializing(Type t)
         {
-            if (IsConcurrentCollection(t))
+            if (IsConcurrentOrObservableCollection(t))
             {
                 return true;
             }
