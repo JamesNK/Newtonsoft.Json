@@ -25,6 +25,9 @@
 
 using System;
 using System.Collections;
+#if HAVE_CONCURRENT_DICTIONARY
+using System.Collections.Concurrent;
+#endif
 using Newtonsoft.Json.Schema;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -47,6 +50,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 using System.Linq;
 
 #endif
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -92,7 +96,7 @@ namespace Newtonsoft.Json.Serialization
         private readonly object _typeContractCacheLock = new object();
         private readonly PropertyNameTable _nameTable = new PropertyNameTable();
 
-        private Dictionary<Type, JsonContract> _contractCache;
+        private readonly ConcurrentDictionary<Type, JsonContract> _contractCache = new ConcurrentDictionary<Type, JsonContract>();
 
         /// <summary>
         /// Gets a value indicating whether members are being get and set using dynamic code generation.
@@ -175,26 +179,7 @@ namespace Newtonsoft.Json.Serialization
                 throw new ArgumentNullException(nameof(type));
             }
 
-            JsonContract contract;
-            Dictionary<Type, JsonContract> cache = _contractCache;
-            if (cache == null || !cache.TryGetValue(type, out contract))
-            {
-                contract = CreateContract(type);
-
-                // avoid the possibility of modifying the cache dictionary while another thread is accessing it
-                lock (_typeContractCacheLock)
-                {
-                    cache = _contractCache;
-                    Dictionary<Type, JsonContract> updatedCache = (cache != null)
-                        ? new Dictionary<Type, JsonContract>(cache)
-                        : new Dictionary<Type, JsonContract>();
-                    updatedCache[type] = contract;
-
-                    _contractCache = updatedCache;
-                }
-            }
-
-            return contract;
+            return _contractCache.GetOrAdd(type, CreateContract);
         }
 
         /// <summary>
