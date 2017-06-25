@@ -156,6 +156,14 @@ namespace Newtonsoft.Json.Serialization
         public bool IgnoreIsSpecifiedMembers { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to ignore ShouldSerialize members when serializing and deserializing tyeps.
+        /// </summary>
+        /// <value>
+        ///     <c>true</c> if the ShouldSerialize members will be ignored when serializing and deserializing types; otherwise, <c>false</c>.
+        /// </value>
+        public bool IgnoreShouldSerializeMembers { get; set; }
+
+        /// <summary>
         /// Gets or sets the naming strategy used to resolve how property names and dictionary keys are serialized.
         /// </summary>
         /// <value>The naming strategy used to resolve how property names and dictionary keys are serialized.</value>
@@ -1393,7 +1401,11 @@ namespace Newtonsoft.Json.Serialization
                 property.Readable = true;
                 property.Writable = true;
             }
-            property.ShouldSerialize = CreateShouldSerializeTest(member);
+
+            if (!IgnoreShouldSerializeMembers)
+            {
+                property.ShouldSerialize = CreateShouldSerializeTest(member);
+            }
 
             if (!IgnoreIsSpecifiedMembers)
             {

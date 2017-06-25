@@ -44,13 +44,13 @@ using Newtonsoft.Json.Serialization;
 namespace Newtonsoft.Json.Utilities
 {
 #if (DOTNET || PORTABLE || PORTABLE40)
+    [Flags]
     internal enum MemberTypes
     {
-        Property = 0,
-        Field = 1,
         Event = 2,
-        Method = 3,
-        Other = 4
+        Field = 4,
+        Method = 8,
+        Property = 16
     }
 #endif
 

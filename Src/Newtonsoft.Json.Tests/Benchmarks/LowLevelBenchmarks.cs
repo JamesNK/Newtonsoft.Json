@@ -35,6 +35,13 @@ using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Newtonsoft.Json.Utilities;
+#if !PORTABLE
+using MemberTypes = System.Reflection.MemberTypes;
+using BindingFlags = System.Reflection.BindingFlags;
+#else
+using MemberTypes = Newtonsoft.Json.Utilities.MemberTypes;
+using BindingFlags = Newtonsoft.Json.Utilities.BindingFlags;
+#endif
 
 namespace Newtonsoft.Json.Tests.Benchmarks
 {
@@ -87,6 +94,19 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         {
             decimal value;
             decimal.TryParse(FloatText, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out value);
+        }
+
+        [Benchmark]
+        public void GetMemberWithMemberTypeAndBindingFlags()
+        {
+            typeof(LowLevelBenchmarks).GetMember("AName", MemberTypes.Field | MemberTypes.Property, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        }
+
+        [Benchmark]
+        public void GetPropertyGetField()
+        {
+            typeof(LowLevelBenchmarks).GetProperty("AName", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            typeof(LowLevelBenchmarks).GetField("AName", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }
 
         [Benchmark]

@@ -650,5 +650,116 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsTrue(extensionData.Any());
             Assert.IsTrue(extensionData.Any()); // second test fails if the enumerator returned isn't reset
         }
+
+        public class ClassWithShouldSerialize
+        {
+            public string Prop1 { get; set; }
+            public string Prop2 { get; set; }
+
+            public bool ShouldSerializeProp1()
+            {
+                return false;
+            }
+        }
+
+        [Test]
+        public void DefaultContractResolverIgnoreShouldSerializeTrue()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+            resolver.IgnoreShouldSerializeMembers = true;
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithShouldSerialize));
+
+            var property1 = contract.Properties["Prop1"];
+            Assert.AreEqual(null, property1.ShouldSerialize);
+
+            var property2 = contract.Properties["Prop2"];
+            Assert.AreEqual(null, property2.ShouldSerialize);
+        }
+
+        [Test]
+        public void DefaultContractResolverIgnoreShouldSerializeUnset()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithShouldSerialize));
+
+            var property1 = contract.Properties["Prop1"];
+            Assert.AreNotEqual(null, property1.ShouldSerialize);
+
+            var property2 = contract.Properties["Prop2"];
+            Assert.AreEqual(null, property2.ShouldSerialize);
+        }
+
+        public class ClassWithIsSpecified
+        {
+            [JsonProperty]
+            public string Prop1 { get; set; }
+            [JsonProperty]
+            public string Prop2 { get; set; }
+            [JsonProperty]
+            public string Prop3 { get; set; }
+            [JsonProperty]
+            public string Prop4 { get; set; }
+
+            public bool Prop1Specified;
+            public bool Prop2Specified { get; set; }
+            public static bool Prop3Specified { get; set; }
+            public event System.Func<bool> Prop4Specified;
+
+            protected virtual bool OnProp4Specified()
+            {
+                return Prop4Specified?.Invoke() ?? false;
+            }
+        }
+
+        [Test]
+        public void DefaultContractResolverIgnoreIsSpecifiedTrue()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+            resolver.IgnoreIsSpecifiedMembers = true;
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithIsSpecified));
+
+            var property1 = contract.Properties["Prop1"];
+            Assert.AreEqual(null, property1.GetIsSpecified);
+            Assert.AreEqual(null, property1.SetIsSpecified);
+
+            var property2 = contract.Properties["Prop2"];
+            Assert.AreEqual(null, property2.GetIsSpecified);
+            Assert.AreEqual(null, property2.SetIsSpecified);
+
+            var property3 = contract.Properties["Prop3"];
+            Assert.AreEqual(null, property3.GetIsSpecified);
+            Assert.AreEqual(null, property3.SetIsSpecified);
+
+            var property4 = contract.Properties["Prop4"];
+            Assert.AreEqual(null, property4.GetIsSpecified);
+            Assert.AreEqual(null, property4.SetIsSpecified);
+        }
+
+        [Test]
+        public void DefaultContractResolverIgnoreIsSpecifiedUnset()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithIsSpecified));
+
+            var property1 = contract.Properties["Prop1"];
+            Assert.AreNotEqual(null, property1.GetIsSpecified);
+            Assert.AreNotEqual(null, property1.SetIsSpecified);
+
+            var property2 = contract.Properties["Prop2"];
+            Assert.AreNotEqual(null, property2.GetIsSpecified);
+            Assert.AreNotEqual(null, property2.SetIsSpecified);
+
+            var property3 = contract.Properties["Prop3"];
+            Assert.AreEqual(null, property3.GetIsSpecified);
+            Assert.AreEqual(null, property3.SetIsSpecified);
+
+            var property4 = contract.Properties["Prop4"];
+            Assert.AreEqual(null, property4.GetIsSpecified);
+            Assert.AreEqual(null, property4.SetIsSpecified);
+        }
     }
 }

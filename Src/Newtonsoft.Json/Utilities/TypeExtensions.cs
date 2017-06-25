@@ -128,7 +128,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                return MemberTypes.Other;
+                return default(MemberTypes);
             }
 #endif
         }
@@ -248,7 +248,7 @@ namespace Newtonsoft.Json.Utilities
 #else
             return type.GetMember(name, bindingFlags).Where(m =>
             {
-                if (m.MemberType() != memberType)
+                if ((m.MemberType() | memberType) != memberType)
                 {
                     return false;
                 }
@@ -334,7 +334,7 @@ namespace Newtonsoft.Json.Utilities
             return type.GetTypeInfo().GetMembersRecursive().Where(m =>
                 m.Name == member &&
                 // test type before accessibility - accessibility doesn't support some types
-                (memberType == null || m.MemberType() == memberType) &&
+                (memberType == null || (m.MemberType() | memberType) == memberType) &&
                 TestAccessibility(m, bindingFlags)).ToArray();
         }
 
