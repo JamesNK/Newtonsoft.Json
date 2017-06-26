@@ -148,7 +148,7 @@ namespace Newtonsoft.Json.Serialization
 #endif
 
         /// <summary>
-        /// Gets or sets a value indicating whether to ignore IsSpecified members when serializing and deserializing tyeps.
+        /// Gets or sets a value indicating whether to ignore IsSpecified members when serializing and deserializing types.
         /// </summary>
         /// <value>
         ///     <c>true</c> if the IsSpecified members will be ignored when serializing and deserializing types; otherwise, <c>false</c>.
@@ -156,7 +156,7 @@ namespace Newtonsoft.Json.Serialization
         public bool IgnoreIsSpecifiedMembers { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether to ignore ShouldSerialize members when serializing and deserializing tyeps.
+        /// Gets or sets a value indicating whether to ignore ShouldSerialize members when serializing and deserializing types.
         /// </summary>
         /// <value>
         ///     <c>true</c> if the ShouldSerialize members will be ignored when serializing and deserializing types; otherwise, <c>false</c>.
