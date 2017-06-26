@@ -701,11 +701,14 @@ namespace Newtonsoft.Json.Tests.Serialization
             public string Prop3 { get; set; }
             [JsonProperty]
             public string Prop4 { get; set; }
+            [JsonProperty]
+            public string Prop5 { get; set; }
 
             public bool Prop1Specified;
             public bool Prop2Specified { get; set; }
             public static bool Prop3Specified { get; set; }
             public event System.Func<bool> Prop4Specified;
+            public static bool Prop5Specified;
 
             protected virtual bool OnProp4Specified()
             {
@@ -736,6 +739,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             var property4 = contract.Properties["Prop4"];
             Assert.AreEqual(null, property4.GetIsSpecified);
             Assert.AreEqual(null, property4.SetIsSpecified);
+
+            var property5 = contract.Properties["Prop5"];
+            Assert.AreEqual(null, property5.GetIsSpecified);
+            Assert.AreEqual(null, property5.SetIsSpecified);
         }
 
         [Test]
@@ -760,6 +767,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             var property4 = contract.Properties["Prop4"];
             Assert.AreEqual(null, property4.GetIsSpecified);
             Assert.AreEqual(null, property4.SetIsSpecified);
+
+            var property5 = contract.Properties["Prop5"];
+            Assert.AreEqual(null, property5.GetIsSpecified);
+            Assert.AreEqual(null, property5.SetIsSpecified);
         }
     }
 }
