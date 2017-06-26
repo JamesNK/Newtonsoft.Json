@@ -772,5 +772,18 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(null, property5.GetIsSpecified);
             Assert.AreEqual(null, property5.SetIsSpecified);
         }
+
+        [Test]
+        public void TimeResolveContract_WithLargeClass()
+        {
+            DateTime startTime = DateTime.Now;
+            DefaultContractResolver resolver = new DefaultContractResolver
+            {
+                IgnoreIsSpecifiedMembers = true
+            };
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(HugeClass));
+
+            Assert.IsTrue((DateTime.Now - startTime).TotalSeconds < 5);
+        }
     }
 }
