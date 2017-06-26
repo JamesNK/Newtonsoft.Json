@@ -779,7 +779,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             DateTime startTime = DateTime.Now;
             DefaultContractResolver resolver = new DefaultContractResolver
             {
-                IgnoreIsSpecifiedMembers = true
+                IgnoreIsSpecifiedMembers = false
             };
             JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(HugeClass));
 
