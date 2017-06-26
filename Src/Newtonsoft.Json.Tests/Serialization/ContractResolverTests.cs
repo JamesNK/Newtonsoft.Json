@@ -783,7 +783,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
             JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(HugeClass));
 
-            Assert.IsTrue((DateTime.Now - startTime).TotalSeconds < 5);
+            double time = Math.Round((DateTime.Now - startTime).TotalMilliseconds);
+            Assert.IsTrue(time < 5000, "ResolveContract took too long: " +  time.ToString());
         }
     }
 }
