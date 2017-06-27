@@ -210,7 +210,7 @@ namespace Newtonsoft.Json.Serialization
                         typeGenericArguments = type.GetGenericArguments();
                     }
 
-                    Type[] converterGenericArguments = converterType.GetGenericArguments();
+                    Type[] converterGenericArguments = converterType.GetGenericParameters();
                     if (converterGenericArguments.Length != typeGenericArguments.Length)
                     {
                         throw new JsonSerializationException("Could not create generic converter {0}. Converter was placed on type {1} that does not have a matching number of type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, type));
@@ -316,7 +316,7 @@ namespace Newtonsoft.Json.Serialization
                     typeGenericArguments = collectionItemType.GetGenericArguments();
                 }
 
-                Type[] converterGenericArguments = converterType.GetGenericArguments();
+                Type[] converterGenericArguments = converterType.GetGenericParameters();
                 if (converterGenericArguments.Length != typeGenericArguments.Length)
                 {
                     throw new JsonSerializationException("Could not create generic converter {0}. Converter was specified for items in collection {1} and item type {2} that does not have a matching number of type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, collectionType, collectionItemType));

@@ -515,6 +515,15 @@ namespace Newtonsoft.Json.Utilities
 #endif
 #endif
 
+        public static Type[] GetGenericParameters(this Type type)
+        {
+#if HAVE_FULL_REFLECTION
+            return type.GetGenericArguments();
+#else
+            return type.GetTypeInfo().GenericTypeParameters;
+#endif
+        }
+
         public static bool IsAbstract(this Type type)
         {
 #if HAVE_FULL_REFLECTION
