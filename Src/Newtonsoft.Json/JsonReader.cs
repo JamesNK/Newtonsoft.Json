@@ -1032,7 +1032,7 @@ namespace Newtonsoft.Json
 
         internal void SetPostValueState(bool updateIndex)
         {
-            if (Peek() != JsonContainerType.None)
+            if (Peek() != JsonContainerType.None || SupportMultipleContent)
             {
                 _currentState = State.PostValue;
             }
@@ -1064,7 +1064,7 @@ namespace Newtonsoft.Json
                 throw JsonReaderException.Create(this, "JsonToken {0} is not valid for closing JsonType {1}.".FormatWith(CultureInfo.InvariantCulture, endToken, currentObject));
             }
 
-            if (Peek() != JsonContainerType.None)
+            if (Peek() != JsonContainerType.None || SupportMultipleContent)
             {
                 _currentState = State.PostValue;
             }

@@ -49,6 +49,59 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
     public class MiscAsyncTests : TestFixtureBase
     {
         [Test]
+        public async Task ReadWithSupportMultipleContentCommaDelimitedAsync()
+        {
+            string json = @"{ 'name': 'Admin' },{ 'name': 'Publisher' },1,null,[],,'string'";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.SupportMultipleContent = true;
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.Null, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.Undefined, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+            Assert.IsFalse(await reader.ReadAsync());
+        }
+
+        [Test]
         public async Task LineInfoAndNewLinesAsync()
         {
             string json = "{}";
