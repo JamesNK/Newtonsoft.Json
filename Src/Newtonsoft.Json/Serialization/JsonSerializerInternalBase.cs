@@ -74,7 +74,7 @@ namespace Newtonsoft.Json.Serialization
                         EqualityComparer<string>.Default,
                         new ReferenceEqualsEqualityComparer(),
                         "A different value already has the Id '{0}'.",
-                        "A different Id has already been assigned for value '{0}'.");
+                        "A different Id has already been assigned for value '{0}'. This error may be caused by an object being reused multiple times during deserialization and can be fixed with the setting ObjectCreationHandling.Replace.");
                 }
 
                 return _mappings;
