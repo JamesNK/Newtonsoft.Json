@@ -1536,7 +1536,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                value = (hi19 * DecimalFactors[mantissaDigits - 20]) + lo10;
+                value = (hi19 / new decimal(1, 0, 0, false, (byte)(mantissaDigits - 19))) + lo10;
             }
 
             if (exponent > 0)
@@ -1550,7 +1550,7 @@ namespace Newtonsoft.Json.Utilities
                 {
                     if (exponent > 1)
                     {
-                        value *= DecimalFactors[exponent - 2];
+                        value /= new decimal(1, 0, 0, false, (byte)(exponent - 1));
                         if (value > decimalMaxValueHi28)
                         {
                             return ParseResult.Overflow;
@@ -1560,7 +1560,7 @@ namespace Newtonsoft.Json.Utilities
                 }
                 else
                 {
-                    value *= DecimalFactors[exponent - 1];
+                    value /= new decimal(1, 0, 0, false, (byte)exponent);
                 }
             }
             else
@@ -1573,18 +1573,17 @@ namespace Newtonsoft.Json.Utilities
                 {
                     if (mantissaDigits + exponent + 28 <= 0)
                     {
-                        value = 0M;
+                        value = isNegative ? -0M : 0M;
                         return ParseResult.Success;
                     }
                     if (exponent >= -28)
                     {
-                        value /= DecimalFactors[-exponent - 1];
+                        value *= new decimal(1, 0, 0, false, (byte)(-exponent));
                     }
                     else
                     {
-                        decimal[] decimalFactors = DecimalFactors;
-                        value /= decimalFactors[27];
-                        value /= decimalFactors[-exponent - 29];
+                        value *= new decimal(1, 0, 0, false, 28);
+                        value *= new decimal(1, 0, 0, false, (byte)(-exponent - 28));
                     }
                 }
             }
@@ -1595,27 +1594,6 @@ namespace Newtonsoft.Json.Utilities
             }
 
             return ParseResult.Success;
-        }
-
-        private static decimal[] _decimalFactors;
-
-        private static decimal[] DecimalFactors
-        {
-            get
-            {
-                decimal[] decimalFactors = _decimalFactors;
-                if (decimalFactors == null)
-                {
-                    decimalFactors = new decimal[28];
-                    decimal last = 1M;
-                    for (int i = 0; i < decimalFactors.Length; ++i)
-                    {
-                        decimalFactors[i] = last *= 10M;
-                    }
-                    _decimalFactors = decimalFactors;
-                }
-                return decimalFactors;
-            }
         }
 
         public static bool TryConvertGuid(string s, out Guid g)

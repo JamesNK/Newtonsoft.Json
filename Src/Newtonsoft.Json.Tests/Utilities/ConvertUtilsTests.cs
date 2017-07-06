@@ -184,6 +184,8 @@ namespace Newtonsoft.Json.Tests.Utilities
                 Assert.AreEqual(expectedValue.Value, d, "Input string: " + s);
 
                 Assert.AreEqual(expectedValue.Value, d2, "DecimalTryParse result is not equal to decimal.Parse. Input string: " + s);
+
+                Assert.AreEqual(expectedValue.Value.ToString(), d.ToString());
             }
         }
 
@@ -196,6 +198,10 @@ namespace Newtonsoft.Json.Tests.Utilities
             AssertDecimalTryParse("-1", ParseResult.Success, -1M);
             AssertDecimalTryParse("1E1", ParseResult.Success, 10M);
             AssertDecimalTryParse("1E28", ParseResult.Success, 10000000000000000000000000000M);
+            AssertDecimalTryParse("1.0", ParseResult.Success, 1.0M);
+            AssertDecimalTryParse("1.10000", ParseResult.Success, 1.10000M);
+            AssertDecimalTryParse("1000.000000000000", ParseResult.Success, 1000.000000000000M);
+            AssertDecimalTryParse("87.50", ParseResult.Success, 87.50M);
 
             AssertDecimalTryParse("1.2345678901234567890123456789", ParseResult.Success, 1.2345678901234567890123456789M);
             AssertDecimalTryParse("1.0000000000000000000000000001", ParseResult.Success, 1.0000000000000000000000000001M);
