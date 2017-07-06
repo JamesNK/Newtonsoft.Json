@@ -1582,7 +1582,7 @@ namespace Newtonsoft.Json.Utilities
                     }
                     else
                     {
-                        value *= new decimal(1, 0, 0, false, 28);
+                        value /= 1e28M;
                         value *= new decimal(1, 0, 0, false, (byte)(-exponent - 28));
                     }
                 }
