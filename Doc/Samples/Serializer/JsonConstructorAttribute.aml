@@ -4,7 +4,7 @@
     <introduction>
       <para>This sample uses the
       <codeEntityReference>T:Newtonsoft.Json.JsonConstructorAttribute</codeEntityReference>
-      to specify that a constrctor should be used to create a class during deserialization.</para>
+      to specify that a constructor should be used to create a class during deserialization.</para>
     </introduction>
     <section>
       <title>Sample</title>
