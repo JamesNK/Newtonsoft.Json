@@ -254,7 +254,9 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(JTokenType.Integer, v.Type);
             Assert.AreEqual(BigInteger.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990"), v.Value);
         }
+#endif
 
+#if !(NETSTANDARD1_0 || PORTABLE)
         [Test]
         public void JValueIConvertable()
         {
