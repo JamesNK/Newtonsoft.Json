@@ -256,11 +256,11 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 #endif
 
-#if !(NETSTANDARD1_0 || PORTABLE)
+#if !(PORTABLE) || NETSTANDARD1_3
         [Test]
         public void JValueIConvertable()
         {
-            Assert.IsInstanceOf(typeof(IConvertible), new JValue(0));
+            Assert.IsTrue(new JValue(0) is IConvertible);
         }
 #endif
 
@@ -503,7 +503,7 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 #endif
 
-#if !(PORTABLE)
+#if !(PORTABLE) || NETSTANDARD1_3
         [Test]
         public void ConvertsToBoolean()
         {
@@ -743,8 +743,6 @@ namespace Newtonsoft.Json.Tests.Linq
                 new JValue(new Uri("http://james.newtonking.com")),
                 new JValue(new Uri("http://james.newtonking.com/install?v=7.0.1"))
                 );
-
-            Console.WriteLine(a.ToString());
 
             StringAssert.AreEqual(@"[
   ""http://james.newtonking.com"",
