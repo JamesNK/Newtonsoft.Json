@@ -10109,6 +10109,58 @@ This is just junk, though.";
 
             Assert.AreEqual(propertyValue, testObject.GetPropertyValue(), "MyProperty should be populated");
         }
+
+        [Test]
+        public void JsonPropertyConverter()
+        {
+            DateTime dt = new DateTime(2000, 12, 20, 0, 0, 0, DateTimeKind.Utc);
+
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                ContractResolver = new JsonPropertyConverterContractResolver(),
+                Formatting = Formatting.Indented
+            };
+
+            JsonPropertyConverterTestClass c1 = new JsonPropertyConverterTestClass
+            {
+                NormalDate = dt,
+                JavaScriptDate = dt
+            };
+
+            string json = JsonConvert.SerializeObject(c1, settings);
+
+            StringAssert.AreEqual(@"{
+  ""NormalDate"": ""2000-12-20T00:00:00Z"",
+  ""JavaScriptDate"": new Date(
+    977270400000
+  )
+}", json);
+
+            JsonPropertyConverterTestClass c2 = JsonConvert.DeserializeObject<JsonPropertyConverterTestClass>(json, settings);
+
+            Assert.AreEqual(dt, c2.NormalDate);
+            Assert.AreEqual(dt, c2.JavaScriptDate);
+        }
+    }
+
+    public class JsonPropertyConverterTestClass
+    {
+        public DateTime NormalDate { get; set; }
+        public DateTime JavaScriptDate { get; set; }
+    }
+
+    public class JsonPropertyConverterContractResolver : DefaultContractResolver
+    {
+        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        {
+            JsonProperty property = base.CreateProperty(member, memberSerialization);
+            if (property.PropertyName == "JavaScriptDate")
+            {
+                property.Converter = new JavaScriptDateTimeConverter();
+            }
+
+            return property;
+        }
     }
 
     public class BaseClassWithProtectedVirtual

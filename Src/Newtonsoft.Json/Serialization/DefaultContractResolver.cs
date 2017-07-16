@@ -709,7 +709,6 @@ namespace Newtonsoft.Json.Serialization
             {
                 property.PropertyName = (property.PropertyName != parameterInfo.Name) ? property.PropertyName : matchingMemberProperty.PropertyName;
                 property.Converter = property.Converter ?? matchingMemberProperty.Converter;
-                property.MemberConverter = property.MemberConverter ?? matchingMemberProperty.MemberConverter;
 
                 if (!property._hasExplicitDefaultValue && matchingMemberProperty._hasExplicitDefaultValue)
                 {
@@ -1560,7 +1559,6 @@ namespace Newtonsoft.Json.Serialization
             // resolve converter for property
             // the class type might have a converter but the property converter takes precedence
             property.Converter = JsonTypeReflector.GetJsonConverter(attributeProvider);
-            property.MemberConverter = JsonTypeReflector.GetJsonConverter(attributeProvider);
 
             DefaultValueAttribute defaultValueAttribute = JsonTypeReflector.GetAttribute<DefaultValueAttribute>(attributeProvider);
             if (defaultValueAttribute != null)

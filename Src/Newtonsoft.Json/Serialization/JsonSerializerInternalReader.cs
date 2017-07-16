@@ -1111,7 +1111,7 @@ namespace Newtonsoft.Json.Serialization
 
                 if (propertyContract != property.PropertyContract)
                 {
-                    propertyConverter = GetConverter(propertyContract, property.MemberConverter, containerContract, containerProperty);
+                    propertyConverter = GetConverter(propertyContract, property.Converter, containerContract, containerProperty);
                 }
             }
 
@@ -1823,7 +1823,7 @@ namespace Newtonsoft.Json.Serialization
                                     property.PropertyContract = GetContractSafe(property.PropertyType);
                                 }
 
-                                JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.MemberConverter, null, null);
+                                JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.Converter, null, null);
 
                                 if (!SetPropertyValue(property, propertyConverter, null, member, reader, newObject))
                                 {
@@ -2160,7 +2160,7 @@ namespace Newtonsoft.Json.Serialization
                                 property.PropertyContract = GetContractSafe(property.PropertyType);
                             }
 
-                            JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.MemberConverter, contract, containerProperty);
+                            JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.Converter, contract, containerProperty);
 
                             if (!reader.ReadForType(property.PropertyContract, propertyConverter != null))
                             {
@@ -2340,7 +2340,7 @@ namespace Newtonsoft.Json.Serialization
                                     property.PropertyContract = GetContractSafe(property.PropertyType);
                                 }
 
-                                JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.MemberConverter, contract, member);
+                                JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.Converter, contract, member);
 
                                 if (!reader.ReadForType(property.PropertyContract, propertyConverter != null))
                                 {

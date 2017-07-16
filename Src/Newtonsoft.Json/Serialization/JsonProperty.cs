@@ -122,7 +122,12 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the member converter.
         /// </summary>
         /// <value>The member converter.</value>
-        public JsonConverter MemberConverter { get; set; }
+        [Obsolete("MemberConverter is obsolete. Use Converter instead.")]
+        public JsonConverter MemberConverter
+        {
+            get { return Converter; }
+            set { Converter = value; }
+        }
 
         /// <summary>
         /// Gets or sets a value indicating whether this <see cref="JsonProperty"/> is ignored.
