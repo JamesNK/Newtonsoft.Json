@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -22,7 +23,8 @@ namespace Newtonsoft.Json.Linq.JsonPath
         GreaterThan = 6,
         GreaterThanOrEquals = 7,
         And = 8,
-        Or = 9
+        Or = 9,
+        RegExEquals = 10
     }
 
     internal abstract class QueryExpression
@@ -131,6 +133,12 @@ namespace Newtonsoft.Json.Linq.JsonPath
             {
                 switch (Operator)
                 {
+                    case QueryOperator.RegExEquals:
+                        if (RegExEquals(leftValue, rightValue))
+                        {
+                            return true;
+                        }
+                        break;
                     case QueryOperator.Equals:
                         if (EqualsWithStringCoercion(leftValue, rightValue))
                         {
@@ -184,6 +192,35 @@ namespace Newtonsoft.Json.Linq.JsonPath
             }
 
             return false;
+        }
+
+        private bool RegExEquals(JValue value, JValue queryValue)
+        {
+            if (queryValue.Type != JTokenType.String || value.Type != JTokenType.String)
+            {
+                return false;
+            }
+
+            var regExArray = ((string)queryValue.Value).Split('/');
+            if (regExArray.Length < 3)
+            {
+                throw new Exception("Syntax error when using regex compare");
+            }
+
+            var trimFirstAndLastMember = regExArray.Skip(1).Take(regExArray.Length - 2).ToArray();
+            var regExQuery = string.Join("/", trimFirstAndLastMember);
+
+            if (regExArray.Last() == string.Empty)
+            {
+                return Regex.IsMatch((string)value.Value, regExQuery);
+            }
+
+            if (regExArray.Last() == "i")
+            {
+                return Regex.IsMatch((string)value.Value, regExQuery, RegexOptions.IgnoreCase);
+            }
+
+            throw new Exception("Syntax error when using regex compare");
         }
 
         private bool EqualsWithStringCoercion(JValue value, JValue queryValue)
