@@ -144,25 +144,25 @@ namespace Newtonsoft.Json.Linq.JsonPath
                         }
                         break;
                     case QueryOperator.GreaterThan:
-                        if (leftValue.CompareTo(rightValue) > 0)
+                        if (rightValue.CompareTo(leftValue) < 0)
                         {
                             return true;
                         }
                         break;
                     case QueryOperator.GreaterThanOrEquals:
-                        if (leftValue.CompareTo(rightValue) >= 0)
+                        if (rightValue.CompareTo(leftValue) <= 0)
                         {
                             return true;
                         }
                         break;
                     case QueryOperator.LessThan:
-                        if (leftValue.CompareTo(rightValue) < 0)
+                        if (rightValue.CompareTo(leftValue) > 0)
                         {
                             return true;
                         }
                         break;
                     case QueryOperator.LessThanOrEquals:
-                        if (leftValue.CompareTo(rightValue) <= 0)
+                        if (rightValue.CompareTo(leftValue) >= 0)
                         {
                             return true;
                         }
