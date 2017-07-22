@@ -1043,9 +1043,22 @@ namespace Newtonsoft.Json.Linq
             }
 
             JValue value = obj as JValue;
-            object otherValue = value != null ? value.Value : obj;
+            JTokenType comparisonType;
+            object otherValue;
+            if (value != null)
+            {
+                otherValue = value.Value;
+                comparisonType = (_valueType == JTokenType.String && _valueType != value._valueType)
+                    ? value._valueType
+                    : _valueType;
+            }
+            else
+            {
+                otherValue = obj;
+                comparisonType = _valueType;
+            }
 
-            return Compare(_valueType, _value, otherValue);
+            return Compare(comparisonType, _value, otherValue);
         }
 
         /// <summary>
@@ -1073,7 +1086,11 @@ namespace Newtonsoft.Json.Linq
                 return 1;
             }
 
-            return Compare(_valueType, _value, obj._value);
+            JTokenType comparisonType = (_valueType == JTokenType.String && _valueType != obj._valueType)
+                ? obj._valueType
+                : _valueType;
+
+            return Compare(comparisonType, _value, obj._value);
         }
 
 #if HAVE_ICONVERTIBLE

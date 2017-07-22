@@ -858,5 +858,117 @@ namespace Newtonsoft.Json.Tests.Linq
             ValueA
         }
 #endif
+
+        [Test]
+        public void CompareTo_MismatchedTypes()
+        {
+            JValue v1 = new JValue(1);
+            JValue v2 = new JValue("2");
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(1.5);
+            v2 = new JValue("2");
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(1.5m);
+            v2 = new JValue("2");
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(1.5m);
+            v2 = new JValue(2);
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(1.5m);
+            v2 = new JValue(2.1);
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(2);
+            v2 = new JValue("2");
+
+            Assert.AreEqual(0, v1.CompareTo(v2));
+            Assert.AreEqual(0, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(0, v2.CompareTo(v1));
+            Assert.AreEqual(0, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(2);
+            v2 = new JValue(2m);
+
+            Assert.AreEqual(0, v1.CompareTo(v2));
+            Assert.AreEqual(0, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(0, v2.CompareTo(v1));
+            Assert.AreEqual(0, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(2f);
+            v2 = new JValue(2m);
+
+            Assert.AreEqual(0, v1.CompareTo(v2));
+            Assert.AreEqual(0, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(0, v2.CompareTo(v1));
+            Assert.AreEqual(0, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(2);
+            v2 = new JValue("10");
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(2);
+            v2 = new JValue((object)null);
+
+            Assert.AreEqual(1, v1.CompareTo(v2));
+            Assert.AreEqual(1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(-1, v2.CompareTo(v1));
+            Assert.AreEqual(-1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue("2");
+            v2 = new JValue((object)null);
+
+            Assert.AreEqual(1, v1.CompareTo(v2));
+            Assert.AreEqual(1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(-1, v2.CompareTo(v1));
+            Assert.AreEqual(-1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue((object)null);
+            v2 = new JValue("2");
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue("2");
+            v2 = null;
+
+            Assert.AreEqual(1, v1.CompareTo(v2));
+            Assert.AreEqual(1, ((IComparable)v1).CompareTo(v2));
+
+            v1 = new JValue((object)null);
+            v2 = null;
+
+            Assert.AreEqual(1, v1.CompareTo(v2));
+            Assert.AreEqual(1, ((IComparable)v1).CompareTo(v2));
+        }
     }
 }

@@ -52,6 +52,52 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     public class JPathExecuteTests : TestFixtureBase
     {
         [Test]
+        public void GreaterThanWithIntegerParameterAndStringValue()
+        {
+            string json = @"{
+  ""persons"": [
+    {
+      ""name""  : ""John"",
+      ""age"": ""26""
+    },
+    {
+      ""name""  : ""Jane"",
+      ""age"": ""2""
+    }
+  ]
+}";
+
+            JObject models = JObject.Parse(json);
+
+            var results = models.SelectTokens("$.persons[?(@.age > 3)]").ToList();
+
+            Assert.AreEqual(1, results.Count);
+        }
+
+        [Test]
+        public void GreaterThanWithStringParameterAndIntegerValue()
+        {
+            string json = @"{
+  ""persons"": [
+    {
+      ""name""  : ""John"",
+      ""age"": 26
+    },
+    {
+      ""name""  : ""Jane"",
+      ""age"": 2
+    }
+  ]
+}";
+
+            JObject models = JObject.Parse(json);
+
+            var results = models.SelectTokens("$.persons[?(@.age > '3')]").ToList();
+
+            Assert.AreEqual(1, results.Count);
+        }
+
+        [Test]
         public void RecursiveWildcard()
         {
             string json = @"{
