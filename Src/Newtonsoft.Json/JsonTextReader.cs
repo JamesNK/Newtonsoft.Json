@@ -38,6 +38,7 @@ namespace Newtonsoft.Json
     {
         Read,
         ReadAsInt32,
+        ReadAsInt64,
         ReadAsBytes,
         ReadAsString,
         ReadAsDecimal,

@@ -1190,6 +1190,13 @@ namespace Newtonsoft.Json
                 case ReadType.ReadAsInt32:
                     ReadAsInt32();
                     break;
+                case ReadType.ReadAsInt64:
+                    bool result = ReadAndMoveToContent();
+                    if (TokenType == JsonToken.Undefined)
+                    {
+                        throw JsonReaderException.Create(this, "An undefined token is not a valid {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+                    }
+                    return result;
                 case ReadType.ReadAsDecimal:
                     ReadAsDecimal();
                     break;

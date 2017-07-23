@@ -61,6 +61,38 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 #endif
     public class ReadTests : TestFixtureBase
     {
+        [Test]
+        public void ReadMissingInt64()
+        {
+            string json = "{ A: \"\", B: 1, C: , D: 1.23, E: 3.45, F: null }";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual("C", reader.Value);
+
+            reader.Read();
+            Assert.AreEqual(JsonToken.Undefined, reader.TokenType);
+            Assert.AreEqual(null, reader.Value);
+        }
+
+        [Test]
+        public void ReadAsInt32WithUndefined()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+                {
+                    JsonTextReader reader = new JsonTextReader(new StringReader("undefined"));
+                    reader.ReadAsInt32();
+                },
+                "Unexpected character encountered while parsing value: u. Path '', line 1, position 1.");
+        }
+
 #if !(PORTABLE || PORTABLE40 || NET35 || NET20)
         [Test]
         public void ReadAsBoolean()

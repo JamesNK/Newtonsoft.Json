@@ -69,6 +69,30 @@ namespace Newtonsoft.Json.Tests.Linq
 #endif
 
         [Test]
+        public void ToObjectFromGuidToString()
+        {
+            JValue token = new JValue(new Guid("91274484-3b20-48b4-9d18-7d936b2cb88f"));
+            string value = token.ToObject<string>();
+            Assert.AreEqual("91274484-3b20-48b4-9d18-7d936b2cb88f", value);
+        }
+
+        [Test]
+        public void ToObjectFromIntegerToString()
+        {
+            JValue token = new JValue(1234);
+            string value = token.ToObject<string>();
+            Assert.AreEqual("1234", value);
+        }
+
+        [Test]
+        public void ToObjectFromStringToInteger()
+        {
+            JValue token = new JValue("1234");
+            int value = token.ToObject<int>();
+            Assert.AreEqual(1234, value);
+        }
+
+        [Test]
         public void FromObjectGuid()
         {
             var token1 = new JValue(Guid.NewGuid());

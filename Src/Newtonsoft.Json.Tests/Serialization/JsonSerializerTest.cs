@@ -10141,6 +10141,46 @@ This is just junk, though.";
             Assert.AreEqual(dt, c2.NormalDate);
             Assert.AreEqual(dt, c2.JavaScriptDate);
         }
+
+        [Test]
+        public void StringEmptyValue()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JsonConvert.DeserializeObject<EmptyJsonValueTestClass>("{ A: , B: 1, C: 123, D: 1.23, E: 3.45, F: null }"),
+                "Unexpected character encountered while parsing value: ,. Path 'A', line 1, position 6.");
+        }
+
+        [Test]
+        public void NullableIntEmptyValue()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JsonConvert.DeserializeObject<EmptyJsonValueTestClass>("{ A: \"\", B: , C: 123, D: 1.23, E: 3.45, F: null }"),
+                "Unexpected character encountered while parsing value: ,. Path 'B', line 1, position 13.");
+        }
+
+        [Test]
+        public void NullableLongEmptyValue()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JsonConvert.DeserializeObject<EmptyJsonValueTestClass>("{ A: \"\", B: 1, C: , D: 1.23, E: 3.45, F: null }"),
+                "An undefined token is not a valid System.Nullable`1[System.Int64]. Path 'C', line 1, position 18.");
+        }
+
+        [Test]
+        public void NullableDecimalEmptyValue()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JsonConvert.DeserializeObject<EmptyJsonValueTestClass>("{ A: \"\", B: 1, C: 123, D: , E: 3.45, F: null }"),
+                "Unexpected character encountered while parsing value: ,. Path 'D', line 1, position 27.");
+        }
+
+        [Test]
+        public void NullableDoubleEmptyValue()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JsonConvert.DeserializeObject<EmptyJsonValueTestClass>("{ A: \"\", B: 1, C: 123, D: 1.23, E: , F: null }"),
+                "Unexpected character encountered while parsing value: ,. Path 'E', line 1, position 36.");
+        }
     }
 
     public class JsonPropertyConverterTestClass
