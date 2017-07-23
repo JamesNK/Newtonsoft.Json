@@ -31,8 +31,10 @@ namespace Newtonsoft.Json.Tests.TestObjects
     [DataContract]
     public class SubWithContractVirtualProperties : BaseWithContract
     {
+#pragma warning disable 108, 114
         [DataMember(Name = "VirtualWithDataMemberSub")]
         public virtual string VirtualWithDataMember { get; set; }
+#pragma warning restore 108, 114
     }
 #endif
 }
