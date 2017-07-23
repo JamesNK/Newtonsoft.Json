@@ -96,28 +96,6 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerTest : TestFixtureBase
     {
-        public class ListSourceTest : IListSource
-        {
-            private string str;
-
-            public string strprop
-            {
-                get { return str; }
-                set { str = value; }
-            }
-
-            [JsonIgnore]
-            public bool ContainsListCollection
-            {
-                get { return false; }
-            }
-
-            public IList GetList()
-            {
-                return new List<string>();
-            }
-        }
-
         [Test]
         public void ListSourceSerialize()
         {
@@ -130,18 +108,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             ListSourceTest c2 = JsonConvert.DeserializeObject<ListSourceTest>(json);
 
             Assert.AreEqual("test", c2.strprop);
-        }
-
-        public struct ImmutableStruct
-        {
-            public ImmutableStruct(string value)
-            {
-                Value = value;
-                Value2 = 0;
-            }
-
-            public string Value { get; }
-            public int Value2 { get; set; }
         }
 
         [Test]
@@ -172,11 +138,6 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(null, result.Value);
             Assert.AreEqual(2, result.Value2);
-        }
-
-        public class ErroringClass
-        {
-            public DateTime Tags { get; set; }
         }
 
         [Test]
@@ -210,65 +171,6 @@ namespace Newtonsoft.Json.Tests.Serialization
 
                     Assert.AreEqual(0, s.Position);
                 }
-            }
-        }
-
-        public interface ISubclassBase
-        {
-            int ID { get; set; }
-            string Name { get; set; }
-            bool P1 { get; }
-        }
-
-        public interface ISubclass : ISubclassBase
-        {
-            new bool P1 { get; set; }
-            int P2 { get; set; }
-        }
-
-        public interface IMainClass
-        {
-            int ID { get; set; }
-            string Name { get; set; }
-            ISubclass Subclass { get; set; }
-        }
-
-        public class Subclass : ISubclass
-        {
-            public int ID { get; set; }
-            public string Name { get; set; }
-            public bool P1 { get; set; }
-            public int P2 { get; set; }
-        }
-
-        public class MainClass : IMainClass
-        {
-            public int ID { get; set; }
-            public string Name { get; set; }
-            public ISubclass Subclass { get; set; }
-        }
-
-        public class MyFactory
-        {
-            public static ISubclass InstantiateSubclass()
-            {
-                return new Subclass
-                {
-                    ID = 123,
-                    Name = "ABC",
-                    P1 = true,
-                    P2 = 44
-                };
-            }
-
-            public static IMainClass InstantiateManiClass()
-            {
-                return new MainClass
-                {
-                    ID = 567,
-                    Name = "XYZ",
-                    Subclass = InstantiateSubclass()
-                };
             }
         }
 
@@ -316,21 +218,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("def", enumerableObject[1].Value);
         }
 
-        public class GenericIEnumerableWithImplicitConversion
-        {
-            public IEnumerable<ClassWithImplicitOperator> Enumerable { get; set; }
-        }
-
-        public class ClassWithImplicitOperator
-        {
-            public string Value { get; set; }
-
-            public static implicit operator ClassWithImplicitOperator(string value)
-            {
-                return new ClassWithImplicitOperator() { Value = value };
-            }
-        }
-
 #if !(PORTABLE || PORTABLE40 || NET20 || NET35)
         [Test]
         public void LargeIntegerAsString()
@@ -340,11 +227,6 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             var largeOddWorkingNumber = JsonConvert.DeserializeObject<Foo64>("{\"Blah\": 53443333222211111117 }");
             Assert.AreEqual("53443333222211111117", largeOddWorkingNumber.Blah);
-        }
-
-        public class Foo64
-        {
-            public string Blah { get; set; }
         }
 #endif
 
@@ -483,21 +365,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(foo1.Bars[2], foo2.Bars[2]);
         }
 
-        public class FooRequired
-        {
-            [JsonProperty(Required = Required.Always)]
-            public List<string> Bars { get; private set; }
-
-            public FooRequired(IEnumerable<string> bars)
-            {
-                Bars = new List<string>();
-                if (bars != null)
-                {
-                    Bars.AddRange(bars);
-                }
-            }
-        }
-
         [Test]
         public void CoercedEmptyStringWithRequired()
         {
@@ -523,34 +390,12 @@ namespace Newtonsoft.Json.Tests.Serialization
             ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<FooRequired>("{Bars:''}"); }, "Required property 'Bars' expects a value but got null. Path '', line 1, position 9.");
         }
 
-        public class IgnoredProperty
-        {
-            [JsonIgnore]
-            [JsonProperty(Required = Required.Always)]
-            public string StringProp1 { get; set; }
-
-            [JsonIgnore]
-            public string StringProp2 { get; set; }
-        }
-
         [Test]
         public void NoErrorWhenValueDoesNotMatchIgnoredProperty()
         {
             IgnoredProperty p = JsonConvert.DeserializeObject<IgnoredProperty>("{'StringProp1':[1,2,3],'StringProp2':{}}");
             Assert.IsNull(p.StringProp1);
             Assert.IsNull(p.StringProp2);
-        }
-
-        public class Binding
-        {
-            [JsonProperty(Required = Required.Always)]
-            public Binding RequiredProperty { get; set; }
-        }
-
-        public class Binding_DisallowNull
-        {
-            [JsonProperty(Required = Required.DisallowNull)]
-            public Binding RequiredProperty { get; set; }
         }
 
         [Test]
@@ -569,33 +414,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("{}", json);
         }
 
-        [JsonObject(ItemRequired = Required.DisallowNull)]
-        public class DictionaryWithNoNull
-        {
-            public string Name { get; set; }
-        }
-
         [Test]
         public void Serialize_ItemRequired_DisallowedNull()
         {
             ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.SerializeObject(new DictionaryWithNoNull()); }, "Cannot write a null value for property 'Name'. Property requires a non-null value. Path ''.");
-        }
-
-        public class DictionaryKeyContractResolver : DefaultContractResolver
-        {
-            protected override string ResolveDictionaryKey(string dictionaryKey)
-            {
-                return dictionaryKey;
-            }
-
-            protected override string ResolvePropertyName(string propertyName)
-            {
-#if DNXCORE50
-                return propertyName.ToUpperInvariant();
-#else
-                return propertyName.ToUpper(CultureInfo.InvariantCulture);
-#endif
-            }
         }
 
         [Test]
@@ -659,18 +481,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 "Unexpected end when deserializing object. Path 'key', line 1, position 8.");
         }
 
-        public class IncompleteTestClass
-        {
-            public int Key { get; set; }
-        }
-
 #if !NET20
-        public enum EnumA
-        {
-            [EnumMember(Value = "value_a")]
-            ValueA
-        }
-
         [Test]
         public void DeserializeEnumsByName()
         {
@@ -681,12 +492,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(EnumA.ValueA, e2);
         }
 #endif
-
-        public class RequiredPropertyTestClass
-        {
-            [JsonRequired]
-            internal string Name { get; set; }
-        }
 
         [Test]
         public void RequiredPropertyTest()
@@ -719,17 +524,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("Name!", c3.Name);
         }
 
-        public class RequiredPropertyConstructorTestClass
-        {
-            public RequiredPropertyConstructorTestClass(string name)
-            {
-                Name = name;
-            }
-
-            [JsonRequired]
-            internal string Name { get; set; }
-        }
-
         [Test]
         public void RequiredPropertyConstructorTest()
         {
@@ -752,34 +546,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             RequiredPropertyConstructorTestClass c3 = JsonConvert.DeserializeObject<RequiredPropertyConstructorTestClass>(@"{""Name"":""Name!""}");
 
             Assert.AreEqual("Name!", c3.Name);
-        }
-
-        public class IgnoredPropertiesTestClass
-        {
-            [JsonIgnore]
-            public Version IgnoredProperty { get; set; }
-
-            [JsonIgnore]
-            public List<Version> IgnoredList { get; set; }
-
-            [JsonIgnore]
-            public Dictionary<string, Version> IgnoredDictionary { get; set; }
-
-            [JsonProperty(Required = Required.Always)]
-            public string Name { get; set; }
-        }
-
-        public class IgnoredPropertiesContractResolver : DefaultContractResolver
-        {
-            public override JsonContract ResolveContract(Type type)
-            {
-                if (type == typeof(Version))
-                {
-                    throw new Exception("Error!");
-                }
-
-                return base.ResolveContract(type);
-            }
         }
 
         [Test]
@@ -1014,15 +780,6 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-        public class NullTestClass
-        {
-            public JObject Value1 { get; set; }
-            public JValue Value2 { get; set; }
-            public JRaw Value3 { get; set; }
-            public JToken Value4 { get; set; }
-            public object Value5 { get; set; }
-        }
-
         [Test]
         public void DeserializeNullToJTokenProperty()
         {
@@ -1038,24 +795,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(JTokenType.Raw, otc.Value3.Type);
             Assert.AreEqual(JTokenType.Null, otc.Value4.Type);
             Assert.IsNull(otc.Value5);
-        }
-
-        public class Link
-        {
-            /// <summary>
-            /// The unique identifier.
-            /// </summary>
-            public int Id;
-
-            /// <summary>
-            /// The parent information identifier.
-            /// </summary>
-            public int ParentId;
-
-            /// <summary>
-            /// The child information identifier.
-            /// </summary>
-            public int ChildId;
         }
 
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE)
@@ -1129,16 +868,6 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-        public class BaseClass
-        {
-            internal bool IsTransient { get; set; }
-        }
-
-        public class ChildClass : BaseClass
-        {
-            public new bool IsTransient { get; set; }
-        }
-
         [Test]
         public void NewProperty()
         {
@@ -1148,16 +877,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(true, childClass.IsTransient);
         }
 
-        public class BaseClassVirtual
-        {
-            internal virtual bool IsTransient { get; set; }
-        }
-
-        public class ChildClassVirtual : BaseClassVirtual
-        {
-            public new virtual bool IsTransient { get; set; }
-        }
-
         [Test]
         public void NewPropertyVirtual()
         {
@@ -1165,37 +884,6 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             var childClass = JsonConvert.DeserializeObject<ChildClassVirtual>(@"{""IsTransient"":true}");
             Assert.AreEqual(true, childClass.IsTransient);
-        }
-
-        public class ResponseWithNewGenericProperty<T> : SimpleResponse
-        {
-            public new T Data { get; set; }
-        }
-
-        public class ResponseWithNewGenericPropertyVirtual<T> : SimpleResponse
-        {
-            public new virtual T Data { get; set; }
-        }
-
-        public class ResponseWithNewGenericPropertyOverride<T> : ResponseWithNewGenericPropertyVirtual<T>
-        {
-            public override T Data { get; set; }
-        }
-
-        public abstract class SimpleResponse
-        {
-            public string Result { get; set; }
-            public string Message { get; set; }
-            public object Data { get; set; }
-
-            protected SimpleResponse()
-            {
-            }
-
-            protected SimpleResponse(string message)
-            {
-                Message = message;
-            }
         }
 
         [Test]
@@ -1322,11 +1010,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(1, o.Count);
             Assert.AreEqual(true, (bool)o["A"]);
             Assert.IsTrue(JToken.DeepEquals(o, JObject.Parse(json)));
-        }
-
-        public class CommentTestObject
-        {
-            public bool? A { get; set; }
         }
 
         [Test]
@@ -1707,60 +1390,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(ratio.Denominator, ratio2.Denominator);
             Assert.AreEqual(ratio.Numerator, ratio2.Numerator);
         }
-
-        public class PreserveReferencesCallbackTestObject : ISerializable
-        {
-            internal string _stringValue;
-            internal int _intValue;
-            internal PersonReference _person1;
-            internal PersonReference _person2;
-            internal PersonReference _person3;
-            internal PreserveReferencesCallbackTestObject _parent;
-            internal SerializationInfo _serializationInfo;
-
-            public PreserveReferencesCallbackTestObject(string stringValue, int intValue, PersonReference p1, PersonReference p2, PersonReference p3)
-            {
-                _stringValue = stringValue;
-                _intValue = intValue;
-                _person1 = p1;
-                _person2 = p2;
-                _person3 = p3;
-            }
-
-            protected PreserveReferencesCallbackTestObject(SerializationInfo info, StreamingContext context)
-            {
-                _serializationInfo = info;
-            }
-
-            public void GetObjectData(SerializationInfo info, StreamingContext context)
-            {
-                info.AddValue("stringValue", _stringValue);
-                info.AddValue("intValue", _intValue);
-                info.AddValue("person1", _person1, typeof(PersonReference));
-                info.AddValue("person2", _person2, typeof(PersonReference));
-                info.AddValue("person3", _person3, typeof(PersonReference));
-                info.AddValue("parent", _parent, typeof(PreserveReferencesCallbackTestObject));
-            }
-
-            [OnDeserialized]
-            private void OnDeserializedMethod(StreamingContext context)
-            {
-                if (_serializationInfo == null)
-                {
-                    return;
-                }
-
-                _stringValue = _serializationInfo.GetString("stringValue");
-                _intValue = _serializationInfo.GetInt32("intValue");
-                _person1 = (PersonReference)_serializationInfo.GetValue("person1", typeof(PersonReference));
-                _person2 = (PersonReference)_serializationInfo.GetValue("person2", typeof(PersonReference));
-                _person3 = (PersonReference)_serializationInfo.GetValue("person3", typeof(PersonReference));
-                _parent = (PreserveReferencesCallbackTestObject)_serializationInfo.GetValue("parent", typeof(PreserveReferencesCallbackTestObject));
-
-                _serializationInfo = null;
-            }
-        }
-
+    
         [Test]
         public void PreserveReferencesCallbackTest()
         {
@@ -1876,28 +1506,6 @@ namespace Newtonsoft.Json.Tests.Serialization
         // be used when serializing and deserializing the object,
         // resulting in unexpected behavior during serialization and deserialization.
 
-        public class Foo1
-        {
-            public object foo { get; set; }
-        }
-
-        public class Bar1
-        {
-            public object bar { get; set; }
-        }
-
-        public class Foo1<T> : Foo1
-        {
-            public new T foo { get; set; }
-
-            public T foo2 { get; set; }
-        }
-
-        public class FooBar1 : Foo1
-        {
-            public new Bar1 foo { get; set; }
-        }
-
         [Test]
         public void BaseClassSerializesAsExpected()
         {
@@ -1977,51 +1585,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             stopWatch.Stop();
         }
 
-        internal class DictionaryKeyCast
-        {
-            private String _name;
-            private int _number;
-
-            public DictionaryKeyCast(String name, int number)
-            {
-                _name = name;
-                _number = number;
-            }
-
-            public override string ToString()
-            {
-                return _name + " " + _number;
-            }
-
-            public static implicit operator DictionaryKeyCast(string dictionaryKey)
-            {
-                var strings = dictionaryKey.Split(' ');
-                return new DictionaryKeyCast(strings[0], Convert.ToInt32(strings[1]));
-            }
-        }
-
 #if !(NET20 || NET35)
-        [DataContract]
-        public class BaseDataContractWithHidden
-        {
-            [DataMember(Name = "virtualMember")]
-            public virtual string VirtualMember { get; set; }
-
-            [DataMember(Name = "nonVirtualMember")]
-            public string NonVirtualMember { get; set; }
-
-            public virtual object NewMember { get; set; }
-        }
-
-        public class ChildDataContractWithHidden : BaseDataContractWithHidden
-        {
-            [DataMember(Name = "NewMember")]
-            public new virtual string NewMember { get; set; }
-
-            public override string VirtualMember { get; set; }
-            public string AddedMember { get; set; }
-        }
-
         [Test]
         public void ChildDataContractTestWithHidden()
         {
@@ -2035,87 +1599,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             string result = JsonConvert.SerializeObject(cc);
             Assert.AreEqual(@"{""NewMember"":""NewMember!"",""virtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
         }
-
-        // ignore hiding members compiler warning
-#pragma warning disable 108, 114
-        [DataContract]
-        public class BaseWithContract
-        {
-            [DataMember(Name = "VirtualWithDataMemberBase")]
-            public virtual string VirtualWithDataMember { get; set; }
-
-            [DataMember]
-            public virtual string Virtual { get; set; }
-
-            [DataMember(Name = "WithDataMemberBase")]
-            public string WithDataMember { get; set; }
-
-            [DataMember]
-            public string JustAProperty { get; set; }
-        }
-
-        [DataContract]
-        public class BaseWithoutContract
-        {
-            [DataMember(Name = "VirtualWithDataMemberBase")]
-            public virtual string VirtualWithDataMember { get; set; }
-
-            [DataMember]
-            public virtual string Virtual { get; set; }
-
-            [DataMember(Name = "WithDataMemberBase")]
-            public string WithDataMember { get; set; }
-
-            [DataMember]
-            public string JustAProperty { get; set; }
-        }
-
-        [DataContract]
-        public class SubWithoutContractNewProperties : BaseWithContract
-        {
-            [DataMember(Name = "VirtualWithDataMemberSub")]
-            public string VirtualWithDataMember { get; set; }
-
-            public string Virtual { get; set; }
-
-            [DataMember(Name = "WithDataMemberSub")]
-            public string WithDataMember { get; set; }
-
-            public string JustAProperty { get; set; }
-        }
-
-        [DataContract]
-        public class SubWithoutContractVirtualProperties : BaseWithContract
-        {
-            public override string VirtualWithDataMember { get; set; }
-
-            [DataMember(Name = "VirtualSub")]
-            public override string Virtual { get; set; }
-        }
-
-        [DataContract]
-        public class SubWithContractNewProperties : BaseWithContract
-        {
-            [DataMember(Name = "VirtualWithDataMemberSub")]
-            public string VirtualWithDataMember { get; set; }
-
-            [DataMember(Name = "Virtual2")]
-            public string Virtual { get; set; }
-
-            [DataMember(Name = "WithDataMemberSub")]
-            public string WithDataMember { get; set; }
-
-            [DataMember(Name = "JustAProperty2")]
-            public string JustAProperty { get; set; }
-        }
-
-        [DataContract]
-        public class SubWithContractVirtualProperties : BaseWithContract
-        {
-            [DataMember(Name = "VirtualWithDataMemberSub")]
-            public virtual string VirtualWithDataMember { get; set; }
-        }
-#pragma warning restore 108, 114
 
         [Test]
         public void SubWithoutContractNewPropertiesTest()
@@ -2916,11 +2399,6 @@ keyword such as type of business.""
             Assert.AreEqual(StringComparison.CurrentCultureIgnoreCase, s);
         }
 
-        public class ClassWithTimeSpan
-        {
-            public TimeSpan TimeSpanField;
-        }
-
         [Test]
         public void TimeSpanTest()
         {
@@ -3514,19 +2992,6 @@ keyword such as type of business.""
             Assert.AreEqual("lastName", o.lastName);
         }
 
-        public sealed class ConstructorAndDefaultValueAttributeTestClass
-        {
-            public ConstructorAndDefaultValueAttributeTestClass(string testProperty1)
-            {
-                TestProperty1 = testProperty1;
-            }
-
-            public string TestProperty1 { get; set; }
-
-            [DefaultValue(21)]
-            public int TestProperty2 { get; set; }
-        }
-
         [Test]
         public void PopulateDefaultValueWhenUsingConstructor()
         {
@@ -3545,19 +3010,6 @@ keyword such as type of business.""
             });
             Assert.AreEqual("value", c.TestProperty1);
             Assert.AreEqual(21, c.TestProperty2);
-        }
-
-        public sealed class ConstructorAndRequiredTestClass
-        {
-            public ConstructorAndRequiredTestClass(string testProperty1)
-            {
-                TestProperty1 = testProperty1;
-            }
-
-            public string TestProperty1 { get; set; }
-
-            [JsonProperty(Required = Required.AllowNull)]
-            public int TestProperty2 { get; set; }
         }
 
         [Test]
@@ -3751,42 +3203,6 @@ keyword such as type of business.""
 #endif
 
 #if !NET20
-        [DataContract]
-        public class DataContractPrivateMembers
-        {
-            public DataContractPrivateMembers()
-            {
-            }
-
-            public DataContractPrivateMembers(string name, int age, int rank, string title)
-            {
-                _name = name;
-                Age = age;
-                Rank = rank;
-                Title = title;
-            }
-
-            [DataMember]
-            private string _name;
-
-            [DataMember(Name = "_age")]
-            private int Age { get; set; }
-
-            [JsonProperty]
-            private int Rank { get; set; }
-
-            [JsonProperty(PropertyName = "JsonTitle")]
-            [DataMember(Name = "DataTitle")]
-            private string Title { get; set; }
-
-            public string NotIncluded { get; set; }
-
-            public override string ToString()
-            {
-                return "_name: " + _name + ", _age: " + Age + ", Rank: " + Rank + ", JsonTitle: " + Title;
-            }
-        }
-
         [Test]
         public void SerializeDataContractPrivateMembers()
         {
@@ -4499,24 +3915,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual(wagePerson.HourlyWage, ((WagePerson)newPersonPropertyClass.Person).HourlyWage);
         }
 
-        public class ExistingValueClass
-        {
-            public Dictionary<string, string> Dictionary { get; set; }
-            public List<string> List { get; set; }
-
-            public ExistingValueClass()
-            {
-                Dictionary = new Dictionary<string, string>
-                {
-                    { "existing", "yup" }
-                };
-                List = new List<string>
-                {
-                    "existing"
-                };
-            }
-        }
-
         [Test]
         public void DeserializePopulateDictionaryAndList()
         {
@@ -4531,73 +3929,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual("appended", d.Dictionary["appended"]);
             Assert.AreEqual(1, d.List.Count);
             Assert.AreEqual("existing", d.List[0]);
-        }
-
-        public interface IKeyValueId
-        {
-            int Id { get; set; }
-            string Key { get; set; }
-            string Value { get; set; }
-        }
-
-        public class KeyValueId : IKeyValueId
-        {
-            public int Id { get; set; }
-            public string Key { get; set; }
-            public string Value { get; set; }
-        }
-
-        public class ThisGenericTest<T> where T : IKeyValueId
-        {
-            private Dictionary<string, T> _dict1 = new Dictionary<string, T>();
-
-            public string MyProperty { get; set; }
-
-            public void Add(T item)
-            {
-                _dict1.Add(item.Key, item);
-            }
-
-            public T this[string key]
-            {
-                get { return _dict1[key]; }
-                set { _dict1[key] = value; }
-            }
-
-            public T this[int id]
-            {
-                get { return _dict1.Values.FirstOrDefault(x => x.Id == id); }
-                set
-                {
-                    var item = this[id];
-
-                    if (item == null)
-                    {
-                        Add(value);
-                    }
-                    else
-                    {
-                        _dict1[item.Key] = value;
-                    }
-                }
-            }
-
-            public string ToJson()
-            {
-                return JsonConvert.SerializeObject(this, Formatting.Indented);
-            }
-
-            public T[] TheItems
-            {
-                get { return _dict1.Values.ToArray<T>(); }
-                set
-                {
-                    foreach (var item in value)
-                    {
-                        Add(item);
-                    }
-                }
-            }
         }
 
         [Test]
@@ -4632,11 +3963,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual("some value", gen.MyProperty);
         }
 
-        public class JRawValueTestObject
-        {
-            public JRaw Value { get; set; }
-        }
-
         [Test]
         public void JRawValue()
         {
@@ -4669,52 +3995,7 @@ Path '', line 1, position 1.");
             {
                 PreserveReferencesHandling = PreserveReferencesHandling.All,
                 MetadataPropertyHandling = MetadataPropertyHandling.Default
-            }), "Cannot preserve reference to readonly dictionary, or dictionary created from a non-default constructor: Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+DictionaryWithNoDefaultConstructor. Path 'key1', line 1, position 16.");
-        }
-
-        public class DictionaryWithNoDefaultConstructor : Dictionary<string, string>
-        {
-            public DictionaryWithNoDefaultConstructor(IEnumerable<KeyValuePair<string, string>> initial)
-            {
-                foreach (KeyValuePair<string, string> pair in initial)
-                {
-                    Add(pair.Key, pair.Value);
-                }
-            }
-        }
-
-        [JsonObject(MemberSerialization.OptIn)]
-        public class A
-        {
-            [JsonProperty("A1")]
-            private string _A1;
-
-            public string A1
-            {
-                get { return _A1; }
-                set { _A1 = value; }
-            }
-
-            [JsonProperty("A2")]
-            private string A2 { get; set; }
-        }
-
-        [JsonObject(MemberSerialization.OptIn)]
-        public class B : A
-        {
-            public string B1 { get; set; }
-
-            [JsonProperty("B2")]
-            private string _B2;
-
-            public string B2
-            {
-                get { return _B2; }
-                set { _B2 = value; }
-            }
-
-            [JsonProperty("B3")]
-            private string B3 { get; set; }
+            }), "Cannot preserve reference to readonly dictionary, or dictionary created from a non-default constructor: Newtonsoft.Json.Tests.TestObjects.DictionaryWithNoDefaultConstructor. Path 'key1', line 1, position 16.");
         }
 
         [Test]
@@ -9993,7 +9274,9 @@ This is just junk, though.";
                 },
                 "Cannot populate list type System.Net.Mime.HeaderCollection. Path 'Headers', line 26, position 14.");
         }
+#endif
 
+#if !(DNXCORE50)
         public class MailAddressReadConverter : JsonConverter
         {
             public override bool CanConvert(Type objectType)
