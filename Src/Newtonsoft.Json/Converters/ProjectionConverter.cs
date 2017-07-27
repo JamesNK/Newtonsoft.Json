@@ -59,6 +59,10 @@ namespace Newtonsoft.Json.Converters
         private ReferenceLoopHandling baseReferenceLoopHandling;
         private HashSet<String> propertyPaths = null;
 
+        /// <summary>
+        /// Creates a new ProjectionConverter instance
+        /// </summary>
+        /// <param name="projections"></param>
         // TODO implement constructors from KeyValuePairs and replace the HashSet by a IEnumerable
         public ProjectionConverter(Dictionary<Type, HashSet<string>> projections = null)
             : base()
@@ -66,8 +70,19 @@ namespace Newtonsoft.Json.Converters
             PropertyPaths = projections;
         }
 
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="JsonConverter"/> can read JSON.
+        /// </summary>
+        /// <value><c>true</c> if this <see cref="JsonConverter"/> can read JSON; otherwise, <c>false</c>.</value>
         public override bool CanRead { get { return false; } }
 
+        /// <summary>
+        /// Determines whether this instance can convert the specified object type.
+        /// </summary>
+        /// <param name="objectType">Type of the object.</param>
+        /// <returns>
+        /// <c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
+        /// </returns>
         public override bool CanConvert(Type objectType)
         {
             if (objectType == typeof(string)) return false;
@@ -75,11 +90,25 @@ namespace Newtonsoft.Json.Converters
             return (PropertyPaths.Keys.Any(k => objectType.IsAssignableFrom(k)) || (!objectType.IsPrimitive && !objectType.IsValueType));
         }
 
+        /// <summary>
+        /// Reads the JSON representation of the object.
+        /// </summary>
+        /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
+        /// <param name="objectType">Type of the object.</param>
+        /// <param name="existingValue">The existing value of object being read.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             throw new NotSupportedException("This converter is usable for serialization only yet");
         }
 
+        /// <summary>
+        /// Writes the JSON representation of the object.
+        /// </summary>
+        /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value == null) return;
