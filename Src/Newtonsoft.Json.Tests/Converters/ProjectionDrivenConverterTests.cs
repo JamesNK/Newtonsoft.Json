@@ -19,7 +19,7 @@
 
 #endregion
 
-#if NET45
+#if NET35 || NET40 || NET45
 
 using System;
 using System.Collections.Generic;
