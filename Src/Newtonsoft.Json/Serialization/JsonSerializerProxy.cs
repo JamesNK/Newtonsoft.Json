@@ -44,10 +44,19 @@ namespace Newtonsoft.Json.Serialization
             remove { _serializer.Error -= value; }
         }
 
+#pragma warning disable 618
+        [Obsolete]
         public override IReferenceResolver ReferenceResolver
         {
             get { return _serializer.ReferenceResolver; }
             set { _serializer.ReferenceResolver = value; }
+        }
+#pragma warning restore 618
+
+        public override Func<IReferenceResolver> ReferenceResolverProvider
+        {
+            get { return _serializer.ReferenceResolverProvider; }
+            set { _serializer.ReferenceResolverProvider = value; }
         }
 
         public override ITraceWriter TraceWriter
