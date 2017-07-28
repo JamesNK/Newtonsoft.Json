@@ -61,6 +61,7 @@ namespace Newtonsoft.Json
         internal ISerializationBinder _serializationBinder;
         internal StreamingContext _context;
         private IReferenceResolver _referenceResolver;
+        private Func<IReferenceResolver> _referenceResolverProvider;
 
         private Formatting? _formatting;
         private DateFormatHandling? _dateFormatHandling;
@@ -84,9 +85,10 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
         /// </summary>
+        [Obsolete("ReferenceResolver property is obsolete. Use the ReferenceResolverProvider property to set the IReferenceResolver: serializer.ReferenceResolverProvider = () => resolver")]
         public virtual IReferenceResolver ReferenceResolver
         {
-            get { return GetReferenceResolver(); }
+            get { return _referenceResolver ?? (_referenceResolver = GetReferenceResolver()); }
             set
             {
                 if (value == null)
@@ -95,6 +97,27 @@ namespace Newtonsoft.Json
                 }
 
                 _referenceResolver = value;
+                ReferenceResolverProvider = () => value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets a function that creates the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
+        /// </summary>
+        /// <value>A function that creates the <see cref="IReferenceResolver"/> used by the serializer when resolving references.</value>
+        public virtual Func<IReferenceResolver> ReferenceResolverProvider
+        {
+#pragma warning disable 618
+            get { return _referenceResolverProvider ?? (() => ReferenceResolver); }
+#pragma warning restore 618
+            set
+            {
+                if (value == null)
+                {
+                    throw new ArgumentNullException(nameof(value), "Reference resolver provider cannot be null.");
+                }
+
+                _referenceResolverProvider = value;
             }
         }
 
@@ -702,7 +725,7 @@ namespace Newtonsoft.Json
             }
             if (settings.ReferenceResolverProvider != null)
             {
-                serializer.ReferenceResolver = settings.ReferenceResolverProvider();
+                serializer.ReferenceResolverProvider = settings.ReferenceResolverProvider;
             }
             if (settings.TraceWriter != null)
             {
@@ -1149,12 +1172,7 @@ namespace Newtonsoft.Json
 
         internal IReferenceResolver GetReferenceResolver()
         {
-            if (_referenceResolver == null)
-            {
-                _referenceResolver = new DefaultReferenceResolver();
-            }
-
-            return _referenceResolver;
+            return _referenceResolverProvider != null ? _referenceResolverProvider() : new DefaultReferenceResolver();
         }
 
         internal JsonConverter GetMatchingConverter(Type type)

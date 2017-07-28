@@ -487,7 +487,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 CircularReferenceClass circularReferenceClass = (CircularReferenceClass)value;
 
+#pragma warning disable 618
                 string reference = serializer.ReferenceResolver.GetReference(serializer, circularReferenceClass);
+#pragma warning restore 618
 
                 JObject me = new JObject();
                 me["$id"] = new JValue(reference);
@@ -513,7 +515,9 @@ namespace Newtonsoft.Json.Tests.Serialization
                 else
                 {
                     string reference = (string)o["$ref"];
+#pragma warning disable 618
                     return serializer.ReferenceResolver.ResolveReference(serializer, reference);
+#pragma warning restore 618
                 }
             }
 

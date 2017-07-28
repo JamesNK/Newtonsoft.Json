@@ -1109,9 +1109,11 @@ namespace Newtonsoft.Json.Tests.Serialization
             serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             Assert.AreEqual(ReferenceLoopHandling.Ignore, serializer.ReferenceLoopHandling);
 
+#pragma warning disable 618
             IdReferenceResolver referenceResolver = new IdReferenceResolver();
             serializer.ReferenceResolver = referenceResolver;
             Assert.AreEqual(referenceResolver, serializer.ReferenceResolver);
+#pragma warning restore 618
 
             serializer.StringEscapeHandling = StringEscapeHandling.EscapeNonAscii;
             Assert.AreEqual(StringEscapeHandling.EscapeNonAscii, serializer.StringEscapeHandling);
@@ -1344,9 +1346,11 @@ namespace Newtonsoft.Json.Tests.Serialization
             serializerProxy.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             Assert.AreEqual(ReferenceLoopHandling.Ignore, serializerProxy.ReferenceLoopHandling);
 
+#pragma warning disable 618
             IdReferenceResolver referenceResolver = new IdReferenceResolver();
             serializerProxy.ReferenceResolver = referenceResolver;
             Assert.AreEqual(referenceResolver, serializerProxy.ReferenceResolver);
+#pragma warning restore 618
 
             serializerProxy.StringEscapeHandling = StringEscapeHandling.EscapeNonAscii;
             Assert.AreEqual(StringEscapeHandling.EscapeNonAscii, serializerProxy.StringEscapeHandling);
@@ -9463,6 +9467,43 @@ This is just junk, though.";
             ExceptionAssert.Throws<JsonReaderException>(
                 () => JsonConvert.DeserializeObject<EmptyJsonValueTestClass>("{ A: \"\", B: 1, C: 123, D: 1.23, E: , F: null }"),
                 "Unexpected character encountered while parsing value: ,. Path 'E', line 1, position 36.");
+        }
+
+        [Test]
+        public void MultipleReferenceResolverUse()
+        {
+            JsonSerializer serializer = new JsonSerializer
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.All,
+                Formatting = Formatting.Indented
+            };
+
+            int[] value = { 1, 8, 12 };
+
+            string expectedJson = @"{
+  ""$id"": ""1"",
+  ""$values"": [
+    1,
+    8,
+    12
+  ]
+}";
+
+            using (StringWriter writer = new StringWriter())
+            {
+                serializer.Serialize(writer, value);
+                string json = writer.ToString();
+
+                StringAssert.AreEqual(expectedJson, json);
+            }
+
+            using (StringWriter writer = new StringWriter())
+            {
+                serializer.Serialize(writer, value);
+                string json = writer.ToString();
+
+                StringAssert.AreEqual(expectedJson, json);
+            }
         }
     }
 }
