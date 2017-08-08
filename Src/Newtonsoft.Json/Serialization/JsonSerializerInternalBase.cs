@@ -49,6 +49,7 @@ namespace Newtonsoft.Json.Serialization
 
         private ErrorContext _currentErrorContext;
         private BidirectionalDictionary<string, object> _mappings;
+        private IReferenceResolver _referenceResolver;
 
         internal readonly JsonSerializer Serializer;
         internal readonly ITraceWriter TraceWriter;
@@ -78,6 +79,17 @@ namespace Newtonsoft.Json.Serialization
                 }
 
                 return _mappings;
+            }
+        }
+
+        internal IReferenceResolver ReferenceResolver
+        {
+            get { return _referenceResolver ?? (_referenceResolver = Serializer.GetReferenceResolver()); }
+            set
+            {
+                ValidationUtils.ArgumentNotNull(value, nameof(value));
+
+                _referenceResolver = value;
             }
         }
 

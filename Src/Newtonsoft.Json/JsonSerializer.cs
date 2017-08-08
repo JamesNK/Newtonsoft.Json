@@ -83,12 +83,11 @@ namespace Newtonsoft.Json
         public virtual event EventHandler<ErrorEventArgs> Error;
 
         /// <summary>
-        /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
+        /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references. Only use this property within a <see cref="JsonConverter"/>. Use the <see cref="ReferenceResolverProvider"/> property to set the <see cref="IReferenceResolver"/>: serializer.ReferenceResolverProvider = () => resolver.
         /// </summary>
-        [Obsolete("ReferenceResolver property is obsolete. Use the ReferenceResolverProvider property to set the IReferenceResolver: serializer.ReferenceResolverProvider = () => resolver. For JsonConverter's use the ReferenceResolver property on JsonWriter and JsonReader")]
         public virtual IReferenceResolver ReferenceResolver
         {
-            get { return _referenceResolver ?? (_referenceResolver = _referenceResolverProvider != null ? _referenceResolverProvider() : new DefaultReferenceResolver()); }
+            get { return _referenceResolver ?? (_referenceResolver = GetReferenceResolver()); }
             set
             {
                 if (value == null)
@@ -818,8 +817,7 @@ namespace Newtonsoft.Json
             FloatParseHandling? previousFloatParseHandling;
             int? previousMaxDepth;
             string previousDateFormatString;
-            IReferenceResolver previousReferenceResolver;
-            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString, out previousReferenceResolver);
+            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? new TraceJsonReader(reader)
@@ -833,7 +831,7 @@ namespace Newtonsoft.Json
                 TraceWriter.Trace(TraceLevel.Verbose, traceJsonReader.GetDeserializedJsonMessage(), null);
             }
 
-            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString, previousReferenceResolver);
+            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString);
         }
 
         /// <summary>
@@ -893,8 +891,7 @@ namespace Newtonsoft.Json
             FloatParseHandling? previousFloatParseHandling;
             int? previousMaxDepth;
             string previousDateFormatString;
-            IReferenceResolver previousReferenceResolver;
-            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString, out previousReferenceResolver);
+            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? new TraceJsonReader(reader)
@@ -908,12 +905,12 @@ namespace Newtonsoft.Json
                 TraceWriter.Trace(TraceLevel.Verbose, traceJsonReader.GetDeserializedJsonMessage(), null);
             }
 
-            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString, previousReferenceResolver);
+            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString);
 
             return value;
         }
 
-        private void SetupReader(JsonReader reader, out CultureInfo previousCulture, out DateTimeZoneHandling? previousDateTimeZoneHandling, out DateParseHandling? previousDateParseHandling, out FloatParseHandling? previousFloatParseHandling, out int? previousMaxDepth, out string previousDateFormatString, out IReferenceResolver previousReferenceResolver)
+        private void SetupReader(JsonReader reader, out CultureInfo previousCulture, out DateTimeZoneHandling? previousDateTimeZoneHandling, out DateParseHandling? previousDateParseHandling, out FloatParseHandling? previousFloatParseHandling, out int? previousMaxDepth, out string previousDateFormatString)
         {
             if (_culture != null && !_culture.Equals(reader.Culture))
             {
@@ -975,16 +972,6 @@ namespace Newtonsoft.Json
                 previousDateFormatString = null;
             }
 
-            if (_referenceResolverProvider != null)
-            {
-                previousReferenceResolver = reader._referenceResolver;
-                reader.ReferenceResolver = _referenceResolverProvider();
-            }
-            else
-            {
-                previousReferenceResolver = null;
-            }
-
             JsonTextReader textReader = reader as JsonTextReader;
             if (textReader != null)
             {
@@ -996,7 +983,7 @@ namespace Newtonsoft.Json
             }
         }
 
-        private void ResetReader(JsonReader reader, CultureInfo previousCulture, DateTimeZoneHandling? previousDateTimeZoneHandling, DateParseHandling? previousDateParseHandling, FloatParseHandling? previousFloatParseHandling, int? previousMaxDepth, string previousDateFormatString, IReferenceResolver previousReferenceResolver)
+        private void ResetReader(JsonReader reader, CultureInfo previousCulture, DateTimeZoneHandling? previousDateTimeZoneHandling, DateParseHandling? previousDateParseHandling, FloatParseHandling? previousFloatParseHandling, int? previousMaxDepth, string previousDateFormatString)
         {
             // reset reader back to previous options
             if (previousCulture != null)
@@ -1022,10 +1009,6 @@ namespace Newtonsoft.Json
             if (_dateFormatStringSet)
             {
                 reader.DateFormatString = previousDateFormatString;
-            }
-            if (_referenceResolverProvider != null)
-            {
-                reader.ReferenceResolver = previousReferenceResolver;
             }
 
             JsonTextReader textReader = reader as JsonTextReader;
@@ -1143,13 +1126,6 @@ namespace Newtonsoft.Json
                 jsonWriter.DateFormatString = _dateFormatString;
             }
 
-            IReferenceResolver previousReferenceResolver = null;
-            if (_referenceResolverProvider != null)
-            {
-                previousReferenceResolver = jsonWriter._referenceResolver;
-                jsonWriter.ReferenceResolver = _referenceResolverProvider();
-            }
-
             TraceJsonWriter traceJsonWriter = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? new TraceJsonWriter(jsonWriter)
                 : null;
@@ -1191,10 +1167,11 @@ namespace Newtonsoft.Json
             {
                 jsonWriter.Culture = previousCulture;
             }
-            if (_referenceResolverProvider != null)
-            {
-                jsonWriter.ReferenceResolver = previousReferenceResolver;
-            }
+        }
+
+        internal IReferenceResolver GetReferenceResolver()
+        {
+            return _referenceResolverProvider != null ? _referenceResolverProvider() : new DefaultReferenceResolver();
         }
 
         internal JsonConverter GetMatchingConverter(Type type)

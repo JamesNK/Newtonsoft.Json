@@ -622,7 +622,7 @@ namespace Newtonsoft.Json.Serialization
                             throw JsonSerializationException.Create(additionalContent, additionalContent.Path, "Additional content found in JSON reference object. A JSON reference object should only have a {0} property.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName), null);
                         }
 
-                        newValue = reader.ReferenceResolver.ResolveReference(this, reference);
+                        newValue = ReferenceResolver.ResolveReference(this, reference);
 
                         if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
                         {
@@ -719,7 +719,7 @@ namespace Newtonsoft.Json.Serialization
                                     throw JsonSerializationException.Create(reader, "Additional content found in JSON reference object. A JSON reference object should only have a {0} property.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName));
                                 }
 
-                                newValue = reader.ReferenceResolver.ResolveReference(this, reference);
+                                newValue = ReferenceResolver.ResolveReference(this, reference);
 
                                 if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
                                 {
@@ -1127,7 +1127,7 @@ namespace Newtonsoft.Json.Serialization
                     TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Read object reference Id '{0}' for {1}.".FormatWith(CultureInfo.InvariantCulture, id, value.GetType())), null);
                 }
 
-                reader.ReferenceResolver.AddReference(this, id, value);
+                ReferenceResolver.AddReference(this, id, value);
             }
             catch (Exception ex)
             {

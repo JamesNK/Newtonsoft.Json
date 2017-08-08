@@ -43,15 +43,12 @@ namespace Newtonsoft.Json.Serialization
             add { _serializer.Error += value; }
             remove { _serializer.Error -= value; }
         }
-
-#pragma warning disable 618
-        [Obsolete]
+        
         public override IReferenceResolver ReferenceResolver
         {
-            get { return _serializer.ReferenceResolver; }
-            set { _serializer.ReferenceResolver = value; }
+            get { return GetInternalSerializer().ReferenceResolver; }
+            set { GetInternalSerializer().ReferenceResolver = value; }
         }
-#pragma warning restore 618
 
         public override Func<IReferenceResolver> ReferenceResolverProvider
         {

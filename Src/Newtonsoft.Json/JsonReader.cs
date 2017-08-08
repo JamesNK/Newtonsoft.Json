@@ -130,7 +130,6 @@ namespace Newtonsoft.Json
         internal FloatParseHandling _floatParseHandling;
         private string _dateFormatString;
         private List<JsonPosition> _stack;
-        internal IReferenceResolver _referenceResolver;
 
         /// <summary>
         /// Gets the current reader state.
@@ -324,15 +323,6 @@ namespace Newtonsoft.Json
         {
             get { return _culture ?? CultureInfo.InvariantCulture; }
             set { _culture = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="IReferenceResolver"/> used when resolving references.
-        /// </summary>
-        public IReferenceResolver ReferenceResolver
-        {
-            get { return _referenceResolver ?? (_referenceResolver = new DefaultReferenceResolver()); }
-            set { _referenceResolver = value; }
         }
 
         internal JsonPosition GetPosition(int depth)

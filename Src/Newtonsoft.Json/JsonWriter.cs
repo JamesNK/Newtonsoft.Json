@@ -29,7 +29,6 @@ using System.IO;
 #if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
-using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 #if !HAVE_LINQ
@@ -226,7 +225,6 @@ namespace Newtonsoft.Json
         private FloatFormatHandling _floatFormatHandling;
         private string _dateFormatString;
         private CultureInfo _culture;
-        internal IReferenceResolver _referenceResolver;
 
         /// <summary>
         /// Gets or sets a value indicating how JSON text output should be formatted.
@@ -337,15 +335,6 @@ namespace Newtonsoft.Json
         {
             get { return _culture ?? CultureInfo.InvariantCulture; }
             set { _culture = value; }
-        }
-
-        /// <summary>
-        /// Gets or sets the <see cref="IReferenceResolver"/> used when writing references.
-        /// </summary>
-        public IReferenceResolver ReferenceResolver
-        {
-            get { return _referenceResolver ?? (_referenceResolver = new DefaultReferenceResolver()); }
-            set { _referenceResolver = value; }
         }
 
         /// <summary>
