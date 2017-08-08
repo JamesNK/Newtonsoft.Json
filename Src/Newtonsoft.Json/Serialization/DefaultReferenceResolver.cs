@@ -23,52 +23,66 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 
 namespace Newtonsoft.Json.Serialization
 {
     internal class DefaultReferenceResolver : IReferenceResolver
     {
-        private int _referenceCount;
-
-        private BidirectionalDictionary<string, object> GetMappings(object context)
+        private class ReferenceEqualsEqualityComparer : IEqualityComparer<object>
         {
-            JsonSerializerInternalBase internalSerializer = context as JsonSerializerInternalBase;
-            if (internalSerializer == null)
+            bool IEqualityComparer<object>.Equals(object x, object y)
             {
-                JsonSerializerProxy proxy = context as JsonSerializerProxy;
-                if (proxy != null)
-                {
-                    internalSerializer = proxy.GetInternalSerializer();
-                }
-                else
-                {
-                    throw new JsonException("The DefaultReferenceResolver can only be used internally.");
-                }
+                return ReferenceEquals(x, y);
             }
 
-            return internalSerializer.DefaultReferenceMappings;
+            int IEqualityComparer<object>.GetHashCode(object obj)
+            {
+                // put objects in a bucket based on their reference
+                return RuntimeHelpers.GetHashCode(obj);
+            }
+        }
+
+        private BidirectionalDictionary<string, object> _mappings;
+        private int _referenceCount;
+
+        private BidirectionalDictionary<string, object> Mappings
+        {
+            get
+            {
+                // override equality comparer for object key dictionary
+                // object will be modified as it deserializes and might have mutable hashcode
+                if (_mappings == null)
+                {
+                    _mappings = new BidirectionalDictionary<string, object>(
+                        EqualityComparer<string>.Default,
+                        new ReferenceEqualsEqualityComparer(),
+                        "A different value already has the Id '{0}'.",
+                        "A different Id has already been assigned for value '{0}'. This error may be caused by an object being reused multiple times during deserialization and can be fixed with the setting ObjectCreationHandling.Replace.");
+                }
+
+                return _mappings;
+            }
         }
 
         public object ResolveReference(object context, string reference)
         {
             object value;
-            GetMappings(context).TryGetByFirst(reference, out value);
+            Mappings.TryGetByFirst(reference, out value);
             return value;
         }
 
         public string GetReference(object context, object value)
         {
-            BidirectionalDictionary<string, object> mappings = GetMappings(context);
-
             string reference;
-            if (!mappings.TryGetBySecond(value, out reference))
+            if (!Mappings.TryGetBySecond(value, out reference))
             {
                 _referenceCount++;
                 reference = _referenceCount.ToString(CultureInfo.InvariantCulture);
-                mappings.Set(reference, value);
+                Mappings.Set(reference, value);
             }
 
             return reference;
@@ -76,13 +90,13 @@ namespace Newtonsoft.Json.Serialization
 
         public void AddReference(object context, string reference, object value)
         {
-            GetMappings(context).Set(reference, value);
+            Mappings.Set(reference, value);
         }
 
         public bool IsReferenced(object context, object value)
         {
             string reference;
-            return GetMappings(context).TryGetBySecond(value, out reference);
+            return Mappings.TryGetBySecond(value, out reference);
         }
     }
 }

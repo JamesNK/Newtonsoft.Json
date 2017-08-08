@@ -24,31 +24,14 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {
     internal abstract class JsonSerializerInternalBase
     {
-        private class ReferenceEqualsEqualityComparer : IEqualityComparer<object>
-        {
-            bool IEqualityComparer<object>.Equals(object x, object y)
-            {
-                return ReferenceEquals(x, y);
-            }
-
-            int IEqualityComparer<object>.GetHashCode(object obj)
-            {
-                // put objects in a bucket based on their reference
-                return RuntimeHelpers.GetHashCode(obj);
-            }
-        }
-
         private ErrorContext _currentErrorContext;
-        private BidirectionalDictionary<string, object> _mappings;
         private IReferenceResolver _referenceResolver;
 
         internal readonly JsonSerializer Serializer;
@@ -61,25 +44,6 @@ namespace Newtonsoft.Json.Serialization
 
             Serializer = serializer;
             TraceWriter = serializer.TraceWriter;
-        }
-
-        internal BidirectionalDictionary<string, object> DefaultReferenceMappings
-        {
-            get
-            {
-                // override equality comparer for object key dictionary
-                // object will be modified as it deserializes and might have mutable hashcode
-                if (_mappings == null)
-                {
-                    _mappings = new BidirectionalDictionary<string, object>(
-                        EqualityComparer<string>.Default,
-                        new ReferenceEqualsEqualityComparer(),
-                        "A different value already has the Id '{0}'.",
-                        "A different Id has already been assigned for value '{0}'. This error may be caused by an object being reused multiple times during deserialization and can be fixed with the setting ObjectCreationHandling.Replace.");
-                }
-
-                return _mappings;
-            }
         }
 
         internal IReferenceResolver ReferenceResolver
