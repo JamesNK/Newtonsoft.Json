@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 throw new ArgumentNullException(nameof(jsonWriter));
             }
-            
+
             _rootType = objectType;
             _rootLevel = _serializeStack.Count + 1;
 

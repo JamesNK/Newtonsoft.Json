@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Serialization
             add { _serializer.Error += value; }
             remove { _serializer.Error -= value; }
         }
-        
+
         public override IReferenceResolver ReferenceResolver
         {
             get { return GetInternalSerializer().ReferenceResolver; }

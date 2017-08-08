@@ -1109,11 +1109,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             serializer.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             Assert.AreEqual(ReferenceLoopHandling.Ignore, serializer.ReferenceLoopHandling);
 
-#pragma warning disable 618
             IdReferenceResolver referenceResolver = new IdReferenceResolver();
             serializer.ReferenceResolver = referenceResolver;
             Assert.AreEqual(referenceResolver, serializer.ReferenceResolver);
-#pragma warning restore 618
 
             serializer.StringEscapeHandling = StringEscapeHandling.EscapeNonAscii;
             Assert.AreEqual(StringEscapeHandling.EscapeNonAscii, serializer.StringEscapeHandling);
@@ -1346,11 +1344,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             serializerProxy.ReferenceLoopHandling = ReferenceLoopHandling.Ignore;
             Assert.AreEqual(ReferenceLoopHandling.Ignore, serializerProxy.ReferenceLoopHandling);
 
-#pragma warning disable 618
             IdReferenceResolver referenceResolver = new IdReferenceResolver();
             serializerProxy.ReferenceResolver = referenceResolver;
             Assert.AreEqual(referenceResolver, serializerProxy.ReferenceResolver);
-#pragma warning restore 618
 
             serializerProxy.StringEscapeHandling = StringEscapeHandling.EscapeNonAscii;
             Assert.AreEqual(StringEscapeHandling.EscapeNonAscii, serializerProxy.StringEscapeHandling);
