@@ -254,7 +254,6 @@ namespace Newtonsoft.Json.Serialization
             }
 #endif
 
-#if HAVE_IMMUTABLE_COLLECTIONS
             Type immutableCreatedType;
             ObjectConstructor<object> immutableParameterizedCreator;
             if (ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(underlyingType, CollectionItemType, out immutableCreatedType, out immutableParameterizedCreator))
@@ -264,7 +263,6 @@ namespace Newtonsoft.Json.Serialization
                 IsReadOnlyOrFixedSize = true;
                 CanDeserialize = true;
             }
-#endif
         }
 
         internal IWrappedCollection CreateWrapper(object list)

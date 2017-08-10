@@ -194,7 +194,6 @@ namespace Newtonsoft.Json.Serialization
             }
 #endif
 
-#if HAVE_IMMUTABLE_COLLECTIONS
             Type immutableCreatedType;
             ObjectConstructor<object> immutableParameterizedCreator;
             if (ImmutableCollectionsUtils.TryBuildImmutableForDictionaryContract(underlyingType, DictionaryKeyType, DictionaryValueType, out immutableCreatedType, out immutableParameterizedCreator))
@@ -203,7 +202,6 @@ namespace Newtonsoft.Json.Serialization
                 _parameterizedCreator = immutableParameterizedCreator;
                 IsReadOnlyOrFixedSize = true;
             }
-#endif
         }
 
         internal IWrappedDictionary CreateWrapper(object dictionary)
