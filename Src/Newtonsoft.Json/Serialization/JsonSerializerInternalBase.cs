@@ -48,7 +48,7 @@ namespace Newtonsoft.Json.Serialization
 
         internal IReferenceResolver ReferenceResolver
         {
-            get { return _referenceResolver ?? (_referenceResolver = Serializer.GetReferenceResolver()); }
+            get { return _referenceResolver ?? (_referenceResolver = Serializer.ReferenceResolverProvider()); }
             set
             {
                 ValidationUtils.ArgumentNotNull(value, nameof(value));

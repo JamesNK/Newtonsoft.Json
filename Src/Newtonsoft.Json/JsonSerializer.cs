@@ -87,7 +87,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual IReferenceResolver ReferenceResolver
         {
-            get { return _referenceResolver ?? (_referenceResolver = GetReferenceResolver()); }
+            get { return _referenceResolver ?? new DefaultReferenceResolver(); }
             set
             {
                 if (value == null)
@@ -96,7 +96,6 @@ namespace Newtonsoft.Json
                 }
 
                 _referenceResolver = value;
-                ReferenceResolverProvider = () => value;
             }
         }
 
@@ -1167,11 +1166,6 @@ namespace Newtonsoft.Json
             {
                 jsonWriter.Culture = previousCulture;
             }
-        }
-
-        internal IReferenceResolver GetReferenceResolver()
-        {
-            return _referenceResolverProvider != null ? _referenceResolverProvider() : new DefaultReferenceResolver();
         }
 
         internal JsonConverter GetMatchingConverter(Type type)
