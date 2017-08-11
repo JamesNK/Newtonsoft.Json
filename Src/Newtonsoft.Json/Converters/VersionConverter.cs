@@ -45,7 +45,9 @@ namespace Newtonsoft.Json.Converters
             if (value == null)
             {
                 writer.WriteNull();
+                return;
             }
+
             writer.WriteValue(value.ToString());
         }
 
@@ -54,11 +56,11 @@ namespace Newtonsoft.Json.Converters
         /// </summary>
         /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
         /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingHasValue">The existing value has a value.</param>
-        /// <param name="existingValue">The existing property value of the JSON that is being converted.</param>
+        /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
+        /// <param name="hasExistingValue">The existing value has a value.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override Version ReadJson(JsonReader reader, Type objectType, bool existingHasValue, Version existingValue, JsonSerializer serializer)
+        public override Version ReadJson(JsonReader reader, Type objectType, Version existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
             {

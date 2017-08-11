@@ -86,7 +86,7 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Converts an object to and from JSON.
     /// </summary>
-    /// <typeparam name="T"></typeparam>
+    /// <typeparam name="T">The object type to convert.</typeparam>
     public abstract class JsonConverter<T> : JsonConverter
     {
         /// <summary>
@@ -99,7 +99,7 @@ namespace Newtonsoft.Json
         {
             if (!(value != null ? value is T : ReflectionUtils.IsNullable(typeof(T))))
             {
-                throw new JsonSerializationException("This converter cannot convert {0} of type {1}".FormatWith(CultureInfo.InvariantCulture, value, value?.GetType()));
+                throw new JsonSerializationException("Converter cannot write specified value to JSON. {0} is required.".FormatWith(CultureInfo.InvariantCulture, typeof(T)));
             }
             WriteJson(writer, (T)value, serializer);
         }
@@ -122,12 +122,12 @@ namespace Newtonsoft.Json
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            var existingIsNull = existingValue == null;
+            bool existingIsNull = existingValue == null;
             if (!(existingIsNull || existingValue is T))
             {
-                throw new JsonSerializationException("This converter cannot convert {0} of type {1}".FormatWith(CultureInfo.InvariantCulture, existingValue, existingValue.GetType()));
+                throw new JsonSerializationException("Converter cannot read JSON with the specified existing value. {0} is required.".FormatWith(CultureInfo.InvariantCulture, typeof(T)));
             }
-            return ReadJson(reader, objectType, !existingIsNull, existingIsNull ? default(T) : (T)existingValue, serializer);
+            return ReadJson(reader, objectType, existingIsNull ? default(T) : (T)existingValue, !existingIsNull, serializer);
         }
 
         /// <summary>
@@ -135,11 +135,11 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
         /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingHasValue">The existing value has a value.</param>
-        /// <param name="existingValue">The existing value of object being read.</param>
+        /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
+        /// <param name="hasExistingValue">The existing value has a value.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public abstract T ReadJson(JsonReader reader, Type objectType, bool existingHasValue, T existingValue, JsonSerializer serializer);
+        public abstract T ReadJson(JsonReader reader, Type objectType, T existingValue, bool hasExistingValue, JsonSerializer serializer);
 
         /// <summary>
         /// Determines whether this instance can convert the specified object type.

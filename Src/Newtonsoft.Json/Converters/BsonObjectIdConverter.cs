@@ -44,6 +44,12 @@ namespace Newtonsoft.Json.Converters
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, BsonObjectId value, JsonSerializer serializer)
         {
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+
             BsonWriter bsonWriter = writer as BsonWriter;
             if (bsonWriter != null)
             {
@@ -60,11 +66,11 @@ namespace Newtonsoft.Json.Converters
         /// </summary>
         /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
         /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingHasValue">The existing value has a value.</param>
-        /// <param name="existingValue">The existing value of object being read.</param>
+        /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
+        /// <param name="hasExistingValue">The existing value has a value.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override BsonObjectId ReadJson(JsonReader reader, Type objectType, bool existingHasValue, BsonObjectId existingValue, JsonSerializer serializer)
+        public override BsonObjectId ReadJson(JsonReader reader, Type objectType, BsonObjectId existingValue, bool hasExistingValue, JsonSerializer serializer)
         {
             if (reader.TokenType != JsonToken.Bytes)
             {
