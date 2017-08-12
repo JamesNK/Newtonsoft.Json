@@ -37,7 +37,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="DataTable"/> to and from JSON.
     /// </summary>
-    public class DataTableConverter : JsonConverter<DataTable>
+    public class DataTableConverter : JsonConverter
     {
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, DataTable value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             if (value == null)
             {
@@ -53,11 +53,12 @@ namespace Newtonsoft.Json.Converters
                 return;
             }
 
+            DataTable table = (DataTable)value;
             DefaultContractResolver resolver = serializer.ContractResolver as DefaultContractResolver;
 
             writer.WriteStartArray();
 
-            foreach (DataRow row in value.Rows)
+            foreach (DataRow row in table.Rows)
             {
                 writer.WriteStartObject();
                 foreach (DataColumn column in row.Table.Columns)
@@ -83,20 +84,19 @@ namespace Newtonsoft.Json.Converters
         /// </summary>
         /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
         /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing value of object being read. If there is no existing value then <c>null</c> will be used.</param>
-        /// <param name="hasExistingValue">The existing value has a value.</param>
+        /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override DataTable ReadJson(JsonReader reader, Type objectType, DataTable existingValue, bool hasExistingValue, JsonSerializer serializer)
+        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
             {
                 return null;
             }
 
-            DataTable dt = existingValue;
+            DataTable dt = existingValue as DataTable;
 
-            if (!hasExistingValue)
+            if (dt == null)
             {
                 // handle typed datasets
                 dt = (objectType == typeof(DataTable))
@@ -236,6 +236,18 @@ namespace Newtonsoft.Json.Converters
                 default:
                     throw JsonSerializationException.Create(reader, "Unexpected JSON token when reading DataTable: {0}".FormatWith(CultureInfo.InvariantCulture, tokenType));
             }
+        }
+
+        /// <summary>
+        /// Determines whether this instance can convert the specified value type.
+        /// </summary>
+        /// <param name="valueType">Type of the value.</param>
+        /// <returns>
+        /// 	<c>true</c> if this instance can convert the specified value type; otherwise, <c>false</c>.
+        /// </returns>
+        public override bool CanConvert(Type valueType)
+        {
+            return typeof(DataTable).IsAssignableFrom(valueType);
         }
     }
 }

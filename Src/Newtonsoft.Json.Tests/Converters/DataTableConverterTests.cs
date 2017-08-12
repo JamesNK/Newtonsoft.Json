@@ -46,6 +46,18 @@ namespace Newtonsoft.Json.Tests.Converters
     public class DataTableConverterTests : TestFixtureBase
     {
         [Test]
+        public void WriteJsonNull()
+        {
+            StringWriter sw = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(sw);
+
+            DataTableConverter converter = new DataTableConverter();
+            converter.WriteJson(jsonWriter, null, null);
+
+            StringAssert.AreEqual(@"null", sw.ToString());
+        }
+
+        [Test]
         public void Deserialize()
         {
             string json = @"[

@@ -1114,6 +1114,12 @@ namespace Newtonsoft.Json.Converters
         /// <param name="value">The value.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+
             IXmlNode node = WrapXml(value);
 
             XmlNamespaceManager manager = new XmlNamespaceManager(new NameTable());

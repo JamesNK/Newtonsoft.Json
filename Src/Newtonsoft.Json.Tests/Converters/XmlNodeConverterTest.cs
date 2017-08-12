@@ -151,6 +151,18 @@ namespace Newtonsoft.Json.Tests.Converters
             return sw.ToString();
         }
 
+        [Test]
+        public void WriteJsonNull()
+        {
+            StringWriter sw = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(sw);
+
+            XmlNodeConverter converter = new XmlNodeConverter();
+            converter.WriteJson(jsonWriter, null, null);
+
+            StringAssert.AreEqual(@"null", sw.ToString());
+        }
+
 #if !NET20
         [Test]
         public void SerializeDollarProperty()
