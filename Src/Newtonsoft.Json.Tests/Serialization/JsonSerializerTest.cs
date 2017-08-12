@@ -4086,56 +4086,13 @@ Path '', line 1, position 1.");
             Assert.AreEqual(null, newC1.C2.C1.C2);
         }
 
-        public class CircularConstructor1
-        {
-            public CircularConstructor2 C2 { get; internal set; }
-            public string StringProperty { get; set; }
-
-            public CircularConstructor1(CircularConstructor2 c2)
-            {
-                C2 = c2;
-            }
-        }
-
-        public class CircularConstructor2
-        {
-            public CircularConstructor1 C1 { get; internal set; }
-            public int IntProperty { get; set; }
-
-            public CircularConstructor2(CircularConstructor1 c1)
-            {
-                C1 = c1;
-            }
-        }
-
-        public class TestClass
-        {
-            public string Key { get; set; }
-            public object Value { get; set; }
-        }
-
         [Test]
         public void DeserializeToObjectProperty()
         {
             var json = "{ Key: 'abc', Value: 123 }";
-            var item = JsonConvert.DeserializeObject<TestClass>(json);
+            var item = JsonConvert.DeserializeObject<KeyValueTestClass>(json);
 
             Assert.AreEqual(123L, item.Value);
-        }
-
-        public abstract class Animal
-        {
-            public abstract string Name { get; }
-        }
-
-        public class Human : Animal
-        {
-            public override string Name
-            {
-                get { return typeof(Human).Name; }
-            }
-
-            public string Ethnicity { get; set; }
         }
 
 #if !(NET20 || NET35)
@@ -4530,7 +4487,7 @@ Path '', line 1, position 1.");
         [Test]
         public void SerializeClassWithInheritedProtectedMember()
         {
-            AA myA = new AA(2);
+            AATestClass myA = new AATestClass(2);
             string json = JsonConvert.SerializeObject(myA, Formatting.Indented);
             StringAssert.AreEqual(@"{
   ""AA_field1"": 2,
@@ -4540,7 +4497,7 @@ Path '', line 1, position 1.");
   ""AA_property4"": 2
 }", json);
 
-            BB myB = new BB(3, 4);
+            BBTestClass myB = new BBTestClass(3, 4);
             json = JsonConvert.SerializeObject(myB, Formatting.Indented);
             StringAssert.AreEqual(@"{
   ""BB_field1"": 4,
@@ -4563,7 +4520,7 @@ Path '', line 1, position 1.");
         [Test]
         public void DeserializeClassWithInheritedProtectedMember()
         {
-            AA myA = JsonConvert.DeserializeObject<AA>(
+            AATestClass myA = JsonConvert.DeserializeObject<AATestClass>(
                 @"{
   ""AA_field1"": 2,
   ""AA_field2"": 2,
@@ -4575,16 +4532,16 @@ Path '', line 1, position 1.");
   ""AA_property6"": 2
 }");
 
-            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetField("AA_field1", BindingFlags.Instance | BindingFlags.NonPublic), myA));
-            Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetField("AA_field2", BindingFlags.Instance | BindingFlags.NonPublic), myA));
-            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property1", BindingFlags.Instance | BindingFlags.NonPublic), myA));
-            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property2", BindingFlags.Instance | BindingFlags.NonPublic), myA));
-            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property3", BindingFlags.Instance | BindingFlags.NonPublic), myA));
-            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property4", BindingFlags.Instance | BindingFlags.NonPublic), myA));
-            Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property5", BindingFlags.Instance | BindingFlags.NonPublic), myA));
-            Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property6", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetField("AA_field1", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+            Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetField("AA_field2", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetProperty("AA_property1", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetProperty("AA_property2", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetProperty("AA_property3", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetProperty("AA_property4", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+            Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetProperty("AA_property5", BindingFlags.Instance | BindingFlags.NonPublic), myA));
+            Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetProperty("AA_property6", BindingFlags.Instance | BindingFlags.NonPublic), myA));
 
-            BB myB = JsonConvert.DeserializeObject<BB>(
+            BBTestClass myB = JsonConvert.DeserializeObject<BBTestClass>(
                 @"{
   ""BB_field1"": 4,
   ""BB_field2"": 4,
@@ -4606,113 +4563,27 @@ Path '', line 1, position 1.");
   ""BB_property8"": 3
 }");
 
-            Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(AA).GetField("AA_field1", BindingFlags.Instance | BindingFlags.NonPublic), myB));
-            Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetField("AA_field2", BindingFlags.Instance | BindingFlags.NonPublic), myB));
-            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property1", BindingFlags.Instance | BindingFlags.NonPublic), myB));
-            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property2", BindingFlags.Instance | BindingFlags.NonPublic), myB));
-            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property3", BindingFlags.Instance | BindingFlags.NonPublic), myB));
-            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property4", BindingFlags.Instance | BindingFlags.NonPublic), myB));
-            Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property5", BindingFlags.Instance | BindingFlags.NonPublic), myB));
-            Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AA).GetProperty("AA_property6", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+            Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetField("AA_field1", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+            Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetField("AA_field2", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetProperty("AA_property1", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetProperty("AA_property2", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetProperty("AA_property3", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+            Assert.AreEqual(2, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetProperty("AA_property4", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+            Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetProperty("AA_property5", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+            Assert.AreEqual(0, ReflectionUtils.GetMemberValue(typeof(AATestClass).GetProperty("AA_property6", BindingFlags.Instance | BindingFlags.NonPublic), myB));
 
             Assert.AreEqual(4, myB.BB_field1);
             Assert.AreEqual(4, myB.BB_field2);
             Assert.AreEqual(3, myB.BB_property1);
             Assert.AreEqual(3, myB.BB_property2);
-            Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property3", BindingFlags.Instance | BindingFlags.Public), myB));
-            Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property4", BindingFlags.Instance | BindingFlags.NonPublic), myB));
+            Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BBTestClass).GetProperty("BB_property3", BindingFlags.Instance | BindingFlags.Public), myB));
+            Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BBTestClass).GetProperty("BB_property4", BindingFlags.Instance | BindingFlags.NonPublic), myB));
             Assert.AreEqual(0, myB.BB_property5);
-            Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property6", BindingFlags.Instance | BindingFlags.Public), myB));
-            Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property7", BindingFlags.Instance | BindingFlags.Public), myB));
-            Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BB).GetProperty("BB_property8", BindingFlags.Instance | BindingFlags.Public), myB));
+            Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BBTestClass).GetProperty("BB_property6", BindingFlags.Instance | BindingFlags.Public), myB));
+            Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BBTestClass).GetProperty("BB_property7", BindingFlags.Instance | BindingFlags.Public), myB));
+            Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BBTestClass).GetProperty("BB_property8", BindingFlags.Instance | BindingFlags.Public), myB));
         }
 #endif
-
-        public class AA
-        {
-            [JsonProperty]
-            protected int AA_field1;
-
-            protected int AA_field2;
-
-            [JsonProperty]
-            protected int AA_property1 { get; set; }
-
-            [JsonProperty]
-            protected int AA_property2 { get; private set; }
-
-            [JsonProperty]
-            protected int AA_property3 { private get; set; }
-
-            [JsonProperty]
-            private int AA_property4 { get; set; }
-
-            protected int AA_property5 { get; private set; }
-            protected int AA_property6 { private get; set; }
-
-            public AA()
-            {
-            }
-
-            public AA(int f)
-            {
-                AA_field1 = f;
-                AA_field2 = f;
-                AA_property1 = f;
-                AA_property2 = f;
-                AA_property3 = f;
-                AA_property4 = f;
-                AA_property5 = f;
-                AA_property6 = f;
-            }
-        }
-
-        public class BB : AA
-        {
-            [JsonProperty]
-            public int BB_field1;
-
-            public int BB_field2;
-
-            [JsonProperty]
-            public int BB_property1 { get; set; }
-
-            [JsonProperty]
-            public int BB_property2 { get; private set; }
-
-            [JsonProperty]
-            public int BB_property3 { private get; set; }
-
-            [JsonProperty]
-            private int BB_property4 { get; set; }
-
-            public int BB_property5 { get; private set; }
-            public int BB_property6 { private get; set; }
-
-            [JsonProperty]
-            public int BB_property7 { protected get; set; }
-
-            public int BB_property8 { protected get; set; }
-
-            public BB()
-            {
-            }
-
-            public BB(int f, int g)
-                : base(f)
-            {
-                BB_field1 = g;
-                BB_field2 = g;
-                BB_property1 = g;
-                BB_property2 = g;
-                BB_property3 = g;
-                BB_property4 = g;
-                BB_property5 = g;
-                BB_property6 = g;
-                BB_property7 = g;
-                BB_property8 = g;
-            }
-        }
 
 #if !NET20
         public class XNodeTestObject
@@ -4795,78 +4666,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual("{\"position\":new Pos(100,200),\"center\":new PosD(251.6,361.3)}", json);
         }
 
-        public class ClientMap
-        {
-            public Pos position { get; set; }
-            public PosDouble center { get; set; }
-        }
-
-        public class Pos
-        {
-            public int X { get; set; }
-            public int Y { get; set; }
-        }
-
-        public class PosDouble
-        {
-            public double X { get; set; }
-            public double Y { get; set; }
-        }
-
-        public class PosConverter : JsonConverter
-        {
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                Pos p = (Pos)value;
-
-                if (p != null)
-                {
-                    writer.WriteRawValue(String.Format("new Pos({0},{1})", p.X, p.Y));
-                }
-                else
-                {
-                    writer.WriteNull();
-                }
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override bool CanConvert(Type objectType)
-            {
-                return objectType == typeof(Pos);
-            }
-        }
-
-        public class PosDoubleConverter : JsonConverter
-        {
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                PosDouble p = (PosDouble)value;
-
-                if (p != null)
-                {
-                    writer.WriteRawValue(String.Format(CultureInfo.InvariantCulture, "new PosD({0},{1})", p.X, p.Y));
-                }
-                else
-                {
-                    writer.WriteNull();
-                }
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override bool CanConvert(Type objectType)
-            {
-                return objectType == typeof(PosDouble);
-            }
-        }
-
         [Test]
         public void SerializeRefAdditionalContent()
         {
@@ -4931,21 +4730,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual("blah!", (string)((JObject)result["Father"])["blah"]);
         }
 
-        public class ConstructorCompexIgnoredProperty
-        {
-            [JsonIgnore]
-            public Product Ignored { get; set; }
-
-            public string First { get; set; }
-            public int Second { get; set; }
-
-            public ConstructorCompexIgnoredProperty(string first, int second)
-            {
-                First = first;
-                Second = second;
-            }
-        }
-
         [Test]
         public void DeserializeIgnoredPropertyInConstructor()
         {
@@ -4970,21 +4754,6 @@ Path '', line 1, position 1.");
 
             Assert.AreEqual(typeof(decimal), dic["value"].GetType());
             Assert.AreEqual(9.9m, dic["value"]);
-        }
-
-        public class DictionaryKey
-        {
-            public string Value { get; set; }
-
-            public override string ToString()
-            {
-                return Value;
-            }
-
-            public static implicit operator DictionaryKey(string value)
-            {
-                return new DictionaryKey() { Value = value };
-            }
         }
 
         [Test]
@@ -5061,16 +4830,6 @@ Path '', line 1, position 1.");
         }
 #endif
 
-        private class MyClass
-        {
-            public byte[] Prop1 { get; set; }
-
-            public MyClass()
-            {
-                Prop1 = new byte[0];
-            }
-        }
-
         [Test]
         public void DeserializeByteArray()
         {
@@ -5082,7 +4841,7 @@ Path '', line 1, position 1.");
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
-            MyClass[] z = (MyClass[])serializer1.Deserialize(reader, typeof(MyClass[]));
+            ByteArrayTestClass[] z = (ByteArrayTestClass[])serializer1.Deserialize(reader, typeof(ByteArrayTestClass[]));
             Assert.AreEqual(2, z.Length);
             Assert.AreEqual(0, z[0].Prop1.Length);
             Assert.AreEqual(0, z[1].Prop1.Length);
@@ -5128,15 +4887,6 @@ Path '', line 1, position 1.");
         }
 #endif
 
-        [JsonObject(MemberSerialization.OptIn)]
-        public struct StructWithAttribute
-        {
-            public string MyString { get; set; }
-
-            [JsonProperty]
-            public int MyInt { get; set; }
-        }
-
         [Test]
         public void SerializeStructWithJsonObjectAttribute()
         {
@@ -5154,11 +4904,6 @@ Path '', line 1, position 1.");
             StructWithAttribute newStruct = JsonConvert.DeserializeObject<StructWithAttribute>(json);
 
             Assert.AreEqual(int.MaxValue, newStruct.MyInt);
-        }
-
-        public class TimeZoneOffsetObject
-        {
-            public DateTimeOffset Offset { get; set; }
         }
 
 #if !NET20
@@ -5219,20 +4964,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual(new DateTimeOffset(new DateTime(2000, 1, 1), TimeSpan.FromHours(6)), d.DateTimeOffsetField);
         }
 #endif
-
-        public abstract class LogEvent
-        {
-            [JsonProperty("event")]
-            public abstract string EventName { get; }
-        }
-
-        public class DerivedEvent : LogEvent
-        {
-            public override string EventName
-            {
-                get { return "derived"; }
-            }
-        }
 
         [Test]
         public void OverridenPropertyMembers()
@@ -5332,28 +5063,11 @@ Path '', line 1, position 1.");
             Assert.AreEqual(123456789876543.21m, d["Value"]);
         }
 
-        public struct Vector
-        {
-            public float X;
-            public float Y;
-            public float Z;
-
-            public override string ToString()
-            {
-                return string.Format("({0},{1},{2})", X, Y, Z);
-            }
-        }
-
-        public class VectorParent
-        {
-            public Vector Position;
-        }
-
         [Test]
         public void DeserializeStructProperty()
         {
             VectorParent obj = new VectorParent();
-            obj.Position = new Vector { X = 1, Y = 2, Z = 3 };
+            obj.Position = new TestObjects.Vector { X = 1, Y = 2, Z = 3 };
 
             string str = JsonConvert.SerializeObject(obj);
 
@@ -5364,43 +5078,10 @@ Path '', line 1, position 1.");
             Assert.AreEqual(3, obj.Position.Z);
         }
 
-        [JsonObject(MemberSerialization.OptIn)]
-        public class Derived : Base
-        {
-            [JsonProperty]
-            public string IDoWork { get; private set; }
-
-            private Derived()
-            {
-            }
-
-            internal Derived(string dontWork, string doWork)
-                : base(dontWork)
-            {
-                IDoWork = doWork;
-            }
-        }
-
-        [JsonObject(MemberSerialization.OptIn)]
-        public class Base
-        {
-            [JsonProperty]
-            public string IDontWork { get; private set; }
-
-            protected Base()
-            {
-            }
-
-            internal Base(string dontWork)
-            {
-                IDontWork = dontWork;
-            }
-        }
-
         [Test]
         public void PrivateSetterOnBaseClassProperty()
         {
-            var derived = new Derived("meh", "woo");
+            var derived = new PrivateSetterDerived("meh", "woo");
 
             var settings = new JsonSerializerSettings
             {
@@ -5410,9 +5091,9 @@ Path '', line 1, position 1.");
 
             string json = JsonConvert.SerializeObject(derived, Formatting.Indented, settings);
 
-            var meh = JsonConvert.DeserializeObject<Base>(json, settings);
+            var meh = JsonConvert.DeserializeObject<PrivateSetterBase>(json, settings);
 
-            Assert.AreEqual(((Derived)meh).IDoWork, "woo");
+            Assert.AreEqual(((PrivateSetterDerived)meh).IDoWork, "woo");
             Assert.AreEqual(meh.IDontWork, "meh");
         }
 
@@ -5500,27 +5181,21 @@ Path '', line 1, position 1.");
         }
 #endif
 
-        public class Response
-        {
-            public string Name { get; set; }
-            public JToken Data { get; set; }
-        }
-
         [Test]
         public void DeserializeJToken()
         {
-            Response response = new Response
+            JTokenTestClass c = new JTokenTestClass
             {
                 Name = "Success",
                 Data = new JObject(new JProperty("First", "Value1"), new JProperty("Second", "Value2"))
             };
 
-            string json = JsonConvert.SerializeObject(response, Formatting.Indented);
+            string json = JsonConvert.SerializeObject(c, Formatting.Indented);
 
-            Response deserializedResponse = JsonConvert.DeserializeObject<Response>(json);
+            JTokenTestClass deserializedResponse = JsonConvert.DeserializeObject<JTokenTestClass>(json);
 
             Assert.AreEqual("Success", deserializedResponse.Name);
-            Assert.IsTrue(deserializedResponse.Data.DeepEquals(response.Data));
+            Assert.IsTrue(deserializedResponse.Data.DeepEquals(c.Data));
         }
 
         [Test]
@@ -5634,32 +5309,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual(@"{}", json);
         }
 
-        public class MultiIndexSuper : MultiIndexBase
-        {
-        }
-
-        public abstract class MultiIndexBase
-        {
-            protected internal object this[string propertyName]
-            {
-                get { return null; }
-                set { }
-            }
-
-            protected internal object this[object property]
-            {
-                get { return null; }
-                set { }
-            }
-        }
-
-        public class CommentTestClass
-        {
-            public bool Indexed { get; set; }
-            public int StartYear { get; set; }
-            public IList<decimal> Values { get; set; }
-        }
-
         [Test]
         public void CommentTestClassTest()
         {
@@ -5681,29 +5330,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual(63, commentTestClass.Values.Count);
         }
 
-        private class DTOWithParameterisedConstructor
-        {
-            public DTOWithParameterisedConstructor(string A)
-            {
-                this.A = A;
-                B = 2;
-            }
-
-            public string A { get; set; }
-            public int? B { get; set; }
-        }
-
-        private class DTOWithoutParameterisedConstructor
-        {
-            public DTOWithoutParameterisedConstructor()
-            {
-                B = 2;
-            }
-
-            public string A { get; set; }
-            public int? B { get; set; }
-        }
-
         [Test]
         public void PopulationBehaviourForOmittedPropertiesIsTheSameForParameterisedConstructorAsForDefaultConstructor()
         {
@@ -5712,18 +5338,6 @@ Path '', line 1, position 1.");
             var withoutParameterisedConstructor = JsonConvert.DeserializeObject<DTOWithoutParameterisedConstructor>(json);
             var withParameterisedConstructor = JsonConvert.DeserializeObject<DTOWithParameterisedConstructor>(json);
             Assert.AreEqual(withoutParameterisedConstructor.B, withParameterisedConstructor.B);
-        }
-
-        public class EnumerableArrayPropertyClass
-        {
-            public IEnumerable<int> Numbers
-            {
-                get
-                {
-                    return new[] { 1, 2, 3 }; //fails
-                    //return new List<int>(new[] { 1, 2, 3 }); //works
-                }
-            }
         }
 
         [Test]
@@ -5792,32 +5406,10 @@ Path '', line 1, position 1.");
         }
 #endif
 
-        [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-        public class BaseObject
-        {
-            [JsonProperty(PropertyName = "virtualMember")]
-            public virtual string VirtualMember { get; set; }
-
-            [JsonProperty(PropertyName = "nonVirtualMember")]
-            public string NonVirtualMember { get; set; }
-        }
-
-        public class ChildObject : BaseObject
-        {
-            public override string VirtualMember { get; set; }
-            public string NewMember { get; set; }
-        }
-
-        public class ChildWithDifferentOverrideObject : BaseObject
-        {
-            [JsonProperty(PropertyName = "differentVirtualMember")]
-            public override string VirtualMember { get; set; }
-        }
-
         [Test]
         public void ChildObjectTest()
         {
-            ChildObject cc = new ChildObject
+            VirtualOverrideNewChildObject cc = new VirtualOverrideNewChildObject
             {
                 VirtualMember = "VirtualMember!",
                 NonVirtualMember = "NonVirtualMember!"
@@ -5830,7 +5422,7 @@ Path '', line 1, position 1.");
         [Test]
         public void ChildWithDifferentOverrideObjectTest()
         {
-            ChildWithDifferentOverrideObject cc = new ChildWithDifferentOverrideObject
+            VirtualOverrideNewChildWithDifferentOverrideObject cc = new VirtualOverrideNewChildWithDifferentOverrideObject
             {
                 VirtualMember = "VirtualMember!",
                 NonVirtualMember = "NonVirtualMember!"
@@ -5838,23 +5430,6 @@ Path '', line 1, position 1.");
 
             string result = JsonConvert.SerializeObject(cc);
             Assert.AreEqual(@"{""differentVirtualMember"":""VirtualMember!"",""nonVirtualMember"":""NonVirtualMember!""}", result);
-        }
-
-        [JsonObject(MemberSerialization = MemberSerialization.OptIn)]
-        public interface IInterfaceObject
-        {
-            [JsonProperty(PropertyName = "virtualMember")]
-            [JsonConverter(typeof(IsoDateTimeConverter))]
-            DateTime InterfaceMember { get; set; }
-        }
-
-        public class ImplementInterfaceObject : IInterfaceObject
-        {
-            public DateTime InterfaceMember { get; set; }
-            public string NewMember { get; set; }
-
-            [JsonProperty(PropertyName = "newMemberWithProperty")]
-            public string NewMemberWithProperty { get; set; }
         }
 
         [Test]
@@ -5872,18 +5447,6 @@ Path '', line 1, position 1.");
   ""virtualMember"": ""2010-12-31T00:00:00Z"",
   ""newMemberWithProperty"": null
 }", result);
-        }
-
-        public class NonDefaultConstructorWithReadOnlyCollectionProperty
-        {
-            public string Title { get; set; }
-            public IList<string> Categories { get; private set; }
-
-            public NonDefaultConstructorWithReadOnlyCollectionProperty(string title)
-            {
-                Title = title;
-                Categories = new List<string>();
-            }
         }
 
         [Test]
@@ -5909,18 +5472,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual("two", c2.Categories[1]);
         }
 
-        public class NonDefaultConstructorWithReadOnlyDictionaryProperty
-        {
-            public string Title { get; set; }
-            public IDictionary<string, int> Categories { get; private set; }
-
-            public NonDefaultConstructorWithReadOnlyDictionaryProperty(string title)
-            {
-                Title = title;
-                Categories = new Dictionary<string, int>();
-            }
-        }
-
         [Test]
         public void NonDefaultConstructorWithReadOnlyDictionaryPropertyTest()
         {
@@ -5942,72 +5493,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual(c1.Categories.Count, c2.Categories.Count);
             Assert.AreEqual(1, c2.Categories["one"]);
             Assert.AreEqual(2, c2.Categories["two"]);
-        }
-
-        [JsonObject(MemberSerialization.OptIn)]
-        public class ClassAttributeBase
-        {
-            [JsonProperty]
-            public string BaseClassValue { get; set; }
-        }
-
-        public class ClassAttributeDerived : ClassAttributeBase
-        {
-            [JsonProperty]
-            public string DerivedClassValue { get; set; }
-
-            public string NonSerialized { get; set; }
-        }
-
-        public class CollectionClassAttributeDerived : ClassAttributeBase, ICollection<object>
-        {
-            [JsonProperty]
-            public string CollectionDerivedClassValue { get; set; }
-
-            public void Add(object item)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void Clear()
-            {
-                throw new NotImplementedException();
-            }
-
-            public bool Contains(object item)
-            {
-                throw new NotImplementedException();
-            }
-
-            public void CopyTo(object[] array, int arrayIndex)
-            {
-                throw new NotImplementedException();
-            }
-
-            public int Count
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public bool IsReadOnly
-            {
-                get { throw new NotImplementedException(); }
-            }
-
-            public bool Remove(object item)
-            {
-                throw new NotImplementedException();
-            }
-
-            public IEnumerator<object> GetEnumerator()
-            {
-                throw new NotImplementedException();
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                throw new NotImplementedException();
-            }
         }
 
         [Test]
@@ -6037,35 +5522,6 @@ Path '', line 1, position 1.");
 }", json);
         }
 
-        public class PrivateMembersClassWithAttributes
-        {
-            public PrivateMembersClassWithAttributes(string privateString, string internalString, string readonlyString)
-            {
-                _privateString = privateString;
-                _readonlyString = readonlyString;
-                _internalString = internalString;
-            }
-
-            public PrivateMembersClassWithAttributes()
-            {
-                _readonlyString = "default!";
-            }
-
-            [JsonProperty]
-            private string _privateString;
-
-            [JsonProperty]
-            private readonly string _readonlyString;
-
-            [JsonProperty]
-            internal string _internalString;
-
-            public string UseValue()
-            {
-                return _readonlyString;
-            }
-        }
-
         [Test]
         public void PrivateMembersClassWithAttributesTest()
         {
@@ -6080,12 +5536,6 @@ Path '', line 1, position 1.");
 
             PrivateMembersClassWithAttributes c2 = JsonConvert.DeserializeObject<PrivateMembersClassWithAttributes>(json);
             Assert.AreEqual("readonlyString!", c2.UseValue());
-        }
-
-        public partial class BusRun
-        {
-            public IEnumerable<Nullable<DateTime>> Departures { get; set; }
-            public Boolean WheelchairAccessible { get; set; }
         }
 
         [Test]
@@ -6151,16 +5601,6 @@ Path '', line 1, position 1.");
 }", json);
         }
 #endif
-
-        public class ClassWithException
-        {
-            public IList<Exception> Exceptions { get; set; }
-
-            public ClassWithException()
-            {
-                Exceptions = new List<Exception>();
-            }
-        }
 
 #if !(PORTABLE || DNXCORE50 || PORTABLE40)
         [Test]
@@ -6307,14 +5747,6 @@ Path '', line 1, position 1.");
             }
         }
 
-        public class ReflectionContractResolver : DefaultContractResolver
-        {
-            protected override IValueProvider CreateMemberValueProvider(MemberInfo member)
-            {
-                return new ReflectionValueProvider(member);
-            }
-        }
-
         [Test]
         public void SerializeStaticDefault()
         {
@@ -6454,70 +5886,6 @@ Path '', line 1, position 1.");
 
             Assert.AreEqual(d1.Count, d2.Count);
             Assert.AreEqual(d1[0], d2[0]);
-        }
-
-        internal class HasByteArray
-        {
-            public byte[] EncryptedPassword { get; set; }
-        }
-
-        [Test]
-        public void DeserializeByteArrayWithTypeName()
-        {
-            string json = @"{
-  ""$type"": ""Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+HasByteArray, Newtonsoft.Json.Tests"",
-  ""EncryptedPassword"": {
-    ""$type"": ""System.Byte[], mscorlib"",
-    ""$value"": ""cGFzc3dvcmQ=""
-  }
-}";
-            HasByteArray value = JsonConvert.DeserializeObject<HasByteArray>(json, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Objects
-            });
-
-            CollectionAssert.AreEquivalent(Convert.FromBase64String("cGFzc3dvcmQ="), value.EncryptedPassword);
-        }
-
-        [Test]
-        public void DeserializeByteArrayWithTypeName_BadAdditionalContent()
-        {
-            string json = @"{
-  ""$type"": ""Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+HasByteArray, Newtonsoft.Json.Tests"",
-  ""EncryptedPassword"": {
-    ""$type"": ""System.Byte[], mscorlib"",
-    ""$value"": ""cGFzc3dvcmQ="",
-    ""$value"": ""cGFzc3dvcmQ=""
-  }
-}";
-
-            ExceptionAssert.Throws<JsonReaderException>(() =>
-            {
-                JsonConvert.DeserializeObject<HasByteArray>(json, new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.Objects
-                });
-            }, "Error reading bytes. Unexpected token: PropertyName. Path 'EncryptedPassword.$value', line 6, position 13.");
-        }
-
-        [Test]
-        public void DeserializeByteArrayWithTypeName_ExtraProperty()
-        {
-            string json = @"{
-  ""$type"": ""Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+HasByteArray, Newtonsoft.Json.Tests"",
-  ""EncryptedPassword"": {
-    ""$type"": ""System.Byte[], mscorlib"",
-    ""$value"": ""cGFzc3dvcmQ=""
-  },
-  ""Pie"": null
-}";
-            HasByteArray value = JsonConvert.DeserializeObject<HasByteArray>(json, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Objects
-            });
-
-            Assert.IsNotNull(value.EncryptedPassword);
-            CollectionAssert.AreEquivalent(Convert.FromBase64String("cGFzc3dvcmQ="), value.EncryptedPassword);
         }
 
         [Test]
@@ -6669,22 +6037,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual(2, writer.NullableGuidCount);
         }
 
-        private class NullableGuidCountingJsonTextWriter : JsonTextWriter
-        {
-            public NullableGuidCountingJsonTextWriter(TextWriter textWriter)
-                : base(textWriter)
-            {
-            }
-
-            public int NullableGuidCount { get; private set; }
-
-            public override void WriteValue(Guid? value)
-            {
-                base.WriteValue(value);
-                ++NullableGuidCount;
-            }
-        }
-
         [Test]
         public void DeserializeGuid()
         {
@@ -6805,11 +6157,6 @@ Path '', line 1, position 1.");
 
             v = JsonConvert.DeserializeObject<byte[]>("");
             Assert.IsNull(v);
-        }
-
-        public class Sdfsdf
-        {
-            public double Id { get; set; }
         }
 
         [Test]
@@ -7026,11 +6373,6 @@ Path '', line 1, position 1.");
         }
 #endif
 
-        public class MultipleItemsClass
-        {
-            public string Name { get; set; }
-        }
-
         [Test]
         public void MultipleItems()
         {
@@ -7055,11 +6397,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual(2, values.Count);
             Assert.AreEqual("bar", values[0].Name);
             Assert.AreEqual("baz", values[1].Name);
-        }
-
-        private class FooBar
-        {
-            public DateTimeOffset Foo { get; set; }
         }
 
 #pragma warning disable 618
@@ -7595,7 +6932,7 @@ lines.*/
                 reader.Read();
                 reader.Read();
 
-                serializer.Deserialize(reader, typeof(MyType));
+                serializer.Deserialize(reader, typeof(ItemConverterTestClass));
             }, "Additional text found in JSON string after finishing deserializing object. Path '[1]', line 1, position 5.");
         }
 
@@ -7608,7 +6945,7 @@ lines.*/
 
             var reader = new JsonTextReader(new StringReader(json));
 
-            MyType mt = (MyType)serializer.Deserialize(reader, typeof(MyType));
+            ItemConverterTestClass mt = (ItemConverterTestClass)serializer.Deserialize(reader, typeof(ItemConverterTestClass));
             Assert.AreEqual(1, mt.MyProperty.Count);
         }
 
@@ -7623,7 +6960,7 @@ This is just junk, though.";
 
             var reader = new JsonTextReader(new StringReader(json));
 
-            MyType mt = (MyType)serializer.Deserialize(reader, typeof(MyType));
+            ItemConverterTestClass mt = (ItemConverterTestClass)serializer.Deserialize(reader, typeof(ItemConverterTestClass));
             Assert.AreEqual(1, mt.MyProperty.Count);
         }
 
@@ -7640,7 +6977,7 @@ This is just junk, though.";
             reader.Read();
             reader.Read();
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => serializer.Deserialize(reader, typeof(MyType)),
+            ExceptionAssert.Throws<JsonSerializationException>(() => serializer.Deserialize(reader, typeof(ItemConverterTestClass)),
                 "Additional text found in JSON string after finishing deserializing object. Path '[1]', line 3, position 2.");
         }
 
@@ -7663,34 +7000,10 @@ This is just junk, though.";
             Assert.AreEqual(new Uri("/path?query#hash", UriKind.RelativeOrAbsolute), uri);
         }
 
-        public class MyConverter : JsonConverter
-        {
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                writer.WriteValue("X");
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                return "X";
-            }
-
-            public override bool CanConvert(Type objectType)
-            {
-                return true;
-            }
-        }
-
-        public class MyType
-        {
-            [JsonProperty(ItemConverterType = typeof(MyConverter))]
-            public Dictionary<string, object> MyProperty { get; set; }
-        }
-
         [Test]
         public void DeserializeDictionaryItemConverter()
         {
-            var actual = JsonConvert.DeserializeObject<MyType>(@"{ ""MyProperty"":{""Key"":""Y""}}");
+            var actual = JsonConvert.DeserializeObject<ItemConverterTestClass>(@"{ ""MyProperty"":{""Key"":""Y""}}");
             Assert.AreEqual("X", actual.MyProperty["Key"]);
         }
 
@@ -7719,38 +7032,6 @@ This is just junk, though.";
   ""key"": 123,
   ""value"": ""test value""
 }", json);
-        }
-
-        [JsonObject(MemberSerialization.Fields)]
-        public class MyTuple<T1>
-        {
-            private readonly T1 m_Item1;
-
-            public MyTuple(T1 item1)
-            {
-                m_Item1 = item1;
-            }
-
-            public T1 Item1
-            {
-                get { return m_Item1; }
-            }
-        }
-
-        [JsonObject(MemberSerialization.Fields)]
-        public class MyTuplePartial<T1>
-        {
-            private readonly T1 m_Item1;
-
-            public MyTuplePartial(T1 item1)
-            {
-                m_Item1 = item1;
-            }
-
-            public T1 Item1
-            {
-                get { return m_Item1; }
-            }
         }
 
         [Test]
@@ -7836,7 +7117,7 @@ This is just junk, though.";
 #else
             ExceptionAssert.Throws<JsonSerializationException>(
                 doStuff,
-                "Unable to find a constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+MyTuple`1[System.Int32]. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Path 'm_Item1', line 1, position 11.");
+                "Unable to find a constructor to use for type Newtonsoft.Json.Tests.TestObjects.MyTuple`1[System.Int32]. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Path 'm_Item1', line 1, position 11.");
 #endif
         }
 
@@ -7852,7 +7133,7 @@ This is just junk, though.";
                 var json = JsonConvert.SerializeObject(tuple);
                 Assert.AreEqual(@"{""m_Item1"":500}", json);
 
-                ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<MyTuplePartial<int>>(json), "Unable to find a constructor to use for type Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+MyTuplePartial`1[System.Int32]. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Path 'm_Item1', line 1, position 11.");
+                ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<MyTuplePartial<int>>(json), "Unable to find a constructor to use for type Newtonsoft.Json.Tests.TestObjects.MyTuplePartial`1[System.Int32]. A class should either have a default constructor, one constructor with arguments or a constructor marked with the JsonConstructor attribute. Path 'm_Item1', line 1, position 11.");
             }
             finally
             {
@@ -7905,16 +7186,6 @@ This is just junk, though.";
 
             Assert.AreEqual(TimeSpan.FromHours(9.5), dateTimeOffset.Offset);
             Assert.AreEqual("07/19/2012 14:30:00 +09:30", dateTimeOffset.ToString(CultureInfo.InvariantCulture));
-        }
-
-        public class NullableFloats
-        {
-            public object Object { get; set; }
-            public float Float { get; set; }
-            public double Double { get; set; }
-            public float? NullableFloat { get; set; }
-            public double? NullableDouble { get; set; }
-            public object ObjectNull { get; set; }
         }
 
         [Test]
@@ -8038,11 +7309,6 @@ This is just junk, though.";
             Assert.AreEqual(20, tuple2.Item2);
         }
 #endif
-
-        public class MessageWithIsoDate
-        {
-            public String IsoDate { get; set; }
-        }
 
         [Test]
         public void JsonSerializerStringEscapeHandling()
@@ -8291,22 +7557,6 @@ This is just junk, though.";
 ]", json);
         }
 #endif
-
-        public class FooConstructor
-        {
-            [JsonProperty(PropertyName = "something_else")]
-            public readonly string Bar;
-
-            public FooConstructor(string bar)
-            {
-                if (bar == null)
-                {
-                    throw new ArgumentNullException(nameof(bar));
-                }
-
-                Bar = bar;
-            }
-        }
 
         [Test]
         public void DeserializeWithConstructor()
@@ -9093,23 +8343,6 @@ This is just junk, though.";
             Assert.AreEqual("Test string", o2.TestString);
         }
 
-        public class MyObservableObject : ObservableObject
-        {
-            public new string PropertyChanged;
-
-            public string TestString { get; set; }
-        }
-
-        public class ObservableObject : INotifyPropertyChanged
-        {
-            public event PropertyChangedEventHandler PropertyChanged;
-
-            protected PropertyChangedEventHandler PropertyChangedHandler
-            {
-                get { return PropertyChanged; }
-            }
-        }
-
         [Test]
         public void ParameterizedConstructorWithBasePrivateProperties()
         {
@@ -9124,60 +8357,10 @@ This is just junk, though.";
             Assert.AreEqual("Derived", clonedObject.DerivedProperty);
         }
 
-        public class DerivedConstructorType : BaseConstructorType
-        {
-            public DerivedConstructorType(string baseProperty, string derivedProperty)
-                : base(baseProperty)
-            {
-                DerivedProperty = derivedProperty;
-            }
-
-            [JsonProperty]
-            public string DerivedProperty { get; private set; }
-        }
-
-        public class BaseConstructorType
-        {
-            [JsonProperty]
-            public string BaseProperty { get; private set; }
-
-            public BaseConstructorType(string baseProperty)
-            {
-                BaseProperty = baseProperty;
-            }
-        }
-
-        public class ErroringJsonConverter : JsonConverter
-        {
-            public ErroringJsonConverter(string s)
-            {
-            }
-
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                throw new NotImplementedException();
-            }
-
-            public override bool CanConvert(Type objectType)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        [JsonConverter(typeof(ErroringJsonConverter))]
-        public class ErroringTestClass
-        {
-        }
-
         [Test]
         public void ErrorCreatingJsonConverter()
         {
-            ExceptionAssert.Throws<JsonException>(() => JsonConvert.SerializeObject(new ErroringTestClass()), "Error creating 'Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+ErroringJsonConverter'.");
+            ExceptionAssert.Throws<JsonException>(() => JsonConvert.SerializeObject(new ErroringTestClass()), "Error creating 'Newtonsoft.Json.Tests.TestObjects.ErroringJsonConverter'.");
         }
 
         [Test]
