@@ -46,6 +46,7 @@ using Newtonsoft.Json;
 using System.IO;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Tests.TestObjects.JsonTextReaderTests;
 using Newtonsoft.Json.Utilities;
 
@@ -1756,108 +1757,6 @@ null//comment
             }
         }
     }
-
-#if !(PORTABLE)
-    public struct ConvertibleInt : IConvertible
-    {
-        private readonly int _value;
-
-        public ConvertibleInt(int value)
-        {
-            _value = value;
-        }
-
-        public TypeCode GetTypeCode()
-        {
-            return TypeCode.Int32;
-        }
-
-        public bool ToBoolean(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public byte ToByte(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public char ToChar(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public DateTime ToDateTime(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public decimal ToDecimal(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public double ToDouble(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public short ToInt16(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public int ToInt32(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public long ToInt64(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public sbyte ToSByte(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public float ToSingle(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public string ToString(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object ToType(Type conversionType, IFormatProvider provider)
-        {
-            if (conversionType == typeof(int))
-            {
-                return _value;
-            }
-
-            throw new Exception("Type not supported: " + conversionType.FullName);
-        }
-
-        public ushort ToUInt16(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public uint ToUInt32(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ulong ToUInt64(IFormatProvider provider)
-        {
-            throw new NotImplementedException();
-        }
-    }
-#endif
 
     public class UnmanagedResourceFakingJsonWriter : JsonWriter
     {

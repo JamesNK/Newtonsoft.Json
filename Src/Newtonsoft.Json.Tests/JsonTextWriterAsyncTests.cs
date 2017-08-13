@@ -42,6 +42,7 @@ using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
 #endif
+using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests
 {

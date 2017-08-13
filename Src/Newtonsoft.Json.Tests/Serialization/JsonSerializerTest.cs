@@ -650,18 +650,6 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
 #if !(DNXCORE50 || NET20)
-        [MetadataType(typeof(CustomerValidation))]
-        public partial class CustomerWithMetadataType
-        {
-            public System.Guid UpdatedBy_Id { get; set; }
-
-            public class CustomerValidation
-            {
-                [JsonIgnore]
-                public System.Guid UpdatedBy_Id { get; set; }
-            }
-        }
-
         [Test]
         public void SerializeMetadataType()
         {
@@ -676,52 +664,6 @@ namespace Newtonsoft.Json.Tests.Serialization
             CustomerWithMetadataType c2 = JsonConvert.DeserializeObject<CustomerWithMetadataType>("{'UpdatedBy_Id':'F6E0666D-13C7-4745-B486-800812C8F6DE'}");
 
             Assert.AreEqual(Guid.Empty, c2.UpdatedBy_Id);
-        }
-
-        [Serializable]
-        public partial class FaqItem
-        {
-            public FaqItem()
-            {
-                this.Sections = new HashSet<FaqSection>();
-            }
-
-            public int FaqId { get; set; }
-            public string Name { get; set; }
-            public bool IsDeleted { get; set; }
-
-            public virtual ICollection<FaqSection> Sections { get; set; }
-        }
-
-        [MetadataType(typeof(FaqItemMetadata))]
-        partial class FaqItem
-        {
-            [JsonProperty("FullSectionsProp")]
-            public ICollection<FaqSection> FullSections
-            {
-                get { return Sections; }
-            }
-        }
-
-        public class FaqItemMetadata
-        {
-            [JsonIgnore]
-            public virtual ICollection<FaqSection> Sections { get; set; }
-        }
-
-        public class FaqSection
-        {
-        }
-
-        public class FaqItemProxy : FaqItem
-        {
-            public bool IsProxy { get; set; }
-
-            public override ICollection<FaqSection> Sections
-            {
-                get { return base.Sections; }
-                set { base.Sections = value; }
-            }
         }
 
         [Test]
@@ -3156,26 +3098,6 @@ keyword such as type of business.""
         }
 
 #if !(NET20 || DNXCORE50)
-        [MetadataType(typeof(OptInClassMetadata))]
-        public class OptInClass
-        {
-            [DataContract]
-            public class OptInClassMetadata
-            {
-                [DataMember]
-                public string Name { get; set; }
-
-                [DataMember]
-                public int Age { get; set; }
-
-                public string NotIncluded { get; set; }
-            }
-
-            public string Name { get; set; }
-            public int Age { get; set; }
-            public string NotIncluded { get; set; }
-        }
-
         [Test]
         public void OptInClassMetadataSerialization()
         {
@@ -4013,13 +3935,6 @@ Path '', line 1, position 1.");
         }
 
 #if !NET20
-        public class DateTimeOffsetWrapper
-        {
-            public DateTimeOffset DateTimeOffsetValue { get; set; }
-
-            public DateTime DateTimeValue { get; set; }
-        }
-
         [Test]
         public void DeserializeDateTimeOffsetAndDateTime()
         {
@@ -4096,13 +4011,6 @@ Path '', line 1, position 1.");
         }
 
 #if !(NET20 || NET35)
-        public class DataContractJsonSerializerTestClass
-        {
-            public TimeSpan TimeSpanProperty { get; set; }
-            public Guid GuidProperty { get; set; }
-            public Animal AnimalProperty { get; set; }
-        }
-
         [Test]
         public void DataContractJsonSerializerTest()
         {
@@ -4130,127 +4038,6 @@ Path '', line 1, position 1.");
             //  }));
         }
 #endif
-
-        public class ModelStateDictionary<T> : IDictionary<string, T>
-        {
-            private readonly Dictionary<string, T> _innerDictionary = new Dictionary<string, T>(StringComparer.OrdinalIgnoreCase);
-
-            public ModelStateDictionary()
-            {
-            }
-
-            public ModelStateDictionary(ModelStateDictionary<T> dictionary)
-            {
-                if (dictionary == null)
-                {
-                    throw new ArgumentNullException(nameof(dictionary));
-                }
-
-                foreach (var entry in dictionary)
-                {
-                    _innerDictionary.Add(entry.Key, entry.Value);
-                }
-            }
-
-            public int Count
-            {
-                get { return _innerDictionary.Count; }
-            }
-
-            public bool IsReadOnly
-            {
-                get { return ((IDictionary<string, T>)_innerDictionary).IsReadOnly; }
-            }
-
-            public ICollection<string> Keys
-            {
-                get { return _innerDictionary.Keys; }
-            }
-
-            public T this[string key]
-            {
-                get
-                {
-                    T value;
-                    _innerDictionary.TryGetValue(key, out value);
-                    return value;
-                }
-                set { _innerDictionary[key] = value; }
-            }
-
-            public ICollection<T> Values
-            {
-                get { return _innerDictionary.Values; }
-            }
-
-            public void Add(KeyValuePair<string, T> item)
-            {
-                ((IDictionary<string, T>)_innerDictionary).Add(item);
-            }
-
-            public void Add(string key, T value)
-            {
-                _innerDictionary.Add(key, value);
-            }
-
-            public void Clear()
-            {
-                _innerDictionary.Clear();
-            }
-
-            public bool Contains(KeyValuePair<string, T> item)
-            {
-                return ((IDictionary<string, T>)_innerDictionary).Contains(item);
-            }
-
-            public bool ContainsKey(string key)
-            {
-                return _innerDictionary.ContainsKey(key);
-            }
-
-            public void CopyTo(KeyValuePair<string, T>[] array, int arrayIndex)
-            {
-                ((IDictionary<string, T>)_innerDictionary).CopyTo(array, arrayIndex);
-            }
-
-            public IEnumerator<KeyValuePair<string, T>> GetEnumerator()
-            {
-                return _innerDictionary.GetEnumerator();
-            }
-
-            public void Merge(ModelStateDictionary<T> dictionary)
-            {
-                if (dictionary == null)
-                {
-                    return;
-                }
-
-                foreach (var entry in dictionary)
-                {
-                    this[entry.Key] = entry.Value;
-                }
-            }
-
-            public bool Remove(KeyValuePair<string, T> item)
-            {
-                return ((IDictionary<string, T>)_innerDictionary).Remove(item);
-            }
-
-            public bool Remove(string key)
-            {
-                return _innerDictionary.Remove(key);
-            }
-
-            public bool TryGetValue(string key, out T value)
-            {
-                return _innerDictionary.TryGetValue(key, out value);
-            }
-
-            IEnumerator IEnumerable.GetEnumerator()
-            {
-                return ((IEnumerable)_innerDictionary).GetEnumerator();
-            }
-        }
 
         [Test]
         public void SerializeNonIDictionary()
@@ -4458,18 +4245,6 @@ Path '', line 1, position 1.");
         }
 #endif
 
-        public class KVPair<TKey, TValue>
-        {
-            public TKey Key { get; set; }
-            public TValue Value { get; set; }
-
-            public KVPair(TKey k, TValue v)
-            {
-                Key = k;
-                Value = v;
-            }
-        }
-
         [Test]
         public void DeserializeUsingNonDefaultConstructorWithLeftOverValues()
         {
@@ -4582,21 +4357,6 @@ Path '', line 1, position 1.");
             Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BBTestClass).GetProperty("BB_property6", BindingFlags.Instance | BindingFlags.Public), myB));
             Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BBTestClass).GetProperty("BB_property7", BindingFlags.Instance | BindingFlags.Public), myB));
             Assert.AreEqual(3, ReflectionUtils.GetMemberValue(typeof(BBTestClass).GetProperty("BB_property8", BindingFlags.Instance | BindingFlags.Public), myB));
-        }
-#endif
-
-#if !NET20
-        public class XNodeTestObject
-        {
-            public XDocument Document { get; set; }
-            public XElement Element { get; set; }
-        }
-#endif
-
-#if !(DNXCORE50)
-        public class XmlNodeTestObject
-        {
-            public XmlDocument Document { get; set; }
         }
 #endif
 
@@ -4848,11 +4608,6 @@ Path '', line 1, position 1.");
         }
 
 #if !(NET20 || DNXCORE50)
-        public class StringDictionaryTestClass
-        {
-            public StringDictionary StringDictionaryProperty { get; set; }
-        }
-
         [Test]
         public void StringDictionaryTest()
         {
@@ -5098,50 +4853,6 @@ Path '', line 1, position 1.");
         }
 
 #if !(NET20 || DNXCORE50)
-        [DataContract]
-        public struct StructISerializable : ISerializable
-        {
-            private string _name;
-
-            public StructISerializable(SerializationInfo info, StreamingContext context)
-            {
-                _name = info.GetString("Name");
-            }
-
-            [DataMember]
-            public string Name
-            {
-                get { return _name; }
-                set { _name = value; }
-            }
-
-            public void GetObjectData(SerializationInfo info, StreamingContext context)
-            {
-                info.AddValue("Name", _name);
-            }
-        }
-
-        [DataContract]
-        public class NullableStructPropertyClass
-        {
-            private StructISerializable _foo1;
-            private StructISerializable? _foo2;
-
-            [DataMember]
-            public StructISerializable Foo1
-            {
-                get { return _foo1; }
-                set { _foo1 = value; }
-            }
-
-            [DataMember]
-            public StructISerializable? Foo2
-            {
-                get { return _foo2; }
-                set { _foo2 = value; }
-            }
-        }
-
         [Test]
         public void DeserializeNullableStruct()
         {
@@ -5348,22 +5059,6 @@ Path '', line 1, position 1.");
         }
 
 #if !(NET20)
-        [DataContract]
-        public class BaseDataContract
-        {
-            [DataMember(Name = "virtualMember")]
-            public virtual string VirtualMember { get; set; }
-
-            [DataMember(Name = "nonVirtualMember")]
-            public string NonVirtualMember { get; set; }
-        }
-
-        public class ChildDataContract : BaseDataContract
-        {
-            public override string VirtualMember { get; set; }
-            public string NewMember { get; set; }
-        }
-
         [Test]
         public void ChildDataContractTest()
         {
@@ -5402,7 +5097,7 @@ Path '', line 1, position 1.");
 
             string xml = Encoding.UTF8.GetString(ms.ToArray(), 0, Convert.ToInt32(ms.Length));
 
-            Assert.AreEqual(@"<JsonSerializerTest.ChildDataContract xmlns=""http://schemas.datacontract.org/2004/07/Newtonsoft.Json.Tests.Serialization"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><nonVirtualMember>NonVirtualMember!</nonVirtualMember><virtualMember>VirtualMember!</virtualMember><NewMember i:nil=""true""/></JsonSerializerTest.ChildDataContract>", xml);
+            Assert.AreEqual(@"<ChildDataContract xmlns=""http://schemas.datacontract.org/2004/07/Newtonsoft.Json.Tests.TestObjects"" xmlns:i=""http://www.w3.org/2001/XMLSchema-instance""><nonVirtualMember>NonVirtualMember!</nonVirtualMember><virtualMember>VirtualMember!</virtualMember><NewMember i:nil=""true""/></ChildDataContract>", xml);
         }
 #endif
 
@@ -5551,38 +5246,6 @@ Path '', line 1, position 1.");
         }
 
 #if !(NET20)
-        [DataContract]
-        public class BaseType
-        {
-            [DataMember]
-            public string zebra;
-        }
-
-        [DataContract]
-        public class DerivedType : BaseType
-        {
-            [DataMember(Order = 0)]
-            public string bird;
-
-            [DataMember(Order = 1)]
-            public string parrot;
-
-            [DataMember]
-            public string dog;
-
-            [DataMember(Order = 3)]
-            public string antelope;
-
-            [DataMember]
-            public string cat;
-
-            [JsonProperty(Order = 1)]
-            public string albatross;
-
-            [JsonProperty(Order = -2)]
-            public string dinosaur;
-        }
-
         [Test]
         public void JsonPropertyDataMemberOrder()
         {
@@ -5922,13 +5585,6 @@ Path '', line 1, position 1.");
         }
 
 #if !(PORTABLE)
-        public class ConvertableIntTestClass
-        {
-            public ConvertibleInt Integer { get; set; }
-            public ConvertibleInt? NullableInteger1 { get; set; }
-            public ConvertibleInt? NullableInteger2 { get; set; }
-        }
-
         [Test]
         public void SerializeIConvertible()
         {
@@ -5957,7 +5613,7 @@ Path '', line 1, position 1.");
   ""NullableInteger2"": null
 }";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<ConvertableIntTestClass>(json), "Error converting value 1 to type 'Newtonsoft.Json.Tests.ConvertibleInt'. Path 'Integer', line 2, position 14.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<ConvertableIntTestClass>(json), "Error converting value 1 to type 'Newtonsoft.Json.Tests.TestObjects.ConvertibleInt'. Path 'Integer', line 2, position 14.");
         }
 #endif
 
@@ -6350,27 +6006,6 @@ Path '', line 1, position 1.");
   "":::GRAY:::""
 ]", json2);
         }
-
-        public class MetroColorConverter : JsonConverter
-        {
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                Color color = (Color)value;
-                Color fixedColor = (color == Color.White || color == Color.Black) ? color : Color.Gray;
-
-                writer.WriteValue(":::" + fixedColor.ToKnownColor().ToString().ToUpper() + ":::");
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                return Enum.Parse(typeof(Color), reader.Value.ToString());
-            }
-
-            public override bool CanConvert(Type objectType)
-            {
-                return objectType == typeof(Color);
-            }
-        }
 #endif
 
         [Test]
@@ -6762,12 +6397,6 @@ Path '', line 1, position 1.");
         }
 
 #if !(NET20 || NET35)
-        public class IgnoreDataMemberTestClass
-        {
-            [IgnoreDataMember]
-            public int Ignored { get; set; }
-        }
-
         [Test]
         public void IgnoreDataMemberTest()
         {
@@ -7162,14 +6791,6 @@ This is just junk, though.";
             });
             Assert.AreEqual(500, obj.Item1);
         }
-
-        public class SerializableContractResolver : DefaultContractResolver
-        {
-            public SerializableContractResolver()
-            {
-                IgnoreSerializableAttribute = false;
-            }
-        }
 #endif
 
 #if !NET20
@@ -7332,32 +6953,17 @@ This is just junk, though.";
 }", json);
         }
 
-        public class NoConstructorReadOnlyCollection<T> : ReadOnlyCollection<T>
-        {
-            public NoConstructorReadOnlyCollection() : base(new List<T>())
-            {
-            }
-        }
-
         [Test]
         public void NoConstructorReadOnlyCollectionTest()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<NoConstructorReadOnlyCollection<int>>("[1]"), "Cannot deserialize readonly or fixed size list: Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+NoConstructorReadOnlyCollection`1[System.Int32]. Path '', line 1, position 1.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<NoConstructorReadOnlyCollection<int>>("[1]"), "Cannot deserialize readonly or fixed size list: Newtonsoft.Json.Tests.TestObjects.NoConstructorReadOnlyCollection`1[System.Int32]. Path '', line 1, position 1.");
         }
 
 #if !(NET40 || NET35 || NET20 || PORTABLE40)
-        public class NoConstructorReadOnlyDictionary<TKey, TValue> : ReadOnlyDictionary<TKey, TValue>
-        {
-            public NoConstructorReadOnlyDictionary()
-                : base(new Dictionary<TKey, TValue>())
-            {
-            }
-        }
-
         [Test]
         public void NoConstructorReadOnlyDictionaryTest()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<NoConstructorReadOnlyDictionary<int, int>>("{'1':1}"), "Cannot deserialize readonly or fixed size dictionary: Newtonsoft.Json.Tests.Serialization.JsonSerializerTest+NoConstructorReadOnlyDictionary`2[System.Int32,System.Int32]. Path '1', line 1, position 5.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<NoConstructorReadOnlyDictionary<int, int>>("{'1':1}"), "Cannot deserialize readonly or fixed size dictionary: Newtonsoft.Json.Tests.TestObjects.NoConstructorReadOnlyDictionary`2[System.Int32,System.Int32]. Path '1', line 1, position 5.");
         }
 #endif
 
@@ -7374,26 +6980,6 @@ This is just junk, though.";
             ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<IList<long>>(json), "Error converting value 999999999999999999999999999999999999999999999999 to type 'System.Int64'. Path '[0]', line 1, position 49.");
         }
 #endif
-
-#if !(DNXCORE50)
-        [Serializable]
-#endif
-        [DataContract]
-        public struct Pair<TFirst, TSecond>
-        {
-            public Pair(TFirst first, TSecond second)
-                : this()
-            {
-                this.First = first;
-                this.Second = second;
-            }
-
-            [DataMember]
-            public TFirst First { get; set; }
-
-            [DataMember]
-            public TSecond Second { get; set; }
-        }
 
         [Test]
         public void SerializeStructWithSerializableAndDataContract()
@@ -7462,15 +7048,6 @@ This is just junk, though.";
 #endif
 
 #if !NET20
-        public class NullableTestClass
-        {
-            public bool? MyNullableBool { get; set; }
-            public int? MyNullableInteger { get; set; }
-            public DateTime? MyNullableDateTime { get; set; }
-            public DateTimeOffset? MyNullableDateTimeOffset { get; set; }
-            public Decimal? MyNullableDecimal { get; set; }
-        }
-
         [Test]
         public void TestStringToNullableDeserialization()
         {
@@ -7700,102 +7277,6 @@ This is just junk, though.";
             Assert.AreEqual(new TypeConverterSize(1, 2), d.Keys.First());
             Assert.AreEqual(new TypeConverterSize(3, 4), d.Values.First());
         }
-
-        [TypeConverter(typeof(TypeConverterSizeConverter))]
-        public struct TypeConverterSize
-        {
-            public static readonly TypeConverterSize Empty;
-            private int _width;
-            private int _height;
-
-            public TypeConverterSize(int width, int height)
-            {
-                _width = width;
-                _height = height;
-            }
-
-            public int Width
-            {
-                get { return _width; }
-                set { _width = value; }
-            }
-
-            public int Height
-            {
-                get { return _height; }
-                set { _height = value; }
-            }
-        }
-
-        public class TypeConverterSizeConverter : TypeConverter
-        {
-            public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
-            {
-                return ((sourceType == typeof(string)) || base.CanConvertFrom(context, sourceType));
-            }
-
-            public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
-            {
-                return base.CanConvertTo(context, destinationType);
-            }
-
-            public override object ConvertFrom(ITypeDescriptorContext context, CultureInfo culture, object value)
-            {
-                string str = value as string;
-                if (str == null)
-                {
-                    return base.ConvertFrom(context, culture, value);
-                }
-                string str2 = str.Trim();
-                if (str2.Length == 0)
-                {
-                    return null;
-                }
-                if (culture == null)
-                {
-                    culture = CultureInfo.CurrentCulture;
-                }
-                string[] strArray = str2.Split(',');
-                int[] numArray = new int[strArray.Length];
-                TypeConverter converter = TypeDescriptor.GetConverter(typeof(int));
-                for (int i = 0; i < numArray.Length; i++)
-                {
-                    numArray[i] = (int)converter.ConvertFromString(context, culture, strArray[i]);
-                }
-                if (numArray.Length == 2)
-                {
-                    return new TypeConverterSize(numArray[0], numArray[1]);
-                }
-
-                throw new ArgumentException("Bad format.");
-            }
-
-            public override object ConvertTo(ITypeDescriptorContext context, CultureInfo culture, object value, Type destinationType)
-            {
-                if (destinationType == null)
-                {
-                    throw new ArgumentNullException("destinationType");
-                }
-                if (value is TypeConverterSize)
-                {
-                    if (destinationType == typeof(string))
-                    {
-                        TypeConverterSize size = (TypeConverterSize)value;
-                        if (culture == null)
-                        {
-                            culture = CultureInfo.CurrentCulture;
-                        }
-                        TypeConverter converter = TypeDescriptor.GetConverter(typeof(int));
-                        string[] strArray = new string[2];
-                        int num = 0;
-                        strArray[num++] = converter.ConvertToString(context, culture, size.Width);
-                        strArray[num++] = converter.ConvertToString(context, culture, size.Height);
-                        return string.Join(", ", strArray);
-                    }
-                }
-                return base.ConvertTo(context, culture, value, destinationType);
-            }
-        }
 #endif
 
         [Test]
@@ -7939,118 +7420,6 @@ This is just junk, though.";
         }
 
 #if !(PORTABLE)
-        public class ConvertibleId : IConvertible
-        {
-            public int Value;
-
-            TypeCode IConvertible.GetTypeCode()
-            {
-                return TypeCode.Object;
-            }
-
-            object IConvertible.ToType(Type conversionType, IFormatProvider provider)
-            {
-                if (conversionType == typeof(object))
-                {
-                    return this;
-                }
-                if (conversionType == typeof(int))
-                {
-                    return (int)Value;
-                }
-                if (conversionType == typeof(long))
-                {
-                    return (long)Value;
-                }
-                if (conversionType == typeof(string))
-                {
-                    return Value.ToString(CultureInfo.InvariantCulture);
-                }
-                throw new InvalidCastException();
-            }
-
-            bool IConvertible.ToBoolean(IFormatProvider provider)
-            {
-                throw new InvalidCastException();
-            }
-
-            byte IConvertible.ToByte(IFormatProvider provider)
-            {
-                throw new InvalidCastException();
-            }
-
-            char IConvertible.ToChar(IFormatProvider provider)
-            {
-                throw new InvalidCastException();
-            }
-
-            DateTime IConvertible.ToDateTime(IFormatProvider provider)
-            {
-                throw new InvalidCastException();
-            }
-
-            decimal IConvertible.ToDecimal(IFormatProvider provider)
-            {
-                throw new InvalidCastException();
-            }
-
-            double IConvertible.ToDouble(IFormatProvider provider)
-            {
-                throw new InvalidCastException();
-            }
-
-            short IConvertible.ToInt16(IFormatProvider provider)
-            {
-                return (short)Value;
-            }
-
-            int IConvertible.ToInt32(IFormatProvider provider)
-            {
-                return Value;
-            }
-
-            long IConvertible.ToInt64(IFormatProvider provider)
-            {
-                return (long)Value;
-            }
-
-            sbyte IConvertible.ToSByte(IFormatProvider provider)
-            {
-                throw new InvalidCastException();
-            }
-
-            float IConvertible.ToSingle(IFormatProvider provider)
-            {
-                throw new InvalidCastException();
-            }
-
-            string IConvertible.ToString(IFormatProvider provider)
-            {
-                throw new InvalidCastException();
-            }
-
-            ushort IConvertible.ToUInt16(IFormatProvider provider)
-            {
-                throw new InvalidCastException();
-            }
-
-            uint IConvertible.ToUInt32(IFormatProvider provider)
-            {
-                throw new InvalidCastException();
-            }
-
-            ulong IConvertible.ToUInt64(IFormatProvider provider)
-            {
-                throw new InvalidCastException();
-            }
-        }
-
-        public class TestClassConvertable
-        {
-            public ConvertibleId Id;
-            public int X;
-        }
-
         [Test]
         public void ConvertibleIdTest()
         {
@@ -8303,13 +7672,6 @@ This is just junk, though.";
             Assert.AreEqual(dt, (DateTimeOffset)v.Value);
         }
 
-        [DataContract]
-        public class ConstantTestClass
-        {
-            [DataMember]
-            public const char MY_CONSTANT = '.';
-        }
-
         [Test]
         public void DeserializeConstantProperty()
         {
@@ -8396,11 +7758,6 @@ This is just junk, though.";
 
             Assert.AreEqual(ulong.MaxValue, result.Value);
         }
-
-        public class NullableLongTestClass
-        {
-            public ulong? Value { get; set; }
-        }
 #endif
 
 #if !(DNXCORE50)
@@ -8456,101 +7813,6 @@ This is just junk, though.";
                         new EncodingReadConverter());
                 },
                 "Cannot populate list type System.Net.Mime.HeaderCollection. Path 'Headers', line 26, position 14.");
-        }
-#endif
-
-#if !(DNXCORE50)
-        public class MailAddressReadConverter : JsonConverter
-        {
-            public override bool CanConvert(Type objectType)
-            {
-                return objectType == typeof(System.Net.Mail.MailAddress);
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                var messageJObject = serializer.Deserialize<JObject>(reader);
-                if (messageJObject == null)
-                {
-                    return null;
-                }
-
-                var address = messageJObject.GetValue("Address", StringComparison.OrdinalIgnoreCase).ToObject<string>();
-
-                JToken displayNameToken;
-                string displayName;
-                if (messageJObject.TryGetValue("DisplayName", StringComparison.OrdinalIgnoreCase, out displayNameToken)
-                    && !string.IsNullOrEmpty(displayName = displayNameToken.ToObject<string>()))
-                {
-                    return new System.Net.Mail.MailAddress(address, displayName);
-                }
-
-                return new System.Net.Mail.MailAddress(address);
-            }
-
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public class AttachmentReadConverter : JsonConverter
-        {
-            public override bool CanConvert(Type objectType)
-            {
-                return objectType == typeof(System.Net.Mail.Attachment);
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                var info = serializer.Deserialize<AttachmentInfo>(reader);
-
-                var attachment = info != null
-                    ? new System.Net.Mail.Attachment(new MemoryStream(Convert.FromBase64String(info.ContentBase64)), "application/octet-stream")
-                    {
-                        ContentDisposition = { FileName = info.FileName }
-                    }
-                    : null;
-                return attachment;
-            }
-
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                throw new NotImplementedException();
-            }
-
-            private class AttachmentInfo
-            {
-                [JsonProperty(Required = Required.Always)]
-                public string FileName { get; set; }
-
-                [JsonProperty(Required = Required.Always)]
-                public string ContentBase64 { get; set; }
-            }
-        }
-
-        public class EncodingReadConverter : JsonConverter
-        {
-            public override bool CanConvert(Type objectType)
-            {
-                return typeof(Encoding).IsAssignableFrom(objectType);
-            }
-
-            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-            {
-                var encodingName = serializer.Deserialize<string>(reader);
-                if (encodingName == null)
-                {
-                    return null;
-                }
-
-                return Encoding.GetEncoding(encodingName);
-            }
-
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                throw new NotImplementedException();
-            }
         }
 #endif
 
