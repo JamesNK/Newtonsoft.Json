@@ -38,6 +38,10 @@
         <para>With PreserveReferencesHandling on, now only one Person object is created
         on deserialization and the list contains two references to it, mirroring
         what we started with.</para>
+ <para>
+   Metadata properties like <codeInline>$id</codeInline> must be located at the beginning of a JSON object to be successfully detected during deserialization. If you can't control
+   the order of properties in your JSON object then <codeEntityReference>T:Newtonsoft.Json.MetadataPropertyHandling</codeEntityReference> can be used to remove this restriction.
+ </para>
 <alert class="note">
   <para>References cannot be preserved when a value is set via a non-default constructor.
         With a non-default constructor, child values must be created before the parent value so they can be passed into
