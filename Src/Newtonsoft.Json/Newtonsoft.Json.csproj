@@ -16,8 +16,8 @@
     <Title>Json.NET</Title>
     <PackageId>Newtonsoft.Json</PackageId>
     <PackageTags>json</PackageTags>
-    <PackageIconUrl>http://www.newtonsoft.com/content/images/nugeticon.png</PackageIconUrl>
-    <PackageProjectUrl>http://www.newtonsoft.com/json</PackageProjectUrl>
+    <PackageIconUrl>https://www.newtonsoft.com/content/images/nugeticon.png</PackageIconUrl>
+    <PackageProjectUrl>https://www.newtonsoft.com/json</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md</PackageLicenseUrl>
     <RepositoryUrl>https://github.com/JamesNK/Newtonsoft.Json</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
