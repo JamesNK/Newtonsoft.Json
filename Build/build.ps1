@@ -230,7 +230,7 @@ function NetCliTests($build)
     Write-Host "Project path: $projectPath"
     Write-Host
 
-    exec { dotnet test $projectPath -f $testDir -c Release -l trx --no-build | Out-Default }
+    exec { dotnet test $projectPath -f $testDir -c Release -l trx --no-restore --no-build | Out-Default }
     copy-item -Path "$location\TestResults\*.trx" -Destination $workingDir
   }
   finally
