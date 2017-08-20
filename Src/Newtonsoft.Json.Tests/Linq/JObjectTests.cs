@@ -716,7 +716,7 @@ Parameter name: arrayIndex");
             Assert.AreEqual(p4, l[1]);
         }
 
-#if !(NET20 || PORTABLE || PORTABLE40)
+#if !(NET20 || PORTABLE || PORTABLE40) || NETSTANDARD1_3
         [Test]
         public void PropertyChanging()
         {
