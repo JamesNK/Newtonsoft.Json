@@ -106,6 +106,21 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsTrue(stack2.TryPop(out i));
             Assert.AreEqual(1, i);
         }
+
+        [Test]
+        public void SerializeConcurrentDictionary()
+        {
+            ConcurrentDictionary<int, int> dic1 = new ConcurrentDictionary<int, int>();
+            dic1[1] = int.MaxValue;
+
+            string output = JsonConvert.SerializeObject(dic1);
+            Assert.AreEqual(@"{""1"":2147483647}", output);
+
+            ConcurrentDictionary<int, int> dic2 = JsonConvert.DeserializeObject<ConcurrentDictionary<int, int>>(output);
+            int i;
+            Assert.IsTrue(dic2.TryGetValue(1, out i));
+            Assert.AreEqual(int.MaxValue, i);
+        }
 #endif
 
         [Test]
