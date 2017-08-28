@@ -78,7 +78,7 @@ namespace Newtonsoft.Json
                         return ParseObjectAsync(cancellationToken);
                     case State.PostValue:
                         Task<bool> task = ParsePostValueAsync(false, cancellationToken);
-                        if (task.Status == TaskStatus.RanToCompletion)
+                        if (task.IsCompletedSucessfully())
                         {
                             if (task.Result)
                             {
@@ -531,7 +531,7 @@ namespace Newtonsoft.Json
             _charPos++;
 
             Task<bool> task = EnsureCharsAsync(1, append, cancellationToken);
-            if (task.Status == TaskStatus.RanToCompletion)
+            if (task.IsCompletedSucessfully())
             {
                 SetNewLine(task.Result);
                 return AsyncUtils.CompletedTask;
