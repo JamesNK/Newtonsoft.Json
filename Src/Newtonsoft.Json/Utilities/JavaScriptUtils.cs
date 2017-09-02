@@ -263,6 +263,8 @@ namespace Newtonsoft.Json.Utilities
                                 // copy it over when creating new buffer
                                 if (isEscapedUnicodeText)
                                 {
+                                    Debug.Assert(writeBuffer != null, "Write buffer should never be null because it is set when the escaped unicode text is encountered.");
+
                                     Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
                                 }
 
