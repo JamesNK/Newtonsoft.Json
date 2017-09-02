@@ -47,7 +47,7 @@ namespace Newtonsoft.Json.Linq
             var t = writer.WriteStartObjectAsync(cancellationToken);
             if (!t.IsCompletedSucessfully())
             {
-                return AwaitStartObject(t, writer, cancellationToken, converters);
+                return AwaitProperties(t, 0, writer, cancellationToken, converters);
             }
 
             for (int i = 0; i < _properties.Count; i++)
@@ -59,22 +59,9 @@ namespace Newtonsoft.Json.Linq
                 }
             }
 
-            t = writer.WriteEndObjectAsync(cancellationToken);
-
-            return (t.IsCompletedSucessfully()) ? AsyncUtils.CompletedTask : AwaitEndObject(t);
+            return writer.WriteEndObjectAsync(cancellationToken);
 
             // Local functions, params renamed (capitalized) so as not to capture and allocate when calling async
-            async Task AwaitStartObject(Task task, JsonWriter Writer, CancellationToken CancellationToken, JsonConverter[] Converters)
-            {
-                await task.ConfigureAwait(false);
-                for (int i = 0; i < _properties.Count; i++)
-                {
-                    await _properties[i].WriteToAsync(Writer, CancellationToken, Converters).ConfigureAwait(false);
-                }
-
-                await Writer.WriteEndObjectAsync(CancellationToken).ConfigureAwait(false);
-            }
-
             async Task AwaitProperties(Task task, int i, JsonWriter Writer, CancellationToken CancellationToken, JsonConverter[] Converters)
             {
                 await task.ConfigureAwait(false);
@@ -84,11 +71,6 @@ namespace Newtonsoft.Json.Linq
                 }
 
                 await Writer.WriteEndObjectAsync(CancellationToken).ConfigureAwait(false);
-            }
-
-            async Task AwaitEndObject(Task task)
-            {
-                await task.ConfigureAwait(false);
             }
         }
 

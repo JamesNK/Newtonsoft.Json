@@ -323,7 +323,7 @@ namespace Newtonsoft.Json
             // Local functions, params renamed (capitalized) so as not to capture and allocate when calling async
             async Task AwaitProperty(Task task, int LevelsToComplete, JsonToken token, JsonContainerType Type, CancellationToken CancellationToken)
             {
-                await task;
+                await task.ConfigureAwait(false);
 
                 //  Finish current loop
                 if (_formatting == Formatting.Indented)
@@ -343,7 +343,7 @@ namespace Newtonsoft.Json
 
             async Task AwaitIndent(Task task, int LevelsToComplete, JsonToken token, JsonContainerType Type, CancellationToken CancellationToken)
             {
-                await task;
+                await task.ConfigureAwait(false);
 
                 //  Finish current loop
 
@@ -356,7 +356,7 @@ namespace Newtonsoft.Json
 
             async Task AwaitEnd(Task task, int LevelsToComplete, JsonContainerType Type, CancellationToken CancellationToken)
             {
-                await task;
+                await task.ConfigureAwait(false);
 
                 //  Finish current loop
 

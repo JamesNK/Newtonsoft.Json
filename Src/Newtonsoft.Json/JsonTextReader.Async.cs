@@ -1138,7 +1138,7 @@ namespace Newtonsoft.Json
             switch (_currentState)
             {
                 case State.PostValue:
-                    if (await ParsePostValueAsync(true, cancellationToken))
+                    if (await ParsePostValueAsync(true, cancellationToken).ConfigureAwait(false))
                     {
                         return null;
                     }
@@ -1273,7 +1273,7 @@ namespace Newtonsoft.Json
             switch (_currentState)
             {
                 case State.PostValue:
-                    if (await ParsePostValueAsync(true, cancellationToken))
+                    if (await ParsePostValueAsync(true, cancellationToken).ConfigureAwait(false))
                     {
                         return null;
                     }
@@ -1399,7 +1399,7 @@ namespace Newtonsoft.Json
             switch (_currentState)
             {
                 case State.PostValue:
-                    if (await ParsePostValueAsync(true, cancellationToken))
+                    if (await ParsePostValueAsync(true, cancellationToken).ConfigureAwait(false))
                     {
                         return null;
                     }
@@ -1535,7 +1535,7 @@ namespace Newtonsoft.Json
             switch (_currentState)
             {
                 case State.PostValue:
-                    if (await ParsePostValueAsync(true, cancellationToken))
+                    if (await ParsePostValueAsync(true, cancellationToken).ConfigureAwait(false))
                     {
                         return null;
                     }
