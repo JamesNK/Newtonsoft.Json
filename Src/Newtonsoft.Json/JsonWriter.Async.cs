@@ -275,31 +275,119 @@ namespace Newtonsoft.Json
             }
         }
 
-        internal async Task InternalWriteEndAsync(JsonContainerType type, CancellationToken cancellationToken)
+        internal Task InternalWriteEndAsync(JsonContainerType type, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            int levelsToComplete = CalculateLevelsToComplete(type);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return cancellationToken.FromCanceled();
+            }
 
+            int levelsToComplete = CalculateLevelsToComplete(type);
+            Task t;
             while (levelsToComplete-- > 0)
             {
                 JsonToken token = GetCloseTokenForType(Pop());
 
                 if (_currentState == State.Property)
                 {
-                    await WriteNullAsync(cancellationToken).ConfigureAwait(false);
+                    t = WriteNullAsync(cancellationToken);
+                    if (!t.IsCompletedSucessfully())
+                    {
+                        return AwaitProperty(t, levelsToComplete, token, type, cancellationToken);
+                    }
                 }
 
                 if (_formatting == Formatting.Indented)
                 {
                     if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
                     {
-                        await WriteIndentAsync(cancellationToken).ConfigureAwait(false);
+                        t = WriteIndentAsync(cancellationToken);
+                        if (!t.IsCompletedSucessfully())
+                        {
+                            return AwaitIndent(t, levelsToComplete, token, type, cancellationToken);
+                        }
                     }
                 }
 
-                await WriteEndAsync(token, cancellationToken).ConfigureAwait(false);
+                t = WriteEndAsync(token, cancellationToken);
+                if (!t.IsCompletedSucessfully())
+                {
+                    return AwaitEnd(t, levelsToComplete, type, cancellationToken);
+                }
 
                 UpdateCurrentState();
+            }
+
+            return AsyncUtils.CompletedTask;
+
+            // Local functions, params renamed (capitalized) so as not to capture and allocate when calling async
+            async Task AwaitProperty(Task task, int LevelsToComplete, JsonToken token, JsonContainerType Type, CancellationToken CancellationToken)
+            {
+                await task;
+
+                //  Finish current loop
+                if (_formatting == Formatting.Indented)
+                {
+                    if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
+                    {
+                        await WriteIndentAsync(CancellationToken).ConfigureAwait(false);
+                    }
+                }
+
+                await WriteEndAsync(token, CancellationToken).ConfigureAwait(false);
+
+                UpdateCurrentState();
+
+                await AwaitRemaining(LevelsToComplete, Type, CancellationToken).ConfigureAwait(false);
+            }
+
+            async Task AwaitIndent(Task task, int LevelsToComplete, JsonToken token, JsonContainerType Type, CancellationToken CancellationToken)
+            {
+                await task;
+
+                //  Finish current loop
+
+                await WriteEndAsync(token, CancellationToken).ConfigureAwait(false);
+
+                UpdateCurrentState();
+
+                await AwaitRemaining(LevelsToComplete, Type, CancellationToken).ConfigureAwait(false);
+            }
+
+            async Task AwaitEnd(Task task, int LevelsToComplete, JsonContainerType Type, CancellationToken CancellationToken)
+            {
+                await task;
+
+                //  Finish current loop
+
+                UpdateCurrentState();
+
+                await AwaitRemaining(LevelsToComplete, Type, CancellationToken).ConfigureAwait(false);
+            }
+
+            async Task AwaitRemaining(int LevelsToComplete, JsonContainerType Type, CancellationToken CancellationToken)
+            {
+                while (LevelsToComplete-- > 0)
+                {
+                    JsonToken token = GetCloseTokenForType(Pop());
+
+                    if (_currentState == State.Property)
+                    {
+                        await WriteNullAsync(CancellationToken).ConfigureAwait(false);
+                    }
+
+                    if (_formatting == Formatting.Indented)
+                    {
+                        if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
+                        {
+                            await WriteIndentAsync(CancellationToken).ConfigureAwait(false);
+                        }
+                    }
+
+                    await WriteEndAsync(token, CancellationToken).ConfigureAwait(false);
+
+                    UpdateCurrentState();
+                }
             }
         }
 
