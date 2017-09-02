@@ -16,6 +16,7 @@
     <Copyright>Copyright © James Newton-King 2008</Copyright>
     <AssemblyName>Newtonsoft.Json.Tests</AssemblyName>
     <RootNamespace>Newtonsoft.Json.Tests</RootNamespace>
+    <IsPackable>false</IsPackable>
     <!-- Workaround for https://github.com/nunit/nunit3-vs-adapter/issues/296 -->
     <DebugType Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'netcoreapp1.0' AND '$(TargetFramework)' != 'netcoreapp1.1'">Full</DebugType>
   </PropertyGroup>
