@@ -578,7 +578,7 @@ namespace Newtonsoft.Json.Utilities
             }
 #endif
 #if HAVE_ADO_NET
-            // handle DBNull and INullable
+            // handle DBNull
             if (initialValue == DBNull.Value)
             {
                 if (ReflectionUtils.IsNullable(targetType))
@@ -590,14 +590,6 @@ namespace Newtonsoft.Json.Utilities
                 // cannot convert null to non-nullable
                 value = null;
                 return ConvertResult.CannotConvertNull;
-            }
-#endif
-#if HAVE_ADO_NET
-            INullable nullable = initialValue as INullable;
-            if (nullable != null)
-            {
-                value = EnsureTypeAssignable(ToValue(nullable), initialType, targetType);
-                return ConvertResult.Success;
             }
 #endif
 
@@ -674,38 +666,6 @@ namespace Newtonsoft.Json.Utilities
 
             throw new ArgumentException("Could not cast or convert from {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, initialType?.ToString() ?? "{null}", targetType));
         }
-
-#if HAVE_ADO_NET
-        public static object ToValue(INullable nullableValue)
-        {
-            if (nullableValue == null)
-            {
-                return null;
-            }
-            else if (nullableValue is SqlInt32)
-            {
-                return ToValue((SqlInt32)nullableValue);
-            }
-            else if (nullableValue is SqlInt64)
-            {
-                return ToValue((SqlInt64)nullableValue);
-            }
-            else if (nullableValue is SqlBoolean)
-            {
-                return ToValue((SqlBoolean)nullableValue);
-            }
-            else if (nullableValue is SqlString)
-            {
-                return ToValue((SqlString)nullableValue);
-            }
-            else if (nullableValue is SqlDateTime)
-            {
-                return ToValue((SqlDateTime)nullableValue);
-            }
-
-            throw new ArgumentException("Unsupported INullable type: {0}".FormatWith(CultureInfo.InvariantCulture, nullableValue.GetType()));
-        }
-#endif
 
         public static bool VersionTryParse(string input, out Version result)
         {
