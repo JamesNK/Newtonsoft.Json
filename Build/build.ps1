@@ -70,8 +70,8 @@ task Build -depends Clean {
 
   mkdir "$buildDir\Temp" -Force
   EnsureNuGetExists
-  EnsureNuGetPacakge "vswhere" $vswherePath $vswhereVersion
-  EnsureNuGetPacakge "NUnit.ConsoleRunner" $nunitConsolePath $nunitConsoleVersion
+  EnsureNuGetPackage "vswhere" $vswherePath $vswhereVersion
+  EnsureNuGetPackage "NUnit.ConsoleRunner" $nunitConsolePath $nunitConsoleVersion
 
   $script:msBuildPath = GetMsBuildPath
   Write-Host "MSBuild path $script:msBuildPath"
@@ -193,7 +193,7 @@ function EnsureNuGetExists()
   }
 }
 
-function EnsureNuGetPacakge($packageName, $packagePath, $packageVersion)
+function EnsureNuGetPackage($packageName, $packagePath, $packageVersion)
 {
   if (!(Test-Path $packagePath))
   {
