@@ -14,9 +14,9 @@ environment:
 init:
   git config --global core.autocrlf true
 before_build:
-- ps: msbuild src /m /nologo /v:quiet /fl /t:restore
+- ps: msbuild Src /m /nologo /v:quiet /fl /t:restore
 build_script:
-- ps: msbuild src /m /nologo /v:minimal /fl /t:build,pack
+- ps: msbuild Src /m /nologo /v:minimal /fl /t:build,pack
 artifacts:
 - path: '**\*.nupkg'
   name: NuGet Package
