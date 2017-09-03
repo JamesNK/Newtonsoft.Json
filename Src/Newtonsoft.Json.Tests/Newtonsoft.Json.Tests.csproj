@@ -8,7 +8,6 @@
   <PropertyGroup>
     <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net451;net452;net40;net35;net20;netcoreapp2.0;netcoreapp1.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(TestFrameworks)'!=''">$(TestFrameworks)</TargetFrameworks>
-    <VersionPrefix>1.0</VersionPrefix>
     <Authors>James Newton-King</Authors>
     <Company>Newtonsoft</Company>
     <Product>Json.NET</Product>
