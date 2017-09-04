@@ -13,10 +13,8 @@ environment:
   VisualStudioVersion: 15.0
 init:
   git config --global core.autocrlf true
-before_build:
-- ps: msbuild Src /m /nologo /v:quiet /fl /t:restore
 build_script:
-- ps: msbuild Src /m /nologo /v:minimal /fl /t:build,pack
+- ps: Build\runbuild.ps1
 artifacts:
 - path: '**\*.nupkg'
   name: NuGet Package
