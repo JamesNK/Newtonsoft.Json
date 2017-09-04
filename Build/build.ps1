@@ -198,8 +198,7 @@ function EnsureNuGetPackage($packageName, $packagePath, $packageVersion)
   if (!(Test-Path $packagePath))
   {
     Write-Host "Couldn't find $packagePath. Downloading with NuGet"
-    $configFilePath = Resolve-Path "$PSScriptRoot\..\Src\nuget.config"
-    exec { & $nugetPath install $packageName -OutputDirectory $buildDir\Temp -Version $packageVersion -ConfigFile $configFilePath | Out-Default } "Error restoring $packagePath"
+    exec { & $nugetPath install $packageName -OutputDirectory $buildDir\Temp -Version $packageVersion -ConfigFile "$sourceDir\nuget.config" | Out-Default } "Error restoring $packagePath"
   }
 }
 
