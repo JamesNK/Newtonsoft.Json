@@ -25,9 +25,9 @@
   $workingSourceDir = "$workingDir\Src"
 
   $nugetPath = "$buildDir\Temp\nuget.exe"
-  $vswhereVersion = "1.0.58"
+  $vswhereVersion = "2.1.4"
   $vswherePath = "$buildDir\Temp\vswhere.$vswhereVersion"
-  $nunitConsoleVersion = "3.6.1"
+  $nunitConsoleVersion = "3.7.0"
   $nunitConsolePath = "$buildDir\Temp\NUnit.ConsoleRunner.$nunitConsoleVersion"
 
   $builds = @(
