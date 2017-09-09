@@ -8,7 +8,7 @@
   $signAssemblies = $false
   $signKeyPath = "C:\Development\Releases\newtonsoft.snk"
   $buildDocumentation = $false
-  $buildNuGet = $false
+  $buildNuGet = $true
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $netCliChannel = "2.0"
@@ -44,7 +44,7 @@
 
 framework '4.6x86'
 
-task default -depends Test
+task default -depends Test,Package
 
 # Ensure a clean working directory
 task Clean {
@@ -151,13 +151,7 @@ task Package -depends Build {
   Compress-Archive -Path $workingDir\Package\* -DestinationPath $workingDir\$zipFileName
 }
 
-# Unzip package to a location
-task Deploy -depends Package {
-  Expand-Archive -Path $workingDir\$zipFileName -DestinationPath "$workingDir\Deployed" 
-}
-
-# Run tests on deployed files
-task Test -depends Deploy {
+task Test -depends Build {
   foreach ($build in $script:enabledBuilds)
   {
     Write-Host "Calling $($build.TestsFunction)"
@@ -243,11 +237,7 @@ function NUnitTests($build)
 {
   $testDir = if ($build.TestFramework -ne $null) { $build.TestFramework } else { $build.Framework }
   $framework = $build.NUnitFramework
-  $testRunDir = "$workingDir\Deployed\Bin\$($build.Framework)"
-
-  Write-Host -ForegroundColor Green "Copying test assembly $testDir to deployed directory"
-  Write-Host
-  robocopy "$workingSourceDir\Newtonsoft.Json.Tests\bin\Release\$testDir" $testRunDir /MIR /NFL /NDL /NJS /NC /NS /NP /XO | Out-Default
+  $testRunDir = "$workingSourceDir\Newtonsoft.Json.Tests\bin\Release\$testDir"
 
   Write-Host -ForegroundColor Green "Running NUnit tests $testDir"
   Write-Host
