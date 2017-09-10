@@ -101,7 +101,7 @@ task Package -depends Build {
   {
     $finalDir = $build.Framework
 
-    $sourcePath = "$workingSourceDir\Newtonsoft.Json\bin\Release\$finalDir"
+    $sourcePath = "$workingDir\bin\Newtonsoft.Json\Release\$finalDir"
 
     if (!(Test-Path -path $sourcePath))
     {
@@ -120,7 +120,7 @@ task Package -depends Build {
     exec { & $script:msBuildPath "/t:pack" "/p:IncludeSource=true" "/p:Configuration=Release" "/p:TargetFrameworks=`"$targetFrameworks`"" "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj" }
 
     mkdir $workingDir\NuGet
-    move -Path $workingSourceDir\Newtonsoft.Json\bin\Release\*.nupkg -Destination $workingDir\NuGet
+    move -Path $workingDir\bin\Newtonsoft.Json\Release\*.nupkg -Destination $workingDir\NuGet
   }
 
   Write-Host "Build documentation: $buildDocumentation"
