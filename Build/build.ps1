@@ -8,7 +8,7 @@
   $signAssemblies = $false
   $signKeyPath = "C:\Development\Releases\newtonsoft.snk"
   $buildDocumentation = $false
-  $buildNuGet = $false
+  $buildNuGet = $true
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $netCliChannel = "2.0"
@@ -25,9 +25,9 @@
   $workingSourceDir = "$workingDir\Src"
 
   $nugetPath = "$buildDir\Temp\nuget.exe"
-  $vswhereVersion = "1.0.58"
+  $vswhereVersion = "2.1.4"
   $vswherePath = "$buildDir\Temp\vswhere.$vswhereVersion"
-  $nunitConsoleVersion = "3.6.1"
+  $nunitConsoleVersion = "3.7.0"
   $nunitConsolePath = "$buildDir\Temp\NUnit.ConsoleRunner.$nunitConsoleVersion"
 
   $builds = @(
@@ -44,7 +44,7 @@
 
 framework '4.6x86'
 
-task default -depends Test
+task default -depends Test,Package
 
 # Ensure a clean working directory
 task Clean {
@@ -70,14 +70,14 @@ task Build -depends Clean {
 
   mkdir "$buildDir\Temp" -Force
   EnsureNuGetExists
-  EnsureNuGetPacakge "vswhere" $vswherePath $vswhereVersion
-  EnsureNuGetPacakge "NUnit.ConsoleRunner" $nunitConsolePath $nunitConsoleVersion
+  EnsureNuGetPackage "vswhere" $vswherePath $vswhereVersion
+  EnsureNuGetPackage "NUnit.ConsoleRunner" $nunitConsolePath $nunitConsoleVersion
 
   $script:msBuildPath = GetMsBuildPath
   Write-Host "MSBuild path $script:msBuildPath"
 
   Write-Host "Copying source to working source directory $workingSourceDir"
-  robocopy $sourceDir $workingSourceDir /MIR /NP /XD bin obj TestResults AppPackages $packageDirs .vs artifacts /XF *.suo *.user *.lock.json | Out-Default
+  robocopy $sourceDir $workingSourceDir /MIR /NFL /NDL /NP /XD bin obj TestResults AppPackages $packageDirs .vs artifacts /XF *.suo *.user *.lock.json | Out-Default
   Copy-Item -Path $baseDir\LICENSE.md -Destination $workingDir\
   mkdir "$workingDir\Build" -Force
   Copy-Item -Path $buildDir\install.ps1 -Destination $workingDir\Build\
@@ -151,13 +151,7 @@ task Package -depends Build {
   Compress-Archive -Path $workingDir\Package\* -DestinationPath $workingDir\$zipFileName
 }
 
-# Unzip package to a location
-task Deploy -depends Package {
-  Expand-Archive -Path $workingDir\$zipFileName -DestinationPath "$workingDir\Deployed" 
-}
-
-# Run tests on deployed files
-task Test -depends Deploy {
+task Test -depends Build {
   foreach ($build in $script:enabledBuilds)
   {
     Write-Host "Calling $($build.TestsFunction)"
@@ -193,12 +187,12 @@ function EnsureNuGetExists()
   }
 }
 
-function EnsureNuGetPacakge($packageName, $packagePath, $packageVersion)
+function EnsureNuGetPackage($packageName, $packagePath, $packageVersion)
 {
   if (!(Test-Path $packagePath))
   {
     Write-Host "Couldn't find $packagePath. Downloading with NuGet"
-    exec { & $nugetPath install $packageName -OutputDirectory $buildDir\Temp -Version $packageVersion | Out-Default } "Error restoring $packagePath"
+    exec { & $nugetPath install $packageName -OutputDirectory $buildDir\Temp -Version $packageVersion -ConfigFile "$sourceDir\nuget.config" | Out-Default } "Error restoring $packagePath"
   }
 }
 
@@ -230,8 +224,7 @@ function NetCliTests($build)
     Write-Host "Project path: $projectPath"
     Write-Host
 
-    exec { dotnet test $projectPath -f $testDir -c Release -l trx --no-restore --no-build | Out-Default }
-    copy-item -Path "$location\TestResults\*.trx" -Destination $workingDir
+    exec { dotnet test $projectPath -f $testDir -c Release -l trx -r $workingDir --no-restore --no-build | Out-Default }
   }
   finally
   {
@@ -243,18 +236,14 @@ function NUnitTests($build)
 {
   $testDir = if ($build.TestFramework -ne $null) { $build.TestFramework } else { $build.Framework }
   $framework = $build.NUnitFramework
-  $testRunDir = "$workingDir\Deployed\Bin\$($build.Framework)"
-
-  Write-Host -ForegroundColor Green "Copying test assembly $testDir to deployed directory"
-  Write-Host
-  robocopy "$workingSourceDir\Newtonsoft.Json.Tests\bin\Release\$testDir" $testRunDir /MIR /NFL /NDL /NJS /NC /NS /NP /XO | Out-Default
+  $testRunDir = "$workingSourceDir\Newtonsoft.Json.Tests\bin\Release\$testDir"
 
   Write-Host -ForegroundColor Green "Running NUnit tests $testDir"
   Write-Host
   try
   {
     Set-Location $testRunDir
-    exec { & $nunitConsolePath\tools\nunit3-console.exe "$testRunDir\Newtonsoft.Json.Tests.dll" --framework=$framework --result=$workingDir\$testDir.xml | Out-Default } "Error running $testDir tests"
+    exec { & $nunitConsolePath\tools\nunit3-console.exe "$testRunDir\Newtonsoft.Json.Tests.dll" --framework=$framework --result=$workingDir\$testDir.xml --out=$workingDir\$testDir.txt | Out-Default } "Error running $testDir tests"
   }
   finally
   {
