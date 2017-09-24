@@ -1,4 +1,4 @@
-﻿properties { 
+﻿properties {
   $zipFileName = "Json100r3.zip"
   $majorVersion = "10.0"
   $majorWithReleaseVersion = "10.0.3"
@@ -9,12 +9,13 @@
   $signKeyPath = "C:\Development\Releases\newtonsoft.snk"
   $buildDocumentation = $false
   $buildNuGet = $true
+  $msbuildVerbosity = 'minimal'
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $netCliChannel = "2.0"
   $netCliVersion = "2.0.0"
   $nugetUrl = "http://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
-  
+
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
   $sourceDir = "$baseDir\Src"
@@ -50,14 +51,14 @@ task default -depends Test,Package
 task Clean {
   Write-Host "Setting location to $baseDir"
   Set-Location $baseDir
-  
+
   if (Test-Path -path $workingDir)
   {
     Write-Host "Deleting existing working directory $workingDir"
-    
+
     Execute-Command -command { del $workingDir -Recurse -Force }
   }
-  
+
   Write-Host "Creating working directory $workingDir"
   New-Item -Path $workingDir -ItemType Directory
 
@@ -110,21 +111,21 @@ task Package -depends Build {
 
     robocopy $sourcePath $workingDir\Package\Bin\$finalDir *.dll *.pdb *.xml /NFL /NDL /NJS /NC /NS /NP /XO /XF *.CodeAnalysisLog.xml | Out-Default
   }
-  
+
   if ($buildNuGet)
   {
     Write-Host -ForegroundColor Green "Creating NuGet package"
 
     $targetFrameworks = ($script:enabledBuilds | Select-Object @{Name="Framework";Expression={$_.Framework}} | select -expand Framework) -join ";"
 
-    exec { & $script:msBuildPath "/t:pack" "/p:IncludeSource=true" "/p:Configuration=Release" "/p:TargetFrameworks=`"$targetFrameworks`"" "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj" }
+    exec { & $script:msBuildPath "/t:pack" "/v:$msbuildVerbosity" "/p:IncludeSource=true" "/p:Configuration=Release" "/p:TargetFrameworks=`"$targetFrameworks`"" "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj" }
 
     mkdir $workingDir\NuGet
     move -Path $workingSourceDir\Newtonsoft.Json\bin\Release\*.nupkg -Destination $workingDir\NuGet
   }
 
   Write-Host "Build documentation: $buildDocumentation"
-  
+
   if ($buildDocumentation)
   {
     $mainBuild = $script:enabledBuilds | where { $_.Framework -eq "net45" } | select -first 1
@@ -135,11 +136,11 @@ task Package -depends Build {
     Write-Host "Documentation output to $docOutputPath"
 
     # Sandcastle has issues when compiling with .NET 4 MSBuild - http://shfb.codeplex.com/Thread/View.aspx?ThreadId=50652
-    exec { & $script:msBuildPath "/t:Clean;Rebuild" "/p:Configuration=Release" "/p:DocumentationSourcePath=$documentationSourcePath" "/p:OutputPath=$docOutputPath" "$docDir\doc.shfbproj" | Out-Default } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
-    
+    exec { & $script:msBuildPath "/t:Clean;Rebuild" "/v:$msbuildVerbosity" "/p:Configuration=Release" "/p:DocumentationSourcePath=$documentationSourcePath" "/p:OutputPath=$docOutputPath" "$docDir\doc.shfbproj" | Out-Default } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
+
     move -Path $workingDir\Documentation\LastBuild.log -Destination $workingDir\Documentation.log
   }
-  
+
   Copy-Item -Path $docDir\readme.txt -Destination $workingDir\Package\
   Copy-Item -Path $docDir\license.txt -Destination $workingDir\Package\
 
@@ -147,7 +148,7 @@ task Package -depends Build {
   robocopy $buildDir $workingDir\Package\Source\Build /MIR /NFL /NDL /NJS /NC /NS /NP /XD Temp /XF runbuild.txt | Out-Default
   robocopy $docDir $workingDir\Package\Source\Doc /MIR /NFL /NDL /NJS /NC /NS /NP | Out-Default
   robocopy $toolsDir $workingDir\Package\Source\Tools /MIR /NFL /NDL /NJS /NC /NS /NP | Out-Default
-  
+
   Compress-Archive -Path $workingDir\Package\* -DestinationPath $workingDir\$zipFileName
 }
 
@@ -170,12 +171,12 @@ function NetCliBuild()
   Write-Host -ForegroundColor Green "Restoring packages for $libraryFrameworks in $projectPath"
   Write-Host
 
-  exec { & $script:msBuildPath "/t:restore" "/p:Configuration=Release" "/p:LibraryFrameworks=`"$libraryFrameworks`"" "/p:TestFrameworks=`"$testFrameworks`"" $projectPath | Out-Default } "Error restoring $projectPath"
+  exec { & $script:msBuildPath "/t:restore" "/v:$msbuildVerbosity" "/p:Configuration=Release" "/p:LibraryFrameworks=`"$libraryFrameworks`"" "/p:TestFrameworks=`"$testFrameworks`"" $projectPath | Out-Default } "Error restoring $projectPath"
 
   Write-Host -ForegroundColor Green "Building $libraryFrameworks in $projectPath"
   Write-Host
 
-  exec { & $script:msBuildPath "/t:build" $projectPath "/p:Configuration=Release" "/p:LibraryFrameworks=`"$libraryFrameworks`"" "/p:TestFrameworks=`"$testFrameworks`"" "/p:AssemblyOriginatorKeyFile=$signKeyPath" "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:AdditionalConstants=$additionalConstants" }
+  exec { & $script:msBuildPath "/t:build" "/v:$msbuildVerbosity" $projectPath "/p:Configuration=Release" "/p:LibraryFrameworks=`"$libraryFrameworks`"" "/p:TestFrameworks=`"$testFrameworks`"" "/p:AssemblyOriginatorKeyFile=$signKeyPath" "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:AdditionalConstants=$additionalConstants" }
 }
 
 function EnsureNuGetExists()
@@ -254,17 +255,17 @@ function NUnitTests($build)
 function GetVersion($majorVersion)
 {
     $now = [DateTime]::Now
-    
+
     $year = $now.Year - 2000
     $month = $now.Month
     $totalMonthsSince2000 = ($year * 12) + $month
     $day = $now.Day
     $minor = "{0}{1:00}" -f $totalMonthsSince2000, $day
-    
+
     $hour = $now.Hour
     $minute = $now.Minute
     $revision = "{0:00}{1:00}" -f $hour, $minute
-    
+
     return $majorVersion + "." + $minor
 }
 
@@ -274,12 +275,12 @@ function Edit-XmlNodes {
         [string] $xpath = $(throw "xpath is a required parameter"),
         [string] $value = $(throw "value is a required parameter")
     )
-    
+
     $nodes = $doc.SelectNodes($xpath)
     $count = $nodes.Count
 
     Write-Host "Found $count nodes with path '$xpath'"
-    
+
     foreach ($node in $nodes) {
         if ($node -ne $null) {
             if ($node.NodeType -eq "Element")
