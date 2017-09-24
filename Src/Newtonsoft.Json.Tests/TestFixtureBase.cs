@@ -291,6 +291,9 @@ namespace Newtonsoft.Json.Tests
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
+#else
+            // suppress writing to console with dotnet test to keep build log size small
+            Console.SetOut(new StringWriter());
 #endif
 
             JsonConvert.DefaultSettings = null;
