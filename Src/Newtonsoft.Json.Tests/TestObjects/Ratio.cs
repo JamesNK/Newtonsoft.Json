@@ -29,7 +29,7 @@ using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(DNXCORE50)
+#if !(DNXCORE50) || NETSTANDARD1_3 || NETSTANDARD2_0
     public struct Ratio : IConvertible, IFormattable, ISerializable
     {
         private readonly int _numerator;

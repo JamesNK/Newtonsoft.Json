@@ -23,12 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
 using System.IO;
 using System.Text;
 using Newtonsoft.Json.Bson;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
 using System;
 using System.Collections.Generic;
 #if DNXCORE50

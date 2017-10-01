@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET40 || NET35 || NET20 || DNXCORE50)
+#if !(NET40 || NET35 || NET20 || DNXCORE50) || NETSTANDARD2_0
 using System.Diagnostics;
 using System.Reflection;
 using Microsoft.FSharp.Core;
@@ -36,7 +36,13 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Tests.TestObjects;
 using Newtonsoft.Json.Tests.TestObjects.GeometricForms;
 using Newtonsoft.Json.Tests.TestObjects.Money;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
 using NUnit.Framework;
+#endif
 
 namespace Newtonsoft.Json.Tests.Converters
 {
@@ -191,7 +197,7 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             Union u = new Union();
 
-            u.TagReader = FSharpFunc<object, int>.ToConverter(FSharpValue.PreComputeUnionTagReader(t, null));
+            u.TagReader = (s) => FSharpValue.PreComputeUnionTagReader(t, null).Invoke(s);
             u.Cases = new List<UnionCase>();
 
             UnionCaseInfo[] cases = FSharpType.GetUnionCases(t, null);
@@ -202,8 +208,8 @@ namespace Newtonsoft.Json.Tests.Converters
                 unionCase.Tag = unionCaseInfo.Tag;
                 unionCase.Name = unionCaseInfo.Name;
                 unionCase.Fields = unionCaseInfo.GetFields();
-                unionCase.FieldReader = FSharpFunc<object, object[]>.ToConverter(FSharpValue.PreComputeUnionReader(unionCaseInfo, null));
-                unionCase.Constructor = FSharpFunc<object[], object>.ToConverter(FSharpValue.PreComputeUnionConstructor(unionCaseInfo, null));
+                unionCase.FieldReader = (s) => FSharpValue.PreComputeUnionReader(unionCaseInfo, null).Invoke(s);
+                unionCase.Constructor = (s) => FSharpValue.PreComputeUnionConstructor(unionCaseInfo, null).Invoke(s);
 
                 u.Cases.Add(unionCase);
             }
@@ -224,8 +230,8 @@ namespace Newtonsoft.Json.Tests.Converters
 
             object[] fields = caseInfo.FieldReader.Invoke(value);
 
-            Assert.AreEqual(10, fields[0]);
-            Assert.AreEqual(5, fields[1]);
+            Assert.AreEqual(10d, fields[0]);
+            Assert.AreEqual(5d, fields[1]);
         }
 
         [Test]

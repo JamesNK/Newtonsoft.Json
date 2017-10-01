@@ -262,7 +262,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 "Constructor for 'Newtonsoft.Json.Tests.Serialization.JsonSerializerCollectionsTests+TestCollectionBadIEnumerableParameter' must have no parameters or a single parameter that implements 'System.Collections.Generic.IEnumerable`1[System.Int32]'.");
         }
 
-#if !(DNXCORE50 || PORTABLE)
+#if !(DNXCORE50 || PORTABLE) || NETSTANDARD2_0
         public class TestCollectionNonGeneric : ArrayList
         {
             [JsonConstructor]
@@ -279,9 +279,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             TestCollectionNonGeneric l = JsonConvert.DeserializeObject<TestCollectionNonGeneric>(json);
 
             Assert.AreEqual(3, l.Count);
-            Assert.AreEqual(1, l[0]);
-            Assert.AreEqual(2, l[1]);
-            Assert.AreEqual(3, l[2]);
+            Assert.AreEqual(1L, l[0]);
+            Assert.AreEqual(2L, l[1]);
+            Assert.AreEqual(3L, l[2]);
         }
 #endif
 
@@ -375,7 +375,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 "Constructor for 'Newtonsoft.Json.Tests.Serialization.JsonSerializerCollectionsTests+TestDictionaryBadIEnumerableParameter' must have no parameters or a single parameter that implements 'System.Collections.Generic.IEnumerable`1[System.Collections.Generic.KeyValuePair`2[System.String,System.Int32]]'.");
         }
 
-#if !(DNXCORE50 || PORTABLE)
+#if !(DNXCORE50 || PORTABLE) || NETSTANDARD2_0
         public class TestDictionaryNonGeneric : Hashtable
         {
             [JsonConstructor]
@@ -392,13 +392,13 @@ namespace Newtonsoft.Json.Tests.Serialization
             TestDictionaryNonGeneric d = JsonConvert.DeserializeObject<TestDictionaryNonGeneric>(json);
 
             Assert.AreEqual(3, d.Count);
-            Assert.AreEqual(0, d["zero"]);
-            Assert.AreEqual(1, d["one"]);
-            Assert.AreEqual(2, d["two"]);
+            Assert.AreEqual(0L, d["zero"]);
+            Assert.AreEqual(1L, d["one"]);
+            Assert.AreEqual(2L, d["two"]);
         }
 #endif
 
-#if !(DNXCORE50)
+#if !(DNXCORE50) || NETSTANDARD2_0
         public class NameValueCollectionTestClass
         {
             public NameValueCollection Collection { get; set; }
@@ -413,7 +413,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40) || NETSTANDARD2_0
         public class SomeObject
         {
             public string Text1 { get; set; }
@@ -1055,7 +1055,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(3, v2["Third"]);
         }
 
-#if !(NET35 || NET20 || PORTABLE || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40) || NETSTANDARD2_0
         [Test]
         public void DeserializeConcurrentDictionary()
         {
@@ -1769,7 +1769,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(1, (int)((JObject)o.Data[2])["one"]);
         }
 
-#if !(DNXCORE50)
+#if !(DNXCORE50) || NETSTANDARD2_0
         [Test]
         public void SerializeArrayAsArrayList()
         {
@@ -1999,7 +1999,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-#if !DNXCORE50
+#if !DNXCORE50 || NETSTANDARD2_0
         [Test]
         public void EmptyStringInHashtableIsDeserialized()
         {

@@ -24,7 +24,7 @@
 #endregion
 
 using System;
-#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
 using System.Buffers;
 #endif
 using System.Collections.Generic;
@@ -592,7 +592,7 @@ namespace Newtonsoft.Json.Tests
 }", json);
         }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
         [Test]
         public void ArrayPooling()
         {
@@ -610,7 +610,7 @@ namespace Newtonsoft.Json.Tests
         }
 #endif
 
-#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
         [Test]
         public async Task AsyncDemo()
         {
@@ -634,7 +634,7 @@ namespace Newtonsoft.Json.Tests
 #endif
     }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50)
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
     public class JsonArrayPool : IArrayPool<char>
     {
         public static readonly JsonArrayPool Instance = new JsonArrayPool();

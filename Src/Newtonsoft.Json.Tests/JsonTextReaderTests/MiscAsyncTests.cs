@@ -988,7 +988,6 @@ null//comment
             Assert.IsTrue(await reader.ReadAsync());
         }
 
-#if !DNXCORE50
         [Test]
         public async Task LinePositionOnNewLineAsync()
         {
@@ -1036,7 +1035,6 @@ null//comment
 
             Assert.IsFalse(await r.ReadAsync());
         }
-#endif
 
         [Test]
         public async Task InvalidUnicodeSequenceAsync()

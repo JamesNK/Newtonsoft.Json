@@ -43,7 +43,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
-#if (DOTNET || PORTABLE || PORTABLE40)
+#if (DOTNET || PORTABLE || PORTABLE40) && !NETSTANDARD2_0
     [Flags]
     internal enum MemberTypes
     {
@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
-#if PORTABLE
+#if PORTABLE && !NETSTANDARD2_0
     [Flags]
     internal enum BindingFlags
     {
@@ -738,7 +738,7 @@ namespace Newtonsoft.Json.Utilities
             return attributes?.FirstOrDefault();
         }
 
-#if !(DOTNET || PORTABLE)
+#if !(DOTNET || PORTABLE) || NETSTANDARD2_0
         public static T[] GetAttributes<T>(object attributeProvider, bool inherit) where T : Attribute
         {
             Attribute[] a = GetAttributes(attributeProvider, typeof(T), inherit);

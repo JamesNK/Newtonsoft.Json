@@ -27,7 +27,7 @@ using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NET20 || DNXCORE50)
+#if !(NET20 || DNXCORE50) || NETSTANDARD2_0
     [DataContract]
     public struct StructISerializable : ISerializable
     {

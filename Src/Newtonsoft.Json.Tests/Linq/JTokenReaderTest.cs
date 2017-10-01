@@ -35,7 +35,7 @@ using NUnit.Framework;
 #endif
 using Newtonsoft.Json;
 using System.IO;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Linq;
@@ -47,7 +47,7 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class JTokenReaderTest : TestFixtureBase
     {
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void ConvertBigIntegerToDouble()
         {
@@ -884,7 +884,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(1d, reader.ReadAsDouble());
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void ReadAsBoolean_BigInteger_Success()
         {

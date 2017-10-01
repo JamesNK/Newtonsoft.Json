@@ -28,7 +28,7 @@
 using System;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
-#if !PORTABLE || NETSTANDARD1_3
+#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0
 using System.Numerics;
 #endif
 using System.Text;
@@ -88,7 +88,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
                 "Unexpected character encountered while parsing value: u. Path '', line 1, position 1.");
         }
 
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public async Task ReadAsBooleanAsync()
         {
@@ -1056,69 +1056,6 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             Assert.IsTrue(await reader.ReadAsync());
         }
 
-#if !DNXCORE50
-        [Test]
-        [Ignore("Probably not a Json.NET issue")]
-        public async Task ReadFromNetworkStreamAsync()
-        {
-            const int port = 11999;
-            const int jsonArrayElementsCount = 193;
-
-            var serverStartedEvent = new ManualResetEvent(false);
-            var clientReceivedEvent = new ManualResetEvent(false);
-
-            ThreadPool.QueueUserWorkItem(work =>
-            {
-                var server = new TcpListener(IPAddress.Parse("0.0.0.0"), port);
-                server.Start();
-
-                serverStartedEvent.Set();
-
-                var serverSocket = server.AcceptSocket();
-
-                var jsonString = "[\r\n" + String.Join(",", Enumerable.Repeat("  \"testdata\"\r\n", jsonArrayElementsCount).ToArray()) + "]";
-                var bytes = new UTF8Encoding().GetBytes(jsonString);
-                serverSocket.Send(bytes);
-                Console.WriteLine("server send: " + bytes.Length);
-
-                clientReceivedEvent.WaitOne();
-
-            });
-
-            serverStartedEvent.WaitOne();
-
-            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.Blocking = false;
-            socket.Connect("127.0.0.1", port);
-
-            var stream = new NetworkStream(socket);
-
-            int i = 0;
-            using (var sr = new StreamReader(stream, new UTF8Encoding(), false))
-            using (var jsonTextReader = new JsonTextReader(sr))
-            {
-                while (await jsonTextReader.ReadAsync())
-                {
-                    i++;
-
-                    if (i == 193)
-                    {
-                        string s = string.Empty;
-                    }
-
-                    Console.WriteLine($"{i} - {jsonTextReader.TokenType} - {jsonTextReader.Value}");
-                }
-
-                //var result = serializer.Deserialize(jsonTextReader).ToString();
-                //Console.WriteLine("client receive: " + new UTF8Encoding().GetBytes(result).Length);
-            }
-
-            clientReceivedEvent.Set();
-
-            Console.WriteLine("Done");
-        }
-#endif
-
         [Test]
         public async Task ReadCommentInsideArrayAsync()
         {
@@ -1205,7 +1142,7 @@ second line
 third line", jsonTextReader.Value);
         }
 
-#if !PORTABLE || NETSTANDARD1_3
+#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public async Task ReadBigIntegerAsync()
         {
