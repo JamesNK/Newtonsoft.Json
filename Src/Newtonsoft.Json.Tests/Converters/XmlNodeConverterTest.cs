@@ -151,6 +151,26 @@ namespace Newtonsoft.Json.Tests.Converters
             return sw.ToString();
         }
 
+#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0
+        [Test]
+        public void DeserializeXmlNode_DefaultDate()
+        {
+            XmlDocument xmlNode = JsonConvert.DeserializeXmlNode("{Time: \"0001-01-01T00:00:00\"}");
+
+            Assert.AreEqual("<Time>0001-01-01T00:00:00</Time>", xmlNode.OuterXml);
+        }
+#endif
+
+#if !NET20
+        [Test]
+        public void DeserializeXNode_DefaultDate()
+        {
+            var xmlNode = JsonConvert.DeserializeXNode("{Time: \"0001-01-01T00:00:00\"}");
+
+            Assert.AreEqual("<Time>0001-01-01T00:00:00</Time>", xmlNode.ToString());
+        }
+#endif
+
         [Test]
         public void WriteJsonNull()
         {

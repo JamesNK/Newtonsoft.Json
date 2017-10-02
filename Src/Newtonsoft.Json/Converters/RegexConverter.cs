@@ -57,8 +57,7 @@ namespace Newtonsoft.Json.Converters
             Regex regex = (Regex)value;
 
 #pragma warning disable 618
-            BsonWriter bsonWriter = writer as BsonWriter;
-            if (bsonWriter != null)
+            if (writer is BsonWriter bsonWriter)
             {
                 WriteBson(bsonWriter, regex);
             }

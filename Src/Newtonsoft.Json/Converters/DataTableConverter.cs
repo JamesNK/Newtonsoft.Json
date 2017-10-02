@@ -94,9 +94,7 @@ namespace Newtonsoft.Json.Converters
                 return null;
             }
 
-            DataTable dt = existingValue as DataTable;
-
-            if (dt == null)
+            if (!(existingValue is DataTable dt))
             {
                 // handle typed datasets
                 dt = (objectType == typeof(DataTable))

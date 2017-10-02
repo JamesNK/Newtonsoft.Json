@@ -1867,40 +1867,44 @@ namespace Newtonsoft.Json.Converters
                     return reader.Value?.ToString();
                 case JsonToken.Integer:
 #if HAVE_BIG_INTEGER
-                    if (reader.Value is BigInteger)
+                    if (reader.Value is BigInteger i)
                     {
-                        return ((BigInteger)reader.Value).ToString(CultureInfo.InvariantCulture);
+                        return i.ToString(CultureInfo.InvariantCulture);
                     }
 #endif
                     return XmlConvert.ToString(Convert.ToInt64(reader.Value, CultureInfo.InvariantCulture));
                 case JsonToken.Float:
-                    if (reader.Value is decimal)
+                {
+                    if (reader.Value is decimal d)
                     {
-                        return XmlConvert.ToString((decimal)reader.Value);
+                        return XmlConvert.ToString(d);
                     }
 
-                    if (reader.Value is float)
+                    if (reader.Value is float f)
                     {
-                        return XmlConvert.ToString((float)reader.Value);
+                        return XmlConvert.ToString(f);
                     }
 
                     return XmlConvert.ToString(Convert.ToDouble(reader.Value, CultureInfo.InvariantCulture));
+                }
                 case JsonToken.Boolean:
                     return XmlConvert.ToString(Convert.ToBoolean(reader.Value, CultureInfo.InvariantCulture));
                 case JsonToken.Date:
+                {
 #if HAVE_DATE_TIME_OFFSET
-                    if (reader.Value is DateTimeOffset)
+                    if (reader.Value is DateTimeOffset offset)
                     {
-                        return XmlConvert.ToString((DateTimeOffset)reader.Value);
+                        return XmlConvert.ToString(offset);
                     }
 
 #endif
                     DateTime d = Convert.ToDateTime(reader.Value, CultureInfo.InvariantCulture);
-#if !PORTABLE
+#if !PORTABLE || NETSTANDARD1_3
                     return XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind));
 #else
-                    return XmlConvert.ToString(d, DateTimeUtils.ToDateTimeFormat(d.Kind));
+                    return d.ToString(DateTimeUtils.ToDateTimeFormat(d.Kind), CultureInfo.InvariantCulture);
 #endif
+                }
                 case JsonToken.Bytes:
                     return Convert.ToBase64String((byte[])reader.Value);
                 case JsonToken.Null:
@@ -1934,8 +1938,7 @@ namespace Newtonsoft.Json.Converters
             {
                 foreach (IXmlNode childNode in nestedArrayElement.ChildNodes)
                 {
-                    IXmlElement element = childNode as IXmlElement;
-                    if (element != null && element.LocalName == propertyName)
+                    if (childNode is IXmlElement element && element.LocalName == propertyName)
                     {
                         AddJsonArrayAttribute(element, document);
                         break;
@@ -2005,8 +2008,7 @@ namespace Newtonsoft.Json.Converters
                                     attributeValue = ConvertTokenToXmlValue(reader);
                                     attributeNameValues.Add(attributeName, attributeValue);
 
-                                    string namespacePrefix;
-                                    if (IsNamespaceAttribute(attributeName, out namespacePrefix))
+                                    if (IsNamespaceAttribute(attributeName, out string namespacePrefix))
                                     {
                                         manager.AddNamespace(namespacePrefix, attributeValue);
                                     }
@@ -2205,8 +2207,7 @@ namespace Newtonsoft.Json.Converters
                             {
                                 foreach (IXmlNode childNode in currentNode.ChildNodes)
                                 {
-                                    IXmlElement element = childNode as IXmlElement;
-                                    if (element != null && element.LocalName == propertyName)
+                                    if (childNode is IXmlElement element && element.LocalName == propertyName)
                                     {
                                         AddJsonArrayAttribute(element, document);
                                         break;

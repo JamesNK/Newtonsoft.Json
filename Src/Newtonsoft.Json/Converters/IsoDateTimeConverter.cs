@@ -80,10 +80,8 @@ namespace Newtonsoft.Json.Converters
         {
             string text;
 
-            if (value is DateTime)
+            if (value is DateTime dateTime)
             {
-                DateTime dateTime = (DateTime)value;
-
                 if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
                     || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
                 {
@@ -93,9 +91,8 @@ namespace Newtonsoft.Json.Converters
                 text = dateTime.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
             }
 #if HAVE_DATE_TIME_OFFSET
-            else if (value is DateTimeOffset)
+            else if (value is DateTimeOffset dateTimeOffset)
             {
-                DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
                 if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
                     || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
                 {
@@ -149,9 +146,9 @@ namespace Newtonsoft.Json.Converters
                 }
 
                 // converter is expected to return a DateTime
-                if (reader.Value is DateTimeOffset)
+                if (reader.Value is DateTimeOffset offset)
                 {
-                    return ((DateTimeOffset)reader.Value).DateTime;
+                    return offset.DateTime;
                 }
 #endif
 
