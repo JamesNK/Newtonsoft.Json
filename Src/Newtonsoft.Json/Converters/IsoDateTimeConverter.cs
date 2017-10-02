@@ -126,7 +126,7 @@ namespace Newtonsoft.Json.Converters
             bool nullable = ReflectionUtils.IsNullableType(objectType);
             if (reader.TokenType == JsonToken.Null)
             {
-                if (!ReflectionUtils.IsNullableType(objectType))
+                if (!nullable)
                 {
                     throw JsonSerializationException.Create(reader, "Cannot convert null value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
                 }
