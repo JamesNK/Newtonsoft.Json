@@ -32,56 +32,56 @@ namespace Newtonsoft.Json.Serialization
         public override bool Read()
         {
             bool value = _innerReader.Read();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override int? ReadAsInt32()
         {
             int? value = _innerReader.ReadAsInt32();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override string ReadAsString()
         {
             string value = _innerReader.ReadAsString();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override byte[] ReadAsBytes()
         {
             byte[] value = _innerReader.ReadAsBytes();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override decimal? ReadAsDecimal()
         {
             decimal? value = _innerReader.ReadAsDecimal();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override double? ReadAsDouble()
         {
             double? value = _innerReader.ReadAsDouble();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override bool? ReadAsBoolean()
         {
             bool? value = _innerReader.ReadAsBoolean();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override DateTime? ReadAsDateTime()
         {
             DateTime? value = _innerReader.ReadAsDateTime();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
@@ -89,10 +89,15 @@ namespace Newtonsoft.Json.Serialization
         public override DateTimeOffset? ReadAsDateTimeOffset()
         {
             DateTimeOffset? value = _innerReader.ReadAsDateTimeOffset();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 #endif
+
+        public void WriteCurrentToken()
+        {
+            _textWriter.WriteToken(_innerReader, false, false, true);
+        }
 
         public override int Depth
         {

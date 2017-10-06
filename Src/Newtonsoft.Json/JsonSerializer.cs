@@ -798,7 +798,7 @@ namespace Newtonsoft.Json
             SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
-                ? new TraceJsonReader(reader)
+                ? CreateTraceJsonReader(reader)
                 : null;
 
             JsonSerializerInternalReader serializerReader = new JsonSerializerInternalReader(this);
@@ -872,7 +872,7 @@ namespace Newtonsoft.Json
             SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
-                ? new TraceJsonReader(reader)
+                ? CreateTraceJsonReader(reader)
                 : null;
 
             JsonSerializerInternalReader serializerReader = new JsonSerializerInternalReader(this);
@@ -1048,6 +1048,17 @@ namespace Newtonsoft.Json
         public void Serialize(JsonWriter jsonWriter, object value)
         {
             SerializeInternal(jsonWriter, value, null);
+        }
+
+        private TraceJsonReader CreateTraceJsonReader(JsonReader reader)
+        {
+            TraceJsonReader traceReader = new TraceJsonReader(reader);
+            if (reader.TokenType != JsonToken.None)
+            {
+                traceReader.WriteCurrentToken();
+            }
+
+            return traceReader;
         }
 
         internal virtual void SerializeInternal(JsonWriter jsonWriter, object value, Type objectType)
