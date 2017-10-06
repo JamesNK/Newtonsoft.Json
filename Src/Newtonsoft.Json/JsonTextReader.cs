@@ -240,7 +240,7 @@ namespace Newtonsoft.Json
             // once in the last 10% of the buffer shift the remaining content to the start to avoid
             // unnecessarily increasing the buffer size when reading numbers/strings
             int length = _chars.Length;
-            if (length - _charPos <= length * 0.1)
+            if (length - _charPos <= length * 0.1 || length > int.MaxValue / 2 - 1)
             {
                 int count = _charsUsed - _charPos;
                 if (count > 0)
