@@ -274,6 +274,46 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
         }
 
         [Test]
+        public void ReadLargeObjects()
+        {
+            const int nrItems = 2;
+            const int length = int.MaxValue / 3;
+
+            byte apostrophe = Encoding.ASCII.GetBytes(@"""").First();
+            byte openingBracket = Encoding.ASCII.GetBytes(@"[").First();
+            byte comma = Encoding.ASCII.GetBytes(@",").First();
+            byte closingBracket = Encoding.ASCII.GetBytes(@"]").First();
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                ms.WriteByte(openingBracket);
+                for (int i = 0; i < nrItems; i++)
+                {
+                    ms.WriteByte(apostrophe);
+
+                    for (int j = 0; j <= length; j++)
+                        ms.WriteByte(7);
+
+                    ms.WriteByte(apostrophe);
+                    if (i < nrItems - 1)
+                        ms.WriteByte(comma);
+                }
+                ms.WriteByte(closingBracket);
+                ms.Seek(0, SeekOrigin.Begin);
+
+                var reader = new JsonTextReader(new StreamReader(ms));
+
+                Assert.IsTrue(reader.Read());
+
+                for (int i = 0; i < nrItems; i++)
+                    Assert.IsTrue(reader.Read());
+
+                Assert.IsTrue(reader.Read());
+                Assert.IsFalse(reader.Read());
+            }
+        }
+
+        [Test]
         public void ReadSingleBytes()
         {
             StringReader s = new StringReader(@"""SGVsbG8gd29ybGQu""");
