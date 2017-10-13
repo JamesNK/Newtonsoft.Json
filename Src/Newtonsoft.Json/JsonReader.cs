@@ -447,8 +447,7 @@ namespace Newtonsoft.Json
                 return null;
             }
 
-            int i;
-            if (int.TryParse(s, NumberStyles.Integer, Culture, out i))
+            if (int.TryParse(s, NumberStyles.Integer, Culture, out int i))
             {
                 SetToken(JsonToken.Integer, i, false);
                 return i;
@@ -483,8 +482,7 @@ namespace Newtonsoft.Json
                 if (Value != null)
                 {
                     string s;
-                    IFormattable formattable = Value as IFormattable;
-                    if (formattable != null)
+                    if (Value is IFormattable formattable)
                     {
                         s = formattable.ToString(null, Culture);
                     }
@@ -535,12 +533,11 @@ namespace Newtonsoft.Json
 
                     byte[] data;
 
-                    Guid g;
                     if (s.Length == 0)
                     {
                         data = CollectionUtils.ArrayEmpty<byte>();
                     }
-                    else if (ConvertUtils.TryConvertGuid(s, out g))
+                    else if (ConvertUtils.TryConvertGuid(s, out Guid g))
                     {
                         data = g.ToByteArray();
                     }
@@ -630,9 +627,9 @@ namespace Newtonsoft.Json
                     {
                         double d;
 #if HAVE_BIG_INTEGER
-                        if (Value is BigInteger)
+                        if (Value is BigInteger value)
                         {
-                            d = (double)(BigInteger)Value;
+                            d = (double)value;
                         }
                         else
 #endif
@@ -659,8 +656,7 @@ namespace Newtonsoft.Json
                 return null;
             }
 
-            double d;
-            if (double.TryParse(s, NumberStyles.Float | NumberStyles.AllowThousands, Culture, out d))
+            if (double.TryParse(s, NumberStyles.Float | NumberStyles.AllowThousands, Culture, out double d))
             {
                 SetToken(JsonToken.Float, d, false);
                 return d;
@@ -690,9 +686,9 @@ namespace Newtonsoft.Json
                 case JsonToken.Float:
                     bool b;
 #if HAVE_BIG_INTEGER
-                    if (Value is BigInteger)
+                    if (Value is BigInteger integer)
                     {
-                        b = (BigInteger)Value != 0;
+                        b = integer != 0;
                     }
                     else
 #endif
@@ -720,8 +716,7 @@ namespace Newtonsoft.Json
                 return null;
             }
 
-            bool b;
-            if (bool.TryParse(s, out b))
+            if (bool.TryParse(s, out bool b))
             {
                 SetToken(JsonToken.Boolean, b, false);
                 return b;
@@ -753,9 +748,9 @@ namespace Newtonsoft.Json
                     {
                         decimal d;
 #if HAVE_BIG_INTEGER
-                        if (Value is BigInteger)
+                        if (Value is BigInteger value)
                         {
-                            d = (decimal)(BigInteger)Value;
+                            d = (decimal)value;
                         }
                         else
 #endif
@@ -782,8 +777,7 @@ namespace Newtonsoft.Json
                 return null;
             }
 
-            decimal d;
-            if (decimal.TryParse(s, NumberStyles.Number, Culture, out d))
+            if (decimal.TryParse(s, NumberStyles.Number, Culture, out decimal d))
             {
                 SetToken(JsonToken.Float, d, false);
                 return d;
@@ -809,9 +803,9 @@ namespace Newtonsoft.Json
                     return null;
                 case JsonToken.Date:
 #if HAVE_DATE_TIME_OFFSET
-                    if (Value is DateTimeOffset)
+                    if (Value is DateTimeOffset offset)
                     {
-                        SetToken(JsonToken.Date, ((DateTimeOffset)Value).DateTime, false);
+                        SetToken(JsonToken.Date, offset.DateTime, false);
                     }
 #endif
 
@@ -832,8 +826,7 @@ namespace Newtonsoft.Json
                 return null;
             }
 
-            DateTime dt;
-            if (DateTimeUtils.TryParseDateTime(s, DateTimeZoneHandling, _dateFormatString, Culture, out dt))
+            if (DateTimeUtils.TryParseDateTime(s, DateTimeZoneHandling, _dateFormatString, Culture, out DateTime dt))
             {
                 dt = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
                 SetToken(JsonToken.Date, dt, false);
@@ -866,9 +859,9 @@ namespace Newtonsoft.Json
                 case JsonToken.EndArray:
                     return null;
                 case JsonToken.Date:
-                    if (Value is DateTime)
+                    if (Value is DateTime time)
                     {
-                        SetToken(JsonToken.Date, new DateTimeOffset((DateTime)Value), false);
+                        SetToken(JsonToken.Date, new DateTimeOffset(time), false);
                     }
 
                     return (DateTimeOffset)Value;
@@ -888,8 +881,7 @@ namespace Newtonsoft.Json
                 return null;
             }
 
-            DateTimeOffset dt;
-            if (DateTimeUtils.TryParseDateTimeOffset(s, _dateFormatString, Culture, out dt))
+            if (DateTimeUtils.TryParseDateTimeOffset(s, _dateFormatString, Culture, out DateTimeOffset dt))
             {
                 SetToken(JsonToken.Date, dt, false);
                 return dt;
@@ -1102,14 +1094,7 @@ namespace Newtonsoft.Json
 
         private void SetFinished()
         {
-            if (SupportMultipleContent)
-            {
-                _currentState = State.Start;
-            }
-            else
-            {
-                _currentState = State.Finished;
-            }
+            _currentState = SupportMultipleContent ? State.Start : State.Finished;
         }
 
         private JsonContainerType GetTypeForCloseToken(JsonToken token)
@@ -1181,7 +1166,7 @@ namespace Newtonsoft.Json
                 return Read();
             }
 
-            ReadType t = (contract != null) ? contract.InternalReadType : ReadType.Read;
+            ReadType t = contract?.InternalReadType ?? ReadType.Read;
 
             switch (t)
             {
@@ -1194,7 +1179,7 @@ namespace Newtonsoft.Json
                     bool result = ReadAndMoveToContent();
                     if (TokenType == JsonToken.Undefined)
                     {
-                        throw JsonReaderException.Create(this, "An undefined token is not a valid {0}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+                        throw JsonReaderException.Create(this, "An undefined token is not a valid {0}.".FormatWith(CultureInfo.InvariantCulture, contract?.UnderlyingType ?? typeof(long)));
                     }
                     return result;
                 case ReadType.ReadAsDecimal:

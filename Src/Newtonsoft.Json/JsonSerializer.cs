@@ -950,11 +950,9 @@ namespace Newtonsoft.Json
                 previousDateFormatString = null;
             }
 
-            JsonTextReader textReader = reader as JsonTextReader;
-            if (textReader != null)
+            if (reader is JsonTextReader textReader)
             {
-                DefaultContractResolver resolver = _contractResolver as DefaultContractResolver;
-                if (resolver != null)
+                if (_contractResolver is DefaultContractResolver resolver)
                 {
                     textReader.NameTable = resolver.GetNameTable();
                 }
@@ -989,8 +987,7 @@ namespace Newtonsoft.Json
                 reader.DateFormatString = previousDateFormatString;
             }
 
-            JsonTextReader textReader = reader as JsonTextReader;
-            if (textReader != null)
+            if (reader is JsonTextReader textReader)
             {
                 textReader.NameTable = null;
             }

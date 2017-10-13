@@ -283,11 +283,11 @@ namespace Newtonsoft.Json
             }
 
             int levelsToComplete = CalculateLevelsToComplete(type);
-            Task t;
             while (levelsToComplete-- > 0)
             {
                 JsonToken token = GetCloseTokenForType(Pop());
 
+                Task t;
                 if (_currentState == State.Property)
                 {
                     t = WriteNullAsync(cancellationToken);
@@ -701,24 +701,24 @@ namespace Newtonsoft.Json
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
                     return
 #if HAVE_BIG_INTEGER
-                        value is BigInteger ? WriteValueAsync((BigInteger)value, cancellationToken) :
+                        value is BigInteger integer ? WriteValueAsync(integer, cancellationToken) :
 #endif
                         WriteValueAsync(Convert.ToInt64(value, CultureInfo.InvariantCulture), cancellationToken);
                 case JsonToken.Float:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is decimal)
+                    if (value is decimal dec)
                     {
-                        return WriteValueAsync((decimal)value, cancellationToken);
+                        return WriteValueAsync(dec, cancellationToken);
                     }
 
-                    if (value is double)
+                    if (value is double doub)
                     {
-                        return WriteValueAsync((double)value, cancellationToken);
+                        return WriteValueAsync(doub, cancellationToken);
                     }
 
-                    if (value is float)
+                    if (value is float f)
                     {
-                        return WriteValueAsync((float)value, cancellationToken);
+                        return WriteValueAsync(f, cancellationToken);
                     }
 
                     return WriteValueAsync(Convert.ToDouble(value, CultureInfo.InvariantCulture), cancellationToken);
@@ -740,9 +740,9 @@ namespace Newtonsoft.Json
                     return WriteEndConstructorAsync(cancellationToken);
                 case JsonToken.Date:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is DateTimeOffset)
+                    if (value is DateTimeOffset offset)
                     {
-                        return WriteValueAsync((DateTimeOffset)value, cancellationToken);
+                        return WriteValueAsync(offset, cancellationToken);
                     }
 
                     return WriteValueAsync(Convert.ToDateTime(value, CultureInfo.InvariantCulture), cancellationToken);
@@ -750,9 +750,9 @@ namespace Newtonsoft.Json
                     return WriteRawValueAsync(value?.ToString(), cancellationToken);
                 case JsonToken.Bytes:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is Guid)
+                    if (value is Guid guid)
                     {
-                        return WriteValueAsync((Guid)value, cancellationToken);
+                        return WriteValueAsync(guid, cancellationToken);
                     }
 
                     return WriteValueAsync((byte[])value, cancellationToken);
@@ -1772,8 +1772,7 @@ namespace Newtonsoft.Json
 #endif
                 default:
 #if HAVE_ICONVERTIBLE
-                    IConvertible convertable = value as IConvertible;
-                    if (convertable != null)
+                    if (value is IConvertible convertable)
                     {
                         // the value is a non-standard IConvertible
                         // convert to the underlying value and retry
