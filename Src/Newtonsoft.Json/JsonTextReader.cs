@@ -202,8 +202,7 @@ namespace Newtonsoft.Json
 
                         if (dateParseHandling == DateParseHandling.DateTime)
                         {
-                            DateTime dt;
-                            if (DateTimeUtils.TryParseDateTime(_stringReference, DateTimeZoneHandling, DateFormatString, Culture, out dt))
+                            if (DateTimeUtils.TryParseDateTime(_stringReference, DateTimeZoneHandling, DateFormatString, Culture, out DateTime dt))
                             {
                                 SetToken(JsonToken.Date, dt, false);
                                 return;
@@ -212,8 +211,7 @@ namespace Newtonsoft.Json
 #if HAVE_DATE_TIME_OFFSET
                         else
                         {
-                            DateTimeOffset dt;
-                            if (DateTimeUtils.TryParseDateTimeOffset(_stringReference, DateFormatString, Culture, out dt))
+                            if (DateTimeUtils.TryParseDateTimeOffset(_stringReference, DateFormatString, Culture, out DateTimeOffset dt))
                             {
                                 SetToken(JsonToken.Date, dt, false);
                                 return;
@@ -709,17 +707,17 @@ namespace Newtonsoft.Json
                 case ReadType.ReadAsString:
                     return Value;
                 case ReadType.ReadAsDateTime:
-                    if (Value is DateTime)
+                    if (Value is DateTime time)
                     {
-                        return (DateTime)Value;
+                        return time;
                     }
 
                     return ReadDateTimeString((string)Value);
 #if HAVE_DATE_TIME_OFFSET
                 case ReadType.ReadAsDateTimeOffset:
-                    if (Value is DateTimeOffset)
+                    if (Value is DateTimeOffset offset)
                     {
-                        return (DateTimeOffset)Value;
+                        return offset;
                     }
 
                     return ReadDateTimeOffsetString((string)Value);
@@ -791,9 +789,9 @@ namespace Newtonsoft.Json
                                 ParseNumber(ReadType.Read);
                                 bool b;
 #if HAVE_BIG_INTEGER
-                                if (Value is BigInteger)
+                                if (Value is BigInteger integer)
                                 {
-                                    b = (BigInteger)Value != 0;
+                                    b = integer != 0;
                                 }
                                 else
 #endif
@@ -1286,8 +1284,7 @@ namespace Newtonsoft.Json
         {
             if (enoughChars)
             {
-                int value;
-                if (ConvertUtils.TryHexTextToInt(_chars, _charPos, _charPos + 4, out value))
+                if (ConvertUtils.TryHexTextToInt(_chars, _charPos, _charPos + 4, out int value))
                 {
                     char hexChar = Convert.ToChar(value);
                     _charPos += 4;
@@ -1984,8 +1981,7 @@ namespace Newtonsoft.Json
                 }
                 else
                 {
-                    int value;
-                    ParseResult parseResult = ConvertUtils.Int32TryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out value);
+                    ParseResult parseResult = ConvertUtils.Int32TryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out int value);
                     if (parseResult == ParseResult.Success)
                     {
                         numberValue = value;
@@ -2027,8 +2023,7 @@ namespace Newtonsoft.Json
                 }
                 else
                 {
-                    decimal value;
-                    ParseResult parseResult = ConvertUtils.DecimalTryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out value);
+                    ParseResult parseResult = ConvertUtils.DecimalTryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out decimal value);
                     if (parseResult == ParseResult.Success)
                     {
                         numberValue = value;
@@ -2068,8 +2063,7 @@ namespace Newtonsoft.Json
                 {
                     string number = _stringReference.ToString();
 
-                    double value;
-                    if (double.TryParse(number, NumberStyles.Float, CultureInfo.InvariantCulture, out value))
+                    if (double.TryParse(number, NumberStyles.Float, CultureInfo.InvariantCulture, out double value))
                     {
                         numberValue = value;
                     }
@@ -2106,8 +2100,7 @@ namespace Newtonsoft.Json
                 }
                 else
                 {
-                    long value;
-                    ParseResult parseResult = ConvertUtils.Int64TryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out value);
+                    ParseResult parseResult = ConvertUtils.Int64TryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out long value);
                     if (parseResult == ParseResult.Success)
                     {
                         numberValue = value;
@@ -2133,8 +2126,7 @@ namespace Newtonsoft.Json
                     {
                         if (_floatParseHandling == FloatParseHandling.Decimal)
                         {
-                            decimal d;
-                            parseResult = ConvertUtils.DecimalTryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out d);
+                            parseResult = ConvertUtils.DecimalTryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out decimal d);
                             if (parseResult == ParseResult.Success)
                             {
                                 numberValue = d;
@@ -2148,8 +2140,7 @@ namespace Newtonsoft.Json
                         {
                             string number = _stringReference.ToString();
 
-                            double d;
-                            if (double.TryParse(number, NumberStyles.Float, CultureInfo.InvariantCulture, out d))
+                            if (double.TryParse(number, NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
                             {
                                 numberValue = d;
                             }

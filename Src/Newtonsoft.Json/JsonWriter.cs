@@ -546,9 +546,9 @@ namespace Newtonsoft.Json
                 case JsonToken.Integer:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
 #if HAVE_BIG_INTEGER
-                    if (value is BigInteger)
+                    if (value is BigInteger integer)
                     {
-                        WriteValue((BigInteger)value);
+                        WriteValue(integer);
                     }
                     else
 #endif
@@ -558,9 +558,9 @@ namespace Newtonsoft.Json
                     break;
                 case JsonToken.Float:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is decimal)
+                    if (value is decimal d)
                     {
-                        WriteValue((decimal)value);
+                        WriteValue(d);
                     }
                     else if (value is double)
                     {
