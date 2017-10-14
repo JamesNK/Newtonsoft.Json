@@ -318,7 +318,8 @@ namespace Newtonsoft.Json.Serialization
                 }
                 else
                 {
-                    base.WriteValue(value);
+                    // base.WriteValue(value) will error
+                    InternalWriteValue(JsonToken.String);
                 }
             }
         }

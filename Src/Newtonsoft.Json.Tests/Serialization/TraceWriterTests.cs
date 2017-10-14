@@ -1073,6 +1073,50 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.AreEqual(23, deserialized.FavoriteNumber);
         }
 
+        [Test]
+        public void TraceJsonWriterTest_WriteObjectInObject()
+        {
+            StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+            JsonTextWriter w = new JsonTextWriter(sw);
+            TraceJsonWriter traceWriter = new TraceJsonWriter(w);
+
+            traceWriter.WriteStartObject();
+            traceWriter.WritePropertyName("Prop1");
+            traceWriter.WriteValue((object)1);
+            traceWriter.WriteEndObject();
+            traceWriter.Flush();
+            traceWriter.Close();
+
+            string json = @"{
+  ""Prop1"": 1
+}";
+
+            StringAssert.AreEqual("Serialized JSON: " + Environment.NewLine + json, traceWriter.GetSerializedJsonMessage());
+        }
+
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40)
+        [Test]
+        public async Task TraceJsonWriterTest_WriteObjectInObjectAsync()
+        {
+            StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+            JsonTextWriter w = new JsonTextWriter(sw);
+            TraceJsonWriter traceWriter = new TraceJsonWriter(w);
+
+            await traceWriter.WriteStartObjectAsync();
+            await traceWriter.WritePropertyNameAsync("Prop1");
+            await traceWriter.WriteValueAsync((object)1);
+            await traceWriter.WriteEndObjectAsync();
+            await traceWriter.FlushAsync();
+            traceWriter.Close();
+
+            string json = @"{
+  ""Prop1"": 1
+}";
+
+            StringAssert.AreEqual("Serialized JSON: " + Environment.NewLine + json, traceWriter.GetSerializedJsonMessage());
+        }
+#endif
+
 #if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void TraceJsonWriterTest()
@@ -1175,7 +1219,6 @@ Newtonsoft.Json Error: 0 : Error!
     1,
     true,
     9999999990000000000000000000000000000000000,
-    true,
     true,
     ""00:01:00"",
     ""00000000-0000-0000-0000-000000000000"",
