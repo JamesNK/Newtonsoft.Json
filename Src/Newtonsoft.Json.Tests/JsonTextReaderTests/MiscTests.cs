@@ -494,7 +494,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[129]);
+            reader.CharBuffer = new char[129];
 #endif
 
             for (int i = 0; i < 15; i++)
@@ -526,7 +526,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[129]);
+            reader.CharBuffer = new char[129];
 #endif
 
             for (int i = 0; i < 14; i++)
@@ -699,7 +699,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[2]);
+            reader.CharBuffer = new char[2];
 #endif
 
             reader.Read();

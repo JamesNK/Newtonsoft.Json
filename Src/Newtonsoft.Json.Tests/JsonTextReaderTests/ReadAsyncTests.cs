@@ -114,7 +114,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[10]);
+            reader.CharBuffer = new char[10];
 #endif
 
             Assert.IsTrue(await reader.ReadAsync());
@@ -227,7 +227,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[5]);
+            reader.CharBuffer = new char[5];
 #endif
 
             Assert.IsTrue(await reader.ReadAsync());
@@ -267,6 +267,65 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             Assert.IsTrue(await reader.ReadAsync());
             Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
         }
+
+#if DEBUG
+        [Test]
+        public async Task ReadLargeObjectsAsync()
+        {
+            const int nrItems = 2;
+            const int length = 1200;
+            const int largeBufferLength = 2048;
+
+            byte apostrophe = Encoding.ASCII.GetBytes(@"""").First();
+            byte openingBracket = Encoding.ASCII.GetBytes(@"[").First();
+            byte comma = Encoding.ASCII.GetBytes(@",").First();
+            byte closingBracket = Encoding.ASCII.GetBytes(@"]").First();
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                ms.WriteByte(openingBracket);
+                for (int i = 0; i < nrItems; i++)
+                {
+                    ms.WriteByte(apostrophe);
+
+                    for (int j = 0; j <= length; j++)
+                    {
+                        byte current = Convert.ToByte((j % 10) + 48);
+                        ms.WriteByte(current);
+                    }
+
+                    ms.WriteByte(apostrophe);
+                    if (i < nrItems - 1)
+                    {
+                        ms.WriteByte(comma);
+                    }
+                }
+
+                ms.WriteByte(closingBracket);
+                ms.Seek(0, SeekOrigin.Begin);
+
+                JsonTextReader reader = new JsonTextReader(new StreamReader(ms));
+                reader.LargeBufferLength = largeBufferLength;
+
+                Assert.IsTrue(await reader.ReadAsync());
+                Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+                Assert.IsTrue(await reader.ReadAsync());
+                Assert.AreEqual(JsonToken.String, reader.TokenType);
+                Assert.AreEqual(largeBufferLength, reader.CharBuffer.Length);
+
+                Assert.IsTrue(await reader.ReadAsync());
+                Assert.AreEqual(JsonToken.String, reader.TokenType);
+                // buffer has been shifted before reading the second string
+                Assert.AreEqual(largeBufferLength, reader.CharBuffer.Length);
+
+                Assert.IsTrue(await reader.ReadAsync());
+                Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+                Assert.IsFalse(await reader.ReadAsync());
+            }
+        }
+#endif
 
         [Test]
         public async Task ReadSingleBytesAsync()
@@ -675,7 +734,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[5]);
+            reader.CharBuffer = new char[5];
 #endif
 
             for (int i = 0; i < 13; i++)
@@ -703,7 +762,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[5]);
+            reader.CharBuffer = new char[5];
 #endif
 
             for (int i = 0; i < 26; i++)
@@ -1248,7 +1307,7 @@ third line", jsonTextReader.Value);
             using (JsonTextReader jsonReader = new JsonTextReader(sr))
             {
 #if DEBUG
-                jsonReader.SetCharBuffer(new char[5]);
+                jsonReader.CharBuffer = new char[5];
 #endif
 
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.None);
