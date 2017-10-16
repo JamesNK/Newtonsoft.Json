@@ -5267,6 +5267,24 @@ Path '', line 1, position 1.");
         }
 #endif
 
+        public class CustomClass
+        {
+#if !(NET20 || PORTABLE)
+            [Required]
+#endif
+            public System.Guid? clientId { get; set; }
+        }
+
+        [Test]
+        public void DeserializeStringIntoNullableGuid()
+        {
+            string json = @"{ 'clientId': 'bb2f3da7-bf79-4d14-9d54-0a1f7ff5f902' }";
+
+            CustomClass c = JsonConvert.DeserializeObject<CustomClass>(json);
+
+            Assert.AreEqual(new Guid("bb2f3da7-bf79-4d14-9d54-0a1f7ff5f902"), c.clientId);
+        }
+
 #if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
         [Test]
         public void SerializeException1()
