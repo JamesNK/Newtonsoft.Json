@@ -2048,6 +2048,17 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("goose", deserialized[2]);
         }
 
+#if !(PORTABLE || PORTABLE40)
+        [Test]
+        public void DeserializeCultureInfoKey()
+        {
+            string json = @"{ ""en-US"": ""Hi"", ""sv-SE"": ""Hej"" }";
+
+            Dictionary<CultureInfo, string> values = JsonConvert.DeserializeObject<Dictionary<CultureInfo, string>>(json);
+            Assert.AreEqual(2, values.Count);
+        }
+#endif
+
         public class MyClass : IList<string>
         {
             private List<string> _storage;
