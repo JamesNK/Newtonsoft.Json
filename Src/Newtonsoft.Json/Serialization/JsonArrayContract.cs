@@ -251,9 +251,11 @@ namespace Newtonsoft.Json.Serialization
             }
 #endif
 
-            Type immutableCreatedType;
-            ObjectConstructor<object> immutableParameterizedCreator;
-            if (ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(underlyingType, CollectionItemType, out immutableCreatedType, out immutableParameterizedCreator))
+            if (ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(
+                underlyingType,
+                CollectionItemType,
+                out Type immutableCreatedType,
+                out ObjectConstructor<object> immutableParameterizedCreator))
             {
                 CreatedType = immutableCreatedType;
                 _parameterizedCreator = immutableParameterizedCreator;

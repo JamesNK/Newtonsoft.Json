@@ -376,7 +376,7 @@ namespace Newtonsoft.Json.Utilities
                 {
                     object value = _dictionary[item.Key];
 
-                    if (object.Equals(value, item.Value))
+                    if (Equals(value, item.Value))
                     {
                         _dictionary.Remove(item.Key);
                         return true;

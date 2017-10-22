@@ -184,7 +184,7 @@ namespace Newtonsoft.Json.Utilities
 
         private static Expression[] GetArgArray(DynamicMetaObject[] args, DynamicMetaObject value)
         {
-            var exp = value.Expression;
+            Expression exp = value.Expression;
             return new[]
             {
                 Expression.NewArrayInit(typeof(object), GetArgs(args)),

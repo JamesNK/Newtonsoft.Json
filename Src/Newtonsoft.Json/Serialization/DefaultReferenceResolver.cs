@@ -35,11 +35,9 @@ namespace Newtonsoft.Json.Serialization
 
         private BidirectionalDictionary<string, object> GetMappings(object context)
         {
-            JsonSerializerInternalBase internalSerializer = context as JsonSerializerInternalBase;
-            if (internalSerializer == null)
+            if (!(context is JsonSerializerInternalBase internalSerializer))
             {
-                JsonSerializerProxy proxy = context as JsonSerializerProxy;
-                if (proxy != null)
+                if (context is JsonSerializerProxy proxy)
                 {
                     internalSerializer = proxy.GetInternalSerializer();
                 }
@@ -54,8 +52,7 @@ namespace Newtonsoft.Json.Serialization
 
         public object ResolveReference(object context, string reference)
         {
-            object value;
-            GetMappings(context).TryGetByFirst(reference, out value);
+            GetMappings(context).TryGetByFirst(reference, out object value);
             return value;
         }
 
@@ -63,8 +60,7 @@ namespace Newtonsoft.Json.Serialization
         {
             BidirectionalDictionary<string, object> mappings = GetMappings(context);
 
-            string reference;
-            if (!mappings.TryGetBySecond(value, out reference))
+            if (!mappings.TryGetBySecond(value, out string reference))
             {
                 _referenceCount++;
                 reference = _referenceCount.ToString(CultureInfo.InvariantCulture);
@@ -81,8 +77,7 @@ namespace Newtonsoft.Json.Serialization
 
         public bool IsReferenced(object context, object value)
         {
-            string reference;
-            return GetMappings(context).TryGetBySecond(value, out reference);
+            return GetMappings(context).TryGetBySecond(value, out _);
         }
     }
 }

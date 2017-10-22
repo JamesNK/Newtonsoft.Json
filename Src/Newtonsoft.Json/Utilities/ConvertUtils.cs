@@ -30,8 +30,10 @@ using System.ComponentModel;
 #if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
+#if !HAVE_GUID_TRY_PARSE
 using System.Text;
 using System.Text.RegularExpressions;
+#endif
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
 #if !HAVE_LINQ
@@ -381,7 +383,7 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
-        #region TryConvert
+#region TryConvert
         internal enum ConvertResult
         {
             Success = 0,
@@ -447,7 +449,7 @@ namespace Newtonsoft.Json.Utilities
             }
 
             // use Convert.ChangeType if both types are IConvertible
-            if (ConvertUtils.IsConvertible(initialValue.GetType()) && ConvertUtils.IsConvertible(targetType))
+            if (IsConvertible(initialValue.GetType()) && IsConvertible(targetType))
             {
                 if (targetType.IsEnum())
                 {
@@ -468,9 +470,9 @@ namespace Newtonsoft.Json.Utilities
             }
 
 #if HAVE_DATE_TIME_OFFSET
-            if (initialValue is DateTime && targetType == typeof(DateTimeOffset))
+            if (initialValue is DateTime dt && targetType == typeof(DateTimeOffset))
             {
-                value = new DateTimeOffset((DateTime)initialValue);
+                value = new DateTimeOffset(dt);
                 return ConvertResult.Success;
             }
 #endif
@@ -582,9 +584,9 @@ namespace Newtonsoft.Json.Utilities
             value = null;
             return ConvertResult.NoValidConversion;
         }
-        #endregion
+#endregion
 
-        #region ConvertOrCast
+#region ConvertOrCast
         /// <summary>
         /// Converts the value to the specified type. If the value is unable to be converted, the
         /// value is checked whether it assignable to the specified type.
@@ -615,7 +617,7 @@ namespace Newtonsoft.Json.Utilities
 
             return EnsureTypeAssignable(initialValue, ReflectionUtils.GetObjectType(initialValue), targetType);
         }
-        #endregion
+#endregion
 
         private static object EnsureTypeAssignable(object value, Type initialType, Type targetType)
         {

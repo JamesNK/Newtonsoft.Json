@@ -25,12 +25,9 @@
 
 #if HAVE_DYNAMIC
 using System;
-using System.Collections.Generic;
 using System.Dynamic;
-using System.Reflection;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Utilities;
-using System.Collections;
 
 namespace Newtonsoft.Json.Serialization
 {

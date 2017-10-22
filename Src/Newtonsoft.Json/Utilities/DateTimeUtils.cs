@@ -521,11 +521,7 @@ namespace Newtonsoft.Json.Utilities
 
         private static bool TryParseDateTimeMicrosoft(StringReference text, DateTimeZoneHandling dateTimeZoneHandling, out DateTime dt)
         {
-            long ticks;
-            TimeSpan offset;
-            DateTimeKind kind;
-
-            if (!TryParseMicrosoftDate(text, out ticks, out offset, out kind))
+            if (!TryParseMicrosoftDate(text, out long ticks, out _, out DateTimeKind kind))
             {
                 dt = default(DateTime);
                 return false;
@@ -552,8 +548,7 @@ namespace Newtonsoft.Json.Utilities
 
         private static bool TryParseDateTimeExact(string text, DateTimeZoneHandling dateTimeZoneHandling, string dateFormatString, CultureInfo culture, out DateTime dt)
         {
-            DateTime temp;
-            if (DateTime.TryParseExact(text, dateFormatString, culture, DateTimeStyles.RoundtripKind, out temp))
+            if (DateTime.TryParseExact(text, dateFormatString, culture, DateTimeStyles.RoundtripKind, out DateTime temp))
             {
                 temp = EnsureDateTime(temp, dateTimeZoneHandling);
                 dt = temp;
@@ -567,11 +562,7 @@ namespace Newtonsoft.Json.Utilities
 #if HAVE_DATE_TIME_OFFSET
         private static bool TryParseDateTimeOffsetMicrosoft(StringReference text, out DateTimeOffset dt)
         {
-            long ticks;
-            TimeSpan offset;
-            DateTimeKind kind;
-
-            if (!TryParseMicrosoftDate(text, out ticks, out offset, out kind))
+            if (!TryParseMicrosoftDate(text, out long ticks, out TimeSpan offset, out _))
             {
                 dt = default(DateTime);
                 return false;
@@ -585,8 +576,7 @@ namespace Newtonsoft.Json.Utilities
 
         private static bool TryParseDateTimeOffsetExact(string text, string dateFormatString, CultureInfo culture, out DateTimeOffset dt)
         {
-            DateTimeOffset temp;
-            if (DateTimeOffset.TryParseExact(text, dateFormatString, culture, DateTimeStyles.RoundtripKind, out temp))
+            if (DateTimeOffset.TryParseExact(text, dateFormatString, culture, DateTimeStyles.RoundtripKind, out DateTimeOffset temp))
             {
                 dt = temp;
                 return true;
@@ -601,8 +591,7 @@ namespace Newtonsoft.Json.Utilities
         {
             bool negative = (offsetText[startIndex] == '-');
 
-            int hours;
-            if (ConvertUtils.Int32TryParse(offsetText.Chars, startIndex + 1, 2, out hours) != ParseResult.Success)
+            if (ConvertUtils.Int32TryParse(offsetText.Chars, startIndex + 1, 2, out int hours) != ParseResult.Success)
             {
                 offset = default(TimeSpan);
                 return false;
@@ -698,10 +687,7 @@ namespace Newtonsoft.Json.Utilities
         {
             int length = 19;
 
-            int year;
-            int month;
-            int day;
-            GetDateValues(dt, out year, out month, out day);
+            GetDateValues(dt, out int year, out int month, out int day);
 
             CopyIntToCharArray(chars, start, year, 4);
             chars[start + 4] = '-';

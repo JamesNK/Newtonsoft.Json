@@ -44,7 +44,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="Task"/> that represents the asynchronous write operation.</returns>
         public override Task WriteToAsync(JsonWriter writer, CancellationToken cancellationToken, params JsonConverter[] converters)
         {
-            var t = writer.WriteStartObjectAsync(cancellationToken);
+            Task t = writer.WriteStartObjectAsync(cancellationToken);
             if (!t.IsCompletedSucessfully())
             {
                 return AwaitProperties(t, 0, writer, cancellationToken, converters);
