@@ -379,7 +379,7 @@ namespace Newtonsoft.Json.Linq
         public override void WriteValue(char value)
         {
             base.WriteValue(value);
-            string s = null;
+            string s;
 #if HAVE_CHAR_TO_STRING_WITH_CULTURE
             s = value.ToString(CultureInfo.InvariantCulture);
 #else
@@ -485,10 +485,8 @@ namespace Newtonsoft.Json.Linq
 
         internal override void WriteToken(JsonReader reader, bool writeChildren, bool writeDateConstructorAsDate, bool writeComments)
         {
-            JTokenReader tokenReader = reader as JTokenReader;
-
             // cloning the token rather than reading then writing it doesn't lose some type information, e.g. Guid, byte[], etc
-            if (tokenReader != null && writeChildren && writeDateConstructorAsDate && writeComments)
+            if (reader is JTokenReader tokenReader && writeChildren && writeDateConstructorAsDate && writeComments)
             {
                 if (tokenReader.TokenType == JsonToken.None)
                 {

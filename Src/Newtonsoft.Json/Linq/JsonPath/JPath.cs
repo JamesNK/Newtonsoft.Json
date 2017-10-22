@@ -406,7 +406,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
             _currentIndex++;
 
-            QueryExpression expression = ParseExpression(scan);
+            QueryExpression expression = ParseExpression();
 
             _currentIndex++;
             EnsureLength("Path ended with open indexer.");
@@ -433,7 +433,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
             }
         }
 
-        private bool TryParseExpression(bool scan, out List<PathFilter> expressionPath)
+        private bool TryParseExpression(out List<PathFilter> expressionPath)
         {
             if (_expression[_currentIndex] == '$')
             {
@@ -465,12 +465,11 @@ namespace Newtonsoft.Json.Linq.JsonPath
             return new JsonException("Unexpected character while parsing path query: " + _expression[_currentIndex]);
         }
 
-        private object ParseSide(bool scan)
+        private object ParseSide()
         {
             EatWhitespace();
 
-            List<PathFilter> expressionPath;
-            if (TryParseExpression(scan, out expressionPath))
+            if (TryParseExpression(out var expressionPath))
             {
                 EatWhitespace();
                 EnsureLength("Path ended with open query.");
@@ -478,8 +477,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 return expressionPath;
             }
 
-            object value;
-            if (TryParseValue(out value))
+            if (TryParseValue(out var value))
             {
                 EatWhitespace();
                 EnsureLength("Path ended with open query.");
@@ -490,14 +488,14 @@ namespace Newtonsoft.Json.Linq.JsonPath
             throw CreateUnexpectedCharacterException();
         }
 
-        private QueryExpression ParseExpression(bool scan)
+        private QueryExpression ParseExpression()
         {
             QueryExpression rootExpression = null;
             CompositeExpression parentExpression = null;
 
             while (_currentIndex < _expression.Length)
             {
-                object left = ParseSide(scan);
+                object left = ParseSide();
                 object right = null;
 
                 QueryOperator op;
@@ -511,7 +509,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 {
                     op = ParseOperator();
 
-                    right = ParseSide(scan);
+                    right = ParseSide();
                 }
 
                 BooleanQueryExpression booleanExpression = new BooleanQueryExpression
@@ -603,17 +601,15 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     {
                         string numberText = sb.ToString();
 
-                        if (numberText.IndexOfAny(new char[] { '.', 'E', 'e' }) != -1)
+                        if (numberText.IndexOfAny(new[] { '.', 'E', 'e' }) != -1)
                         {
-                            double d;
-                            bool result = double.TryParse(numberText, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out d);
+                            bool result = double.TryParse(numberText, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var d);
                             value = d;
                             return result;
                         }
                         else
                         {
-                            long l;
-                            bool result = long.TryParse(numberText, NumberStyles.Integer, CultureInfo.InvariantCulture, out l);
+                            bool result = long.TryParse(numberText, NumberStyles.Integer, CultureInfo.InvariantCulture, out var l);
                             value = l;
                             return result;
                         }

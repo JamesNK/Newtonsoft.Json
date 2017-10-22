@@ -115,8 +115,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override bool DeepEquals(JToken node)
         {
-            JObject t = node as JObject;
-            if (t == null)
+            if (!(node is JObject t))
             {
                 return false;
             }
@@ -169,8 +168,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override void MergeItem(object content, JsonMergeSettings settings)
         {
-            JObject o = content as JObject;
-            if (o == null)
+            if (!(content is JObject o))
             {
                 return;
             }
@@ -185,8 +183,7 @@ namespace Newtonsoft.Json.Linq
                 }
                 else if (contentItem.Value != null)
                 {
-                    JContainer existingContainer = existingProperty.Value as JContainer;
-                    if (existingContainer == null || existingContainer.Type != contentItem.Value.Type)
+                    if (!(existingProperty.Value is JContainer existingContainer) || existingContainer.Type != contentItem.Value.Type)
                     {
                         if (contentItem.Value.Type != JTokenType.Null || settings?.MergeNullValueHandling == MergeNullValueHandling.Merge)
                         {
@@ -257,8 +254,7 @@ namespace Newtonsoft.Json.Linq
                 return null;
             }
 
-            JToken property;
-            _properties.TryGetValue(name, out property);
+            _properties.TryGetValue(name, out JToken property);
             return (JProperty)property;
         }
 
@@ -281,8 +277,7 @@ namespace Newtonsoft.Json.Linq
             {
                 ValidationUtils.ArgumentNotNull(key, nameof(key));
 
-                string propertyName = key as string;
-                if (propertyName == null)
+                if (!(key is string propertyName))
                 {
                     throw new ArgumentException("Accessed JObject values with invalid key value: {0}. Object property name expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
                 }
@@ -293,8 +288,7 @@ namespace Newtonsoft.Json.Linq
             {
                 ValidationUtils.ArgumentNotNull(key, nameof(key));
 
-                string propertyName = key as string;
-                if (propertyName == null)
+                if (!(key is string propertyName))
                 {
                     throw new ArgumentException("Set JObject values with invalid key value: {0}. Object property name expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
                 }
@@ -794,10 +788,8 @@ namespace Newtonsoft.Json.Linq
 
             public override bool TrySetMember(JObject instance, SetMemberBinder binder, object value)
             {
-                JToken v = value as JToken;
-
                 // this can throw an error if value isn't a valid for a JValue
-                if (v == null)
+                if (!(value is JToken v))
                 {
                     v = new JValue(value);
                 }

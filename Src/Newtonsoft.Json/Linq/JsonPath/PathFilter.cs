@@ -10,10 +10,8 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
         protected static JToken GetTokenIndex(JToken t, bool errorWhenNoMatch, int index)
         {
-            JArray a = t as JArray;
-            JConstructor c = t as JConstructor;
 
-            if (a != null)
+            if (t is JArray a)
             {
                 if (a.Count <= index)
                 {
@@ -27,7 +25,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
                 return a[index];
             }
-            else if (c != null)
+            else if (t is JConstructor c)
             {
                 if (c.Count <= index)
                 {

@@ -304,8 +304,7 @@ namespace Newtonsoft.Json.Linq
             foreach (JToken o in ChildrenTokens)
             {
                 yield return o;
-                JContainer c = o as JContainer;
-                if (c != null)
+                if (o is JContainer c)
                 {
                     foreach (JToken d in c.Descendants())
                     {
@@ -597,8 +596,7 @@ namespace Newtonsoft.Json.Linq
 
         internal static bool IsTokenUnchanged(JToken currentValue, JToken newValue)
         {
-            JValue v1 = currentValue as JValue;
-            if (v1 != null)
+            if (currentValue is JValue v1)
             {
                 // null will get turned into a JValue of type null
                 if (v1.Type == JTokenType.Null && newValue == null)
@@ -668,8 +666,7 @@ namespace Newtonsoft.Json.Linq
 
         internal static JToken CreateFromContent(object content)
         {
-            JToken token = content as JToken;
-            if (token != null)
+            if (content is JToken token)
             {
                 return token;
             }
@@ -944,8 +941,7 @@ namespace Newtonsoft.Json.Linq
                 return null;
             }
 
-            JToken token = value as JToken;
-            if (token != null)
+            if (value is JToken token)
             {
                 return token;
             }
@@ -1148,8 +1144,7 @@ namespace Newtonsoft.Json.Linq
                         {
                             JToken sourceItem = target[i];
 
-                            JContainer existingContainer = sourceItem as JContainer;
-                            if (existingContainer != null)
+                            if (sourceItem is JContainer existingContainer)
                             {
                                 existingContainer.Merge(targetItem, settings);
                             }

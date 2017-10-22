@@ -52,8 +52,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override void MergeItem(object content, JsonMergeSettings settings)
         {
-            JConstructor c = content as JConstructor;
-            if (c == null)
+            if (!(content is JConstructor c))
             {
                 return;
             }
@@ -140,8 +139,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override bool DeepEquals(JToken node)
         {
-            JConstructor c = node as JConstructor;
-            return (c != null && _name == c.Name && ContentsEqual(c));
+            return (node is JConstructor c && _name == c.Name && ContentsEqual(c));
         }
 
         internal override JToken CloneToken()

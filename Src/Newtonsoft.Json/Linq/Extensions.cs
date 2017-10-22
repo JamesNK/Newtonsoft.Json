@@ -171,8 +171,7 @@ namespace Newtonsoft.Json.Linq
         {
             ValidationUtils.ArgumentNotNull(value, nameof(value));
 
-            JToken token = value as JToken;
-            if (token == null)
+            if (!(value is JToken token))
             {
                 throw new ArgumentException("Source value must be a JToken.");
             }
@@ -275,9 +274,9 @@ namespace Newtonsoft.Json.Linq
                     throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, token.GetType(), typeof(T)));
                 }
 
-                if (value.Value is U)
+                if (value.Value is U u)
                 {
-                    return (U)value.Value;
+                    return u;
                 }
 
                 Type targetType = typeof(U);

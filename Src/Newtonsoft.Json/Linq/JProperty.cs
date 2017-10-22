@@ -263,8 +263,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override bool DeepEquals(JToken node)
         {
-            JProperty t = node as JProperty;
-            return (t != null && _name == t.Name && ContentsEqual(t));
+            return (node is JProperty t && _name == t.Name && ContentsEqual(t));
         }
 
         internal override JToken CloneToken()
@@ -338,7 +337,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override int GetDeepHashCode()
         {
-            return _name.GetHashCode() ^ ((Value != null) ? Value.GetDeepHashCode() : 0);
+            return _name.GetHashCode() ^ (Value?.GetDeepHashCode() ?? 0);
         }
 
         /// <summary>

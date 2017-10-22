@@ -76,8 +76,7 @@ namespace Newtonsoft.Json.Linq
                     return false;
                 }
 
-                JContainer container = _current as JContainer;
-                if (container != null && _parent != container)
+                if (_current is JContainer container && _parent != container)
                 {
                     return ReadInto(container);
                 }

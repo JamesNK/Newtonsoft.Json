@@ -113,9 +113,9 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public override bool Equals(object obj)
         {
-            if (obj is JEnumerable<T>)
+            if (obj is JEnumerable<T> enumerable)
             {
-                return Equals((JEnumerable<T>)obj);
+                return Equals(enumerable);
             }
 
             return false;

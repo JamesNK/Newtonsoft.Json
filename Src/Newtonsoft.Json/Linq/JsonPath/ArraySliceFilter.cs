@@ -20,8 +20,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
             foreach (JToken t in current)
             {
-                JArray a = t as JArray;
-                if (a != null)
+                if (t is JArray a)
                 {
                     // set defaults for null arguments
                     int stepCount = Step ?? 1;
