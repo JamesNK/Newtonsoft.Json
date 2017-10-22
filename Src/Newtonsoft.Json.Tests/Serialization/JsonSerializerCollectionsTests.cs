@@ -2060,7 +2060,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 #endif
 
         [Test]
-        public void DeserializeReadonlyArrayProperty()
+        public void DeserializeConstructorWithReadonlyArrayProperty()
         {
             string json = @"{""Endpoint"":""http://localhost"",""Name"":""account1"",""Dimensions"":[{""Key"":""Endpoint"",""Value"":""http://localhost""},{""Key"":""Name"",""Value"":""account1""}]}";
 
