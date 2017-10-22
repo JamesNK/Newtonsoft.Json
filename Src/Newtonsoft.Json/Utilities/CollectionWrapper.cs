@@ -283,10 +283,7 @@ namespace Newtonsoft.Json.Utilities
             CopyTo((T[])array, arrayIndex);
         }
 
-        bool ICollection.IsSynchronized
-        {
-            get { return false; }
-        }
+        bool ICollection.IsSynchronized => false;
 
         object ICollection.SyncRoot
         {
@@ -319,9 +316,6 @@ namespace Newtonsoft.Json.Utilities
             return true;
         }
 
-        public object UnderlyingCollection
-        {
-            get { return (object)_genericCollection ?? _list; }
-        }
+        public object UnderlyingCollection => (object)_genericCollection ?? _list;
     }
 }

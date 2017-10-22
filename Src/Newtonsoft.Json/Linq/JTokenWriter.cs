@@ -46,10 +46,7 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Gets the <see cref="JToken"/> at the writer's current position.
         /// </summary>
-        public JToken CurrentToken
-        {
-            get { return _current; }
-        }
+        public JToken CurrentToken => _current;
 
         /// <summary>
         /// Gets the token being written.

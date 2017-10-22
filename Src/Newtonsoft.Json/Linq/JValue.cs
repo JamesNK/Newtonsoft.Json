@@ -214,10 +214,7 @@ namespace Newtonsoft.Json.Linq
         /// <value>
         /// 	<c>true</c> if this token has child values; otherwise, <c>false</c>.
         /// </value>
-        public override bool HasValues
-        {
-            get { return false; }
-        }
+        public override bool HasValues => false;
 
 #if HAVE_BIG_INTEGER
         private static int CompareBigInteger(BigInteger i1, object i2)
@@ -695,10 +692,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets the node type for this <see cref="JToken"/>.
         /// </summary>
         /// <value>The type.</value>
-        public override JTokenType Type
-        {
-            get { return _valueType; }
-        }
+        public override JTokenType Type => _valueType;
 
         /// <summary>
         /// Gets or sets the underlying token value.
@@ -706,7 +700,7 @@ namespace Newtonsoft.Json.Linq
         /// <value>The underlying token value.</value>
         public object Value
         {
-            get { return _value; }
+            get => _value;
             set
             {
                 Type currentType = _value?.GetType();

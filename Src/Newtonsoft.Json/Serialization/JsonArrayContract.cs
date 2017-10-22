@@ -91,7 +91,7 @@ namespace Newtonsoft.Json.Serialization
         /// <value>The function used to create the object.</value>
         public ObjectConstructor<object> OverrideCreator
         {
-            get { return _overrideCreator; }
+            get => _overrideCreator;
             set
             {
                 _overrideCreator = value;
@@ -106,10 +106,7 @@ namespace Newtonsoft.Json.Serialization
         /// <value><c>true</c> if the creator has a parameter with the collection values; otherwise, <c>false</c>.</value>
         public bool HasParameterizedCreator { get; set; }
 
-        internal bool HasParameterizedCreatorInternal
-        {
-            get { return (HasParameterizedCreator || _parameterizedCreator != null || _parameterizedConstructor != null); }
-        }
+        internal bool HasParameterizedCreatorInternal => (HasParameterizedCreator || _parameterizedCreator != null || _parameterizedConstructor != null);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonArrayContract"/> class.

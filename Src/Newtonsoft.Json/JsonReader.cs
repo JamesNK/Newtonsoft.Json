@@ -32,11 +32,6 @@ using System.Numerics;
 #endif
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
-#if !HAVE_LINQ
-using Newtonsoft.Json.Utilities.LinqBridge;
-#else
-using System.Linq;
-#endif
 
 namespace Newtonsoft.Json
 {
@@ -135,10 +130,7 @@ namespace Newtonsoft.Json
         /// Gets the current reader state.
         /// </summary>
         /// <value>The current reader state.</value>
-        protected State CurrentState
-        {
-            get { return _currentState; }
-        }
+        protected State CurrentState => _currentState;
 
         /// <summary>
         /// Gets or sets a value indicating whether the source should be closed when this reader is closed.
@@ -163,8 +155,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual char QuoteChar
         {
-            get { return _quoteChar; }
-            protected internal set { _quoteChar = value; }
+            get => _quoteChar;
+            protected internal set => _quoteChar = value;
         }
 
         /// <summary>
@@ -172,7 +164,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public DateTimeZoneHandling DateTimeZoneHandling
         {
-            get { return _dateTimeZoneHandling; }
+            get => _dateTimeZoneHandling;
             set
             {
                 if (value < DateTimeZoneHandling.Local || value > DateTimeZoneHandling.RoundtripKind)
@@ -189,7 +181,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public DateParseHandling DateParseHandling
         {
-            get { return _dateParseHandling; }
+            get => _dateParseHandling;
             set
             {
                 if (value < DateParseHandling.None ||
@@ -212,7 +204,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public FloatParseHandling FloatParseHandling
         {
-            get { return _floatParseHandling; }
+            get => _floatParseHandling;
             set
             {
                 if (value < FloatParseHandling.Double || value > FloatParseHandling.Decimal)
@@ -229,8 +221,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public string DateFormatString
         {
-            get { return _dateFormatString; }
-            set { _dateFormatString = value; }
+            get => _dateFormatString;
+            set => _dateFormatString = value;
         }
 
         /// <summary>
@@ -238,7 +230,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public int? MaxDepth
         {
-            get { return _maxDepth; }
+            get => _maxDepth;
             set
             {
                 if (value <= 0)
@@ -253,26 +245,17 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets the type of the current JSON token. 
         /// </summary>
-        public virtual JsonToken TokenType
-        {
-            get { return _tokenType; }
-        }
+        public virtual JsonToken TokenType => _tokenType;
 
         /// <summary>
         /// Gets the text value of the current JSON token.
         /// </summary>
-        public virtual object Value
-        {
-            get { return _value; }
-        }
+        public virtual object Value => _value;
 
         /// <summary>
         /// Gets the .NET type for the current JSON token.
         /// </summary>
-        public virtual Type ValueType
-        {
-            get { return _value?.GetType(); }
-        }
+        public virtual Type ValueType => _value?.GetType();
 
         /// <summary>
         /// Gets the depth of the current token in the JSON document.
@@ -282,7 +265,7 @@ namespace Newtonsoft.Json
         {
             get
             {
-                int depth = (_stack != null) ? _stack.Count : 0;
+                int depth = _stack?.Count ?? 0;
                 if (JsonTokenUtils.IsStartToken(TokenType) || _currentPosition.Type == JsonContainerType.None)
                 {
                     return depth;
@@ -321,8 +304,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public CultureInfo Culture
         {
-            get { return _culture ?? CultureInfo.InvariantCulture; }
-            set { _culture = value; }
+            get => _culture ?? CultureInfo.InvariantCulture;
+            set => _culture = value;
         }
 
         internal JsonPosition GetPosition(int depth)

@@ -94,8 +94,8 @@ namespace Newtonsoft.Json.Bson
         [Obsolete("JsonNet35BinaryCompatibility will be removed in a future version of Json.NET.")]
         public bool JsonNet35BinaryCompatibility
         {
-            get { return _jsonNet35BinaryCompatibility; }
-            set { _jsonNet35BinaryCompatibility = value; }
+            get => _jsonNet35BinaryCompatibility;
+            set => _jsonNet35BinaryCompatibility = value;
         }
 
         /// <summary>
@@ -106,8 +106,8 @@ namespace Newtonsoft.Json.Bson
         /// </value>
         public bool ReadRootValueAsArray
         {
-            get { return _readRootValueAsArray; }
-            set { _readRootValueAsArray = value; }
+            get => _readRootValueAsArray;
+            set => _readRootValueAsArray = value;
         }
 
         /// <summary>
@@ -116,8 +116,8 @@ namespace Newtonsoft.Json.Bson
         /// <value>The <see cref="DateTimeKind" /> used when reading <see cref="DateTime"/> values from BSON.</value>
         public DateTimeKind DateTimeKindHandling
         {
-            get { return _dateTimeKindHandling; }
-            set { _dateTimeKindHandling = value; }
+            get => _dateTimeKindHandling;
+            set => _dateTimeKindHandling = value;
         }
 
         /// <summary>

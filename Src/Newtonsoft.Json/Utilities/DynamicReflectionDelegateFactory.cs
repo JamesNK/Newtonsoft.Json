@@ -40,10 +40,7 @@ namespace Newtonsoft.Json.Utilities
     {
         private static readonly DynamicReflectionDelegateFactory _instance = new DynamicReflectionDelegateFactory();
 
-        internal static DynamicReflectionDelegateFactory Instance
-        {
-            get { return _instance; }
-        }
+        internal static DynamicReflectionDelegateFactory Instance => _instance;
 
         private static DynamicMethod CreateDynamicMethod(string name, Type returnType, Type[] parameterTypes, Type owner)
         {

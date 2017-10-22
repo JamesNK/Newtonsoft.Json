@@ -81,14 +81,14 @@ namespace Newtonsoft.Json.Serialization
         /// <value>The function used to create the object.</value>
         public ObjectConstructor<object> OverrideCreator
         {
-            get { return _overrideCreator; }
-            set { _overrideCreator = value; }
+            get => _overrideCreator;
+            set => _overrideCreator = value;
         }
 
         internal ObjectConstructor<object> ParameterizedCreator
         {
-            get { return _parameterizedCreator; }
-            set { _parameterizedCreator = value; }
+            get => _parameterizedCreator;
+            set => _parameterizedCreator = value;
         }
 
         /// <summary>
@@ -106,7 +106,7 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         public Type ExtensionDataValueType
         {
-            get { return _extensionDataValueType; }
+            get => _extensionDataValueType;
             set
             {
                 _extensionDataValueType = value;

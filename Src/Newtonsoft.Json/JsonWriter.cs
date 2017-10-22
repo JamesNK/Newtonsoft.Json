@@ -231,7 +231,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public Formatting Formatting
         {
-            get { return _formatting; }
+            get => _formatting;
             set
             {
                 if (value < Formatting.None || value > Formatting.Indented)
@@ -248,7 +248,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public DateFormatHandling DateFormatHandling
         {
-            get { return _dateFormatHandling; }
+            get => _dateFormatHandling;
             set
             {
                 if (value < DateFormatHandling.IsoDateFormat || value > DateFormatHandling.MicrosoftDateFormat)
@@ -265,7 +265,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public DateTimeZoneHandling DateTimeZoneHandling
         {
-            get { return _dateTimeZoneHandling; }
+            get => _dateTimeZoneHandling;
             set
             {
                 if (value < DateTimeZoneHandling.Local || value > DateTimeZoneHandling.RoundtripKind)
@@ -282,7 +282,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public StringEscapeHandling StringEscapeHandling
         {
-            get { return _stringEscapeHandling; }
+            get => _stringEscapeHandling;
             set
             {
                 if (value < StringEscapeHandling.Default || value > StringEscapeHandling.EscapeHtml)
@@ -307,7 +307,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public FloatFormatHandling FloatFormatHandling
         {
-            get { return _floatFormatHandling; }
+            get => _floatFormatHandling;
             set
             {
                 if (value < FloatFormatHandling.String || value > FloatFormatHandling.DefaultValue)
@@ -324,8 +324,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public string DateFormatString
         {
-            get { return _dateFormatString; }
-            set { _dateFormatString = value; }
+            get => _dateFormatString;
+            set => _dateFormatString = value;
         }
 
         /// <summary>
@@ -333,8 +333,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public CultureInfo Culture
         {
-            get { return _culture ?? CultureInfo.InvariantCulture; }
-            set { _culture = value; }
+            get => _culture ?? CultureInfo.InvariantCulture;
+            set => _culture = value;
         }
 
         /// <summary>

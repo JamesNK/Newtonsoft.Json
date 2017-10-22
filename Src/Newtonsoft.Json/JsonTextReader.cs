@@ -102,10 +102,7 @@ namespace Newtonsoft.Json
             set => _chars = value;
         }
 
-        internal int CharPos
-        {
-            get => _charPos;
-        }
+        internal int CharPos => _charPos;
 #endif
 
         /// <summary>
@@ -113,7 +110,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public IArrayPool<char> ArrayPool
         {
-            get { return _arrayPool; }
+            get => _arrayPool;
             set
             {
                 if (value == null)
@@ -2582,9 +2579,6 @@ namespace Newtonsoft.Json
         /// <value>
         /// The current line position or 0 if no line information is available (for example, <see cref="JsonTextReader.HasLineInfo"/> returns <c>false</c>).
         /// </value>
-        public int LinePosition
-        {
-            get { return _charPos - _lineStartPos; }
-        }
+        public int LinePosition => _charPos - _lineStartPos;
     }
 }

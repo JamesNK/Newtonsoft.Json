@@ -30,15 +30,9 @@ namespace Newtonsoft.Json.Utilities
         private readonly string _name;
         private readonly T _value;
 
-        public string Name
-        {
-            get { return _name; }
-        }
+        public string Name => _name;
 
-        public T Value
-        {
-            get { return _value; }
-        }
+        public T Value => _value;
 
         public EnumValue(string name, T value)
         {

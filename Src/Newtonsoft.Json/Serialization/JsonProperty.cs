@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Serialization
         /// <value>The name of the property.</value>
         public string PropertyName
         {
-            get { return _propertyName; }
+            get => _propertyName;
             set
             {
                 _propertyName = value;
@@ -100,7 +100,7 @@ namespace Newtonsoft.Json.Serialization
         /// <value>The type of the property.</value>
         public Type PropertyType
         {
-            get { return _propertyType; }
+            get => _propertyType;
             set
             {
                 if (_propertyType != value)
@@ -125,8 +125,8 @@ namespace Newtonsoft.Json.Serialization
         [Obsolete("MemberConverter is obsolete. Use Converter instead.")]
         public JsonConverter MemberConverter
         {
-            get { return Converter; }
-            set { Converter = value; }
+            get => Converter;
+            set => Converter = value;
         }
 
         /// <summary>
@@ -197,8 +197,8 @@ namespace Newtonsoft.Json.Serialization
         /// <value>A value indicating whether this <see cref="JsonProperty"/> is required.</value>
         public Required Required
         {
-            get { return _required ?? Required.Default; }
-            set { _required = value; }
+            get => _required ?? Required.Default;
+            set => _required = value;
         }
 
         /// <summary>

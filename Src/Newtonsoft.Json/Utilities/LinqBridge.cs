@@ -2832,12 +2832,9 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
     /// Gets the number of key/value collection pairs in the <see cref="Lookup{TKey,TElement}" />.
     /// </summary>
 
-    public int Count
-    {
-      get { return _map.Count; }
-    }
+    public int Count => _map.Count;
 
-    /// <summary>
+      /// <summary>
     /// Gets the collection of values indexed by the specified key.
     /// </summary>
 

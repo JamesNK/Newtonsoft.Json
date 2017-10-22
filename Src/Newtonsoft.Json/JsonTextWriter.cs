@@ -71,7 +71,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public IArrayPool<char> ArrayPool
         {
-            get { return _arrayPool; }
+            get => _arrayPool;
             set
             {
                 if (value == null)
@@ -88,7 +88,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public int Indentation
         {
-            get { return _indentation; }
+            get => _indentation;
             set
             {
                 if (value < 0)
@@ -105,7 +105,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public char QuoteChar
         {
-            get { return _quoteChar; }
+            get => _quoteChar;
             set
             {
                 if (value != '"' && value != '\'')
@@ -123,7 +123,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public char IndentChar
         {
-            get { return _indentChar; }
+            get => _indentChar;
             set
             {
                 if (value != _indentChar)
@@ -139,8 +139,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public bool QuoteName
         {
-            get { return _quoteName; }
-            set { _quoteName = value; }
+            get => _quoteName;
+            set => _quoteName = value;
         }
 
         /// <summary>

@@ -41,10 +41,7 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Gets the <see cref="JToken"/> at the reader's current position.
         /// </summary>
-        public JToken CurrentToken
-        {
-            get { return _current; }
-        }
+        public JToken CurrentToken => _current;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JTokenReader"/> class.

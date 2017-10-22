@@ -46,19 +46,13 @@ namespace Newtonsoft.Json.Linq
         /// Gets the container's children tokens.
         /// </summary>
         /// <value>The container's children tokens.</value>
-        protected override IList<JToken> ChildrenTokens
-        {
-            get { return _values; }
-        }
+        protected override IList<JToken> ChildrenTokens => _values;
 
         /// <summary>
         /// Gets the node type for this <see cref="JToken"/>.
         /// </summary>
         /// <value>The type.</value>
-        public override JTokenType Type
-        {
-            get { return JTokenType.Array; }
-        }
+        public override JTokenType Type => JTokenType.Array;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JArray"/> class.
@@ -266,8 +260,8 @@ namespace Newtonsoft.Json.Linq
         /// <value></value>
         public JToken this[int index]
         {
-            get { return GetItem(index); }
-            set { SetItem(index, value); }
+            get => GetItem(index);
+            set => SetItem(index, value);
         }
 
         internal override int IndexOfItem(JToken item)
@@ -382,10 +376,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets a value indicating whether the <see cref="JArray"/> is read-only.
         /// </summary>
         /// <returns><c>true</c> if the <see cref="JArray"/> is read-only; otherwise, <c>false</c>.</returns>
-        public bool IsReadOnly
-        {
-            get { return false; }
-        }
+        public bool IsReadOnly => false;
 
         /// <summary>
         /// Removes the first occurrence of a specific object from the <see cref="JArray"/>.

@@ -164,8 +164,8 @@ namespace Newtonsoft.Json.Linq
         /// <value>The <see cref="JToken"/> that contains the next sibling token.</value>
         public JToken Next
         {
-            get { return _next; }
-            internal set { _next = value; }
+            get => _next;
+            internal set => _next = value;
         }
 
         /// <summary>
@@ -174,8 +174,8 @@ namespace Newtonsoft.Json.Linq
         /// <value>The <see cref="JToken"/> that contains the previous sibling token.</value>
         public JToken Previous
         {
-            get { return _previous; }
-            internal set { _previous = value; }
+            get => _previous;
+            internal set => _previous = value;
         }
 
         /// <summary>
@@ -319,8 +319,8 @@ namespace Newtonsoft.Json.Linq
         /// <value>The <see cref="JToken"/> with the specified key.</value>
         public virtual JToken this[object key]
         {
-            get { throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType())); }
-            set { throw new InvalidOperationException("Cannot set child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType())); }
+            get => throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType()));
+            set => throw new InvalidOperationException("Cannot set child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType()));
         }
 
         /// <summary>
@@ -341,19 +341,13 @@ namespace Newtonsoft.Json.Linq
         /// Get the first child token of this token.
         /// </summary>
         /// <value>A <see cref="JToken"/> containing the first child token of the <see cref="JToken"/>.</value>
-        public virtual JToken First
-        {
-            get { throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType())); }
-        }
+        public virtual JToken First => throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType()));
 
         /// <summary>
         /// Get the last child token of this token.
         /// </summary>
         /// <value>A <see cref="JToken"/> containing the last child token of the <see cref="JToken"/>.</value>
-        public virtual JToken Last
-        {
-            get { throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType())); }
-        }
+        public virtual JToken Last => throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType()));
 
         /// <summary>
         /// Returns a collection of the child tokens of this token, in document order.
@@ -1879,10 +1873,7 @@ namespace Newtonsoft.Json.Linq
 
         internal abstract int GetDeepHashCode();
 
-        IJEnumerable<JToken> IJEnumerable<JToken>.this[object key]
-        {
-            get { return this[key]; }
-        }
+        IJEnumerable<JToken> IJEnumerable<JToken>.this[object key] => this[key];
 
         /// <summary>
         /// Creates a <see cref="JsonReader"/> for this token.
