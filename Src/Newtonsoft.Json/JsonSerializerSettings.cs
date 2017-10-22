@@ -88,6 +88,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how reference loops (e.g. a class referencing itself) are handled.
+        /// By default errors if a reference loop is encountered.
         /// </summary>
         /// <value>Reference loop handling.</value>
         public ReferenceLoopHandling ReferenceLoopHandling
@@ -98,6 +99,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how missing members (e.g. JSON contains a property that isn't a member on the object) are handled during deserialization.
+        /// By default ignores missing members.
         /// </summary>
         /// <value>Missing member handling.</value>
         public MissingMemberHandling MissingMemberHandling
@@ -108,6 +110,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how objects are created during deserialization.
+        /// By default attempts to set JSON values onto existing objects and add JSON values to existing collections during deserialization.
         /// </summary>
         /// <value>The object creation handling.</value>
         public ObjectCreationHandling ObjectCreationHandling
@@ -118,6 +121,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how null values are handled during serialization and deserialization.
+        /// By default writes null values to JSON when serializing and sets null values to fields/properties when deserializing.
         /// </summary>
         /// <value>Null value handling.</value>
         public NullValueHandling NullValueHandling
@@ -128,6 +132,8 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how default values are handled during serialization and deserialization.
+        /// By default writes a field/property value to JSON when serializing if the value is the same as the field/property's default value.
+        /// The deserializer will continue setting a field/property if the JSON value is the same as the default value.
         /// </summary>
         /// <value>The default value handling.</value>
         public DefaultValueHandling DefaultValueHandling
@@ -144,6 +150,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how object references are preserved by the serializer.
+        /// By default does not preserves references when serializing types.
         /// </summary>
         /// <value>The preserve references handling.</value>
         public PreserveReferencesHandling PreserveReferencesHandling
@@ -154,6 +161,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how type name writing and reading is handled by the serializer.
+        /// By default does not read or write type names during deserialization.
         /// </summary>
         /// <remarks>
         /// <see cref="JsonSerializerSettings.TypeNameHandling"/> should be used with caution when your application deserializes JSON from an external source.
@@ -169,6 +177,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how metadata properties are used during deserialization.
+        /// By default reads the metadata properties located at the start of a JSON object.
         /// </summary>
         /// <value>The metadata properties handling.</value>
         public MetadataPropertyHandling MetadataPropertyHandling
@@ -179,6 +188,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how a type name assembly is written and resolved by the serializer.
+        /// By default writes the partial assembly name with the type.
         /// </summary>
         /// <value>The type name assembly format.</value>
         [Obsolete("TypeNameAssemblyFormat is obsolete. Use TypeNameAssemblyFormatHandling instead.")]
@@ -190,6 +200,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how a type name assembly is written and resolved by the serializer.
+        /// By default the assembly used during deserialization need not match exactly the assembly used during serialization.
         /// </summary>
         /// <value>The type name assembly format.</value>
         public TypeNameAssemblyFormatHandling TypeNameAssemblyFormatHandling
@@ -200,6 +211,11 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how constructors are used during deserialization.
+        /// By default first looks for a constructor marked with the JsonConstructorAttribute, then look for a public default constructor
+        /// (a constructor that doesn't take any arguments), then check if the class has a single public constructor with arguments
+        /// and finally check for a non-public default constructor.
+        /// If the class has multiple public constructors with arguments an error will be thrown.
+        /// This can be fixed by marking one of the constructors with the JsonConstructorAttribute.
         /// </summary>
         /// <value>The constructor handling.</value>
         public ConstructorHandling ConstructorHandling
@@ -302,6 +318,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets or sets how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatted when writing JSON text,
         /// and the expected date format when reading JSON text.
+        /// By default uses the format "yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK"
         /// </summary>
         public string DateFormatString
         {
@@ -333,6 +350,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Indicates how JSON text output is formatted.
+        /// By default no special formatting is applied.
         /// </summary>
         public Formatting Formatting
         {
@@ -342,6 +360,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how dates are written to JSON text.
+        /// By default writes dates in ISO 8601 format.
         /// </summary>
         public DateFormatHandling DateFormatHandling
         {
@@ -351,6 +370,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how <see cref="DateTime"/> time zones are handled during serialization and deserialization.
+        /// By default time zone information is preserved when converting.
         /// </summary>
         public DateTimeZoneHandling DateTimeZoneHandling
         {
@@ -360,6 +380,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how date formatted strings, e.g. "\/Date(1198908717056)\/" and "2012-03-21T05:40Z", are parsed when reading JSON.
+        /// By default dates are parsed to <see cref="DateTime"/>
         /// </summary>
         public DateParseHandling DateParseHandling
         {
@@ -371,6 +392,7 @@ namespace Newtonsoft.Json
         /// Gets or sets how special floating point numbers, e.g. <see cref="Double.NaN"/>,
         /// <see cref="Double.PositiveInfinity"/> and <see cref="Double.NegativeInfinity"/>,
         /// are written as JSON.
+        /// By default writes special floating point values as strings in JSON, e.g. <c>"NaN"</c>, <c>"Infinity"</c>, <c>"-Infinity"</c>.
         /// </summary>
         public FloatFormatHandling FloatFormatHandling
         {
@@ -380,6 +402,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
+        /// By default floating point numbers are parsed to <see cref="Double"/>.
         /// </summary>
         public FloatParseHandling FloatParseHandling
         {
@@ -389,6 +412,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets or sets how strings are escaped when writing JSON text.
+        /// By default only control characters (e.g. newline) are escaped.
         /// </summary>
         public StringEscapeHandling StringEscapeHandling
         {
@@ -407,6 +431,7 @@ namespace Newtonsoft.Json
 
         /// <summary>
         /// Gets a value indicating whether there will be a check for additional content after deserializing an object.
+        /// By default set to false.
         /// </summary>
         /// <value>
         /// 	<c>true</c> if there will be a check for additional content after deserializing an object; otherwise, <c>false</c>.
