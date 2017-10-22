@@ -42,7 +42,6 @@ using System.Data;
 using System.Data.SqlTypes;
 using System.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
-using System.Linq;
 #if !(NET20 || NET35)
 using System.Numerics;
 #endif
