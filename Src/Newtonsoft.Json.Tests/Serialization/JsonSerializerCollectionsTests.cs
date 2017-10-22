@@ -2059,6 +2059,39 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
+        [Test]
+        public void DeserializeReadonlyArrayProperty()
+        {
+            string json = @"{""Endpoint"":""http://localhost"",""Name"":""account1"",""Dimensions"":[{""Key"":""Endpoint"",""Value"":""http://localhost""},{""Key"":""Name"",""Value"":""account1""}]}";
+
+            AccountInfo values = JsonConvert.DeserializeObject<AccountInfo>(json);
+            Assert.AreEqual("http://localhost", values.Endpoint);
+            Assert.AreEqual("account1", values.Name);
+            Assert.AreEqual(2, values.Dimensions.Length);
+        }
+
+        public sealed class AccountInfo
+        {
+            private KeyValuePair<string, string>[] metricDimensions;
+
+            public AccountInfo(string endpoint, string name)
+            {
+                this.Endpoint = endpoint;
+                this.Name = name;
+            }
+
+            public string Endpoint { get; }
+
+            public string Name { get; }
+
+            public KeyValuePair<string, string>[] Dimensions =>
+                this.metricDimensions ?? (this.metricDimensions = new KeyValuePair<string, string>[]
+                {
+                    new KeyValuePair<string, string>("Endpoint", this.Endpoint.ToString()),
+                    new KeyValuePair<string, string>("Name", this.Name)
+                });
+        }
+
         public class MyClass : IList<string>
         {
             private List<string> _storage;

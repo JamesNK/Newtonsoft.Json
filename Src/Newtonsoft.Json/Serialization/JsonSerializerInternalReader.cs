@@ -2006,7 +2006,7 @@ namespace Newtonsoft.Json.Serialization
                     {
                         JsonArrayContract propertyArrayContract = (JsonArrayContract)propertyContract;
 
-                        if (propertyArrayContract.CanDeserialize)
+                        if (propertyArrayContract.CanDeserialize && !propertyArrayContract.IsReadOnlyOrFixedSize)
                         {
                             object createdObjectCollection = property.ValueProvider.GetValue(createdObject);
                             if (createdObjectCollection != null)
