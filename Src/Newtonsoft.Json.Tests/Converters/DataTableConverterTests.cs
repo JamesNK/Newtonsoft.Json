@@ -39,12 +39,114 @@ using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 using NUnit.Framework;
 #endif
 using System.Data;
+using System.Data.SqlTypes;
+using System.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
+using System.Linq;
+#if !(NET20 || NET35)
+using System.Numerics;
+#endif
 
 namespace Newtonsoft.Json.Tests.Converters
 {
     public class DataTableConverterTests : TestFixtureBase
     {
+#if !(NET20 || NET35)
+        [Test]
+        public void SerializeNullValues()
+        {
+            DataTable dt = new DataTable();
+            List<Type> types = new List<Type>
+            {
+                typeof(TimeSpan),
+                typeof(char[]),
+                typeof(Type),
+                typeof(Object),
+                typeof(byte[]),
+                typeof(Uri),
+                typeof(Guid),
+                typeof(BigInteger)
+            };
+
+            foreach (var ss in types)
+            {
+                dt.Columns.Add(ss.Name, ss);
+            }
+
+            dt.Rows.Add(types.Select(t => (object)null).ToArray());
+
+            StringWriter sw = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(sw);
+            jsonWriter.Formatting = Formatting.Indented;
+
+            DataTableConverter converter = new DataTableConverter();
+            converter.WriteJson(jsonWriter, dt, new JsonSerializer());
+
+            StringAssert.AreEqual(@"[
+  {
+    ""TimeSpan"": null,
+    ""Char[]"": null,
+    ""Type"": null,
+    ""Object"": null,
+    ""Byte[]"": null,
+    ""Uri"": null,
+    ""Guid"": null,
+    ""BigInteger"": null
+  }
+]", sw.ToString());
+        }
+
+        [Test]
+        public void SerializeValues()
+        {
+            DataTable dt = new DataTable();
+            Dictionary<Type, object> types = new Dictionary<Type, object>
+            {
+                [typeof(TimeSpan)] = TimeSpan.Zero,
+                [typeof(char[])] = new char[] {'a', 'b', 'c' },
+                [typeof(Type)] = typeof(string),
+                [typeof(Object)] = new object(),
+                [typeof(byte[])] = new byte[] { 1, 2, 3, 4, 5, 6, 7, 8 },
+                [typeof(Uri)] = new Uri("http://localhost"),
+                [typeof(Guid)] = new Guid(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11),
+                [typeof(BigInteger)] = BigInteger.Parse("10000000000000000000000000000000000")
+            };
+
+            foreach (var ss in types)
+            {
+                dt.Columns.Add(ss.Key.Name, ss.Key);
+            }
+
+            dt.Rows.Add(types.Select(t => t.Value).ToArray());
+
+            StringWriter sw = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(sw);
+            jsonWriter.Formatting = Formatting.Indented;
+
+            DataTableConverter converter = new DataTableConverter();
+            converter.WriteJson(jsonWriter, dt, new JsonSerializer());
+
+            string stringName = typeof(string).AssemblyQualifiedName;
+
+            StringAssert.AreEqual(@"[
+  {
+    ""TimeSpan"": ""00:00:00"",
+    ""Char[]"": [
+      ""a"",
+      ""b"",
+      ""c""
+    ],
+    ""Type"": """ + stringName + @""",
+    ""Object"": {},
+    ""Byte[]"": ""AQIDBAUGBwg="",
+    ""Uri"": ""http://localhost"",
+    ""Guid"": ""00000001-0002-0003-0405-060708090a0b"",
+    ""BigInteger"": 10000000000000000000000000000000000
+  }
+]", sw.ToString());
+        }
+#endif
+
         [Test]
         public void WriteJsonNull()
         {

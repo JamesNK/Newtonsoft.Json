@@ -93,7 +93,6 @@ namespace Newtonsoft.Json.Serialization
             new RegexConverter()
         };
 
-        private readonly object _typeContractCacheLock = new object();
         private readonly PropertyNameTable _nameTable = new PropertyNameTable();
 
         private readonly ThreadSafeStore<Type, JsonContract> _contractCache;

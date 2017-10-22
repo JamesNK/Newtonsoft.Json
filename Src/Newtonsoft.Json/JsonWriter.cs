@@ -1631,6 +1631,13 @@ namespace Newtonsoft.Json
                         break;
                     }
 #endif
+                    // write an unknown null value, fix https://github.com/JamesNK/Newtonsoft.Json/issues/1460
+                    if (value == null)
+                    {
+                        writer.WriteNull();
+                        break;
+                    }
+
                     throw CreateUnsupportedTypeException(writer, value);
             }
         }
