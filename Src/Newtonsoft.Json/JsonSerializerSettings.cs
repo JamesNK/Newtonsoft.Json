@@ -93,8 +93,8 @@ namespace Newtonsoft.Json
         /// <value>Reference loop handling.</value>
         public ReferenceLoopHandling ReferenceLoopHandling
         {
-            get { return _referenceLoopHandling ?? DefaultReferenceLoopHandling; }
-            set { _referenceLoopHandling = value; }
+            get => _referenceLoopHandling ?? DefaultReferenceLoopHandling;
+            set => _referenceLoopHandling = value;
         }
 
         /// <summary>
@@ -104,8 +104,8 @@ namespace Newtonsoft.Json
         /// <value>Missing member handling.</value>
         public MissingMemberHandling MissingMemberHandling
         {
-            get { return _missingMemberHandling ?? DefaultMissingMemberHandling; }
-            set { _missingMemberHandling = value; }
+            get => _missingMemberHandling ?? DefaultMissingMemberHandling;
+            set => _missingMemberHandling = value;
         }
 
         /// <summary>
@@ -115,8 +115,8 @@ namespace Newtonsoft.Json
         /// <value>The object creation handling.</value>
         public ObjectCreationHandling ObjectCreationHandling
         {
-            get { return _objectCreationHandling ?? DefaultObjectCreationHandling; }
-            set { _objectCreationHandling = value; }
+            get => _objectCreationHandling ?? DefaultObjectCreationHandling;
+            set => _objectCreationHandling = value;
         }
 
         /// <summary>
@@ -126,8 +126,8 @@ namespace Newtonsoft.Json
         /// <value>Null value handling.</value>
         public NullValueHandling NullValueHandling
         {
-            get { return _nullValueHandling ?? DefaultNullValueHandling; }
-            set { _nullValueHandling = value; }
+            get => _nullValueHandling ?? DefaultNullValueHandling;
+            set => _nullValueHandling = value;
         }
 
         /// <summary>
@@ -137,8 +137,8 @@ namespace Newtonsoft.Json
         /// <value>The default value handling.</value>
         public DefaultValueHandling DefaultValueHandling
         {
-            get { return _defaultValueHandling ?? DefaultDefaultValueHandling; }
-            set { _defaultValueHandling = value; }
+            get => _defaultValueHandling ?? DefaultDefaultValueHandling;
+            set => _defaultValueHandling = value;
         }
 
         /// <summary>
@@ -154,8 +154,8 @@ namespace Newtonsoft.Json
         /// <value>The preserve references handling.</value>
         public PreserveReferencesHandling PreserveReferencesHandling
         {
-            get { return _preserveReferencesHandling ?? DefaultPreserveReferencesHandling; }
-            set { _preserveReferencesHandling = value; }
+            get => _preserveReferencesHandling ?? DefaultPreserveReferencesHandling;
+            set => _preserveReferencesHandling = value;
         }
 
         /// <summary>
@@ -170,8 +170,8 @@ namespace Newtonsoft.Json
         /// <value>The type name handling.</value>
         public TypeNameHandling TypeNameHandling
         {
-            get { return _typeNameHandling ?? DefaultTypeNameHandling; }
-            set { _typeNameHandling = value; }
+            get => _typeNameHandling ?? DefaultTypeNameHandling;
+            set => _typeNameHandling = value;
         }
 
         /// <summary>
@@ -181,8 +181,8 @@ namespace Newtonsoft.Json
         /// <value>The metadata properties handling.</value>
         public MetadataPropertyHandling MetadataPropertyHandling
         {
-            get { return _metadataPropertyHandling ?? DefaultMetadataPropertyHandling; }
-            set { _metadataPropertyHandling = value; }
+            get => _metadataPropertyHandling ?? DefaultMetadataPropertyHandling;
+            set => _metadataPropertyHandling = value;
         }
 
         /// <summary>
@@ -193,8 +193,8 @@ namespace Newtonsoft.Json
         [Obsolete("TypeNameAssemblyFormat is obsolete. Use TypeNameAssemblyFormatHandling instead.")]
         public FormatterAssemblyStyle TypeNameAssemblyFormat
         {
-            get { return (FormatterAssemblyStyle)TypeNameAssemblyFormatHandling; }
-            set { TypeNameAssemblyFormatHandling = (TypeNameAssemblyFormatHandling)value; }
+            get => (FormatterAssemblyStyle)TypeNameAssemblyFormatHandling;
+            set => TypeNameAssemblyFormatHandling = (TypeNameAssemblyFormatHandling)value;
         }
 
         /// <summary>
@@ -204,8 +204,8 @@ namespace Newtonsoft.Json
         /// <value>The type name assembly format.</value>
         public TypeNameAssemblyFormatHandling TypeNameAssemblyFormatHandling
         {
-            get { return _typeNameAssemblyFormatHandling ?? DefaultTypeNameAssemblyFormatHandling; }
-            set { _typeNameAssemblyFormatHandling = value; }
+            get => _typeNameAssemblyFormatHandling ?? DefaultTypeNameAssemblyFormatHandling;
+            set => _typeNameAssemblyFormatHandling = value;
         }
 
         /// <summary>
@@ -215,8 +215,8 @@ namespace Newtonsoft.Json
         /// <value>The constructor handling.</value>
         public ConstructorHandling ConstructorHandling
         {
-            get { return _constructorHandling ?? DefaultConstructorHandling; }
-            set { _constructorHandling = value; }
+            get => _constructorHandling ?? DefaultConstructorHandling;
+            set => _constructorHandling = value;
         }
 
         /// <summary>
@@ -239,10 +239,7 @@ namespace Newtonsoft.Json
         [Obsolete("ReferenceResolver property is obsolete. Use the ReferenceResolverProvider property to set the IReferenceResolver: settings.ReferenceResolverProvider = () => resolver")]
         public IReferenceResolver ReferenceResolver
         {
-            get
-            {
-                return ReferenceResolverProvider?.Invoke();
-            }
+            get => ReferenceResolverProvider?.Invoke();
             set
             {
                 ReferenceResolverProvider = (value != null)
@@ -277,15 +274,14 @@ namespace Newtonsoft.Json
                     return null;
                 }
 
-                SerializationBinderAdapter adapter = SerializationBinder as SerializationBinderAdapter;
-                if (adapter != null)
+                if (SerializationBinder is SerializationBinderAdapter adapter)
                 {
                     return adapter.SerializationBinder;
                 }
 
                 throw new InvalidOperationException("Cannot get SerializationBinder because an ISerializationBinder was previously set.");
             }
-            set { SerializationBinder = value == null ? null : new SerializationBinderAdapter(value); }
+            set => SerializationBinder = value == null ? null : new SerializationBinderAdapter(value);
         }
 
         /// <summary>
@@ -306,8 +302,8 @@ namespace Newtonsoft.Json
         /// <value>The context.</value>
         public StreamingContext Context
         {
-            get { return _context ?? DefaultContext; }
-            set { _context = value; }
+            get => _context ?? DefaultContext;
+            set => _context = value;
         }
 
         /// <summary>
@@ -317,7 +313,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public string DateFormatString
         {
-            get { return _dateFormatString ?? DefaultDateFormatString; }
+            get => _dateFormatString ?? DefaultDateFormatString;
             set
             {
                 _dateFormatString = value;
@@ -332,7 +328,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public int? MaxDepth
         {
-            get { return _maxDepth; }
+            get => _maxDepth;
             set
             {
                 if (value <= 0)
@@ -351,8 +347,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public Formatting Formatting
         {
-            get { return _formatting ?? DefaultFormatting; }
-            set { _formatting = value; }
+            get => _formatting ?? DefaultFormatting;
+            set => _formatting = value;
         }
 
         /// <summary>
@@ -361,8 +357,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public DateFormatHandling DateFormatHandling
         {
-            get { return _dateFormatHandling ?? DefaultDateFormatHandling; }
-            set { _dateFormatHandling = value; }
+            get => _dateFormatHandling ?? DefaultDateFormatHandling;
+            set => _dateFormatHandling = value;
         }
 
         /// <summary>
@@ -371,8 +367,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public DateTimeZoneHandling DateTimeZoneHandling
         {
-            get { return _dateTimeZoneHandling ?? DefaultDateTimeZoneHandling; }
-            set { _dateTimeZoneHandling = value; }
+            get => _dateTimeZoneHandling ?? DefaultDateTimeZoneHandling;
+            set => _dateTimeZoneHandling = value;
         }
 
         /// <summary>
@@ -381,8 +377,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public DateParseHandling DateParseHandling
         {
-            get { return _dateParseHandling ?? DefaultDateParseHandling; }
-            set { _dateParseHandling = value; }
+            get => _dateParseHandling ?? DefaultDateParseHandling;
+            set => _dateParseHandling = value;
         }
 
         /// <summary>
@@ -393,8 +389,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public FloatFormatHandling FloatFormatHandling
         {
-            get { return _floatFormatHandling ?? DefaultFloatFormatHandling; }
-            set { _floatFormatHandling = value; }
+            get => _floatFormatHandling ?? DefaultFloatFormatHandling;
+            set => _floatFormatHandling = value;
         }
 
         /// <summary>
@@ -403,8 +399,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public FloatParseHandling FloatParseHandling
         {
-            get { return _floatParseHandling ?? DefaultFloatParseHandling; }
-            set { _floatParseHandling = value; }
+            get => _floatParseHandling ?? DefaultFloatParseHandling;
+            set => _floatParseHandling = value;
         }
 
         /// <summary>
@@ -413,8 +409,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public StringEscapeHandling StringEscapeHandling
         {
-            get { return _stringEscapeHandling ?? DefaultStringEscapeHandling; }
-            set { _stringEscapeHandling = value; }
+            get => _stringEscapeHandling ?? DefaultStringEscapeHandling;
+            set => _stringEscapeHandling = value;
         }
 
         /// <summary>
@@ -423,8 +419,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public CultureInfo Culture
         {
-            get { return _culture ?? DefaultCulture; }
-            set { _culture = value; }
+            get => _culture ?? DefaultCulture;
+            set => _culture = value;
         }
 
         /// <summary>
@@ -436,8 +432,8 @@ namespace Newtonsoft.Json
         /// </value>
         public bool CheckAdditionalContent
         {
-            get { return _checkAdditionalContent ?? DefaultCheckAdditionalContent; }
-            set { _checkAdditionalContent = value; }
+            get => _checkAdditionalContent ?? DefaultCheckAdditionalContent;
+            set => _checkAdditionalContent = value;
         }
 
         static JsonSerializerSettings()

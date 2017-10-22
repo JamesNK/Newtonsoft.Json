@@ -86,7 +86,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual IReferenceResolver ReferenceResolver
         {
-            get { return GetReferenceResolver(); }
+            get => GetReferenceResolver();
             set
             {
                 if (value == null)
@@ -116,8 +116,7 @@ namespace Newtonsoft.Json
                     return legacySerializationBinder;
                 }
 
-                SerializationBinderAdapter adapter = _serializationBinder as SerializationBinderAdapter;
-                if (adapter != null)
+                if (_serializationBinder is SerializationBinderAdapter adapter)
                 {
                     return adapter.SerializationBinder;
                 }
@@ -140,7 +139,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual ISerializationBinder SerializationBinder
         {
-            get { return _serializationBinder; }
+            get => _serializationBinder;
             set
             {
                 if (value == null)
@@ -158,8 +157,8 @@ namespace Newtonsoft.Json
         /// <value>The trace writer.</value>
         public virtual ITraceWriter TraceWriter
         {
-            get { return _traceWriter; }
-            set { _traceWriter = value; }
+            get => _traceWriter;
+            set => _traceWriter = value;
         }
 
         /// <summary>
@@ -168,8 +167,8 @@ namespace Newtonsoft.Json
         /// <value>The equality comparer.</value>
         public virtual IEqualityComparer EqualityComparer
         {
-            get { return _equalityComparer; }
-            set { _equalityComparer = value; }
+            get => _equalityComparer;
+            set => _equalityComparer = value;
         }
 
         /// <summary>
@@ -183,7 +182,7 @@ namespace Newtonsoft.Json
         /// </remarks>
         public virtual TypeNameHandling TypeNameHandling
         {
-            get { return _typeNameHandling; }
+            get => _typeNameHandling;
             set
             {
                 if (value < TypeNameHandling.None || value > TypeNameHandling.Auto)
@@ -203,7 +202,7 @@ namespace Newtonsoft.Json
         [Obsolete("TypeNameAssemblyFormat is obsolete. Use TypeNameAssemblyFormatHandling instead.")]
         public virtual FormatterAssemblyStyle TypeNameAssemblyFormat
         {
-            get { return (FormatterAssemblyStyle)_typeNameAssemblyFormatHandling; }
+            get => (FormatterAssemblyStyle)_typeNameAssemblyFormatHandling;
             set
             {
                 if (value < FormatterAssemblyStyle.Simple || value > FormatterAssemblyStyle.Full)
@@ -222,7 +221,7 @@ namespace Newtonsoft.Json
         /// <value>The type name assembly format.</value>
         public virtual TypeNameAssemblyFormatHandling TypeNameAssemblyFormatHandling
         {
-            get { return _typeNameAssemblyFormatHandling; }
+            get => _typeNameAssemblyFormatHandling;
             set
             {
                 if (value < TypeNameAssemblyFormatHandling.Simple || value > TypeNameAssemblyFormatHandling.Full)
@@ -240,7 +239,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual PreserveReferencesHandling PreserveReferencesHandling
         {
-            get { return _preserveReferencesHandling; }
+            get => _preserveReferencesHandling;
             set
             {
                 if (value < PreserveReferencesHandling.None || value > PreserveReferencesHandling.All)
@@ -258,7 +257,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual ReferenceLoopHandling ReferenceLoopHandling
         {
-            get { return _referenceLoopHandling; }
+            get => _referenceLoopHandling;
             set
             {
                 if (value < ReferenceLoopHandling.Error || value > ReferenceLoopHandling.Serialize)
@@ -276,7 +275,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual MissingMemberHandling MissingMemberHandling
         {
-            get { return _missingMemberHandling; }
+            get => _missingMemberHandling;
             set
             {
                 if (value < MissingMemberHandling.Ignore || value > MissingMemberHandling.Error)
@@ -294,7 +293,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual NullValueHandling NullValueHandling
         {
-            get { return _nullValueHandling; }
+            get => _nullValueHandling;
             set
             {
                 if (value < NullValueHandling.Include || value > NullValueHandling.Ignore)
@@ -312,7 +311,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual DefaultValueHandling DefaultValueHandling
         {
-            get { return _defaultValueHandling; }
+            get => _defaultValueHandling;
             set
             {
                 if (value < DefaultValueHandling.Include || value > DefaultValueHandling.IgnoreAndPopulate)
@@ -331,7 +330,7 @@ namespace Newtonsoft.Json
         /// <value>The object creation handling.</value>
         public virtual ObjectCreationHandling ObjectCreationHandling
         {
-            get { return _objectCreationHandling; }
+            get => _objectCreationHandling;
             set
             {
                 if (value < ObjectCreationHandling.Auto || value > ObjectCreationHandling.Replace)
@@ -350,7 +349,7 @@ namespace Newtonsoft.Json
         /// <value>The constructor handling.</value>
         public virtual ConstructorHandling ConstructorHandling
         {
-            get { return _constructorHandling; }
+            get => _constructorHandling;
             set
             {
                 if (value < ConstructorHandling.Default || value > ConstructorHandling.AllowNonPublicDefaultConstructor)
@@ -369,7 +368,7 @@ namespace Newtonsoft.Json
         /// <value>The metadata properties handling.</value>
         public virtual MetadataPropertyHandling MetadataPropertyHandling
         {
-            get { return _metadataPropertyHandling; }
+            get => _metadataPropertyHandling;
             set
             {
                 if (value < MetadataPropertyHandling.Default || value > MetadataPropertyHandling.Ignore)
@@ -404,8 +403,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual IContractResolver ContractResolver
         {
-            get { return _contractResolver; }
-            set { _contractResolver = value ?? DefaultContractResolver.Instance; }
+            get => _contractResolver;
+            set => _contractResolver = value ?? DefaultContractResolver.Instance;
         }
 
         /// <summary>
@@ -414,8 +413,8 @@ namespace Newtonsoft.Json
         /// <value>The context.</value>
         public virtual StreamingContext Context
         {
-            get { return _context; }
-            set { _context = value; }
+            get => _context;
+            set => _context = value;
         }
 
         /// <summary>
@@ -424,8 +423,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual Formatting Formatting
         {
-            get { return _formatting ?? JsonSerializerSettings.DefaultFormatting; }
-            set { _formatting = value; }
+            get => _formatting ?? JsonSerializerSettings.DefaultFormatting;
+            set => _formatting = value;
         }
 
         /// <summary>
@@ -434,8 +433,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual DateFormatHandling DateFormatHandling
         {
-            get { return _dateFormatHandling ?? JsonSerializerSettings.DefaultDateFormatHandling; }
-            set { _dateFormatHandling = value; }
+            get => _dateFormatHandling ?? JsonSerializerSettings.DefaultDateFormatHandling;
+            set => _dateFormatHandling = value;
         }
 
         /// <summary>
@@ -444,8 +443,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual DateTimeZoneHandling DateTimeZoneHandling
         {
-            get { return _dateTimeZoneHandling ?? JsonSerializerSettings.DefaultDateTimeZoneHandling; }
-            set { _dateTimeZoneHandling = value; }
+            get => _dateTimeZoneHandling ?? JsonSerializerSettings.DefaultDateTimeZoneHandling;
+            set => _dateTimeZoneHandling = value;
         }
 
         /// <summary>
@@ -454,8 +453,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual DateParseHandling DateParseHandling
         {
-            get { return _dateParseHandling ?? JsonSerializerSettings.DefaultDateParseHandling; }
-            set { _dateParseHandling = value; }
+            get => _dateParseHandling ?? JsonSerializerSettings.DefaultDateParseHandling;
+            set => _dateParseHandling = value;
         }
 
         /// <summary>
@@ -464,8 +463,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual FloatParseHandling FloatParseHandling
         {
-            get { return _floatParseHandling ?? JsonSerializerSettings.DefaultFloatParseHandling; }
-            set { _floatParseHandling = value; }
+            get => _floatParseHandling ?? JsonSerializerSettings.DefaultFloatParseHandling;
+            set => _floatParseHandling = value;
         }
 
         /// <summary>
@@ -476,8 +475,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual FloatFormatHandling FloatFormatHandling
         {
-            get { return _floatFormatHandling ?? JsonSerializerSettings.DefaultFloatFormatHandling; }
-            set { _floatFormatHandling = value; }
+            get => _floatFormatHandling ?? JsonSerializerSettings.DefaultFloatFormatHandling;
+            set => _floatFormatHandling = value;
         }
 
         /// <summary>
@@ -486,8 +485,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual StringEscapeHandling StringEscapeHandling
         {
-            get { return _stringEscapeHandling ?? JsonSerializerSettings.DefaultStringEscapeHandling; }
-            set { _stringEscapeHandling = value; }
+            get => _stringEscapeHandling ?? JsonSerializerSettings.DefaultStringEscapeHandling;
+            set => _stringEscapeHandling = value;
         }
 
         /// <summary>
@@ -497,7 +496,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual string DateFormatString
         {
-            get { return _dateFormatString ?? JsonSerializerSettings.DefaultDateFormatString; }
+            get => _dateFormatString ?? JsonSerializerSettings.DefaultDateFormatString;
             set
             {
                 _dateFormatString = value;
@@ -511,8 +510,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual CultureInfo Culture
         {
-            get { return _culture ?? JsonSerializerSettings.DefaultCulture; }
-            set { _culture = value; }
+            get => _culture ?? JsonSerializerSettings.DefaultCulture;
+            set => _culture = value;
         }
 
         /// <summary>
@@ -522,7 +521,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual int? MaxDepth
         {
-            get { return _maxDepth; }
+            get => _maxDepth;
             set
             {
                 if (value <= 0)
@@ -544,8 +543,8 @@ namespace Newtonsoft.Json
         /// </value>
         public virtual bool CheckAdditionalContent
         {
-            get { return _checkAdditionalContent ?? JsonSerializerSettings.DefaultCheckAdditionalContent; }
-            set { _checkAdditionalContent = value; }
+            get => _checkAdditionalContent ?? JsonSerializerSettings.DefaultCheckAdditionalContent;
+            set => _checkAdditionalContent = value;
         }
 
         internal bool IsCheckAdditionalContentSet()
@@ -1035,7 +1034,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The <see cref="Object"/> to serialize.</param>
         /// <param name="objectType">
         /// The type of the value being serialized.
-        /// This parameter is used when <see cref="JsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// This parameter is used when <see cref="JsonSerializer.TypeNameHandling"/> is <see cref="Json.TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
         /// Specifying the type is optional.
         /// </param>
         public void Serialize(JsonWriter jsonWriter, object value, Type objectType)
