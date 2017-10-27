@@ -47,14 +47,14 @@ namespace Newtonsoft.Json.Converters
     {
         /// <summary>
         /// Gets or sets a value indicating whether the written enum text should be camel case.
-        /// Defaults to <c>false</c>.
+        /// The default value is <c>false</c>.
         /// </summary>
         /// <value><c>true</c> if the written enum text will be camel case; otherwise, <c>false</c>.</value>
         public bool CamelCaseText { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether integer values are allowed when deserializing.
-        /// Defaults to <c>true</c>.
+        /// The default value is <c>true</c>.
         /// </summary>
         /// <value><c>true</c> if integers are allowed when deserializing; otherwise, <c>false</c>.</value>
         public bool AllowIntegerValues { get; set; }
