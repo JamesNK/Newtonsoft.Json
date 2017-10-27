@@ -23,8 +23,14 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || DNXCORE50)
+#if !(NET40 || NET35 || NET20 || DNXCORE50) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
 using NUnit.Framework;
+#endif
 using System;
 using System.Collections.Generic;
 using System.Linq;

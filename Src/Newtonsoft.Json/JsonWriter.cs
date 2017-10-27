@@ -142,7 +142,7 @@ namespace Newtonsoft.Json
         {
             get
             {
-                int depth = (_stack != null) ? _stack.Count : 0;
+                int depth = _stack?.Count ?? 0;
                 if (Peek() != JsonContainerType.None)
                 {
                     depth++;
@@ -231,7 +231,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public Formatting Formatting
         {
-            get { return _formatting; }
+            get => _formatting;
             set
             {
                 if (value < Formatting.None || value > Formatting.Indented)
@@ -248,7 +248,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public DateFormatHandling DateFormatHandling
         {
-            get { return _dateFormatHandling; }
+            get => _dateFormatHandling;
             set
             {
                 if (value < DateFormatHandling.IsoDateFormat || value > DateFormatHandling.MicrosoftDateFormat)
@@ -265,7 +265,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public DateTimeZoneHandling DateTimeZoneHandling
         {
-            get { return _dateTimeZoneHandling; }
+            get => _dateTimeZoneHandling;
             set
             {
                 if (value < DateTimeZoneHandling.Local || value > DateTimeZoneHandling.RoundtripKind)
@@ -282,7 +282,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public StringEscapeHandling StringEscapeHandling
         {
-            get { return _stringEscapeHandling; }
+            get => _stringEscapeHandling;
             set
             {
                 if (value < StringEscapeHandling.Default || value > StringEscapeHandling.EscapeHtml)
@@ -307,7 +307,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public FloatFormatHandling FloatFormatHandling
         {
-            get { return _floatFormatHandling; }
+            get => _floatFormatHandling;
             set
             {
                 if (value < FloatFormatHandling.String || value > FloatFormatHandling.DefaultValue)
@@ -324,8 +324,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public string DateFormatString
         {
-            get { return _dateFormatString; }
-            set { _dateFormatString = value; }
+            get => _dateFormatString;
+            set => _dateFormatString = value;
         }
 
         /// <summary>
@@ -333,8 +333,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public CultureInfo Culture
         {
-            get { return _culture ?? CultureInfo.InvariantCulture; }
-            set { _culture = value; }
+            get => _culture ?? CultureInfo.InvariantCulture;
+            set => _culture = value;
         }
 
         /// <summary>
@@ -546,9 +546,9 @@ namespace Newtonsoft.Json
                 case JsonToken.Integer:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
 #if HAVE_BIG_INTEGER
-                    if (value is BigInteger)
+                    if (value is BigInteger integer)
                     {
-                        WriteValue((BigInteger)value);
+                        WriteValue(integer);
                     }
                     else
 #endif
@@ -558,9 +558,9 @@ namespace Newtonsoft.Json
                     break;
                 case JsonToken.Float:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is decimal)
+                    if (value is decimal d)
                     {
-                        WriteValue((decimal)value);
+                        WriteValue(d);
                     }
                     else if (value is double)
                     {
@@ -601,9 +601,9 @@ namespace Newtonsoft.Json
                 case JsonToken.Date:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
 #if HAVE_DATE_TIME_OFFSET
-                    if (value is DateTimeOffset)
+                    if (value is DateTimeOffset dt)
                     {
-                        WriteValue((DateTimeOffset)value);
+                        WriteValue(dt);
                     }
                     else
 #endif
@@ -616,9 +616,9 @@ namespace Newtonsoft.Json
                     break;
                 case JsonToken.Bytes:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is Guid)
+                    if (value is Guid guid)
                     {
-                        WriteValue((Guid)value);
+                        WriteValue(guid);
                     }
                     else
                     {
@@ -1614,8 +1614,7 @@ namespace Newtonsoft.Json
 #endif
                 default:
 #if HAVE_ICONVERTIBLE
-                    IConvertible convertible = value as IConvertible;
-                    if (convertible != null)
+                    if (value is IConvertible convertible)
                     {
                         // the value is a non-standard IConvertible
                         // convert to the underlying value and retry
@@ -1632,6 +1631,13 @@ namespace Newtonsoft.Json
                         break;
                     }
 #endif
+                    // write an unknown null value, fix https://github.com/JamesNK/Newtonsoft.Json/issues/1460
+                    if (value == null)
+                    {
+                        writer.WriteNull();
+                        break;
+                    }
+
                     throw CreateUnsupportedTypeException(writer, value);
             }
         }

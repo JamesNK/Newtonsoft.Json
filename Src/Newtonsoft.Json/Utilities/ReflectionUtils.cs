@@ -31,8 +31,6 @@ using System.Numerics;
 using System.Reflection;
 using System.Collections;
 using System.Globalization;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters;
 using System.Text;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -43,7 +41,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
-#if (DOTNET || PORTABLE || PORTABLE40)
+#if (DOTNET || PORTABLE || PORTABLE40) && !NETSTANDARD2_0
     [Flags]
     internal enum MemberTypes
     {
@@ -54,7 +52,7 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
-#if PORTABLE
+#if PORTABLE && !NETSTANDARD2_0
     [Flags]
     internal enum BindingFlags
     {
@@ -164,9 +162,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (binder != null)
             {
-                string assemblyName;
-                string typeName;
-                binder.BindToName(t, out assemblyName, out typeName);
+                binder.BindToName(t, out string assemblyName, out string typeName);
 #if (NET20 || NET35)
                 // for older SerializationBinder implementations that didn't have BindToName
                 if (assemblyName == null & typeName == null)
@@ -292,8 +288,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool ImplementsGenericDefinition(Type type, Type genericInterfaceDefinition)
         {
-            Type implementingType;
-            return ImplementsGenericDefinition(type, genericInterfaceDefinition, out implementingType);
+            return ImplementsGenericDefinition(type, genericInterfaceDefinition, out _);
         }
 
         public static bool ImplementsGenericDefinition(Type type, Type genericInterfaceDefinition, out Type implementingType)
@@ -340,8 +335,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool InheritsGenericDefinition(Type type, Type genericClassDefinition)
         {
-            Type implementingType;
-            return InheritsGenericDefinition(type, genericClassDefinition, out implementingType);
+            return InheritsGenericDefinition(type, genericClassDefinition, out _);
         }
 
         public static bool InheritsGenericDefinition(Type type, Type genericClassDefinition, out Type implementingType)
@@ -387,13 +381,12 @@ namespace Newtonsoft.Json.Utilities
         public static Type GetCollectionItemType(Type type)
         {
             ValidationUtils.ArgumentNotNull(type, nameof(type));
-            Type genericListType;
 
             if (type.IsArray)
             {
                 return type.GetElementType();
             }
-            if (ImplementsGenericDefinition(type, typeof(IEnumerable<>), out genericListType))
+            if (ImplementsGenericDefinition(type, typeof(IEnumerable<>), out Type genericListType))
             {
                 if (genericListType.IsGenericTypeDefinition())
                 {
@@ -414,8 +407,7 @@ namespace Newtonsoft.Json.Utilities
         {
             ValidationUtils.ArgumentNotNull(dictionaryType, nameof(dictionaryType));
 
-            Type genericDictionaryType;
-            if (ImplementsGenericDefinition(dictionaryType, typeof(IDictionary<,>), out genericDictionaryType))
+            if (ImplementsGenericDefinition(dictionaryType, typeof(IDictionary<,>), out Type genericDictionaryType))
             {
                 if (genericDictionaryType.IsGenericTypeDefinition())
                 {
@@ -473,9 +465,7 @@ namespace Newtonsoft.Json.Utilities
         {
             ValidationUtils.ArgumentNotNull(member, nameof(member));
 
-            PropertyInfo propertyInfo = member as PropertyInfo;
-
-            if (propertyInfo != null)
+            if (member is PropertyInfo propertyInfo)
             {
                 return IsIndexedProperty(propertyInfo);
             }
@@ -738,7 +728,7 @@ namespace Newtonsoft.Json.Utilities
             return attributes?.FirstOrDefault();
         }
 
-#if !(DOTNET || PORTABLE)
+#if !(DOTNET || PORTABLE) || NETSTANDARD2_0
         public static T[] GetAttributes<T>(object attributeProvider, bool inherit) where T : Attribute
         {
             Attribute[] a = GetAttributes(attributeProvider, typeof(T), inherit);
@@ -821,36 +811,31 @@ namespace Newtonsoft.Json.Utilities
 
         public static Attribute[] GetAttributes(object provider, Type attributeType, bool inherit)
         {
-            if (provider is Type)
+            if (provider is Type t)
             {
-                Type t = (Type)provider;
                 return (attributeType != null)
                     ? t.GetTypeInfo().GetCustomAttributes(attributeType, inherit).ToArray()
                     : t.GetTypeInfo().GetCustomAttributes(inherit).ToArray();
             }
 
-            if (provider is Assembly)
+            if (provider is Assembly a)
             {
-                Assembly a = (Assembly)provider;
                 return (attributeType != null) ? a.GetCustomAttributes(attributeType).ToArray() : a.GetCustomAttributes().ToArray();
             }
 
-            if (provider is MemberInfo)
+            if (provider is MemberInfo memberInfo)
             {
-                MemberInfo m = (MemberInfo)provider;
-                return (attributeType != null) ? m.GetCustomAttributes(attributeType, inherit).ToArray() : m.GetCustomAttributes(inherit).ToArray();
+                return (attributeType != null) ? memberInfo.GetCustomAttributes(attributeType, inherit).ToArray() : memberInfo.GetCustomAttributes(inherit).ToArray();
             }
 
-            if (provider is Module)
+            if (provider is Module module)
             {
-                Module m = (Module)provider;
-                return (attributeType != null) ? m.GetCustomAttributes(attributeType).ToArray() : m.GetCustomAttributes().ToArray();
+                return (attributeType != null) ? module.GetCustomAttributes(attributeType).ToArray() : module.GetCustomAttributes().ToArray();
             }
 
-            if (provider is ParameterInfo)
+            if (provider is ParameterInfo parameterInfo)
             {
-                ParameterInfo p = (ParameterInfo)provider;
-                return (attributeType != null) ? p.GetCustomAttributes(attributeType, inherit).ToArray() : p.GetCustomAttributes(inherit).ToArray();
+                return (attributeType != null) ? parameterInfo.GetCustomAttributes(attributeType, inherit).ToArray() : parameterInfo.GetCustomAttributes(inherit).ToArray();
             }
 
             throw new Exception("Cannot get attributes from '{0}'.".FormatWith(CultureInfo.InvariantCulture, provider));

@@ -39,7 +39,7 @@ using NUnit.Framework;
 
 #endif
 
-#if !(DNXCORE50 || NET20)
+#if !(DNXCORE50 || NET20) || NETSTANDARD1_3 || NETSTANDARD2_0
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 {
@@ -375,7 +375,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 
                 Assert.IsTrue(reader.Read());
                 Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-                Assert.AreEqual(123, reader.Value);
+                Assert.AreEqual(123L, reader.Value);
 
                 Assert.IsTrue(reader.Read());
                 Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
@@ -442,7 +442,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 
                 Assert.AreEqual(1, reader.ReadAsInt32());
                 Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-                Assert.AreEqual(1, reader.Value);
+                Assert.AreEqual(1L, reader.Value);
 
                 Assert.IsTrue(reader.Read());
                 Assert.AreEqual(JsonToken.Bytes, reader.TokenType);
@@ -490,15 +490,15 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 
                 Assert.IsTrue(reader.Read());
                 Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-                Assert.AreEqual(2000, reader.Value);
+                Assert.AreEqual(2000L, reader.Value);
 
                 Assert.IsTrue(reader.Read());
                 Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-                Assert.AreEqual(12, reader.Value);
+                Assert.AreEqual(12L, reader.Value);
 
                 Assert.IsTrue(reader.Read());
                 Assert.AreEqual(JsonToken.Integer, reader.TokenType);
-                Assert.AreEqual(30, reader.Value);
+                Assert.AreEqual(30L, reader.Value);
 
                 Assert.IsTrue(reader.Read());
                 Assert.AreEqual(JsonToken.EndConstructor, reader.TokenType);

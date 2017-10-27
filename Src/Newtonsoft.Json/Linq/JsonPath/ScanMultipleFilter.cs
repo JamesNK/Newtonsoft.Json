@@ -11,29 +11,28 @@ namespace Newtonsoft.Json.Linq.JsonPath
             foreach (JToken c in current)
             {
                 JToken value = c;
-                JContainer container = c as JContainer;
 
                 while (true)
                 {
+                    JContainer container = value as JContainer;
+
                     value = GetNextScanValue(c, container, value);
                     if (value == null)
                     {
                         break;
                     }
 
-                    JProperty e = value as JProperty;
-                    if (e != null)
+                    if (value is JProperty property)
                     {
                         foreach (string name in Names)
                         {
-                            if (e.Name == name)
+                            if (property.Name == name)
                             {
-                                yield return e.Value;
+                                yield return property.Value;
                             }
                         }
                     }
 
-                    container = value as JContainer;
                 }
             }
         }

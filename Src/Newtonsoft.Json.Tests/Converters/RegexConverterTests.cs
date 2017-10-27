@@ -51,6 +51,18 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void WriteJsonNull()
+        {
+            StringWriter sw = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(sw);
+
+            RegexConverter converter = new RegexConverter();
+            converter.WriteJson(jsonWriter, null, null);
+
+            StringAssert.AreEqual(@"null", sw.ToString());
+        }
+
+        [Test]
         public void SerializeToText()
         {
             Regex regex = new Regex("abc", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);

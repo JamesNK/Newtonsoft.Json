@@ -72,7 +72,7 @@ namespace Newtonsoft.Json.Schema
 
                 return _contractResolver;
             }
-            set { _contractResolver = value; }
+            set => _contractResolver = value;
         }
 
         private class TypeSchema
@@ -94,10 +94,7 @@ namespace Newtonsoft.Json.Schema
         private readonly IList<TypeSchema> _stack = new List<TypeSchema>();
         private JsonSchema _currentSchema;
 
-        private JsonSchema CurrentSchema
-        {
-            get { return _currentSchema; }
-        }
+        private JsonSchema CurrentSchema => _currentSchema;
 
         private void Push(TypeSchema typeSchema)
         {

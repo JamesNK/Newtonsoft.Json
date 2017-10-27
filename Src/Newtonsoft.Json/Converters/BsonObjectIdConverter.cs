@@ -46,8 +46,7 @@ namespace Newtonsoft.Json.Converters
         {
             BsonObjectId objectId = (BsonObjectId)value;
 
-            BsonWriter bsonWriter = writer as BsonWriter;
-            if (bsonWriter != null)
+            if (writer is BsonWriter bsonWriter)
             {
                 bsonWriter.WriteObjectId(objectId.Value);
             }

@@ -70,15 +70,13 @@ namespace Newtonsoft.Json.Serialization
 
         public object ResolveReference(object context, string reference)
         {
-            object value;
-            Mappings.TryGetByFirst(reference, out value);
+            Mappings.TryGetByFirst(reference, out object value);
             return value;
         }
 
         public string GetReference(object context, object value)
         {
-            string reference;
-            if (!Mappings.TryGetBySecond(value, out reference))
+            if (!Mappings.TryGetBySecond(value, out string reference))
             {
                 _referenceCount++;
                 reference = _referenceCount.ToString(CultureInfo.InvariantCulture);
@@ -95,8 +93,7 @@ namespace Newtonsoft.Json.Serialization
 
         public bool IsReferenced(object context, object value)
         {
-            string reference;
-            return Mappings.TryGetBySecond(value, out reference);
+            return Mappings.TryGetBySecond(value, out _);
         }
     }
 }

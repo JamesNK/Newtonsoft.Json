@@ -63,6 +63,7 @@
       <Topic id="ErrorHandlingEvent" visible="True" title="ErrorHandling setting" />
       <Topic id="MaxDepth" visible="True" title="MaxDepth setting" />
       <Topic id="CustomJsonConverter" visible="True" title="Custom JsonConverter" />
+      <Topic id="CustomJsonConverterGeneric" visible="True" isSelected="true" title="Custom JsonConverter&lt;T&gt;" />
       <Topic id="CustomContractResolver" visible="True" title="Custom IContractResolver" />
       <Topic id="CustomTraceWriter" visible="True" title="Custom ITraceWriter" />
       <Topic id="SerializeSerializationBinder" visible="True" title="Custom SerializationBinder" />
@@ -71,7 +72,7 @@
       <Topic id="JsonConverterAttributeProperty" visible="True" title="JsonConverterAttribute on a property" />
       <Topic id="JsonObjectAttributeOptIn" visible="True" title="JsonObjectAttribute opt-in serialization" />
       <Topic id="JsonObjectAttributeOverrideIEnumerable" visible="True" title="JsonObjectAttribute force object serialization" />
-      <Topic id="NamingStrategyAttributes" visible="True" isSelected="true" title="JsonObjectAttribute NamingStrategy setting" />
+      <Topic id="NamingStrategyAttributes" visible="True" title="JsonObjectAttribute NamingStrategy setting" />
       <Topic id="JsonPropertyName" visible="True" title="JsonPropertyAttribute name" />
       <Topic id="JsonPropertyOrder" visible="True" title="JsonPropertyAttribute order" />
       <Topic id="JsonPropertyRequired" visible="True" title="JsonPropertyAttribute required" />

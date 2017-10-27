@@ -26,6 +26,8 @@
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Tests.TestObjects;
+using Newtonsoft.Json.Tests.TestObjects.Organization;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -40,31 +42,6 @@ namespace Newtonsoft.Json.Tests.Converters
     [TestFixture]
     public class CustomCreationConverterTests : TestFixtureBase
     {
-        public interface IPerson
-        {
-            string FirstName { get; set; }
-            string LastName { get; set; }
-            DateTime BirthDate { get; set; }
-        }
-
-        public class Employee : IPerson
-        {
-            public string FirstName { get; set; }
-            public string LastName { get; set; }
-            public DateTime BirthDate { get; set; }
-
-            public string Department { get; set; }
-            public string JobTitle { get; set; }
-        }
-
-        public class PersonConverter : CustomCreationConverter<IPerson>
-        {
-            public override IPerson Create(Type objectType)
-            {
-                return new Employee();
-            }
-        }
-
         public void DeserializeObject()
         {
             string json = JsonConvert.SerializeObject(new List<Employee>

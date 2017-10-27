@@ -60,8 +60,7 @@ namespace Newtonsoft.Json.Utilities
                 n2 = f.Name;
 #endif
 
-                string s;
-                if (map.TryGetBySecond(n2, out s))
+                if (map.TryGetBySecond(n2, out _))
                 {
                     throw new InvalidOperationException("Enum name '{0}' already exists on enum '{1}'.".FormatWith(CultureInfo.InvariantCulture, n2, type.Name));
                 }
@@ -196,8 +195,7 @@ namespace Newtonsoft.Json.Utilities
             string finalEnumText;
 
             BidirectionalDictionary<string, string> map = EnumMemberNamesPerType.Get(t);
-            string resolvedEnumName;
-            if (TryResolvedEnumName(map, enumText, out resolvedEnumName))
+            if (TryResolvedEnumName(map, enumText, out string resolvedEnumName))
             {
                 finalEnumText = resolvedEnumName;
             }
@@ -242,8 +240,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 string name = names[i].Trim();
 
-                string resolvedEnumName;
-                map.TryGetByFirst(name, out resolvedEnumName);
+                map.TryGetByFirst(name, out string resolvedEnumName);
                 resolvedEnumName = resolvedEnumName ?? name;
 
                 if (camelCaseText)

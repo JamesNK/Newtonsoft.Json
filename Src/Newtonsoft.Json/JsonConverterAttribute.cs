@@ -41,10 +41,7 @@ namespace Newtonsoft.Json
         /// Gets the <see cref="Type"/> of the <see cref="JsonConverter"/>.
         /// </summary>
         /// <value>The <see cref="Type"/> of the <see cref="JsonConverter"/>.</value>
-        public Type ConverterType
-        {
-            get { return _converterType; }
-        }
+        public Type ConverterType => _converterType;
 
         /// <summary>
         /// The parameter list to use when constructing the <see cref="JsonConverter"/> described by <see cref="ConverterType"/>.

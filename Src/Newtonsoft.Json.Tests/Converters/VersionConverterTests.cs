@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.IO;
 using Newtonsoft.Json.Converters;
 #if DNXCORE50
 using Xunit;
@@ -90,6 +91,18 @@ namespace Newtonsoft.Json.Tests.Converters
                 Assert.AreEqual(expectedVersion2, versionClass.Version2);
                 Assert.AreEqual("StringProperty2", versionClass.StringProperty2);
             }
+        }
+
+        [Test]
+        public void WriteJsonNull()
+        {
+            StringWriter sw = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(sw);
+
+            VersionConverter converter = new VersionConverter();
+            converter.WriteJson(jsonWriter, null, null);
+
+            StringAssert.AreEqual(@"null", sw.ToString());
         }
 
         [Test]

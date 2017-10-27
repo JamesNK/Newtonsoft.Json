@@ -66,20 +66,11 @@ namespace Newtonsoft.Json
             public IList<JToken> UniqueArrayItems { get; }
             public JTokenWriter CurrentItemWriter { get; set; }
 
-            public IList<JsonSchemaModel> Schemas
-            {
-                get { return _schemas; }
-            }
+            public IList<JsonSchemaModel> Schemas => _schemas;
 
-            public Dictionary<string, bool> RequiredProperties
-            {
-                get { return _requiredProperties; }
-            }
+            public Dictionary<string, bool> RequiredProperties => _requiredProperties;
 
-            public JTokenType TokenType
-            {
-                get { return _tokenType; }
-            }
+            public JTokenType TokenType => _tokenType;
 
             public SchemaScope(JTokenType tokenType, IList<JsonSchemaModel> schemas)
             {
@@ -121,27 +112,18 @@ namespace Newtonsoft.Json
         /// Gets the text value of the current JSON token.
         /// </summary>
         /// <value></value>
-        public override object Value
-        {
-            get { return _reader.Value; }
-        }
+        public override object Value => _reader.Value;
 
         /// <summary>
         /// Gets the depth of the current token in the JSON document.
         /// </summary>
         /// <value>The depth of the current token in the JSON document.</value>
-        public override int Depth
-        {
-            get { return _reader.Depth; }
-        }
+        public override int Depth => _reader.Depth;
 
         /// <summary>
         /// Gets the path of the current JSON token. 
         /// </summary>
-        public override string Path
-        {
-            get { return _reader.Path; }
-        }
+        public override string Path => _reader.Path;
 
         /// <summary>
         /// Gets the quotation mark character used to enclose the value of a string.
@@ -157,19 +139,13 @@ namespace Newtonsoft.Json
         /// Gets the type of the current JSON token.
         /// </summary>
         /// <value></value>
-        public override JsonToken TokenType
-        {
-            get { return _reader.TokenType; }
-        }
+        public override JsonToken TokenType => _reader.TokenType;
 
         /// <summary>
         /// Gets the .NET type for the current JSON token.
         /// </summary>
         /// <value></value>
-        public override Type ValueType
-        {
-            get { return _reader.ValueType; }
-        }
+        public override Type ValueType => _reader.ValueType;
 
         private void Push(SchemaScope scope)
         {
@@ -187,10 +163,7 @@ namespace Newtonsoft.Json
             return poppedScope;
         }
 
-        private IList<JsonSchemaModel> CurrentSchemas
-        {
-            get { return _currentScope.Schemas; }
-        }
+        private IList<JsonSchemaModel> CurrentSchemas => _currentScope.Schemas;
 
         private static readonly IList<JsonSchemaModel> EmptySchemaList = new List<JsonSchemaModel>();
 
@@ -329,7 +302,7 @@ namespace Newtonsoft.Json
         /// <value>The schema.</value>
         public JsonSchema Schema
         {
-            get { return _schema; }
+            get => _schema;
             set
             {
                 if (TokenType != JsonToken.None)
@@ -346,10 +319,7 @@ namespace Newtonsoft.Json
         /// Gets the <see cref="JsonReader"/> used to construct this <see cref="JsonValidatingReader"/>.
         /// </summary>
         /// <value>The <see cref="JsonReader"/> specified in the constructor.</value>
-        public JsonReader Reader
-        {
-            get { return _reader; }
-        }
+        public JsonReader Reader => _reader;
 
         /// <summary>
         /// Changes the reader's state to <see cref="JsonReader.State.Closed"/>.

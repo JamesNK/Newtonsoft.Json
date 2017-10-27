@@ -263,6 +263,8 @@ namespace Newtonsoft.Json.Utilities
                                 // copy it over when creating new buffer
                                 if (isEscapedUnicodeText)
                                 {
+                                    Debug.Assert(writeBuffer != null, "Write buffer should never be null because it is set when the escaped unicode text is encountered.");
+
                                     Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
                                 }
 
@@ -381,7 +383,7 @@ namespace Newtonsoft.Json.Utilities
             bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken)
         {
             Task task = writer.WriteAsync(delimiter, cancellationToken);
-            if (task.Status != TaskStatus.RanToCompletion)
+            if (!task.IsCompletedSucessfully())
             {
                 return WriteEscapedJavaScriptStringWithDelimitersAsync(task, writer, s, delimiter, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
             }
@@ -389,7 +391,7 @@ namespace Newtonsoft.Json.Utilities
             if (!string.IsNullOrEmpty(s))
             {
                 task = WriteEscapedJavaScriptStringWithoutDelimitersAsync(writer, s, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
-                if (task.Status == TaskStatus.RanToCompletion)
+                if (task.IsCompletedSucessfully())
                 {
                     return writer.WriteAsync(delimiter, cancellationToken);
                 }

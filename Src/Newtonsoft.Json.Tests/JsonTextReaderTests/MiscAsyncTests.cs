@@ -460,7 +460,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[129]);
+            reader.CharBuffer = new char[129];
 #endif
 
             for (int i = 0; i < 15; i++)
@@ -492,7 +492,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[129]);
+            reader.CharBuffer = new char[129];
 #endif
 
             for (int i = 0; i < 14; i++)
@@ -665,7 +665,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[2]);
+            reader.CharBuffer = new char[2];
 #endif
 
             await reader.ReadAsync();
@@ -988,7 +988,6 @@ null//comment
             Assert.IsTrue(await reader.ReadAsync());
         }
 
-#if !DNXCORE50
         [Test]
         public async Task LinePositionOnNewLineAsync()
         {
@@ -1036,7 +1035,6 @@ null//comment
 
             Assert.IsFalse(await r.ReadAsync());
         }
-#endif
 
         [Test]
         public async Task InvalidUnicodeSequenceAsync()

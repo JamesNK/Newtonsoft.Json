@@ -74,9 +74,9 @@ namespace Newtonsoft.Json.Converters
             }
 #endif
 #if HAVE_ADO_NET
-            if (value is SqlBinary)
+            if (value is SqlBinary binary)
             {
-                return ((SqlBinary)value).Value;
+                return binary.Value;
             }
 #endif
 

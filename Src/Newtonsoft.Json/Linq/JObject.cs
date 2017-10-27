@@ -65,10 +65,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets the container's children tokens.
         /// </summary>
         /// <value>The container's children tokens.</value>
-        protected override IList<JToken> ChildrenTokens
-        {
-            get { return _properties; }
-        }
+        protected override IList<JToken> ChildrenTokens => _properties;
 
         /// <summary>
         /// Occurs when a property value changes.
@@ -118,8 +115,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override bool DeepEquals(JToken node)
         {
-            JObject t = node as JObject;
-            if (t == null)
+            if (!(node is JObject t))
             {
                 return false;
             }
@@ -172,8 +168,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override void MergeItem(object content, JsonMergeSettings settings)
         {
-            JObject o = content as JObject;
-            if (o == null)
+            if (!(content is JObject o))
             {
                 return;
             }
@@ -188,8 +183,7 @@ namespace Newtonsoft.Json.Linq
                 }
                 else if (contentItem.Value != null)
                 {
-                    JContainer existingContainer = existingProperty.Value as JContainer;
-                    if (existingContainer == null || existingContainer.Type != contentItem.Value.Type)
+                    if (!(existingProperty.Value is JContainer existingContainer) || existingContainer.Type != contentItem.Value.Type)
                     {
                         if (contentItem.Value.Type != JTokenType.Null || settings?.MergeNullValueHandling == MergeNullValueHandling.Merge)
                         {
@@ -237,10 +231,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets the node type for this <see cref="JToken"/>.
         /// </summary>
         /// <value>The type.</value>
-        public override JTokenType Type
-        {
-            get { return JTokenType.Object; }
-        }
+        public override JTokenType Type => JTokenType.Object;
 
         /// <summary>
         /// Gets an <see cref="IEnumerable{T}"/> of <see cref="JProperty"/> of this object's properties.
@@ -263,8 +254,7 @@ namespace Newtonsoft.Json.Linq
                 return null;
             }
 
-            JToken property;
-            _properties.TryGetValue(name, out property);
+            _properties.TryGetValue(name, out JToken property);
             return (JProperty)property;
         }
 
@@ -287,8 +277,7 @@ namespace Newtonsoft.Json.Linq
             {
                 ValidationUtils.ArgumentNotNull(key, nameof(key));
 
-                string propertyName = key as string;
-                if (propertyName == null)
+                if (!(key is string propertyName))
                 {
                     throw new ArgumentException("Accessed JObject values with invalid key value: {0}. Object property name expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
                 }
@@ -299,8 +288,7 @@ namespace Newtonsoft.Json.Linq
             {
                 ValidationUtils.ArgumentNotNull(key, nameof(key));
 
-                string propertyName = key as string;
-                if (propertyName == null)
+                if (!(key is string propertyName))
                 {
                     throw new ArgumentException("Set JObject values with invalid key value: {0}. Object property name expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
                 }
@@ -558,11 +546,7 @@ namespace Newtonsoft.Json.Linq
             return _properties.Contains(key);
         }
 
-        ICollection<string> IDictionary<string, JToken>.Keys
-        {
-            // todo: make order of the collection returned match JObject order
-            get { return _properties.Keys; }
-        }
+        ICollection<string> IDictionary<string, JToken>.Keys => _properties.Keys;
 
         /// <summary>
         /// Removes the property with the specified name.
@@ -600,14 +584,8 @@ namespace Newtonsoft.Json.Linq
             return true;
         }
 
-        ICollection<JToken> IDictionary<string, JToken>.Values
-        {
-            get
-            {
-                // todo: need to wrap _properties.Values with a collection to get the JProperty value
-                throw new NotImplementedException();
-            }
-        }
+        ICollection<JToken> IDictionary<string, JToken>.Values => throw new NotImplementedException();
+
         #endregion
 
         #region ICollection<KeyValuePair<string,JToken>> Members
@@ -659,10 +637,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        bool ICollection<KeyValuePair<string, JToken>>.IsReadOnly
-        {
-            get { return false; }
-        }
+        bool ICollection<KeyValuePair<string, JToken>>.IsReadOnly => false;
 
         bool ICollection<KeyValuePair<string, JToken>>.Remove(KeyValuePair<string, JToken> item)
         {
@@ -813,10 +788,8 @@ namespace Newtonsoft.Json.Linq
 
             public override bool TrySetMember(JObject instance, SetMemberBinder binder, object value)
             {
-                JToken v = value as JToken;
-
                 // this can throw an error if value isn't a valid for a JValue
-                if (v == null)
+                if (!(value is JToken v))
                 {
                     v = new JValue(value);
                 }

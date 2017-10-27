@@ -100,6 +100,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="icons\favicon.ico" />
+    <None Include="Samples\Serializer\CustomJsonConverterGeneric.aml" />
     <None Include="Samples\Serializer\NamingStrategyAttributes.aml" />
     <None Include="Samples\Serializer\NamingStrategySnakeCase.aml" />
     <None Include="Samples\Serializer\NamingStrategySkipSpecifiedNames.aml" />

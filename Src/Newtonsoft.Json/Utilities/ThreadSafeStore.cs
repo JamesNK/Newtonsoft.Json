@@ -63,8 +63,7 @@ namespace Newtonsoft.Json.Utilities
 #if HAVE_CONCURRENT_DICTIONARY
             return _concurrentStore.GetOrAdd(key, _creator);
 #else
-            TValue value;
-            if (!_store.TryGetValue(key, out value))
+            if (!_store.TryGetValue(key, out TValue value))
             {
                 return AddValue(key);
             }
@@ -88,8 +87,7 @@ namespace Newtonsoft.Json.Utilities
                 else
                 {
                     // double check locking
-                    TValue checkValue;
-                    if (_store.TryGetValue(key, out checkValue))
+                    if (_store.TryGetValue(key, out TValue checkValue))
                     {
                         return checkValue;
                     }

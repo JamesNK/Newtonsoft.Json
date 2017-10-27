@@ -17,8 +17,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
         {
             foreach (JToken t in current)
             {
-                JObject o = t as JObject;
-                if (o != null)
+                if (t is JObject o)
                 {
                     foreach (string name in Names)
                     {

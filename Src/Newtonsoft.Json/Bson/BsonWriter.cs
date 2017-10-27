@@ -56,8 +56,8 @@ namespace Newtonsoft.Json.Bson
         /// <value>The <see cref="DateTimeKind" /> used when writing <see cref="DateTime"/> values to BSON.</value>
         public DateTimeKind DateTimeKindHandling
         {
-            get { return _writer.DateTimeKindHandling; }
-            set { _writer.DateTimeKindHandling = value; }
+            get => _writer.DateTimeKindHandling;
+            set => _writer.DateTimeKindHandling = value;
         }
 
         /// <summary>

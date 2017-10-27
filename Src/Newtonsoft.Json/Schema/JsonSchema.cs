@@ -243,10 +243,7 @@ namespace Newtonsoft.Json.Schema
 
         private readonly string _internalId = Guid.NewGuid().ToString("N");
 
-        internal string InternalId
-        {
-            get { return _internalId; }
-        }
+        internal string InternalId => _internalId;
 
         // if this is set then this schema instance is just a deferred reference
         // and will be replaced when the schema reference is resolved

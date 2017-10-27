@@ -75,15 +75,15 @@
     </row>
   </tableHeader>
   <row>
-    <entry><para>Error</para></entry>
+    <entry><para><legacyBold>Error</legacyBold></para></entry>
     <entry><para>By default Json.NET will error if a reference loop is encountered (otherwise the serializer will get into an infinite loop).</para></entry>
   </row>
   <row>
-    <entry><para>Ignore</para></entry>
+    <entry><para><legacyBold>Ignore</legacyBold></para></entry>
     <entry><para>Json.NET will ignore objects in reference loops and not serialize them. The first time an object is encountered it will be serialized as usual but if the object is encountered as a child object of itself the serializer will skip serializing it.</para></entry>
   </row>
   <row>
-    <entry><para>Serialize</para></entry>
+    <entry><para><legacyBold>Serialize</legacyBold></para></entry>
     <entry><para>This option forces Json.NET to serialize objects in reference loops. This is useful if objects are nested but not indefinitely.</para></entry>
   </row>
 </table>
@@ -107,11 +107,11 @@ or a property's object properties or collection items using
     </row>
   </tableHeader>
   <row>
-    <entry><para>Include</para></entry>
+    <entry><para><legacyBold>Include</legacyBold></para></entry>
     <entry><para>By default Json.NET writes null values to JSON when serializing and sets null values to fields/properties when deserializing.</para></entry>
   </row>
   <row>
-    <entry><para>Ignore</para></entry>
+    <entry><para><legacyBold>Ignore</legacyBold></para></entry>
     <entry><para>Json.NET will skip writing JSON properties if the .NET value is null when serializing and will skip setting fields/properties if the JSON property is null when deserializing.</para></entry>
   </row>
 </table>
@@ -185,18 +185,22 @@ or a property's object properties or collection items using
  <codeEntityReference>T:Newtonsoft.Json.TypeNameHandling</codeEntityReference> should be used with caution when your application deserializes JSON from an external source.
   </para>
   <para>
-    Incoming types should be validated with a custom <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference> when deserializing with a value other than <c>TypeNameHandling.None</c>.
+    Incoming types should be validated with a custom <codeEntityReference>T:Newtonsoft.Json.Serialization.ISerializationBinder</codeEntityReference> when deserializing with a value other than <codeInline>TypeNameHandling.None</codeInline>.
   </para>
  </alert>
  
  <para>
    <codeEntityReference>T:Newtonsoft.Json.TypeNameHandling</codeEntityReference> controls whether Json.NET includes .NET type names
-   during serialization with a $type property and reads .NET type names from that property to determine what type to create during
+   during serialization with a <codeInline>$type</codeInline> property and reads .NET type names from that property to determine what type to create during
    deserialization.
  </para>
  <para>
-   The value of the $type property can be customized and validated by creating your own 
-   <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference>.
+   Metadata properties like <codeInline>$type</codeInline> must be located at the beginning of a JSON object to be successfully detected during deserialization. If you can't control
+   the order of properties in your JSON object then <codeEntityReference>T:Newtonsoft.Json.MetadataPropertyHandling</codeEntityReference> can be used to remove this restriction.
+ </para>
+ <para>
+   The value of the <codeInline>$type</codeInline> property can be customized and validated by creating your own 
+   <codeEntityReference>T:Newtonsoft.Json.Serialization.ISerializationBinder</codeEntityReference>.
  </para>
 
 <table>
@@ -260,10 +264,44 @@ or a property's object properties or collection items using
 </content>
 </section>
 
-<section address="Binder">
- <title>Binder</title>
- <content><para>The <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference> is used to resolve type names to a .NET type.</para>
- <para>Read more about the serialization binder here: <codeEntityReference>T:System.Runtime.Serialization.SerializationBinder</codeEntityReference></para>
+<section address="SerializationBinder">
+ <title>SerializationBinder</title>
+ <content><para>The <codeEntityReference>T:Newtonsoft.Json.Serialization.ISerializationBinder</codeEntityReference> is used to resolve .NET types to type names during serialization and type names to .NET types during deserialization.</para>
+ <para>
+ If TypeNameHandling is enabled then it is strongly recommended that a custom <codeEntityReference>T:Newtonsoft.Json.Serialization.ISerializationBinder</codeEntityReference> is used to validate incoming type names for security reasons.</para>
+</content>
+</section>
+
+<section address="MetadataPropertyHandling">
+ <title>MetadataPropertyHandling</title>
+ <content><para><codeEntityReference>T:Newtonsoft.Json.MetadataPropertyHandling</codeEntityReference> controls how metadata properties like <codeInline>$type</codeInline> and <codeInline>$id</codeInline> are read during deserialization.</para>
+ <para>
+  For performance reasons by default the JsonSerializer assumes that any metadata properties are located at the beginning of a JSON object.
+  If you are unable to guarantee the order of properties in JSON you are deserializing then <codeInline>MetadataPropertyHandling.ReadAhead</codeInline> removes this
+  restriction at the cost of some performance.
+ </para>
+ 
+<table>
+  <tableHeader>
+    <row>
+      <entry><para>Member</para></entry>
+      <entry><para>Description</para></entry>
+    </row>
+  </tableHeader>
+  <row>
+    <entry><para><legacyBold>Default</legacyBold></para></entry>
+    <entry><para>By default Json.NET will only read metadata properties that are at the beginning of a JSON object.</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>ReadAhead</legacyBold></para></entry>
+    <entry><para>Json.NET will look for metadata properties located anywhere in a JSON object.</para></entry>
+  </row>
+  <row>
+    <entry><para><legacyBold>Ignore</legacyBold></para></entry>
+    <entry><para>Json.NET will ignore metadata properties.</para></entry>
+  </row>
+</table>
+
 </content>
 </section>
 

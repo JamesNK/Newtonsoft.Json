@@ -71,8 +71,7 @@ namespace Newtonsoft.Json.Converters
 
             if (keyValueType != null)
             {
-                string valueJson;
-                if (JsonSerializerInternalWriter.TryConvertToString(keyValue, keyValueType, out valueJson))
+                if (JsonSerializerInternalWriter.TryConvertToString(keyValue, keyValueType, out string valueJson))
                 {
                     writer.WriteValue(valueJson);
                 }

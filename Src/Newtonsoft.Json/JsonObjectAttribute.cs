@@ -45,8 +45,8 @@ namespace Newtonsoft.Json
         /// <value>The member serialization.</value>
         public MemberSerialization MemberSerialization
         {
-            get { return _memberSerialization; }
-            set { _memberSerialization = value; }
+            get => _memberSerialization;
+            set => _memberSerialization = value;
         }
 
         /// <summary>
@@ -57,8 +57,8 @@ namespace Newtonsoft.Json
         /// </value>
         public Required ItemRequired
         {
-            get { return _itemRequired ?? default(Required); }
-            set { _itemRequired = value; }
+            get => _itemRequired ?? default(Required);
+            set => _itemRequired = value;
         }
 
         /// <summary>

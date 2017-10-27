@@ -109,7 +109,7 @@ namespace Newtonsoft.Json.Serialization
         /// <value>The type created during deserialization.</value>
         public Type CreatedType
         {
-            get { return _createdType; }
+            get => _createdType;
             set
             {
                 _createdType = value;
