@@ -697,7 +697,8 @@ namespace Newtonsoft.Json.Tests.Converters
 
             // unfortunatly Enum.Parse with ignoreCase will find the first match rather than the best match
             // it would be great to find a way around this
-            Assert.AreEqual(EnumWithDifferentCases.M, e);
+            // now it finds the best match
+            Assert.AreEqual(EnumWithDifferentCases.m, e);
         }
         
         public enum CaseInsensitiveEnum
