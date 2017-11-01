@@ -31,6 +31,7 @@ namespace Newtonsoft.Json.Utilities
 {
     internal class BidirectionalDictionary<TFirst, TSecond>
     {
+        private const string DuplicateErrorMessage = "Duplicate item already exists for '{0}'.";
         private readonly IDictionary<TFirst, TSecond> _firstToSecond;
         private readonly IDictionary<TSecond, TFirst> _secondToFirst;
         private readonly string _duplicateFirstErrorMessage;
@@ -45,16 +46,34 @@ namespace Newtonsoft.Json.Utilities
             : this(
                 firstEqualityComparer,
                 secondEqualityComparer,
-                "Duplicate item already exists for '{0}'.",
-                "Duplicate item already exists for '{0}'.")
+                DuplicateErrorMessage,
+                DuplicateErrorMessage)
         {
         }
 
         public BidirectionalDictionary(IEqualityComparer<TFirst> firstEqualityComparer, IEqualityComparer<TSecond> secondEqualityComparer,
-            string duplicateFirstErrorMessage, string duplicateSecondErrorMessage)
+            BidirectionalDictionary<TFirst, TSecond> copyFromBidirectionalDictionary) : this(
+            DuplicateErrorMessage,
+            DuplicateErrorMessage,
+            new Dictionary<TFirst, TSecond>(copyFromBidirectionalDictionary._firstToSecond, firstEqualityComparer),
+            new Dictionary<TSecond, TFirst>(copyFromBidirectionalDictionary._secondToFirst, secondEqualityComparer)
+        )
         {
-            _firstToSecond = new Dictionary<TFirst, TSecond>(firstEqualityComparer);
-            _secondToFirst = new Dictionary<TSecond, TFirst>(secondEqualityComparer);
+        }
+
+        public BidirectionalDictionary(IEqualityComparer<TFirst> firstEqualityComparer, IEqualityComparer<TSecond> secondEqualityComparer,
+            string duplicateFirstErrorMessage, string duplicateSecondErrorMessage) : this(
+            duplicateFirstErrorMessage, duplicateSecondErrorMessage,
+            new Dictionary<TFirst, TSecond>(firstEqualityComparer), 
+            new Dictionary<TSecond, TFirst>(secondEqualityComparer))
+        {
+        }
+
+        private BidirectionalDictionary(string duplicateFirstErrorMessage, string duplicateSecondErrorMessage, 
+            IDictionary<TFirst, TSecond> firstToSecond, IDictionary<TSecond, TFirst> secondToFirst)
+        {
+            _firstToSecond = firstToSecond;
+            _secondToFirst = secondToFirst;
             _duplicateFirstErrorMessage = duplicateFirstErrorMessage;
             _duplicateSecondErrorMessage = duplicateSecondErrorMessage;
         }
