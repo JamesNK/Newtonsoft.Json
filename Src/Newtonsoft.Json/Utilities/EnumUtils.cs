@@ -42,9 +42,10 @@ namespace Newtonsoft.Json.Utilities
 
         private static BidirectionalDictionary<string, string> InitializeEnumType(Type type)
         {
+            bool isCaseSensitive = false;
             BidirectionalDictionary<string, string> map = new BidirectionalDictionary<string, string>(
-                StringComparer.Ordinal,
-                StringComparer.Ordinal);
+                StringComparer.OrdinalIgnoreCase,
+                StringComparer.OrdinalIgnoreCase);
 
             foreach (FieldInfo f in type.GetFields(BindingFlags.Public | BindingFlags.Static))
             {
@@ -62,6 +63,24 @@ namespace Newtonsoft.Json.Utilities
 
                 if (map.TryGetBySecond(n2, out _))
                 {
+                    if (!isCaseSensitive)
+                    {
+                        // Update case sensitive
+                        isCaseSensitive = true;
+
+                        // Don't ignore case when overlapping members is found
+                        map = new BidirectionalDictionary<string, string>(StringComparer.Ordinal, StringComparer.Ordinal, map);
+                        
+                        // Check if element could not be found again
+                        if (!map.TryGetBySecond(n2, out _))
+                        {
+                            map.Set(n1, n2);
+                            continue;
+                        }
+
+                        // Throw exception if enum name is still found
+                    }
+
                     throw new InvalidOperationException("Enum name '{0}' already exists on enum '{1}'.".FormatWith(CultureInfo.InvariantCulture, n2, type.Name));
                 }
 
