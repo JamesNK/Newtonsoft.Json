@@ -699,6 +699,24 @@ namespace Newtonsoft.Json.Tests.Converters
             // it would be great to find a way around this
             Assert.AreEqual(EnumWithDifferentCases.M, e);
         }
+        
+        public enum CaseInsensitiveEnum
+        {
+            a,
+            B
+        }
+
+        [Test]
+        public void DeserilizeEnumWithDifferentCasesWithoutCaseSensitiveEnum()
+        {
+            CaseInsensitiveEnum e = JsonConvert.DeserializeObject<CaseInsensitiveEnum>(@"""A""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseInsensitiveEnum.a, e);
+
+            e = JsonConvert.DeserializeObject<CaseInsensitiveEnum>(@"""b""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseInsensitiveEnum.B, e);
+        }
 
 #if !NET20
         [DataContract(Name = "DateFormats")]
