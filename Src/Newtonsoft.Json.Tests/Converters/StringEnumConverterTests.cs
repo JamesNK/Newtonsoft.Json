@@ -709,13 +709,49 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void DeserilizeEnumWithDifferentCasesWithoutCaseSensitiveEnum()
         {
-            CaseInsensitiveEnum e = JsonConvert.DeserializeObject<CaseInsensitiveEnum>(@"""A""", new StringEnumConverter());
+            CaseInsensitiveEnum e = JsonConvert.DeserializeObject<CaseInsensitiveEnum>(@"""a""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseInsensitiveEnum.a, e);
+
+            e = JsonConvert.DeserializeObject<CaseInsensitiveEnum>(@"""A""", new StringEnumConverter());
 
             Assert.AreEqual(CaseInsensitiveEnum.a, e);
 
             e = JsonConvert.DeserializeObject<CaseInsensitiveEnum>(@"""b""", new StringEnumConverter());
 
             Assert.AreEqual(CaseInsensitiveEnum.B, e);
+
+            e = JsonConvert.DeserializeObject<CaseInsensitiveEnum>(@"""B""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseInsensitiveEnum.B, e);
+        }
+
+        public enum CaseSensitiveEnum
+        {
+            a,
+            b,
+            B
+        }
+
+        [Test]
+        public void DeserilizeEnumWithDifferentCasesSameNames()
+        {
+            CaseSensitiveEnum e = JsonConvert.DeserializeObject<CaseSensitiveEnum>(@"""a""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseSensitiveEnum.a, e);
+
+            // This will still parse because of the method ParseEnumName (return Enum.Parse(t, finalEnumText, true);); in EnumUitils
+            e = JsonConvert.DeserializeObject<CaseSensitiveEnum>(@"""A""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseSensitiveEnum.a, e);
+
+            e = JsonConvert.DeserializeObject<CaseSensitiveEnum>(@"""b""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseSensitiveEnum.b, e);
+
+            e = JsonConvert.DeserializeObject<CaseSensitiveEnum>(@"""B""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseSensitiveEnum.B, e);
         }
 
 #if !NET20
