@@ -755,6 +755,30 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
 #if !NET20
+        [JsonConverter(typeof(StringEnumConverter))]
+        enum LengthOfResidence
+        {
+            [EnumMember(Value = "other")]
+            one,
+            [EnumMember(Value = "two")]
+            two
+        }
+
+        class test
+        {
+            public LengthOfResidence residence { get; set; }
+        }
+
+        [Test]
+        public void DeserilizeCaseInsensitiveTestCaseFromIssue1426()
+        {
+            test e = JsonConvert.DeserializeObject<test>("{residence:\"Other\"}");
+            Assert.AreEqual(LengthOfResidence.one, e.residence);
+
+            e = JsonConvert.DeserializeObject<test>("{residence:\"Two\"}");
+            Assert.AreEqual(LengthOfResidence.two, e.residence);
+        }
+
         [DataContract(Name = "DateFormats")]
         public enum EnumMemberWithDifferentCases
         {
