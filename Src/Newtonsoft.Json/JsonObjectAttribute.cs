@@ -38,7 +38,7 @@ namespace Newtonsoft.Json
         // yuck. can't set nullable properties on an attribute in C#
         // have to use this approach to get an unset default state
         internal Required? _itemRequired;
-        internal NullValueHandling? _nullValueHandling;
+        internal NullValueHandling? _itemNullValueHandling;
 
         /// <summary>
         /// Gets or sets the member serialization.
@@ -54,10 +54,10 @@ namespace Newtonsoft.Json
         /// Gets or sets the null value handling.
         /// </summary>
         /// <value>The null value handling.</value>
-        public NullValueHandling NullValueHandling
+        public NullValueHandling ItemNullValueHandling
         {
-            get => _nullValueHandling ?? default(NullValueHandling);
-            set => _nullValueHandling = value;
+            get => _itemNullValueHandling ?? default(NullValueHandling);
+            set => _itemNullValueHandling = value;
         }
 
         /// <summary>

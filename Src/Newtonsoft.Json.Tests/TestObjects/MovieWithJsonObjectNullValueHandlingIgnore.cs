@@ -28,7 +28,7 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-    [JsonObject(NullValueHandling = NullValueHandling.Ignore)]
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Ignore)]
     public class MovieWithJsonObjectNullValueHandlingIgnore
     {
         public string Name { get; set; }
