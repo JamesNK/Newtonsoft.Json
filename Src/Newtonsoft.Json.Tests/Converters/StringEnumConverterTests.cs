@@ -695,9 +695,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             e = JsonConvert.DeserializeObject<EnumWithDifferentCases>(@"""m""", new StringEnumConverter());
 
-            // unfortunatly Enum.Parse with ignoreCase will find the first match rather than the best match
-            // it would be great to find a way around this
-            Assert.AreEqual(EnumWithDifferentCases.M, e);
+            Assert.AreEqual(EnumWithDifferentCases.m, e);
         }
         
         public enum CaseInsensitiveEnum
@@ -751,9 +749,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             e = JsonConvert.DeserializeObject<CaseSensitiveEnum>(@"""B""", new StringEnumConverter());
 
-            // unfortunatly Enum.Parse with ignoreCase will find the first match rather than the best match
-            // it would be great to find a way around this
-            Assert.AreEqual(CaseSensitiveEnum.b, e);
+            Assert.AreEqual(CaseSensitiveEnum.B, e);
         }
 
 #if !NET20
