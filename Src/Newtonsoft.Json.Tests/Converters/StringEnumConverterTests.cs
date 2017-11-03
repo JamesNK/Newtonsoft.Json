@@ -697,8 +697,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             // unfortunatly Enum.Parse with ignoreCase will find the first match rather than the best match
             // it would be great to find a way around this
-            // now it finds the best match
-            Assert.AreEqual(EnumWithDifferentCases.m, e);
+            Assert.AreEqual(EnumWithDifferentCases.M, e);
         }
         
         public enum CaseInsensitiveEnum
@@ -752,10 +751,32 @@ namespace Newtonsoft.Json.Tests.Converters
 
             e = JsonConvert.DeserializeObject<CaseSensitiveEnum>(@"""B""", new StringEnumConverter());
 
-            Assert.AreEqual(CaseSensitiveEnum.B, e);
+            // unfortunatly Enum.Parse with ignoreCase will find the first match rather than the best match
+            // it would be great to find a way around this
+            Assert.AreEqual(CaseSensitiveEnum.b, e);
         }
 
 #if !NET20
+        enum EnumWithDifferentCasesAndEnumMember
+        {
+            [EnumMember(Value = "a")]
+            a,
+            [EnumMember(Value = "A")]
+            A
+        }
+
+        [Test]
+        public void DeserilizeEnumWithDifferentCasesAndEnumMemberSameNames()
+        {
+            EnumWithDifferentCasesAndEnumMember e = JsonConvert.DeserializeObject<EnumWithDifferentCasesAndEnumMember>(@"""a""", new StringEnumConverter());
+
+            Assert.AreEqual(EnumWithDifferentCasesAndEnumMember.a, e);
+
+            e = JsonConvert.DeserializeObject<EnumWithDifferentCasesAndEnumMember>(@"""A""", new StringEnumConverter());
+
+            Assert.AreEqual(EnumWithDifferentCasesAndEnumMember.A, e);
+        }
+
         [JsonConverter(typeof(StringEnumConverter))]
         enum LengthOfResidence
         {

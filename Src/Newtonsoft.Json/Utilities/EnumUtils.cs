@@ -246,15 +246,7 @@ namespace Newtonsoft.Json.Utilities
                     }
                 }
             }
-
-            // Try parse case sensitive
-            try
-            {
-                return Enum.Parse(t, finalEnumText, false);
-            }
-            catch(ArgumentException) { }
-
-            // Now parse case insensitive
+            
             return Enum.Parse(t, finalEnumText, true);
         }
 
