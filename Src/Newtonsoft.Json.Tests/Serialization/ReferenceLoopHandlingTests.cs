@@ -152,6 +152,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
 #if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
+        [Serializable]
         public class MainClass : ISerializable
         {
             public ChildClass Child { get; set; }
@@ -162,6 +163,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             }
         }
 
+        [Serializable]
         public class ChildClass : ISerializable
         {
             public string Name { get; set; }

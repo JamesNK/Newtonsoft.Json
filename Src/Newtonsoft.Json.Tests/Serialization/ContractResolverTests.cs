@@ -126,6 +126,15 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void ResolveSerializableWithoutAttributeContract()
+        {
+            DefaultContractResolver contractResolver = new DefaultContractResolver();
+            JsonContract contract = contractResolver.ResolveContract(typeof(ISerializableWithoutAttributeTestObject));
+
+            Assert.AreEqual(JsonContractType.Object, contract.ContractType);
+        }
+
+        [Test]
         public void ResolveObjectContractWithFieldsSerialization()
         {
             DefaultContractResolver contractResolver = new DefaultContractResolver
