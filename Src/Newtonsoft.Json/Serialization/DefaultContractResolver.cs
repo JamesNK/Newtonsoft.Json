@@ -1509,6 +1509,11 @@ namespace Newtonsoft.Json.Serialization
 #endif
             }
 
+            if (property.NullValueHandling == null && containerAttribute is JsonObjectAttribute objectAttribute)
+            {
+                property.NullValueHandling = objectAttribute._itemNullValueHandling;
+            }
+
             if (requiredAttribute != null)
             {
                 property._required = Required.Always;
