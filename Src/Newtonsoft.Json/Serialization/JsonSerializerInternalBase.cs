@@ -81,6 +81,16 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
+        protected NullValueHandling ResolvedNullValueHandling(JsonObjectContract containerContract, JsonProperty property)
+        {
+            NullValueHandling resolvedNullValueHandling =
+                property.NullValueHandling
+                ?? containerContract?.ItemNullValueHandling
+                ?? Serializer._nullValueHandling;
+
+            return resolvedNullValueHandling;
+        }
+
         private ErrorContext GetErrorContext(object currentObject, object member, string path, Exception error)
         {
             if (_currentErrorContext == null)

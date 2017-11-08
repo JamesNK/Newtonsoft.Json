@@ -51,9 +51,9 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Gets or sets the null value handling.
+        /// Gets or sets how the object's properties with null values are handled during serialization and deserialization.
         /// </summary>
-        /// <value>The null value handling.</value>
+        /// <value>How the object's properties with null values are handled during serialization and deserialization.</value>
         public NullValueHandling ItemNullValueHandling
         {
             get => _itemNullValueHandling ?? default(NullValueHandling);

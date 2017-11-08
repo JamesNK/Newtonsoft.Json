@@ -53,6 +53,12 @@ namespace Newtonsoft.Json.Serialization
         public Required? ItemRequired { get; set; }
 
         /// <summary>
+        /// Gets or sets how the object's properties with null values are handled during serialization and deserialization.
+        /// </summary>
+        /// <value>How the object's properties with null values are handled during serialization and deserialization.</value>
+        public NullValueHandling? ItemNullValueHandling { get; set; }
+
+        /// <summary>
         /// Gets the object's properties.
         /// </summary>
         /// <value>The object's properties.</value>
