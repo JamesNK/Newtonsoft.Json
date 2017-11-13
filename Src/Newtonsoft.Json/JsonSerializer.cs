@@ -1187,12 +1187,12 @@ namespace Newtonsoft.Json
             return _referenceResolver;
         }
 
-        internal JsonConverter GetMatchingConverter(Type type)
+        internal JsonConverter GetMatchingConverter(Type type, bool forWriting)
         {
-            return GetMatchingConverter(_converters, type);
+            return GetMatchingConverter(_converters, type, forWriting);
         }
 
-        internal static JsonConverter GetMatchingConverter(IList<JsonConverter> converters, Type objectType)
+        internal static JsonConverter GetMatchingConverter(IList<JsonConverter> converters, Type objectType, bool forWriting)
         {
 #if DEBUG
             ValidationUtils.ArgumentNotNull(objectType, nameof(objectType));
@@ -1200,15 +1200,19 @@ namespace Newtonsoft.Json
 
             if (converters != null)
             {
+                JsonConverter possibleConverter = null;
                 for (int i = 0; i < converters.Count; i++)
                 {
                     JsonConverter converter = converters[i];
 
                     if (converter.CanConvert(objectType))
                     {
-                        return converter;
+                        if (forWriting ? converter.CanWrite : converter.CanRead)
+                            return converter;
+                        possibleConverter = converter;
                     }
                 }
+                return possibleConverter;
             }
 
             return null;

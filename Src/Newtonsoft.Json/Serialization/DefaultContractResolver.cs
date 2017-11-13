@@ -758,7 +758,7 @@ namespace Newtonsoft.Json.Serialization
             contract.Converter = ResolveContractConverter(contract.NonNullableUnderlyingType);
 
             // then see whether object is compatible with any of the built in converters
-            contract.InternalConverter = JsonSerializer.GetMatchingConverter(BuiltInConverters, contract.NonNullableUnderlyingType);
+            contract.InternalConverter = JsonSerializer.GetMatchingConverter(BuiltInConverters, contract.NonNullableUnderlyingType, true);
 
             if (contract.IsInstantiable
                 && (ReflectionUtils.HasDefaultConstructor(contract.CreatedType, true) || contract.CreatedType.IsValueType()))
