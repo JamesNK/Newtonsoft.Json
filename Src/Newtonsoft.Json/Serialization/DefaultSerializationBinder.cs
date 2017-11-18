@@ -69,9 +69,27 @@ namespace Newtonsoft.Json.Serialization
                 assembly = Assembly.LoadWithPartialName(assemblyName);
 #pragma warning restore 618,612
 #elif DOTNET || PORTABLE
-                assembly = Assembly.Load(new AssemblyName(assemblyName));
+                try 
+	            {	        
+                    assembly = Assembly.Load(new AssemblyName(assemblyName));
+	            }
+	            catch (System.IO.FileNotFoundException)
+	            {
+                    // we catch this exact exception without rethrowing it, 
+                    // because we want to check if the required Assembly is already loaded
+                    // in the current AppDomain, in order to retrieve it from there
+	            }
 #else
-                assembly = Assembly.Load(assemblyName);
+                try 
+	            {	      
+                    assembly = Assembly.Load(assemblyName);
+	            }
+	            catch (System.IO.FileNotFoundException)
+	            {
+                    // we catch this exact exception without rethrowing it, 
+                    // because we want to check if the required Assembly is already loaded
+                    // in the current AppDomain, in order to retrieve it from there
+	            }
 #endif
 
 #if HAVE_APP_DOMAIN
