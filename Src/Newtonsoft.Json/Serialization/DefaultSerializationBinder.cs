@@ -60,7 +60,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (assemblyName != null)
             {
-                Assembly assembly;
+                Assembly assembly = null;
 
 #if !(DOTNET || PORTABLE40 || PORTABLE)
                 // look, I don't like using obsolete methods as much as you do but this is the only way
