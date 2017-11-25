@@ -541,9 +541,16 @@ namespace Newtonsoft.Json.Linq
             Add(new JProperty(propertyName, value));
         }
 
-        bool IDictionary<string, JToken>.ContainsKey(string key)
+        /// <summary>
+        /// Determines whether the JSON object has the specified property name.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns><c>true</c> if the JSON object has the specified property name; otherwise, <c>false</c>.</returns>
+        public bool ContainsKey(string propertyName)
         {
-            return _properties.Contains(key);
+            ValidationUtils.ArgumentNotNull(propertyName, nameof(propertyName));
+
+            return _properties.Contains(propertyName);
         }
 
         ICollection<string> IDictionary<string, JToken>.Keys => _properties.Keys;
