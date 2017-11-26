@@ -165,6 +165,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             public string PropertyName { get; set; }
         }
 
+        [Test]
         public void SerializeReadOnlyProperty()
         {
             Child c = new Child

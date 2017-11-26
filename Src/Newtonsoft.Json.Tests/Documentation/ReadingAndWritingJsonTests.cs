@@ -52,6 +52,7 @@ namespace Newtonsoft.Json.Tests.Documentation
     [TestFixture]
     public class ReadingAndWritingJsonTests : TestFixtureBase
     {
+        [Test]
         public void ReadingAndWritingJsonText()
         {
             #region ReadingAndWritingJsonText
@@ -134,6 +135,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             #endregion
         }
 
+        [Test]
         public void ReadingAndWritingJsonLinq()
         {
             #region ReadingAndWritingJsonLinq
@@ -148,6 +150,8 @@ namespace Newtonsoft.Json.Tests.Documentation
             Console.WriteLine(p.Name);
             // John Smith
             #endregion
+
+            Assert.AreEqual("John Smith", p.Name);
         }
     }
 }

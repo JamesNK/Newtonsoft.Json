@@ -1137,7 +1137,12 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(typeof(DateTime), jsonReader.ValueType);
         }
 
-        //[Test]
+#if DNXCORE50
+        [Test(Skip = "Don't run with other unit tests")]
+#else
+        [Ignore("Don't run with other unit tests")]
+        [Test]
+#endif
         public void StackOverflowTest()
         {
             StringBuilder sb = new StringBuilder();

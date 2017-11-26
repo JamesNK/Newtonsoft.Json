@@ -105,7 +105,14 @@ namespace Newtonsoft.Json.Tests.Documentation
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            return null;
+            JObject o = (JObject)JToken.ReadFrom(reader);
+
+            Person p = new Person
+            {
+                Name = (string)o["Name"]
+            };
+
+            return p;
         }
 
         public override bool CanConvert(Type objectType)
@@ -126,37 +133,6 @@ namespace Newtonsoft.Json.Tests.Documentation
             });
 
             Console.WriteLine(json);
-        }
-
-        public void DeserializeString()
-        {
-            #region DeserializeString
-            HttpClient client = new HttpClient();
-
-            // read the json into a string
-            // string could potentially be very large and cause memory problems
-            string json = client.GetStringAsync("http://www.test.com/large.json").Result;
-
-            Person p = JsonConvert.DeserializeObject<Person>(json);
-            #endregion
-        }
-
-        public void DeserializeStream()
-        {
-            #region DeserializeStream
-            HttpClient client = new HttpClient();
-
-            using (Stream s = client.GetStreamAsync("http://www.test.com/large.json").Result)
-            using (StreamReader sr = new StreamReader(s))
-            using (JsonReader reader = new JsonTextReader(sr))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-
-                // read the json from a stream
-                // json size doesn't matter because only a small piece is read at a time from the HTTP request
-                Person p = serializer.Deserialize<Person>(reader);
-            }
-            #endregion
         }
     }
 

@@ -42,6 +42,7 @@ namespace Newtonsoft.Json.Tests.Converters
     [TestFixture]
     public class CustomCreationConverterTests : TestFixtureBase
     {
+        [Test]
         public void DeserializeObject()
         {
             string json = JsonConvert.SerializeObject(new List<Employee>
@@ -85,7 +86,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             IPerson person = people[0];
 
-            Assert.AreEqual("Newtonsoft.Json.Tests.Employee", person.GetType().Name);
+            Assert.AreEqual("Employee", person.GetType().Name);
 
             Assert.AreEqual("Maurice", person.FirstName);
 
