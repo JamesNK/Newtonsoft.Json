@@ -25,11 +25,9 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json.Converters;
 #if DNXCORE50
 using Xunit;
@@ -699,6 +697,50 @@ namespace Newtonsoft.Json.Tests.Converters
             // it would be great to find a way around this
             Assert.AreEqual(EnumWithDifferentCases.M, e);
         }
+
+#if !NET20
+        [JsonConverter(typeof(StringEnumCaseInsensitiveConverter))]
+        public enum EnumMemberDoesNotMatchName
+        {
+            [EnumMember(Value = "first_value")]
+            First
+        }
+
+        [Test]
+        public void DeserializeEnumCaseIncensitive_ByEnumMemberValue_UpperCase()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberDoesNotMatchName>(@"""FIRST_VALUE""", new StringEnumCaseInsensitiveConverter());
+            Assert.AreEqual(EnumMemberDoesNotMatchName.First, e);
+        }
+
+        [Test]
+        public void DeserializeEnumCaseIncensitive_ByEnumMemberValue_MixedCase()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberDoesNotMatchName>(@"""First_Value""", new StringEnumCaseInsensitiveConverter());
+            Assert.AreEqual(EnumMemberDoesNotMatchName.First, e);
+        }
+
+        [Test]
+        public void DeserializeEnumCaseIncensitive_ByName_LowerCase()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberDoesNotMatchName>(@"""first""", new StringEnumConverter());
+            Assert.AreEqual(EnumMemberDoesNotMatchName.First, e);
+        }
+
+        [Test]
+        public void DeserializeEnumCaseIncensitive_ByName_UperCase()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberDoesNotMatchName>(@"""FIRST""", new StringEnumConverter());
+            Assert.AreEqual(EnumMemberDoesNotMatchName.First, e);
+        }
+
+        [Test]
+        public void DeserializeEnumCaseIncensitive_FromAttribute()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberDoesNotMatchName>(@"""FIRST_VALUE""");
+            Assert.AreEqual(EnumMemberDoesNotMatchName.First, e);
+        }
+#endif
 
 #if !NET20
         [DataContract(Name = "DateFormats")]
