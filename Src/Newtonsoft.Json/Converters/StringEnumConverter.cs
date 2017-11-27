@@ -86,7 +86,6 @@ namespace Newtonsoft.Json.Converters
         /// <param name="camelCaseText"><c>true</c> if the written enum text will be camel case; otherwise, <c>false</c>.</param>
         /// <param name="caseSensitive"><c>true</c> if the text conversion is case sensitive; otherwise, <c>false</c>.</param>
         public StringEnumConverter(bool camelCaseText, bool caseSensitive)
-            : this(camelCaseText)
         {
             AllowIntegerValues = true;
             CamelCaseText = camelCaseText;
