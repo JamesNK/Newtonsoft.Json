@@ -24,73 +24,38 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
-using System.Globalization;
-#if !HAVE_LINQ
-using Newtonsoft.Json.Utilities.LinqBridge;
-#else
-using System.Linq;
-#endif
 
 namespace Newtonsoft.Json.Utilities
 {
     internal class EnumBidirectionalDictionary
     {
-        private readonly IDictionary<string, string> _firstToSecond;
-        private readonly IDictionary<string, string> _secondToFirst;
-        private readonly string _duplicateFirstErrorMessage;
-        private readonly string _duplicateSecondErrorMessage;
+        private readonly BidirectionalDictionary<string, string> _caseSensitive;
+        private readonly BidirectionalDictionary<string, string> _caseInsensitive;
 
         public EnumBidirectionalDictionary()
-            : this(
-                "Duplicate item already exists for '{0}'.",
-                "Duplicate item already exists for '{0}'.")
         {
-        }
-
-        public EnumBidirectionalDictionary(string duplicateFirstErrorMessage, string duplicateSecondErrorMessage)
-        {
-            // By default, our dictionaries are case sensitive.
-            _firstToSecond = new Dictionary<string, string>(StringComparer.Ordinal);
-            _secondToFirst = new Dictionary<string, string>(StringComparer.Ordinal);
-
-            _duplicateFirstErrorMessage = duplicateFirstErrorMessage;
-            _duplicateSecondErrorMessage = duplicateSecondErrorMessage;
+            _caseSensitive = new BidirectionalDictionary<string, string>(StringComparer.Ordinal, StringComparer.Ordinal);
+            _caseInsensitive = new BidirectionalDictionary<string, string>(StringComparer.OrdinalIgnoreCase, StringComparer.OrdinalIgnoreCase);
         }
 
         public void Set(string first, string second)
         {
-            if (_firstToSecond.TryGetValue(first, out string existingSecond))
+            _caseSensitive.Set(first, second);
+            if (!_caseInsensitive.TryGetByFirst(first, out _) && !_caseInsensitive.TryGetBySecond(second, out _))
             {
-                if (!existingSecond.Equals(second))
-                {
-                    throw new ArgumentException(_duplicateFirstErrorMessage.FormatWith(CultureInfo.InvariantCulture, first));
-                }
+                _caseInsensitive.Set(first, second);
             }
-
-            if (_secondToFirst.TryGetValue(second, out string existingFirst))
-            {
-                if (!existingFirst.Equals(first))
-                {
-                    throw new ArgumentException(_duplicateSecondErrorMessage.FormatWith(CultureInfo.InvariantCulture, second));
-                }
-            }
-
-            _firstToSecond.Add(first, second);
-            _secondToFirst.Add(second, first);
         }
 
         public bool TryGetByFirst(string first, out string second, bool caseSensitive)
         {
             if (caseSensitive)
             {
-                return _firstToSecond.TryGetValue(first, out second);
+                return _caseSensitive.TryGetByFirst(first, out second);
             }
             else
             {
-                var matchingElements = _firstToSecond.Where(kvp => kvp.Key.Equals(first, StringComparison.OrdinalIgnoreCase));
-                second = matchingElements.Any() ? matchingElements.First().Value : null;
-                return second != null;
+                return _caseInsensitive.TryGetByFirst(first, out second);
             }
         }
 
@@ -98,13 +63,11 @@ namespace Newtonsoft.Json.Utilities
         {
             if (caseSensitive)
             {
-                return _secondToFirst.TryGetValue(second, out first);
+                return _caseSensitive.TryGetBySecond(second, out first);
             }
             else
             {
-                var matchingElements = _secondToFirst.Where(kvp => kvp.Key.Equals(second, StringComparison.OrdinalIgnoreCase));
-                first = matchingElements.Any() ? matchingElements.First().Value : null;
-                return first != null;
+                return _caseInsensitive.TryGetBySecond(second, out first);
             }
         }
     }
