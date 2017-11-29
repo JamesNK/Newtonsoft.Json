@@ -695,12 +695,108 @@ namespace Newtonsoft.Json.Tests.Converters
 
             e = JsonConvert.DeserializeObject<EnumWithDifferentCases>(@"""m""", new StringEnumConverter());
 
-            // unfortunatly Enum.Parse with ignoreCase will find the first match rather than the best match
-            // it would be great to find a way around this
-            Assert.AreEqual(EnumWithDifferentCases.M, e);
+            Assert.AreEqual(EnumWithDifferentCases.m, e);
+        }
+        
+        public enum CaseInsensitiveEnum
+        {
+            a,
+            B
+        }
+
+        [Test]
+        public void DeserilizeEnumWithDifferentCasesWithoutCaseSensitiveEnum()
+        {
+            CaseInsensitiveEnum e = JsonConvert.DeserializeObject<CaseInsensitiveEnum>(@"""a""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseInsensitiveEnum.a, e);
+
+            e = JsonConvert.DeserializeObject<CaseInsensitiveEnum>(@"""A""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseInsensitiveEnum.a, e);
+
+            e = JsonConvert.DeserializeObject<CaseInsensitiveEnum>(@"""b""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseInsensitiveEnum.B, e);
+
+            e = JsonConvert.DeserializeObject<CaseInsensitiveEnum>(@"""B""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseInsensitiveEnum.B, e);
+        }
+
+        public enum CaseSensitiveEnum
+        {
+            a,
+            b,
+            B
+        }
+
+        [Test]
+        public void DeserilizeEnumWithDifferentCasesSameNames()
+        {
+            CaseSensitiveEnum e = JsonConvert.DeserializeObject<CaseSensitiveEnum>(@"""a""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseSensitiveEnum.a, e);
+
+            // This will still parse because of the method ParseEnumName (return Enum.Parse(t, finalEnumText, true);); in EnumUitils
+            e = JsonConvert.DeserializeObject<CaseSensitiveEnum>(@"""A""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseSensitiveEnum.a, e);
+
+            e = JsonConvert.DeserializeObject<CaseSensitiveEnum>(@"""b""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseSensitiveEnum.b, e);
+
+            e = JsonConvert.DeserializeObject<CaseSensitiveEnum>(@"""B""", new StringEnumConverter());
+
+            Assert.AreEqual(CaseSensitiveEnum.B, e);
         }
 
 #if !NET20
+        enum EnumWithDifferentCasesAndEnumMember
+        {
+            [EnumMember(Value = "a")]
+            a,
+            [EnumMember(Value = "A")]
+            A
+        }
+
+        [Test]
+        public void DeserilizeEnumWithDifferentCasesAndEnumMemberSameNames()
+        {
+            EnumWithDifferentCasesAndEnumMember e = JsonConvert.DeserializeObject<EnumWithDifferentCasesAndEnumMember>(@"""a""", new StringEnumConverter());
+
+            Assert.AreEqual(EnumWithDifferentCasesAndEnumMember.a, e);
+
+            e = JsonConvert.DeserializeObject<EnumWithDifferentCasesAndEnumMember>(@"""A""", new StringEnumConverter());
+
+            Assert.AreEqual(EnumWithDifferentCasesAndEnumMember.A, e);
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        enum LengthOfResidence
+        {
+            [EnumMember(Value = "other")]
+            one,
+            [EnumMember(Value = "two")]
+            two
+        }
+
+        class test
+        {
+            public LengthOfResidence residence { get; set; }
+        }
+
+        [Test]
+        public void DeserilizeCaseInsensitiveTestCaseFromIssue1426()
+        {
+            test e = JsonConvert.DeserializeObject<test>("{residence:\"Other\"}");
+            Assert.AreEqual(LengthOfResidence.one, e.residence);
+
+            e = JsonConvert.DeserializeObject<test>("{residence:\"Two\"}");
+            Assert.AreEqual(LengthOfResidence.two, e.residence);
+        }
+
         [DataContract(Name = "DateFormats")]
         public enum EnumMemberWithDifferentCases
         {
