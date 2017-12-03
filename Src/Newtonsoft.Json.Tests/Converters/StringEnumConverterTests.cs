@@ -230,10 +230,12 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeEnumClass()
         {
-            EnumClass enumClass = new EnumClass();
-            enumClass.StoreColor = StoreColor.Red;
-            enumClass.NullableStoreColor1 = StoreColor.White;
-            enumClass.NullableStoreColor2 = null;
+            EnumClass enumClass = new EnumClass()
+            {
+                StoreColor = StoreColor.Red,
+                NullableStoreColor1 = StoreColor.White,
+                NullableStoreColor2 = null
+            };
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
 
@@ -247,10 +249,12 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeEnumClassWithCamelCase()
         {
-            EnumClass enumClass = new EnumClass();
-            enumClass.StoreColor = StoreColor.Red;
-            enumClass.NullableStoreColor1 = StoreColor.DarkGoldenrod;
-            enumClass.NullableStoreColor2 = null;
+            EnumClass enumClass = new EnumClass()
+            {
+                StoreColor = StoreColor.Red,
+                NullableStoreColor1 = StoreColor.DarkGoldenrod,
+                NullableStoreColor2 = null
+            };
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
 
@@ -264,10 +268,12 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeEnumClassUndefined()
         {
-            EnumClass enumClass = new EnumClass();
-            enumClass.StoreColor = (StoreColor)1000;
-            enumClass.NullableStoreColor1 = (StoreColor)1000;
-            enumClass.NullableStoreColor2 = null;
+            EnumClass enumClass = new EnumClass()
+            {
+                StoreColor = (StoreColor)1000,
+                NullableStoreColor1 = (StoreColor)1000,
+                NullableStoreColor2 = null
+            };
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
 
@@ -281,10 +287,12 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeFlagEnum()
         {
-            EnumClass enumClass = new EnumClass();
-            enumClass.StoreColor = StoreColor.Red | StoreColor.White;
-            enumClass.NullableStoreColor1 = StoreColor.White & StoreColor.Yellow;
-            enumClass.NullableStoreColor2 = StoreColor.Red | StoreColor.White | StoreColor.Black;
+            EnumClass enumClass = new EnumClass()
+            {
+                StoreColor = StoreColor.Red | StoreColor.White,
+                NullableStoreColor1 = StoreColor.White & StoreColor.Yellow,
+                NullableStoreColor2 = StoreColor.Red | StoreColor.White | StoreColor.Black
+            };
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
 
@@ -298,9 +306,11 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeNegativeEnum()
         {
-            NegativeEnumClass negativeEnumClass = new NegativeEnumClass();
-            negativeEnumClass.Value1 = NegativeEnum.Negative;
-            negativeEnumClass.Value2 = (NegativeEnum)int.MinValue;
+            NegativeEnumClass negativeEnumClass = new NegativeEnumClass()
+            {
+                Value1 = NegativeEnum.Negative,
+                Value2 = (NegativeEnum)int.MinValue
+            };
 
             string json = JsonConvert.SerializeObject(negativeEnumClass, Formatting.Indented, new StringEnumConverter());
 
