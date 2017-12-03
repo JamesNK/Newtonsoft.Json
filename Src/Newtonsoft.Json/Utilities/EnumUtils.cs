@@ -191,25 +191,35 @@ namespace Newtonsoft.Json.Utilities
             }
 
             string finalEnumText;
+            bool ignoreCase = true;
 
             EnumBidirectionalDictionary map = EnumMemberNamesPerType.Get(t);
             if (TryResolvedEnumName(map, enumText, out string resolvedEnumName, caseSensitive))
             {
                 finalEnumText = resolvedEnumName;
+
+                // We found an exact match, therefore Enum.Parse must be case sensitive
+                ignoreCase = false;
             }
             else if (enumText.IndexOf(',') != -1)
             {
+                bool allEnumNamesResolved = true;
                 string[] names = enumText.Split(',');
                 for (int i = 0; i < names.Length; i++)
                 {
                     string name = names[i].Trim();
-
-                    names[i] = TryResolvedEnumName(map, name, out resolvedEnumName, caseSensitive)
-                        ? resolvedEnumName
-                        : name;
+                    bool enumNameResolved = TryResolvedEnumName(map, name, out resolvedEnumName, caseSensitive);
+                    names[i] = enumNameResolved ? resolvedEnumName : name;
+                    allEnumNamesResolved &= enumNameResolved;
                 }
 
                 finalEnumText = string.Join(", ", names);
+
+                if (allEnumNamesResolved)
+                {
+                    // We found an exact match for all items, therefore Enum.Parse must be case sensitive
+                    ignoreCase = false;
+                }
             }
             else
             {
@@ -226,7 +236,7 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
 
-            return Enum.Parse(t, finalEnumText, true);
+            return Enum.Parse(t, finalEnumText, ignoreCase);
         }
 
         public static string ToEnumName(Type enumType, string enumText, bool camelCaseText, bool caseSensitive)

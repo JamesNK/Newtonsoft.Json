@@ -35,7 +35,7 @@ namespace Newtonsoft.Json.Utilities
         public EnumBidirectionalDictionary()
         {
             _caseSensitive = new BidirectionalDictionary<string, string>(StringComparer.Ordinal, StringComparer.Ordinal);
-            _caseInsensitive = new BidirectionalDictionary<string, string>(StringComparer.OrdinalIgnoreCase, StringComparer.OrdinalIgnoreCase);
+            _caseInsensitive = new BidirectionalDictionary<string, string>(StringComparer.Ordinal, StringComparer.OrdinalIgnoreCase);
         }
 
         public void Set(string first, string second)

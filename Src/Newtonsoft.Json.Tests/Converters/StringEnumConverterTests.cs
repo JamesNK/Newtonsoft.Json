@@ -688,14 +688,10 @@ namespace Newtonsoft.Json.Tests.Converters
         public void DeserializeEnumWithDifferentCases()
         {
             EnumWithDifferentCases e = JsonConvert.DeserializeObject<EnumWithDifferentCases>(@"""M""", new StringEnumConverter());
-
             Assert.AreEqual(EnumWithDifferentCases.M, e);
 
             e = JsonConvert.DeserializeObject<EnumWithDifferentCases>(@"""m""", new StringEnumConverter());
-
-            // unfortunatly Enum.Parse with ignoreCase will find the first match rather than the best match
-            // it would be great to find a way around this
-            Assert.AreEqual(EnumWithDifferentCases.M, e);
+            Assert.AreEqual(EnumWithDifferentCases.m, e);
         }
 
 #if !NET20
@@ -739,6 +735,29 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             var e = JsonConvert.DeserializeObject<EnumMemberDoesNotMatchName>(@"""FIRST_VALUE""");
             Assert.AreEqual(EnumMemberDoesNotMatchName.First, e);
+        }
+
+        [JsonConverter(typeof(StringEnumCaseInsensitiveConverter))]
+        public enum EnumMemberWithDiffrentCases
+        {
+            [EnumMember(Value = "first_value")]
+            First,
+            [EnumMember(Value = "second_value")]
+            first
+        }
+
+        [Test]
+        public void DeserializeEnumMemberWithDifferentCasing_ByEnumMemberValue_First()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberWithDiffrentCases>(@"""first_value""", new StringEnumCaseInsensitiveConverter());
+            Assert.AreEqual(EnumMemberWithDiffrentCases.First, e);
+        }
+
+        [Test]
+        public void DeserializeEnumMemberWithDifferentCasing_ByEnumMemberValue_Second()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberWithDiffrentCases>(@"""second_value""", new StringEnumCaseInsensitiveConverter());
+            Assert.AreEqual(EnumMemberWithDiffrentCases.first, e);
         }
 #endif
 
