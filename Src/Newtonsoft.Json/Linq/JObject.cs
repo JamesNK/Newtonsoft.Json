@@ -185,7 +185,7 @@ namespace Newtonsoft.Json.Linq
                 {
                     if (!(existingProperty.Value is JContainer existingContainer) || existingContainer.Type != contentItem.Value.Type)
                     {
-                        if (contentItem.Value.Type != JTokenType.Null || settings?.MergeNullValueHandling == MergeNullValueHandling.Merge)
+                        if (!IsNull(contentItem.Value) || settings?.MergeNullValueHandling == MergeNullValueHandling.Merge)
                         {
                             existingProperty.Value = contentItem.Value;
                         }
@@ -196,6 +196,21 @@ namespace Newtonsoft.Json.Linq
                     }
                 }
             }
+        }
+
+        private static bool IsNull(JToken token)
+        {
+            if (token.Type == JTokenType.Null)
+            {
+                return true;
+            }
+
+            if (token is JValue v && v.Value == null)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         internal void InternalPropertyChanged(JProperty childProperty)
