@@ -39,7 +39,7 @@ namespace Newtonsoft.Json.Utilities
     internal class ThreadSafeStore<TKey, TValue>
     {
 #if HAVE_CONCURRENT_DICTIONARY
-        private ConcurrentDictionary<TKey, TValue> _concurrentStore;
+        private readonly ConcurrentDictionary<TKey, TValue> _concurrentStore;
 #else
         private readonly object _lock = new object();
         private Dictionary<TKey, TValue> _store;
