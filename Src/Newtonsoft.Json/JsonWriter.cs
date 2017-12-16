@@ -1482,7 +1482,7 @@ namespace Newtonsoft.Json
 
         internal static void WriteValue(JsonWriter writer, PrimitiveTypeCode typeCode, object value)
         {
-            for (;;)
+            while (true)
             {
                 switch (typeCode)
                 {

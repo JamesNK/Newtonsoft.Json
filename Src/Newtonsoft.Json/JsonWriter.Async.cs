@@ -1680,7 +1680,7 @@ namespace Newtonsoft.Json
 
         internal static Task WriteValueAsync(JsonWriter writer, PrimitiveTypeCode typeCode, object value, CancellationToken cancellationToken)
         {
-            for (;;)
+            while (true)
             {
                 switch (typeCode)
                 {
