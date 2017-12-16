@@ -30,6 +30,10 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
+#if !(NET20 || NET35 || NET40 || PORTABLE40)
+using System.Threading.Tasks;
+#endif
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Xml;
@@ -60,5 +64,17 @@ namespace Newtonsoft.Json.Tests.Issues
 
             Assert.AreEqual("null", sw.ToString());
         }
+
+#if !(NET20 || NET35 || NET40 || PORTABLE40)
+        [Test]
+        public async Task TestAsync()
+        {
+            StringWriter sw = new StringWriter();
+            JsonTextWriter writer = new JsonTextWriter(sw);
+            await JsonWriter.WriteValueAsync(writer, PrimitiveTypeCode.Object, null, CancellationToken.None);
+
+            Assert.AreEqual("null", sw.ToString());
+        }
+#endif
     }
 }
