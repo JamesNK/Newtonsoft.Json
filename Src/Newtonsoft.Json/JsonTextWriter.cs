@@ -846,8 +846,10 @@ namespace Newtonsoft.Json
 
             do
             {
-                _writeBuffer[--index] = (char)('0' + value % 10);
-                value /= 10;
+                ulong quotient = value / 10;
+                ulong digit = value - (quotient * 10);
+                _writeBuffer[--index] = (char)('0' + digit);
+                value = quotient;
             } while (value != 0);
 
             return totalLength;
