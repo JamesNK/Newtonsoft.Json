@@ -817,15 +817,15 @@ namespace Newtonsoft.Json
             }
         }
 
-        private void WriteIntegerValue(ulong uvalue, bool negative)
+        private void WriteIntegerValue(ulong value, bool negative)
         {
-            if (!negative & uvalue <= 9)
+            if (!negative & value <= 9)
             {
-                _writer.Write((char)('0' + uvalue));
+                _writer.Write((char)('0' + value));
             }
             else
             {
-                int length = WriteNumberToBuffer(uvalue, negative);
+                int length = WriteNumberToBuffer(value, negative);
                 _writer.Write(_writeBuffer, 0, length);
             }
         }
@@ -868,15 +868,15 @@ namespace Newtonsoft.Json
             }
         }
 
-        private void WriteIntegerValue(uint uvalue, bool negative)
+        private void WriteIntegerValue(uint value, bool negative)
         {
-            if (!negative & uvalue <= 9)
+            if (!negative & value <= 9)
             {
-                _writer.Write((char)('0' + uvalue));
+                _writer.Write((char)('0' + value));
             }
             else
             {
-                int length = WriteNumberToBuffer(uvalue, negative);
+                int length = WriteNumberToBuffer(value, negative);
                 _writer.Write(_writeBuffer, 0, length);
             }
         }
