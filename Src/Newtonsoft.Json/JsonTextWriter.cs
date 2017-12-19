@@ -832,6 +832,12 @@ namespace Newtonsoft.Json
 
         private int WriteNumberToBuffer(ulong value, bool negative)
         {
+            if(value < uint.MaxValue)
+            {
+                // avoid the 64 bit division if possible
+                return WriteNumberToBuffer((uint)value, negative);                
+            }
+
             EnsureWriteBuffer();
 
             int totalLength = MathUtils.IntLength(value);
