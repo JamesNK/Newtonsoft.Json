@@ -902,6 +902,9 @@ namespace Newtonsoft.Json.Tests
                 jsonWriter.WriteValue(long.MinValue);
                 jsonWriter.WriteValue(ulong.MaxValue);
                 jsonWriter.WriteValue(ulong.MinValue);
+                jsonWriter.WriteValue((ulong)uint.MaxValue - 1);
+                jsonWriter.WriteValue((ulong)uint.MaxValue);
+                jsonWriter.WriteValue((ulong)uint.MaxValue + 1);
 
                 jsonWriter.WriteEndArray();
             }
@@ -918,7 +921,10 @@ namespace Newtonsoft.Json.Tests
   9223372036854775807,
   -9223372036854775808,
   18446744073709551615,
-  0
+  0,
+  4294967294,
+  4294967295,
+  4294967296
 ]", sb.ToString());
         }
 
