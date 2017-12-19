@@ -854,5 +854,56 @@ namespace Newtonsoft.Json
 
             return totalLength;
         }
+
+        private void WriteIntegerValue(int value)
+        {
+            if (value >= 0 && value <= 9)
+            {
+                _writer.Write((char)('0' + value));
+            }
+            else
+            {
+                bool negative = value < 0;
+                WriteIntegerValue(negative ? (uint)-value : (uint)value, negative);
+            }
+        }
+
+        private void WriteIntegerValue(uint uvalue, bool negative)
+        {
+            if (!negative & uvalue <= 9)
+            {
+                _writer.Write((char)('0' + uvalue));
+            }
+            else
+            {
+                int length = WriteNumberToBuffer(uvalue, negative);
+                _writer.Write(_writeBuffer, 0, length);
+            }
+        }
+
+        private int WriteNumberToBuffer(uint value, bool negative)
+        {
+            EnsureWriteBuffer();
+
+            int totalLength = MathUtils.IntLength(value);
+
+            if (negative)
+            {
+                totalLength++;
+                _writeBuffer[0] = '-';
+            }
+
+            int index = totalLength;
+
+            do
+            {
+                uint quotient = value / 10;
+                uint digit = value - (quotient * 10);
+                _writeBuffer[--index] = (char)('0' + digit);
+                value = quotient;
+            } while (value != 0);
+
+            return totalLength;
+        }
     }
 }
