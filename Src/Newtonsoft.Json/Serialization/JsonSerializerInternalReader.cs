@@ -2531,7 +2531,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 reader.Skip();
 
-                while (reader.Depth > (initialDepth + 1))
+                while (reader.Depth > initialDepth)
                 {
                     if (!reader.Read())
                     {
