@@ -39,9 +39,9 @@ namespace Newtonsoft.Json.Tests.Issues
     public class Issue1545 : TestFixtureBase
     {
         [Test]
-        public void Test()
+        public void Test_Populate()
         {
-            var json = @"{
+            string json = @"{
                 ""array"": [
                     /* comment0 */
                     {
@@ -54,18 +54,39 @@ namespace Newtonsoft.Json.Tests.Issues
                     /* comment2 */
                 ]
             }";
-            var error = false;
 
-            try
-            {
-                JsonConvert.DeserializeObject<Simple>(json);
-            }
-            catch
-            {
-                error = true;
-            }
+            Simple s = JsonConvert.DeserializeObject<Simple>(json);
+            Assert.AreEqual(2, s.Array.Length);
+            Assert.AreEqual("item1", s.Array[0].Value);
+            Assert.AreEqual("item2", s.Array[1].Value);
+        }
 
-            Assert.IsFalse(error);
+        [Test]
+        public void Test_Multidimensional()
+        {
+            string json = @"[
+                /* comment0 */
+                [1,2,3],
+                /* comment1 */
+                [
+                    /* comment2 */
+                    4,
+                    /* comment3 */
+                    5,
+                    /* comment4 */
+                    6
+                ]
+                /* comment5 */
+            ]";
+
+            int[,] s = JsonConvert.DeserializeObject<int[,]>(json);
+            Assert.AreEqual(6, s.Length);
+            Assert.AreEqual(1, s[0, 0]);
+            Assert.AreEqual(2, s[0, 1]);
+            Assert.AreEqual(3, s[0, 2]);
+            Assert.AreEqual(4, s[1, 0]);
+            Assert.AreEqual(5, s[1, 1]);
+            Assert.AreEqual(6, s[1, 2]);
         }
     }
 
@@ -118,10 +139,10 @@ namespace Newtonsoft.Json.Tests.Issues
                 return null;
             }
 
-            var lineInfoObject = Activator.CreateInstance(objectType) as JsonLineInfo;
+            JsonLineInfo lineInfoObject = Activator.CreateInstance(objectType) as JsonLineInfo;
             serializer.Populate(reader, lineInfoObject);
 
-            var jsonLineInfo = reader as IJsonLineInfo;
+            IJsonLineInfo jsonLineInfo = reader as IJsonLineInfo;
             if (jsonLineInfo != null && jsonLineInfo.HasLineInfo())
             {
                 lineInfoObject.LineNumber = jsonLineInfo.LineNumber;
