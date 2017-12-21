@@ -1445,6 +1445,8 @@ namespace Newtonsoft.Json.Serialization
                                     currentList = listStack.Peek();
                                     previousErrorIndex = null;
                                     break;
+                                case JsonToken.Comment:
+                                    break;
                                 default:
                                     object value;
 
@@ -1596,6 +1598,8 @@ namespace Newtonsoft.Json.Serialization
                         {
                             case JsonToken.EndArray:
                                 finished = true;
+                                break;
+                            case JsonToken.Comment:
                                 break;
                             default:
                                 object value;
