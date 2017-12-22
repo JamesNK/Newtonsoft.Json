@@ -27,7 +27,7 @@
 
 using System;
 using System.Globalization;
-#if !PORTABLE || NETSTANDARD1_3
+#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0
 using System.Numerics;
 #endif
 using System.Text;
@@ -401,7 +401,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[2]);
+            reader.CharBuffer = new char[2];
 #endif
 
             await reader.ReadAsync();
@@ -593,7 +593,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             }
         }
 
-#if !PORTABLE || NETSTANDARD1_3
+#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public async Task ReadInt64OverflowAsync()
         {

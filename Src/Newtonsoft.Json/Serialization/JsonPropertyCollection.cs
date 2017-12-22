@@ -156,8 +156,7 @@ namespace Newtonsoft.Json.Serialization
             // KeyedCollection has an ordinal comparer
             if (comparisonType == StringComparison.Ordinal)
             {
-                JsonProperty property;
-                if (TryGetValue(propertyName, out property))
+                if (TryGetValue(propertyName, out JsonProperty property))
                 {
                     return property;
                 }

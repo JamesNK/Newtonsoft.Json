@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
     {
         private JArray _largeJArraySample;
 
-        [Setup]
+        [GlobalSetup]
         public void SetupData()
         {
             _largeJArraySample = new JArray();

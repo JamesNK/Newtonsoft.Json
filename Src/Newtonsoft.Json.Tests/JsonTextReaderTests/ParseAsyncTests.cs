@@ -398,7 +398,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             string json = "new Date\0()";
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[7]);
+            reader.CharBuffer = new char[7];
 #endif
 
             Assert.IsTrue(await reader.ReadAsync());

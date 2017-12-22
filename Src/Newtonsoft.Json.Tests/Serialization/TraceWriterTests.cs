@@ -4,7 +4,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using Newtonsoft.Json.Linq;
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
 using System.Numerics;
 #endif
 using System.Runtime.Serialization;
@@ -33,7 +33,7 @@ using System.Threading.Tasks;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
-{
+{ 
     public class Staff
     {
         public string Name { get; set; }
@@ -41,10 +41,87 @@ namespace Newtonsoft.Json.Tests.Serialization
         public IList<string> Roles { get; set; }
     }
 
+    public class RoleTrace
+    {
+        public string Name { get; set; }
+    }
+
     [TestFixture]
     public class TraceWriterTests : TestFixtureBase
     {
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+        [Test]
+        public void DeserializedJsonWithAlreadyReadReader()
+        {
+            string json = @"{ 'name': 'Admin' }{ 'name': 'Publisher' }";
+            IList<RoleTrace> roles = new List<RoleTrace>();
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.SupportMultipleContent = true;
+            InMemoryTraceWriter traceWriter = new InMemoryTraceWriter();
+            while (true)
+            {
+                if (!reader.Read())
+                {
+                    break;
+                }
+                JsonSerializer serializer = new JsonSerializer();
+                //the next line raise an exception
+                serializer.TraceWriter = traceWriter;
+                RoleTrace role = serializer.Deserialize<RoleTrace>(reader);
+                roles.Add(role);
+            }
+
+            Assert.AreEqual("Admin", roles[0].Name);
+            Assert.AreEqual("Publisher", roles[1].Name);
+
+            StringAssert.AreEqual(@"Deserialized JSON: 
+{
+  ""name"": ""Admin""
+}", traceWriter.TraceRecords[2].Message);
+
+            StringAssert.AreEqual(@"Deserialized JSON: 
+{
+  ""name"": ""Publisher""
+}", traceWriter.TraceRecords[5].Message);
+        }
+
+#if !(NET20 || NET35 || NET40 || PORTABLE40 || PORTABLE) || DNXCORE50
+        [Test]
+        public async Task DeserializedJsonWithAlreadyReadReader_Async()
+        {
+            string json = @"{ 'name': 'Admin' }{ 'name': 'Publisher' }";
+            IList<RoleTrace> roles = new List<RoleTrace>();
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.SupportMultipleContent = true;
+            InMemoryTraceWriter traceWriter = new InMemoryTraceWriter();
+            while (true)
+            {
+                if (!await reader.ReadAsync())
+                {
+                    break;
+                }
+                JsonSerializer serializer = new JsonSerializer();
+                //the next line raise an exception
+                serializer.TraceWriter = traceWriter;
+                RoleTrace role = serializer.Deserialize<RoleTrace>(reader);
+                roles.Add(role);
+            }
+
+            Assert.AreEqual("Admin", roles[0].Name);
+            Assert.AreEqual("Publisher", roles[1].Name);
+
+            StringAssert.AreEqual(@"Deserialized JSON: 
+{
+  ""name"": ""Admin""
+}", traceWriter.TraceRecords[2].Message);
+
+            StringAssert.AreEqual(@"Deserialized JSON: 
+{
+  ""name"": ""Publisher""
+}", traceWriter.TraceRecords[5].Message);
+        }
+#endif
+
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
         [Test]
         public void DiagnosticsTraceWriterTest()
         {
@@ -790,7 +867,7 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.IsTrue(traceWriter.TraceRecords[9].Message.StartsWith("Finished deserializing System.Collections.Generic.List`1[System.Object]. Path '$values'"));
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
         [Test]
         public void DeserializeISerializable()
         {
@@ -996,7 +1073,51 @@ Newtonsoft.Json Error: 0 : Error!
             Assert.AreEqual(23, deserialized.FavoriteNumber);
         }
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3
+        [Test]
+        public void TraceJsonWriterTest_WriteObjectInObject()
+        {
+            StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+            JsonTextWriter w = new JsonTextWriter(sw);
+            TraceJsonWriter traceWriter = new TraceJsonWriter(w);
+
+            traceWriter.WriteStartObject();
+            traceWriter.WritePropertyName("Prop1");
+            traceWriter.WriteValue((object)1);
+            traceWriter.WriteEndObject();
+            traceWriter.Flush();
+            traceWriter.Close();
+
+            string json = @"{
+  ""Prop1"": 1
+}";
+
+            StringAssert.AreEqual("Serialized JSON: " + Environment.NewLine + json, traceWriter.GetSerializedJsonMessage());
+        }
+
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40)
+        [Test]
+        public async Task TraceJsonWriterTest_WriteObjectInObjectAsync()
+        {
+            StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
+            JsonTextWriter w = new JsonTextWriter(sw);
+            TraceJsonWriter traceWriter = new TraceJsonWriter(w);
+
+            await traceWriter.WriteStartObjectAsync();
+            await traceWriter.WritePropertyNameAsync("Prop1");
+            await traceWriter.WriteValueAsync((object)1);
+            await traceWriter.WriteEndObjectAsync();
+            await traceWriter.FlushAsync();
+            traceWriter.Close();
+
+            string json = @"{
+  ""Prop1"": 1
+}";
+
+            StringAssert.AreEqual("Serialized JSON: " + Environment.NewLine + json, traceWriter.GetSerializedJsonMessage());
+        }
+#endif
+
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void TraceJsonWriterTest()
         {
@@ -1098,7 +1219,6 @@ Newtonsoft.Json Error: 0 : Error!
     1,
     true,
     9999999990000000000000000000000000000000000,
-    true,
     true,
     ""00:01:00"",
     ""00000000-0000-0000-0000-000000000000"",

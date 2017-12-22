@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
 using System;
 using Newtonsoft.Json.Converters;
 #if DNXCORE50
@@ -36,6 +36,7 @@ using NUnit.Framework;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 using System.Data;
+using System.IO;
 
 namespace Newtonsoft.Json.Tests.Converters
 {
@@ -105,6 +106,18 @@ namespace Newtonsoft.Json.Tests.Converters
         public class DataSetTestClass
         {
             public DataSet Set { get; set; }
+        }
+
+        [Test]
+        public void WriteJsonNull()
+        {
+            StringWriter sw = new StringWriter();
+            JsonTextWriter jsonWriter = new JsonTextWriter(sw);
+
+            DataSetConverter converter = new DataSetConverter();
+            converter.WriteJson(jsonWriter, null, null);
+
+            StringAssert.AreEqual(@"null", sw.ToString());
         }
 
         [Test]

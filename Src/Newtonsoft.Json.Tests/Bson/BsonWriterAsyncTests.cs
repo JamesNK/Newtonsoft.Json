@@ -26,7 +26,7 @@
 #pragma warning disable 618
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
 using System;
-#if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
 using System.Numerics;
 #endif
 using System.Text;
@@ -499,7 +499,7 @@ namespace Newtonsoft.Json.Tests.Bson
             Assert.AreEqual("10-00-00-00-09-30-00-C8-88-07-6B-DC-00-00-00-00", (BitConverter.ToString(ms.ToArray())));
         }
 
-#if !PORTABLE || NETSTANDARD1_3
+#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public async Task WriteBigIntegerAsync()
         {

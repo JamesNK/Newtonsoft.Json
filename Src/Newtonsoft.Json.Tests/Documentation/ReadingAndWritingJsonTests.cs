@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || PORTABLE || DNXCORE50)
+#if !(NET40 || NET35 || NET20 || PORTABLE || DNXCORE50) || NETSTANDARD1_3 || NETSTANDARD2_0
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -52,6 +52,7 @@ namespace Newtonsoft.Json.Tests.Documentation
     [TestFixture]
     public class ReadingAndWritingJsonTests : TestFixtureBase
     {
+        [Test]
         public void ReadingAndWritingJsonText()
         {
             #region ReadingAndWritingJsonText
@@ -134,6 +135,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             #endregion
         }
 
+        [Test]
         public void ReadingAndWritingJsonLinq()
         {
             #region ReadingAndWritingJsonLinq
@@ -148,6 +150,8 @@ namespace Newtonsoft.Json.Tests.Documentation
             Console.WriteLine(p.Name);
             // John Smith
             #endregion
+
+            Assert.AreEqual("John Smith", p.Name);
         }
     }
 }

@@ -26,6 +26,7 @@
 #if HAVE_BENCHMARKS
 
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -34,6 +35,13 @@ using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Newtonsoft.Json.Utilities;
+#if !PORTABLE || NETSTANDARD2_0
+using MemberTypes = System.Reflection.MemberTypes;
+using BindingFlags = System.Reflection.BindingFlags;
+#else
+using MemberTypes = Newtonsoft.Json.Utilities.MemberTypes;
+using BindingFlags = Newtonsoft.Json.Utilities.BindingFlags;
+#endif
 
 namespace Newtonsoft.Json.Tests.Benchmarks
 {
@@ -42,11 +50,63 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         private const string FloatText = "123.123";
         private static readonly char[] FloatChars = FloatText.ToCharArray();
 
+        private static readonly Dictionary<string, object> NormalDictionary = new Dictionary<string, object>();
+
+        private static readonly ConcurrentDictionary<string, object> ConcurrentDictionary = new ConcurrentDictionary<string, object>();
+
+        static LowLevelBenchmarks()
+        {
+            for (int i = 0; i < 10; i++)
+            {
+                string key = i.ToString();
+                object value = new object();
+
+                NormalDictionary.Add(key, value);
+                ConcurrentDictionary.TryAdd(key, value);
+            }
+        }
+
+        [Benchmark]
+        public void DictionaryGet()
+        {
+            NormalDictionary.TryGetValue("1", out object _);
+        }
+
+        [Benchmark]
+        public void ConcurrentDictionaryGet()
+        {
+            ConcurrentDictionary.TryGetValue("1", out object _);
+        }
+
+        [Benchmark]
+        public void ConcurrentDictionaryGetOrCreate()
+        {
+            ConcurrentDictionary.GetOrAdd("1", Dummy);
+        }
+
+        private object Dummy(string arg)
+        {
+            throw new Exception("Should never get here.");
+        }
+
         [Benchmark]
         public void DecimalTryParseString()
         {
             decimal value;
             decimal.TryParse(FloatText, NumberStyles.Number | NumberStyles.AllowExponent, CultureInfo.InvariantCulture, out value);
+        }
+
+        [Benchmark]
+        public void GetMemberWithMemberTypeAndBindingFlags()
+        {
+            typeof(LowLevelBenchmarks).GetMember("AName", MemberTypes.Field | MemberTypes.Property, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+        }
+
+        [Benchmark]
+        public void GetPropertyGetField()
+        {
+            typeof(LowLevelBenchmarks).GetProperty("AName", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            typeof(LowLevelBenchmarks).GetField("AName", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
         }
 
         [Benchmark]

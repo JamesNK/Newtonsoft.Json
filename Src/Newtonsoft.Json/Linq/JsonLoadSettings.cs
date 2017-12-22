@@ -25,7 +25,7 @@ namespace Newtonsoft.Json.Linq
         /// <value>The JSON comment handling.</value>
         public CommentHandling CommentHandling
         {
-            get { return _commentHandling; }
+            get => _commentHandling;
             set
             {
                 if (value < CommentHandling.Ignore || value > CommentHandling.Load)
@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Linq
         /// <value>The JSON line info handling.</value>
         public LineInfoHandling LineInfoHandling
         {
-            get { return _lineInfoHandling; }
+            get => _lineInfoHandling;
             set
             {
                 if (value < LineInfoHandling.Ignore || value > LineInfoHandling.Load)

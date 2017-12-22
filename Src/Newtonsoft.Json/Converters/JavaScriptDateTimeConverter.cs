@@ -44,16 +44,14 @@ namespace Newtonsoft.Json.Converters
         {
             long ticks;
 
-            if (value is DateTime)
+            if (value is DateTime dateTime)
             {
-                DateTime dateTime = (DateTime)value;
                 DateTime utcDateTime = dateTime.ToUniversalTime();
                 ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(utcDateTime);
             }
 #if HAVE_DATE_TIME_OFFSET
-            else if (value is DateTimeOffset)
+            else if (value is DateTimeOffset dateTimeOffset)
             {
-                DateTimeOffset dateTimeOffset = (DateTimeOffset)value;
                 DateTimeOffset utcDateTimeOffset = dateTimeOffset.ToUniversalTime();
                 ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(utcDateTimeOffset.UtcDateTime);
             }

@@ -347,7 +347,7 @@ namespace Newtonsoft.Json.Tests.Utilities
         [Test]
         public void CreateStaticMethodCall()
         {
-            MethodInfo castMethodInfo = typeof(JsonSerializerTest.DictionaryKey).GetMethod("op_Implicit", new[] { typeof(string) });
+            MethodInfo castMethodInfo = typeof(DictionaryKey).GetMethod("op_Implicit", new[] { typeof(string) });
 
             Assert.IsNotNull(castMethodInfo);
 
@@ -356,7 +356,7 @@ namespace Newtonsoft.Json.Tests.Utilities
             object result = call(null, "First!");
             Assert.IsNotNull(result);
 
-            JsonSerializerTest.DictionaryKey key = (JsonSerializerTest.DictionaryKey)result;
+            DictionaryKey key = (DictionaryKey)result;
             Assert.AreEqual("First!", key.Value);
         }
 

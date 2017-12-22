@@ -45,6 +45,20 @@ namespace Newtonsoft.Json.Tests.Benchmarks
 
             return sw.ToString();
         }
+
+        [Benchmark]
+        public string SerializeIntegers()
+        {
+            StringWriter sw = new StringWriter();
+            JsonTextWriter jsonTextWriter = new JsonTextWriter(sw);
+            for (int i = 0; i < 10000; i++)
+            {
+                jsonTextWriter.WriteValue(i);
+            }
+            jsonTextWriter.Flush();
+
+            return sw.ToString();
+        }
     }
 }
 

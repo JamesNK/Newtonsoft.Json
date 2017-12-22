@@ -28,7 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
-#if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
 using System.Numerics;
 #endif
 using System.Text;
@@ -179,7 +179,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(g, v.Value);
             Assert.AreEqual(JTokenType.Guid, v.Type);
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
             BigInteger i = BigInteger.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990");
             v.Value = i;
             Assert.AreEqual(i, v.Value);
@@ -239,13 +239,13 @@ namespace Newtonsoft.Json.Tests.Linq
             v = new JValue(new Guid("B282ADE7-C520-496C-A448-4084F6803DE5"));
             Assert.AreEqual("b282ade7-c520-496c-a448-4084f6803de5", v.ToString(null, CultureInfo.InvariantCulture));
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
             v = new JValue(BigInteger.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990"));
             Assert.AreEqual("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990", v.ToString(null, CultureInfo.InvariantCulture));
 #endif
         }
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void JValueParse()
         {
@@ -253,6 +253,14 @@ namespace Newtonsoft.Json.Tests.Linq
 
             Assert.AreEqual(JTokenType.Integer, v.Type);
             Assert.AreEqual(BigInteger.Parse("123456789999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999999990"), v.Value);
+        }
+#endif
+
+#if !(PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
+        [Test]
+        public void JValueIConvertable()
+        {
+            Assert.IsTrue(new JValue(0) is IConvertible);
         }
 #endif
 
@@ -461,6 +469,7 @@ namespace Newtonsoft.Json.Tests.Linq
             o.Property("DateTimeOffset").Value = dateTimeOffset;
         }
 
+        [Test]
         public void ParseAndConvertDateTimeOffset()
         {
             var json = @"{ d: ""\/Date(0+0100)\/"" }";
@@ -482,6 +491,7 @@ namespace Newtonsoft.Json.Tests.Linq
             }
         }
 
+        [Test]
         public void ReadDatesAsDateTimeOffsetViaJsonConvert()
         {
             var content = @"{""startDateTime"":""2012-07-19T14:30:00+09:30""}";
@@ -491,11 +501,11 @@ namespace Newtonsoft.Json.Tests.Linq
 
             object startDateTime = obj["startDateTime"];
 
-            CustomAssert.IsInstanceOfType(typeof(DateTimeOffset), startDateTime);
+            CustomAssert.IsInstanceOfType(typeof(DateTimeOffset), ((JValue)startDateTime).Value);
         }
 #endif
 
-#if !(PORTABLE)
+#if !(PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void ConvertsToBoolean()
         {
@@ -514,7 +524,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(Int32.MaxValue, Convert.ToInt32(new JValue(Int32.MaxValue)));
         }
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void ConvertsToInt32_BigInteger()
         {
@@ -676,7 +686,7 @@ namespace Newtonsoft.Json.Tests.Linq
             v = new JValue(new Uri("http://www.google.com"));
             Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
             v = new JValue(new BigInteger(3));
             Assert.AreEqual(TypeCode.Object, v.GetTypeCode());
 #endif
@@ -695,7 +705,7 @@ namespace Newtonsoft.Json.Tests.Linq
             int i = (int)v.ToType(typeof(int), CultureInfo.InvariantCulture);
             Assert.AreEqual(9, i);
 
-#if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
             BigInteger bi = (BigInteger)v.ToType(typeof(BigInteger), CultureInfo.InvariantCulture);
             Assert.AreEqual(new BigInteger(9), bi);
 #endif
@@ -710,7 +720,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual("2013", v.ToString("yyyy"));
         }
 
-#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void ToStringNewTypes()
         {
@@ -735,8 +745,6 @@ namespace Newtonsoft.Json.Tests.Linq
                 new JValue(new Uri("http://james.newtonking.com")),
                 new JValue(new Uri("http://james.newtonking.com/install?v=7.0.1"))
                 );
-
-            Console.WriteLine(a.ToString());
 
             StringAssert.AreEqual(@"[
   ""http://james.newtonking.com"",
@@ -852,5 +860,117 @@ namespace Newtonsoft.Json.Tests.Linq
             ValueA
         }
 #endif
+
+        [Test]
+        public void CompareTo_MismatchedTypes()
+        {
+            JValue v1 = new JValue(1);
+            JValue v2 = new JValue("2");
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(1.5);
+            v2 = new JValue("2");
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(1.5m);
+            v2 = new JValue("2");
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(1.5m);
+            v2 = new JValue(2);
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(1.5m);
+            v2 = new JValue(2.1);
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(2);
+            v2 = new JValue("2");
+
+            Assert.AreEqual(0, v1.CompareTo(v2));
+            Assert.AreEqual(0, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(0, v2.CompareTo(v1));
+            Assert.AreEqual(0, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(2);
+            v2 = new JValue(2m);
+
+            Assert.AreEqual(0, v1.CompareTo(v2));
+            Assert.AreEqual(0, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(0, v2.CompareTo(v1));
+            Assert.AreEqual(0, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(2f);
+            v2 = new JValue(2m);
+
+            Assert.AreEqual(0, v1.CompareTo(v2));
+            Assert.AreEqual(0, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(0, v2.CompareTo(v1));
+            Assert.AreEqual(0, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(2);
+            v2 = new JValue("10");
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue(2);
+            v2 = new JValue((object)null);
+
+            Assert.AreEqual(1, v1.CompareTo(v2));
+            Assert.AreEqual(1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(-1, v2.CompareTo(v1));
+            Assert.AreEqual(-1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue("2");
+            v2 = new JValue((object)null);
+
+            Assert.AreEqual(1, v1.CompareTo(v2));
+            Assert.AreEqual(1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(-1, v2.CompareTo(v1));
+            Assert.AreEqual(-1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue((object)null);
+            v2 = new JValue("2");
+
+            Assert.AreEqual(-1, v1.CompareTo(v2));
+            Assert.AreEqual(-1, ((IComparable)v1).CompareTo(v2));
+            Assert.AreEqual(1, v2.CompareTo(v1));
+            Assert.AreEqual(1, ((IComparable)v2).CompareTo(v1));
+
+            v1 = new JValue("2");
+            v2 = null;
+
+            Assert.AreEqual(1, v1.CompareTo(v2));
+            Assert.AreEqual(1, ((IComparable)v1).CompareTo(v2));
+
+            v1 = new JValue((object)null);
+            v2 = null;
+
+            Assert.AreEqual(1, v1.CompareTo(v2));
+            Assert.AreEqual(1, ((IComparable)v1).CompareTo(v2));
+        }
     }
 }

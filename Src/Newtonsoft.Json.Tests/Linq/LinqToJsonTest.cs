@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class LinqToJsonTest : TestFixtureBase
     {
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
         public class DemoClass
         {
             public decimal maxValue;
@@ -67,6 +67,30 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(10000000000000000000m, list[0].maxValue);
         }
 #endif
+
+        [Test]
+        public void ToObjectFromGuidToString()
+        {
+            JValue token = new JValue(new Guid("91274484-3b20-48b4-9d18-7d936b2cb88f"));
+            string value = token.ToObject<string>();
+            Assert.AreEqual("91274484-3b20-48b4-9d18-7d936b2cb88f", value);
+        }
+
+        [Test]
+        public void ToObjectFromIntegerToString()
+        {
+            JValue token = new JValue(1234);
+            string value = token.ToObject<string>();
+            Assert.AreEqual("1234", value);
+        }
+
+        [Test]
+        public void ToObjectFromStringToInteger()
+        {
+            JValue token = new JValue("1234");
+            int value = token.ToObject<int>();
+            Assert.AreEqual(1234, value);
+        }
 
         [Test]
         public void FromObjectGuid()

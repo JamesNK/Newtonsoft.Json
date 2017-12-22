@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class JObjectTests : TestFixtureBase
     {
-#if !(NET35 || NET20 || PORTABLE40)
+#if !(NET35 || NET20 || PORTABLE40) || NETSTANDARD2_0
         [Test]
         public void EmbedJValueStringInNewJObject()
         {
@@ -291,6 +291,27 @@ namespace Newtonsoft.Json.Tests.Linq
 
             contains = ((ICollection<KeyValuePair<string, JToken>>)o).Contains(default(KeyValuePair<string, JToken>));
             Assert.AreEqual(false, contains);
+        }
+
+        [Test]
+        public void Contains()
+        {
+            JObject o = new JObject();
+            o.Add("PropertyNameValue", new JValue(1));
+            Assert.AreEqual(1, o.Children().Count());
+
+            bool contains = o.ContainsKey("PropertyNameValue");
+            Assert.AreEqual(true, contains);
+
+            contains = o.ContainsKey("does not exist");
+            Assert.AreEqual(false, contains);
+
+            ExceptionAssert.Throws<ArgumentNullException>(() =>
+            {
+                contains = o.ContainsKey(null);
+                Assert.AreEqual(false, contains);
+            }, @"Value cannot be null.
+Parameter name: propertyName");
         }
 
         [Test]
@@ -716,7 +737,7 @@ Parameter name: arrayIndex");
             Assert.AreEqual(p4, l[1]);
         }
 
-#if !(NET20 || PORTABLE || PORTABLE40)
+#if !(NET20 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void PropertyChanging()
         {
@@ -1259,7 +1280,7 @@ Parameter name: arrayIndex");
             }, "Can not add property Test3 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.");
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
         [Test]
         public void IBindingListSortDirection()
         {
@@ -1454,7 +1475,7 @@ Parameter name: arrayIndex");
         }
 #endif
 
-#if !(NET20 || NET35 || PORTABLE40)
+#if !(NET20 || NET35 || PORTABLE40) || NETSTANDARD2_0
         [Test]
         public void CollectionChanged()
         {
@@ -1583,7 +1604,7 @@ Parameter name: arrayIndex");
             Assert.AreEqual("Name2", value);
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
         [Test]
         public void WriteObjectNullDBNullValue()
         {
@@ -1695,7 +1716,7 @@ Parameter name: arrayIndex");
             }, "Unexpected end of content while loading JObject. Path 'short.error.code', line 6, position 14.");
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40)
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
         [Test]
         public void GetProperties()
         {

@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !DNXCORE50
+#if !DNXCORE50 || NETSTANDARD2_0
 
 using System;
 using System.Collections.Generic;

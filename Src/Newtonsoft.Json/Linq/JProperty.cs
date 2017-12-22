@@ -88,15 +88,9 @@ namespace Newtonsoft.Json.Linq
                 return false;
             }
 
-            public int Count
-            {
-                get { return (_token != null) ? 1 : 0; }
-            }
+            public int Count => (_token != null) ? 1 : 0;
 
-            public bool IsReadOnly
-            {
-                get { return false; }
-            }
+            public bool IsReadOnly => false;
 
             public int IndexOf(JToken item)
             {
@@ -121,7 +115,7 @@ namespace Newtonsoft.Json.Linq
 
             public JToken this[int index]
             {
-                get { return (index == 0) ? _token : null; }
+                get => (index == 0) ? _token : null;
                 set
                 {
                     if (index == 0)
@@ -140,10 +134,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets the container's children tokens.
         /// </summary>
         /// <value>The container's children tokens.</value>
-        protected override IList<JToken> ChildrenTokens
-        {
-            get { return _content; }
-        }
+        protected override IList<JToken> ChildrenTokens => _content;
 
         /// <summary>
         /// Gets the property name.
@@ -272,8 +263,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override bool DeepEquals(JToken node)
         {
-            JProperty t = node as JProperty;
-            return (t != null && _name == t.Name && ContentsEqual(t));
+            return (node is JProperty t && _name == t.Name && ContentsEqual(t));
         }
 
         internal override JToken CloneToken()
@@ -347,7 +337,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override int GetDeepHashCode()
         {
-            return _name.GetHashCode() ^ ((Value != null) ? Value.GetDeepHashCode() : 0);
+            return _name.GetHashCode() ^ (Value?.GetDeepHashCode() ?? 0);
         }
 
         /// <summary>

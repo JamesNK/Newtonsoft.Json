@@ -28,7 +28,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
 using System.Numerics;
 #endif
 using System.Text;
@@ -61,7 +61,39 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 #endif
     public class ReadTests : TestFixtureBase
     {
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20)
+        [Test]
+        public void ReadMissingInt64()
+        {
+            string json = "{ A: \"\", B: 1, C: , D: 1.23, E: 3.45, F: null }";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            reader.Read();
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual("C", reader.Value);
+
+            reader.Read();
+            Assert.AreEqual(JsonToken.Undefined, reader.TokenType);
+            Assert.AreEqual(null, reader.Value);
+        }
+
+        [Test]
+        public void ReadAsInt32WithUndefined()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+                {
+                    JsonTextReader reader = new JsonTextReader(new StringReader("undefined"));
+                    reader.ReadAsInt32();
+                },
+                "Unexpected character encountered while parsing value: u. Path '', line 1, position 1.");
+        }
+
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void ReadAsBoolean()
         {
@@ -87,7 +119,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[10]);
+            reader.CharBuffer = new char[10];
 #endif
 
             Assert.IsTrue(reader.Read());
@@ -200,7 +232,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[5]);
+            reader.CharBuffer = new char[5];
 #endif
 
             Assert.IsTrue(reader.Read());
@@ -240,6 +272,65 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             Assert.IsTrue(reader.Read());
             Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
         }
+
+#if !(NET20 || NET35) && DEBUG
+        [Test]
+        public void ReadLargeObjects()
+        {
+            const int nrItems = 2;
+            const int length = 1200;
+            const int largeBufferLength = 2048;
+
+            byte apostrophe = Encoding.ASCII.GetBytes(@"""").First();
+            byte openingBracket = Encoding.ASCII.GetBytes(@"[").First();
+            byte comma = Encoding.ASCII.GetBytes(@",").First();
+            byte closingBracket = Encoding.ASCII.GetBytes(@"]").First();
+
+            using (MemoryStream ms = new MemoryStream())
+            {
+                ms.WriteByte(openingBracket);
+                for (int i = 0; i < nrItems; i++)
+                {
+                    ms.WriteByte(apostrophe);
+
+                    for (int j = 0; j <= length; j++)
+                    {
+                        byte current = Convert.ToByte((j % 10) + 48);
+                        ms.WriteByte(current);
+                    }
+
+                    ms.WriteByte(apostrophe);
+                    if (i < nrItems - 1)
+                    {
+                        ms.WriteByte(comma);
+                    }
+                }
+
+                ms.WriteByte(closingBracket);
+                ms.Seek(0, SeekOrigin.Begin);
+
+                JsonTextReader reader = new JsonTextReader(new StreamReader(ms));
+                reader.LargeBufferLength = largeBufferLength;
+
+                Assert.IsTrue(reader.Read());
+                Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+                Assert.IsTrue(reader.Read());
+                Assert.AreEqual(JsonToken.String, reader.TokenType);
+                Assert.AreEqual(largeBufferLength, reader.CharBuffer.Length);
+
+                Assert.IsTrue(reader.Read());
+                Assert.AreEqual(JsonToken.String, reader.TokenType);
+                // buffer has been shifted before reading the second string
+                Assert.AreEqual(largeBufferLength, reader.CharBuffer.Length);
+
+                Assert.IsTrue(reader.Read());
+                Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+                Assert.IsFalse(reader.Read());
+            }
+        }
+#endif
 
         [Test]
         public void ReadSingleBytes()
@@ -660,7 +751,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[5]);
+            reader.CharBuffer = new char[5];
 #endif
 
             for (int i = 0; i < 13; i++)
@@ -688,7 +779,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[5]);
+            reader.CharBuffer = new char[5];
 #endif
 
             for (int i = 0; i < 26; i++)
@@ -1041,71 +1132,6 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             Assert.IsTrue(reader.Read());
         }
 
-#if !DNXCORE50
-        [Test]
-        [Ignore("Probably not a Json.NET issue")]
-        public void ReadFromNetworkStream()
-        {
-            const int port = 11999;
-            const int jsonArrayElementsCount = 193;
-
-            var serverStartedEvent = new ManualResetEvent(false);
-            var clientReceivedEvent = new ManualResetEvent(false);
-
-            ThreadPool.QueueUserWorkItem(work =>
-            {
-                var server = new TcpListener(IPAddress.Parse("0.0.0.0"), port);
-                server.Start();
-
-                serverStartedEvent.Set();
-
-                var serverSocket = server.AcceptSocket();
-
-                var jsonString = "[\r\n" + String.Join(",", Enumerable.Repeat("  \"testdata\"\r\n", jsonArrayElementsCount).ToArray()) + "]";
-                var bytes = new UTF8Encoding().GetBytes(jsonString);
-                serverSocket.Send(bytes);
-                Console.WriteLine("server send: " + bytes.Length);
-
-
-                clientReceivedEvent.WaitOne();
-
-            });
-
-            serverStartedEvent.WaitOne();
-
-
-            var socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            socket.Blocking = false;
-            socket.Connect("127.0.0.1", port);
-
-            var stream = new NetworkStream(socket);
-            var serializer = new JsonSerializer();
-
-            int i = 0;
-            using (var sr = new StreamReader(stream, new UTF8Encoding(), false))
-            using (var jsonTextReader = new JsonTextReader(sr))
-            {
-                while (jsonTextReader.Read())
-                {
-                    i++;
-
-                    if (i == 193)
-                    {
-                        string s = string.Empty;
-                    }
-
-                    Console.WriteLine($"{i} - {jsonTextReader.TokenType} - {jsonTextReader.Value}");
-                }
-                //var result = serializer.Deserialize(jsonTextReader).ToString();
-                //Console.WriteLine("client receive: " + new UTF8Encoding().GetBytes(result).Length);
-            }
-
-            clientReceivedEvent.Set();
-
-            Console.WriteLine("Done");
-        }
-#endif
-
         [Test]
         public void ReadCommentInsideArray()
         {
@@ -1194,7 +1220,7 @@ third line", jsonTextReader.Value);
 
 
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void ReadBigInteger()
         {
@@ -1301,7 +1327,7 @@ third line", jsonTextReader.Value);
             using (JsonTextReader jsonReader = new JsonTextReader(sr))
             {
 #if DEBUG
-                jsonReader.SetCharBuffer(new char[5]);
+                jsonReader.CharBuffer = new char[5];
 #endif
 
                 Assert.AreEqual(jsonReader.TokenType, JsonToken.None);

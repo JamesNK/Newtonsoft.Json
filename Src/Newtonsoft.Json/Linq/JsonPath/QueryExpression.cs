@@ -76,14 +76,12 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
         private IEnumerable<JToken> GetResult(JToken root, JToken t, object o)
         {
-            JToken resultToken = o as JToken;
-            if (resultToken != null)
+            if (o is JToken resultToken)
             {
                 return new[] { resultToken };
             }
 
-            List<PathFilter> pathFilters = o as List<PathFilter>;
-            if (pathFilters != null)
+            if (o is List<PathFilter> pathFilters)
             {
                 return JPath.Evaluate(pathFilters, root, t, false);
             }
@@ -124,10 +122,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
         private bool MatchTokens(JToken leftResult, JToken rightResult)
         {
-            JValue leftValue = leftResult as JValue;
-            JValue rightValue = rightResult as JValue;
-
-            if (leftValue != null && rightValue != null)
+            if (leftResult is JValue leftValue && rightResult is JValue rightValue)
             {
                 switch (Operator)
                 {
@@ -209,9 +204,9 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     using (StringWriter writer = StringUtils.CreateStringWriter(64))
                     {
 #if HAVE_DATE_TIME_OFFSET
-                        if (value.Value is DateTimeOffset)
+                        if (value.Value is DateTimeOffset offset)
                         {
-                            DateTimeUtils.WriteDateTimeOffsetString(writer, (DateTimeOffset)value.Value, DateFormatHandling.IsoDateFormat, null, CultureInfo.InvariantCulture);
+                            DateTimeUtils.WriteDateTimeOffsetString(writer, offset, DateFormatHandling.IsoDateFormat, null, CultureInfo.InvariantCulture);
                         }
                         else
 #endif

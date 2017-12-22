@@ -1,4 +1,29 @@
-﻿using System;
+﻿#region License
+// Copyright (c) 2007 James Newton-King
+//
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+#endregion
+
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
@@ -32,56 +57,56 @@ namespace Newtonsoft.Json.Serialization
         public override bool Read()
         {
             bool value = _innerReader.Read();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override int? ReadAsInt32()
         {
             int? value = _innerReader.ReadAsInt32();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override string ReadAsString()
         {
             string value = _innerReader.ReadAsString();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override byte[] ReadAsBytes()
         {
             byte[] value = _innerReader.ReadAsBytes();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override decimal? ReadAsDecimal()
         {
             decimal? value = _innerReader.ReadAsDecimal();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override double? ReadAsDouble()
         {
             double? value = _innerReader.ReadAsDouble();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override bool? ReadAsBoolean()
         {
             bool? value = _innerReader.ReadAsBoolean();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
         public override DateTime? ReadAsDateTime()
         {
             DateTime? value = _innerReader.ReadAsDateTime();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 
@@ -89,41 +114,31 @@ namespace Newtonsoft.Json.Serialization
         public override DateTimeOffset? ReadAsDateTimeOffset()
         {
             DateTimeOffset? value = _innerReader.ReadAsDateTimeOffset();
-            _textWriter.WriteToken(_innerReader, false, false, true);
+            WriteCurrentToken();
             return value;
         }
 #endif
 
-        public override int Depth
+        public void WriteCurrentToken()
         {
-            get { return _innerReader.Depth; }
+            _textWriter.WriteToken(_innerReader, false, false, true);
         }
 
-        public override string Path
-        {
-            get { return _innerReader.Path; }
-        }
+        public override int Depth => _innerReader.Depth;
+
+        public override string Path => _innerReader.Path;
 
         public override char QuoteChar
         {
-            get { return _innerReader.QuoteChar; }
-            protected internal set { _innerReader.QuoteChar = value; }
+            get => _innerReader.QuoteChar;
+            protected internal set => _innerReader.QuoteChar = value;
         }
 
-        public override JsonToken TokenType
-        {
-            get { return _innerReader.TokenType; }
-        }
+        public override JsonToken TokenType => _innerReader.TokenType;
 
-        public override object Value
-        {
-            get { return _innerReader.Value; }
-        }
+        public override object Value => _innerReader.Value;
 
-        public override Type ValueType
-        {
-            get { return _innerReader.ValueType; }
-        }
+        public override Type ValueType => _innerReader.ValueType;
 
         public override void Close()
         {
@@ -132,16 +147,14 @@ namespace Newtonsoft.Json.Serialization
 
         bool IJsonLineInfo.HasLineInfo()
         {
-            IJsonLineInfo lineInfo = _innerReader as IJsonLineInfo;
-            return lineInfo != null && lineInfo.HasLineInfo();
+            return _innerReader is IJsonLineInfo lineInfo && lineInfo.HasLineInfo();
         }
 
         int IJsonLineInfo.LineNumber
         {
             get
             {
-                IJsonLineInfo lineInfo = _innerReader as IJsonLineInfo;
-                return (lineInfo != null) ? lineInfo.LineNumber : 0;
+                return (_innerReader is IJsonLineInfo lineInfo) ? lineInfo.LineNumber : 0;
             }
         }
 
@@ -149,8 +162,7 @@ namespace Newtonsoft.Json.Serialization
         {
             get
             {
-                IJsonLineInfo lineInfo = _innerReader as IJsonLineInfo;
-                return (lineInfo != null) ? lineInfo.LinePosition : 0;
+                return (_innerReader is IJsonLineInfo lineInfo) ? lineInfo.LinePosition : 0;
             }
         }
     }

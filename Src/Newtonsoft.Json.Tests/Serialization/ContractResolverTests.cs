@@ -115,7 +115,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class ContractResolverTests : TestFixtureBase
     {
-#if !(PORTABLE || PORTABLE40) || NETSTANDARD1_3
+#if !(PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void ResolveSerializableContract()
         {
@@ -123,6 +123,15 @@ namespace Newtonsoft.Json.Tests.Serialization
             JsonContract contract = contractResolver.ResolveContract(typeof(ISerializableTestObject));
 
             Assert.AreEqual(JsonContractType.Serializable, contract.ContractType);
+        }
+
+        [Test]
+        public void ResolveSerializableWithoutAttributeContract()
+        {
+            DefaultContractResolver contractResolver = new DefaultContractResolver();
+            JsonContract contract = contractResolver.ResolveContract(typeof(ISerializableWithoutAttributeTestObject));
+
+            Assert.AreEqual(JsonContractType.Object, contract.ContractType);
         }
 
         [Test]
@@ -202,7 +211,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<AbstractTestClass>(@"{Value:'Value!'}", new JsonSerializerSettings
             {
                 ContractResolver = resolver
-            }), "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractTestClass. Type is an interface or abstract class and cannot be instantiated. Path 'Value', line 1, position 7.");
+            }), "Could not create an instance of type Newtonsoft.Json.Tests.TestObjects.AbstractTestClass. Type is an interface or abstract class and cannot be instantiated. Path 'Value', line 1, position 7.");
 
             contract.DefaultCreator = () => new AbstractImplementationTestClass();
 
@@ -227,7 +236,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<AbstractListTestClass<int>>(@"[1,2]", new JsonSerializerSettings
             {
                 ContractResolver = resolver
-            }), "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractListTestClass`1[System.Int32]. Type is an interface or abstract class and cannot be instantiated. Path '', line 1, position 1.");
+            }), "Could not create an instance of type Newtonsoft.Json.Tests.TestObjects.AbstractListTestClass`1[System.Int32]. Type is an interface or abstract class and cannot be instantiated. Path '', line 1, position 1.");
 
             contract.DefaultCreator = () => new AbstractImplementationListTestClass<int>();
 
@@ -307,7 +316,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<AbstractDictionaryTestClass<string, int>>(@"{key1:1,key2:2}", new JsonSerializerSettings
             {
                 ContractResolver = resolver
-            }), "Could not create an instance of type Newtonsoft.Json.Tests.Serialization.AbstractDictionaryTestClass`2[System.String,System.Int32]. Type is an interface or abstract class and cannot be instantiated. Path 'key1', line 1, position 6.");
+            }), "Could not create an instance of type Newtonsoft.Json.Tests.TestObjects.AbstractDictionaryTestClass`2[System.String,System.Int32]. Type is an interface or abstract class and cannot be instantiated. Path 'key1', line 1, position 6.");
 
             contract.DefaultCreator = () => new AbstractImplementationDictionaryTestClass<string, int>();
 
@@ -573,7 +582,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", startingWithB);
         }
 
-#if !(PORTABLE || PORTABLE40)
+#if !(PORTABLE || PORTABLE40) || NETSTANDARD2_0
 #pragma warning disable 618
         [Test]
         public void SerializeCompilerGeneratedMembers()
@@ -649,6 +658,128 @@ namespace Newtonsoft.Json.Tests.Serialization
             IEnumerable<KeyValuePair<object, object>> extensionData = getter(myClass);
             Assert.IsTrue(extensionData.Any());
             Assert.IsTrue(extensionData.Any()); // second test fails if the enumerator returned isn't reset
+        }
+
+        public class ClassWithShouldSerialize
+        {
+            public string Prop1 { get; set; }
+            public string Prop2 { get; set; }
+
+            public bool ShouldSerializeProp1()
+            {
+                return false;
+            }
+        }
+
+        [Test]
+        public void DefaultContractResolverIgnoreShouldSerializeTrue()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+            resolver.IgnoreShouldSerializeMembers = true;
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithShouldSerialize));
+
+            var property1 = contract.Properties["Prop1"];
+            Assert.AreEqual(null, property1.ShouldSerialize);
+
+            var property2 = contract.Properties["Prop2"];
+            Assert.AreEqual(null, property2.ShouldSerialize);
+        }
+
+        [Test]
+        public void DefaultContractResolverIgnoreShouldSerializeUnset()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithShouldSerialize));
+
+            var property1 = contract.Properties["Prop1"];
+            Assert.AreNotEqual(null, property1.ShouldSerialize);
+
+            var property2 = contract.Properties["Prop2"];
+            Assert.AreEqual(null, property2.ShouldSerialize);
+        }
+
+        public class ClassWithIsSpecified
+        {
+            [JsonProperty]
+            public string Prop1 { get; set; }
+            [JsonProperty]
+            public string Prop2 { get; set; }
+            [JsonProperty]
+            public string Prop3 { get; set; }
+            [JsonProperty]
+            public string Prop4 { get; set; }
+            [JsonProperty]
+            public string Prop5 { get; set; }
+
+            public bool Prop1Specified;
+            public bool Prop2Specified { get; set; }
+            public static bool Prop3Specified { get; set; }
+            public event System.Func<bool> Prop4Specified;
+            public static bool Prop5Specified;
+
+            protected virtual bool OnProp4Specified()
+            {
+                return Prop4Specified?.Invoke() ?? false;
+            }
+        }
+
+        [Test]
+        public void DefaultContractResolverIgnoreIsSpecifiedTrue()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+            resolver.IgnoreIsSpecifiedMembers = true;
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithIsSpecified));
+
+            var property1 = contract.Properties["Prop1"];
+            Assert.AreEqual(null, property1.GetIsSpecified);
+            Assert.AreEqual(null, property1.SetIsSpecified);
+
+            var property2 = contract.Properties["Prop2"];
+            Assert.AreEqual(null, property2.GetIsSpecified);
+            Assert.AreEqual(null, property2.SetIsSpecified);
+
+            var property3 = contract.Properties["Prop3"];
+            Assert.AreEqual(null, property3.GetIsSpecified);
+            Assert.AreEqual(null, property3.SetIsSpecified);
+
+            var property4 = contract.Properties["Prop4"];
+            Assert.AreEqual(null, property4.GetIsSpecified);
+            Assert.AreEqual(null, property4.SetIsSpecified);
+
+            var property5 = contract.Properties["Prop5"];
+            Assert.AreEqual(null, property5.GetIsSpecified);
+            Assert.AreEqual(null, property5.SetIsSpecified);
+        }
+
+        [Test]
+        public void DefaultContractResolverIgnoreIsSpecifiedUnset()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithIsSpecified));
+
+            var property1 = contract.Properties["Prop1"];
+            Assert.AreNotEqual(null, property1.GetIsSpecified);
+            Assert.AreNotEqual(null, property1.SetIsSpecified);
+
+            var property2 = contract.Properties["Prop2"];
+            Assert.AreNotEqual(null, property2.GetIsSpecified);
+            Assert.AreNotEqual(null, property2.SetIsSpecified);
+
+            var property3 = contract.Properties["Prop3"];
+            Assert.AreEqual(null, property3.GetIsSpecified);
+            Assert.AreEqual(null, property3.SetIsSpecified);
+
+            var property4 = contract.Properties["Prop4"];
+            Assert.AreEqual(null, property4.GetIsSpecified);
+            Assert.AreEqual(null, property4.SetIsSpecified);
+
+            var property5 = contract.Properties["Prop5"];
+            Assert.AreEqual(null, property5.GetIsSpecified);
+            Assert.AreEqual(null, property5.SetIsSpecified);
         }
 
         [Test]

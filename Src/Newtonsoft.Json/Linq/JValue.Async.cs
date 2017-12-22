@@ -69,43 +69,43 @@ namespace Newtonsoft.Json.Linq
                 case JTokenType.Undefined:
                     return writer.WriteUndefinedAsync(cancellationToken);
                 case JTokenType.Integer:
-                    if (_value is int)
+                    if (_value is int i)
                     {
-                        return writer.WriteValueAsync((int)_value, cancellationToken);
+                        return writer.WriteValueAsync(i, cancellationToken);
                     }
 
-                    if (_value is long)
+                    if (_value is long l)
                     {
-                        return writer.WriteValueAsync((long)_value, cancellationToken);
+                        return writer.WriteValueAsync(l, cancellationToken);
                     }
 
-                    if (_value is ulong)
+                    if (_value is ulong ul)
                     {
-                        return writer.WriteValueAsync((ulong)_value, cancellationToken);
+                        return writer.WriteValueAsync(ul, cancellationToken);
                     }
 
 #if HAVE_BIG_INTEGER
-                    if (_value is BigInteger)
+                    if (_value is BigInteger integer)
                     {
-                        return writer.WriteValueAsync((BigInteger)_value, cancellationToken);
+                        return writer.WriteValueAsync(integer, cancellationToken);
                     }
 #endif
 
                     return writer.WriteValueAsync(Convert.ToInt64(_value, CultureInfo.InvariantCulture), cancellationToken);
                 case JTokenType.Float:
-                    if (_value is decimal)
+                    if (_value is decimal dec)
                     {
-                        return writer.WriteValueAsync((decimal)_value, cancellationToken);
+                        return writer.WriteValueAsync(dec, cancellationToken);
                     }
 
-                    if (_value is double)
+                    if (_value is double d)
                     {
-                        return writer.WriteValueAsync((double)_value, cancellationToken);
+                        return writer.WriteValueAsync(d, cancellationToken);
                     }
 
-                    if (_value is float)
+                    if (_value is float f)
                     {
-                        return writer.WriteValueAsync((float)_value, cancellationToken);
+                        return writer.WriteValueAsync(f, cancellationToken);
                     }
 
                     return writer.WriteValueAsync(Convert.ToDouble(_value, CultureInfo.InvariantCulture), cancellationToken);
@@ -114,9 +114,9 @@ namespace Newtonsoft.Json.Linq
                 case JTokenType.Boolean:
                     return writer.WriteValueAsync(Convert.ToBoolean(_value, CultureInfo.InvariantCulture), cancellationToken);
                 case JTokenType.Date:
-                    if (_value is DateTimeOffset)
+                    if (_value is DateTimeOffset offset)
                     {
-                        return writer.WriteValueAsync((DateTimeOffset)_value, cancellationToken);
+                        return writer.WriteValueAsync(offset, cancellationToken);
                     }
 
                     return writer.WriteValueAsync(Convert.ToDateTime(_value, CultureInfo.InvariantCulture), cancellationToken);

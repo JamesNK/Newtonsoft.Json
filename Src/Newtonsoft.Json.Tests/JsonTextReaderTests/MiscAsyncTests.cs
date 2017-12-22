@@ -49,6 +49,59 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
     public class MiscAsyncTests : TestFixtureBase
     {
         [Test]
+        public async Task ReadWithSupportMultipleContentCommaDelimitedAsync()
+        {
+            string json = @"{ 'name': 'Admin' },{ 'name': 'Publisher' },1,null,[],,'string'";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.SupportMultipleContent = true;
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.EndObject, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.Null, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.StartArray, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.Undefined, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.String, reader.TokenType);
+
+            Assert.IsFalse(await reader.ReadAsync());
+        }
+
+        [Test]
         public async Task LineInfoAndNewLinesAsync()
         {
             string json = "{}";
@@ -407,7 +460,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[129]);
+            reader.CharBuffer = new char[129];
 #endif
 
             for (int i = 0; i < 15; i++)
@@ -439,7 +492,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[129]);
+            reader.CharBuffer = new char[129];
 #endif
 
             for (int i = 0; i < 14; i++)
@@ -612,7 +665,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 #if DEBUG
-            reader.SetCharBuffer(new char[2]);
+            reader.CharBuffer = new char[2];
 #endif
 
             await reader.ReadAsync();
@@ -935,7 +988,6 @@ null//comment
             Assert.IsTrue(await reader.ReadAsync());
         }
 
-#if !DNXCORE50
         [Test]
         public async Task LinePositionOnNewLineAsync()
         {
@@ -983,7 +1035,6 @@ null//comment
 
             Assert.IsFalse(await r.ReadAsync());
         }
-#endif
 
         [Test]
         public async Task InvalidUnicodeSequenceAsync()

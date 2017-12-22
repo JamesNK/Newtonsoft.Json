@@ -41,8 +41,8 @@ namespace Newtonsoft.Json
         /// <value><c>true</c> if null items are allowed in the collection; otherwise, <c>false</c>.</value>
         public bool AllowNullItems
         {
-            get { return _allowNullItems; }
-            set { _allowNullItems = value; }
+            get => _allowNullItems;
+            set => _allowNullItems = value;
         }
 
         /// <summary>

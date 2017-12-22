@@ -28,7 +28,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
-#if !(PORTABLE || PORTABLE40)
+#if !(PORTABLE || PORTABLE40) || NETSTANDARD2_0
 using System.Collections.ObjectModel;
 #if !(NET35 || NET20)
 using System.Dynamic;
@@ -62,6 +62,66 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class TypeNameHandlingTests : TestFixtureBase
     {
+
+        [Test]
+        public void DeserializeByteArrayWithTypeName()
+        {
+            string json = @"{
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.HasByteArray, Newtonsoft.Json.Tests"",
+  ""EncryptedPassword"": {
+    ""$type"": ""System.Byte[], mscorlib"",
+    ""$value"": ""cGFzc3dvcmQ=""
+  }
+}";
+            HasByteArray value = JsonConvert.DeserializeObject<HasByteArray>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
+
+            CollectionAssert.AreEquivalent(Convert.FromBase64String("cGFzc3dvcmQ="), value.EncryptedPassword);
+        }
+
+        [Test]
+        public void DeserializeByteArrayWithTypeName_BadAdditionalContent()
+        {
+            string json = @"{
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.HasByteArray, Newtonsoft.Json.Tests"",
+  ""EncryptedPassword"": {
+    ""$type"": ""System.Byte[], mscorlib"",
+    ""$value"": ""cGFzc3dvcmQ="",
+    ""$value"": ""cGFzc3dvcmQ=""
+  }
+}";
+
+            ExceptionAssert.Throws<JsonReaderException>(() =>
+            {
+                JsonConvert.DeserializeObject<HasByteArray>(json, new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Objects
+                });
+            }, "Error reading bytes. Unexpected token: PropertyName. Path 'EncryptedPassword.$value', line 6, position 13.");
+        }
+
+        [Test]
+        public void DeserializeByteArrayWithTypeName_ExtraProperty()
+        {
+            string json = @"{
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.HasByteArray, Newtonsoft.Json.Tests"",
+  ""EncryptedPassword"": {
+    ""$type"": ""System.Byte[], mscorlib"",
+    ""$value"": ""cGFzc3dvcmQ=""
+  },
+  ""Pie"": null
+}";
+            HasByteArray value = JsonConvert.DeserializeObject<HasByteArray>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
+
+            Assert.IsNotNull(value.EncryptedPassword);
+            CollectionAssert.AreEquivalent(Convert.FromBase64String("cGFzc3dvcmQ="), value.EncryptedPassword);
+        }
+
 #if !(NET20 || NET35)
         [Test]
         public void SerializeValueTupleWithTypeName()
@@ -1105,10 +1165,12 @@ namespace Newtonsoft.Json.Tests.Serialization
 #pragma warning restore 618
             });
 
+            string dictionaryTypeName = ReflectionUtils.GetTypeName(typeof(Dictionary<string, object>), TypeNameAssemblyFormatHandling.Simple, null);
             string urlStatusTypeName = ReflectionUtils.GetTypeName(typeof(UrlStatus), TypeNameAssemblyFormatHandling.Simple, null);
+            string listTypeName = ReflectionUtils.GetTypeName(typeof(List<UrlStatus>), TypeNameAssemblyFormatHandling.Simple, null);
 
             StringAssert.AreEqual(@"{
-  ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"",
+  ""$type"": """ + dictionaryTypeName + @""",
   ""First"": {
     ""$type"": """ + urlStatusTypeName + @""",
     ""Status"": 404,
@@ -1120,7 +1182,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     ""Url"": ""http://www.google.com""
   },
   ""List"": {
-    ""$type"": ""System.Collections.Generic.List`1[[" + urlStatusTypeName + @"]], mscorlib"",
+    ""$type"": """ + listTypeName + @""",
     ""$values"": [
       {
         ""$type"": """ + urlStatusTypeName + @""",
@@ -1246,15 +1308,17 @@ namespace Newtonsoft.Json.Tests.Serialization
             string output = JsonConvert.SerializeObject(testerObject, Formatting.Indented, jsonSettings);
 
             string carClassRef = ReflectionUtils.GetTypeName(typeof(Car), TypeNameAssemblyFormatHandling.Simple, null);
+            string objectArrayRef = ReflectionUtils.GetTypeName(typeof(object[]), TypeNameAssemblyFormatHandling.Simple, null);
+            string byteArrayRef = ReflectionUtils.GetTypeName(typeof(byte[]), TypeNameAssemblyFormatHandling.Simple, null);
 
             StringAssert.AreEqual(output, @"{
   ""$type"": """ + carClassRef + @""",
   ""Year"": ""2000-10-05T01:01:01Z"",
   ""Objects"": {
-    ""$type"": ""System.Object[], mscorlib"",
+    ""$type"": """ + objectArrayRef + @""",
     ""$values"": [
       {
-        ""$type"": ""System.Byte[], mscorlib"",
+        ""$type"": """ + byteArrayRef + @""",
         ""$value"": ""S0FSSVJB""
       },
       ""prueba""
@@ -1271,7 +1335,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             CollectionAssert.AreEquivalent(data, d);
         }
 
-#if !(DNXCORE50)
+#if !(DNXCORE50) || NETSTANDARD2_0
         [Test]
         public void ISerializableTypeNameHandlingTest()
         {
@@ -1551,6 +1615,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
 
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
+
+            string listTypeName = ReflectionUtils.GetTypeName(typeof(List<object>), TypeNameAssemblyFormatHandling.Simple, null);
+
             StringAssert.AreEqual(@"{
   ""Data"": [
     {
@@ -1558,7 +1625,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       ""MyProperty"": 1
     },
     {
-      ""$type"": ""System.Collections.Generic.List`1[[System.Object, mscorlib]], mscorlib"",
+      ""$type"": """+ listTypeName + @""",
       ""$values"": [
         [
           []
@@ -1583,7 +1650,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       ""MyProperty"": 1
     },
     {
-      ""$type"": ""System.Collections.Generic.List`1[[System.Object, mscorlib]], mscorlib"",
+      ""$type"": """ + listTypeName + @""",
       ""$values"": [
         {
           ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
@@ -1630,6 +1697,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
 
             string json = JsonConvert.SerializeObject(c1, Formatting.Indented);
+
+            string dictionaryTypeName = ReflectionUtils.GetTypeName(typeof(Dictionary<string, object>), TypeNameAssemblyFormatHandling.Simple, null);
+
             StringAssert.AreEqual(@"{
   ""Data"": {
     ""one"": {
@@ -1637,7 +1707,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       ""MyProperty"": 1
     },
     ""two"": {
-      ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"",
+      ""$type"": """ + dictionaryTypeName + @""",
       ""one"": {
         ""one"": 1
       }
@@ -1660,7 +1730,7 @@ namespace Newtonsoft.Json.Tests.Serialization
       ""MyProperty"": 1
     },
     ""two"": {
-      ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Object, mscorlib]], mscorlib"",
+      ""$type"": """ + dictionaryTypeName + @""",
       ""one"": {
         ""$type"": ""Newtonsoft.Json.Tests.TestObjects.TestComponentSimple, Newtonsoft.Json.Tests"",
         ""MyProperty"": 1
@@ -1705,10 +1775,13 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
 
             string json = JsonConvert.SerializeObject(o1, Formatting.Indented);
+
+            string listTypeName = ReflectionUtils.GetTypeName(typeof(List<object>), TypeNameAssemblyFormatHandling.Simple, null);
+
             StringAssert.AreEqual(@"{
   ""Data"": {
     ""Prop1"": {
-      ""$type"": ""System.Collections.Generic.List`1[[System.Object, mscorlib]], mscorlib"",
+      ""$type"": """ + listTypeName + @""",
       ""$values"": [
         {
           ""MyProperty"": 1
@@ -1812,7 +1885,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-#if !(DNXCORE50)
+#if !(DNXCORE50) || NETSTANDARD2_0
         [Test]
         public void SerializeDeserialize_DictionaryContextContainsGuid_DeserializesItemAsGuid()
         {
@@ -1829,8 +1902,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             };
             string serializedString = JsonConvert.SerializeObject(inputContext, jsonSerializerSettings);
 
+            string dictionaryTypeName = ReflectionUtils.GetTypeName(typeof(Dictionary<string, Guid>), TypeNameAssemblyFormatHandling.Simple, null);
+
             StringAssert.AreEqual(@"{
-  ""$type"": ""System.Collections.Generic.Dictionary`2[[System.String, mscorlib],[System.Guid, mscorlib]], mscorlib"",
+  ""$type"": """ + dictionaryTypeName + @""",
   ""k1"": ""a6e986df-fc2c-4906-a1ef-9492388f7833""
 }", serializedString);
 
@@ -2018,10 +2093,12 @@ namespace Newtonsoft.Json.Tests.Serialization
             data.Rows.Add("key", new List<MyInterfaceImplementationType> { new MyInterfaceImplementationType() { SomeProperty = "property" } });
             string serialized = JsonConvert.SerializeObject(data, Formatting.Indented);
 
+            string listTypeName = ReflectionUtils.GetTypeName(typeof(List<MyInterfaceImplementationType>), TypeNameAssemblyFormatHandling.Simple, null);
+
             StringAssert.AreEqual(@"{
   ""Rows"": {
     ""key"": {
-      ""$type"": ""System.Collections.Generic.List`1[[Newtonsoft.Json.Tests.Serialization.MyInterfaceImplementationType, Newtonsoft.Json.Tests]], mscorlib"",
+      ""$type"": """ + listTypeName + @""",
       ""$values"": [
         {
           ""SomeProperty"": ""property""
@@ -2130,7 +2207,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             var serializer = JsonSerializer.Create();
 #pragma warning disable CS0618
-            Assert.NotNull(serializer.Binder);
+            Assert.AreNotEqual(null, serializer.Binder);
             Assert.IsInstanceOf(typeof(DefaultSerializationBinder), serializer.Binder);
 #pragma warning restore CS0618 // Type or member is obsolete
             Assert.IsInstanceOf(typeof(DefaultSerializationBinder), serializer.SerializationBinder);
@@ -2151,6 +2228,20 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsInstanceOf(typeof(FancyBinder), serializer.SerializationBinder);
         }
 
+        [Test]
+        public void SetOldBinderAndSerializationBinderReturnsWrapper()
+        {
+#pragma warning disable CS0618 // Type or member is obsolete
+            var serializer = JsonSerializer.Create(new JsonSerializerSettings() { Binder = new OldBinder() });
+            Assert.IsInstanceOf(typeof(OldBinder), serializer.Binder);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            var binder = serializer.SerializationBinder;
+
+            Assert.IsInstanceOf(typeof(SerializationBinderAdapter), binder);
+            Assert.AreEqual(typeof(string), binder.BindToType(null, null));
+        }
+
         public class FancyBinder : ISerializationBinder
         {
             private static readonly string Annotate = new string(':', 3);
@@ -2166,6 +2257,16 @@ namespace Newtonsoft.Json.Tests.Serialization
                 return null;
             }
         }
+
+#pragma warning disable CS0618 // Type or member is obsolete
+        public class OldBinder : SerializationBinder
+        {
+            public override Type BindToType(string assemblyName, string typeName)
+            {
+                return typeof(string);
+            }
+        }
+#pragma warning restore CS0618 // Type or member is obsolete
 #endif
     }
 
@@ -2213,7 +2314,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public string SomeProperty { get; set; }
     }
 
-#if !(DNXCORE50)
+#if !(DNXCORE50) || NETSTANDARD2_0
     public class ParentParent
     {
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
@@ -2281,7 +2382,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public int Quantity { get; set; }
     }
 
-#if !(DNXCORE50)
+#if !(DNXCORE50) || NETSTANDARD2_0
     public class SerializableWrapper
     {
         public object Content { get; set; }

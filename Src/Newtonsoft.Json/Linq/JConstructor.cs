@@ -43,10 +43,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets the container's children tokens.
         /// </summary>
         /// <value>The container's children tokens.</value>
-        protected override IList<JToken> ChildrenTokens
-        {
-            get { return _values; }
-        }
+        protected override IList<JToken> ChildrenTokens => _values;
 
         internal override int IndexOfItem(JToken item)
         {
@@ -55,8 +52,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override void MergeItem(object content, JsonMergeSettings settings)
         {
-            JConstructor c = content as JConstructor;
-            if (c == null)
+            if (!(content is JConstructor c))
             {
                 return;
             }
@@ -74,18 +70,15 @@ namespace Newtonsoft.Json.Linq
         /// <value>The constructor name.</value>
         public string Name
         {
-            get { return _name; }
-            set { _name = value; }
+            get => _name;
+            set => _name = value;
         }
 
         /// <summary>
         /// Gets the node type for this <see cref="JToken"/>.
         /// </summary>
         /// <value>The type.</value>
-        public override JTokenType Type
-        {
-            get { return JTokenType.Constructor; }
-        }
+        public override JTokenType Type => JTokenType.Constructor;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JConstructor"/> class.
@@ -146,8 +139,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override bool DeepEquals(JToken node)
         {
-            JConstructor c = node as JConstructor;
-            return (c != null && _name == c.Name && ContentsEqual(c));
+            return (node is JConstructor c && _name == c.Name && ContentsEqual(c));
         }
 
         internal override JToken CloneToken()

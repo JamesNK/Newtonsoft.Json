@@ -114,7 +114,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task CloseAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -132,7 +132,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -151,7 +151,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         protected virtual Task WriteEndAsync(JsonToken token, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -169,7 +169,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         protected virtual Task WriteIndentAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -187,7 +187,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         protected virtual Task WriteValueDelimiterAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -205,7 +205,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         protected virtual Task WriteIndentSpaceAsync(CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -224,7 +224,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteRawAsync(string json, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -242,7 +242,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteEndAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -275,31 +275,119 @@ namespace Newtonsoft.Json
             }
         }
 
-        internal async Task InternalWriteEndAsync(JsonContainerType type, CancellationToken cancellationToken)
+        internal Task InternalWriteEndAsync(JsonContainerType type, CancellationToken cancellationToken)
         {
-            cancellationToken.ThrowIfCancellationRequested();
-            int levelsToComplete = CalculateLevelsToComplete(type);
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return cancellationToken.FromCanceled();
+            }
 
+            int levelsToComplete = CalculateLevelsToComplete(type);
             while (levelsToComplete-- > 0)
             {
                 JsonToken token = GetCloseTokenForType(Pop());
 
+                Task t;
                 if (_currentState == State.Property)
                 {
-                    await WriteNullAsync(cancellationToken).ConfigureAwait(false);
+                    t = WriteNullAsync(cancellationToken);
+                    if (!t.IsCompletedSucessfully())
+                    {
+                        return AwaitProperty(t, levelsToComplete, token, type, cancellationToken);
+                    }
                 }
 
                 if (_formatting == Formatting.Indented)
                 {
                     if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
                     {
-                        await WriteIndentAsync(cancellationToken).ConfigureAwait(false);
+                        t = WriteIndentAsync(cancellationToken);
+                        if (!t.IsCompletedSucessfully())
+                        {
+                            return AwaitIndent(t, levelsToComplete, token, type, cancellationToken);
+                        }
                     }
                 }
 
-                await WriteEndAsync(token, cancellationToken).ConfigureAwait(false);
+                t = WriteEndAsync(token, cancellationToken);
+                if (!t.IsCompletedSucessfully())
+                {
+                    return AwaitEnd(t, levelsToComplete, type, cancellationToken);
+                }
 
                 UpdateCurrentState();
+            }
+
+            return AsyncUtils.CompletedTask;
+
+            // Local functions, params renamed (capitalized) so as not to capture and allocate when calling async
+            async Task AwaitProperty(Task task, int LevelsToComplete, JsonToken token, JsonContainerType Type, CancellationToken CancellationToken)
+            {
+                await task.ConfigureAwait(false);
+
+                //  Finish current loop
+                if (_formatting == Formatting.Indented)
+                {
+                    if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
+                    {
+                        await WriteIndentAsync(CancellationToken).ConfigureAwait(false);
+                    }
+                }
+
+                await WriteEndAsync(token, CancellationToken).ConfigureAwait(false);
+
+                UpdateCurrentState();
+
+                await AwaitRemaining(LevelsToComplete, Type, CancellationToken).ConfigureAwait(false);
+            }
+
+            async Task AwaitIndent(Task task, int LevelsToComplete, JsonToken token, JsonContainerType Type, CancellationToken CancellationToken)
+            {
+                await task.ConfigureAwait(false);
+
+                //  Finish current loop
+
+                await WriteEndAsync(token, CancellationToken).ConfigureAwait(false);
+
+                UpdateCurrentState();
+
+                await AwaitRemaining(LevelsToComplete, Type, CancellationToken).ConfigureAwait(false);
+            }
+
+            async Task AwaitEnd(Task task, int LevelsToComplete, JsonContainerType Type, CancellationToken CancellationToken)
+            {
+                await task.ConfigureAwait(false);
+
+                //  Finish current loop
+
+                UpdateCurrentState();
+
+                await AwaitRemaining(LevelsToComplete, Type, CancellationToken).ConfigureAwait(false);
+            }
+
+            async Task AwaitRemaining(int LevelsToComplete, JsonContainerType Type, CancellationToken CancellationToken)
+            {
+                while (LevelsToComplete-- > 0)
+                {
+                    JsonToken token = GetCloseTokenForType(Pop());
+
+                    if (_currentState == State.Property)
+                    {
+                        await WriteNullAsync(CancellationToken).ConfigureAwait(false);
+                    }
+
+                    if (_formatting == Formatting.Indented)
+                    {
+                        if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
+                        {
+                            await WriteIndentAsync(CancellationToken).ConfigureAwait(false);
+                        }
+                    }
+
+                    await WriteEndAsync(token, CancellationToken).ConfigureAwait(false);
+
+                    UpdateCurrentState();
+                }
             }
         }
 
@@ -309,7 +397,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteEndArrayAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -327,7 +415,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteEndConstructorAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -345,7 +433,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteEndObjectAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -363,7 +451,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteNullAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -382,7 +470,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WritePropertyNameAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -402,7 +490,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WritePropertyNameAsync(string name, bool escape, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -431,7 +519,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteStartArrayAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -457,7 +545,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteCommentAsync(string text, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -481,7 +569,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteRawValueAsync(string json, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -500,7 +588,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteStartConstructorAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -518,7 +606,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteStartObjectAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -537,7 +625,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public Task WriteTokenAsync(JsonReader reader, CancellationToken cancellationToken = default(CancellationToken))
         {
             return WriteTokenAsync(reader, true, cancellationToken);
@@ -551,7 +639,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public Task WriteTokenAsync(JsonReader reader, bool writeChildren, CancellationToken cancellationToken = default(CancellationToken))
         {
             ValidationUtils.ArgumentNotNull(reader, nameof(reader));
@@ -566,7 +654,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public Task WriteTokenAsync(JsonToken token, CancellationToken cancellationToken = default(CancellationToken))
         {
             return WriteTokenAsync(token, null, cancellationToken);
@@ -584,7 +672,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public Task WriteTokenAsync(JsonToken token, object value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -613,24 +701,24 @@ namespace Newtonsoft.Json
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
                     return
 #if HAVE_BIG_INTEGER
-                        value is BigInteger ? WriteValueAsync((BigInteger)value, cancellationToken) :
+                        value is BigInteger integer ? WriteValueAsync(integer, cancellationToken) :
 #endif
                         WriteValueAsync(Convert.ToInt64(value, CultureInfo.InvariantCulture), cancellationToken);
                 case JsonToken.Float:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is decimal)
+                    if (value is decimal dec)
                     {
-                        return WriteValueAsync((decimal)value, cancellationToken);
+                        return WriteValueAsync(dec, cancellationToken);
                     }
 
-                    if (value is double)
+                    if (value is double doub)
                     {
-                        return WriteValueAsync((double)value, cancellationToken);
+                        return WriteValueAsync(doub, cancellationToken);
                     }
 
-                    if (value is float)
+                    if (value is float f)
                     {
-                        return WriteValueAsync((float)value, cancellationToken);
+                        return WriteValueAsync(f, cancellationToken);
                     }
 
                     return WriteValueAsync(Convert.ToDouble(value, CultureInfo.InvariantCulture), cancellationToken);
@@ -652,9 +740,9 @@ namespace Newtonsoft.Json
                     return WriteEndConstructorAsync(cancellationToken);
                 case JsonToken.Date:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is DateTimeOffset)
+                    if (value is DateTimeOffset offset)
                     {
-                        return WriteValueAsync((DateTimeOffset)value, cancellationToken);
+                        return WriteValueAsync(offset, cancellationToken);
                     }
 
                     return WriteValueAsync(Convert.ToDateTime(value, CultureInfo.InvariantCulture), cancellationToken);
@@ -662,9 +750,9 @@ namespace Newtonsoft.Json
                     return WriteRawValueAsync(value?.ToString(), cancellationToken);
                 case JsonToken.Bytes:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is Guid)
+                    if (value is Guid guid)
                     {
-                        return WriteValueAsync((Guid)value, cancellationToken);
+                        return WriteValueAsync(guid, cancellationToken);
                     }
 
                     return WriteValueAsync((byte[])value, cancellationToken);
@@ -764,7 +852,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(bool value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -783,7 +871,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(bool? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -802,7 +890,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(byte value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -821,7 +909,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(byte? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -840,7 +928,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(byte[] value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -859,7 +947,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(char value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -878,7 +966,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(char? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -897,7 +985,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(DateTime value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -916,7 +1004,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(DateTime? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -935,7 +1023,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(DateTimeOffset value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -954,7 +1042,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(DateTimeOffset? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -973,7 +1061,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(decimal value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -992,7 +1080,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(decimal? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1011,7 +1099,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(double value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1030,7 +1118,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(double? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1049,7 +1137,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(float value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1068,7 +1156,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(float? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1087,7 +1175,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(Guid value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1106,7 +1194,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(Guid? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1125,7 +1213,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(int value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1144,7 +1232,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(int? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1163,7 +1251,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(long value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1182,7 +1270,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(long? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1201,7 +1289,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(object value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1220,7 +1308,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         [CLSCompliant(false)]
         public virtual Task WriteValueAsync(sbyte value, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1240,7 +1328,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         [CLSCompliant(false)]
         public virtual Task WriteValueAsync(sbyte? value, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1260,7 +1348,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(short value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1279,7 +1367,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(short? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1298,7 +1386,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(string value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1317,7 +1405,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(TimeSpan value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1336,7 +1424,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(TimeSpan? value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1355,7 +1443,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         [CLSCompliant(false)]
         public virtual Task WriteValueAsync(uint value, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1375,7 +1463,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         [CLSCompliant(false)]
         public virtual Task WriteValueAsync(uint? value, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1395,7 +1483,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         [CLSCompliant(false)]
         public virtual Task WriteValueAsync(ulong value, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1415,7 +1503,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         [CLSCompliant(false)]
         public virtual Task WriteValueAsync(ulong? value, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1435,7 +1523,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteValueAsync(Uri value, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1454,7 +1542,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         [CLSCompliant(false)]
         public virtual Task WriteValueAsync(ushort value, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1474,7 +1562,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         [CLSCompliant(false)]
         public virtual Task WriteValueAsync(ushort? value, CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -1493,7 +1581,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteUndefinedAsync(CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1512,7 +1600,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         public virtual Task WriteWhitespaceAsync(string ws, CancellationToken cancellationToken = default(CancellationToken))
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1543,7 +1631,7 @@ namespace Newtonsoft.Json
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
-        /// classes can override this behaviour for true asychronousity.</remarks>
+        /// classes can override this behaviour for true asynchronicity.</remarks>
         protected Task SetWriteStateAsync(JsonToken token, object value, CancellationToken cancellationToken)
         {
             if (cancellationToken.IsCancellationRequested)
@@ -1592,115 +1680,122 @@ namespace Newtonsoft.Json
 
         internal static Task WriteValueAsync(JsonWriter writer, PrimitiveTypeCode typeCode, object value, CancellationToken cancellationToken)
         {
-            switch (typeCode)
+            while (true)
             {
-                case PrimitiveTypeCode.Char:
-                    return writer.WriteValueAsync((char)value, cancellationToken);
-                case PrimitiveTypeCode.CharNullable:
-                    return writer.WriteValueAsync(value == null ? (char?)null : (char)value, cancellationToken);
-                case PrimitiveTypeCode.Boolean:
-                    return writer.WriteValueAsync((bool)value, cancellationToken);
-                case PrimitiveTypeCode.BooleanNullable:
-                    return writer.WriteValueAsync(value == null ? (bool?)null : (bool)value, cancellationToken);
-                case PrimitiveTypeCode.SByte:
-                    return writer.WriteValueAsync((sbyte)value, cancellationToken);
-                case PrimitiveTypeCode.SByteNullable:
-                    return writer.WriteValueAsync(value == null ? (sbyte?)null : (sbyte)value, cancellationToken);
-                case PrimitiveTypeCode.Int16:
-                    return writer.WriteValueAsync((short)value, cancellationToken);
-                case PrimitiveTypeCode.Int16Nullable:
-                    return writer.WriteValueAsync(value == null ? (short?)null : (short)value, cancellationToken);
-                case PrimitiveTypeCode.UInt16:
-                    return writer.WriteValueAsync((ushort)value, cancellationToken);
-                case PrimitiveTypeCode.UInt16Nullable:
-                    return writer.WriteValueAsync(value == null ? (ushort?)null : (ushort)value, cancellationToken);
-                case PrimitiveTypeCode.Int32:
-                    return writer.WriteValueAsync((int)value, cancellationToken);
-                case PrimitiveTypeCode.Int32Nullable:
-                    return writer.WriteValueAsync(value == null ? (int?)null : (int)value, cancellationToken);
-                case PrimitiveTypeCode.Byte:
-                    return writer.WriteValueAsync((byte)value, cancellationToken);
-                case PrimitiveTypeCode.ByteNullable:
-                    return writer.WriteValueAsync(value == null ? (byte?)null : (byte)value, cancellationToken);
-                case PrimitiveTypeCode.UInt32:
-                    return writer.WriteValueAsync((uint)value, cancellationToken);
-                case PrimitiveTypeCode.UInt32Nullable:
-                    return writer.WriteValueAsync(value == null ? (uint?)null : (uint)value, cancellationToken);
-                case PrimitiveTypeCode.Int64:
-                    return writer.WriteValueAsync((long)value, cancellationToken);
-                case PrimitiveTypeCode.Int64Nullable:
-                    return writer.WriteValueAsync(value == null ? (long?)null : (long)value, cancellationToken);
-                case PrimitiveTypeCode.UInt64:
-                    return writer.WriteValueAsync((ulong)value, cancellationToken);
-                case PrimitiveTypeCode.UInt64Nullable:
-                    return writer.WriteValueAsync(value == null ? (ulong?)null : (ulong)value, cancellationToken);
-                case PrimitiveTypeCode.Single:
-                    return writer.WriteValueAsync((float)value, cancellationToken);
-                case PrimitiveTypeCode.SingleNullable:
-                    return writer.WriteValueAsync(value == null ? (float?)null : (float)value, cancellationToken);
-                case PrimitiveTypeCode.Double:
-                    return writer.WriteValueAsync((double)value, cancellationToken);
-                case PrimitiveTypeCode.DoubleNullable:
-                    return writer.WriteValueAsync(value == null ? (double?)null : (double)value, cancellationToken);
-                case PrimitiveTypeCode.DateTime:
-                    return writer.WriteValueAsync((DateTime)value, cancellationToken);
-                case PrimitiveTypeCode.DateTimeNullable:
-                    return writer.WriteValueAsync(value == null ? (DateTime?)null : (DateTime)value, cancellationToken);
-                case PrimitiveTypeCode.DateTimeOffset:
-                    return writer.WriteValueAsync((DateTimeOffset)value, cancellationToken);
-                case PrimitiveTypeCode.DateTimeOffsetNullable:
-                    return writer.WriteValueAsync(value == null ? (DateTimeOffset?)null : (DateTimeOffset)value, cancellationToken);
-                case PrimitiveTypeCode.Decimal:
-                    return writer.WriteValueAsync((decimal)value, cancellationToken);
-                case PrimitiveTypeCode.DecimalNullable:
-                    return writer.WriteValueAsync(value == null ? (decimal?)null : (decimal)value, cancellationToken);
-                case PrimitiveTypeCode.Guid:
-                    return writer.WriteValueAsync((Guid)value, cancellationToken);
-                case PrimitiveTypeCode.GuidNullable:
-                    return writer.WriteValueAsync(value == null ? (Guid?)null : (Guid)value, cancellationToken);
-                case PrimitiveTypeCode.TimeSpan:
-                    return writer.WriteValueAsync((TimeSpan)value, cancellationToken);
-                case PrimitiveTypeCode.TimeSpanNullable:
-                    return writer.WriteValueAsync(value == null ? (TimeSpan?)null : (TimeSpan)value, cancellationToken);
+                switch (typeCode)
+                {
+                    case PrimitiveTypeCode.Char:
+                        return writer.WriteValueAsync((char)value, cancellationToken);
+                    case PrimitiveTypeCode.CharNullable:
+                        return writer.WriteValueAsync(value == null ? (char?)null : (char)value, cancellationToken);
+                    case PrimitiveTypeCode.Boolean:
+                        return writer.WriteValueAsync((bool)value, cancellationToken);
+                    case PrimitiveTypeCode.BooleanNullable:
+                        return writer.WriteValueAsync(value == null ? (bool?)null : (bool)value, cancellationToken);
+                    case PrimitiveTypeCode.SByte:
+                        return writer.WriteValueAsync((sbyte)value, cancellationToken);
+                    case PrimitiveTypeCode.SByteNullable:
+                        return writer.WriteValueAsync(value == null ? (sbyte?)null : (sbyte)value, cancellationToken);
+                    case PrimitiveTypeCode.Int16:
+                        return writer.WriteValueAsync((short)value, cancellationToken);
+                    case PrimitiveTypeCode.Int16Nullable:
+                        return writer.WriteValueAsync(value == null ? (short?)null : (short)value, cancellationToken);
+                    case PrimitiveTypeCode.UInt16:
+                        return writer.WriteValueAsync((ushort)value, cancellationToken);
+                    case PrimitiveTypeCode.UInt16Nullable:
+                        return writer.WriteValueAsync(value == null ? (ushort?)null : (ushort)value, cancellationToken);
+                    case PrimitiveTypeCode.Int32:
+                        return writer.WriteValueAsync((int)value, cancellationToken);
+                    case PrimitiveTypeCode.Int32Nullable:
+                        return writer.WriteValueAsync(value == null ? (int?)null : (int)value, cancellationToken);
+                    case PrimitiveTypeCode.Byte:
+                        return writer.WriteValueAsync((byte)value, cancellationToken);
+                    case PrimitiveTypeCode.ByteNullable:
+                        return writer.WriteValueAsync(value == null ? (byte?)null : (byte)value, cancellationToken);
+                    case PrimitiveTypeCode.UInt32:
+                        return writer.WriteValueAsync((uint)value, cancellationToken);
+                    case PrimitiveTypeCode.UInt32Nullable:
+                        return writer.WriteValueAsync(value == null ? (uint?)null : (uint)value, cancellationToken);
+                    case PrimitiveTypeCode.Int64:
+                        return writer.WriteValueAsync((long)value, cancellationToken);
+                    case PrimitiveTypeCode.Int64Nullable:
+                        return writer.WriteValueAsync(value == null ? (long?)null : (long)value, cancellationToken);
+                    case PrimitiveTypeCode.UInt64:
+                        return writer.WriteValueAsync((ulong)value, cancellationToken);
+                    case PrimitiveTypeCode.UInt64Nullable:
+                        return writer.WriteValueAsync(value == null ? (ulong?)null : (ulong)value, cancellationToken);
+                    case PrimitiveTypeCode.Single:
+                        return writer.WriteValueAsync((float)value, cancellationToken);
+                    case PrimitiveTypeCode.SingleNullable:
+                        return writer.WriteValueAsync(value == null ? (float?)null : (float)value, cancellationToken);
+                    case PrimitiveTypeCode.Double:
+                        return writer.WriteValueAsync((double)value, cancellationToken);
+                    case PrimitiveTypeCode.DoubleNullable:
+                        return writer.WriteValueAsync(value == null ? (double?)null : (double)value, cancellationToken);
+                    case PrimitiveTypeCode.DateTime:
+                        return writer.WriteValueAsync((DateTime)value, cancellationToken);
+                    case PrimitiveTypeCode.DateTimeNullable:
+                        return writer.WriteValueAsync(value == null ? (DateTime?)null : (DateTime)value, cancellationToken);
+                    case PrimitiveTypeCode.DateTimeOffset:
+                        return writer.WriteValueAsync((DateTimeOffset)value, cancellationToken);
+                    case PrimitiveTypeCode.DateTimeOffsetNullable:
+                        return writer.WriteValueAsync(value == null ? (DateTimeOffset?)null : (DateTimeOffset)value, cancellationToken);
+                    case PrimitiveTypeCode.Decimal:
+                        return writer.WriteValueAsync((decimal)value, cancellationToken);
+                    case PrimitiveTypeCode.DecimalNullable:
+                        return writer.WriteValueAsync(value == null ? (decimal?)null : (decimal)value, cancellationToken);
+                    case PrimitiveTypeCode.Guid:
+                        return writer.WriteValueAsync((Guid)value, cancellationToken);
+                    case PrimitiveTypeCode.GuidNullable:
+                        return writer.WriteValueAsync(value == null ? (Guid?)null : (Guid)value, cancellationToken);
+                    case PrimitiveTypeCode.TimeSpan:
+                        return writer.WriteValueAsync((TimeSpan)value, cancellationToken);
+                    case PrimitiveTypeCode.TimeSpanNullable:
+                        return writer.WriteValueAsync(value == null ? (TimeSpan?)null : (TimeSpan)value, cancellationToken);
 #if HAVE_BIG_INTEGER
-                case PrimitiveTypeCode.BigInteger:
+                    case PrimitiveTypeCode.BigInteger:
 
-                    // this will call to WriteValueAsync(object)
-                    return writer.WriteValueAsync((BigInteger)value, cancellationToken);
-                case PrimitiveTypeCode.BigIntegerNullable:
+                        // this will call to WriteValueAsync(object)
+                        return writer.WriteValueAsync((BigInteger)value, cancellationToken);
+                    case PrimitiveTypeCode.BigIntegerNullable:
 
-                    // this will call to WriteValueAsync(object)
-                    return writer.WriteValueAsync(value == null ? (BigInteger?)null : (BigInteger)value, cancellationToken);
+                        // this will call to WriteValueAsync(object)
+                        return writer.WriteValueAsync(value == null ? (BigInteger?)null : (BigInteger)value, cancellationToken);
 #endif
-                case PrimitiveTypeCode.Uri:
-                    return writer.WriteValueAsync((Uri)value, cancellationToken);
-                case PrimitiveTypeCode.String:
-                    return writer.WriteValueAsync((string)value, cancellationToken);
-                case PrimitiveTypeCode.Bytes:
-                    return writer.WriteValueAsync((byte[])value, cancellationToken);
+                    case PrimitiveTypeCode.Uri:
+                        return writer.WriteValueAsync((Uri)value, cancellationToken);
+                    case PrimitiveTypeCode.String:
+                        return writer.WriteValueAsync((string)value, cancellationToken);
+                    case PrimitiveTypeCode.Bytes:
+                        return writer.WriteValueAsync((byte[])value, cancellationToken);
 #if HAVE_DB_NULL_TYPE_CODE
-                case PrimitiveTypeCode.DBNull:
-                    return writer.WriteNullAsync(cancellationToken);
+                    case PrimitiveTypeCode.DBNull:
+                        return writer.WriteNullAsync(cancellationToken);
 #endif
-                default:
+                    default:
 #if HAVE_ICONVERTIBLE
-                    IConvertible convertable = value as IConvertible;
-                    if (convertable != null)
-                    {
-                        // the value is a non-standard IConvertible
-                        // convert to the underlying value and retry
-                        TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertable);
+                        if (value is IConvertible convertible)
+                        {
+                            // the value is a non-standard IConvertible
+                            // convert to the underlying value and retry
+                            TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertible);
 
-                        // if convertible has an underlying typecode of Object then attempt to convert it to a string
-                        PrimitiveTypeCode resolvedTypeCode = typeInformation.TypeCode == PrimitiveTypeCode.Object ? PrimitiveTypeCode.String : typeInformation.TypeCode;
-                        Type resolvedType = typeInformation.TypeCode == PrimitiveTypeCode.Object ? typeof(string) : typeInformation.Type;
-
-                        object convertedValue = convertable.ToType(resolvedType, CultureInfo.InvariantCulture);
-
-                        return WriteValueAsync(writer, resolvedTypeCode, convertedValue, cancellationToken);
-                    }
+                            // if convertible has an underlying typecode of Object then attempt to convert it to a string
+                            typeCode = typeInformation.TypeCode == PrimitiveTypeCode.Object ? PrimitiveTypeCode.String : typeInformation.TypeCode;
+                            Type resolvedType = typeInformation.TypeCode == PrimitiveTypeCode.Object ? typeof(string) : typeInformation.Type;
+                            value = convertible.ToType(resolvedType, CultureInfo.InvariantCulture);
+                            continue;
+                        }
 #endif
-                    throw CreateUnsupportedTypeException(writer, value);
+
+                        // write an unknown null value, fix https://github.com/JamesNK/Newtonsoft.Json/issues/1460
+                        if (value == null)
+                        {
+                            return writer.WriteNullAsync(cancellationToken);
+                        }
+
+                        throw CreateUnsupportedTypeException(writer, value);
+                }
             }
         }
     }

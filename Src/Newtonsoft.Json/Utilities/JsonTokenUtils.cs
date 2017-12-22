@@ -23,9 +23,6 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-using System.Text;
-
 namespace Newtonsoft.Json.Utilities
 {
     internal static class JsonTokenUtils

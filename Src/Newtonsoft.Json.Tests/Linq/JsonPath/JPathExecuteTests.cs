@@ -26,7 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_3
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_3 || NETSTANDARD2_0
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Linq.JsonPath;
@@ -51,6 +51,71 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     [TestFixture]
     public class JPathExecuteTests : TestFixtureBase
     {
+        [Test]
+        public void GreaterThanIssue1518()
+        {
+            string statusJson = @"{""usingmem"": ""214376""}";//214,376
+            JObject jObj = JObject.Parse(statusJson);
+
+            var aa = jObj.SelectToken("$..[?(@.usingmem>10)]");//found,10
+            Assert.AreEqual(jObj, aa);
+
+            var bb = jObj.SelectToken("$..[?(@.usingmem>27000)]");//null, 27,000
+            Assert.AreEqual(jObj, bb);
+
+            var cc = jObj.SelectToken("$..[?(@.usingmem>21437)]");//found, 21,437
+            Assert.AreEqual(jObj, cc);
+
+            var dd = jObj.SelectToken("$..[?(@.usingmem>21438)]");//null,21,438
+            Assert.AreEqual(jObj, dd);
+        }
+
+        [Test]
+        public void GreaterThanWithIntegerParameterAndStringValue()
+        {
+            string json = @"{
+  ""persons"": [
+    {
+      ""name""  : ""John"",
+      ""age"": ""26""
+    },
+    {
+      ""name""  : ""Jane"",
+      ""age"": ""2""
+    }
+  ]
+}";
+
+            JObject models = JObject.Parse(json);
+
+            var results = models.SelectTokens("$.persons[?(@.age > 3)]").ToList();
+
+            Assert.AreEqual(1, results.Count);
+        }
+
+        [Test]
+        public void GreaterThanWithStringParameterAndIntegerValue()
+        {
+            string json = @"{
+  ""persons"": [
+    {
+      ""name""  : ""John"",
+      ""age"": 26
+    },
+    {
+      ""name""  : ""Jane"",
+      ""age"": 2
+    }
+  ]
+}";
+
+            JObject models = JObject.Parse(json);
+
+            var results = models.SelectTokens("$.persons[?(@.age > '3')]").ToList();
+
+            Assert.AreEqual(1, results.Count);
+        }
+
         [Test]
         public void RecursiveWildcard()
         {
@@ -892,7 +957,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             Assert.IsTrue(JToken.DeepEquals(new JObject(new JProperty("hi", 3)), t[1]));
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_3
+#if !(PORTABLE || DNXCORE50 || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_3 || NETSTANDARD2_0
         [Test]
         public void GreaterQueryBigInteger()
         {

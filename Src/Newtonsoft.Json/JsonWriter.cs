@@ -142,7 +142,7 @@ namespace Newtonsoft.Json
         {
             get
             {
-                int depth = (_stack != null) ? _stack.Count : 0;
+                int depth = _stack?.Count ?? 0;
                 if (Peek() != JsonContainerType.None)
                 {
                     depth++;
@@ -231,7 +231,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public Formatting Formatting
         {
-            get { return _formatting; }
+            get => _formatting;
             set
             {
                 if (value < Formatting.None || value > Formatting.Indented)
@@ -248,7 +248,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public DateFormatHandling DateFormatHandling
         {
-            get { return _dateFormatHandling; }
+            get => _dateFormatHandling;
             set
             {
                 if (value < DateFormatHandling.IsoDateFormat || value > DateFormatHandling.MicrosoftDateFormat)
@@ -265,7 +265,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public DateTimeZoneHandling DateTimeZoneHandling
         {
-            get { return _dateTimeZoneHandling; }
+            get => _dateTimeZoneHandling;
             set
             {
                 if (value < DateTimeZoneHandling.Local || value > DateTimeZoneHandling.RoundtripKind)
@@ -282,7 +282,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public StringEscapeHandling StringEscapeHandling
         {
-            get { return _stringEscapeHandling; }
+            get => _stringEscapeHandling;
             set
             {
                 if (value < StringEscapeHandling.Default || value > StringEscapeHandling.EscapeHtml)
@@ -307,7 +307,7 @@ namespace Newtonsoft.Json
         /// </summary>
         public FloatFormatHandling FloatFormatHandling
         {
-            get { return _floatFormatHandling; }
+            get => _floatFormatHandling;
             set
             {
                 if (value < FloatFormatHandling.String || value > FloatFormatHandling.DefaultValue)
@@ -324,8 +324,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public string DateFormatString
         {
-            get { return _dateFormatString; }
-            set { _dateFormatString = value; }
+            get => _dateFormatString;
+            set => _dateFormatString = value;
         }
 
         /// <summary>
@@ -333,8 +333,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public CultureInfo Culture
         {
-            get { return _culture ?? CultureInfo.InvariantCulture; }
-            set { _culture = value; }
+            get => _culture ?? CultureInfo.InvariantCulture;
+            set => _culture = value;
         }
 
         /// <summary>
@@ -546,9 +546,9 @@ namespace Newtonsoft.Json
                 case JsonToken.Integer:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
 #if HAVE_BIG_INTEGER
-                    if (value is BigInteger)
+                    if (value is BigInteger integer)
                     {
-                        WriteValue((BigInteger)value);
+                        WriteValue(integer);
                     }
                     else
 #endif
@@ -558,9 +558,9 @@ namespace Newtonsoft.Json
                     break;
                 case JsonToken.Float:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is decimal)
+                    if (value is decimal d)
                     {
-                        WriteValue((decimal)value);
+                        WriteValue(d);
                     }
                     else if (value is double)
                     {
@@ -601,9 +601,9 @@ namespace Newtonsoft.Json
                 case JsonToken.Date:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
 #if HAVE_DATE_TIME_OFFSET
-                    if (value is DateTimeOffset)
+                    if (value is DateTimeOffset dt)
                     {
-                        WriteValue((DateTimeOffset)value);
+                        WriteValue(dt);
                     }
                     else
 #endif
@@ -616,9 +616,9 @@ namespace Newtonsoft.Json
                     break;
                 case JsonToken.Bytes:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is Guid)
+                    if (value is Guid guid)
                     {
-                        WriteValue((Guid)value);
+                        WriteValue(guid);
                     }
                     else
                     {
@@ -1482,157 +1482,200 @@ namespace Newtonsoft.Json
 
         internal static void WriteValue(JsonWriter writer, PrimitiveTypeCode typeCode, object value)
         {
-            switch (typeCode)
+            while (true)
             {
-                case PrimitiveTypeCode.Char:
-                    writer.WriteValue((char)value);
-                    break;
-                case PrimitiveTypeCode.CharNullable:
-                    writer.WriteValue((value == null) ? (char?)null : (char)value);
-                    break;
-                case PrimitiveTypeCode.Boolean:
-                    writer.WriteValue((bool)value);
-                    break;
-                case PrimitiveTypeCode.BooleanNullable:
-                    writer.WriteValue((value == null) ? (bool?)null : (bool)value);
-                    break;
-                case PrimitiveTypeCode.SByte:
-                    writer.WriteValue((sbyte)value);
-                    break;
-                case PrimitiveTypeCode.SByteNullable:
-                    writer.WriteValue((value == null) ? (sbyte?)null : (sbyte)value);
-                    break;
-                case PrimitiveTypeCode.Int16:
-                    writer.WriteValue((short)value);
-                    break;
-                case PrimitiveTypeCode.Int16Nullable:
-                    writer.WriteValue((value == null) ? (short?)null : (short)value);
-                    break;
-                case PrimitiveTypeCode.UInt16:
-                    writer.WriteValue((ushort)value);
-                    break;
-                case PrimitiveTypeCode.UInt16Nullable:
-                    writer.WriteValue((value == null) ? (ushort?)null : (ushort)value);
-                    break;
-                case PrimitiveTypeCode.Int32:
-                    writer.WriteValue((int)value);
-                    break;
-                case PrimitiveTypeCode.Int32Nullable:
-                    writer.WriteValue((value == null) ? (int?)null : (int)value);
-                    break;
-                case PrimitiveTypeCode.Byte:
-                    writer.WriteValue((byte)value);
-                    break;
-                case PrimitiveTypeCode.ByteNullable:
-                    writer.WriteValue((value == null) ? (byte?)null : (byte)value);
-                    break;
-                case PrimitiveTypeCode.UInt32:
-                    writer.WriteValue((uint)value);
-                    break;
-                case PrimitiveTypeCode.UInt32Nullable:
-                    writer.WriteValue((value == null) ? (uint?)null : (uint)value);
-                    break;
-                case PrimitiveTypeCode.Int64:
-                    writer.WriteValue((long)value);
-                    break;
-                case PrimitiveTypeCode.Int64Nullable:
-                    writer.WriteValue((value == null) ? (long?)null : (long)value);
-                    break;
-                case PrimitiveTypeCode.UInt64:
-                    writer.WriteValue((ulong)value);
-                    break;
-                case PrimitiveTypeCode.UInt64Nullable:
-                    writer.WriteValue((value == null) ? (ulong?)null : (ulong)value);
-                    break;
-                case PrimitiveTypeCode.Single:
-                    writer.WriteValue((float)value);
-                    break;
-                case PrimitiveTypeCode.SingleNullable:
-                    writer.WriteValue((value == null) ? (float?)null : (float)value);
-                    break;
-                case PrimitiveTypeCode.Double:
-                    writer.WriteValue((double)value);
-                    break;
-                case PrimitiveTypeCode.DoubleNullable:
-                    writer.WriteValue((value == null) ? (double?)null : (double)value);
-                    break;
-                case PrimitiveTypeCode.DateTime:
-                    writer.WriteValue((DateTime)value);
-                    break;
-                case PrimitiveTypeCode.DateTimeNullable:
-                    writer.WriteValue((value == null) ? (DateTime?)null : (DateTime)value);
-                    break;
+                switch (typeCode)
+                {
+                    case PrimitiveTypeCode.Char:
+                        writer.WriteValue((char)value);
+                        return;
+
+                    case PrimitiveTypeCode.CharNullable:
+                        writer.WriteValue((value == null) ? (char?)null : (char)value);
+                        return;
+
+                    case PrimitiveTypeCode.Boolean:
+                        writer.WriteValue((bool)value);
+                        return;
+
+                    case PrimitiveTypeCode.BooleanNullable:
+                        writer.WriteValue((value == null) ? (bool?)null : (bool)value);
+                        return;
+
+                    case PrimitiveTypeCode.SByte:
+                        writer.WriteValue((sbyte)value);
+                        return;
+
+                    case PrimitiveTypeCode.SByteNullable:
+                        writer.WriteValue((value == null) ? (sbyte?)null : (sbyte)value);
+                        return;
+
+                    case PrimitiveTypeCode.Int16:
+                        writer.WriteValue((short)value);
+                        return;
+
+                    case PrimitiveTypeCode.Int16Nullable:
+                        writer.WriteValue((value == null) ? (short?)null : (short)value);
+                        return;
+
+                    case PrimitiveTypeCode.UInt16:
+                        writer.WriteValue((ushort)value);
+                        return;
+
+                    case PrimitiveTypeCode.UInt16Nullable:
+                        writer.WriteValue((value == null) ? (ushort?)null : (ushort)value);
+                        return;
+
+                    case PrimitiveTypeCode.Int32:
+                        writer.WriteValue((int)value);
+                        return;
+
+                    case PrimitiveTypeCode.Int32Nullable:
+                        writer.WriteValue((value == null) ? (int?)null : (int)value);
+                        return;
+
+                    case PrimitiveTypeCode.Byte:
+                        writer.WriteValue((byte)value);
+                        return;
+
+                    case PrimitiveTypeCode.ByteNullable:
+                        writer.WriteValue((value == null) ? (byte?)null : (byte)value);
+                        return;
+
+                    case PrimitiveTypeCode.UInt32:
+                        writer.WriteValue((uint)value);
+                        return;
+
+                    case PrimitiveTypeCode.UInt32Nullable:
+                        writer.WriteValue((value == null) ? (uint?)null : (uint)value);
+                        return;
+
+                    case PrimitiveTypeCode.Int64:
+                        writer.WriteValue((long)value);
+                        return;
+
+                    case PrimitiveTypeCode.Int64Nullable:
+                        writer.WriteValue((value == null) ? (long?)null : (long)value);
+                        return;
+
+                    case PrimitiveTypeCode.UInt64:
+                        writer.WriteValue((ulong)value);
+                        return;
+
+                    case PrimitiveTypeCode.UInt64Nullable:
+                        writer.WriteValue((value == null) ? (ulong?)null : (ulong)value);
+                        return;
+
+                    case PrimitiveTypeCode.Single:
+                        writer.WriteValue((float)value);
+                        return;
+
+                    case PrimitiveTypeCode.SingleNullable:
+                        writer.WriteValue((value == null) ? (float?)null : (float)value);
+                        return;
+
+                    case PrimitiveTypeCode.Double:
+                        writer.WriteValue((double)value);
+                        return;
+
+                    case PrimitiveTypeCode.DoubleNullable:
+                        writer.WriteValue((value == null) ? (double?)null : (double)value);
+                        return;
+
+                    case PrimitiveTypeCode.DateTime:
+                        writer.WriteValue((DateTime)value);
+                        return;
+
+                    case PrimitiveTypeCode.DateTimeNullable:
+                        writer.WriteValue((value == null) ? (DateTime?)null : (DateTime)value);
+                        return;
+
 #if HAVE_DATE_TIME_OFFSET
-                case PrimitiveTypeCode.DateTimeOffset:
-                    writer.WriteValue((DateTimeOffset)value);
-                    break;
-                case PrimitiveTypeCode.DateTimeOffsetNullable:
-                    writer.WriteValue((value == null) ? (DateTimeOffset?)null : (DateTimeOffset)value);
-                    break;
+                    case PrimitiveTypeCode.DateTimeOffset:
+                        writer.WriteValue((DateTimeOffset)value);
+                        return;
+
+                    case PrimitiveTypeCode.DateTimeOffsetNullable:
+                        writer.WriteValue((value == null) ? (DateTimeOffset?)null : (DateTimeOffset)value);
+                        return;
 #endif
-                case PrimitiveTypeCode.Decimal:
-                    writer.WriteValue((decimal)value);
-                    break;
-                case PrimitiveTypeCode.DecimalNullable:
-                    writer.WriteValue((value == null) ? (decimal?)null : (decimal)value);
-                    break;
-                case PrimitiveTypeCode.Guid:
-                    writer.WriteValue((Guid)value);
-                    break;
-                case PrimitiveTypeCode.GuidNullable:
-                    writer.WriteValue((value == null) ? (Guid?)null : (Guid)value);
-                    break;
-                case PrimitiveTypeCode.TimeSpan:
-                    writer.WriteValue((TimeSpan)value);
-                    break;
-                case PrimitiveTypeCode.TimeSpanNullable:
-                    writer.WriteValue((value == null) ? (TimeSpan?)null : (TimeSpan)value);
-                    break;
-#if HAVE_BIG_INTEGER
-                case PrimitiveTypeCode.BigInteger:
-                    // this will call to WriteValue(object)
-                    writer.WriteValue((BigInteger)value);
-                    break;
-                case PrimitiveTypeCode.BigIntegerNullable:
-                    // this will call to WriteValue(object)
-                    writer.WriteValue((value == null) ? (BigInteger?)null : (BigInteger)value);
-                    break;
-#endif
-                case PrimitiveTypeCode.Uri:
-                    writer.WriteValue((Uri)value);
-                    break;
-                case PrimitiveTypeCode.String:
-                    writer.WriteValue((string)value);
-                    break;
-                case PrimitiveTypeCode.Bytes:
-                    writer.WriteValue((byte[])value);
-                    break;
-#if HAVE_DB_NULL_TYPE_CODE
-                case PrimitiveTypeCode.DBNull:
-                    writer.WriteNull();
-                    break;
-#endif
-                default:
-#if HAVE_ICONVERTIBLE
-                    IConvertible convertible = value as IConvertible;
-                    if (convertible != null)
-                    {
-                        // the value is a non-standard IConvertible
-                        // convert to the underlying value and retry
+                    case PrimitiveTypeCode.Decimal:
+                        writer.WriteValue((decimal)value);
+                        return;
 
-                        TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertible);
-
-                        // if convertible has an underlying typecode of Object then attempt to convert it to a string
-                        PrimitiveTypeCode resolvedTypeCode = (typeInformation.TypeCode == PrimitiveTypeCode.Object) ? PrimitiveTypeCode.String : typeInformation.TypeCode;
-                        Type resolvedType = (typeInformation.TypeCode == PrimitiveTypeCode.Object) ? typeof(string) : typeInformation.Type;
-
-                        object convertedValue = convertible.ToType(resolvedType, CultureInfo.InvariantCulture);
-
-                        WriteValue(writer, resolvedTypeCode, convertedValue);
+                    case PrimitiveTypeCode.DecimalNullable:
+                        writer.WriteValue((value == null) ? (decimal?)null : (decimal)value);
                         break;
-                    }
+                    case PrimitiveTypeCode.Guid:
+                        writer.WriteValue((Guid)value);
+                        return;
+
+                    case PrimitiveTypeCode.GuidNullable:
+                        writer.WriteValue((value == null) ? (Guid?)null : (Guid)value);
+                        return;
+
+                    case PrimitiveTypeCode.TimeSpan:
+                        writer.WriteValue((TimeSpan)value);
+                        return;
+
+                    case PrimitiveTypeCode.TimeSpanNullable:
+                        writer.WriteValue((value == null) ? (TimeSpan?)null : (TimeSpan)value);
+                        return;
+
+#if HAVE_BIG_INTEGER
+                    case PrimitiveTypeCode.BigInteger:
+                        // this will call to WriteValue(object)
+                        writer.WriteValue((BigInteger)value);
+                        return;
+
+                    case PrimitiveTypeCode.BigIntegerNullable:
+                        // this will call to WriteValue(object)
+                        writer.WriteValue((value == null) ? (BigInteger?)null : (BigInteger)value);
+                        return;
 #endif
-                    throw CreateUnsupportedTypeException(writer, value);
+                    case PrimitiveTypeCode.Uri:
+                        writer.WriteValue((Uri)value);
+                        return;
+
+                    case PrimitiveTypeCode.String:
+                        writer.WriteValue((string)value);
+                        return;
+
+                    case PrimitiveTypeCode.Bytes:
+                        writer.WriteValue((byte[])value);
+                        return;
+
+#if HAVE_DB_NULL_TYPE_CODE
+                    case PrimitiveTypeCode.DBNull:
+                        writer.WriteNull();
+                        return;
+#endif
+                    default:
+#if HAVE_ICONVERTIBLE
+                        if (value is IConvertible convertible)
+                        {
+                            // the value is a non-standard IConvertible
+                            // convert to the underlying value and retry
+
+                            TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertible);
+
+                            // if convertible has an underlying typecode of Object then attempt to convert it to a string
+                            typeCode = typeInformation.TypeCode == PrimitiveTypeCode.Object ? PrimitiveTypeCode.String : typeInformation.TypeCode;
+                            Type resolvedType = typeInformation.TypeCode == PrimitiveTypeCode.Object ? typeof(string) : typeInformation.Type;
+                            value = convertible.ToType(resolvedType, CultureInfo.InvariantCulture);
+                            continue;
+                        }
+#endif
+
+                        // write an unknown null value, fix https://github.com/JamesNK/Newtonsoft.Json/issues/1460
+                        if (value == null)
+                        {
+                            writer.WriteNull();
+                            return;
+                        }
+
+                        throw CreateUnsupportedTypeException(writer, value);
+                }
             }
         }
 

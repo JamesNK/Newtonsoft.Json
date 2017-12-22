@@ -78,7 +78,7 @@ namespace Newtonsoft.Json
                         return ParseObjectAsync(cancellationToken);
                     case State.PostValue:
                         Task<bool> task = ParsePostValueAsync(false, cancellationToken);
-                        if (task.Status == TaskStatus.RanToCompletion)
+                        if (task.IsCompletedSucessfully())
                         {
                             if (task.Result)
                             {
@@ -176,6 +176,13 @@ namespace Newtonsoft.Json
                         }
                         else
                         {
+                            // handle multiple content without comma delimiter
+                            if (SupportMultipleContent && Depth == 0)
+                            {
+                                SetStateBasedOnCurrent();
+                                return false;
+                            }
+
                             throw JsonReaderException.Create(this, "After parsing a value an unexpected character was encountered: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                         }
 
@@ -524,7 +531,7 @@ namespace Newtonsoft.Json
             _charPos++;
 
             Task<bool> task = EnsureCharsAsync(1, append, cancellationToken);
-            if (task.Status == TaskStatus.RanToCompletion)
+            if (task.IsCompletedSucessfully())
             {
                 SetNewLine(task.Result);
                 return AsyncUtils.CompletedTask;
@@ -1131,7 +1138,7 @@ namespace Newtonsoft.Json
             switch (_currentState)
             {
                 case State.PostValue:
-                    if (await ParsePostValueAsync(true, cancellationToken))
+                    if (await ParsePostValueAsync(true, cancellationToken).ConfigureAwait(false))
                     {
                         return null;
                     }
@@ -1266,7 +1273,7 @@ namespace Newtonsoft.Json
             switch (_currentState)
             {
                 case State.PostValue:
-                    if (await ParsePostValueAsync(true, cancellationToken))
+                    if (await ParsePostValueAsync(true, cancellationToken).ConfigureAwait(false))
                     {
                         return null;
                     }
@@ -1392,7 +1399,7 @@ namespace Newtonsoft.Json
             switch (_currentState)
             {
                 case State.PostValue:
-                    if (await ParsePostValueAsync(true, cancellationToken))
+                    if (await ParsePostValueAsync(true, cancellationToken).ConfigureAwait(false))
                     {
                         return null;
                     }
@@ -1528,7 +1535,7 @@ namespace Newtonsoft.Json
             switch (_currentState)
             {
                 case State.PostValue:
-                    if (await ParsePostValueAsync(true, cancellationToken))
+                    if (await ParsePostValueAsync(true, cancellationToken).ConfigureAwait(false))
                     {
                         return null;
                     }

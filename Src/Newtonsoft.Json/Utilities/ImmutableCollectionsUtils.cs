@@ -23,18 +23,24 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if HAVE_IMMUTABLE_COLLECTIONS
-
 using System;
 using System.Collections.Generic;
+#if !HAVE_LINQ
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
 using System.Linq;
+#endif
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Utilities
 {
+    /// <summary>
+    /// Helper class for serializing immutable collections.
+    /// Note that this is used by all builds, even those that don't support immutable collections, in case the DLL is GACed
+    /// https://github.com/JamesNK/Newtonsoft.Json/issues/652
+    /// </summary>
     internal static class ImmutableCollectionsUtils
     {
         internal class ImmutableCollectionTypeInfo
@@ -173,5 +179,3 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 }
-
-#endif

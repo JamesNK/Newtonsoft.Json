@@ -48,7 +48,7 @@ namespace Newtonsoft.Json.Serialization
         // will be null for containers that don't have an item type (e.g. IList) or for complex objects
         internal JsonContract ItemContract
         {
-            get { return _itemContract; }
+            get => _itemContract;
             set
             {
                 _itemContract = value;
@@ -64,10 +64,7 @@ namespace Newtonsoft.Json.Serialization
         }
 
         // the final (i.e. can't be inherited from like a sealed class or valuetype) item contract
-        internal JsonContract FinalItemContract
-        {
-            get { return _finalItemContract; }
-        }
+        internal JsonContract FinalItemContract => _finalItemContract;
 
         /// <summary>
         /// Gets or sets the default collection items <see cref="JsonConverter" />.

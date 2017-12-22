@@ -70,10 +70,7 @@ namespace Newtonsoft.Json.Schema
             return poppedSchema;
         }
 
-        private JsonSchema CurrentSchema
-        {
-            get { return _currentSchema; }
-        }
+        private JsonSchema CurrentSchema => _currentSchema;
 
         internal JsonSchema Read(JsonReader reader)
         {

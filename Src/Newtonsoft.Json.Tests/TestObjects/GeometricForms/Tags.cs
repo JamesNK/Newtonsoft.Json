@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || DNXCORE50)
+#if !(NET35 || NET20 || DNXCORE50) || NETSTANDARD1_3 || NETSTANDARD2_0
 namespace Newtonsoft.Json.Tests.TestObjects.GeometricForms
 {
     public static class Tags

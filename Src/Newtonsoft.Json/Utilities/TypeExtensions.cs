@@ -128,7 +128,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                return MemberTypes.Other;
+                return default(MemberTypes);
             }
 #endif
         }
@@ -248,7 +248,7 @@ namespace Newtonsoft.Json.Utilities
 #else
             return type.GetMember(name, bindingFlags).Where(m =>
             {
-                if (m.MemberType() != memberType)
+                if ((m.MemberType() | memberType) != memberType)
                 {
                     return false;
                 }
@@ -334,7 +334,7 @@ namespace Newtonsoft.Json.Utilities
             return type.GetTypeInfo().GetMembersRecursive().Where(m =>
                 m.Name == member &&
                 // test type before accessibility - accessibility doesn't support some types
-                (memberType == null || m.MemberType() == memberType) &&
+                (memberType == null || (m.MemberType() | memberType) == memberType) &&
                 TestAccessibility(m, bindingFlags)).ToArray();
         }
 
@@ -345,7 +345,13 @@ namespace Newtonsoft.Json.Utilities
 
         public static FieldInfo GetField(this Type type, string member, BindingFlags bindingFlags)
         {
-            return type.GetTypeInfo().GetDeclaredField(member);
+            MemberInfo field = type.GetTypeInfo().GetDeclaredField(member);
+            if (field == null || !TestAccessibility(field, bindingFlags))
+            {
+                return null;
+            }
+            
+            return field;
         }
 
         public static IEnumerable<PropertyInfo> GetProperties(this Type type, BindingFlags bindingFlags)
@@ -426,7 +432,13 @@ namespace Newtonsoft.Json.Utilities
 
         public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags)
         {
-            return type.GetTypeInfo().GetDeclaredProperty(name);
+            PropertyInfo property = type.GetTypeInfo().GetDeclaredProperty(name);
+            if (property == null || !TestAccessibility(property, bindingFlags))
+            {
+                return null;
+            }
+            
+            return property;
         }
 
         public static IEnumerable<FieldInfo> GetFields(this Type type)

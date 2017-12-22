@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || DNXCORE50)
+#if !(NET35 || NET20 || DNXCORE50) || NETSTANDARD1_3 || NETSTANDARD2_0
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -75,6 +75,7 @@ namespace Newtonsoft.Json.Tests.Documentation
     [TestFixture]
     public class LinqToJsonTests : TestFixtureBase
     {
+        [Test]
         public void LinqToJsonBasic()
         {
             #region LinqToJsonBasic
@@ -98,6 +99,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             #endregion
         }
 
+        [Test]
         public void LinqToJsonCreateNormal()
         {
             #region LinqToJsonCreateNormal
