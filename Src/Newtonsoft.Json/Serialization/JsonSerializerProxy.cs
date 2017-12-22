@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Serialization
 
         public override Func<IReferenceResolver> ReferenceResolverProvider
         {
-            get => return _serializer.ReferenceResolverProvider;
+            get => _serializer.ReferenceResolverProvider;
             set => _serializer.ReferenceResolverProvider = value;
         }
 
@@ -230,14 +230,7 @@ namespace Newtonsoft.Json.Serialization
 
         internal JsonSerializerInternalBase GetInternalSerializer()
         {
-            if (_serializerReader != null)
-            {
-                return _serializerReader;
-            }
-            else
-            {
-                return _serializerWriter;
-            }
+            return _serializerReader ?? (JsonSerializerInternalBase)_serializerWriter;
         }
 
         public JsonSerializerProxy(JsonSerializerInternalReader serializerReader)
