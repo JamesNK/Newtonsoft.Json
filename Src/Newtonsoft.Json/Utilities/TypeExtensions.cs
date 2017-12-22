@@ -345,7 +345,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static FieldInfo GetField(this Type type, string member, BindingFlags bindingFlags)
         {
-            MemberInfo field = type.GetTypeInfo().GetDeclaredField(member);
+            FieldInfo field = type.GetTypeInfo().GetDeclaredField(member);
             if (field == null || !TestAccessibility(field, bindingFlags))
             {
                 return null;
