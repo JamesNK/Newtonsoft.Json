@@ -230,7 +230,14 @@ namespace Newtonsoft.Json.Serialization
 
         internal JsonSerializerInternalBase GetInternalSerializer()
         {
-            return _serializerReader ?? (JsonSerializerInternalBase)_serializerWriter;
+            if (_serializerReader != null)
+            {
+                return _serializerReader;
+            }
+            else
+            {
+                return _serializerWriter;
+            }
         }
 
         public JsonSerializerProxy(JsonSerializerInternalReader serializerReader)
