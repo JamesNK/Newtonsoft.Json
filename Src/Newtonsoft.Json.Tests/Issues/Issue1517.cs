@@ -23,22 +23,19 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if (NETSTANDARD2_0)
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
-using System.Threading.Tasks;
-#endif
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Xml;
 using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Utilities;
 #if !NET20
 using System.Xml.Linq;
 #endif
@@ -53,28 +50,30 @@ using NUnit.Framework;
 namespace Newtonsoft.Json.Tests.Issues
 {
     [TestFixture]
-    public class Issue1460 : TestFixtureBase
+    public class Issue1517 : TestFixtureBase
     {
         [Test]
         public void Test()
         {
-            StringWriter sw = new StringWriter();
-            JsonTextWriter writer = new JsonTextWriter(sw);
-            JsonWriter.WriteValue(writer, PrimitiveTypeCode.Object, null);
+            RSAParameters rsaParameters = new RSAParameters();
+            rsaParameters.D = new byte[] { 1, 2 };
+            rsaParameters.DP = new byte[] { 2, 4 };
+            rsaParameters.DQ = new byte[] { 5, 6 };
+            rsaParameters.Exponent = new byte[] { 7, 8 };
+            rsaParameters.InverseQ = new byte[] { 9, 10 };
+            rsaParameters.Modulus = new byte[] { 11, 12 };
+            rsaParameters.P = new byte[] { 13, 14 };
+            rsaParameters.Q = new byte[] { 15, 16 };
 
-            Assert.AreEqual("null", sw.ToString());
+            string json = JsonConvert.SerializeObject(rsaParameters, Formatting.Indented);
+
+            // a subset of values is serialized because of the NotSerializedAttribute
+            // https://msdn.microsoft.com/en-us/library/system.security.cryptography.rsaparameters.d(v=vs.110).aspx
+            StringAssert.AreEqual(@"{
+  ""Exponent"": ""Bwg="",
+  ""Modulus"": ""Cww=""
+}", json);
         }
-
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
-        [Test]
-        public async Task TestAsync()
-        {
-            StringWriter sw = new StringWriter();
-            JsonTextWriter writer = new JsonTextWriter(sw);
-            await JsonWriter.WriteValueAsync(writer, PrimitiveTypeCode.Object, null, CancellationToken.None);
-
-            Assert.AreEqual("null", sw.ToString());
-        }
-#endif
     }
 }
+#endif

@@ -294,6 +294,27 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void Contains()
+        {
+            JObject o = new JObject();
+            o.Add("PropertyNameValue", new JValue(1));
+            Assert.AreEqual(1, o.Children().Count());
+
+            bool contains = o.ContainsKey("PropertyNameValue");
+            Assert.AreEqual(true, contains);
+
+            contains = o.ContainsKey("does not exist");
+            Assert.AreEqual(false, contains);
+
+            ExceptionAssert.Throws<ArgumentNullException>(() =>
+            {
+                contains = o.ContainsKey(null);
+                Assert.AreEqual(false, contains);
+            }, @"Value cannot be null.
+Parameter name: propertyName");
+        }
+
+        [Test]
         public void GenericDictionaryContains()
         {
             JObject o = new JObject();

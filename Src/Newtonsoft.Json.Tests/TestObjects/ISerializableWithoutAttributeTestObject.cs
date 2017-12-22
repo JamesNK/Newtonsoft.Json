@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -23,43 +23,16 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if HAVE_BENCHMARKS
+using System;
+using System.Runtime.Serialization;
 
-using System.IO;
-using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
-
-namespace Newtonsoft.Json.Tests.Benchmarks
+namespace Newtonsoft.Json.Tests.TestObjects
 {
-    public class JsonTextWriterBenchmarks
+    public class ISerializableWithoutAttributeTestObject : ISerializable
     {
-        private static readonly string UnicodeCharsString = (new string('\0', 30));
-
-        [Benchmark]
-        public string SerializeUnicodeChars()
+        public void GetObjectData(SerializationInfo info, StreamingContext context)
         {
-            StringWriter sw = new StringWriter();
-            JsonTextWriter jsonTextWriter = new JsonTextWriter(sw);
-            jsonTextWriter.WriteValue(UnicodeCharsString);
-            jsonTextWriter.Flush();
-
-            return sw.ToString();
-        }
-
-        [Benchmark]
-        public string SerializeIntegers()
-        {
-            StringWriter sw = new StringWriter();
-            JsonTextWriter jsonTextWriter = new JsonTextWriter(sw);
-            for (int i = 0; i < 10000; i++)
-            {
-                jsonTextWriter.WriteValue(i);
-            }
-            jsonTextWriter.Flush();
-
-            return sw.ToString();
+            throw new NotImplementedException();
         }
     }
 }
-
-#endif

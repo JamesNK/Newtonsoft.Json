@@ -327,6 +327,8 @@ namespace Newtonsoft.Json.Serialization
             if (attribute != null)
             {
                 contract.ItemRequired = attribute._itemRequired;
+                contract.ItemNullValueHandling = attribute._itemNullValueHandling;
+
                 if (attribute.NamingStrategyType != null)
                 {
                     NamingStrategy namingStrategy = JsonTypeReflector.GetContainerNamingStrategy(attribute);
@@ -1171,7 +1173,7 @@ namespace Newtonsoft.Json.Serialization
             }
 
 #if HAVE_BINARY_SERIALIZATION
-            if (!IgnoreSerializableInterface && typeof(ISerializable).IsAssignableFrom(t))
+            if (!IgnoreSerializableInterface && typeof(ISerializable).IsAssignableFrom(t) && JsonTypeReflector.IsSerializable(t))
             {
                 return CreateISerializableContract(objectType);
             }

@@ -24,7 +24,6 @@
     <RootNamespace>Newtonsoft.Json</RootNamespace>
     <AssemblyName>Newtonsoft.Json</AssemblyName>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NetStandardImplicitPackageVersion>2.0.0</NetStandardImplicitPackageVersion>
     <MinClientVersion>2.12</MinClientVersion>
   </PropertyGroup>
   <ItemGroup>

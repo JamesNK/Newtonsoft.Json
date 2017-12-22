@@ -23,43 +23,19 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if HAVE_BENCHMARKS
+using System;
+using System.Collections.Generic;
 
-using System.IO;
-using BenchmarkDotNet.Attributes;
-using BenchmarkDotNet.Running;
-
-namespace Newtonsoft.Json.Tests.Benchmarks
+namespace Newtonsoft.Json.Tests.TestObjects
 {
-    public class JsonTextWriterBenchmarks
+    [JsonObject(ItemNullValueHandling = NullValueHandling.Include)]
+    public class MovieWithJsonObjectNullValueHandlingInclude
     {
-        private static readonly string UnicodeCharsString = (new string('\0', 30));
-
-        [Benchmark]
-        public string SerializeUnicodeChars()
-        {
-            StringWriter sw = new StringWriter();
-            JsonTextWriter jsonTextWriter = new JsonTextWriter(sw);
-            jsonTextWriter.WriteValue(UnicodeCharsString);
-            jsonTextWriter.Flush();
-
-            return sw.ToString();
-        }
-
-        [Benchmark]
-        public string SerializeIntegers()
-        {
-            StringWriter sw = new StringWriter();
-            JsonTextWriter jsonTextWriter = new JsonTextWriter(sw);
-            for (int i = 0; i < 10000; i++)
-            {
-                jsonTextWriter.WriteValue(i);
-            }
-            jsonTextWriter.Flush();
-
-            return sw.ToString();
-        }
+        public string Name { get; set; }
+        public string Description { get; set; }
+        public string Classification { get; set; }
+        public string Studio { get; set; }
+        public DateTime? ReleaseDate { get; set; }
+        public List<string> ReleaseCountries { get; set; }
     }
 }
-
-#endif

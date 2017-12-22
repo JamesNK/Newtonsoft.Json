@@ -1,4 +1,10 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
+  <Target Name="WorkAroundPackageAndProjectReferenceConflict" BeforeTargets="ResolveLockFileReferences">
+    <ItemGroup>
+      <!-- Required for https://github.com/dotnet/roslyn-project-system/issues/1386 -->
+      <ResolvedCompileFileDefinitions Remove="@(ResolvedCompileFileDefinitions)" Condition="'%(ResolvedCompileFileDefinitions.Filename)' == 'Newtonsoft.Json'" />
+    </ItemGroup>
+  </Target>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net46;netcoreapp2.0</TargetFrameworks>

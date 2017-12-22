@@ -469,6 +469,7 @@ namespace Newtonsoft.Json.Tests.Linq
             o.Property("DateTimeOffset").Value = dateTimeOffset;
         }
 
+        [Test]
         public void ParseAndConvertDateTimeOffset()
         {
             var json = @"{ d: ""\/Date(0+0100)\/"" }";
@@ -490,6 +491,7 @@ namespace Newtonsoft.Json.Tests.Linq
             }
         }
 
+        [Test]
         public void ReadDatesAsDateTimeOffsetViaJsonConvert()
         {
             var content = @"{""startDateTime"":""2012-07-19T14:30:00+09:30""}";
@@ -499,7 +501,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             object startDateTime = obj["startDateTime"];
 
-            CustomAssert.IsInstanceOfType(typeof(DateTimeOffset), startDateTime);
+            CustomAssert.IsInstanceOfType(typeof(DateTimeOffset), ((JValue)startDateTime).Value);
         }
 #endif
 

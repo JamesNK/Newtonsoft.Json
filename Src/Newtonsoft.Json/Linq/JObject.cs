@@ -185,7 +185,7 @@ namespace Newtonsoft.Json.Linq
                 {
                     if (!(existingProperty.Value is JContainer existingContainer) || existingContainer.Type != contentItem.Value.Type)
                     {
-                        if (contentItem.Value.Type != JTokenType.Null || settings?.MergeNullValueHandling == MergeNullValueHandling.Merge)
+                        if (!IsNull(contentItem.Value) || settings?.MergeNullValueHandling == MergeNullValueHandling.Merge)
                         {
                             existingProperty.Value = contentItem.Value;
                         }
@@ -196,6 +196,21 @@ namespace Newtonsoft.Json.Linq
                     }
                 }
             }
+        }
+
+        private static bool IsNull(JToken token)
+        {
+            if (token.Type == JTokenType.Null)
+            {
+                return true;
+            }
+
+            if (token is JValue v && v.Value == null)
+            {
+                return true;
+            }
+
+            return false;
         }
 
         internal void InternalPropertyChanged(JProperty childProperty)
@@ -541,9 +556,16 @@ namespace Newtonsoft.Json.Linq
             Add(new JProperty(propertyName, value));
         }
 
-        bool IDictionary<string, JToken>.ContainsKey(string key)
+        /// <summary>
+        /// Determines whether the JSON object has the specified property name.
+        /// </summary>
+        /// <param name="propertyName">Name of the property.</param>
+        /// <returns><c>true</c> if the JSON object has the specified property name; otherwise, <c>false</c>.</returns>
+        public bool ContainsKey(string propertyName)
         {
-            return _properties.Contains(key);
+            ValidationUtils.ArgumentNotNull(propertyName, nameof(propertyName));
+
+            return _properties.Contains(propertyName);
         }
 
         ICollection<string> IDictionary<string, JToken>.Keys => _properties.Keys;

@@ -52,6 +52,25 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     public class JPathExecuteTests : TestFixtureBase
     {
         [Test]
+        public void GreaterThanIssue1518()
+        {
+            string statusJson = @"{""usingmem"": ""214376""}";//214,376
+            JObject jObj = JObject.Parse(statusJson);
+
+            var aa = jObj.SelectToken("$..[?(@.usingmem>10)]");//found,10
+            Assert.AreEqual(jObj, aa);
+
+            var bb = jObj.SelectToken("$..[?(@.usingmem>27000)]");//null, 27,000
+            Assert.AreEqual(jObj, bb);
+
+            var cc = jObj.SelectToken("$..[?(@.usingmem>21437)]");//found, 21,437
+            Assert.AreEqual(jObj, cc);
+
+            var dd = jObj.SelectToken("$..[?(@.usingmem>21438)]");//null,21,438
+            Assert.AreEqual(jObj, dd);
+        }
+
+        [Test]
         public void GreaterThanWithIntegerParameterAndStringValue()
         {
             string json = @"{

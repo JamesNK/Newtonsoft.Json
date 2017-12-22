@@ -407,7 +407,7 @@ namespace Newtonsoft.Json
         {
             await task.ConfigureAwait(false);
 
-            await _writer.WriteAsync('[').ConfigureAwait(false);
+            await _writer.WriteAsync('[', cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -437,7 +437,7 @@ namespace Newtonsoft.Json
         {
             await task.ConfigureAwait(false);
 
-            await _writer.WriteAsync('{').ConfigureAwait(false);
+            await _writer.WriteAsync('{', cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>

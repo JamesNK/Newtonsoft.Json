@@ -29,6 +29,7 @@ using Newtonsoft.Json.Tests.TestObjects.Organization;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
+    [Serializable]
     public class ISerializableTestObject : ISerializable
     {
         internal string _stringValue;

@@ -1012,7 +1012,7 @@ namespace Newtonsoft.Json.Serialization
             // otherwise also set it if CreateValue returns a new value compared to the currentValue
             // this could happen because of a JsonConverter against the type
             if ((!useExistingValue || value != currentValue)
-                && ShouldSetPropertyValue(property, value))
+                && ShouldSetPropertyValue(property, containerContract as JsonObjectContract, value))
             {
                 property.ValueProvider.SetValue(target, value);
 
@@ -1076,7 +1076,7 @@ namespace Newtonsoft.Json.Serialization
             }
 
             // test tokenType here because null might not be convertible to some types, e.g. ignoring null when applied to DateTime
-            if (property.NullValueHandling.GetValueOrDefault(Serializer._nullValueHandling) == NullValueHandling.Ignore && tokenType == JsonToken.Null)
+            if (tokenType == JsonToken.Null && ResolvedNullValueHandling(containerContract as JsonObjectContract, property) == NullValueHandling.Ignore)
             {
                 return true;
             }
@@ -1129,9 +1129,9 @@ namespace Newtonsoft.Json.Serialization
             return ((value & flag) == flag);
         }
 
-        private bool ShouldSetPropertyValue(JsonProperty property, object value)
+        private bool ShouldSetPropertyValue(JsonProperty property, JsonObjectContract contract, object value)
         {
-            if (property.NullValueHandling.GetValueOrDefault(Serializer._nullValueHandling) == NullValueHandling.Ignore && value == null)
+            if (value == null && ResolvedNullValueHandling(contract, property) == NullValueHandling.Ignore)
             {
                 return false;
             }
@@ -1445,6 +1445,8 @@ namespace Newtonsoft.Json.Serialization
                                     currentList = listStack.Peek();
                                     previousErrorIndex = null;
                                     break;
+                                case JsonToken.Comment:
+                                    break;
                                 default:
                                     object value;
 
@@ -1596,6 +1598,8 @@ namespace Newtonsoft.Json.Serialization
                         {
                             case JsonToken.EndArray:
                                 finished = true;
+                                break;
+                            case JsonToken.Comment:
                                 break;
                             default:
                                 object value;
@@ -1992,7 +1996,7 @@ namespace Newtonsoft.Json.Serialization
                 JsonProperty property = context.Property;
                 object value = context.Value;
 
-                if (ShouldSetPropertyValue(property, value))
+                if (ShouldSetPropertyValue(property, contract, value))
                 {
                     property.ValueProvider.SetValue(createdObject, value);
                     context.Used = true;

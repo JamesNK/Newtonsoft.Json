@@ -23,25 +23,12 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if NETSTANDARD2_0
 using System;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Globalization;
+using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading;
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
-using System.Threading.Tasks;
-#endif
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using System.Xml;
 using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Utilities;
-#if !NET20
-using System.Xml.Linq;
-#endif
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -53,28 +40,17 @@ using NUnit.Framework;
 namespace Newtonsoft.Json.Tests.Issues
 {
     [TestFixture]
-    public class Issue1460 : TestFixtureBase
+    public class Issue1404 : TestFixtureBase
     {
         [Test]
         public void Test()
         {
-            StringWriter sw = new StringWriter();
-            JsonTextWriter writer = new JsonTextWriter(sw);
-            JsonWriter.WriteValue(writer, PrimitiveTypeCode.Object, null);
+            DefaultContractResolver resolver = new DefaultContractResolver();
 
-            Assert.AreEqual("null", sw.ToString());
+            JsonContract contract = resolver.ResolveContract(typeof(DirectoryInfo));
+
+            Assert.AreEqual(JsonContractType.Object, contract.ContractType);
         }
-
-#if !(NET20 || NET35 || NET40 || PORTABLE40)
-        [Test]
-        public async Task TestAsync()
-        {
-            StringWriter sw = new StringWriter();
-            JsonTextWriter writer = new JsonTextWriter(sw);
-            await JsonWriter.WriteValueAsync(writer, PrimitiveTypeCode.Object, null, CancellationToken.None);
-
-            Assert.AreEqual("null", sw.ToString());
-        }
-#endif
     }
 }
+#endif

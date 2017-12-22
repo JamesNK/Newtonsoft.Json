@@ -817,20 +817,77 @@ namespace Newtonsoft.Json
             }
         }
 
-        private void WriteIntegerValue(ulong uvalue, bool negative)
+        private void WriteIntegerValue(ulong value, bool negative)
         {
-            if (!negative & uvalue <= 9)
+            if (!negative & value <= 9)
             {
-                _writer.Write((char)('0' + uvalue));
+                _writer.Write((char)('0' + value));
             }
             else
             {
-                int length = WriteNumberToBuffer(uvalue, negative);
+                int length = WriteNumberToBuffer(value, negative);
                 _writer.Write(_writeBuffer, 0, length);
             }
         }
 
         private int WriteNumberToBuffer(ulong value, bool negative)
+        {
+            if (value <= uint.MaxValue)
+            {
+                // avoid the 64 bit division if possible
+                return WriteNumberToBuffer((uint)value, negative);
+            }
+
+            EnsureWriteBuffer();
+
+            int totalLength = MathUtils.IntLength(value);
+
+            if (negative)
+            {
+                totalLength++;
+                _writeBuffer[0] = '-';
+            }
+
+            int index = totalLength;
+
+            do
+            {
+                ulong quotient = value / 10;
+                ulong digit = value - (quotient * 10);
+                _writeBuffer[--index] = (char)('0' + digit);
+                value = quotient;
+            } while (value != 0);
+
+            return totalLength;
+        }
+
+        private void WriteIntegerValue(int value)
+        {
+            if (value >= 0 && value <= 9)
+            {
+                _writer.Write((char)('0' + value));
+            }
+            else
+            {
+                bool negative = value < 0;
+                WriteIntegerValue(negative ? (uint)-value : (uint)value, negative);
+            }
+        }
+
+        private void WriteIntegerValue(uint value, bool negative)
+        {
+            if (!negative & value <= 9)
+            {
+                _writer.Write((char)('0' + value));
+            }
+            else
+            {
+                int length = WriteNumberToBuffer(value, negative);
+                _writer.Write(_writeBuffer, 0, length);
+            }
+        }
+
+        private int WriteNumberToBuffer(uint value, bool negative)
         {
             EnsureWriteBuffer();
 
@@ -846,8 +903,10 @@ namespace Newtonsoft.Json
 
             do
             {
-                _writeBuffer[--index] = (char)('0' + value % 10);
-                value /= 10;
+                uint quotient = value / 10;
+                uint digit = value - (quotient * 10);
+                _writeBuffer[--index] = (char)('0' + digit);
+                value = quotient;
             } while (value != 0);
 
             return totalLength;

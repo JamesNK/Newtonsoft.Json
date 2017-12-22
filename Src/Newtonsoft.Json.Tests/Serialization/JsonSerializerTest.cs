@@ -2871,6 +2871,7 @@ keyword such as type of business.""
             Assert.AreEqual(@"{""Details"":""Application started."",""LogDate"":new Date(1234656000000)}", javascriptJson);
         }
 
+        [Test]
         public void GenericListAndDictionaryInterfaceProperties()
         {
             GenericListAndDictionaryInterfaceProperties o = new GenericListAndDictionaryInterfaceProperties();

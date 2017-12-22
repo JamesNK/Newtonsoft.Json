@@ -353,24 +353,20 @@ namespace Newtonsoft.Json.Utilities
 
         private static bool InheritsGenericDefinitionInternal(Type currentType, Type genericClassDefinition, out Type implementingType)
         {
-            if (currentType.IsGenericType())
+            do
             {
-                Type currentGenericClassDefinition = currentType.GetGenericTypeDefinition();
-
-                if (genericClassDefinition == currentGenericClassDefinition)
+                if (currentType.IsGenericType() && genericClassDefinition == currentType.GetGenericTypeDefinition())
                 {
                     implementingType = currentType;
                     return true;
                 }
-            }
 
-            if (currentType.BaseType() == null)
-            {
-                implementingType = null;
-                return false;
+                currentType = currentType.BaseType();
             }
+            while (currentType != null);
 
-            return InheritsGenericDefinitionInternal(currentType.BaseType(), genericClassDefinition, out implementingType);
+            implementingType = null;
+            return false;
         }
 
         /// <summary>

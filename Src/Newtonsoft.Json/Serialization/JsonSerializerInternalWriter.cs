@@ -270,10 +270,9 @@ namespace Newtonsoft.Json.Serialization
             return ReferenceResolver.IsReferenced(this, value);
         }
 
-        private bool ShouldWriteProperty(object memberValue, JsonProperty property)
+        private bool ShouldWriteProperty(object memberValue, JsonObjectContract containerContract, JsonProperty property)
         {
-            if (property.NullValueHandling.GetValueOrDefault(Serializer._nullValueHandling) == NullValueHandling.Ignore &&
-                memberValue == null)
+            if (memberValue == null && ResolvedNullValueHandling(containerContract, property) == NullValueHandling.Ignore)
             {
                 return false;
             }
@@ -525,7 +524,7 @@ namespace Newtonsoft.Json.Serialization
                 memberValue = property.ValueProvider.GetValue(value);
                 memberContract = (property.PropertyContract.IsSealed) ? property.PropertyContract : GetContractSafe(memberValue);
 
-                if (ShouldWriteProperty(memberValue, property))
+                if (ShouldWriteProperty(memberValue, contract as JsonObjectContract, property))
                 {
                     if (ShouldWriteReference(memberValue, property, memberContract, contract, member))
                     {

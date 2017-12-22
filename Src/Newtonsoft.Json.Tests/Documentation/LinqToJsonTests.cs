@@ -75,6 +75,7 @@ namespace Newtonsoft.Json.Tests.Documentation
     [TestFixture]
     public class LinqToJsonTests : TestFixtureBase
     {
+        [Test]
         public void LinqToJsonBasic()
         {
             #region LinqToJsonBasic
@@ -98,6 +99,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             #endregion
         }
 
+        [Test]
         public void LinqToJsonCreateNormal()
         {
             #region LinqToJsonCreateNormal

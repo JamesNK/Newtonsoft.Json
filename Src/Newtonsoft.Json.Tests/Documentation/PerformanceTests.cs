@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET35 || NET20 || PORTABLE || DNXCORE50) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(NET40 || NET35 || NET20 || PORTABLE || DNXCORE50) || NETSTANDARD1_3 || NETSTANDARD2_0
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -50,19 +50,6 @@ using System.Globalization;
 
 namespace Newtonsoft.Json.Tests.Documentation
 {
-    public class HttpClient
-    {
-        public Task<string> GetStringAsync(string requestUri)
-        {
-            return null;
-        }
-
-        public Task<Stream> GetStreamAsync(string requestUri)
-        {
-            return null;
-        }
-    }
-
     #region JsonConverterAttribute
     [JsonConverter(typeof(PersonConverter))]
     public class Person
@@ -105,7 +92,14 @@ namespace Newtonsoft.Json.Tests.Documentation
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
-            return null;
+            JObject o = (JObject)JToken.ReadFrom(reader);
+
+            Person p = new Person
+            {
+                Name = (string)o["Name"]
+            };
+
+            return p;
         }
 
         public override bool CanConvert(Type objectType)
@@ -128,6 +122,20 @@ namespace Newtonsoft.Json.Tests.Documentation
             Console.WriteLine(json);
         }
 
+        public class HttpClient
+        {
+            public Task<Stream> GetStreamAsync(string url)
+            {
+                return Task.FromResult<Stream>(new MemoryStream());
+            }
+
+            public Task<string> GetStringAsync(string url)
+            {
+                return Task.FromResult("{}");
+            }
+        }
+
+        [Test]
         public void DeserializeString()
         {
             #region DeserializeString
@@ -141,6 +149,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             #endregion
         }
 
+        [Test]
         public void DeserializeStream()
         {
             #region DeserializeStream
