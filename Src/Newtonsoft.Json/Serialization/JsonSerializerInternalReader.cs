@@ -1474,7 +1474,7 @@ namespace Newtonsoft.Json.Serialization
 
                         if (IsErrorHandled(list, contract, errorPosition.Position, reader as IJsonLineInfo, reader.Path, ex))
                         {
-                            HandleError(reader, true, initialDepth);
+                            HandleError(reader, true, initialDepth + 1);
 
                             if (previousErrorIndex != null && previousErrorIndex == errorPosition.Position)
                             {
@@ -1628,7 +1628,7 @@ namespace Newtonsoft.Json.Serialization
 
                     if (IsErrorHandled(underlyingList, contract, errorPosition.Position, reader as IJsonLineInfo, reader.Path, ex))
                     {
-                        HandleError(reader, true, initialDepth);
+                        HandleError(reader, true, initialDepth + 1);
 
                         if (previousErrorIndex != null && previousErrorIndex == errorPosition.Position)
                         {
@@ -2338,7 +2338,7 @@ namespace Newtonsoft.Json.Serialization
                         {
                             if (IsErrorHandled(newObject, contract, memberName, reader as IJsonLineInfo, reader.Path, ex))
                             {
-                                HandleError(reader, true, initialDepth - 1);
+                                HandleError(reader, true, initialDepth);
                             }
                             else
                             {
@@ -2535,7 +2535,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 reader.Skip();
 
-                while (reader.Depth > (initialDepth + 1))
+                while (reader.Depth > initialDepth)
                 {
                     if (!reader.Read())
                     {
