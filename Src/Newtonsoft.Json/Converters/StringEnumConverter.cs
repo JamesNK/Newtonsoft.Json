@@ -26,10 +26,7 @@
 #endregion
 
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.Reflection;
-using System.Runtime.Serialization;
 using Newtonsoft.Json.Utilities;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -60,11 +57,18 @@ namespace Newtonsoft.Json.Converters
         public bool AllowIntegerValues { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether the "string to enum" conversion is case sensitive.
+        /// The default value is <c>true</c>.
+        /// </summary>
+        /// <value><c>true</c> if conversion is case sensitive; otherwise, <c>false</c>.</value>
+        public bool CaseSensitive { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="StringEnumConverter"/> class.
         /// </summary>
         public StringEnumConverter()
+            : this(false)
         {
-            AllowIntegerValues = true;
         }
 
         /// <summary>
@@ -72,9 +76,20 @@ namespace Newtonsoft.Json.Converters
         /// </summary>
         /// <param name="camelCaseText"><c>true</c> if the written enum text will be camel case; otherwise, <c>false</c>.</param>
         public StringEnumConverter(bool camelCaseText)
-            : this()
+            : this(camelCaseText, true)
         {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringEnumConverter"/> class.
+        /// </summary>
+        /// <param name="camelCaseText"><c>true</c> if the written enum text will be camel case; otherwise, <c>false</c>.</param>
+        /// <param name="caseSensitive"><c>true</c> if the text conversion is case sensitive; otherwise, <c>false</c>.</param>
+        public StringEnumConverter(bool camelCaseText, bool caseSensitive)
+        {
+            AllowIntegerValues = true;
             CamelCaseText = camelCaseText;
+            CaseSensitive = caseSensitive;
         }
 
         /// <summary>
@@ -109,7 +124,7 @@ namespace Newtonsoft.Json.Converters
             {
                 Type enumType = e.GetType();
 
-                string finalName = EnumUtils.ToEnumName(enumType, enumName, CamelCaseText);
+                string finalName = EnumUtils.ToEnumName(enumType, enumName, CamelCaseText, CaseSensitive);
 
                 writer.WriteValue(finalName);
             }
@@ -144,7 +159,7 @@ namespace Newtonsoft.Json.Converters
                 {
                     string enumText = reader.Value.ToString();
 
-                    return EnumUtils.ParseEnumName(enumText, isNullable, !AllowIntegerValues, t);
+                    return EnumUtils.ParseEnumName(enumText, isNullable, !AllowIntegerValues, t, CaseSensitive);
                 }
 
                 if (reader.TokenType == JsonToken.Integer)

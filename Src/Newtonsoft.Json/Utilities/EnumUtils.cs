@@ -38,13 +38,11 @@ namespace Newtonsoft.Json.Utilities
 {
     internal static class EnumUtils
     {
-        private static readonly ThreadSafeStore<Type, BidirectionalDictionary<string, string>> EnumMemberNamesPerType = new ThreadSafeStore<Type, BidirectionalDictionary<string, string>>(InitializeEnumType);
+        private static readonly ThreadSafeStore<Type, EnumBidirectionalDictionary> EnumMemberNamesPerType = new ThreadSafeStore<Type, EnumBidirectionalDictionary>(InitializeEnumType);
 
-        private static BidirectionalDictionary<string, string> InitializeEnumType(Type type)
+        private static EnumBidirectionalDictionary InitializeEnumType(Type type)
         {
-            BidirectionalDictionary<string, string> map = new BidirectionalDictionary<string, string>(
-                StringComparer.Ordinal,
-                StringComparer.Ordinal);
+            EnumBidirectionalDictionary map = new EnumBidirectionalDictionary();
 
             foreach (FieldInfo f in type.GetFields(BindingFlags.Public | BindingFlags.Static))
             {
@@ -60,7 +58,7 @@ namespace Newtonsoft.Json.Utilities
                 n2 = f.Name;
 #endif
 
-                if (map.TryGetBySecond(n2, out _))
+                if (map.TryGetBySecond(n2, out _, true))
                 {
                     throw new InvalidOperationException("Enum name '{0}' already exists on enum '{1}'.".FormatWith(CultureInfo.InvariantCulture, n2, type.Name));
                 }
@@ -185,7 +183,7 @@ namespace Newtonsoft.Json.Utilities
             return values;
         }
 
-        public static object ParseEnumName(string enumText, bool isNullable, bool disallowValue, Type t)
+        public static object ParseEnumName(string enumText, bool isNullable, bool disallowValue, Type t, bool caseSensitive)
         {
             if (enumText == string.Empty && isNullable)
             {
@@ -193,25 +191,35 @@ namespace Newtonsoft.Json.Utilities
             }
 
             string finalEnumText;
+            bool ignoreCase = true;
 
-            BidirectionalDictionary<string, string> map = EnumMemberNamesPerType.Get(t);
-            if (TryResolvedEnumName(map, enumText, out string resolvedEnumName))
+            EnumBidirectionalDictionary map = EnumMemberNamesPerType.Get(t);
+            if (TryResolvedEnumName(map, enumText, out string resolvedEnumName, caseSensitive))
             {
                 finalEnumText = resolvedEnumName;
+
+                // We found an exact match, therefore Enum.Parse must be case sensitive
+                ignoreCase = false;
             }
             else if (enumText.IndexOf(',') != -1)
             {
+                bool allEnumNamesResolved = true;
                 string[] names = enumText.Split(',');
                 for (int i = 0; i < names.Length; i++)
                 {
                     string name = names[i].Trim();
-
-                    names[i] = TryResolvedEnumName(map, name, out resolvedEnumName)
-                        ? resolvedEnumName
-                        : name;
+                    bool enumNameResolved = TryResolvedEnumName(map, name, out resolvedEnumName, caseSensitive);
+                    names[i] = enumNameResolved ? resolvedEnumName : name;
+                    allEnumNamesResolved &= enumNameResolved;
                 }
 
                 finalEnumText = string.Join(", ", names);
+
+                if (allEnumNamesResolved)
+                {
+                    // We found an exact match for all items, therefore Enum.Parse must be case sensitive
+                    ignoreCase = false;
+                }
             }
             else
             {
@@ -228,19 +236,19 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
 
-            return Enum.Parse(t, finalEnumText, true);
+            return Enum.Parse(t, finalEnumText, ignoreCase);
         }
 
-        public static string ToEnumName(Type enumType, string enumText, bool camelCaseText)
+        public static string ToEnumName(Type enumType, string enumText, bool camelCaseText, bool caseSensitive)
         {
-            BidirectionalDictionary<string, string> map = EnumMemberNamesPerType.Get(enumType);
+            EnumBidirectionalDictionary map = EnumMemberNamesPerType.Get(enumType);
 
             string[] names = enumText.Split(',');
             for (int i = 0; i < names.Length; i++)
             {
                 string name = names[i].Trim();
 
-                map.TryGetByFirst(name, out string resolvedEnumName);
+                map.TryGetByFirst(name, out string resolvedEnumName, caseSensitive);
                 resolvedEnumName = resolvedEnumName ?? name;
 
                 if (camelCaseText)
@@ -256,9 +264,9 @@ namespace Newtonsoft.Json.Utilities
             return finalName;
         }
 
-        private static bool TryResolvedEnumName(BidirectionalDictionary<string, string> map, string enumText, out string resolvedEnumName)
+        private static bool TryResolvedEnumName(EnumBidirectionalDictionary map, string enumText, out string resolvedEnumName, bool caseSensitive)
         {
-            if (map.TryGetBySecond(enumText, out resolvedEnumName))
+            if (map.TryGetBySecond(enumText, out resolvedEnumName, caseSensitive))
             {
                 return true;
             }
