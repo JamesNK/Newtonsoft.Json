@@ -1,3 +1,4 @@
+using System;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 #if DNXCORE50

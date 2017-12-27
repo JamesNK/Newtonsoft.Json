@@ -82,11 +82,14 @@ namespace Newtonsoft.Json
             State[] errorStates = StateArrayTempate[0];
             State[] valueStates = StateArrayTempate[7];
 
-            foreach (JsonToken valueToken in EnumUtils.GetValues(typeof(JsonToken)))
+            TypeValuesAndNames enumValuesAndNames = EnumUtils.GetEnumValuesAndNames(typeof(JsonToken));
+
+            foreach (ulong valueToken in enumValuesAndNames.Values)
             {
                 if (allStates.Count <= (int)valueToken)
                 {
-                    switch (valueToken)
+                    JsonToken token = (JsonToken)valueToken;
+                    switch (token)
                     {
                         case JsonToken.Integer:
                         case JsonToken.Float:

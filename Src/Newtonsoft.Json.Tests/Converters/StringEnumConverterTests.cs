@@ -72,6 +72,18 @@ namespace Newtonsoft.Json.Tests.Converters
             Positive = 1
         }
 
+        [Flags]
+        public enum NegativeFlagsEnum
+        {
+            NegativeFour = -4,
+            NegativeTwo = -2,
+            NegativeOne = -1,
+            Zero = 0,
+            One = 1,
+            Two = 2,
+            Four = 4
+        }
+
 #if !NET20
         public enum NamedEnum
         {
@@ -113,6 +125,12 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             public NegativeEnum Value1 { get; set; }
             public NegativeEnum Value2 { get; set; }
+        }
+
+        public class NegativeFlagsEnumClass
+        {
+            public NegativeFlagsEnum Value1 { get; set; }
+            public NegativeFlagsEnum Value2 { get; set; }
         }
 
         [JsonConverter(typeof(StringEnumConverter), true)]
@@ -211,6 +229,13 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void NamedEnumCommaCaseInsensitiveTest()
+        {
+            EnumContainer<NamedEnumWithComma> c2 = JsonConvert.DeserializeObject<EnumContainer<NamedEnumWithComma>>(@"{""Enum"":"",THIRD""}", new StringEnumConverter());
+            Assert.AreEqual(NamedEnumWithComma.Third, c2.Enum);
+        }
+
+        [Test]
         public void DeserializeNameEnumTest()
         {
             string json = @"{
@@ -295,6 +320,35 @@ namespace Newtonsoft.Json.Tests.Converters
   ""NullableStoreColor1"": 0,
   ""NullableStoreColor2"": ""Black, Red, White""
 }", json);
+        }
+
+        [Test]
+        public void SerializeNegativeFlagsEnum()
+        {
+            NegativeFlagsEnumClass negativeEnumClass = new NegativeFlagsEnumClass();
+            negativeEnumClass.Value1 = NegativeFlagsEnum.NegativeFour | NegativeFlagsEnum.NegativeTwo;
+            negativeEnumClass.Value2 = NegativeFlagsEnum.Two | NegativeFlagsEnum.Four;
+
+            string json = JsonConvert.SerializeObject(negativeEnumClass, Formatting.Indented, new StringEnumConverter());
+
+            StringAssert.AreEqual(@"{
+  ""Value1"": ""NegativeTwo"",
+  ""Value2"": ""Two, Four""
+}", json);
+        }
+
+        [Test]
+        public void DeserializeNegativeFlagsEnum()
+        {
+            string json = @"{
+  ""Value1"": ""NegativeFour,NegativeTwo"",
+  ""Value2"": ""NegativeFour,Four""
+}";
+
+            NegativeFlagsEnumClass negativeEnumClass = JsonConvert.DeserializeObject<NegativeFlagsEnumClass>(json, new StringEnumConverter());
+
+            Assert.AreEqual(NegativeFlagsEnum.NegativeFour | NegativeFlagsEnum.NegativeTwo, negativeEnumClass.Value1);
+            Assert.AreEqual(NegativeFlagsEnum.NegativeFour | NegativeFlagsEnum.Four, negativeEnumClass.Value2);
         }
 
         [Test]
@@ -695,9 +749,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             e = JsonConvert.DeserializeObject<EnumWithDifferentCases>(@"""m""", new StringEnumConverter());
 
-            // unfortunatly Enum.Parse with ignoreCase will find the first match rather than the best match
-            // it would be great to find a way around this
-            Assert.AreEqual(EnumWithDifferentCases.M, e);
+            Assert.AreEqual(EnumWithDifferentCases.m, e);
         }
 
 #if !NET20

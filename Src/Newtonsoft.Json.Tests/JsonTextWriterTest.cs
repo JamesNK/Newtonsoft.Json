@@ -44,6 +44,7 @@ using NUnit.Framework;
 #endif
 using Newtonsoft.Json;
 using System.IO;
+using System.Reflection;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -1213,7 +1214,7 @@ _____'propertyName': NaN,
 
             var valueStates = JsonWriter.StateArrayTempate[7];
 
-            foreach (JsonToken valueToken in EnumUtils.GetValues(typeof(JsonToken)))
+            foreach (JsonToken valueToken in GetValues(typeof(JsonToken)))
             {
                 switch (valueToken)
                 {
@@ -1229,6 +1230,24 @@ _____'propertyName': NaN,
                         break;
                 }
             }
+        }
+
+        private static IList<object> GetValues(Type enumType)
+        {
+            if (!enumType.IsEnum())
+            {
+                throw new ArgumentException("Type {0} is not an enum.".FormatWith(CultureInfo.InvariantCulture, enumType.Name), nameof(enumType));
+            }
+
+            List<object> values = new List<object>();
+
+            foreach (FieldInfo field in enumType.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static))
+            {
+                object value = field.GetValue(enumType);
+                values.Add(value);
+            }
+
+            return values;
         }
 
         [Test]

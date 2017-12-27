@@ -338,14 +338,14 @@ namespace Newtonsoft.Json.Utilities
                 TestAccessibility(m, bindingFlags)).ToArray();
         }
 
-        public static MemberInfo GetField(this Type type, string member)
+        public static FieldInfo GetField(this Type type, string member)
         {
             return type.GetField(member, DefaultFlags);
         }
 
-        public static MemberInfo GetField(this Type type, string member, BindingFlags bindingFlags)
+        public static FieldInfo GetField(this Type type, string member, BindingFlags bindingFlags)
         {
-            MemberInfo field = type.GetTypeInfo().GetDeclaredField(member);
+            FieldInfo field = type.GetTypeInfo().GetDeclaredField(member);
             if (field == null || !TestAccessibility(field, bindingFlags))
             {
                 return null;
