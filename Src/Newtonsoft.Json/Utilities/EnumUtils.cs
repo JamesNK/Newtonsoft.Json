@@ -127,7 +127,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 string name = names[i].Trim();
 
-                int? matchingIndex = FindIndexByName(enumValuesAndNames.Names, name, name.Length, 0, StringComparison.Ordinal);
+                int? matchingIndex = FindIndexByName(enumValuesAndNames.Names, name, 0, name.Length, StringComparison.Ordinal);
                 string resolvedEnumName = matchingIndex != null
                     ? enumValuesAndNames.ResolvedNames[matchingIndex.Value]
                     : name;
@@ -185,19 +185,12 @@ namespace Newtonsoft.Json.Utilities
 
         private static object ParseEnum(Type enumType, string value, bool disallowNumber)
         {
-            if (enumType == null)
-            {
-                throw new ArgumentNullException(nameof(enumType));
-            }
+            ValidationUtils.ArgumentNotNull(enumType, nameof(enumType));
+            ValidationUtils.ArgumentNotNull(value, nameof(value));
 
             if (!enumType.IsEnum())
             {
                 throw new ArgumentException("Type provided must be an Enum.", nameof(enumType));
-            }
-
-            if (value == null)
-            {
-                throw new ArgumentNullException(nameof(value));
             }
 
             TypeValuesAndNames entry = ValuesAndNamesPerEnum.Get(enumType);
@@ -206,7 +199,7 @@ namespace Newtonsoft.Json.Utilities
             ulong[] enumValues = entry.Values;
 
             // first check if the entire text (including commas) matches a resolved name
-            int? matchingIndex = MatchName(value, enumNames, resolvedNames, 0, value.Length, StringComparison.Ordinal);
+            int? matchingIndex = FindIndexByName(resolvedNames, value, 0, value.Length, StringComparison.Ordinal);
             if (matchingIndex != null)
             {
                 return Enum.ToObject(enumType, enumValues[matchingIndex.Value]);
@@ -226,7 +219,7 @@ namespace Newtonsoft.Json.Utilities
                 throw new ArgumentException("Must specify valid information for parsing in the string.");
             }
 
-            // first check whether string is a number
+            // check whether string is a number and parse as a number value
             char firstNonWhitespaceChar = value[firstNonWhitespaceIndex];
             if (char.IsDigit(firstNonWhitespaceChar) || firstNonWhitespaceChar == '-' || firstNonWhitespaceChar == '+')
             {
@@ -282,6 +275,7 @@ namespace Newtonsoft.Json.Utilities
                 }
                 int valueSubstringLength = endIndexNoWhitespace - valueIndex;
 
+                // match with case sensitivity
                 matchingIndex = MatchName(value, enumNames, resolvedNames, valueIndex, valueSubstringLength, StringComparison.Ordinal);
 
                 // if no match found, attempt case insensitive search
@@ -290,11 +284,11 @@ namespace Newtonsoft.Json.Utilities
                     matchingIndex = MatchName(value, enumNames, resolvedNames, valueIndex, valueSubstringLength, StringComparison.OrdinalIgnoreCase);
                 }
 
-                // If we couldn't find a match
                 if (matchingIndex == null)
                 {
+                    // still can't find a match
                     // before we throw an error, check whether the entire string has a case insensitive match against resolve names
-                    matchingIndex = MatchName(value, enumNames, resolvedNames, 0, value.Length, StringComparison.OrdinalIgnoreCase);
+                    matchingIndex = FindIndexByName(resolvedNames, value, 0, value.Length, StringComparison.OrdinalIgnoreCase);
                     if (matchingIndex != null)
                     {
                         return Enum.ToObject(enumType, enumValues[matchingIndex.Value]);
@@ -315,16 +309,16 @@ namespace Newtonsoft.Json.Utilities
 
         private static int? MatchName(string value, string[] enumNames, string[] resolvedNames, int valueIndex, int valueSubstringLength, StringComparison comparison)
         {
-            int? matchingIndex = FindIndexByName(resolvedNames, value, valueSubstringLength, valueIndex, comparison);
+            int? matchingIndex = FindIndexByName(resolvedNames, value, valueIndex, valueSubstringLength, comparison);
             if (matchingIndex == null)
             {
-                matchingIndex = FindIndexByName(enumNames, value, valueSubstringLength, valueIndex, comparison);
+                matchingIndex = FindIndexByName(enumNames, value, valueIndex, valueSubstringLength, comparison);
             }
 
             return matchingIndex;
         }
 
-        private static int? FindIndexByName(string[] enumNames, string value, int valueSubstringLength, int valueIndex, StringComparison comparison)
+        private static int? FindIndexByName(string[] enumNames, string value, int valueIndex, int valueSubstringLength, StringComparison comparison)
         {
             for (int i = 0; i < enumNames.Length; i++)
             {
