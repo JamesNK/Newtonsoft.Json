@@ -3,10 +3,11 @@
     <TargetFrameworks Condition="'$(LibraryFrameworks)'==''">net45;net40;net35;net20;netstandard1.0;netstandard1.3;netstandard2.0;portable-net45+win8+wpa81+wp8;portable-net40+win8+wpa81+wp8+sl5</TargetFrameworks>
     <TargetFrameworks Condition="'$(LibraryFrameworks)'!=''">$(LibraryFrameworks)</TargetFrameworks>
     <LangVersion>latest</LangVersion>
-    <AssemblyVersion>10.0.0.0</AssemblyVersion>
-    <FileVersion>10.0.1</FileVersion>
-    <VersionPrefix>10.0.1</VersionPrefix>
-    <VersionSuffix>beta1</VersionSuffix>
+    <!-- version numbers will be updated by build -->
+    <AssemblyVersion>11.0.0.0</AssemblyVersion>
+    <FileVersion>11.0.1</FileVersion>
+    <VersionPrefix>11.0.1</VersionPrefix>
+    <VersionSuffix>beta2</VersionSuffix>
     <Authors>James Newton-King</Authors>
     <Company>Newtonsoft</Company>
     <Product>Json.NET</Product>
