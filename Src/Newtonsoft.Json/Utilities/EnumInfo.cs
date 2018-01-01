@@ -23,40 +23,21 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if NETSTANDARD2_0
-using System;
-using System.Data;
-using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Utilities;
-#if DNXCORE50
-using Xunit;
-using Test = Xunit.FactAttribute;
-using Assert = Newtonsoft.Json.Tests.XUnitAssert;
-#else
-using NUnit.Framework;
-#endif
-
-namespace Newtonsoft.Json.Tests.Issues
+namespace Newtonsoft.Json.Utilities
 {
-    [TestFixture]
-    public class Issue1404 : TestFixtureBase
+    internal class EnumInfo
     {
-        [Test]
-        public void Test()
+        public EnumInfo(bool isFlags, ulong[] values, string[] names, string[] resolvedNames)
         {
-            Type t = typeof(FileSystemInfo);
-
-            Assert.IsTrue(t.ImplementInterface(typeof(ISerializable)));
-
-            DefaultContractResolver resolver = new DefaultContractResolver();
-
-            JsonContract contract = resolver.ResolveContract(t);
-
-            Assert.AreEqual(JsonContractType.Object, contract.ContractType);
+            IsFlags = isFlags;
+            Values = values;
+            Names = names;
+            ResolvedNames = resolvedNames;
         }
+
+        public readonly bool IsFlags;
+        public readonly ulong[] Values;
+        public readonly string[] Names;
+        public readonly string[] ResolvedNames;
     }
 }
-#endif

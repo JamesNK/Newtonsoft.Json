@@ -23,15 +23,10 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if NETSTANDARD2_0
 using System;
-using System.Data;
 using System.IO;
-using System.Linq;
-using System.Runtime.Serialization;
-using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Utilities;
 #if DNXCORE50
+using System.Reflection;
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -42,21 +37,40 @@ using NUnit.Framework;
 namespace Newtonsoft.Json.Tests.Issues
 {
     [TestFixture]
-    public class Issue1404 : TestFixtureBase
+    public class Issue1541 : TestFixtureBase
     {
+#if DNXCORE50
         [Test]
-        public void Test()
+        public void Test_DirectoryInfo()
         {
-            Type t = typeof(FileSystemInfo);
+            FileInfo fileInfo = new FileInfo(TestFixtureBase.ResolvePath("large.json"));
 
-            Assert.IsTrue(t.ImplementInterface(typeof(ISerializable)));
-
-            DefaultContractResolver resolver = new DefaultContractResolver();
-
-            JsonContract contract = resolver.ResolveContract(t);
-
-            Assert.AreEqual(JsonContractType.Object, contract.ContractType);
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.SerializeObject(fileInfo.Directory),
+                "Unable to serialize instance of 'System.IO.DirectoryInfo'.");
         }
+
+        [Test]
+        public void Test_FileInfo()
+        {
+            FileInfo fileInfo = new FileInfo(TestFixtureBase.ResolvePath("large.json"));
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.SerializeObject(fileInfo),
+                "Unable to serialize instance of 'System.IO.FileInfo'.");
+        }
+
+#if !(NETSTANDARD1_0 || NETSTANDARD1_3)
+        [Test]
+        public void Test_DriveInfo()
+        {
+            DriveInfo drive = DriveInfo.GetDrives()[0];
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.SerializeObject(drive),
+                "Unable to serialize instance of 'System.IO.DriveInfo'.");
+        }
+#endif
+#endif
     }
 }
-#endif

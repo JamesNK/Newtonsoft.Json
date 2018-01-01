@@ -138,7 +138,12 @@ namespace Newtonsoft.Json.Converters
                 {
                     string enumText = reader.Value.ToString();
 
-                    return EnumUtils.ParseEnumName(enumText, isNullable, !AllowIntegerValues, t);
+                    if (enumText == string.Empty && isNullable)
+                    {
+                        return null;
+                    }
+
+                    return EnumUtils.ParseEnum(t, enumText, !AllowIntegerValues);
                 }
 
                 if (reader.TokenType == JsonToken.Integer)

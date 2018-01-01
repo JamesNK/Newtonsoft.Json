@@ -113,16 +113,6 @@ namespace Newtonsoft.Json.Utilities
             return selectedFlagsValues;
         }
 
-        public static object ParseEnumName(string enumText, bool isNullable, bool disallowValue, Type t)
-        {
-            if (enumText == string.Empty && isNullable)
-            {
-                return null;
-            }
-
-            return ParseEnum(t, enumText, disallowValue);
-        }
-
         public static bool TryToString(Type enumType, object value, bool camelCaseText, out string name)
         {
             EnumInfo enumInfo = ValuesAndNamesPerEnum.Get(enumType);
@@ -257,7 +247,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        private static object ParseEnum(Type enumType, string value, bool disallowNumber)
+        public static object ParseEnum(Type enumType, string value, bool disallowNumber)
         {
             ValidationUtils.ArgumentNotNull(enumType, nameof(enumType));
             ValidationUtils.ArgumentNotNull(value, nameof(value));
@@ -405,21 +395,5 @@ namespace Newtonsoft.Json.Utilities
 
             return null;
         }
-    }
-
-    internal class EnumInfo
-    {
-        public EnumInfo(bool isFlags, ulong[] values, string[] names, string[] resolvedNames)
-        {
-            IsFlags = isFlags;
-            Values = values;
-            Names = names;
-            ResolvedNames = resolvedNames;
-        }
-
-        public readonly bool IsFlags;
-        public readonly ulong[] Values;
-        public readonly string[] Names;
-        public readonly string[] ResolvedNames;
     }
 }

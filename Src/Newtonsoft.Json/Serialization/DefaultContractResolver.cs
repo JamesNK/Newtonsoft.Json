@@ -35,6 +35,7 @@ using System.ComponentModel;
 using System.Dynamic;
 #endif
 using System.Globalization;
+using System.IO;
 using System.Reflection;
 using System.Runtime.Serialization;
 #if HAVE_CAS
@@ -63,6 +64,13 @@ namespace Newtonsoft.Json.Serialization
 
         // Json.NET Schema requires a property
         internal static IContractResolver Instance => _instance;
+
+        private static readonly string[] BlacklistedTypeNames =
+        {
+            "System.IO.DriveInfo",
+            "System.IO.FileInfo",
+            "System.IO.DirectoryInfo"
+        };
 
         private static readonly JsonConverter[] BuiltInConverters =
         {
@@ -308,6 +316,13 @@ namespace Newtonsoft.Json.Serialization
         /// <returns>A <see cref="JsonObjectContract"/> for the given type.</returns>
         protected virtual JsonObjectContract CreateObjectContract(Type objectType)
         {
+            // serializing DirectoryInfo without ISerializable will stackoverflow
+            // https://github.com/JamesNK/Newtonsoft.Json/issues/1541
+            if (Array.IndexOf(BlacklistedTypeNames, objectType.FullName) != -1)
+            {
+                throw new JsonSerializationException("Unable to serialize instance of '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
+            }
+
             JsonObjectContract contract = new JsonObjectContract(objectType);
             InitializeContract(contract);
 
