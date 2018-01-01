@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.Serialization;
 #if !HAVE_LINQ
@@ -33,16 +34,18 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 using System.Linq;
 #endif
 using System.Reflection;
+using System.Text;
 
 namespace Newtonsoft.Json.Utilities
 {
     internal static class EnumUtils
     {
         private const char EnumSeparatorChar = ',';
+        private const string EnumSeparatorString = ", ";
 
-        private static readonly ThreadSafeStore<Type, TypeValuesAndNames> ValuesAndNamesPerEnum = new ThreadSafeStore<Type, TypeValuesAndNames>(InitializeValuesAndNames);
+        private static readonly ThreadSafeStore<Type, EnumInfo> ValuesAndNamesPerEnum = new ThreadSafeStore<Type, EnumInfo>(InitializeValuesAndNames);
 
-        private static TypeValuesAndNames InitializeValuesAndNames(Type enumType)
+        private static EnumInfo InitializeValuesAndNames(Type enumType)
         {
             string[] names = Enum.GetNames(enumType);
             string[] resolvedNames = new string[names.Length];
@@ -72,7 +75,9 @@ namespace Newtonsoft.Json.Utilities
                 resolvedNames[i] = resolvedName;
             }
 
-            return new TypeValuesAndNames(values, names, resolvedNames);
+            bool isFlags = enumType.IsDefined(typeof(FlagsAttribute), false);
+
+            return new EnumInfo(isFlags, values, names, resolvedNames);
         }
 
         public static IList<T> GetFlagsValues<T>(T value) where T : struct
@@ -87,7 +92,7 @@ namespace Newtonsoft.Json.Utilities
             Type underlyingType = Enum.GetUnderlyingType(value.GetType());
 
             ulong num = ToUInt64(value);
-            TypeValuesAndNames enumNameValues = GetEnumValuesAndNames(enumType);
+            EnumInfo enumNameValues = GetEnumValuesAndNames(enumType);
             IList<T> selectedFlagsValues = new List<T>();
 
             for (int i = 0; i < enumNameValues.Values.Length; i++)
@@ -118,34 +123,103 @@ namespace Newtonsoft.Json.Utilities
             return ParseEnum(t, enumText, disallowValue);
         }
 
-        public static string ToEnumName(Type enumType, string enumText, bool camelCaseText)
+        public static bool TryToString(Type enumType, object value, bool camelCaseText, out string name)
         {
-            TypeValuesAndNames enumValuesAndNames = ValuesAndNamesPerEnum.Get(enumType);
+            EnumInfo enumInfo = ValuesAndNamesPerEnum.Get(enumType);
+            ulong v = ToUInt64(value);
 
-            string[] names = enumText.Split(',');
-            for (int i = 0; i < names.Length; i++)
+            if (!enumInfo.IsFlags)
             {
-                string name = names[i].Trim();
-
-                int? matchingIndex = FindIndexByName(enumValuesAndNames.Names, name, 0, name.Length, StringComparison.Ordinal);
-                string resolvedEnumName = matchingIndex != null
-                    ? enumValuesAndNames.ResolvedNames[matchingIndex.Value]
-                    : name;
-
-                if (camelCaseText)
+                int index = Array.BinarySearch(enumInfo.Values, v);
+                if (index >= 0)
                 {
-                    resolvedEnumName = StringUtils.ToCamelCase(resolvedEnumName);
+                    name = enumInfo.ResolvedNames[index];
+                    if (camelCaseText)
+                    {
+                        name = StringUtils.ToCamelCase(name);
+                    }
+
+                    return true;
                 }
 
-                names[i] = resolvedEnumName;
+                // is number value
+                name = null;
+                return false;
             }
-
-            string finalName = string.Join(", ", names);
-
-            return finalName;
+            else // These are flags OR'ed together (We treat everything as unsigned types)
+            {
+                name = InternalFlagsFormat(enumInfo, v, camelCaseText);
+                return name != null;
+            }
         }
 
-        public static TypeValuesAndNames GetEnumValuesAndNames(Type enumType)
+        private static String InternalFlagsFormat(EnumInfo entry, ulong result, bool camelCaseText)
+        {
+            string[] resolvedNames = entry.ResolvedNames;
+            ulong[] values = entry.Values;
+
+            int index = values.Length - 1;
+            StringBuilder sb = new StringBuilder();
+            bool firstTime = true;
+            ulong saveResult = result;
+
+            // We will not optimize this code further to keep it maintainable. There are some boundary checks that can be applied
+            // to minimize the comparsions required. This code works the same for the best/worst case. In general the number of
+            // items in an enum are sufficiently small and not worth the optimization.
+            while (index >= 0)
+            {
+                if (index == 0 && values[index] == 0)
+                {
+                    break;
+                }
+
+                if ((result & values[index]) == values[index])
+                {
+                    result -= values[index];
+                    if (!firstTime)
+                    {
+                        sb.Insert(0, EnumSeparatorString);
+                    }
+
+                    string resolvedName = resolvedNames[index];
+                    sb.Insert(0, camelCaseText ? StringUtils.ToCamelCase(resolvedName) : resolvedName);
+                    firstTime = false;
+                }
+
+                index--;
+            }
+
+            string returnString;
+            if (result != 0)
+            {
+                // We were unable to represent this number as a bitwise or of valid flags
+                returnString = null; // return null so the caller knows to .ToString() the input
+            }
+            else if (saveResult == 0)
+            {
+                // For the cases when we have zero
+                if (values.Length > 0 && values[0] == 0)
+                {
+                    returnString = resolvedNames[0]; // Zero was one of the enum values.
+                    if (camelCaseText)
+                    {
+                        returnString = StringUtils.ToCamelCase(returnString);
+                    }
+                }
+                else
+                {
+                    returnString = null;
+                }
+            }
+            else
+            {
+                returnString = sb.ToString(); // Return the string representation
+            }
+
+            return returnString;
+        }
+
+        public static EnumInfo GetEnumValuesAndNames(Type enumType)
         {
             return ValuesAndNamesPerEnum.Get(enumType);
         }
@@ -193,7 +267,7 @@ namespace Newtonsoft.Json.Utilities
                 throw new ArgumentException("Type provided must be an Enum.", nameof(enumType));
             }
 
-            TypeValuesAndNames entry = ValuesAndNamesPerEnum.Get(enumType);
+            EnumInfo entry = ValuesAndNamesPerEnum.Get(enumType);
             string[] enumNames = entry.Names;
             string[] resolvedNames = entry.ResolvedNames;
             ulong[] enumValues = entry.Values;
@@ -333,15 +407,17 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 
-    internal class TypeValuesAndNames
+    internal class EnumInfo
     {
-        public TypeValuesAndNames(ulong[] values, string[] names, string[] resolvedNames)
+        public EnumInfo(bool isFlags, ulong[] values, string[] names, string[] resolvedNames)
         {
+            IsFlags = isFlags;
             Values = values;
             Names = names;
             ResolvedNames = resolvedNames;
         }
 
+        public readonly bool IsFlags;
         public readonly ulong[] Values;
         public readonly string[] Names;
         public readonly string[] ResolvedNames;

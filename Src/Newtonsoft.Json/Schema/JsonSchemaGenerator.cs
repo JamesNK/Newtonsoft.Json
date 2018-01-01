@@ -309,7 +309,7 @@ namespace Newtonsoft.Json.Schema
                         {
                             CurrentSchema.Enum = new List<JToken>();
 
-                            TypeValuesAndNames enumValues = EnumUtils.GetEnumValuesAndNames(type);
+                            EnumInfo enumValues = EnumUtils.GetEnumValuesAndNames(type);
                             for (int i = 0; i < enumValues.Names.Length; i++)
                             {
                                 ulong v = enumValues.Values[i];

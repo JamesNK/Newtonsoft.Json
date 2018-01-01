@@ -201,6 +201,32 @@ namespace Newtonsoft.Json.Tests
     ]
 }", sw.ToString());
         }
+
+        [Test]
+        public async Task WriteLazy_Property()
+        {
+            LazyStringWriter sw = new LazyStringWriter(CultureInfo.InvariantCulture);
+
+            using (JsonTextWriter writer = new JsonTextWriter(sw))
+            {
+                writer.Indentation = 4;
+                writer.Formatting = Formatting.Indented;
+
+                await writer.WriteStartArrayAsync();
+
+                await writer.WriteStartObjectAsync();
+
+                await writer.WritePropertyNameAsync("IncompleteProp");
+
+                await writer.WriteEndArrayAsync();
+            }
+
+            StringAssert.AreEqual(@"[
+    {
+        ""IncompleteProp"": null
+    }
+]", sw.ToString());
+        }
 #endif
 
         [Test]
