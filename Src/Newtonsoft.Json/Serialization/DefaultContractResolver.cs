@@ -1179,7 +1179,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (typeof(IEnumerable).IsAssignableFrom(t))
             {
-                return CreateArrayContract(objectType);
+                return CreateArrayContract(t);
             }
 
             if (CanConvertToString(t))
