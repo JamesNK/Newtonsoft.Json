@@ -1608,7 +1608,8 @@ namespace Newtonsoft.Json
 
                     case PrimitiveTypeCode.DecimalNullable:
                         writer.WriteValue((value == null) ? (decimal?)null : (decimal)value);
-                        break;
+                        return;
+
                     case PrimitiveTypeCode.Guid:
                         writer.WriteValue((Guid)value);
                         return;
