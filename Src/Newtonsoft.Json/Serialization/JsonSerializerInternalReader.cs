@@ -1888,7 +1888,7 @@ namespace Newtonsoft.Json.Serialization
                 TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Deserializing {0} using creator with parameters: {1}.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType, parameters)), null);
             }
 
-            List<CreatorPropertyContext> propertyContexts = ResolvePropertyAndCreatorValues(contract, containerProperty, reader, objectType);
+            List<CreatorPropertyContext> propertyContexts = ResolvePropertyAndCreatorValues(contract, containerProperty, reader, objectType, id, out var deferredExecution);
             if (trackPresence)
             {
                 foreach (JsonProperty property in contract.Properties)
@@ -1979,6 +1979,8 @@ namespace Newtonsoft.Json.Serialization
             {
                 AddReference(reader, id, createdObject);
             }
+
+            deferredExecution?.Invoke();
 
             OnDeserializing(reader, contract, createdObject);
 
@@ -2111,8 +2113,9 @@ namespace Newtonsoft.Json.Serialization
             return value;
         }
 
-        private List<CreatorPropertyContext> ResolvePropertyAndCreatorValues(JsonObjectContract contract, JsonProperty containerProperty, JsonReader reader, Type objectType)
+        private List<CreatorPropertyContext> ResolvePropertyAndCreatorValues(JsonObjectContract contract, JsonProperty containerProperty, JsonReader reader, Type objectType, string id, out Action deferredExecution)
         {
+            deferredExecution = null;
             List<CreatorPropertyContext> propertyValues = new List<CreatorPropertyContext>();
             bool exit = false;
             do
@@ -2130,28 +2133,33 @@ namespace Newtonsoft.Json.Serialization
                         };
                         propertyValues.Add(creatorPropertyContext);
 
-                        JsonProperty property = creatorPropertyContext.ConstructorProperty ?? creatorPropertyContext.Property;
-                        if (property != null && !property.Ignored)
+                        JsonProperty property = creatorPropertyContext.ConstructorProperty;
+
+                        if ((property != null || id == null && (property = creatorPropertyContext.Property) != null) && !property.Ignored)
                         {
-                            if (property.PropertyContract == null)
-                            {
-                                property.PropertyContract = GetContractSafe(property.PropertyType);
-                            }
+                            ReadPropertyValue(contract, containerProperty, reader, memberName, creatorPropertyContext, property);
 
-                            JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.Converter, contract, containerProperty);
+                            continue;
+                        }
+                        else if (id != null && (property = creatorPropertyContext.Property) != null && !property.Ignored)
+                        {
+                            // Defer the deserialization till the object is created and the reference is stored in the reference resolver.
 
-                            if (!reader.ReadForType(property.PropertyContract, propertyConverter != null))
-                            {
-                                throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
-                            }
+                            var deferredReader = new DeferredJsonReader(reader);
 
-                            if (propertyConverter != null && propertyConverter.CanRead)
+                            Action deferred = () =>
                             {
-                                creatorPropertyContext.Value = DeserializeConvertable(propertyConverter, reader, property.PropertyType, null);
+                                deferredReader.Read();
+                                ReadPropertyValue(contract, containerProperty, deferredReader, memberName, creatorPropertyContext, property);
+                            };
+
+                            if (deferredExecution == null)
+                            {
+                                deferredExecution = deferred;
                             }
                             else
                             {
-                                creatorPropertyContext.Value = CreateValueInternal(reader, property.PropertyType, property.PropertyContract, property, contract, containerProperty, null);
+                                deferredExecution += deferred;
                             }
 
                             continue;
@@ -2199,6 +2207,93 @@ namespace Newtonsoft.Json.Serialization
             }
 
             return propertyValues;
+        }
+
+        private void ReadPropertyValue(JsonObjectContract contract, JsonProperty containerProperty, JsonReader reader, string memberName, CreatorPropertyContext creatorPropertyContext, JsonProperty property)
+        {
+            if (property.PropertyContract == null)
+            {
+                property.PropertyContract = GetContractSafe(property.PropertyType);
+            }
+
+            JsonConverter propertyConverter = GetConverter(property.PropertyContract, property.Converter, contract, containerProperty);
+
+            if (!reader.ReadForType(property.PropertyContract, propertyConverter != null))
+            {
+                throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+            }
+
+            if (propertyConverter != null && propertyConverter.CanRead)
+            {
+                creatorPropertyContext.Value = DeserializeConvertable(propertyConverter, reader, property.PropertyType, null);
+            }
+            else
+            {
+                var value = CreateValueInternal(reader, property.PropertyType, property.PropertyContract, property, contract, containerProperty, null);
+
+                if (value == null)
+                {
+
+                }
+
+                creatorPropertyContext.Value = value;
+            }
+        }
+
+        // Reads the child nodes of the current node of reader and stores them for deferred reading.
+        private sealed class DeferredJsonReader : JsonReader
+        {
+            private readonly Queue<StoredToken> _tokens = new Queue<StoredToken>();
+
+            public DeferredJsonReader(JsonReader reader)
+            {
+                if (reader == null)
+                    throw new ArgumentNullException(nameof(reader));
+
+                QuoteChar = reader.QuoteChar;
+                DateTimeZoneHandling = reader.DateTimeZoneHandling;
+                DateParseHandling = reader.DateParseHandling;
+                FloatParseHandling = reader.FloatParseHandling;
+                DateFormatString = reader.DateFormatString;
+                Culture = reader.Culture;
+
+                _tokens.Enqueue(new StoredToken { Token = reader.TokenType, Value = reader.Value });
+
+                if (reader.TokenType == JsonToken.PropertyName)
+                {
+                    reader.Read();
+                    _tokens.Enqueue(new StoredToken { Token = reader.TokenType, Value = reader.Value });
+                }
+
+                if (JsonTokenUtils.IsStartToken(reader.TokenType))
+                {
+                    var depth = reader.Depth;
+
+                    while (reader.Read() && (depth < reader.Depth))
+                    {
+                        _tokens.Enqueue(new StoredToken { Token = reader.TokenType, Value = reader.Value });
+                    }
+
+                    _tokens.Enqueue(new StoredToken { Token = reader.TokenType, Value = reader.Value });
+                }
+            }
+
+            public override bool Read()
+            {
+                if (_tokens.Count == 0)
+                    return false;
+
+                var storedToken = _tokens.Dequeue();
+
+                SetToken(storedToken.Token, storedToken.Value);
+                return true;
+            }
+
+            private struct StoredToken
+            {
+                public JsonToken Token;
+                public object Value;
+            }
         }
 
         public object CreateNewObject(JsonReader reader, JsonObjectContract objectContract, JsonProperty containerMember, JsonProperty containerProperty, string id, out bool createdFromNonDefaultCreator)
