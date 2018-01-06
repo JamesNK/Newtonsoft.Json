@@ -53,7 +53,7 @@ namespace Newtonsoft.Json.Tests.Issues
             };
             var b = new B(1, "Hello");
 
-            var a = new A(1.234) { B = b };
+            var a = new A(1.234, b);
             b.As = new List<A> { a };
 
             var aChild = new AChild(1.45f) { A = a };
@@ -88,11 +88,6 @@ namespace Newtonsoft.Json.Tests.Issues
                 Id = id;
                 Message = message;
             }
-
-            //public B() // Must be present to deserialize A -> B
-            //{
-
-            //}
         }
 
         public class A
@@ -107,26 +102,17 @@ namespace Newtonsoft.Json.Tests.Issues
 
             public AChild Child { get; set; }
 
-            public A(double d)
+            public A(double d, B b)
             {
+                B = b;
                 D = d;
             }
-
-            //public A() // Must be present to deserialize AChild -> A
-            //{
-
-            //}
         }
 
         public class AChild
         {
             public A A { get; set; }
             public float F { get; set; }
-
-            //public AChild() // Can be removed
-            //{
-
-            //}
 
             public AChild(float f)
             {

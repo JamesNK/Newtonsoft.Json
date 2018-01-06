@@ -2147,21 +2147,8 @@ namespace Newtonsoft.Json.Serialization
 
                             var deferredReader = new DeferredJsonReader(reader);
 
-                            Action deferred = () =>
-                            {
-                                deferredReader.Read();
-                                ReadPropertyValue(contract, containerProperty, deferredReader, memberName, creatorPropertyContext, property);
-                            };
-
-                            if (deferredExecution == null)
-                            {
-                                deferredExecution = deferred;
-                            }
-                            else
-                            {
-                                deferredExecution += deferred;
-                            }
-
+                            deferredExecution += () => ReadPropertyValue(contract, containerProperty, deferredReader, memberName, creatorPropertyContext, property);
+                            
                             continue;
                         }
                         else
@@ -2243,7 +2230,9 @@ namespace Newtonsoft.Json.Serialization
         // Reads the child nodes of the current node of reader and stores them for deferred reading.
         private sealed class DeferredJsonReader : JsonReader
         {
-            private readonly Queue<StoredToken> _tokens = new Queue<StoredToken>();
+            private readonly List<StoredToken> _tokens = new List<StoredToken>();
+            private readonly int _end;
+            private int _index;
 
             public DeferredJsonReader(JsonReader reader)
             {
@@ -2257,33 +2246,45 @@ namespace Newtonsoft.Json.Serialization
                 DateFormatString = reader.DateFormatString;
                 Culture = reader.Culture;
 
-                _tokens.Enqueue(new StoredToken { Token = reader.TokenType, Value = reader.Value });
-
-                if (reader.TokenType == JsonToken.PropertyName)
+                if (reader is DeferredJsonReader deferredReader)
                 {
-                    reader.Read();
-                    _tokens.Enqueue(new StoredToken { Token = reader.TokenType, Value = reader.Value });
+                    _tokens = deferredReader._tokens;
+                    _index = deferredReader._index;
+
+                    deferredReader.Skip();
+
+                    _end = deferredReader._index;
                 }
-
-                if (JsonTokenUtils.IsStartToken(reader.TokenType))
+                else
                 {
-                    var depth = reader.Depth;
-
-                    while (reader.Read() && (depth < reader.Depth))
+                    if (reader.TokenType == JsonToken.PropertyName)
                     {
-                        _tokens.Enqueue(new StoredToken { Token = reader.TokenType, Value = reader.Value });
+                        reader.Read();
+                        _tokens.Add(new StoredToken { Token = reader.TokenType, Value = reader.Value });
                     }
 
-                    _tokens.Enqueue(new StoredToken { Token = reader.TokenType, Value = reader.Value });
+                    if (JsonTokenUtils.IsStartToken(reader.TokenType))
+                    {
+                        var depth = reader.Depth;
+
+                        while (reader.Read() && (depth < reader.Depth))
+                        {
+                            _tokens.Add(new StoredToken { Token = reader.TokenType, Value = reader.Value });
+                        }
+
+                        _tokens.Add(new StoredToken { Token = reader.TokenType, Value = reader.Value });
+                    }
+
+                    _end = _tokens.Count;
                 }
             }
 
             public override bool Read()
             {
-                if (_tokens.Count == 0)
+                if (_index >= _end)
                     return false;
 
-                var storedToken = _tokens.Dequeue();
+                var storedToken = _tokens[_index++];
 
                 SetToken(storedToken.Token, storedToken.Value);
                 return true;
