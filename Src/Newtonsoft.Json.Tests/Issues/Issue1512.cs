@@ -25,6 +25,8 @@
 
 #if !(NET20 || NET35 || NET40)
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 #if DNXCORE50
 using System.Reflection;
@@ -41,17 +43,35 @@ namespace Newtonsoft.Json.Tests.Issues
     public class Issue1512 : TestFixtureBase
     {
         [Test]
-        public void Test()
+        public void Test_Constructor()
         {
             var json = @"[
                             {
-                                ""Inners"": []
+                                ""Inners"": [""hi"",""bye""]
                             }
                         ]";
             ImmutableArray<Outer> result = JsonConvert.DeserializeObject<ImmutableArray<Outer>>(json);
 
             Assert.AreEqual(1, result.Length);
-            Assert.AreEqual(0, result[0].Inners.Value.Length);
+            Assert.AreEqual(2, result[0].Inners.Value.Length);
+            Assert.AreEqual("hi", result[0].Inners.Value[0]);
+            Assert.AreEqual("bye", result[0].Inners.Value[1]);
+        }
+
+        [Test]
+        public void Test_Property()
+        {
+            var json = @"[
+                            {
+                                ""Inners"": [""hi"",""bye""]
+                            }
+                        ]";
+            ImmutableArray<OuterProperty> result = JsonConvert.DeserializeObject<ImmutableArray<OuterProperty>>(json);
+
+            Assert.AreEqual(1, result.Length);
+            Assert.AreEqual(2, result[0].Inners.Value.Length);
+            Assert.AreEqual("hi", result[0].Inners.Value[0]);
+            Assert.AreEqual("bye", result[0].Inners.Value[1]);
         }
     }
 
@@ -65,14 +85,9 @@ namespace Newtonsoft.Json.Tests.Issues
         public ImmutableArray<string>? Inners { get; }
     }
 
-    public sealed class Inner
+    public sealed class OuterProperty
     {
-        public Inner(string id)
-        {
-            this.Id = id;
-        }
-
-        public string Id { get; }
+        public ImmutableArray<string>? Inners { get; set; }
     }
 }
 #endif
