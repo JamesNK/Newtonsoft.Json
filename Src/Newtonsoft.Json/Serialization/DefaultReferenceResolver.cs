@@ -30,9 +30,12 @@ using System.Runtime.CompilerServices;
 
 namespace Newtonsoft.Json.Serialization
 {
-    internal class DefaultReferenceResolver : IReferenceResolver
+    /// <summary>
+    /// Used to resolve references when serializing and deserializing JSON by the <see cref="JsonSerializer"/>.
+    /// </summary>
+    public class DefaultReferenceResolver : IReferenceResolver
     {
-        private class ReferenceEqualsEqualityComparer : IEqualityComparer<object>
+        private sealed class ReferenceEqualsEqualityComparer : IEqualityComparer<object>
         {
             bool IEqualityComparer<object>.Equals(object x, object y)
             {
@@ -46,54 +49,71 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private BidirectionalDictionary<string, object> _mappings;
+        private BidirectionalDictionary<string, object> _mappings = new BidirectionalDictionary<string, object>(
+            EqualityComparer<string>.Default,
+            new ReferenceEqualsEqualityComparer(),
+            "A different value already has the Id '{0}'.",
+            "A different Id has already been assigned for value '{0}'. This error may be caused by an object being reused multiple times during deserialization and can be fixed with the setting ObjectCreationHandling.Replace.");
         private int _referenceCount;
 
-        private BidirectionalDictionary<string, object> Mappings
+        /// <summary>
+        /// Resolves a reference to its object.
+        /// </summary>
+        /// <param name="context">The serialization context.</param>
+        /// <param name="reference">The reference to resolve.</param>
+        /// <returns>The object that was resolved from the reference.</returns>
+        public virtual object ResolveReference(object context, string reference)
         {
-            get
-            {
-                // override equality comparer for object key dictionary
-                // object will be modified as it deserializes and might have mutable hashcode
-                if (_mappings == null)
-                {
-                    _mappings = new BidirectionalDictionary<string, object>(
-                        EqualityComparer<string>.Default,
-                        new ReferenceEqualsEqualityComparer(),
-                        "A different value already has the Id '{0}'.",
-                        "A different Id has already been assigned for value '{0}'. This error may be caused by an object being reused multiple times during deserialization and can be fixed with the setting ObjectCreationHandling.Replace.");
-                }
-
-                return _mappings;
-            }
-        }
-
-        public object ResolveReference(object context, string reference)
-        {
-            Mappings.TryGetByFirst(reference, out object value);
+            _mappings.TryGetByFirst(reference, out object value);
             return value;
         }
 
-        public string GetReference(object context, object value)
+        /// <summary>
+        /// Gets the reference for the specified object.
+        /// </summary>
+        /// <param name="context">The serialization context.</param>
+        /// <param name="value">The object to get a reference for.</param>
+        /// <returns>The reference to the object.</returns>
+        public virtual string GetReference(object context, object value)
         {
-            if (!Mappings.TryGetBySecond(value, out string reference))
-            {
-                _referenceCount++;
-                reference = _referenceCount.ToString(CultureInfo.InvariantCulture);
-                Mappings.Set(reference, value);
-            }
+            return _mappings.TryGetBySecond(value, out string reference) ? reference : AddReference(context, value);
+        }
 
+        /// <summary>
+        /// Adds a reference to the specified object.
+        /// </summary>
+        /// <param name="context">The serialization context.</param>
+        /// <param name="value">The object to reference.</param>
+        /// <returns>The reference to the object.</returns>
+        public virtual string AddReference(object context, object value)
+        {
+            var reference = (++_referenceCount).ToString(CultureInfo.InvariantCulture);
+            AddReference(context, reference, value);
             return reference;
         }
 
-        public void AddReference(object context, string reference, object value)
+        /// <summary>
+        /// Adds a reference to the specified object.
+        /// </summary>
+        /// <param name="context">The serialization context.</param>
+        /// <param name="reference">The reference.</param>
+        /// <param name="value">The object to reference.</param>
+        public virtual void AddReference(object context, string reference, object value)
         {
-            Mappings.Set(reference, value);
+            _mappings.Set(reference, value);
         }
 
-        public bool IsReferenced(object context, object value)
+        /// <summary>
+        /// Determines whether the specified object is referenced.
+        /// </summary>
+        /// <param name="context">The serialization context.</param>
+        /// <param name="value">The object to test for a reference.</param>
+        /// <returns>
+        /// 	<c>true</c> if the specified object is referenced; otherwise, <c>false</c>.
+        /// </returns>
+        public virtual bool IsReferenced(object context, object value)
         {
-            return Mappings.TryGetBySecond(value, out _);
+            return _mappings.TryGetBySecond(value, out _);
         }
     }
 }
