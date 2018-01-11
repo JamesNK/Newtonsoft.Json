@@ -362,7 +362,7 @@ namespace Newtonsoft.Json
 
                         if (char.IsNumber(currentChar) || currentChar == '-' || currentChar == '.')
                         {
-                            ParseNumber(ReadType.Read);
+                            await ParseNumberAsync(ReadType.Read, cancellationToken).ConfigureAwait(false);
                             return true;
                         }
 
