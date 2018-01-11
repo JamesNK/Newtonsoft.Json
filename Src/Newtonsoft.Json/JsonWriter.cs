@@ -1658,15 +1658,7 @@ namespace Newtonsoft.Json
 #if HAVE_ICONVERTIBLE
                         if (value is IConvertible convertible)
                         {
-                            // the value is a non-standard IConvertible
-                            // convert to the underlying value and retry
-
-                            TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertible);
-
-                            // if convertible has an underlying typecode of Object then attempt to convert it to a string
-                            typeCode = typeInformation.TypeCode == PrimitiveTypeCode.Object ? PrimitiveTypeCode.String : typeInformation.TypeCode;
-                            Type resolvedType = typeInformation.TypeCode == PrimitiveTypeCode.Object ? typeof(string) : typeInformation.Type;
-                            value = convertible.ToType(resolvedType, CultureInfo.InvariantCulture);
+                            ResolveConvertibleValue(convertible, out typeCode, out value);
                             continue;
                         }
 #endif
@@ -1682,6 +1674,20 @@ namespace Newtonsoft.Json
                 }
             }
         }
+
+#if HAVE_ICONVERTIBLE
+        private static void ResolveConvertibleValue(IConvertible convertible, out PrimitiveTypeCode typeCode, out object value)
+        {
+            // the value is a non-standard IConvertible
+            // convert to the underlying value and retry
+            TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertible);
+
+            // if convertible has an underlying typecode of Object then attempt to convert it to a string
+            typeCode = typeInformation.TypeCode == PrimitiveTypeCode.Object ? PrimitiveTypeCode.String : typeInformation.TypeCode;
+            Type resolvedType = typeInformation.TypeCode == PrimitiveTypeCode.Object ? typeof(string) : typeInformation.Type;
+            value = convertible.ToType(resolvedType, CultureInfo.InvariantCulture);
+        }
+#endif
 
         private static JsonWriterException CreateUnsupportedTypeException(JsonWriter writer, object value)
         {
