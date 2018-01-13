@@ -1543,6 +1543,8 @@ namespace Newtonsoft.Json.Serialization
 #endif
                 ;
 
+            property.IsXMLAttribute = JsonTypeReflector.GetAttribute<JsonAttributeForXMLAttribute>(attributeProvider) != null;
+
             if (memberSerialization != MemberSerialization.OptIn)
             {
                 bool hasIgnoreDataMemberAttribute = false;
