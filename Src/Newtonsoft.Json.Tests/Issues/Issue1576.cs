@@ -58,21 +58,6 @@ namespace Newtonsoft.Json.Tests.Issues
             Assert.AreEqual(result.Items[0], 11);
         }
 
-        [Test]
-        public void Test2()
-        {
-            var settings = new JsonSerializerSettings()
-            {
-                Converters = new[] { new OneItemListJsonConverter() }
-            };
-
-            var result = JsonConvert.DeserializeObject<List<int>>("'11'", settings);
-
-            Assert.IsNotNull(result);
-            Assert.AreEqual(result.Count, 1);
-            Assert.AreEqual(result[0], 11);
-        }
-
         public class TestClass
         {
             public List<int> Items { get; } = new List<int>();
@@ -104,50 +89,32 @@ namespace Newtonsoft.Json.Tests.Issues
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
-                var recursionBlocked = false;
-                var converter = serializer.Converters.OfType<OneItemListJsonConverter>().FirstOrDefault();
-                if (converter != null)
+                var token = JToken.Load(reader);
+                if (token.Type == JTokenType.Array)
                 {
-                    serializer.Converters.Remove(converter);
-                    recursionBlocked = true;
+                    return token.ToObject(objectType, serializer);
                 }
 
-                try
+                var array = new JArray();
+                array.Add(token);
+
+                var list = array.ToObject(objectType, serializer) as IEnumerable;
+                var existing = existingValue as IList;
+
+                if (list != null && existing != null)
                 {
-                    var token = JToken.Load(reader);
-                    if (token.Type == JTokenType.Array)
+                    foreach (var item in list)
                     {
-                        return token.ToObject(objectType, serializer);
-                    }
-
-                    var array = new JArray();
-                    array.Add(token);
-
-                    var list = array.ToObject(objectType, serializer) as IEnumerable;
-                    var existing = existingValue as IList;
-
-                    if (list != null && existing != null)
-                    {
-                        foreach (var item in list)
-                        {
-                            existing.Add(item);
-                        }
-                    }
-
-                    return list;
-                }
-                finally
-                {
-                    if (recursionBlocked)
-                    {
-                        serializer.Converters.Add(converter);
+                        existing.Add(item);
                     }
                 }
+
+                return list;
             }
 
             public override bool CanConvert(Type objectType)
             {
-                return typeof(IEnumerable).IsAssignableFrom(objectType) && objectType != typeof(string);
+                return typeof(ICollection).IsAssignableFrom(objectType);
             }
         }
 
