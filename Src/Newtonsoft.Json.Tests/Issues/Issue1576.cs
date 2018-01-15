@@ -46,110 +46,110 @@ namespace Newtonsoft.Json.Tests.Issues
         [Test]
         public void Test()
         {
-			var settings = new JsonSerializerSettings()
-			{
-				ContractResolver = new CustomContractResolver()
-			};
+            var settings = new JsonSerializerSettings()
+            {
+                ContractResolver = new CustomContractResolver()
+            };
 
-			var result = JsonConvert.DeserializeObject<TestClass>("{ 'Items': '11' }", settings);
+            var result = JsonConvert.DeserializeObject<TestClass>("{ 'Items': '11' }", settings);
 
-			Assert.IsNotNull(result);
-			Assert.AreEqual(result.Items.Count, 1);
-			Assert.AreEqual(result.Items[0], 11);
-		}
-
-		[Test]
-		public void Test2()
-		{
-			var settings = new JsonSerializerSettings()
-			{
-				Converters = new[] { new OneItemListJsonConverter() }
-			};
-
-			var result = JsonConvert.DeserializeObject<List<int>>("'11'", settings);
-
-			Assert.IsNotNull(result);
-			Assert.AreEqual(result.Count, 1);
-			Assert.AreEqual(result[0], 11);
-		}
-
-		public class TestClass
-        {
-			public List<int> Items { get; } = new List<int>();
+            Assert.IsNotNull(result);
+            Assert.AreEqual(result.Items.Count, 1);
+            Assert.AreEqual(result.Items[0], 11);
         }
 
-		public class CustomContractResolver : DefaultContractResolver
-		{
-			protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
-			{
-				var property = base.CreateProperty(member, memberSerialization);
+        [Test]
+        public void Test2()
+        {
+            var settings = new JsonSerializerSettings()
+            {
+                Converters = new[] { new OneItemListJsonConverter() }
+            };
 
-				if (member.Name == "Items")
-				{
-					property.Converter = new OneItemListJsonConverter();
-				}
+            var result = JsonConvert.DeserializeObject<List<int>>("'11'", settings);
 
-				return property;
-			}
-		}
+            Assert.IsNotNull(result);
+            Assert.AreEqual(result.Count, 1);
+            Assert.AreEqual(result[0], 11);
+        }
 
-		public class OneItemListJsonConverter : JsonConverter
-		{
-			public override bool CanWrite => false;
+        public class TestClass
+        {
+            public List<int> Items { get; } = new List<int>();
+        }
 
-			public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-			{
-				throw new NotSupportedException();
-			}
+        public class CustomContractResolver : DefaultContractResolver
+        {
+            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+            {
+                var property = base.CreateProperty(member, memberSerialization);
 
-			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-			{
-				var recursionBlocked = false;
-				var converter = serializer.Converters.OfType<OneItemListJsonConverter>().FirstOrDefault();
-				if (converter != null)
-				{
-					serializer.Converters.Remove(converter);
-					recursionBlocked = true;
-				}
+                if (member.Name == "Items")
+                {
+                    property.Converter = new OneItemListJsonConverter();
+                }
 
-				try
-				{
-					var token = JToken.Load(reader);
-					if (token.Type == JTokenType.Array)
-					{
-						return token.ToObject(objectType, serializer);
-					}
+                return property;
+            }
+        }
 
-					var array = new JArray();
-					array.Add(token);
+        public class OneItemListJsonConverter : JsonConverter
+        {
+            public override bool CanWrite => false;
 
-					var list = array.ToObject(objectType, serializer) as IEnumerable;
-					var existing = existingValue as IList;
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotSupportedException();
+            }
 
-					if (list != null && existing != null)
-					{
-						foreach (var item in list)
-						{
-							existing.Add(item);
-						}
-					}
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                var recursionBlocked = false;
+                var converter = serializer.Converters.OfType<OneItemListJsonConverter>().FirstOrDefault();
+                if (converter != null)
+                {
+                    serializer.Converters.Remove(converter);
+                    recursionBlocked = true;
+                }
 
-					return list;
-				}
-				finally
-				{
-					if (recursionBlocked)
-					{
-						serializer.Converters.Add(converter);
-					}
-				}
-			}
+                try
+                {
+                    var token = JToken.Load(reader);
+                    if (token.Type == JTokenType.Array)
+                    {
+                        return token.ToObject(objectType, serializer);
+                    }
 
-			public override bool CanConvert(Type objectType)
-			{
-				return typeof(IEnumerable).IsAssignableFrom(objectType) && objectType != typeof(string);
-			}
-		}
+                    var array = new JArray();
+                    array.Add(token);
 
-	}
+                    var list = array.ToObject(objectType, serializer) as IEnumerable;
+                    var existing = existingValue as IList;
+
+                    if (list != null && existing != null)
+                    {
+                        foreach (var item in list)
+                        {
+                            existing.Add(item);
+                        }
+                    }
+
+                    return list;
+                }
+                finally
+                {
+                    if (recursionBlocked)
+                    {
+                        serializer.Converters.Add(converter);
+                    }
+                }
+            }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return typeof(IEnumerable).IsAssignableFrom(objectType) && objectType != typeof(string);
+            }
+        }
+
+    }
 }
