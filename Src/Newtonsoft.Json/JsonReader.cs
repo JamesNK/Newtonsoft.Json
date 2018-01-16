@@ -123,6 +123,7 @@ namespace Newtonsoft.Json
         private bool _hasExceededMaxDepth;
         internal DateParseHandling _dateParseHandling;
         internal FloatParseHandling _floatParseHandling;
+        internal TypeCastErrorHandling _typeCastErrorHandling;
         private string _dateFormatString;
         private List<JsonPosition> _stack;
 
@@ -1072,6 +1073,23 @@ namespace Newtonsoft.Json
                     break;
                 default:
                     throw JsonReaderException.Create(this, "While setting the reader state back to current object an unexpected JsonType was encountered: {0}".FormatWith(CultureInfo.InvariantCulture, currentObject));
+            }
+        }
+
+        /// <summary>
+        /// Indicates the method that will be used during deserialization handing errors in conversion.
+        /// </summary>
+        public TypeCastErrorHandling TypeCastErrorHandling
+        {
+            get => _typeCastErrorHandling;
+            set
+            {
+                if (value < TypeCastErrorHandling.Throw || value > TypeCastErrorHandling.Ignore)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                }
+
+                _typeCastErrorHandling = value;
             }
         }
 
