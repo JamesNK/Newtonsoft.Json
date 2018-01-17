@@ -1088,6 +1088,20 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40) || NETSTANDARD2_0
+        [Test]
+        public void DeserializeConcurrentDictionaryWithNullValue()
+        {
+            const string key = "id";
+            
+            var jsonValue = $"{{\"{key}\":null}}";
+
+            var deserializeObject = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(jsonValue);
+
+            Assert.IsNull(deserializeObject[key]);
+        }
+#endif
+
         [Test]
         public void DeserializeKeyValuePairArray()
         {

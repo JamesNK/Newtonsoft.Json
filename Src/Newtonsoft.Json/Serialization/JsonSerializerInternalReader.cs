@@ -1375,7 +1375,14 @@ namespace Newtonsoft.Json.Serialization
                                 itemValue = CreateValueInternal(reader, contract.DictionaryValueType, contract.ItemContract, null, contract, containerProperty, null);
                             }
 
-                            dictionary[keyValue] = itemValue;
+                            if (!dictionary.Contains(keyValue))
+                            {
+                                dictionary.Add(keyValue, itemValue);
+                            }
+                            else
+                            {
+                                dictionary[keyValue] = itemValue;
+                            }
                         }
                         catch (Exception ex)
                         {
