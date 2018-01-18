@@ -1096,9 +1096,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             
             var jsonValue = $"{{\"{key}\":null}}";
 
-            var deserializeObject = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(jsonValue);
+            var deserializedObject = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(jsonValue);
 
-            Assert.IsNull(deserializeObject[key]);
+            Assert.IsNull(deserializedObject[key]);
         }
 #endif
 
