@@ -58,8 +58,24 @@ namespace Newtonsoft.Json.Tests.Issues
             Assert.AreEqual(result.Items[0], 11);
         }
 
+        [Test]
+        public void Test_WithJsonConverterAttribute()
+        {
+            var result = JsonConvert.DeserializeObject<TestClassWithJsonConverter>("{ 'Items': '11' }");
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(result.Items.Count, 1);
+            Assert.AreEqual(result.Items[0], 11);
+        }
+
         public class TestClass
         {
+            public List<int> Items { get; } = new List<int>();
+        }
+
+        public class TestClassWithJsonConverter
+        {
+            [JsonConverter(typeof(OneItemListJsonConverter))]
             public List<int> Items { get; } = new List<int>();
         }
 
