@@ -1817,6 +1817,41 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("444-1212", newName.pNumbers[1].phoneNumber);
         }
 
+        [TestFixture]
+        public class MultipleDefinedPropertySerialization
+        {
+            [Test]
+            public void SerializePropertyDefinedInMultipleInterfaces()
+            {
+                const string propertyValue = "value";
+
+                var list = new List<ITestInterface> { new TestClass { Property = propertyValue } };
+
+                var json = JsonConvert.SerializeObject(list);
+
+                StringAssert.AreEqual($"[{{\"Property\":\"{propertyValue}\"}}]", json);
+            }
+
+            public interface IFirstInterface
+            {
+                string Property { get; set; }
+            }
+
+            public interface ISecondInterface
+            {
+                string Property { get; set; }
+            }
+
+            public interface ITestInterface : IFirstInterface, ISecondInterface
+            {
+            }
+
+            public class TestClass : ITestInterface
+            {
+                public string Property { get; set; }
+            }
+        }
+
         [Test]
         public void CustomCollectionSerialization()
         {
