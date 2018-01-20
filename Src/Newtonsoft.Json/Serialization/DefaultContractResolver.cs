@@ -900,7 +900,7 @@ namespace Newtonsoft.Json.Serialization
                     case "System.Collections.Concurrent.ConcurrentQueue`1":
                     case "System.Collections.Concurrent.ConcurrentStack`1":
                     case "System.Collections.Concurrent.ConcurrentBag`1":
-                    case "System.Collections.Concurrent.ConcurrentDictionary`2":
+                    case JsonTypeReflector.ConcurrentDictionaryTypeName:
                     case "System.Collections.ObjectModel.ObservableCollection`1":
                         return true;
                 }

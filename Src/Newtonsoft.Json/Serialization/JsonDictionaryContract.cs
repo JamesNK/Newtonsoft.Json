@@ -127,10 +127,22 @@ namespace Newtonsoft.Json.Serialization
                 {
                     CreatedType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
                 }
+                else if (underlyingType.IsGenericType())
+                {
+                    // ConcurrentDictionary<,> + IDictionary setter + null value = error
+                    // wrap to use generic setter
+                    // https://github.com/JamesNK/Newtonsoft.Json/issues/1582
+                    Type typeDefinition = underlyingType.GetGenericTypeDefinition();
+                    if (typeDefinition.FullName == JsonTypeReflector.ConcurrentDictionaryTypeName)
+                    {
+                        ShouldCreateWrapper = true;
+                    }
+                }
 
 #if HAVE_READ_ONLY_COLLECTIONS
                 IsReadOnlyOrFixedSize = ReflectionUtils.InheritsGenericDefinition(underlyingType, typeof(ReadOnlyDictionary<,>));
 #endif
+
             }
 #if HAVE_READ_ONLY_COLLECTIONS
             else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IReadOnlyDictionary<,>), out _genericCollectionDefinitionType))
@@ -172,7 +184,10 @@ namespace Newtonsoft.Json.Serialization
 #endif
             }
 
-            ShouldCreateWrapper = !typeof(IDictionary).IsAssignableFrom(CreatedType);
+            if (!typeof(IDictionary).IsAssignableFrom(CreatedType))
+            {
+                ShouldCreateWrapper = true;
+            }
 
             DictionaryKeyType = keyType;
             DictionaryValueType = valueType;

@@ -61,6 +61,20 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerCollectionsTests : TestFixtureBase
     {
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40) || NETSTANDARD2_0
+        [Test]
+        public void DeserializeConcurrentDictionaryWithNullValue()
+        {
+            const string key = "id";
+            
+            var jsonValue = $"{{\"{key}\":null}}";
+
+            var deserializedObject = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(jsonValue);
+
+            Assert.IsNull(deserializedObject[key]);
+        }
+#endif
+
 #if !(NET20 || NET35)
         [Test]
         public void SerializeConcurrentQueue()
