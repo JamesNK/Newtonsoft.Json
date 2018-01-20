@@ -34,10 +34,7 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     public class UnixDateTimeConverter : DateTimeConverterBase
     {
-        /// <summary>
-        /// Unix epoch time. Thursday, January 1, 1970 12:00:00 AM GMT
-        /// </summary>
-        public readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+        internal static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -47,7 +44,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            long ticks = default;
+            long ticks;
 
             if (value is DateTime dateTime)
             {
@@ -59,10 +56,14 @@ namespace Newtonsoft.Json.Converters
                 ticks = (long)(dateTimeOffset.ToUniversalTime() - UnixEpoch).TotalSeconds;
             }
 #endif
+            else
+            {
+                throw new JsonSerializationException("Expected date object value.");
+            }
 
             if (ticks < 0)
             {
-                throw new JsonSerializationException("Expected a valid Unix date.");
+                throw new JsonSerializationException("Cannot convert date value that is before Unix epoch of 00:00:00 UTC on 1 January 1970.");
             }
 
             writer.WriteValue(ticks);
@@ -78,43 +79,54 @@ namespace Newtonsoft.Json.Converters
         /// <returns>The object value.</returns>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
+            bool nullable = ReflectionUtils.IsNullable(objectType);
             if (reader.TokenType == JsonToken.Null)
             {
-                if (ReflectionUtils.IsNullable(objectType))
-                    return null;
-                else
-                    throw JsonSerializationException.Create(
-                    reader, "Cannot convert null value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType)
-                );
+                if (!nullable)
+                {
+                    throw JsonSerializationException.Create(reader, "Cannot convert null value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
+                }
+
+                return null;
             }
 
-            if (long.TryParse(reader.Value + "", out long ticks))
-            {
-                if (ticks >= 0)
-                {
-                    DateTime d = UnixEpoch.AddSeconds(ticks);
+            long ticks;
 
-#if HAVE_DATE_TIME_OFFSET
-                    Type t = (ReflectionUtils.IsNullableType(objectType))
-                        ? Nullable.GetUnderlyingType(objectType)
-                        : objectType;
-                    if (t == typeof(DateTimeOffset))
-                    {
-                        return new DateTimeOffset(d, TimeSpan.Zero);
-                    }
-#endif
-                    return d;
+            if (reader.TokenType == JsonToken.Integer)
+            {
+                ticks = (long)reader.Value;
+            }
+            else if (reader.TokenType == JsonToken.String)
+            {
+                if (!long.TryParse((string)reader.Value, out ticks))
+                {
+                    throw JsonSerializationException.Create(reader, "Cannot convert invalid value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
                 }
-                else
-                    throw JsonSerializationException.Create(
-                        reader, "Cannot convert invalid value {0} to {1}."
-                            .FormatWith(CultureInfo.InvariantCulture, ticks, objectType)
-                    );
             }
             else
-                throw JsonSerializationException.Create(
-                    reader, "Cannot convert invalid value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType)
-                );
+            {
+                throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected Integer or String, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+            }
+
+            if (ticks >= 0)
+            {
+                DateTime d = UnixEpoch.AddSeconds(ticks);
+
+#if HAVE_DATE_TIME_OFFSET
+                Type t = (nullable)
+                    ? Nullable.GetUnderlyingType(objectType)
+                    : objectType;
+                if (t == typeof(DateTimeOffset))
+                {
+                    return new DateTimeOffset(d, TimeSpan.Zero);
+                }
+#endif
+                return d;
+            }
+            else
+            {
+                throw JsonSerializationException.Create(reader, "Cannot convert value that is before Unix epoch of 00:00:00 UTC on 1 January 1970 to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
+            }
         }
     }
 }

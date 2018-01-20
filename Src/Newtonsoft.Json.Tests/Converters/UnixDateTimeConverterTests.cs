@@ -33,6 +33,7 @@ using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 using NUnit.Framework;
 #endif
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Converters
@@ -43,7 +44,7 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeDateTime()
         {
-            DateTime unixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
+            DateTime unixEpoch = UnixDateTimeConverter.UnixEpoch;
 
             string result = JsonConvert.SerializeObject(unixEpoch, new UnixDateTimeConverter());
 
@@ -66,7 +67,18 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             ExceptionAssert.Throws<JsonSerializationException>(
                 () => JsonConvert.SerializeObject(new DateTime(1964, 2, 7), new UnixDateTimeConverter()),
-                "Expected a valid Unix date."
+                "Cannot convert date value that is before Unix epoch of 00:00:00 UTC on 1 January 1970."
+            );
+        }
+
+        [Test]
+        public void WriteJsonInvalidType()
+        {
+            UnixDateTimeConverter converter = new UnixDateTimeConverter();
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => converter.WriteJson(new JTokenWriter(), new object(), new JsonSerializer()),
+                "Expected date object value."
             );
         }
 
@@ -138,6 +150,15 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual(new DateTimeOffset(2018, 1, 1, 21, 1, 16, TimeSpan.Zero), result);
         }
+
+        [Test]
+        public void DeserializeInvalidStringToDateTimeOffset()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<DateTimeOffset>(@"""PIE""", new UnixDateTimeConverter()),
+                "Cannot convert invalid value to System.DateTimeOffset. Path '', line 1, position 5."
+            );
+        }
 #endif
 
         [Test]
@@ -159,18 +180,18 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void DeserializeInvalidValue()
         {
-            ExceptionAssert.Throws<Exception>(
+            ExceptionAssert.Throws<JsonSerializationException>(
                 () => JsonConvert.DeserializeObject<DateTime>("-1", new UnixDateTimeConverter()),
-                "Cannot convert invalid value -1 to System.DateTime. Path '', line 1, position 2."
+                "Cannot convert value that is before Unix epoch of 00:00:00 UTC on 1 January 1970 to System.DateTime. Path '', line 1, position 2."
             );
         }
 
         [Test]
         public void DeserializeInvalidValueType()
         {
-            ExceptionAssert.Throws<Exception>(
+            ExceptionAssert.Throws<JsonSerializationException>(
                 () => JsonConvert.DeserializeObject<DateTime>("false", new UnixDateTimeConverter()),
-                "Cannot convert invalid value to System.DateTime. Path '', line 1, position 5."
+                "Unexpected token parsing date. Expected Integer or String, got Boolean. Path '', line 1, position 5."
             );
         }
 
