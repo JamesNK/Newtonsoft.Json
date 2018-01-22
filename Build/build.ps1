@@ -12,8 +12,6 @@
   $msbuildVerbosity = 'minimal'
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
-  $netCliChannel = "2.0"
-  $netCliVersion = "2.0.0"
   $nugetUrl = "http://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 
   $baseDir  = resolve-path ..
@@ -24,6 +22,7 @@
   $releaseDir = "$baseDir\Release"
   $workingDir = "$baseDir\$workingName"
   $workingSourceDir = "$workingDir\Src"
+  if ($env:ci){ $workingSourceDir = $sourceDir } # for source linking
 
   $nugetPath = "$buildDir\Temp\nuget.exe"
   $vswhereVersion = "2.1.4"
@@ -53,16 +52,22 @@ task Clean {
   Write-Host "Setting location to $baseDir"
   Set-Location $baseDir
 
-  if (Test-Path -path $workingDir)
+  if($env:ci)
   {
-    Write-Host "Deleting existing working directory $workingDir"
-
-    Execute-Command -command { del $workingDir -Recurse -Force }
+    # for testing CI behavior locally
+    Execute-Command -command { git clean -xfd }
+  }
+  else
+  {
+    if (Test-Path -path $workingDir)
+    {
+      Write-Host "Deleting existing working directory $workingDir"
+      Execute-Command -command { del $workingDir -Recurse -Force }
+    }
   }
 
   Write-Host "Creating working directory $workingDir"
   New-Item -Path $workingDir -ItemType Directory
-
 }
 
 # Build each solution, optionally signed
@@ -78,8 +83,11 @@ task Build -depends Clean {
   $script:msBuildPath = GetMsBuildPath
   Write-Host "MSBuild path $script:msBuildPath"
 
-  Write-Host "Copying source to working source directory $workingSourceDir"
-  robocopy $sourceDir $workingSourceDir /MIR /NFL /NDL /NP /XD bin obj TestResults AppPackages $packageDirs .vs artifacts /XF *.suo *.user *.lock.json | Out-Default
+  if (-not $env:ci)
+  {
+    Write-Host "Copying source to working source directory $workingSourceDir"
+    robocopy $sourceDir $workingSourceDir /MIR /NFL /NDL /NP /XD bin obj TestResults AppPackages $packageDirs .vs artifacts /XF *.suo *.user *.lock.json | Out-Default
+  }
   Copy-Item -Path $baseDir\LICENSE.md -Destination $workingDir\
   mkdir "$workingDir\Build" -Force
   Copy-Item -Path $buildDir\install.ps1 -Destination $workingDir\Build\
@@ -212,8 +220,6 @@ function NetCliTests($build)
   $projectPath = "$workingSourceDir\Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.csproj"
   $location = "$workingSourceDir\Newtonsoft.Json.Tests"
   $testDir = if ($build.TestFramework -ne $null) { $build.TestFramework } else { $build.Framework }
-
-  exec { .\Tools\Dotnet\dotnet-install.ps1 -Channel $netCliChannel -Version $netCliVersion | Out-Default }
 
   try
   {
