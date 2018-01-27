@@ -34,6 +34,7 @@ using Newtonsoft.Json.Converters;
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+using TestCase = Xunit.InlineDataAttribute;
 #else
 using NUnit.Framework;
 #endif
@@ -1289,6 +1290,38 @@ namespace Newtonsoft.Json.Tests.Linq
 
             ExceptionAssert.Throws<JsonReaderException>(() => JToken.Parse(json),
                 "Additional text encountered after finished reading JSON content: {. Path '', line 3, position 0.");
+        }
+
+#if DNXCORE50
+        [Theory]
+#endif
+        [TestCase("test customer", "['test customer']")]
+        [TestCase("test customer's", "['test customer\\'s']")]
+        [TestCase("testcustomer's", "['testcustomer\\'s']")]
+        [TestCase("testcustomer", "testcustomer")]
+        [TestCase("test.customer", "['test.customer']")]
+        [TestCase("test\rcustomer", "['test\\rcustomer']")]
+        [TestCase("test\ncustomer", "['test\\ncustomer']")]
+        [TestCase("test\tcustomer", "['test\\tcustomer']")]
+        [TestCase("test\bcustomer", "['test\\bcustomer']")]
+        [TestCase("test\fcustomer", "['test\\fcustomer']")]
+        [TestCase("test/customer", "['test/customer']")]
+        [TestCase("test\\customer", "['test\\\\customer']")]
+        [TestCase("\"test\"customer", "['\"test\"customer']")]
+        public void PathEscapingTest(string name, string expectedPath)
+        {
+            JValue v = new JValue("12345");
+            JObject o = new JObject
+            {
+                [name] = v
+            };
+
+            string path = v.Path;
+
+            Assert.AreEqual(expectedPath, path);
+
+            JToken token = o.SelectToken(path);
+            Assert.AreEqual(v, token);
         }
     }
 }

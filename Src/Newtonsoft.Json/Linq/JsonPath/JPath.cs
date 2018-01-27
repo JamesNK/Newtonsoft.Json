@@ -661,28 +661,44 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 if (currentChar == '\\' && _currentIndex + 1 < _expression.Length)
                 {
                     _currentIndex++;
+                    currentChar = _expression[_currentIndex];
 
-                    if (_expression[_currentIndex] == '\'')
+                    char resolvedChar;
+                    switch (currentChar)
                     {
-                        sb.Append('\'');
+                        case 'b':
+                            resolvedChar = '\b';
+                            break;
+                        case 't':
+                            resolvedChar = '\t';
+                            break;
+                        case 'n':
+                            resolvedChar = '\n';
+                            break;
+                        case 'f':
+                            resolvedChar = '\f';
+                            break;
+                        case 'r':
+                            resolvedChar = '\r';
+                            break;
+                        case '\\':
+                        case '"':
+                        case '\'':
+                        case '/':
+                            resolvedChar = currentChar;
+                            break;
+                        default:
+                            throw new JsonException(@"Unknown escape character: \" + _expression[_currentIndex]);
                     }
-                    else if (_expression[_currentIndex] == '\\')
-                    {
-                        sb.Append('\\');
-                    }
-                    else
-                    {
-                        throw new JsonException(@"Unknown escape character: \" + _expression[_currentIndex]);
-                    }
+
+                    sb.Append(resolvedChar);
 
                     _currentIndex++;
                 }
                 else if (currentChar == '\'')
                 {
                     _currentIndex++;
-                    {
-                        return sb.ToString();
-                    }
+                    return sb.ToString();
                 }
                 else
                 {
