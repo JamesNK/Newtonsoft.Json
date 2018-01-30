@@ -33,6 +33,8 @@ namespace Newtonsoft.Json.Linq.JsonPath
 {
     internal class JPath
     {
+        private static readonly char[] FloatCharacters = new[] {'.', 'E', 'e'};
+
         private readonly string _expression;
         public List<PathFilter> Filters { get; }
 
@@ -601,7 +603,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     {
                         string numberText = sb.ToString();
 
-                        if (numberText.IndexOfAny(new[] { '.', 'E', 'e' }) != -1)
+                        if (numberText.IndexOfAny(FloatCharacters) != -1)
                         {
                             bool result = double.TryParse(numberText, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var d);
                             value = d;
@@ -688,7 +690,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                             resolvedChar = currentChar;
                             break;
                         default:
-                            throw new JsonException(@"Unknown escape character: \" + _expression[_currentIndex]);
+                            throw new JsonException(@"Unknown escape character: \" + currentChar);
                     }
 
                     sb.Append(resolvedChar);

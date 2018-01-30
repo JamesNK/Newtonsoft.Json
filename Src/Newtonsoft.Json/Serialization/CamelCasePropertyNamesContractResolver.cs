@@ -30,7 +30,7 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {
-    internal struct ResolverContractKey : IEquatable<ResolverContractKey>
+    internal readonly struct ResolverContractKey : IEquatable<ResolverContractKey>
     {
         private readonly Type _resolverType;
         private readonly Type _contractType;
