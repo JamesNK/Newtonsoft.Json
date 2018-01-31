@@ -1150,6 +1150,12 @@ namespace Newtonsoft.Json.Serialization
                     default:
                     {
                         escape = true;
+
+                        if (primitiveContract.IsEnum && EnumUtils.TryToString(primitiveContract.NonNullableUnderlyingType, name, false, out string enumName))
+                        {
+                            return enumName;
+                        }
+
                         return Convert.ToString(name, CultureInfo.InvariantCulture);
                     }
                 }

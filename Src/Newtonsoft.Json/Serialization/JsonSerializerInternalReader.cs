@@ -955,7 +955,7 @@ namespace Newtonsoft.Json.Serialization
                         {
                             if (value is string)
                             {
-                                return Enum.Parse(contract.NonNullableUnderlyingType, value.ToString(), true);
+                                return EnumUtils.ParseEnum(contract.NonNullableUnderlyingType, value.ToString(), false);
                             }
                             if (ConvertUtils.IsInteger(primitiveContract.TypeCode))
                             {
