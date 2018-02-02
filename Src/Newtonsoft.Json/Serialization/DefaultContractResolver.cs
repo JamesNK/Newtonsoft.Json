@@ -1174,6 +1174,15 @@ namespace Newtonsoft.Json.Serialization
                 return CreateDictionaryContract(objectType);
             }
 
+#if HAVE_DATA_CONTRACTS
+            // don't use GetDataContractAttribute because it looks for the attribute on base classes
+            DataContractAttribute dataContractAttribute = JsonTypeReflector.GetCachedAttribute<DataContractAttribute>(objectType);
+            if (dataContractAttribute != null)
+            {
+                return CreateObjectContract(objectType);
+            }
+#endif
+
             if (t == typeof(JToken) || t.IsSubclassOf(typeof(JToken)))
             {
                 return CreateLinqContract(objectType);
