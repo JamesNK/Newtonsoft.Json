@@ -194,33 +194,20 @@ namespace Newtonsoft.Json.Linq.JsonPath
             return false;
         }
 
-        private bool RegExEquals(JValue value, JValue queryValue)
+        private static bool RegExEquals(JValue input, JValue pattern)
         {
-            if (queryValue.Type != JTokenType.String || value.Type != JTokenType.String)
+            if (input.Type != JTokenType.String || pattern.Type != JTokenType.String)
             {
                 return false;
             }
 
-            var regExArray = ((string)queryValue.Value).Split('/');
-            if (regExArray.Length < 3)
-            {
-                throw new Exception("Syntax error when using regex compare");
-            }
+            var regexText = (string)pattern.Value;
+            int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
 
-            var trimFirstAndLastMember = regExArray.Skip(1).Take(regExArray.Length - 2).ToArray();
-            var regExQuery = string.Join("/", trimFirstAndLastMember);
+            string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
+            string optionsText = regexText.Substring(patternOptionDelimiterIndex + 1);
 
-            if (regExArray.Last() == string.Empty)
-            {
-                return Regex.IsMatch((string)value.Value, regExQuery);
-            }
-
-            if (regExArray.Last() == "i")
-            {
-                return Regex.IsMatch((string)value.Value, regExQuery, RegexOptions.IgnoreCase);
-            }
-
-            throw new Exception("Syntax error when using regex compare");
+            return Regex.IsMatch((string)input.Value, patternText, MiscellaneousUtils.GetRegexOptions(optionsText));
         }
 
         private bool EqualsWithStringCoercion(JValue value, JValue queryValue)

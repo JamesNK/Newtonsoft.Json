@@ -317,7 +317,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         [Test]
         public void SinglePropertyAndFilterWithRegex()
         {
-            JPath path = new JPath("Blah[ ?( @.name=~'/hi/i' ) ]");
+            JPath path = new JPath("Blah[ ?( @.name=~/hi/i ) ]");
             Assert.AreEqual(2, path.Filters.Count);
             Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
             BooleanQueryExpression expressions = (BooleanQueryExpression)((QueryFilter)path.Filters[1]).Expression;
