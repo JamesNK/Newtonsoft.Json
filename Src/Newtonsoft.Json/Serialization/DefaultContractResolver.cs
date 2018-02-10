@@ -193,10 +193,7 @@ namespace Newtonsoft.Json.Serialization
         /// <returns>The contract for a given type.</returns>
         public virtual JsonContract ResolveContract(Type type)
         {
-            if (type == null)
-            {
-                throw new ArgumentNullException(nameof(type));
-            }
+            ValidationUtils.ArgumentNotNull(type, nameof(type));
 
             return _contractCache.Get(type);
         }
