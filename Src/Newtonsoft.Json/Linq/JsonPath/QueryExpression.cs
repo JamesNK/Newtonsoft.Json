@@ -134,7 +134,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 switch (Operator)
                 {
                     case QueryOperator.RegExEquals:
-                        if (RegExEquals(leftValue, rightValue))
+                        if (RegexEquals(leftValue, rightValue))
                         {
                             return true;
                         }
@@ -194,7 +194,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
             return false;
         }
 
-        private static bool RegExEquals(JValue input, JValue pattern)
+        private static bool RegexEquals(JValue input, JValue pattern)
         {
             if (input.Type != JTokenType.String || pattern.Type != JTokenType.String)
             {
