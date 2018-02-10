@@ -29,6 +29,7 @@ using Newtonsoft.Json.Bson;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Converters
 {
@@ -154,25 +155,7 @@ namespace Newtonsoft.Json.Converters
             string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
             string optionsText = regexText.Substring(patternOptionDelimiterIndex + 1);
 
-            RegexOptions options = RegexOptions.None;
-            foreach (char c in optionsText)
-            {
-                switch (c)
-                {
-                    case 'i':
-                        options |= RegexOptions.IgnoreCase;
-                        break;
-                    case 'm':
-                        options |= RegexOptions.Multiline;
-                        break;
-                    case 's':
-                        options |= RegexOptions.Singleline;
-                        break;
-                    case 'x':
-                        options |= RegexOptions.ExplicitCapture;
-                        break;
-                }
-            }
+            RegexOptions options = MiscellaneousUtils.GetRegexOptions(optionsText);
 
             return new Regex(patternText, options);
         }

@@ -315,6 +315,17 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void SinglePropertyAndFilterWithRegex()
+        {
+            JPath path = new JPath("Blah[ ?( @.name=~/hi/i ) ]");
+            Assert.AreEqual(2, path.Filters.Count);
+            Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
+            BooleanQueryExpression expressions = (BooleanQueryExpression)((QueryFilter)path.Filters[1]).Expression;
+            Assert.AreEqual(QueryOperator.RegExEquals, expressions.Operator);
+            Assert.AreEqual("/hi/i", (string)(JToken)expressions.Right);
+        }
+
+        [Test]
         public void SinglePropertyAndFilterWithUnknownEscape()
         {
             ExceptionAssert.Throws<JsonException>(() => { new JPath(@"Blah[ ?( @.name=='h\i' ) ]"); }, @"Unknown escape character: \i");

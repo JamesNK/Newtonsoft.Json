@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Text.RegularExpressions;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -22,7 +23,8 @@ namespace Newtonsoft.Json.Linq.JsonPath
         GreaterThan = 6,
         GreaterThanOrEquals = 7,
         And = 8,
-        Or = 9
+        Or = 9,
+        RegExEquals = 10
     }
 
     internal abstract class QueryExpression
@@ -126,6 +128,12 @@ namespace Newtonsoft.Json.Linq.JsonPath
             {
                 switch (Operator)
                 {
+                    case QueryOperator.RegExEquals:
+                        if (RegexEquals(leftValue, rightValue))
+                        {
+                            return true;
+                        }
+                        break;
                     case QueryOperator.Equals:
                         if (EqualsWithStringCoercion(leftValue, rightValue))
                         {
@@ -179,6 +187,22 @@ namespace Newtonsoft.Json.Linq.JsonPath
             }
 
             return false;
+        }
+
+        private static bool RegexEquals(JValue input, JValue pattern)
+        {
+            if (input.Type != JTokenType.String || pattern.Type != JTokenType.String)
+            {
+                return false;
+            }
+
+            var regexText = (string)pattern.Value;
+            int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
+
+            string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
+            string optionsText = regexText.Substring(patternOptionDelimiterIndex + 1);
+
+            return Regex.IsMatch((string)input.Value, patternText, MiscellaneousUtils.GetRegexOptions(optionsText));
         }
 
         private bool EqualsWithStringCoercion(JValue value, JValue queryValue)
