@@ -154,7 +154,7 @@ namespace Newtonsoft.Json.Utilities
 
         internal static RegexOptions GetRegexOptions(string optionsText)
         {
-            var options = RegexOptions.None;
+            RegexOptions options = RegexOptions.None;
             foreach (char c in optionsText)
             {
                 switch (c)
@@ -176,6 +176,5 @@ namespace Newtonsoft.Json.Utilities
 
             return options;
         }
-
     }
 }

@@ -24,7 +24,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
         GreaterThanOrEquals = 7,
         And = 8,
         Or = 9,
-        RegExEquals = 10
+        RegexEquals = 10
     }
 
     internal abstract class QueryExpression
@@ -128,7 +128,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
             {
                 switch (Operator)
                 {
-                    case QueryOperator.RegExEquals:
+                    case QueryOperator.RegexEquals:
                         if (RegexEquals(leftValue, rightValue))
                         {
                             return true;
@@ -196,7 +196,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 return false;
             }
 
-            var regexText = (string)pattern.Value;
+            string regexText = (string)pattern.Value;
             int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
 
             string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);

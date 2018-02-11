@@ -159,11 +159,11 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
         
         [Test]
-        public void BooleanExpressionTest_RegExEqualsOperator()
+        public void BooleanExpressionTest_RegexEqualsOperator()
         {
             BooleanQueryExpression e1 = new BooleanQueryExpression
             {
-                Operator = QueryOperator.RegExEquals,
+                Operator = QueryOperator.RegexEquals,
                 Right = new JValue("/foo.*d/"),
                 Left = new List<PathFilter>
                 {
@@ -178,7 +178,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
 
             BooleanQueryExpression e2 = new BooleanQueryExpression
             {
-                Operator = QueryOperator.RegExEquals,
+                Operator = QueryOperator.RegexEquals,
                 Right = new JValue("/Foo.*d/i"),
                 Left = new List<PathFilter>
                 {
@@ -193,11 +193,11 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
-        public void BooleanExpressionTest_RegExEqualsOperator_CornerCase()
+        public void BooleanExpressionTest_RegexEqualsOperator_CornerCase()
         {
             BooleanQueryExpression e1 = new BooleanQueryExpression
             {
-                Operator = QueryOperator.RegExEquals,
+                Operator = QueryOperator.RegexEquals,
                 Right = new JValue("/// comment/"),
                 Left = new List<PathFilter>
                 {
@@ -210,7 +210,7 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
 
             BooleanQueryExpression e2 = new BooleanQueryExpression
             {
-                Operator = QueryOperator.RegExEquals,
+                Operator = QueryOperator.RegexEquals,
                 Right = new JValue("/<tag>.*</tag>/i"),
                 Left = new List<PathFilter>
                 {
