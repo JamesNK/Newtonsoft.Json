@@ -34,6 +34,7 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Tests.TestObjects;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -48,7 +49,7 @@ namespace Newtonsoft.Json.Tests.Issues
     public class Issue0198 : TestFixtureBase
     {
         [Test]
-        public void Test()
+        public void Test_List()
         {
             IEnumerable<TestClass1> objects = new List<TestClass1>
             {
@@ -96,6 +97,29 @@ namespace Newtonsoft.Json.Tests.Issues
             Assert.AreEqual(1, o.Prop3.Count);
         }
 
+        [Test]
+        public void Test_Collection()
+        {
+            TestClass3 c = new TestClass3();
+            c.Prop1 = new Dictionary<string, string>
+            {
+                ["key"] = "value"
+            };
+
+            string serializedData = JsonConvert.SerializeObject(c, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+                Formatting = Formatting.Indented
+            });
+
+            TestClass3 a = JsonConvert.DeserializeObject<TestClass3>(serializedData, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            });
+
+            Assert.AreEqual(1, a.Prop1.Count);
+        }
+
         class TestClass1 : AbstactClass
         {
             public TestClass1()
@@ -117,6 +141,16 @@ namespace Newtonsoft.Json.Tests.Issues
         abstract class AbstactClass
         {
             public ICollection<TestClass2> Prop3 { get; set; } = new List<TestClass2>();
+        }
+
+        class TestClass3
+        {
+            public TestClass3()
+            {
+                Prop1 = new ModelStateDictionary<string>();
+            }
+
+            public IDictionary<string, string> Prop1 { get; set; }
         }
     }
 }
