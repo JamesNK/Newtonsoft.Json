@@ -67,7 +67,8 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             JValue token = new JValue(long.MaxValue);
 
             ExceptionAssert.Throws<JsonReaderException>(
-                () => token.CreateReader().ReadAsInt32()
+                () => token.CreateReader().ReadAsInt32(),
+                "Could not convert to integer: 9223372036854775807. Path ''."
             );
         }
 
