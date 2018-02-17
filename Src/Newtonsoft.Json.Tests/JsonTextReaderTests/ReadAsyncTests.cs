@@ -57,6 +57,16 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
     public class ReadAsyncTests : TestFixtureBase
     {
         [Test]
+        public async Task ReadAsInt32Async_IntegerTooLarge_ThrowsJsonReaderException()
+        {
+            JValue token = new JValue(long.MaxValue);
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(
+                () => token.CreateReader().ReadAsInt32Async()
+            );
+        }
+
+        [Test]
         public async Task ReadMissingInt64()
         {
             string json = "{ A: \"\", B: 1, C: , D: 1.23, E: 3.45, F: null }";

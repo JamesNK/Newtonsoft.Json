@@ -408,12 +408,24 @@ namespace Newtonsoft.Json
                     return null;
                 case JsonToken.Integer:
                 case JsonToken.Float:
-                    if (!(Value is int))
+                    object v = Value;
+                    if (v is int i)
                     {
-                        SetToken(JsonToken.Integer, Convert.ToInt32(Value, CultureInfo.InvariantCulture), false);
+                        return i;
                     }
 
-                    return (int)Value;
+                    try
+                    {
+                        i = Convert.ToInt32(v, CultureInfo.InvariantCulture);
+                    }
+                    catch (Exception ex)
+                    {
+                        // handle error for large integer overflow exceptions
+                        throw JsonReaderException.Create(this, "Could not convert to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, v), ex);
+                    }
+
+                    SetToken(JsonToken.Integer, i, false);
+                    return i;
                 case JsonToken.String:
                     string s = (string)Value;
                     return ReadInt32String(s);
@@ -462,17 +474,18 @@ namespace Newtonsoft.Json
 
             if (JsonTokenUtils.IsPrimitiveToken(t))
             {
-                if (Value != null)
+                object v = Value;
+                if (v != null)
                 {
                     string s;
-                    if (Value is IFormattable formattable)
+                    if (v is IFormattable formattable)
                     {
                         s = formattable.ToString(null, Culture);
                     }
                     else
                     {
-                        Uri uri = Value as Uri;
-                        s = uri != null ? uri.OriginalString : Value.ToString();
+                        Uri uri = v as Uri;
+                        s = uri != null ? uri.OriginalString : v.ToString();
                     }
 
                     SetToken(JsonToken.String, s, false);
@@ -520,9 +533,9 @@ namespace Newtonsoft.Json
                     {
                         data = CollectionUtils.ArrayEmpty<byte>();
                     }
-                    else if (ConvertUtils.TryConvertGuid(s, out Guid g))
+                    else if (ConvertUtils.TryConvertGuid(s, out Guid g1))
                     {
-                        data = g.ToByteArray();
+                        data = g1.ToByteArray();
                     }
                     else
                     {
@@ -537,9 +550,9 @@ namespace Newtonsoft.Json
                 case JsonToken.EndArray:
                     return null;
                 case JsonToken.Bytes:
-                    if (ValueType == typeof(Guid))
+                    if (Value is Guid g2)
                     {
-                        byte[] data = ((Guid)Value).ToByteArray();
+                        byte[] data = g2.ToByteArray();
                         SetToken(JsonToken.Bytes, data, false);
                         return data;
                     }
@@ -606,24 +619,26 @@ namespace Newtonsoft.Json
                     return null;
                 case JsonToken.Integer:
                 case JsonToken.Float:
-                    if (!(Value is double))
+                    object v = Value;
+                    if (v is double d)
                     {
-                        double d;
-#if HAVE_BIG_INTEGER
-                        if (Value is BigInteger value)
-                        {
-                            d = (double)value;
-                        }
-                        else
-#endif
-                        {
-                            d = Convert.ToDouble(Value, CultureInfo.InvariantCulture);
-                        }
-
-                        SetToken(JsonToken.Float, d, false);
+                        return d;
                     }
 
-                    return (double)Value;
+#if HAVE_BIG_INTEGER
+                    if (v is BigInteger value)
+                    {
+                        d = (double)value;
+                    }
+                    else
+#endif
+                    {
+                        d = Convert.ToDouble(v, CultureInfo.InvariantCulture);
+                    }
+
+                    SetToken(JsonToken.Float, d, false);
+
+                    return (double)d;
                 case JsonToken.String:
                     return ReadDoubleString((string)Value);
             }
@@ -680,7 +695,6 @@ namespace Newtonsoft.Json
                     }
 
                     SetToken(JsonToken.Boolean, b, false);
-
                     return b;
                 case JsonToken.String:
                     return ReadBooleanString((string)Value);
@@ -727,24 +741,26 @@ namespace Newtonsoft.Json
                     return null;
                 case JsonToken.Integer:
                 case JsonToken.Float:
-                    if (!(Value is decimal))
+                    object v = Value;
+                    
+                    if (v is decimal d)
                     {
-                        decimal d;
-#if HAVE_BIG_INTEGER
-                        if (Value is BigInteger value)
-                        {
-                            d = (decimal)value;
-                        }
-                        else
-#endif
-                        {
-                            d = Convert.ToDecimal(Value, CultureInfo.InvariantCulture);
-                        }
-
-                        SetToken(JsonToken.Float, d, false);
+                        return d;
                     }
 
-                    return (decimal)Value;
+#if HAVE_BIG_INTEGER
+                    if (v is BigInteger value)
+                    {
+                        d = (decimal)value;
+                    }
+                    else
+#endif
+                    {
+                        d = Convert.ToDecimal(v, CultureInfo.InvariantCulture);
+                    }
+
+                    SetToken(JsonToken.Float, d, false);
+                    return d;
                 case JsonToken.String:
                     return ReadDecimalString((string)Value);
             }

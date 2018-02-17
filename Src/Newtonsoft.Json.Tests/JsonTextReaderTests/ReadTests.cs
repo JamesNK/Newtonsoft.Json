@@ -62,6 +62,16 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
     public class ReadTests : TestFixtureBase
     {
         [Test]
+        public void ReadAsInt32_IntegerTooLarge_ThrowsJsonReaderException()
+        {
+            JValue token = new JValue(long.MaxValue);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => token.CreateReader().ReadAsInt32()
+            );
+        }
+
+        [Test]
         public void ReadMissingInt64()
         {
             string json = "{ A: \"\", B: 1, C: , D: 1.23, E: 3.45, F: null }";
