@@ -73,6 +73,28 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
         }
 
         [Test]
+        public void ReadAsDecimal_IntegerTooLarge_ThrowsJsonReaderException()
+        {
+            JValue token = new JValue(double.MaxValue);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => token.CreateReader().ReadAsDecimal(),
+                "Could not convert to decimal: 1.79769313486232E+308. Path ''."
+            );
+        }
+
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
+        [Test]
+        public void ReadAsInt32_BigIntegerValue_Success()
+        {
+            JValue token = new JValue(BigInteger.Parse("1"));
+
+            int? i = token.CreateReader().ReadAsInt32();
+            Assert.AreEqual(1, i);
+        }
+#endif
+
+        [Test]
         public void ReadMissingInt64()
         {
             string json = "{ A: \"\", B: 1, C: , D: 1.23, E: 3.45, F: null }";

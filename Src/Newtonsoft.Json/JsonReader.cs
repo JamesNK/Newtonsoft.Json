@@ -414,14 +414,23 @@ namespace Newtonsoft.Json
                         return i;
                     }
 
-                    try
+#if HAVE_BIG_INTEGER
+                    if (v is BigInteger value)
                     {
-                        i = Convert.ToInt32(v, CultureInfo.InvariantCulture);
+                        i = (int)value;
                     }
-                    catch (Exception ex)
+                    else
+#endif
                     {
-                        // handle error for large integer overflow exceptions
-                        throw JsonReaderException.Create(this, "Could not convert to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, v), ex);
+                        try
+                        {
+                            i = Convert.ToInt32(v, CultureInfo.InvariantCulture);
+                        }
+                        catch (Exception ex)
+                        {
+                            // handle error for large integer overflow exceptions
+                            throw JsonReaderException.Create(this, "Could not convert to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, v), ex);
+                        }
                     }
 
                     SetToken(JsonToken.Integer, i, false);
@@ -756,7 +765,15 @@ namespace Newtonsoft.Json
                     else
 #endif
                     {
-                        d = Convert.ToDecimal(v, CultureInfo.InvariantCulture);
+                        try
+                        {
+                            d = Convert.ToDecimal(v, CultureInfo.InvariantCulture);
+                        }
+                        catch (Exception ex)
+                        {
+                            // handle error for large integer overflow exceptions
+                            throw JsonReaderException.Create(this, "Could not convert to decimal: {0}.".FormatWith(CultureInfo.InvariantCulture, v), ex);
+                        }
                     }
 
                     SetToken(JsonToken.Float, d, false);
