@@ -2,7 +2,7 @@
   $zipFileName = "Json110r1.zip"
   $majorVersion = "11.0"
   $majorWithReleaseVersion = "11.0.1"
-  $nugetPrerelease = "beta3"
+  $nugetPrerelease = $null
   $version = GetVersion $majorWithReleaseVersion
   $packageId = "Newtonsoft.Json"
   $signAssemblies = $false
