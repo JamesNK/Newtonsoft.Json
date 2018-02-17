@@ -83,25 +83,12 @@ and write from your objects.</para>
                 <linkTarget>_blank</linkTarget>
             </externalLink>,
             an async library for building real-time, multi-user interactive web applications; and <externalLink>
-                <linkText>ASP.NET Web API</linkText>
-                <linkUri>http://www.asp.net/web-api</linkUri>
+                <linkText>ASP.NET Core</linkText>
+                <linkUri>http://www.asp.net</linkUri>
                 <linkTarget>_blank</linkTarget>
             </externalLink>,
-            Microsoft's HTTP service framework.</para>
+            Microsoft's web app and service framework.</para>
 </content>
-</section>
-
-<section>
- <title>Donate</title>
- <content><para>Json.NET is a personal open source project. Started in 2006, I have put thousands of hours into adding, refining, and tuning Json.NET with the goal of making it not just the best JSON serializer for .NET, but the best serializer for any computer language. I need your
- help to achieve this.</para>
-
- <markup>
- <p>
-   <a href="https://pledgie.com/campaigns/18941" target="_blank"><img src="https://pledgie.com/campaigns/18941.png?skin_name=chrome" alt="Click here to lend your support to: Json.NET and make a donation at www.pledgie.com !" border="0" /></a>
- </p>
- </markup>
- </content>
 </section>
 
     <relatedTopics>

@@ -150,14 +150,23 @@ namespace Newtonsoft.Json.Converters
         private object ReadRegexString(JsonReader reader)
         {
             string regexText = (string)reader.Value;
-            int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
 
-            string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
-            string optionsText = regexText.Substring(patternOptionDelimiterIndex + 1);
+            if (regexText.Length > 0 && regexText[0] == '/')
+            {
+                int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
 
-            RegexOptions options = MiscellaneousUtils.GetRegexOptions(optionsText);
+                if (patternOptionDelimiterIndex > 0)
+                {
+                    string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
+                    string optionsText = regexText.Substring(patternOptionDelimiterIndex + 1);
 
-            return new Regex(patternText, options);
+                    RegexOptions options = MiscellaneousUtils.GetRegexOptions(optionsText);
+
+                    return new Regex(patternText, options);
+                }
+            }
+
+            throw JsonSerializationException.Create(reader, "Regex pattern must be enclosed by slashes.");
         }
 
         private Regex ReadRegexObject(JsonReader reader, JsonSerializer serializer)
