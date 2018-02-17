@@ -96,9 +96,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="donate.gif" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="icons\favicon.ico" />
     <None Include="Samples\Serializer\CustomJsonConverterGeneric.aml" />
     <None Include="Samples\Serializer\NamingStrategyAttributes.aml" />
