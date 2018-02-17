@@ -31,7 +31,6 @@
   <ItemGroup>
     <None Remove="**\*.orig" />
     <None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
-    <None Include="..\..\Build\install.ps1" Pack="true" PackagePath="tools\install.ps1" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
     <AssemblyTitle>Json.NET</AssemblyTitle>
