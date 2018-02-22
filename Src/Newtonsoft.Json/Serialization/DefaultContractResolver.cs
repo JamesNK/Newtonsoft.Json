@@ -313,13 +313,6 @@ namespace Newtonsoft.Json.Serialization
         /// <returns>A <see cref="JsonObjectContract"/> for the given type.</returns>
         protected virtual JsonObjectContract CreateObjectContract(Type objectType)
         {
-            // serializing DirectoryInfo without ISerializable will stackoverflow
-            // https://github.com/JamesNK/Newtonsoft.Json/issues/1541
-            if (Array.IndexOf(BlacklistedTypeNames, objectType.FullName) != -1)
-            {
-                throw new JsonSerializationException("Unable to serialize instance of '{0}'.".FormatWith(CultureInfo.InvariantCulture, objectType));
-            }
-
             JsonObjectContract contract = new JsonObjectContract(objectType);
             InitializeContract(contract);
 
@@ -404,7 +397,19 @@ namespace Newtonsoft.Json.Serialization
                 SetExtensionDataDelegates(contract, extensionDataMember);
             }
 
+            // serializing DirectoryInfo without ISerializable will stackoverflow
+            // https://github.com/JamesNK/Newtonsoft.Json/issues/1541
+            if (Array.IndexOf(BlacklistedTypeNames, objectType.FullName) != -1)
+            {
+                contract.OnSerializingCallbacks.Add(ThrowUnableToSerializeError);
+            }
+
             return contract;
+        }
+
+        private static void ThrowUnableToSerializeError(object o, StreamingContext context)
+        {
+            throw new JsonSerializationException("Unable to serialize instance of '{0}'.".FormatWith(CultureInfo.InvariantCulture, o.GetType()));
         }
 
         private MemberInfo GetExtensionDataMemberForType(Type type)
