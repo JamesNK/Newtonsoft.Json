@@ -28,7 +28,11 @@ using System;
 using System.Buffers;
 #endif
 using System.Collections.Generic;
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
+using System.Data;
+#endif
 using System.IO;
+using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
@@ -609,6 +613,73 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(4, value.Count);
         }
 #endif
+
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
+        [Test]
+        public void SerializeDataTable()
+        {
+            DataTable dt = new DataTable();
+            dt.Columns.Add("PackageId", typeof(string));
+            dt.Columns.Add("Version", typeof(string));
+            dt.Columns.Add("ReleaseDate", typeof(DateTime));
+
+            dt.Rows.Add("Newtonsoft.Json", "11.0.1", new DateTime(2018, 2, 17));
+            dt.Rows.Add("Newtonsoft.Json", "10.0.3", new DateTime(2017, 6, 18));
+
+            string json = JsonConvert.SerializeObject(dt, Formatting.Indented);
+
+            Console.WriteLine(json);
+            // [
+            //   {
+            //     "PackageId": "Newtonsoft.Json",
+            //     "Version": "11.0.1",
+            //     "ReleaseDate": "2018-02-17T00:00:00"
+            //   },
+            //   {
+            //     "PackageId": "Newtonsoft.Json",
+            //     "Version": "10.0.3",
+            //     "ReleaseDate": "2017-06-18T00:00:00"
+            //   }
+            // ]
+
+            StringAssert.AreEqual(@"[
+  {
+    ""PackageId"": ""Newtonsoft.Json"",
+    ""Version"": ""11.0.1"",
+    ""ReleaseDate"": ""2018-02-17T00:00:00""
+  },
+  {
+    ""PackageId"": ""Newtonsoft.Json"",
+    ""Version"": ""10.0.3"",
+    ""ReleaseDate"": ""2017-06-18T00:00:00""
+  }
+]", json);
+        }
+#endif
+
+        [Test]
+        public void JsonPathRegex()
+        {
+            JArray packages = JArray.Parse(@"[
+              {
+                ""PackageId"": ""Newtonsoft.Json"",
+                ""Version"": ""11.0.1"",
+                ""ReleaseDate"": ""2018-02-17T00:00:00""
+              },
+              {
+                ""PackageId"": ""NUnit"",
+                ""Version"": ""3.9.0"",
+                ""ReleaseDate"": ""2017-11-10T00:00:00""
+              }
+            ]");
+
+            List<JToken> newtonsoftPackages = packages.SelectTokens(@"$.[?(@.PackageId =~ /^Newtonsoft\.(.*)$/)]").ToList();
+
+            Console.WriteLine(newtonsoftPackages.Count);
+            // 1
+
+            Assert.AreEqual(1, newtonsoftPackages.Count);
+        }
 
 #if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
         [Test]
