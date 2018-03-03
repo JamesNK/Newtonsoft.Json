@@ -982,6 +982,11 @@ namespace Newtonsoft.Json.Serialization
                 }
             }
 
+            if (value is DateTime dt)
+            {
+                return DateTimeUtils.EnsureDateTime(dt, reader.DateTimeZoneHandling);
+            }
+
             return value;
         }
 
