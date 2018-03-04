@@ -73,7 +73,7 @@ namespace Newtonsoft.Json.Tests.Documentation
                 writer.WriteValue("DVD read/writer");
                 writer.WriteComment("(broken)");
                 writer.WriteValue("500 gigabyte hard drive");
-                writer.WriteValue("200 gigabype hard drive");
+                writer.WriteValue("200 gigabyte hard drive");
                 writer.WriteEnd();
                 writer.WriteEndObject();
             }
@@ -85,7 +85,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             //     "DVD read/writer"
             //     /*(broken)*/,
             //     "500 gigabyte hard drive",
-            //     "200 gigabype hard drive"
+            //     "200 gigabyte hard drive"
             //   ]
             // }
             #endregion
@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Tests.Documentation
                  'DVD read/writer'
                  /*(broken)*/,
                  '500 gigabyte hard drive',
-                 '200 gigabype hard drive'
+                 '200 gigabyte hard drive'
                ]
             }";
 
@@ -129,7 +129,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             // Token: String, Value: DVD read/writer
             // Token: Comment, Value: (broken)
             // Token: String, Value: 500 gigabyte hard drive
-            // Token: String, Value: 200 gigabype hard drive
+            // Token: String, Value: 200 gigabyte hard drive
             // Token: EndArray
             // Token: EndObject
             #endregion

@@ -535,7 +535,7 @@ namespace Newtonsoft.Json.Tests
                 await jsonWriter.WriteValueAsync("DVD read/writer");
                 await jsonWriter.WriteCommentAsync("(broken)");
                 await jsonWriter.WriteValueAsync("500 gigabyte hard drive");
-                await jsonWriter.WriteValueAsync("200 gigabype hard drive");
+                await jsonWriter.WriteValueAsync("200 gigabyte hard drive");
                 await jsonWriter.WriteEndObjectAsync();
                 Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
             }
@@ -547,7 +547,7 @@ namespace Newtonsoft.Json.Tests
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }";
             string result = sb.ToString();
@@ -575,7 +575,7 @@ namespace Newtonsoft.Json.Tests
                 await jsonWriter.WriteValueAsync("DVD read/writer");
                 await jsonWriter.WriteCommentAsync("(broken)");
                 await jsonWriter.WriteValueAsync("500 gigabyte hard drive");
-                await jsonWriter.WriteValueAsync("200 gigabype hard drive");
+                await jsonWriter.WriteValueAsync("200 gigabyte hard drive");
                 await jsonWriter.CloseAsync();
             }
 
@@ -586,7 +586,7 @@ namespace Newtonsoft.Json.Tests
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }";
             string result = sb.ToString();
@@ -614,7 +614,7 @@ namespace Newtonsoft.Json.Tests
                 await jsonWriter.WriteValueAsync("DVD read/writer");
                 await jsonWriter.WriteCommentAsync("(broken)");
                 await jsonWriter.WriteValueAsync("500 gigabyte hard drive");
-                await jsonWriter.WriteValueAsync("200 gigabype hard drive");
+                await jsonWriter.WriteValueAsync("200 gigabyte hard drive");
                 await jsonWriter.WriteEndAsync();
                 await jsonWriter.WriteEndObjectAsync();
                 Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
@@ -627,7 +627,7 @@ namespace Newtonsoft.Json.Tests
             //     "DVD read/writer"
             //     /*(broken)*/,
             //     "500 gigabyte hard drive",
-            //     "200 gigabype hard drive"
+            //     "200 gigabyte hard drive"
             //   ]
             // }
 
@@ -638,7 +638,7 @@ namespace Newtonsoft.Json.Tests
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }";
             string result = sb.ToString();

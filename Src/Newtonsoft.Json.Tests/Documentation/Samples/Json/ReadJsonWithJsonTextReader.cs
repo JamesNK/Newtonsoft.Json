@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
                  'DVD read/writer'
                  /*(broken)*/,
                  '500 gigabyte hard drive',
-                 '200 gigabype hard drive'
+                 '200 gigabyte hard drive'
                ]
             }";
 
@@ -79,7 +79,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             // Token: String, Value: DVD read/writer
             // Token: Comment, Value: (broken)
             // Token: String, Value: 500 gigabyte hard drive
-            // Token: String, Value: 200 gigabype hard drive
+            // Token: String, Value: 200 gigabyte hard drive
             // Token: EndArray
             // Token: EndObject
             #endregion

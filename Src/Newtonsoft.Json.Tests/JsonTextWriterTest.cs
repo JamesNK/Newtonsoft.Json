@@ -398,7 +398,7 @@ namespace Newtonsoft.Json.Tests
                 jsonWriter.WriteValue("DVD read/writer");
                 jsonWriter.WriteComment("(broken)");
                 jsonWriter.WriteValue("500 gigabyte hard drive");
-                jsonWriter.WriteValue("200 gigabype hard drive");
+                jsonWriter.WriteValue("200 gigabyte hard drive");
                 jsonWriter.WriteEndObject();
                 Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
             }
@@ -410,7 +410,7 @@ namespace Newtonsoft.Json.Tests
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }";
             string result = sb.ToString();
@@ -438,7 +438,7 @@ namespace Newtonsoft.Json.Tests
                 jsonWriter.WriteValue("DVD read/writer");
                 jsonWriter.WriteComment("(broken)");
                 jsonWriter.WriteValue("500 gigabyte hard drive");
-                jsonWriter.WriteValue("200 gigabype hard drive");
+                jsonWriter.WriteValue("200 gigabyte hard drive");
                 jsonWriter.Close();
             }
 
@@ -449,7 +449,7 @@ namespace Newtonsoft.Json.Tests
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }";
             string result = sb.ToString();
@@ -477,7 +477,7 @@ namespace Newtonsoft.Json.Tests
                 jsonWriter.WriteValue("DVD read/writer");
                 jsonWriter.WriteComment("(broken)");
                 jsonWriter.WriteValue("500 gigabyte hard drive");
-                jsonWriter.WriteValue("200 gigabype hard drive");
+                jsonWriter.WriteValue("200 gigabyte hard drive");
                 jsonWriter.WriteEnd();
                 jsonWriter.WriteEndObject();
                 Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
@@ -490,7 +490,7 @@ namespace Newtonsoft.Json.Tests
             //     "DVD read/writer"
             //     /*(broken)*/,
             //     "500 gigabyte hard drive",
-            //     "200 gigabype hard drive"
+            //     "200 gigabyte hard drive"
             //   ]
             // }
 
@@ -501,7 +501,7 @@ namespace Newtonsoft.Json.Tests
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }";
             string result = sb.ToString();
