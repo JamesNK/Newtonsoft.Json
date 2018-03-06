@@ -21,7 +21,7 @@
     <PackageIconUrl>https://www.newtonsoft.com/content/images/nugeticon.png</PackageIconUrl>
     <PackageProjectUrl>https://www.newtonsoft.com/json</PackageProjectUrl>
     <PackageLicenseUrl>https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md</PackageLicenseUrl>
-    <RepositoryUrl>https://github.com/JamesNK/Newtonsoft.Json</RepositoryUrl>
+    <RepositoryUrl>https://github.com/JamesNK/Newtonsoft.Json.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <RootNamespace>Newtonsoft.Json</RootNamespace>
     <AssemblyName>Newtonsoft.Json</AssemblyName>
