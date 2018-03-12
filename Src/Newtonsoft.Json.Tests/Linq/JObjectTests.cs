@@ -2040,5 +2040,28 @@ Parameter name: arrayIndex");
             ExceptionAssert.Throws<JsonReaderException>(() => JObject.Parse(json),
                 "Additional text encountered after finished reading JSON content: [. Path '', line 3, position 0.");
         }
+
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
+        [Test]
+        public void GetPropertyOwner_ReturnsJObject()
+        {
+            ICustomTypeDescriptor o = new JObject
+            {
+                ["prop1"] = 1
+            };
+
+            PropertyDescriptorCollection properties = o.GetProperties();
+            Assert.AreEqual(1, properties.Count);
+
+            PropertyDescriptor pd = properties[0];      
+            Assert.AreEqual("prop1", pd.Name);
+
+            object owner = o.GetPropertyOwner(pd);
+            Assert.AreEqual(o, owner);
+
+            object value = pd.GetValue(owner);
+            Assert.AreEqual(1, (int)(JToken)value);
+        }
+#endif
     }
 }

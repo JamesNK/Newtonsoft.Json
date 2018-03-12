@@ -780,6 +780,11 @@ namespace Newtonsoft.Json.Linq
 
         object ICustomTypeDescriptor.GetPropertyOwner(PropertyDescriptor pd)
         {
+            if (pd is JPropertyDescriptor)
+            {
+                return this;
+            }
+
             return null;
         }
         #endregion

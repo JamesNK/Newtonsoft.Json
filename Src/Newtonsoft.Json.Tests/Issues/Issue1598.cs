@@ -60,13 +60,13 @@ namespace Newtonsoft.Json.Tests.Issues
             };
 
             string json = JsonConvert.SerializeObject(activities, Formatting.Indented);
-            StringAssert.AreEqual(@"{
-  ""List"": [
-    {
-      ""Name"": ""An activity""
-    }
-  ]
-}", json);
+            // note that this has been reverted back in 11.0.2 because it is causing compat issues
+            // https://github.com/JamesNK/Newtonsoft.Json/issues/1627
+            StringAssert.AreEqual(@"[
+  {
+    ""Name"": ""An activity""
+  }
+]", json);
         }
 
         [Test]
