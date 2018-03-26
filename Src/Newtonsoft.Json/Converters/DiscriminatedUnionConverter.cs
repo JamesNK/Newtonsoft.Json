@@ -112,6 +112,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
+        /// <exception cref="JsonSerializationException"/>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
             DefaultContractResolver resolver = serializer.ContractResolver as DefaultContractResolver;
@@ -128,14 +129,35 @@ namespace Newtonsoft.Json.Converters
             if (caseInfo.Fields != null && caseInfo.Fields.Length > 0)
             {
                 object[] fields = (object[])caseInfo.FieldReader.Invoke(value);
-
-                writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(FieldsPropertyName) : FieldsPropertyName);
-                writer.WriteStartArray();
-                foreach (object field in fields)
+#if HAVE_FULL_REFLECTION
+                bool treatUnionFieldsAsRecords = unionType.GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Length > 0;
+#else
+                bool treatUnionFieldsAsRecords = unionType.GetTypeInfo().GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Count() > 0;
+#endif
+                if (treatUnionFieldsAsRecords)
                 {
-                    serializer.Serialize(writer, field);
+                    if (fields.Length != caseInfo.Fields.Length) throw new JsonSerializationException("Unexpected array length mismatch between union case field values and union case field info.");
+
+                    writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(FieldsPropertyName) : FieldsPropertyName);
+                    writer.WriteStartObject();
+                    for (int i = 0; i < fields.Length; i++)
+                    {
+                        writer.WritePropertyName(caseInfo.Fields[i].Name);
+                        serializer.Serialize(writer, fields[i]);
+                    }
+                    writer.WriteEndObject();
                 }
-                writer.WriteEndArray();
+                else
+                {
+                    writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(FieldsPropertyName) : FieldsPropertyName);
+                    writer.WriteStartArray();
+                    foreach (object field in fields)
+                    {
+                        serializer.Serialize(writer, field);
+                    }
+                    writer.WriteEndArray();
+                }
+                
             }
             writer.WriteEndObject();
         }
@@ -148,6 +170,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
+        /// <exception cref="JsonSerializationException"/>
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
