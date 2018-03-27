@@ -64,6 +64,7 @@ namespace Newtonsoft.Json.Converters
 
         private const string CasePropertyName = "Case";
         private const string FieldsPropertyName = "Fields";
+        private const string RecordPropertyName = "Record";
 
         private static readonly ThreadSafeStore<Type, Union> UnionCache = new ThreadSafeStore<Type, Union>(CreateUnion);
         private static readonly ThreadSafeStore<Type, Type> UnionTypeLookupCache = new ThreadSafeStore<Type, Type>(CreateUnionTypeLookup);
@@ -130,15 +131,15 @@ namespace Newtonsoft.Json.Converters
             {
                 object[] fields = (object[])caseInfo.FieldReader.Invoke(value);
 #if HAVE_FULL_REFLECTION
-                bool treatUnionFieldsAsRecords = unionType.GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Length > 0;
+                bool treatUnionFieldsAsRecord = unionType.GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Length > 0;
 #else
-                bool treatUnionFieldsAsRecords = unionType.GetTypeInfo().GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Count() > 0;
+                bool treatUnionFieldsAsRecord = unionType.GetTypeInfo().GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Count() > 0;
 #endif
-                if (treatUnionFieldsAsRecords)
+                if (treatUnionFieldsAsRecord)
                 {
                     if (fields.Length != caseInfo.Fields.Length) throw new JsonSerializationException("Unexpected array length mismatch between union case field values and union case field info.");
 
-                    writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(FieldsPropertyName) : FieldsPropertyName);
+                    writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(RecordPropertyName) : RecordPropertyName);
                     writer.WriteStartObject();
                     for (int i = 0; i < fields.Length; i++)
                     {
