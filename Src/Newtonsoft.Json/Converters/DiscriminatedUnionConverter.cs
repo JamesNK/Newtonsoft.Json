@@ -124,22 +124,22 @@ namespace Newtonsoft.Json.Converters
             int tag = (int)union.TagReader.Invoke(value);
             UnionCase caseInfo = union.Cases.Single(c => c.Tag == tag);
 
-            writer.WriteStartObject();
-            writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(CasePropertyName) : CasePropertyName);
-            writer.WriteValue(caseInfo.Name);
-            if (caseInfo.Fields != null && caseInfo.Fields.Length > 0)
-            {
-                object[] fields = (object[])caseInfo.FieldReader.Invoke(value);
 #if HAVE_FULL_REFLECTION
-                bool treatUnionFieldsAsRecord = unionType.GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Length > 0;
+            bool treatUnionFieldsAsRecord = unionType.GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Length > 0;
 #else
-                bool treatUnionFieldsAsRecord = unionType.GetTypeInfo().GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Count() > 0;
+            bool treatUnionFieldsAsRecord = unionType.GetTypeInfo().GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Count() > 0;
 #endif
-                if (treatUnionFieldsAsRecord)
+
+            writer.WriteStartObject();
+            if (treatUnionFieldsAsRecord)
+            {
+                if (caseInfo.Fields != null && caseInfo.Fields.Length > 0)
                 {
+                    object[] fields = (object[])caseInfo.FieldReader.Invoke(value);
+
                     if (fields.Length != caseInfo.Fields.Length) throw new JsonSerializationException("Unexpected array length mismatch between union case field values and union case field info.");
 
-                    writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(RecordPropertyName) : RecordPropertyName);
+                    writer.WritePropertyName(caseInfo.Name);
                     writer.WriteStartObject();
                     for (int i = 0; i < fields.Length; i++)
                     {
@@ -148,8 +148,16 @@ namespace Newtonsoft.Json.Converters
                     }
                     writer.WriteEndObject();
                 }
-                else
+            }
+            else
+            {
+                writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(CasePropertyName) : CasePropertyName);
+                writer.WriteValue(caseInfo.Name);
+
+                if (caseInfo.Fields != null && caseInfo.Fields.Length > 0)
                 {
+                    object[] fields = (object[])caseInfo.FieldReader.Invoke(value);
+
                     writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(FieldsPropertyName) : FieldsPropertyName);
                     writer.WriteStartArray();
                     foreach (object field in fields)
@@ -158,7 +166,7 @@ namespace Newtonsoft.Json.Converters
                     }
                     writer.WriteEndArray();
                 }
-                
+
             }
             writer.WriteEndObject();
         }
