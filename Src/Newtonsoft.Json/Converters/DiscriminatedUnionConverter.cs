@@ -124,22 +124,22 @@ namespace Newtonsoft.Json.Converters
             int tag = (int)union.TagReader.Invoke(value);
             UnionCase caseInfo = union.Cases.Single(c => c.Tag == tag);
 
-            writer.WriteStartObject();
-            writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(CasePropertyName) : CasePropertyName);
-            writer.WriteValue(caseInfo.Name);
-            if (caseInfo.Fields != null && caseInfo.Fields.Length > 0)
-            {
-                object[] fields = (object[])caseInfo.FieldReader.Invoke(value);
 #if HAVE_FULL_REFLECTION
-                bool treatUnionFieldsAsRecord = unionType.GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Length > 0;
+            bool treatUnionFieldsAsRecord = unionType.GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Length > 0;
 #else
-                bool treatUnionFieldsAsRecord = unionType.GetTypeInfo().GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Count() > 0;
+            bool treatUnionFieldsAsRecord = unionType.GetTypeInfo().GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Count() > 0;
 #endif
-                if (treatUnionFieldsAsRecord)
+
+            writer.WriteStartObject();
+            if (treatUnionFieldsAsRecord)
+            {
+                if (caseInfo.Fields != null && caseInfo.Fields.Length > 0)
                 {
+                    object[] fields = (object[])caseInfo.FieldReader.Invoke(value);
+
                     if (fields.Length != caseInfo.Fields.Length) throw new JsonSerializationException("Unexpected array length mismatch between union case field values and union case field info.");
 
-                    writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(RecordPropertyName) : RecordPropertyName);
+                    writer.WritePropertyName(caseInfo.Name);
                     writer.WriteStartObject();
                     for (int i = 0; i < fields.Length; i++)
                     {
@@ -148,8 +148,16 @@ namespace Newtonsoft.Json.Converters
                     }
                     writer.WriteEndObject();
                 }
-                else
+            }
+            else
+            {
+                writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(CasePropertyName) : CasePropertyName);
+                writer.WriteValue(caseInfo.Name);
+
+                if (caseInfo.Fields != null && caseInfo.Fields.Length > 0)
                 {
+                    object[] fields = (object[])caseInfo.FieldReader.Invoke(value);
+
                     writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(FieldsPropertyName) : FieldsPropertyName);
                     writer.WriteStartArray();
                     foreach (object field in fields)
@@ -158,7 +166,7 @@ namespace Newtonsoft.Json.Converters
                     }
                     writer.WriteEndArray();
                 }
-                
+
             }
             writer.WriteEndObject();
         }
@@ -179,6 +187,12 @@ namespace Newtonsoft.Json.Converters
                 return null;
             }
 
+#if HAVE_FULL_REFLECTION
+            bool treatUnionFieldsAsRecord = objectType.GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Length > 0;
+#else
+            bool treatUnionFieldsAsRecord = objectType.GetTypeInfo().GetCustomAttributes(typeof(DiscriminatedUnionFieldsAsRecordAttribute), true).Count() > 0;
+#endif
+
             UnionCase caseInfo = null;
             string caseName = null;
             JArray fields = null;
@@ -186,37 +200,86 @@ namespace Newtonsoft.Json.Converters
             // start object
             reader.ReadAndAssert();
 
+            Union union = UnionCache.Get(objectType);
+
+            Dictionary<string, object> labelValuePairs = new Dictionary<string, object>();
+
             while (reader.TokenType == JsonToken.PropertyName)
             {
                 string propertyName = reader.Value.ToString();
-                if (string.Equals(propertyName, CasePropertyName, StringComparison.OrdinalIgnoreCase))
+
+                if (treatUnionFieldsAsRecord)
                 {
-                    reader.ReadAndAssert();
-
-                    Union union = UnionCache.Get(objectType);
-
-                    caseName = reader.Value.ToString();
-
-                    caseInfo = union.Cases.SingleOrDefault(c => c.Name == caseName);
+                    caseInfo = union.Cases.SingleOrDefault(c => c.Name == propertyName);
 
                     if (caseInfo == null)
                     {
-                        throw JsonSerializationException.Create(reader, "No union type found with the name '{0}'.".FormatWith(CultureInfo.InvariantCulture, caseName));
+                        throw JsonSerializationException.Create(reader, "No union type found with the name '{0}'.".FormatWith(CultureInfo.InvariantCulture, propertyName));
                     }
-                }
-                else if (string.Equals(propertyName, FieldsPropertyName, StringComparison.OrdinalIgnoreCase))
-                {
+                    
                     reader.ReadAndAssert();
-                    if (reader.TokenType != JsonToken.StartArray)
+                    if (reader.TokenType == JsonToken.StartObject)
                     {
-                        throw JsonSerializationException.Create(reader, "Union fields must been an array.");
+                        reader.ReadAndAssert();
+
+                        JToken propertyValueToken;
+                        object propertyValue;
+                        string caseProperty;
+                        PropertyInfo casePropertyInfo;
+
+                        while (reader.TokenType == JsonToken.PropertyName)
+                        {
+                            caseProperty = reader.Value.ToString();
+                            casePropertyInfo = caseInfo.Fields.SingleOrDefault(c => c.Name == caseProperty);
+
+                            if (casePropertyInfo != null)
+                            {
+                                reader.ReadAndAssert();
+                                propertyValueToken = JToken.ReadFrom(reader);
+                                propertyValue = propertyValueToken.ToObject(casePropertyInfo.PropertyType, serializer);
+                                labelValuePairs.Add(caseProperty, propertyValue);
+                            }
+                            reader.ReadAndAssert();
+                        }
+
+                        reader.ReadAndAssert();
+                        if (reader.TokenType != JsonToken.EndObject)
+                        {
+                            throw JsonSerializationException.Create(reader, "Error reading discriminated union. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+                        }
                     }
 
-                    fields = (JArray)JToken.ReadFrom(reader);
+                    break;
                 }
                 else
                 {
-                    throw JsonSerializationException.Create(reader, "Unexpected property '{0}' found when reading union.".FormatWith(CultureInfo.InvariantCulture, propertyName));
+                    if (string.Equals(propertyName, CasePropertyName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        reader.ReadAndAssert();
+
+                        caseName = reader.Value.ToString();
+
+                        caseInfo = union.Cases.SingleOrDefault(c => c.Name == caseName);
+
+                        if (caseInfo == null)
+                        {
+                            throw JsonSerializationException.Create(reader, "No union type found with the name '{0}'.".FormatWith(CultureInfo.InvariantCulture, caseName));
+                        }
+                    }
+                    else if (string.Equals(propertyName, FieldsPropertyName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        reader.ReadAndAssert();
+                        if (reader.TokenType != JsonToken.StartArray)
+                        {
+                            throw JsonSerializationException.Create(reader, "Union fields must been an array.");
+                        }
+
+                        fields = (JArray)JToken.ReadFrom(reader);
+                    }
+                    else
+                    {
+                        throw JsonSerializationException.Create(reader, "Unexpected property '{0}' found when reading union.".FormatWith(CultureInfo.InvariantCulture, propertyName));
+                    }
                 }
 
                 reader.ReadAndAssert();
@@ -229,24 +292,35 @@ namespace Newtonsoft.Json.Converters
 
             object[] typedFieldValues = new object[caseInfo.Fields.Length];
 
-            if (caseInfo.Fields.Length > 0 && fields == null)
+            if (treatUnionFieldsAsRecord)
             {
-                throw JsonSerializationException.Create(reader, "No '{0}' property with union fields found.".FormatWith(CultureInfo.InvariantCulture, FieldsPropertyName));
-            }
-
-            if (fields != null)
-            {
-                if (caseInfo.Fields.Length != fields.Count)
+                for (int i = 0; i < caseInfo.Fields.Length; i++)
                 {
-                    throw JsonSerializationException.Create(reader, "The number of field values does not match the number of properties defined by union '{0}'.".FormatWith(CultureInfo.InvariantCulture, caseName));
+                    labelValuePairs.TryGetValue(caseInfo.Fields[i].Name, out typedFieldValues[i]);
+                }
+            }
+            else
+            {
+
+                if (caseInfo.Fields.Length > 0 && fields == null)
+                {
+                    throw JsonSerializationException.Create(reader, "No '{0}' property with union fields found.".FormatWith(CultureInfo.InvariantCulture, FieldsPropertyName));
                 }
 
-                for (int i = 0; i < fields.Count; i++)
+                if (fields != null)
                 {
-                    JToken t = fields[i];
-                    PropertyInfo fieldProperty = caseInfo.Fields[i];
+                    if (caseInfo.Fields.Length != fields.Count)
+                    {
+                        throw JsonSerializationException.Create(reader, "The number of field values does not match the number of properties defined by union '{0}'.".FormatWith(CultureInfo.InvariantCulture, caseName));
+                    }
 
-                    typedFieldValues[i] = t.ToObject(fieldProperty.PropertyType, serializer);
+                    for (int i = 0; i < fields.Count; i++)
+                    {
+                        JToken t = fields[i];
+                        PropertyInfo fieldProperty = caseInfo.Fields[i];
+
+                        typedFieldValues[i] = t.ToObject(fieldProperty.PropertyType, serializer);
+                    }
                 }
             }
 
