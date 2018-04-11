@@ -38,6 +38,9 @@ using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 
 namespace Newtonsoft.Json
 {
+
+   
+
     /// <summary>
     /// Serializes and deserializes objects into and from the JSON format.
     /// The <see cref="JsonSerializer"/> enables you to control how objects are encoded into JSON.
@@ -66,6 +69,7 @@ namespace Newtonsoft.Json
         private DateFormatHandling? _dateFormatHandling;
         private DateTimeZoneHandling? _dateTimeZoneHandling;
         private DateParseHandling? _dateParseHandling;
+        private DataTableColumnType? _dataTableColumnType;
         private FloatFormatHandling? _floatFormatHandling;
         private FloatParseHandling? _floatParseHandling;
         private StringEscapeHandling? _stringEscapeHandling;
@@ -457,6 +461,16 @@ namespace Newtonsoft.Json
             set => _dateParseHandling = value;
         }
 
+
+        /// <summary>
+        /// Gets or sets how DataTable column types are set.        
+        /// </summary>
+        public virtual DataTableColumnType DataTableColumnType
+        {
+            get => _dataTableColumnType ?? JsonSerializerSettings.DefaultDataTableColumnType;
+            set => _dataTableColumnType = value;
+        }
+
         /// <summary>
         /// Gets or sets how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
         /// The default value is <see cref="Json.FloatParseHandling.Double" />.
@@ -762,6 +776,10 @@ namespace Newtonsoft.Json
                 serializer._dateFormatString = settings._dateFormatString;
                 serializer._dateFormatStringSet = settings._dateFormatStringSet;
             }
+            if (settings._dataTableColumnType != null)
+            {
+                serializer._dataTableColumnType = settings._dataTableColumnType;
+            }
             if (settings._floatFormatHandling != null)
             {
                 serializer._floatFormatHandling = settings._floatFormatHandling;
@@ -815,9 +833,10 @@ namespace Newtonsoft.Json
             DateTimeZoneHandling? previousDateTimeZoneHandling;
             DateParseHandling? previousDateParseHandling;
             FloatParseHandling? previousFloatParseHandling;
+            DataTableColumnType? previousDataTableColumnType;
             int? previousMaxDepth;
             string previousDateFormatString;
-            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
+            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString, out previousDataTableColumnType);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? CreateTraceJsonReader(reader)
@@ -831,7 +850,7 @@ namespace Newtonsoft.Json
                 TraceWriter.Trace(TraceLevel.Verbose, traceJsonReader.GetDeserializedJsonMessage(), null);
             }
 
-            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString);
+            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString, previousDataTableColumnType);
         }
 
         /// <summary>
@@ -889,9 +908,10 @@ namespace Newtonsoft.Json
             DateTimeZoneHandling? previousDateTimeZoneHandling;
             DateParseHandling? previousDateParseHandling;
             FloatParseHandling? previousFloatParseHandling;
+            DataTableColumnType? previousDataTableColumnType;
             int? previousMaxDepth;
             string previousDateFormatString;
-            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
+            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString, out previousDataTableColumnType);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? CreateTraceJsonReader(reader)
@@ -905,12 +925,12 @@ namespace Newtonsoft.Json
                 TraceWriter.Trace(TraceLevel.Verbose, traceJsonReader.GetDeserializedJsonMessage(), null);
             }
 
-            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString);
+            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString, previousDataTableColumnType);
 
             return value;
         }
 
-        private void SetupReader(JsonReader reader, out CultureInfo previousCulture, out DateTimeZoneHandling? previousDateTimeZoneHandling, out DateParseHandling? previousDateParseHandling, out FloatParseHandling? previousFloatParseHandling, out int? previousMaxDepth, out string previousDateFormatString)
+        private void SetupReader(JsonReader reader, out CultureInfo previousCulture, out DateTimeZoneHandling? previousDateTimeZoneHandling, out DateParseHandling? previousDateParseHandling, out FloatParseHandling? previousFloatParseHandling, out int? previousMaxDepth, out string previousDateFormatString, out DataTableColumnType? previousDataTableColumnType)
         {
             if (_culture != null && !_culture.Equals(reader.Culture))
             {
@@ -940,6 +960,17 @@ namespace Newtonsoft.Json
             else
             {
                 previousDateParseHandling = null;
+            }
+
+
+            if (_dataTableColumnType != null && reader.DataTableColumnType != _dataTableColumnType)
+            {
+                previousDataTableColumnType = reader.DataTableColumnType;
+                reader.DataTableColumnType = _dataTableColumnType.GetValueOrDefault();
+            }
+            else
+            {
+                previousDataTableColumnType = null;
             }
 
             if (_floatParseHandling != null && reader.FloatParseHandling != _floatParseHandling)
@@ -981,7 +1012,7 @@ namespace Newtonsoft.Json
             }
         }
 
-        private void ResetReader(JsonReader reader, CultureInfo previousCulture, DateTimeZoneHandling? previousDateTimeZoneHandling, DateParseHandling? previousDateParseHandling, FloatParseHandling? previousFloatParseHandling, int? previousMaxDepth, string previousDateFormatString)
+        private void ResetReader(JsonReader reader, CultureInfo previousCulture, DateTimeZoneHandling? previousDateTimeZoneHandling, DateParseHandling? previousDateParseHandling, FloatParseHandling? previousFloatParseHandling, int? previousMaxDepth, string previousDateFormatString, DataTableColumnType? previousDataTableColumnType)
         {
             // reset reader back to previous options
             if (previousCulture != null)
@@ -996,6 +1027,11 @@ namespace Newtonsoft.Json
             {
                 reader.DateParseHandling = previousDateParseHandling.GetValueOrDefault();
             }
+            if (previousDataTableColumnType != null)
+            {
+                reader.DataTableColumnType = previousDataTableColumnType.GetValueOrDefault();
+            }
+
             if (previousFloatParseHandling != null)
             {
                 reader.FloatParseHandling = previousFloatParseHandling.GetValueOrDefault();

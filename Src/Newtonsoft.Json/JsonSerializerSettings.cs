@@ -60,11 +60,15 @@ namespace Newtonsoft.Json
         internal static readonly CultureInfo DefaultCulture;
         internal const bool DefaultCheckAdditionalContent = false;
         internal const string DefaultDateFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
+        internal const DataTableColumnType DefaultDataTableColumnType = DataTableColumnType.Automatic;
+
 
         internal Formatting? _formatting;
         internal DateFormatHandling? _dateFormatHandling;
         internal DateTimeZoneHandling? _dateTimeZoneHandling;
         internal DateParseHandling? _dateParseHandling;
+        internal DataTableColumnType? _dataTableColumnType;
+        
         internal FloatFormatHandling? _floatFormatHandling;
         internal FloatParseHandling? _floatParseHandling;
         internal StringEscapeHandling? _stringEscapeHandling;
@@ -379,6 +383,16 @@ namespace Newtonsoft.Json
         {
             get => _dateParseHandling ?? DefaultDateParseHandling;
             set => _dateParseHandling = value;
+        }
+
+        /// <summary>
+        /// Gets or sets how the data type for columns on DataTables is determined.
+        /// The default value is <see cref="Json.DataTableColumnType.Automatic" />.
+        /// </summary>
+        public DataTableColumnType DataTableColumnType
+        {
+            get => _dataTableColumnType ?? JsonSerializerSettings.DefaultDataTableColumnType;
+            set => _dataTableColumnType = value;
         }
 
         /// <summary>

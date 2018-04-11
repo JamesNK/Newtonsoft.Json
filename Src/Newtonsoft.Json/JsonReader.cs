@@ -122,6 +122,8 @@ namespace Newtonsoft.Json
         private int? _maxDepth;
         private bool _hasExceededMaxDepth;
         internal DateParseHandling _dateParseHandling;
+        internal DataTableColumnType _dataTableColumnType;
+        
         internal FloatParseHandling _floatParseHandling;
         private string _dateFormatString;
         private List<JsonPosition> _stack;
@@ -173,6 +175,19 @@ namespace Newtonsoft.Json
                 }
 
                 _dateTimeZoneHandling = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets how column data types are defined in DataTables.
+        /// </summary>
+        public DataTableColumnType DataTableColumnType
+        {
+            get => _dataTableColumnType;
+            set
+            {
+
+                _dataTableColumnType = value;
             }
         }
 

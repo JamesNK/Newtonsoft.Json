@@ -433,6 +433,7 @@ namespace Newtonsoft.Json.Serialization
                     tokenReader.DateTimeZoneHandling = reader.DateTimeZoneHandling;
                     tokenReader.FloatParseHandling = reader.FloatParseHandling;
                     tokenReader.SupportMultipleContent = reader.SupportMultipleContent;
+                    tokenReader.DataTableColumnType = reader.DataTableColumnType;
 
                     // start
                     tokenReader.ReadAndAssert();

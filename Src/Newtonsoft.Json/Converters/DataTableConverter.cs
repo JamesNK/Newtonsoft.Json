@@ -144,15 +144,32 @@ namespace Newtonsoft.Json.Converters
 
                 reader.ReadAndAssert();
 
+                Type columnType = null;
+
                 DataColumn column = dt.Columns[columnName];
+
                 if (column == null)
                 {
-                    Type columnType = GetColumnDataType(reader);
-                    column = new DataColumn(columnName, columnType);
+                    columnType = GetColumnDataType(reader);
+
+
+                    if (reader.DataTableColumnType == DataTableColumnType.Object && (columnType != typeof(DataTable)) && !(columnType.IsArray && columnType != typeof(byte[])))
+                    {
+                        column = new DataColumn(columnName, typeof(object));
+                    }
+                    else
+                    {
+                        column = new DataColumn(columnName, columnType);
+                    }
+
                     dt.Columns.Add(column);
                 }
+                else
+                {
+                    columnType = column.DataType;
+                }
 
-                if (column.DataType == typeof(DataTable))
+                if (columnType == typeof(DataTable))
                 {
                     if (reader.TokenType == JsonToken.StartArray)
                     {
@@ -170,7 +187,7 @@ namespace Newtonsoft.Json.Converters
 
                     dr[columnName] = nestedDt;
                 }
-                else if (column.DataType.IsArray && column.DataType != typeof(byte[]))
+                else if (columnType.IsArray && columnType != typeof(byte[]))
                 {
                     if (reader.TokenType == JsonToken.StartArray)
                     {
@@ -185,7 +202,7 @@ namespace Newtonsoft.Json.Converters
                         reader.ReadAndAssert();
                     }
 
-                    Array destinationArray = Array.CreateInstance(column.DataType.GetElementType(), o.Count);
+                    Array destinationArray = Array.CreateInstance(columnType.GetElementType(), o.Count);
                     ((IList)o).CopyTo(destinationArray, 0);
 
                     dr[columnName] = destinationArray;
@@ -193,7 +210,7 @@ namespace Newtonsoft.Json.Converters
                 else
                 {
                     object columnValue = (reader.Value != null)
-                        ? serializer.Deserialize(reader, column.DataType) ?? DBNull.Value
+                        ? serializer.Deserialize(reader, columnType) ?? DBNull.Value
                         : DBNull.Value;
 
                     dr[columnName] = columnValue;
@@ -209,6 +226,9 @@ namespace Newtonsoft.Json.Converters
         private static Type GetColumnDataType(JsonReader reader)
         {
             JsonToken tokenType = reader.TokenType;
+
+
+
 
             switch (tokenType)
             {
