@@ -1204,7 +1204,7 @@ namespace Newtonsoft.Json
                 {
                     JsonConverter converter = converters[i];
 
-                    if (converter.CanConvert(objectType))
+                    if (converter != null && converter.CanConvert(objectType))
                     {
                         return converter;
                     }
