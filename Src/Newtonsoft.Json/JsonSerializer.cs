@@ -788,7 +788,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Populates the JSON values onto the target object.
         /// </summary>
-        /// <param name="reader">The <see cref="TextReader"/> that contains the JSON structure to reader values from.</param>
+        /// <param name="reader">The <see cref="TextReader"/> that contains the JSON structure to read values from.</param>
         /// <param name="target">The target object to populate values onto.</param>
         public void Populate(TextReader reader, object target)
         {
@@ -798,7 +798,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Populates the JSON values onto the target object.
         /// </summary>
-        /// <param name="reader">The <see cref="JsonReader"/> that contains the JSON structure to reader values from.</param>
+        /// <param name="reader">The <see cref="JsonReader"/> that contains the JSON structure to read values from.</param>
         /// <param name="target">The target object to populate values onto.</param>
         public void Populate(JsonReader reader, object target)
         {
