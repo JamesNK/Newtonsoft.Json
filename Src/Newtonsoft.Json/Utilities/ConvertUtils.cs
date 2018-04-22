@@ -1334,7 +1334,7 @@ namespace Newtonsoft.Json.Utilities
             ulong lo10 = 0UL;
             int mantissaDigits = 0;
             int exponentFromMantissa = 0;
-            bool? roundUp = null;
+            char? digit29 = null;
             bool? storeOnly28Digits = null;
             for (; i < end; i++)
             {
@@ -1455,9 +1455,9 @@ namespace Newtonsoft.Json.Utilities
                         }
                         else
                         {
-                            if (!roundUp.HasValue)
+                            if (!digit29.HasValue)
                             {
-                                roundUp = c >= '5';
+                                digit29 = c;
                             }
                             ++exponentFromMantissa;
                         }
@@ -1496,6 +1496,10 @@ namespace Newtonsoft.Json.Utilities
                             return ParseResult.Overflow;
                         }
                     }
+                    else if (value == decimalMaxValueHi28 && digit29 > decimalMaxValueLo1)
+                    {
+                        return ParseResult.Overflow;
+                    }
                     value *= 10M;
                 }
                 else
@@ -1505,7 +1509,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                if (roundUp == true && exponent >= -28)
+                if (digit29 >= '5' && exponent >= -28)
                 {
                     ++value;
                 }

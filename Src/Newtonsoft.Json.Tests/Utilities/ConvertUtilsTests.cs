@@ -233,6 +233,8 @@ namespace Newtonsoft.Json.Tests.Utilities
 
             AssertDecimalTryParse("1E+29", ParseResult.Overflow, null);
             AssertDecimalTryParse("-1E+29", ParseResult.Overflow, null);
+            AssertDecimalTryParse("79228162514264337593543950336", ParseResult.Overflow, null); // decimal.MaxValue + 1
+            AssertDecimalTryParse("-79228162514264337593543950336", ParseResult.Overflow, null); // decimal.MinValue - 1
 
             AssertDecimalTryParse("1-1", ParseResult.Invalid, null);
             AssertDecimalTryParse("1-", ParseResult.Invalid, null);
