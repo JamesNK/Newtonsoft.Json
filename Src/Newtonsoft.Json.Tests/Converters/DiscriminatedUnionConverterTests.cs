@@ -71,6 +71,46 @@ namespace Newtonsoft.Json.Tests.Converters
             }
         }
 
+        public class Union
+        {
+            public List<UnionCase> Cases;
+            public Converter<object, int> TagReader { get; set; }
+        }
+
+        public class UnionCase
+        {
+            public int Tag;
+            public string Name;
+            public PropertyInfo[] Fields;
+            public Converter<object, object[]> FieldReader;
+            public Converter<object[], object> Constructor;
+        }
+
+        private Union CreateUnion(Type t)
+        {
+            Union u = new Union();
+
+            u.TagReader = (s) => FSharpValue.PreComputeUnionTagReader(t, null).Invoke(s);
+            u.Cases = new List<UnionCase>();
+
+            UnionCaseInfo[] cases = FSharpType.GetUnionCases(t, null);
+
+            foreach (UnionCaseInfo unionCaseInfo in cases)
+            {
+                UnionCase unionCase = new UnionCase();
+                unionCase.Tag = unionCaseInfo.Tag;
+                unionCase.Name = unionCaseInfo.Name;
+                unionCase.Fields = unionCaseInfo.GetFields();
+                unionCase.FieldReader = (s) => FSharpValue.PreComputeUnionReader(unionCaseInfo, null).Invoke(s);
+                unionCase.Constructor = (s) => FSharpValue.PreComputeUnionConstructor(unionCaseInfo, null).Invoke(s);
+
+                u.Cases.Add(unionCase);
+            }
+
+            return u;
+        }
+
+        #region Standard Tests
         [Test]
         public void SerializeUnionWithConverter()
         {
@@ -178,45 +218,6 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(10.0, r.width);
         }
 
-        public class Union
-        {
-            public List<UnionCase> Cases;
-            public Converter<object, int> TagReader { get; set; }
-        }
-
-        public class UnionCase
-        {
-            public int Tag;
-            public string Name;
-            public PropertyInfo[] Fields;
-            public Converter<object, object[]> FieldReader;
-            public Converter<object[], object> Constructor;
-        }
-
-        private Union CreateUnion(Type t)
-        {
-            Union u = new Union();
-
-            u.TagReader = (s) => FSharpValue.PreComputeUnionTagReader(t, null).Invoke(s);
-            u.Cases = new List<UnionCase>();
-
-            UnionCaseInfo[] cases = FSharpType.GetUnionCases(t, null);
-
-            foreach (UnionCaseInfo unionCaseInfo in cases)
-            {
-                UnionCase unionCase = new UnionCase();
-                unionCase.Tag = unionCaseInfo.Tag;
-                unionCase.Name = unionCaseInfo.Name;
-                unionCase.Fields = unionCaseInfo.GetFields();
-                unionCase.FieldReader = (s) => FSharpValue.PreComputeUnionReader(unionCaseInfo, null).Invoke(s);
-                unionCase.Constructor = (s) => FSharpValue.PreComputeUnionConstructor(unionCaseInfo, null).Invoke(s);
-
-                u.Cases.Add(unionCase);
-            }
-
-            return u;
-        }
-
         [Test]
         public void Serialize()
         {
@@ -306,6 +307,7 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(5.0, r.length);
             Assert.AreEqual(10.0, r.width);
         }
+        #endregion
     }
 }
 
