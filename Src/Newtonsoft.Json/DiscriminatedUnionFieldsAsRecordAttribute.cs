@@ -9,10 +9,9 @@ namespace Newtonsoft.Json
     /// instead of an array of values.
     /// </summary>
     /// <remarks>
-    /// Attribute intended for use with F# Discriminated Unions and limited to 
-    /// AttributeTargets.Struct as a best option for applying a filter for usage.
+    /// Attribute intended for use with F# Discriminated Unions
     /// </remarks>
-    [AttributeUsage(AttributeTargets.Struct, AllowMultiple = false)]
+    [AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
     public class DiscriminatedUnionFieldsAsRecordAttribute : Attribute { }
 #endif
 }

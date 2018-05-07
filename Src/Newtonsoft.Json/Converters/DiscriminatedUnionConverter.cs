@@ -133,21 +133,23 @@ namespace Newtonsoft.Json.Converters
             writer.WriteStartObject();
             if (treatUnionFieldsAsRecord)
             {
+                writer.WritePropertyName(caseInfo.Name);
+                writer.WriteStartObject();
+
                 if (caseInfo.Fields != null && caseInfo.Fields.Length > 0)
                 {
                     object[] fields = (object[])caseInfo.FieldReader.Invoke(value);
 
                     if (fields.Length != caseInfo.Fields.Length) throw new JsonSerializationException("Unexpected array length mismatch between union case field values and union case field info.");
-
-                    writer.WritePropertyName(caseInfo.Name);
-                    writer.WriteStartObject();
+                    
                     for (int i = 0; i < fields.Length; i++)
                     {
                         writer.WritePropertyName(caseInfo.Fields[i].Name);
                         serializer.Serialize(writer, fields[i]);
                     }
-                    writer.WriteEndObject();
                 }
+
+                writer.WriteEndObject();
             }
             else
             {
@@ -245,7 +247,7 @@ namespace Newtonsoft.Json.Converters
                         reader.ReadAndAssert();
                         if (reader.TokenType != JsonToken.EndObject)
                         {
-                            throw JsonSerializationException.Create(reader, "Error reading discriminated union. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+                            throw JsonSerializationException.Create(reader, "Error reading discriminated union. Unexpected token: '{0}'.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
                         }
                     }
 
@@ -287,7 +289,14 @@ namespace Newtonsoft.Json.Converters
 
             if (caseInfo == null)
             {
-                throw JsonSerializationException.Create(reader, "No '{0}' property with union name found.".FormatWith(CultureInfo.InvariantCulture, CasePropertyName));
+                if (treatUnionFieldsAsRecord)
+                {
+                    throw JsonSerializationException.Create(reader, "No property with union name found.".FormatWith(CultureInfo.InvariantCulture, CasePropertyName));
+                }
+                else
+                {
+                    throw JsonSerializationException.Create(reader, "No '{0}' property with union name found.".FormatWith(CultureInfo.InvariantCulture, CasePropertyName));
+                }
             }
 
             object[] typedFieldValues = new object[caseInfo.Fields.Length];
