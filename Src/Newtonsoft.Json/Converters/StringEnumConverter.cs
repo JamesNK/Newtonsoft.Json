@@ -84,7 +84,6 @@ namespace Newtonsoft.Json.Converters
         /// <param name="allowIntegerValues"><c>true</c> if integers are allowed when deserializing; otherwise, <c>false</c>.</param>
         public StringEnumConverter(bool camelCaseText, bool allowIntegerValues) : this(camelCaseText)
         {
-            CamelCaseText = camelCaseText;
             AllowIntegerValues = allowIntegerValues;
         }
 
