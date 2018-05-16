@@ -974,9 +974,9 @@ namespace Newtonsoft.Json
 
             if (reader is JsonTextReader textReader)
             {
-                if (_contractResolver is DefaultContractResolver resolver)
+                if (textReader.PropertyNameTable == null && _contractResolver is DefaultContractResolver resolver)
                 {
-                    textReader.NameTable = resolver.GetNameTable();
+                    textReader.PropertyNameTable = resolver.GetNameTable();
                 }
             }
         }
@@ -1009,9 +1009,9 @@ namespace Newtonsoft.Json
                 reader.DateFormatString = previousDateFormatString;
             }
 
-            if (reader is JsonTextReader textReader)
+            if (reader is JsonTextReader textReader && textReader.PropertyNameTable is PropertyNameTable)
             {
-                textReader.NameTable = null;
+                textReader.PropertyNameTable = null;
             }
         }
 

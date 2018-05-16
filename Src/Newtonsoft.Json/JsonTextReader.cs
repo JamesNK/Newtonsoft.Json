@@ -74,7 +74,6 @@ namespace Newtonsoft.Json
         private StringBuffer _stringBuffer;
         private StringReference _stringReference;
         private IArrayPool<char> _arrayPool;
-        internal PropertyNameTable NameTable;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonTextReader"/> class with the specified <see cref="TextReader"/>.
@@ -104,6 +103,11 @@ namespace Newtonsoft.Json
 
         internal int CharPos => _charPos;
 #endif
+
+        /// <summary>
+        /// Gets or sets the reader's property name table.
+        /// </summary>
+        public INameTable PropertyNameTable { get; set; }
 
         /// <summary>
         /// Gets or sets the reader's character buffer pool.
@@ -1563,9 +1567,9 @@ namespace Newtonsoft.Json
 
             string propertyName;
 
-            if (NameTable != null)
+            if (PropertyNameTable != null)
             {
-                propertyName = NameTable.Get(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length);
+                propertyName = PropertyNameTable.Get(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length);
 
                 // no match in name table
                 if (propertyName == null)

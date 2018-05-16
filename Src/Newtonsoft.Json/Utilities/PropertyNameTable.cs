@@ -27,7 +27,7 @@ using System;
 
 namespace Newtonsoft.Json.Utilities
 {
-    internal class PropertyNameTable
+    internal class PropertyNameTable : INameTable
     {
         // used to defeat hashtable DoS attack where someone passes in lots of strings that hash to the same hash code
         private static readonly int HashCodeRandomizer;

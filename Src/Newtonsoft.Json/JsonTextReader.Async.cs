@@ -979,9 +979,9 @@ namespace Newtonsoft.Json
 
             string propertyName;
 
-            if (NameTable != null)
+            if (PropertyNameTable != null)
             {
-                propertyName = NameTable.Get(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length)
+                propertyName = PropertyNameTable.Get(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length)
                     // no match in name table
                     ?? _stringReference.ToString();
             }
