@@ -1093,12 +1093,15 @@ namespace Newtonsoft.Json.Serialization
             JsonISerializableContract contract = new JsonISerializableContract(objectType);
             InitializeContract(contract);
 
-            ConstructorInfo constructorInfo = contract.NonNullableUnderlyingType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] { typeof(SerializationInfo), typeof(StreamingContext) }, null);
-            if (constructorInfo != null)
+            if (contract.IsInstantiable)
             {
-                ObjectConstructor<object> creator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(constructorInfo);
+                ConstructorInfo constructorInfo = contract.NonNullableUnderlyingType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof(SerializationInfo), typeof(StreamingContext)}, null);
+                if (constructorInfo != null)
+                {
+                    ObjectConstructor<object> creator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(constructorInfo);
 
-                contract.ISerializableCreator = creator;
+                    contract.ISerializableCreator = creator;
+                }
             }
 
             return contract;

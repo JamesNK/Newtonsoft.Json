@@ -1706,6 +1706,11 @@ namespace Newtonsoft.Json.Serialization
                 ThrowUnexpectedEndException(reader, contract, serializationInfo, "Unexpected end when deserializing object.");
             }
 
+            if (!contract.IsInstantiable)
+            {
+                throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, contract.UnderlyingType));
+            }
+
             if (contract.ISerializableCreator == null)
             {
                 throw JsonSerializationException.Create(reader, "ISerializable type '{0}' does not have a valid constructor. To correctly implement ISerializable a constructor that takes SerializationInfo and StreamingContext parameters should be present.".FormatWith(CultureInfo.InvariantCulture, objectType));
