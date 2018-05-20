@@ -48,7 +48,7 @@
       <NamespaceSummaryItem name="Newtonsoft.Json.Linq" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement LINQ to JSON.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Newtonsoft.Json.Linq.ComponentModel" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq.ComponentModel&lt;/b&gt; namespace provides classes for LINQ to JSON databinding.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Newtonsoft.Json.Schema" isDocumented="True">&lt;para&gt;The &lt;b&gt;Newtonsoft.Json.Schema&lt;/b&gt; namespace provides classes that are used to implement JSON schema.&lt;/para&gt;
-        &lt;para&gt;&lt;b&gt;Obsolete.&lt;/b&gt; JSON Schema validation has been moved to its own package. See &lt;a href="http://www.newtonsoft.com/jsonschema"&gt;http://www.newtonsoft.com/jsonschema&lt;/a&gt; for more details.&lt;/para&gt;</NamespaceSummaryItem>
+        &lt;para&gt;&lt;b&gt;Obsolete.&lt;/b&gt; JSON Schema validation has been moved to its own package. See &lt;a href="https://www.newtonsoft.com/jsonschema"&gt;https://www.newtonsoft.com/jsonschema&lt;/a&gt; for more details.&lt;/para&gt;</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Newtonsoft.Json.Serialization" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used when serializing and deserializing JSON.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Newtonsoft.Json.Utilities" isDocumented="False" />
       <NamespaceSummaryItem name="Newtonsoft.Json.Bson" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement BSON.</NamespaceSummaryItem>
