@@ -31,7 +31,12 @@
         <para>Convert JSON to and from XML</para>
     </listItem>
    <listItem>
-        <para>Supports .NET 2, .NET 3.5, .NET 4, .NET 4.5, Silverlight, Windows Phone and Windows 8 Store</para>
+        <para>Supports <externalLink>
+                <linkText>.NET Standard 2.0</linkText>
+                <linkUri>https://github.com/dotnet/standard/blob/master/docs/versions.md</linkUri>
+                <linkTarget>_blank</linkTarget>
+            </externalLink>,
+            .NET 2, .NET 3.5, .NET 4, .NET 4.5, Silverlight, Windows Phone and Windows 8 Store</para>
     </listItem>
 
 </list>
