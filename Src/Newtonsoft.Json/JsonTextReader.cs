@@ -1119,146 +1119,145 @@ namespace Newtonsoft.Json
 
             while (true)
             {
-                switch (_chars[charPos++])
+                char currentChar = _chars[charPos++];
+                if (currentChar <= '\'')
                 {
-                    case '\0':
-                        if (_charsUsed == charPos - 1)
-                        {
-                            charPos--;
-
-                            if (ReadData(true) == 0)
-                            {
-                                _charPos = charPos;
-                                throw JsonReaderException.Create(this, "Unterminated string. Expected delimiter: {0}.".FormatWith(CultureInfo.InvariantCulture, quote));
-                            }
-                        }
-                        break;
-                    case '\\':
-                        _charPos = charPos;
-                        if (!EnsureChars(0, true))
-                        {
-                            throw JsonReaderException.Create(this, "Unterminated string. Expected delimiter: {0}.".FormatWith(CultureInfo.InvariantCulture, quote));
-                        }
-
-                        // start of escape sequence
-                        int escapeStartPos = charPos - 1;
-
-                        char currentChar = _chars[charPos];
-                        charPos++;
-
-                        char writeChar;
-
-                        switch (currentChar)
-                        {
-                            case 'b':
-                                writeChar = '\b';
-                                break;
-                            case 't':
-                                writeChar = '\t';
-                                break;
-                            case 'n':
-                                writeChar = '\n';
-                                break;
-                            case 'f':
-                                writeChar = '\f';
-                                break;
-                            case 'r':
-                                writeChar = '\r';
-                                break;
-                            case '\\':
-                                writeChar = '\\';
-                                break;
-                            case '"':
-                            case '\'':
-                            case '/':
-                                writeChar = currentChar;
-                                break;
-                            case 'u':
-                                _charPos = charPos;
-                                writeChar = ParseUnicode();
-
-                                if (StringUtils.IsLowSurrogate(writeChar))
-                                {
-                                    // low surrogate with no preceding high surrogate; this char is replaced
-                                    writeChar = UnicodeReplacementChar;
-                                }
-                                else if (StringUtils.IsHighSurrogate(writeChar))
-                                {
-                                    bool anotherHighSurrogate;
-
-                                    // loop for handling situations where there are multiple consecutive high surrogates
-                                    do
-                                    {
-                                        anotherHighSurrogate = false;
-
-                                        // potential start of a surrogate pair
-                                        if (EnsureChars(2, true) && _chars[_charPos] == '\\' && _chars[_charPos + 1] == 'u')
-                                        {
-                                            char highSurrogate = writeChar;
-
-                                            _charPos += 2;
-                                            writeChar = ParseUnicode();
-
-                                            if (StringUtils.IsLowSurrogate(writeChar))
-                                            {
-                                                // a valid surrogate pair!
-                                            }
-                                            else if (StringUtils.IsHighSurrogate(writeChar))
-                                            {
-                                                // another high surrogate; replace current and start check over
-                                                highSurrogate = UnicodeReplacementChar;
-                                                anotherHighSurrogate = true;
-                                            }
-                                            else
-                                            {
-                                                // high surrogate not followed by low surrogate; original char is replaced
-                                                highSurrogate = UnicodeReplacementChar;
-                                            }
-
-                                            EnsureBufferNotEmpty();
-
-                                            WriteCharToBuffer(highSurrogate, lastWritePosition, escapeStartPos);
-                                            lastWritePosition = _charPos;
-                                        }
-                                        else
-                                        {
-                                            // there are not enough remaining chars for the low surrogate or is not follow by unicode sequence
-                                            // replace high surrogate and continue on as usual
-                                            writeChar = UnicodeReplacementChar;
-                                        }
-                                    } while (anotherHighSurrogate);
-                                }
-
-                                charPos = _charPos;
-                                break;
-                            default:
-                                _charPos = charPos;
-                                throw JsonReaderException.Create(this, "Bad JSON escape sequence: {0}.".FormatWith(CultureInfo.InvariantCulture, @"\" + currentChar));
-                        }
-
-                        EnsureBufferNotEmpty();
-                        WriteCharToBuffer(writeChar, lastWritePosition, escapeStartPos);
-
-                        lastWritePosition = charPos;
-                        break;
-                    case StringUtils.CarriageReturn:
+                    if (currentChar == quote)
+                    {
+                        FinishReadStringIntoBuffer(charPos - 1, initialPosition, lastWritePosition);
+                        return;
+                    }
+                    else if (currentChar == StringUtils.CarriageReturn)
+                    {
                         _charPos = charPos - 1;
                         ProcessCarriageReturn(true);
                         charPos = _charPos;
-                        break;
-                    case StringUtils.LineFeed:
+                    }
+                    else if (currentChar == StringUtils.LineFeed)
+                    {
                         _charPos = charPos - 1;
                         ProcessLineFeed();
                         charPos = _charPos;
-                        break;
-                    case '"':
-                    case '\'':
-                        if (_chars[charPos - 1] == quote)
+                    }
+                    else if (currentChar == '\0' && _charsUsed == charPos - 1)
+                    {
+                        charPos--;
+
+                        if (ReadData(true) == 0)
                         {
-                            FinishReadStringIntoBuffer(charPos - 1, initialPosition, lastWritePosition);
-                            return;
+                            _charPos = charPos;
+                            throw JsonReaderException.Create(this, "Unterminated string. Expected delimiter: {0}.".FormatWith(CultureInfo.InvariantCulture, quote));
                         }
-                        break;
+                    }
+                }
+                else if (currentChar == '\\')
+                {
+                    _charPos = charPos;
+                    if (!EnsureChars(0, true))
+                    {
+                        throw JsonReaderException.Create(this, "Unterminated string. Expected delimiter: {0}.".FormatWith(CultureInfo.InvariantCulture, quote));
+                    }
+
+                    // start of escape sequence
+                    int escapeStartPos = charPos - 1;
+
+                    currentChar = _chars[charPos];
+                    charPos++;
+
+                    char writeChar;
+
+                    switch (currentChar)
+                    {
+                        case 'b':
+                            writeChar = '\b';
+                            break;
+                        case 't':
+                            writeChar = '\t';
+                            break;
+                        case 'n':
+                            writeChar = '\n';
+                            break;
+                        case 'f':
+                            writeChar = '\f';
+                            break;
+                        case 'r':
+                            writeChar = '\r';
+                            break;
+                        case '\\':
+                            writeChar = '\\';
+                            break;
+                        case '"':
+                        case '\'':
+                        case '/':
+                            writeChar = currentChar;
+                            break;
+                        case 'u':
+                            _charPos = charPos;
+                            writeChar = ParseUnicode();
+
+                            if (StringUtils.IsLowSurrogate(writeChar))
+                            {
+                                // low surrogate with no preceding high surrogate; this char is replaced
+                                writeChar = UnicodeReplacementChar;
+                            }
+                            else if (StringUtils.IsHighSurrogate(writeChar))
+                            {
+                                bool anotherHighSurrogate;
+
+                                // loop for handling situations where there are multiple consecutive high surrogates
+                                do
+                                {
+                                    anotherHighSurrogate = false;
+
+                                    // potential start of a surrogate pair
+                                    if (EnsureChars(2, true) && _chars[_charPos] == '\\' && _chars[_charPos + 1] == 'u')
+                                    {
+                                        char highSurrogate = writeChar;
+
+                                        _charPos += 2;
+                                        writeChar = ParseUnicode();
+
+                                        if (StringUtils.IsLowSurrogate(writeChar))
+                                        {
+                                            // a valid surrogate pair!
+                                        }
+                                        else if (StringUtils.IsHighSurrogate(writeChar))
+                                        {
+                                            // another high surrogate; replace current and start check over
+                                            highSurrogate = UnicodeReplacementChar;
+                                            anotherHighSurrogate = true;
+                                        }
+                                        else
+                                        {
+                                            // high surrogate not followed by low surrogate; original char is replaced
+                                            highSurrogate = UnicodeReplacementChar;
+                                        }
+
+                                        EnsureBufferNotEmpty();
+
+                                        WriteCharToBuffer(highSurrogate, lastWritePosition, escapeStartPos);
+                                        lastWritePosition = _charPos;
+                                    }
+                                    else
+                                    {
+                                        // there are not enough remaining chars for the low surrogate or is not follow by unicode sequence
+                                        // replace high surrogate and continue on as usual
+                                        writeChar = UnicodeReplacementChar;
+                                    }
+                                } while (anotherHighSurrogate);
+                            }
+
+                            charPos = _charPos;
+                            break;
+                        default:
+                            _charPos = charPos;
+                            throw JsonReaderException.Create(this, "Bad JSON escape sequence: {0}.".FormatWith(CultureInfo.InvariantCulture, @"\" + currentChar));
+                    }
+
+                    EnsureBufferNotEmpty();
+                    WriteCharToBuffer(writeChar, lastWritePosition, escapeStartPos);
+
+                    lastWritePosition = charPos;
                 }
             }
         }
