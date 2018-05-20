@@ -86,8 +86,8 @@ FOR A PARTICULAR PURPOSE.
 
 
 [github]: https://github.com/JamesNK/Newtonsoft.Json
-[documentation]: http://james.newtonking.com/json/help/index.html
-[stackoverflow]: http://stackoverflow.com/questions/tagged/json.net
+[documentation]: https://www.newtonsoft.com/json/help
+[stackoverflow]: https://stackoverflow.com/questions/tagged/json.net
 [dropbox]: https://www.dropbox.com
 [gist]: https://gist.github.com
 [pullrequesthelp]: https://help.github.com/articles/using-pull-requests

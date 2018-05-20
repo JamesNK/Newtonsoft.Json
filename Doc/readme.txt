@@ -1,6 +1,6 @@
 Json.NET
 
-http://www.newtonsoft.com/json
+https://www.newtonsoft.com/json
 https://github.com/JamesNK/Newtonsoft.Json
 
 
@@ -18,7 +18,7 @@ Json.NET is a popular high-performance JSON framework for .NET
 
 Documentation:
 
-http://www.newtonsoft.com/json/help/
+https://www.newtonsoft.com/json/help/
 
 
 Versions:
