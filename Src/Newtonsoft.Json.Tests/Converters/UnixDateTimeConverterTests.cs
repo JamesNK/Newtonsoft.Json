@@ -55,11 +55,11 @@ namespace Newtonsoft.Json.Tests.Converters
         public void SerializeDateTimeNow()
         {
             DateTime now = DateTime.Now;
-            long nowTicks = (long)(now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds;
+            long nowSeconds = (long)(now.ToUniversalTime() - new DateTime(1970, 1, 1)).TotalSeconds;
 
             string result = JsonConvert.SerializeObject(now, new UnixDateTimeConverter());
 
-            Assert.AreEqual(nowTicks + "", result);
+            Assert.AreEqual(nowSeconds + "", result);
         }
 
         [Test]

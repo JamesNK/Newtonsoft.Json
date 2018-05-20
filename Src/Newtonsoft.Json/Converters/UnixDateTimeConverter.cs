@@ -44,16 +44,16 @@ namespace Newtonsoft.Json.Converters
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            long ticks;
+            long seconds;
 
             if (value is DateTime dateTime)
             {
-                ticks = (long)(dateTime.ToUniversalTime() - UnixEpoch).TotalSeconds;
+                seconds = (long)(dateTime.ToUniversalTime() - UnixEpoch).TotalSeconds;
             }
 #if HAVE_DATE_TIME_OFFSET
             else if (value is DateTimeOffset dateTimeOffset)
             {
-                ticks = (long)(dateTimeOffset.ToUniversalTime() - UnixEpoch).TotalSeconds;
+                seconds = (long)(dateTimeOffset.ToUniversalTime() - UnixEpoch).TotalSeconds;
             }
 #endif
             else
@@ -61,12 +61,12 @@ namespace Newtonsoft.Json.Converters
                 throw new JsonSerializationException("Expected date object value.");
             }
 
-            if (ticks < 0)
+            if (seconds < 0)
             {
                 throw new JsonSerializationException("Cannot convert date value that is before Unix epoch of 00:00:00 UTC on 1 January 1970.");
             }
 
-            writer.WriteValue(ticks);
+            writer.WriteValue(seconds);
         }
 
         /// <summary>
@@ -90,15 +90,15 @@ namespace Newtonsoft.Json.Converters
                 return null;
             }
 
-            long ticks;
+            long seconds;
 
             if (reader.TokenType == JsonToken.Integer)
             {
-                ticks = (long)reader.Value;
+                seconds = (long)reader.Value;
             }
             else if (reader.TokenType == JsonToken.String)
             {
-                if (!long.TryParse((string)reader.Value, out ticks))
+                if (!long.TryParse((string)reader.Value, out seconds))
                 {
                     throw JsonSerializationException.Create(reader, "Cannot convert invalid value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
                 }
@@ -108,9 +108,9 @@ namespace Newtonsoft.Json.Converters
                 throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected Integer or String, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
 
-            if (ticks >= 0)
+            if (seconds >= 0)
             {
-                DateTime d = UnixEpoch.AddSeconds(ticks);
+                DateTime d = UnixEpoch.AddSeconds(seconds);
 
 #if HAVE_DATE_TIME_OFFSET
                 Type t = (nullable)
