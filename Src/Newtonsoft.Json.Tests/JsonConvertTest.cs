@@ -210,9 +210,9 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual("hi", o.Value);
         }
 
-        public class CustonNameTable : INameTable
+        public class CustonNameTable : NameTable
         {
-            public string Get(char[] key, int start, int length)
+            public override string Get(char[] key, int start, int length)
             {
                 return "_" + new string(key, start, length);
             }

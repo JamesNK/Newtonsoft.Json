@@ -1009,7 +1009,8 @@ namespace Newtonsoft.Json
                 reader.DateFormatString = previousDateFormatString;
             }
 
-            if (reader is JsonTextReader textReader && textReader.PropertyNameTable is PropertyNameTable)
+            if (reader is JsonTextReader textReader && textReader.PropertyNameTable != null &&
+                _contractResolver is DefaultContractResolver resolver && textReader.PropertyNameTable == resolver.GetNameTable())
             {
                 textReader.PropertyNameTable = null;
             }

@@ -986,7 +986,7 @@ namespace Newtonsoft.Json.Converters
 
             IXmlNode node = WrapXml(value);
 
-            XmlNamespaceManager manager = new XmlNamespaceManager(new NameTable());
+            XmlNamespaceManager manager = new XmlNamespaceManager(new System.Xml.NameTable());
             PushParentNamespaces(node, manager);
 
             if (!OmitRootObject)
@@ -1476,7 +1476,7 @@ namespace Newtonsoft.Json.Converters
                     throw JsonSerializationException.Create(reader, "XmlNodeConverter can only convert JSON that begins with an object.");
             }
 
-            XmlNamespaceManager manager = new XmlNamespaceManager(new NameTable());
+            XmlNamespaceManager manager = new XmlNamespaceManager(new System.Xml.NameTable());
             IXmlDocument document = null;
             IXmlNode rootNode = null;
 

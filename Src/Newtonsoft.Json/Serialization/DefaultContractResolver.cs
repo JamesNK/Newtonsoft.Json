@@ -98,7 +98,7 @@ namespace Newtonsoft.Json.Serialization
             new RegexConverter()
         };
 
-        private readonly PropertyNameTable _nameTable = new PropertyNameTable();
+        private readonly DefaultNameTable _nameTable = new DefaultNameTable();
 
         private readonly ThreadSafeStore<Type, JsonContract> _contractCache;
 
@@ -1329,7 +1329,7 @@ namespace Newtonsoft.Json.Serialization
                 throw new JsonSerializationException("Null collection of serializable members returned.");
             }
 
-            PropertyNameTable nameTable = GetNameTable();
+            DefaultNameTable nameTable = GetNameTable();
 
             JsonPropertyCollection properties = new JsonPropertyCollection(type);
 
@@ -1353,7 +1353,7 @@ namespace Newtonsoft.Json.Serialization
             return orderedProperties;
         }
 
-        internal virtual PropertyNameTable GetNameTable()
+        internal virtual DefaultNameTable GetNameTable()
         {
             return _nameTable;
         }

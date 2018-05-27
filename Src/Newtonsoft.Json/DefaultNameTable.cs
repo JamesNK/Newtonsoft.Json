@@ -27,7 +27,10 @@ using System;
 
 namespace Newtonsoft.Json.Utilities
 {
-    internal class PropertyNameTable : INameTable
+    /// <summary>
+    /// The default name table implementation.
+    /// </summary>
+    public class DefaultNameTable : NameTable
     {
         // used to defeat hashtable DoS attack where someone passes in lots of strings that hash to the same hash code
         private static readonly int HashCodeRandomizer;
@@ -36,17 +39,26 @@ namespace Newtonsoft.Json.Utilities
         private Entry[] _entries;
         private int _mask = 31;
 
-        static PropertyNameTable()
+        static DefaultNameTable()
         {
             HashCodeRandomizer = Environment.TickCount;
         }
 
-        public PropertyNameTable()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultNameTable"/> class.
+        /// </summary>
+        public DefaultNameTable()
         {
             _entries = new Entry[_mask + 1];
         }
 
-        public string Get(char[] key, int start, int length)
+        /// <summary>
+        /// Gets the string containing the same characters as the specified range of characters in the given array.
+        /// </summary>
+        /// <param name="key">The character array containing the name to find.</param>
+        /// <param name="start">The zero-based index into the array specifying the first character of the name.</param>
+        /// <param name="length">The number of characters in the name.</param>
+        public override string Get(char[] key, int start, int length)
         {
             if (length == 0)
             {
@@ -74,6 +86,11 @@ namespace Newtonsoft.Json.Utilities
             return null;
         }
 
+        /// <summary>
+        /// Adds the specified string into name table.
+        /// </summary>
+        /// <param name="key">The string to add.</param>
+        /// <remarks>This method is not thread-safe.</remarks>
         public string Add(string key)
         {
             if (key == null)
