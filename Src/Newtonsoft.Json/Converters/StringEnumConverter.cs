@@ -53,10 +53,10 @@ namespace Newtonsoft.Json.Converters
         public bool CamelCaseText { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether integer values are allowed when deserializing.
+        /// Gets or sets a value indicating whether integer values are allowed when serializing and deserializing.
         /// The default value is <c>true</c>.
         /// </summary>
-        /// <value><c>true</c> if integers are allowed when deserializing; otherwise, <c>false</c>.</value>
+        /// <value><c>true</c> if integers are allowed when serializing and deserializing; otherwise, <c>false</c>.</value>
         public bool AllowIntegerValues { get; set; }
 
         /// <summary>
@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Converters
         /// Initializes a new instance of the <see cref="StringEnumConverter"/> class.
         /// </summary>
         /// <param name="camelCaseText"><c>true</c> if the written enum text will be camel case; otherwise, <c>false</c>.</param>
-        /// <param name="allowIntegerValues"><c>true</c> if integers are allowed when deserializing; otherwise, <c>false</c>.</param>
+        /// <param name="allowIntegerValues"><c>true</c> if integers are allowed when serializing and deserializing; otherwise, <c>false</c>.</param>
         public StringEnumConverter(bool camelCaseText, bool allowIntegerValues) : this(camelCaseText)
         {
             AllowIntegerValues = allowIntegerValues;
