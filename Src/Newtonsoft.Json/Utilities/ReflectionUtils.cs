@@ -275,6 +275,13 @@ namespace Newtonsoft.Json.Utilities
                 : t;
         }
 
+        public static Type EnsureNotByRefType(Type t)
+        {
+            return (t.IsByRef && t.HasElementType)
+                ? t.GetElementType()
+                : t;
+        }
+
         public static bool IsGenericDefinition(Type type, Type genericInterfaceDefinition)
         {
             if (!type.IsGenericType())
