@@ -1156,12 +1156,14 @@ namespace Newtonsoft.Json.Serialization
         /// <returns>A <see cref="JsonContract"/> for the given type.</returns>
         protected virtual JsonContract CreateContract(Type objectType)
         {
-            if (IsJsonPrimitiveType(objectType))
+            Type t = ReflectionUtils.EnsureNotByRefType(objectType);
+
+            if (IsJsonPrimitiveType(t))
             {
                 return CreatePrimitiveContract(objectType);
             }
 
-            Type t = ReflectionUtils.EnsureNotNullableType(objectType);
+            t = ReflectionUtils.EnsureNotNullableType(t);
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(t);
 
             if (containerAttribute is JsonObjectAttribute)

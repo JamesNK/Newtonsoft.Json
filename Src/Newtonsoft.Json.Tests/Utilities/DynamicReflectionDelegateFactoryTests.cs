@@ -51,6 +51,33 @@ namespace Newtonsoft.Json.Tests.Utilities
     public class DynamicReflectionDelegateFactoryTests : TestFixtureBase
     {
         [Test]
+        public void ConstructorWithInString()
+        {
+            ConstructorInfo constructor = TestReflectionUtils.GetConstructors(typeof(InTestClass)).Single(c => c.GetParameters().Count() == 1);
+
+            var creator = DynamicReflectionDelegateFactory.Instance.CreateParameterizedConstructor(constructor);
+
+            object[] args = new object[] { "Value" };
+            InTestClass o = (InTestClass)creator(args);
+            Assert.IsNotNull(o);
+            Assert.AreEqual("Value", o.Value);
+        }
+
+        [Test]
+        public void ConstructorWithInStringAndBool()
+        {
+            ConstructorInfo constructor = TestReflectionUtils.GetConstructors(typeof(InTestClass)).Single(c => c.GetParameters().Count() == 2);
+
+            var creator = DynamicReflectionDelegateFactory.Instance.CreateParameterizedConstructor(constructor);
+
+            object[] args = new object[] { "Value", true };
+            InTestClass o = (InTestClass)creator(args);
+            Assert.IsNotNull(o);
+            Assert.AreEqual("Value", o.Value);
+            Assert.AreEqual(true, o.B1);
+        }
+
+        [Test]
         public void ConstructorWithRefString()
         {
             ConstructorInfo constructor = typeof(OutAndRefTestClass).GetConstructors().Single(c => c.GetParameters().Count() == 1);
