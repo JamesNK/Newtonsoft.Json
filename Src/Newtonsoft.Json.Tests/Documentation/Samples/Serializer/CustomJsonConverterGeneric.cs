@@ -84,7 +84,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             NuGetPackage p2 = JsonConvert.DeserializeObject<NuGetPackage>(json, new VersionConverter());
 
             Console.WriteLine(p2.Version.ToString());
-            // James
+            // 10.0.4
             #endregion
 
             Assert.AreEqual("10.0.4", p2.Version.ToString());
