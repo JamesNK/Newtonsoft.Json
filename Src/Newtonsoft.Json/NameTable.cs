@@ -1,7 +1,7 @@
 ﻿namespace Newtonsoft.Json
 {
     /// <summary>
-    /// The abstract name table.
+    /// Base class for a table of atomized string objects.
     /// </summary>
     public abstract class NameTable
     {

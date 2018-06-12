@@ -25,7 +25,7 @@
 
 using System;
 
-namespace Newtonsoft.Json.Utilities
+namespace Newtonsoft.Json
 {
     /// <summary>
     /// The default name table implementation.
