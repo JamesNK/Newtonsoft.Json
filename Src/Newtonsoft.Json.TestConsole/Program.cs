@@ -29,9 +29,6 @@ using BenchmarkDotNet.Running;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Tests.Benchmarks;
 using System.Reflection;
-using BenchmarkDotNet.Configs;
-using BenchmarkDotNet.Jobs;
-using BenchmarkDotNet.Environments;
 
 namespace Newtonsoft.Json.TestConsole
 {
@@ -42,7 +39,7 @@ namespace Newtonsoft.Json.TestConsole
             var attribute = (AssemblyFileVersionAttribute)typeof(JsonConvert).GetTypeInfo().Assembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute));
             Console.WriteLine("Json.NET Version: " + attribute.Version);
 
-            new BenchmarkSwitcher(new[] { typeof(JsonTextReaderBenchmarks) }).Run(new[] { "*" });
+            new BenchmarkSwitcher(new [] { typeof(LowLevelBenchmarks) }).Run(new[] { "*" });
         }
     }
 }

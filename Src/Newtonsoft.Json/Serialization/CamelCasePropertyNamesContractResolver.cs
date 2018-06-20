@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Serialization
     public class CamelCasePropertyNamesContractResolver : DefaultContractResolver
     {
         private static readonly object TypeContractCacheLock = new object();
-        private static readonly DefaultNameTable NameTable = new DefaultNameTable();
+        private static readonly DefaultJsonNameTable NameTable = new DefaultJsonNameTable();
         private static Dictionary<ResolverContractKey, JsonContract> _contractCache;
 
         /// <summary>
@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Serialization
             return contract;
         }
 
-        internal override DefaultNameTable GetNameTable()
+        internal override DefaultJsonNameTable GetNameTable()
         {
             return NameTable;
         }

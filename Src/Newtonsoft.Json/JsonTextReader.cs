@@ -107,7 +107,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets or sets the reader's property name table.
         /// </summary>
-        public NameTable PropertyNameTable { get; set; }
+        public JsonNameTable PropertyNameTable { get; set; }
 
         /// <summary>
         /// Gets or sets the reader's character buffer pool.
