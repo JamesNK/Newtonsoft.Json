@@ -45,7 +45,7 @@
 
 framework '4.6x86'
 
-task default -depends Package
+task default -depends Test,Package
 
 # Ensure a clean working directory
 task Clean {
