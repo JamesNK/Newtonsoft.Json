@@ -77,8 +77,6 @@ task Build -depends Clean {
   $script:msBuildPath = GetMsBuildPath
   Write-Host "MSBuild path $script:msBuildPath"
 
-  $projectPath = "$sourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj"
-
   NetCliBuild
 }
 
