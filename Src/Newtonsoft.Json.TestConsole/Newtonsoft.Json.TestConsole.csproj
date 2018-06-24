@@ -12,6 +12,8 @@
     <RootNamespace>Newtonsoft.Json.TestConsole</RootNamespace>
     <AssemblyName>Newtonsoft.Json.TestConsole</AssemblyName>
     <IsPackable>false</IsPackable>
+    <!-- Workaround for https://github.com/dotnet/sourcelink/issues/91 -->
+    <DeterministicSourcePaths Condition="'$(EnableSourceLink)' == ''">false</DeterministicSourcePaths>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="BenchmarkDotNet.Artifacts\**" />
