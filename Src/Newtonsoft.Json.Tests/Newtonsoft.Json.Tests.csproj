@@ -12,6 +12,7 @@
     <AssemblyName>Newtonsoft.Json.Tests</AssemblyName>
     <RootNamespace>Newtonsoft.Json.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
+    <!-- Disabled because SourceLink isn't referenced to calculate paths -->
     <DeterministicSourcePaths>false</DeterministicSourcePaths>
   </PropertyGroup>
   <ItemGroup>
