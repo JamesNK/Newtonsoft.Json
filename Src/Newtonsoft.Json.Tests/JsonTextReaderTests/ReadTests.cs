@@ -62,6 +62,16 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
     public class ReadTests : TestFixtureBase
     {
         [Test]
+        public void Read_EmptyStream_ReturnsFalse()
+        {
+            MemoryStream ms = new MemoryStream();
+            StreamReader sr = new StreamReader(ms);
+
+            JsonTextReader reader = new JsonTextReader(sr);
+            Assert.IsFalse(reader.Read());
+        }
+
+        [Test]
         public void ReadAsInt32_IntegerTooLarge_ThrowsJsonReaderException()
         {
             JValue token = new JValue(long.MaxValue);
