@@ -76,10 +76,11 @@ namespace Newtonsoft.Json
             hashCode -= hashCode >> 11;
             hashCode -= hashCode >> 5;
 
-			// make sure index is evaluated before accessing _entries, otherwise potential race condition causing IndexOutOfRangeException
-			var index = hashCode & _mask;
+            // make sure index is evaluated before accessing _entries, otherwise potential race condition causing IndexOutOfRangeException
+            var index = hashCode & _mask;
+            var entries = _entries;
 
-	        for (Entry entry = _entries[index]; entry != null; entry = entry.Next)
+            for (Entry entry = entries[index]; entry != null; entry = entry.Next)
             {
                 if (entry.HashCode == hashCode && TextEquals(entry.Value, key, start, length))
                 {
