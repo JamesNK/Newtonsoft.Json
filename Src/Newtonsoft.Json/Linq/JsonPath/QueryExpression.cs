@@ -12,7 +12,7 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal enum QueryOperator
+    public enum QueryOperator
     {
         None = 0,
         Equals = 1,
@@ -27,14 +27,14 @@ namespace Newtonsoft.Json.Linq.JsonPath
         RegexEquals = 10
     }
 
-    internal abstract class QueryExpression
+    public abstract class QueryExpression
     {
         public QueryOperator Operator { get; set; }
 
         public abstract bool IsMatch(JToken root, JToken t);
     }
 
-    internal class CompositeExpression : QueryExpression
+    public class CompositeExpression : QueryExpression
     {
         public List<QueryExpression> Expressions { get; set; }
 
@@ -71,7 +71,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
         }
     }
 
-    internal class BooleanQueryExpression : QueryExpression
+    public class BooleanQueryExpression : QueryExpression
     {
         public object Left { get; set; }
         public object Right { get; set; }

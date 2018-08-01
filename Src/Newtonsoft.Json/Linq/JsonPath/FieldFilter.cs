@@ -4,7 +4,7 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class FieldFilter : PathFilter
+    public class FieldFilter : PathFilter
     {
         public string Name { get; set; }
 

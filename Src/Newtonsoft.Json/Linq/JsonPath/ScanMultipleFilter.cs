@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class ScanMultipleFilter : PathFilter
+    public class ScanMultipleFilter : PathFilter
     {
         public List<string> Names { get; set; }
 

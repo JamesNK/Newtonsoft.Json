@@ -5,7 +5,7 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class ArraySliceFilter : PathFilter
+    public class ArraySliceFilter : PathFilter
     {
         public int? Start { get; set; }
         public int? End { get; set; }
