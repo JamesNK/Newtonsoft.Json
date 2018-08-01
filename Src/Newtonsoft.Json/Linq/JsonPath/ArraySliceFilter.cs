@@ -5,12 +5,37 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
+    /// <summary>
+    /// Filters an array by slicing it
+    /// </summary>
+    /// <seealso cref="Newtonsoft.Json.Linq.JsonPath.PathFilter" />
     public class ArraySliceFilter : PathFilter
     {
+        /// <summary>
+        /// Gets or sets the start.
+        /// </summary>
+        /// <value>
+        /// The start.
+        /// </value>
         public int? Start { get; set; }
+
+        /// <summary>
+        /// Gets or sets the end.
+        /// </summary>
+        /// <value>
+        /// The end.
+        /// </value>
         public int? End { get; set; }
+
+        /// <summary>
+        /// Gets or sets the step.
+        /// </summary>
+        /// <value>
+        /// The step.
+        /// </value>
         public int? Step { get; set; }
 
+        /// <inheritdoc />
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             if (Step == 0)

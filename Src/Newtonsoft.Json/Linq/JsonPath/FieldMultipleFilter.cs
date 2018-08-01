@@ -9,10 +9,21 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
+    /// <summary>
+    /// Filters a document by multiple fields
+    /// </summary>
+    /// <seealso cref="Newtonsoft.Json.Linq.JsonPath.PathFilter" />
     public class FieldMultipleFilter : PathFilter
     {
+        /// <summary>
+        /// Gets or sets the field names.
+        /// </summary>
+        /// <value>
+        /// The names.
+        /// </value>
         public List<string> Names { get; set; }
 
+        /// <inheritdoc />
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             foreach (JToken t in current)
