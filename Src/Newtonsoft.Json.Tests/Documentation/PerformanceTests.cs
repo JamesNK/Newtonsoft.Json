@@ -111,6 +111,42 @@ namespace Newtonsoft.Json.Tests.Documentation
     [TestFixture]
     public class PerformanceTests : TestFixtureBase
     {
+        private static class AppSettings
+        {
+            public static readonly IContractResolver SnakeCaseContractResolver = new DefaultContractResolver();
+        }
+
+        [Test]
+        public void ReuseContractResolverTest()
+        {
+            Person person = new Person();
+
+            #region ReuseContractResolver
+            // BAD - a new contract resolver is created each time, forcing slow reflection to be used
+            string json1 = JsonConvert.SerializeObject(person, new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new SnakeCaseNamingStrategy()
+                }
+            });
+
+            // GOOD - reuse the contract resolver from a shared location
+            string json2 = JsonConvert.SerializeObject(person, new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                ContractResolver = AppSettings.SnakeCaseContractResolver
+            });
+
+            // GOOD - an internal contract resolver is used
+            string json3 = JsonConvert.SerializeObject(person, new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented
+            });
+            #endregion
+        }
+
         [Test]
         public void ConverterContractResolverTest()
         {

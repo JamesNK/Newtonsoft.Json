@@ -6,6 +6,20 @@
       Here are some tips to make it go even faster.</para>
       <autoOutline lead="none" excludeRelatedTopics="true" />
     </introduction>
+    <section address="ReuseContractResolver">
+      <title>Reuse Contract Resolver</title>
+      <content>
+        <para>The <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference> resolves .NET types to contracts that are used during serialization inside JsonSerializer.
+        Creating a contract involves inspecting a type with slow reflection, so contracts are typically
+        cached by implementations of IContractResolver like <codeEntityReference>T:Newtonsoft.Json.Serialization.DefaultContractResolver</codeEntityReference>.</para>
+        <para>To avoid the overhead of recreating contracts every time you use JsonSerializer you should create the contract resolver once and reuse it.
+        Note that if you are not using a contract resolver then a shared internal instance is automatically used when serializing and deserializing.
+        </para>
+
+<code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\PerformanceTests.cs" region="ReuseContractResolver" title="Reuse ContractResolver" />
+        
+      </content>
+    </section>
     <section address="MemoryUsage">
       <title>Optimize Memory Usage</title>
       <content>
