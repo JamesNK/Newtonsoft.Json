@@ -14,6 +14,9 @@
       <para>Anything that can be set on an object, collection, property, etc, using attributes or methods to control serialization
       can also be set using an IContractResolver.</para>
       <autoOutline lead="none" excludeRelatedTopics="true" />
+<alert class="note">
+  <para>For performance you should create a contract resolver once and reuse instances when possible. Resolving contracts is slow and implementations of <codeEntityReference>T:Newtonsoft.Json.Serialization.IContractResolver</codeEntityReference> typically cache contracts.</para>
+</alert>
     </introduction>
     <!-- Add one or more top-level section elements.  These are collapsible.
          If using <autoOutline />, add an address attribute to identify it
