@@ -4,10 +4,22 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class ArrayIndexFilter : PathFilter
+    /// <summary>
+    /// Filters an array by index
+    /// </summary>
+    /// <seealso cref="Newtonsoft.Json.Linq.JsonPath.PathFilter" />
+    public class ArrayIndexFilter : PathFilter
     {
+        /// <summary>
+        /// Gets or sets the index.
+        /// </summary>
+        /// <value>
+        /// The index.
+        /// </value>
         public int? Index { get; set; }
 
+        /// <inheritdoc />
+        /// <exception cref="JsonException">Index * not valid on the given token type</exception>
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             foreach (JToken t in current)

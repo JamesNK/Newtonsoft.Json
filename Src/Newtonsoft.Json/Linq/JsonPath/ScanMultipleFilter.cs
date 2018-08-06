@@ -2,10 +2,21 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class ScanMultipleFilter : PathFilter
+    /// <summary>
+    /// Scans a document and filters it by multiple property names
+    /// </summary>
+    /// <seealso cref="Newtonsoft.Json.Linq.JsonPath.PathFilter" />
+    public class ScanMultipleFilter : PathFilter
     {
+        /// <summary>
+        /// Gets or sets the names.
+        /// </summary>
+        /// <value>
+        /// The names.
+        /// </value>
         public List<string> Names { get; set; }
 
+        /// <inheritdoc />
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             foreach (JToken c in current)

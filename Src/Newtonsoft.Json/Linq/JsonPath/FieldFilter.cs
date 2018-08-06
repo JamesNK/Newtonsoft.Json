@@ -4,10 +4,21 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class FieldFilter : PathFilter
+    /// <summary>
+    /// Filters a document by a field
+    /// </summary>
+    /// <seealso cref="Newtonsoft.Json.Linq.JsonPath.PathFilter" />
+    public class FieldFilter : PathFilter
     {
+        /// <summary>
+        /// Gets or sets the name of the filtering property.
+        /// </summary>
+        /// <value>
+        /// The name.
+        /// </value>
         public string Name { get; set; }
 
+        /// <inheritdoc />
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             foreach (JToken t in current)

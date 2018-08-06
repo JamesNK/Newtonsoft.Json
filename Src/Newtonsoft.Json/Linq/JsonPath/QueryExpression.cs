@@ -12,8 +12,12 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal enum QueryOperator
+    /// <summary>
+    /// Represents a query operator
+    /// </summary>
+    public enum QueryOperator
     {
+#pragma warning disable CS1591 // Missing XML comment for publicly visible type or member
         None = 0,
         Equals = 1,
         NotEquals = 2,
@@ -25,24 +29,64 @@ namespace Newtonsoft.Json.Linq.JsonPath
         And = 8,
         Or = 9,
         RegexEquals = 10
+#pragma warning restore CS1591 // Missing XML comment for publicly visible type or member
     }
 
-    internal abstract class QueryExpression
+    /// <summary>
+    /// Represents a query expression
+    /// </summary>
+    public abstract class QueryExpression
     {
+        /// <summary>
+        /// Gets or sets the operator.
+        /// </summary>
+        /// <value>
+        /// The operator.
+        /// </value>
         public QueryOperator Operator { get; set; }
 
+        /// <summary>
+        /// Determines whether the specified expression is matching against the given token.
+        /// </summary>
+        /// <param name="root">The root token.</param>
+        /// <param name="t">The token.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified token is matching; otherwise, <c>false</c>.
+        /// </returns>
         public abstract bool IsMatch(JToken root, JToken t);
     }
 
-    internal class CompositeExpression : QueryExpression
+    /// <summary>
+    /// Represents a combined expression that holds multiple expressions together
+    /// </summary>
+    /// <seealso cref="Newtonsoft.Json.Linq.JsonPath.QueryExpression" />
+    public class CompositeExpression : QueryExpression
     {
+        /// <summary>
+        /// Gets or sets the expressions.
+        /// </summary>
+        /// <value>
+        /// The expressions.
+        /// </value>
         public List<QueryExpression> Expressions { get; set; }
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="CompositeExpression"/> class.
+        /// </summary>
         public CompositeExpression()
         {
             Expressions = new List<QueryExpression>();
         }
 
+        /// <summary>
+        /// Determines whether the specified expressions are matching against the given token.
+        /// </summary>
+        /// <param name="root">The root token.</param>
+        /// <param name="t">The token.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified token is matching; otherwise, <c>false</c>.
+        /// </returns>
+        /// <exception cref="ArgumentOutOfRangeException"></exception>
         public override bool IsMatch(JToken root, JToken t)
         {
             switch (Operator)
@@ -71,9 +115,26 @@ namespace Newtonsoft.Json.Linq.JsonPath
         }
     }
 
-    internal class BooleanQueryExpression : QueryExpression
+    /// <summary>
+    /// Represents a boolean query expression
+    /// </summary>
+    /// <seealso cref="Newtonsoft.Json.Linq.JsonPath.QueryExpression" />
+    public class BooleanQueryExpression : QueryExpression
     {
+        /// <summary>
+        /// Gets or sets the left value.
+        /// </summary>
+        /// <value>
+        /// The left value.
+        /// </value>
         public object Left { get; set; }
+
+        /// <summary>
+        /// Gets or sets the right value.
+        /// </summary>
+        /// <value>
+        /// The right value.
+        /// </value>
         public object Right { get; set; }
 
         private IEnumerable<JToken> GetResult(JToken root, JToken t, object o)
@@ -91,6 +152,14 @@ namespace Newtonsoft.Json.Linq.JsonPath
             return CollectionUtils.ArrayEmpty<JToken>();
         }
 
+        /// <summary>
+        /// Determines whether the specified expression is matching against the given token.
+        /// </summary>
+        /// <param name="root">The root token.</param>
+        /// <param name="t">The token.</param>
+        /// <returns>
+        ///   <c>true</c> if the specified token is matching; otherwise, <c>false</c>.
+        /// </returns>
         public override bool IsMatch(JToken root, JToken t)
         {
             if (Operator == QueryOperator.Exists)

@@ -3,10 +3,21 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class QueryScanFilter : PathFilter
+    /// <summary>
+    /// Filters a document by an expression and traverses all descendant containers
+    /// </summary>
+    /// <seealso cref="Newtonsoft.Json.Linq.JsonPath.PathFilter" />
+    public class QueryScanFilter : PathFilter
     {
+        /// <summary>
+        /// Gets or sets the filter expression.
+        /// </summary>
+        /// <value>
+        /// The filter expression.
+        /// </value>
         public QueryExpression Expression { get; set; }
 
+        /// <inheritdoc />
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
             foreach (JToken t in current)

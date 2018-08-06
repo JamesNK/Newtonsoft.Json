@@ -31,15 +31,29 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class JPath
+    /// <summary>
+    /// Represents a json path
+    /// </summary>
+    public class JPath
     {
-        private static readonly char[] FloatCharacters = new[] {'.', 'E', 'e'};
+        private static readonly char[] FloatCharacters = new[] { '.', 'E', 'e' };
 
         private readonly string _expression;
+
+        /// <summary>
+        /// Gets the filters for the path.
+        /// </summary>
+        /// <value>
+        /// The filters.
+        /// </value>
         public List<PathFilter> Filters { get; }
 
         private int _currentIndex;
 
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JPath"/> class.
+        /// </summary>
+        /// <param name="expression">The json expression.</param>
         public JPath(string expression)
         {
             ValidationUtils.ArgumentNotNull(expression, nameof(expression));
@@ -198,7 +212,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
         private static PathFilter CreatePathFilter(string member, bool scan)
         {
-            PathFilter filter = (scan) ? (PathFilter)new ScanFilter {Name = member} : new FieldFilter {Name = member};
+            PathFilter filter = (scan) ? (PathFilter)new ScanFilter { Name = member } : new FieldFilter { Name = member };
             return filter;
         }
 
