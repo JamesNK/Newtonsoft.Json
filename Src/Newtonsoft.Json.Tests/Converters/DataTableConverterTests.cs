@@ -50,6 +50,23 @@ namespace Newtonsoft.Json.Tests.Converters
 {
     public class DataTableConverterTests : TestFixtureBase
     {
+        [Test]
+        public void DeserializeEmptyNestedArray()
+        {
+            var jsonString2 = @"[{""col1"": []}]";
+
+            DataTable dt = JsonConvert.DeserializeObject<DataTable>(jsonString2);
+
+            Assert.AreEqual(1, dt.Columns.Count);
+            Assert.AreEqual(typeof(string[]), dt.Columns["col1"].DataType);
+
+            Assert.AreEqual(1, dt.Rows.Count);
+            Assert.IsNotNull(dt.Rows[0]["col1"]);
+
+            object[] value = (object[])dt.Rows[0]["col1"];
+            Assert.AreEqual(0, value.Length);
+        }
+
 #if !(NET20 || NET35)
         [Test]
         public void SerializeNullValues()
