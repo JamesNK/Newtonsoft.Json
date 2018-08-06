@@ -303,16 +303,16 @@ namespace Newtonsoft.Json.Serialization
                     case JsonToken.String:
                         string s = (string)reader.Value;
 
-                        // convert empty string to null automatically for nullable types
-                        if (CoerceEmptyStringToNull(objectType, contract, s))
-                        {
-                            return null;
-                        }
-
                         // string that needs to be returned as a byte array should be base 64 decoded
                         if (objectType == typeof(byte[]))
                         {
                             return Convert.FromBase64String(s);
+                        }
+
+                        // convert empty string to null automatically for nullable types
+                        if (CoerceEmptyStringToNull(objectType, contract, s))
+                        {
+                            return null;
                         }
 
                         return EnsureType(reader, s, CultureInfo.InvariantCulture, contract, objectType);
