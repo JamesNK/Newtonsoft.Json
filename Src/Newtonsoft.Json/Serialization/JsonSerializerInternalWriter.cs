@@ -131,14 +131,18 @@ namespace Newtonsoft.Json.Serialization
                 bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Objects, contract, member, containerContract, containerProperty);
                 if (includeTypeDetails)
                 {
-                    writer.WriteStartObject();
-                    WriteTypeProperty(writer, contract.CreatedType);
-                    writer.WritePropertyName(JsonTypeReflector.ValuePropertyName, false);
+                    string typeName = ReflectionUtils.GetTypeName(contract.CreatedType, Serializer._typeNameAssemblyFormatHandling, Serializer._serializationBinder);
+                    if (!string.IsNullOrEmpty(typeName))
+                    {
+                        writer.WriteStartObject();
+                        WriteTypeProperty(writer, contract.CreatedType, typeName);
+                        writer.WritePropertyName(JsonTypeReflector.ValuePropertyName, false);
 
-                    JsonWriter.WriteValue(writer, contract.TypeCode, value);
+                        JsonWriter.WriteValue(writer, contract.TypeCode, value);
 
-                    writer.WriteEndObject();
-                    return;
+                        writer.WriteEndObject();
+                        return;
+                    }
                 }
             }
 
@@ -603,7 +607,14 @@ namespace Newtonsoft.Json.Serialization
         private void WriteTypeProperty(JsonWriter writer, Type type)
         {
             string typeName = ReflectionUtils.GetTypeName(type, Serializer._typeNameAssemblyFormatHandling, Serializer._serializationBinder);
+            if (!string.IsNullOrEmpty(typeName))
+            {
+                WriteTypeProperty(writer, type, typeName);
+            }
+        }
 
+        private void WriteTypeProperty(JsonWriter writer, Type type, string typeName)
+        {
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
             {
                 TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "Writing type name '{0}' for {1}.".FormatWith(CultureInfo.InvariantCulture, typeName, type)), null);
@@ -810,17 +821,31 @@ namespace Newtonsoft.Json.Serialization
 
             if (writeMetadataObject)
             {
-                writer.WriteStartObject();
-
-                if (isReference)
-                {
-                    WriteReferenceIdProperty(writer, contract.UnderlyingType, values);
-                }
+                string typeName = null;
                 if (includeTypeDetails)
                 {
-                    WriteTypeProperty(writer, values.GetType());
+                    typeName = ReflectionUtils.GetTypeName(values.GetType(), Serializer._typeNameAssemblyFormatHandling, Serializer._serializationBinder);
+                    if (string.IsNullOrEmpty(typeName))
+                    {
+                        writeMetadataObject = isReference;
+                        includeTypeDetails = false;
+                    }
                 }
-                writer.WritePropertyName(JsonTypeReflector.ArrayValuesPropertyName, false);
+
+                if (writeMetadataObject)
+                {
+                    writer.WriteStartObject();
+
+                    if (isReference)
+                    {
+                        WriteReferenceIdProperty(writer, contract.UnderlyingType, values);
+                    }
+                    if (includeTypeDetails)
+                    {
+                        WriteTypeProperty(writer, values.GetType(), typeName);
+                    }
+                    writer.WritePropertyName(JsonTypeReflector.ArrayValuesPropertyName, false);
+                }
             }
 
             if (contract.ItemContract == null)
