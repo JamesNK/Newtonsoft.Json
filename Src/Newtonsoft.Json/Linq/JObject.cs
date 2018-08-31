@@ -258,7 +258,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Gets a <see cref="JProperty"/> the specified name.
+        /// Gets a <see cref="JProperty"/> with the specified name.
         /// </summary>
         /// <param name="name">The property name.</param>
         /// <returns>A <see cref="JProperty"/> with the specified name or <c>null</c>.</returns>
