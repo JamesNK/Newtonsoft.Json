@@ -696,32 +696,7 @@ namespace Newtonsoft.Json
 
         private void WriteConstructorDate(JsonReader reader)
         {
-            if (!reader.Read())
-            {
-                throw JsonWriterException.Create(this, "Unexpected end when reading date constructor.", null);
-            }
-            if (reader.TokenType != JsonToken.Integer)
-            {
-                throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected Integer, got " + reader.TokenType, null);
-            }
-
-            long ticks = (long)reader.Value;
-            DateTime date = DateTimeUtils.ConvertJavaScriptTicksToDateTime(ticks);
-
-            if (!reader.Read())
-            {
-                throw JsonWriterException.Create(this, "Unexpected end when reading date constructor.", null);
-            }
-            if (reader.TokenType != JsonToken.EndConstructor)
-            {
-                throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected EndConstructor, got " + reader.TokenType, null);
-            }
-
-            WriteValue(date);
-            
-            
-            
-            List<long> DateParams = new List<long>();
+						List<long> DateParams = new List<long>();
             while (true)
             {
                 if (!reader.Read())
