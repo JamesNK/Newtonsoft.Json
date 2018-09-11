@@ -696,27 +696,31 @@ namespace Newtonsoft.Json
 
         private void WriteConstructorDate(JsonReader reader)
         {
-            if (!reader.Read())
+            List<int> DateParams = new List<int>();
+            while (true)
             {
-                throw JsonWriterException.Create(this, "Unexpected end when reading date constructor.", null);
+                if(!reader.Read())
+                    throw JsonWriterException.Create(this, "Unexpected end when reading date constructor.", null);
+                if (reader.TokenType == JsonToken.EndConstructor)
+                    break;
+                if(reader.TokenType != JsonToken.Integer)
+                    throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected Integer, got " + reader.TokenType, null);
+                DateParams.Add(Convert.ToInt32(reader.Value));
+                if(DateParams.Count > 7)
+                    throw JsonWriterException.Create(this, "Unexpected token when reading date constructor.", null);
             }
-            if (reader.TokenType != JsonToken.Integer)
+            DateTime date;
+            if (DateParams.Count == 1) 
             {
-                throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected Integer, got " + reader.TokenType, null);
+                date = DateTimeUtils.ConvertJavaScriptTicksToDateTime(DateParams[0]);
             }
-
-            long ticks = (long)reader.Value;
-            DateTime date = DateTimeUtils.ConvertJavaScriptTicksToDateTime(ticks);
-
-            if (!reader.Read())
+            else if (DateParams.Count == 7) //add support: new Date(2018,5,26,11,14,31,36)
             {
-                throw JsonWriterException.Create(this, "Unexpected end when reading date constructor.", null);
+                date = new DateTime(DateParams[0], DateParams[1] + 1, DateParams[2], DateParams[3],
+                    DateParams[4], DateParams[5], DateParams[6]);
             }
-            if (reader.TokenType != JsonToken.EndConstructor)
-            {
-                throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected EndConstructor, got " + reader.TokenType, null);
-            }
-
+            else
+                throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Wrong number of arguments.", null);
             WriteValue(date);
         }
 
