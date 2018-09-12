@@ -11,6 +11,7 @@ steps:
     if ($Env:KEY_DATA -eq $null)
     {
         $keyData = [System.Convert]::FromBase64String($Env:KEY_DATA)
+        write-host "Writing key to $keyPath" -fore white
         [System.IO.File]::WriteAllBytes($keyPath, $keyData)
         $sign = $true
     }
