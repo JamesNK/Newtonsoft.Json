@@ -1,7 +1,7 @@
 ﻿properties {
-  $zipFileName = "Json110r3.zip"
-  $majorVersion = "11.0"
-  $majorWithReleaseVersion = "11.0.3"
+  $zipFileName = "Json120r1.zip"
+  $majorVersion = "12.0"
+  $majorWithReleaseVersion = "12.0.1"
   $nugetPrerelease = "beta1"
   $version = GetVersion $majorWithReleaseVersion
   $packageId = "Newtonsoft.Json"
@@ -13,7 +13,7 @@
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $netCliChannel = "2.0"
-  $netCliVersion = "2.1.301"
+  $netCliVersion = "2.1.402"
   $nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 
   $baseDir  = resolve-path ..
