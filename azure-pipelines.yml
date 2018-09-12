@@ -6,7 +6,7 @@ steps:
     #Write-Host "BUILD_SOURCESDIRECTORY contents:"
     #gci $Env:BUILD_SOURCESDIRECTORY
     #Write-Host "Over and out."
-    Build\runbuild.ps1
+    .\Build\runbuild.ps1
   env:
     KEY_DATA: $(KEY_DATA)
   displayName: 'Run build'
