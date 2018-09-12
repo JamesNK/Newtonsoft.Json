@@ -3,5 +3,7 @@ pool:
 
 steps:
 - powershell: |
+    Write-Host "Hello World from $Env:AGENT_NAME."
     .\build\build.ps1
+  env: KEY_DATA: $(KEY_DATA)
   displayName: 'Run build'
