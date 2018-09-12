@@ -38,10 +38,11 @@ steps:
 - powershell: |
     $branch = [string]$Env:BRANCH_NAME
     write-host "Branch $branch" -fore Green
-    if ($branch -eq "master" -and (Test-Path -path "Working\NuGet"))
+    #if ($branch -eq "master" -and (Test-Path -path "Working\NuGet"))
+    if ((Test-Path -path ".\Working\NuGet"))
     {
         $apiKey = $Env:MYGET_KEY
-        $mainPkg = (get-childitem Working\NuGet | Where {$_.Extension -eq ".nupkg" -and !$_.Name.Contains(".symbols.") } | select -first 1).FullName
+        $mainPkg = (get-childitem .\Working\NuGet | Where {$_.Extension -eq ".nupkg" -and !$_.Name.Contains(".symbols.") } | select -first 1).FullName
         write-host
         write-host "Pushing package $mainPkg to myget" -fore Green
         nuget push $mainPkg $apiKey -Source https://www.myget.org/F/json-net/api/v2/package
