@@ -11,14 +11,13 @@ steps:
     if ($Env:KEY_DATA)
     {
         $keyData = [System.Convert]::FromBase64String($Env:KEY_DATA)
-        write-host "Writing key to $keyPath" -fore white
         [System.IO.File]::WriteAllBytes($keyPath, $keyData)
         $sign = $true
     }
     write-host "Sign assemblies $sign" -fore white
     $formattedBuildNumber = $buildNumber.ToString("D6")
     $nugetPrerelease = "build$formattedBuildNumber"
-    #.\Build\runbuild.ps1 -properties @{"signAssemblies"=$sign; "signKeyPath"=$keyPath; "treatWarningsAsErrors"=$true; "nugetPrerelease"=$nugetPrerelease;}
+    .\Build\runbuild.ps1 -properties @{"signAssemblies"=$sign; "signKeyPath"=$keyPath; "treatWarningsAsErrors"=$true; "nugetPrerelease"=$nugetPrerelease;}
   env:
     KEY_DATA: $(newtonsoft.keyData)
     BUILD_ID: $(Build.BuildId)
@@ -35,3 +34,19 @@ steps:
     testRunner: 'VSTest'
     testResultsFiles: '**/Working/*.trx'
   displayName: 'Publish XUnit test results'
+
+- powershell: |
+    $branch = [string]$Env:BRANCH_NAME
+    write-host "Branch $branch" -fore Green
+    if ($branch -eq "master" -and (Test-Path -path "Working\NuGet"))
+    {
+        $apiKey = $Env:MYGET_KEY
+        $mainPkg = (get-childitem Working\NuGet | Where {$_.Extension -eq ".nupkg" -and !$_.Name.Contains(".symbols.") } | select -first 1).FullName
+        write-host
+        write-host "Pushing package $mainPkg to myget" -fore Green
+        nuget push $mainPkg $apiKey -Source https://www.myget.org/F/json-net/api/v2/package
+    }
+  env:
+    MYGET_KEY: $(newtonsoft.mygetKey)
+    BRANCH_NAME: $(Build.SourceBranchName)
+  displayName: 'Publish NuGet package'
