@@ -10,3 +10,13 @@ steps:
   env:
     KEY_DATA: $(KEY_DATA)
   displayName: 'Run build'
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: 'XUnit'
+    testResultsFiles: '**/Working/*.xml'
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: 'VSTest'
+    testResultsFiles: '**/Working/*.trx'
