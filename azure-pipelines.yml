@@ -8,7 +8,7 @@ steps:
     $basePath = resolve-path .
     $keyPath = "$basePath\key.snk"
     $sign = $false
-    if ($Env:KEY_DATA -eq $null)
+    if ($Env:KEY_DATA)
     {
         $keyData = [System.Convert]::FromBase64String($Env:KEY_DATA)
         write-host "Writing key to $keyPath" -fore white
