@@ -45,7 +45,7 @@ steps:
         $mainPkg = (get-childitem .\Working\NuGet | Where {$_.Extension -eq ".nupkg" -and !$_.Name.Contains(".symbols.") } | select -first 1).FullName
         write-host
         write-host "Pushing package $mainPkg to myget" -fore Green
-        nuget push $mainPkg $apiKey -Source https://www.myget.org/F/json-net/api/v2/package
+        .\Build\Temp\nuget.exe push $mainPkg $apiKey -Source https://www.myget.org/F/json-net/api/v2/package
     }
   env:
     MYGET_KEY: $(newtonsoft.mygetKey)
