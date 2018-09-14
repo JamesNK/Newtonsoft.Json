@@ -40,4 +40,4 @@ steps:
     pathtoPublish: .\Working
     artifactName: artifacts
     parallel: true
-  condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
+    parallelCount: 8
