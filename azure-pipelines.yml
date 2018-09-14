@@ -35,11 +35,9 @@ steps:
     testResultsFiles: '**/Working/*.trx'
   displayName: 'Publish dotnet test results'
 
-- task: NuGetCommand@2
+- task: PublishBuildArtifacts@1
   inputs:
-    command: push
-    nuGetFeedType: external
-    publishFeedCredentials: 'json-net'
-    packagesToPush: '**/Working/*.nupkg'
-  displayName: 'Publish NuGet package'
+    pathtoPublish: .\Working
+    artifactName: artifacts
+    parallel: true
   condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
