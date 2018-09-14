@@ -27,26 +27,17 @@ steps:
   inputs:
     testRunner: 'NUnit'
     testResultsFiles: '**/Working/*.xml'
-  displayName: 'Publish NUnit test results'
+  displayName: 'Publish NUnit results'
 
 - task: PublishTestResults@2
   inputs:
     testRunner: 'VSTest'
     testResultsFiles: '**/Working/*.trx'
-  displayName: 'Publish XUnit test results'
+  displayName: 'Publish dotnet test results'
 
-- powershell: |
-    $branch = [string]$Env:BRANCH_NAME
-    write-host "Branch $branch" -fore Green
-    if ($branch -eq "master" -and (Test-Path -path ".\Working\NuGet"))
-    {
-        $apiKey = $Env:MYGET_KEY
-        $mainPkg = (get-childitem .\Working\NuGet | Where {$_.Extension -eq ".nupkg" -and !$_.Name.Contains(".symbols.") } | select -first 1).FullName
-        write-host
-        write-host "Pushing package $mainPkg to myget" -fore Green
-        .\Build\Temp\nuget.exe push $mainPkg $apiKey -Source https://www.myget.org/F/json-net/api/v2/package
-    }
-  env:
-    MYGET_KEY: $(newtonsoft.mygetKey)
-    BRANCH_NAME: $(Build.SourceBranchName)
-  displayName: 'Publish NuGet package'
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: .\Working
+    artifactName: artifacts
+    parallel: true
+    parallelCount: 8
