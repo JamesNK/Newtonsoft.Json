@@ -45,7 +45,11 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void DeserializeInvalidDataTable()
         {
-            ExceptionAssert.Throws<JsonException>(() => JsonConvert.DeserializeObject<DataSet>("{\"pending_count\":23,\"completed_count\":45}"), "Unexpected JSON token when reading DataTable. Expected StartArray, got Integer. Path 'pending_count', line 1, position 19.");
+            var ex = ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<DataSet>("{\"pending_count\":23,\"completed_count\":45}"), "Unexpected JSON token when reading DataTable. Expected StartArray, got Integer. Path 'pending_count', line 1, position 19.");
+
+            Assert.AreEqual(1, ex.LineNumber);
+            Assert.AreEqual(19, ex.LinePosition);
+            Assert.AreEqual("pending_count", ex.Path);
         }
 
         [Test]
