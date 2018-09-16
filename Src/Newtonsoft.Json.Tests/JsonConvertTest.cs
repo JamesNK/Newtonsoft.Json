@@ -121,13 +121,17 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void PopulateObjectWithOnlyComment()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            var ex = ExceptionAssert.Throws<JsonSerializationException>(() =>
             {
                 string json = @"// file header";
 
                 PopulateTestObject o = new PopulateTestObject();
                 JsonConvert.PopulateObject(json, o);
             }, "No JSON content found. Path '', line 1, position 14.");
+
+            Assert.AreEqual(1, ex.LineNumber);
+            Assert.AreEqual(14, ex.LinePosition);
+            Assert.AreEqual(string.Empty, ex.Path);
         }
 
         [Test]
