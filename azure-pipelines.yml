@@ -10,7 +10,7 @@ steps:
   env:
     KEY_DATA: $(newtonsoft.keyData)
   displayName: 'Prepare key'
-  condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 - powershell: |
     $buildNumber = [int]$Env:BUILD_ID
