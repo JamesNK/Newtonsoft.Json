@@ -9,7 +9,7 @@ steps:
     [System.IO.File]::WriteAllBytes($keyPath, $keyData)
   env:
     KEY_DATA: $(newtonsoft.keyData)
-  displayName: 'Prepare key'
+  displayName: 'Prepare signing key'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
 
 - powershell: |
