@@ -23,7 +23,6 @@ steps:
     $nugetPrerelease = "build$formattedBuildNumber"
     .\Build\runbuild.ps1 -properties @{"signAssemblies"=$sign; "signKeyPath"=$keyPath; "treatWarningsAsErrors"=$true; "nugetPrerelease"=$nugetPrerelease;}
   env:
-    KEY_DATA: $(newtonsoft.keyData)
     BUILD_ID: $(Build.BuildId)
   displayName: 'Run build'
 
