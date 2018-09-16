@@ -3,17 +3,21 @@ pool:
 
 steps:
 - powershell: |
+    $basePath = resolve-path .
+    $keyPath = "$basePath\key.snk"
+    $keyData = [System.Convert]::FromBase64String($Env:KEY_DATA)
+    [System.IO.File]::WriteAllBytes($keyPath, $keyData)
+  env:
+    KEY_DATA: $(newtonsoft.keyData)
+  displayName: 'Prepare key'
+  condition: and(succeeded(), eq(variables['system.pullrequest.isfork'], false))
+
+- powershell: |
     $buildNumber = [int]$Env:BUILD_ID
     write-host "Build number $buildNumber" -fore white
     $basePath = resolve-path .
     $keyPath = "$basePath\key.snk"
-    $sign = $false
-    if ($Env:KEY_DATA)
-    {
-        $keyData = [System.Convert]::FromBase64String($Env:KEY_DATA)
-        [System.IO.File]::WriteAllBytes($keyPath, $keyData)
-        $sign = $true
-    }
+    $sign = test-path $keyPath
     write-host "Sign assemblies $sign" -fore white
     $formattedBuildNumber = $buildNumber.ToString("D6")
     $nugetPrerelease = "build$formattedBuildNumber"
@@ -41,3 +45,4 @@ steps:
     artifactName: artifacts
     parallel: true
     parallelCount: 8
+  displayName: 'Publish artifacts'
