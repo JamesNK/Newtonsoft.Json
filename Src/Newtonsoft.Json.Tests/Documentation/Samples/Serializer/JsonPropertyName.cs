@@ -70,7 +70,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""name"": ""Starcraft"",
   ""release_date"": ""1998-01-01T00:00:00""
 }", json);

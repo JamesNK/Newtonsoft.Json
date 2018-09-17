@@ -269,12 +269,12 @@ Newtonsoft.Json Error: 0 : Error!
   $('#element')
 ]", json);
 
-            Assert.IsTrue(traceWriter.ToString().EndsWith(@"Verbose Serialized JSON: 
+            Assert.IsTrue(traceWriter.ToString().Replace("\r\n", "\r").EndsWith(@"Verbose Serialized JSON: 
 [
   $('#element'),
   $('#element'),
   $('#element')
-]", StringComparison.Ordinal));
+]".Replace("\r\n", "\r"), StringComparison.Ordinal));
         }
 
         [Test]

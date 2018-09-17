@@ -107,7 +107,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             // ]
             #endregion
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Title"": ""Json.NET is awesome!"",
     ""Author"": {

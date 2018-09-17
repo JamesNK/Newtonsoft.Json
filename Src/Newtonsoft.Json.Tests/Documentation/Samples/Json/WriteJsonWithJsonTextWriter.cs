@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""CPU"": ""Intel"",
   ""PSU"": ""500W"",
   ""Drives"": [

@@ -79,7 +79,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Xml
             // </Root>
             #endregion
 
-            Assert.AreEqual(@"<Root Id=""1"">
+            StringAssert.AreEqual(@"<Root Id=""1"">
   <Email>james@example.com</Email>
   <Active>true</Active>
   <CreatedDate>2013-01-20T00:00:00Z</CreatedDate>
