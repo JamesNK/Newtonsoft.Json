@@ -157,7 +157,7 @@ namespace Newtonsoft.Json.Tests
 
             string result = o.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""BodyHtml"": ""<h3>Title!</h3>\r\n                                                                                                    <p>Content!</p>""
 }", result);
         }

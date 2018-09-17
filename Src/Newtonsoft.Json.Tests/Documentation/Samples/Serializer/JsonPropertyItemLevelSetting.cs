@@ -104,7 +104,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Acme Ltd."",
   ""Employees"": [
     {

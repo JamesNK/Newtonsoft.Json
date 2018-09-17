@@ -84,7 +84,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Table1"": [
     {
       ""id"": 0,

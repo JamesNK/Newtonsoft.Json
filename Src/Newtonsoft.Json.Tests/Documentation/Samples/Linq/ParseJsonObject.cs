@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""CPU"": ""Intel"",
   ""Drives"": [
     ""DVD read/writer"",

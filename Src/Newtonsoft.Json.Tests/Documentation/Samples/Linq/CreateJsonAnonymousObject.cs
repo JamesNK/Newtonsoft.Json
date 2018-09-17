@@ -116,7 +116,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""channel"": {
     ""title"": ""Star Wars"",
     ""link"": ""http://www.starwars.com"",

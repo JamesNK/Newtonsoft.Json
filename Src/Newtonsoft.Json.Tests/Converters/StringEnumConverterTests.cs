@@ -231,7 +231,7 @@ namespace Newtonsoft.Json.Tests.Converters
             };
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enum"": "",third""
 }", json);
 
@@ -248,7 +248,7 @@ namespace Newtonsoft.Json.Tests.Converters
             };
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enum"": "",""
 }", json);
 

@@ -565,7 +565,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             //}
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""name"": ""Widget"",
   ""expiryDate"": ""2010-12-20T18:01:00Z"",
   ""price"": 9.99,
@@ -615,7 +615,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             //]
             #endregion
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   {
     ""Name"": ""Product 1"",
     ""ExpiryDate"": ""2000-12-29T00:00:00Z"",
@@ -790,7 +790,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Bad Boys III"",
   ""Description"": ""It's no Bad Boys"",
   ""Classification"": null,
@@ -799,7 +799,7 @@ namespace Newtonsoft.Json.Tests.Documentation
   ""ReleaseCountries"": null
 }", included);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Bad Boys III"",
   ""Description"": ""It's no Bad Boys""
 }", ignored);
@@ -862,7 +862,7 @@ namespace Newtonsoft.Json.Tests.Documentation
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Company"": ""Acme Ltd."",
   ""Amount"": 50.0,
   ""Paid"": false,
@@ -871,7 +871,7 @@ namespace Newtonsoft.Json.Tests.Documentation
   ""FollowUpEmailAddress"": """"
 }", included);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Company"": ""Acme Ltd."",
   ""Amount"": 50.0
 }", ignored);
@@ -940,13 +940,13 @@ namespace Newtonsoft.Json.Tests.Documentation
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""AuthorName"": ""Brandon Sanderson"",
   ""AuthorAge"": 34,
   ""AuthorCountry"": ""United States of America""
 }", startingWithA);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""BookName"": ""The Gathering Storm"",
   ""BookPrice"": 16.19
 }", startingWithB);

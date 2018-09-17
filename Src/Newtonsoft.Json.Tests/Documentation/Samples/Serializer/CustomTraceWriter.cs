@@ -113,7 +113,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // ]
             #endregion
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""New Zealand"",
   ""Australia"",
   ""Denmark"",

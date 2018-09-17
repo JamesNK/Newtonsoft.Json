@@ -100,7 +100,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             // ]
             #endregion
 
-            Assert.AreEqual(@"[
+            StringAssert.AreEqual(@"[
   ""DVD"",
   ""SSD""
 ]", a.ToString());

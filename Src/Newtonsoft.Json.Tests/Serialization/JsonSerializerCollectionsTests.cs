@@ -462,7 +462,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(d, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""key"": [
     {
       ""Text1"": ""value1""

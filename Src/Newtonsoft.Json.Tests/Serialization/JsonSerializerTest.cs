@@ -441,7 +441,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 ContractResolver = new DictionaryKeyContractResolver()
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""NAME"": ""James"",
   ""AGE"": 1,
   ""ROLENAMES"": {
@@ -574,7 +574,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 ContractResolver = new IgnoredPropertiesContractResolver()
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Name!""
 }", json);
 
@@ -2907,7 +2907,7 @@ keyword such as type of business.""
 
             string json = JsonConvert.SerializeObject(o, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""IEnumerableProperty"": [
     4,
     5,

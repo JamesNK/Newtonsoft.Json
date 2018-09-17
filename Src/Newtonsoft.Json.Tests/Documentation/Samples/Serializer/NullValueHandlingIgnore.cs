@@ -82,7 +82,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Nigal Newborn"",
   ""Age"": 1
 }", jsonIgnoreNullValues);
