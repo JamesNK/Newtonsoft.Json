@@ -786,6 +786,11 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 throw new JsonException("Path ended with open query.");
             }
 
+            if(Match("==="))
+            {
+                return QueryOperator.Identity;
+            }
+
             if (Match("=="))
             {
                 return QueryOperator.Equals;
@@ -794,6 +799,11 @@ namespace Newtonsoft.Json.Linq.JsonPath
             if (Match("=~"))
             {
                 return QueryOperator.RegexEquals;
+            }
+
+            if(Match("!=="))
+            {
+                return QueryOperator.NotIdentity;
             }
 
             if (Match("!=") || Match("<>"))
