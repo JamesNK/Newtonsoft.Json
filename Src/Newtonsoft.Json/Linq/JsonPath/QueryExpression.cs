@@ -25,8 +25,8 @@ namespace Newtonsoft.Json.Linq.JsonPath
         And = 8,
         Or = 9,
         RegexEquals = 10,
-        Identity = 11,
-        NotIdentity = 12
+        StrictEquals = 11,
+        StrictNotEquals = 12
     }
 
     internal abstract class QueryExpression
@@ -137,25 +137,25 @@ namespace Newtonsoft.Json.Linq.JsonPath
                         }
                         break;
                     case QueryOperator.Equals:
-                        if(EqualsWithStringCoercion(leftValue, rightValue))
+                        if (EqualsWithStringCoercion(leftValue, rightValue))
                         {
                             return true;
                         }
                         break;
-                    case QueryOperator.Identity:
-                        if(EqualsWithoutStringCoercion(leftValue, rightValue))
+                    case QueryOperator.StrictEquals:
+                        if (EqualsWithoutStringCoercion(leftValue, rightValue))
                         {
                             return true;
                         }
                         break;
                     case QueryOperator.NotEquals:
-                        if(!EqualsWithStringCoercion(leftValue, rightValue))
+                        if (!EqualsWithStringCoercion(leftValue, rightValue))
                         {
                             return true;
                         }
                         break;
-                    case QueryOperator.NotIdentity:
-                        if(!EqualsWithoutStringCoercion(leftValue, rightValue))
+                    case QueryOperator.StrictNotEquals:
+                        if (!EqualsWithoutStringCoercion(leftValue, rightValue))
                         {
                             return true;
                         }
@@ -271,6 +271,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
             return string.Equals(currentValueString, queryValueString, StringComparison.Ordinal);
         }
+
         private bool EqualsWithoutStringCoercion(JValue value, JValue queryValue)
         {
             // Looking at the impl I believe it considers type and value and may be euqivalent to javascript's identity op. I think. :/

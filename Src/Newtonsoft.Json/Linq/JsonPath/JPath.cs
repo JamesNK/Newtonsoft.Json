@@ -786,9 +786,9 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 throw new JsonException("Path ended with open query.");
             }
 
-            if(Match("==="))
+            if (Match("==="))
             {
-                return QueryOperator.Identity;
+                return QueryOperator.StrictEquals;
             }
 
             if (Match("=="))
@@ -801,9 +801,9 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 return QueryOperator.RegexEquals;
             }
 
-            if(Match("!=="))
+            if (Match("!=="))
             {
-                return QueryOperator.NotIdentity;
+                return QueryOperator.StrictNotEquals;
             }
 
             if (Match("!=") || Match("<>"))
