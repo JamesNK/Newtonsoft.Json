@@ -2063,5 +2063,27 @@ Parameter name: arrayIndex");
             Assert.AreEqual(1, (int)(JToken)value);
         }
 #endif
+
+        [Test]
+        public void Property()
+        {
+            JObject a = new JObject();
+            a["Name"] = "Name!";
+            a["name"] = "name!";
+            a["title"] = "Title!";
+
+            Assert.AreEqual(null, a.Property("NAME", StringComparison.Ordinal));
+            Assert.AreEqual(null, a.Property("NAME"));
+            Assert.AreEqual(null, a.Property("TITLE"));
+            Assert.AreEqual(null, a.Property(null, StringComparison.Ordinal));
+            Assert.AreEqual(null, a.Property(null));
+
+            // First match comparison match
+            Assert.AreEqual("Name", a.Property("NAME", StringComparison.OrdinalIgnoreCase).Name);
+            // Exact match before comparison
+            Assert.AreEqual("name", a.Property("name", StringComparison.OrdinalIgnoreCase).Name);
+            // Exact match without comparison
+            Assert.AreEqual("name", a.Property("name", StringComparison.Ordinal).Name);
+        }
     }
 }
