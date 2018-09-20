@@ -290,8 +290,9 @@ namespace Newtonsoft.Json.Linq
             // test above already uses this comparison so no need to repeat
             if (comparison != StringComparison.Ordinal)
             {
-                foreach (JProperty p in _properties)
+                for (int i = 0; i < _properties.Count; i++)
                 {
+                    JProperty p = (JProperty)_properties[i];
                     if (string.Equals(p.Name, name, comparison))
                     {
                         return p;
