@@ -264,13 +264,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JProperty"/> with the specified name or <c>null</c>.</returns>
         public JProperty Property(string name)
         {
-            if (name == null)
-            {
-                return null;
-            }
-
-            _properties.TryGetValue(name, out JToken property);
-            return (JProperty)property;
+            return Property(name, StringComparison.Ordinal);
         }
 
         /// <summary>
@@ -283,10 +277,14 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JProperty"/> matched with the specified name or <c>null</c>.</returns>
         public JProperty Property(string name, StringComparison comparison)
         {
-            JProperty property = Property(name);
-            if (property != null)
+            if (name == null)
             {
-                return property;
+                return null;
+            }
+
+            if (_properties.TryGetValue(name, out JToken property))
+            {
+                return (JProperty)property;
             }
 
             // test above already uses this comparison so no need to repeat

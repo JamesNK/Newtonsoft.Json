@@ -699,7 +699,7 @@ namespace Newtonsoft.Json.Tests.Linq
         {
             JsonMergeSettings settings = new JsonMergeSettings();
 
-            Assert.AreEqual(StringComparison.OrdinalIgnoreCase, settings.PropertyNameComparison);
+            Assert.AreEqual(StringComparison.Ordinal, settings.PropertyNameComparison);
         }
     }
 }

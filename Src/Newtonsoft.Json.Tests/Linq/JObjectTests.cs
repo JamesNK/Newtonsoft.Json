@@ -2076,13 +2076,14 @@ Parameter name: arrayIndex");
             Assert.AreEqual(null, a.Property("NAME"));
             Assert.AreEqual(null, a.Property("TITLE"));
             Assert.AreEqual(null, a.Property(null, StringComparison.Ordinal));
+            Assert.AreEqual(null, a.Property(null, StringComparison.OrdinalIgnoreCase));
             Assert.AreEqual(null, a.Property(null));
 
-            // First match comparison match
+            // Return first match when ignoring case
             Assert.AreEqual("Name", a.Property("NAME", StringComparison.OrdinalIgnoreCase).Name);
-            // Exact match before comparison
+            // Return exact match before ignoring case
             Assert.AreEqual("name", a.Property("name", StringComparison.OrdinalIgnoreCase).Name);
-            // Exact match without comparison
+            // Return exact match without ignoring case
             Assert.AreEqual("name", a.Property("name", StringComparison.Ordinal).Name);
         }
     }
