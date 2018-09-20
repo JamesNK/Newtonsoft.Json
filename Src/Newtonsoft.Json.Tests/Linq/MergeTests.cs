@@ -693,5 +693,13 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual("User", (string)words[0]);
             Assert.AreEqual("Name", (string)words[1]);
         }
+
+        [Test]
+        public void MergeSettingsComparisonDefault()
+        {
+            JsonMergeSettings settings = new JsonMergeSettings();
+
+            Assert.AreEqual(StringComparison.OrdinalIgnoreCase, settings.PropertyNameComparison);
+        }
     }
 }

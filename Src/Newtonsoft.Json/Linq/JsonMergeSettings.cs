@@ -36,6 +36,11 @@ namespace Newtonsoft.Json.Linq
         private MergeNullValueHandling _mergeNullValueHandling;
         private StringComparison _propertyNameComparison;
 
+        public JsonMergeSettings()
+        {
+            _propertyNameComparison = StringComparison.Ordinal;
+        }
+
         /// <summary>
         /// Gets or sets the method used when merging JSON arrays.
         /// </summary>
