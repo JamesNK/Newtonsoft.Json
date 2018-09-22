@@ -1906,14 +1906,17 @@ namespace Newtonsoft.Json.Serialization
             {
                 foreach (JsonProperty property in contract.Properties)
                 {
-                    if (propertyContexts.All(p => p.Property != property))
+                    if (!property.Ignored)
                     {
-                        propertyContexts.Add(new CreatorPropertyContext
+                        if (propertyContexts.All(p => p.Property != property))
                         {
-                            Property = property,
-                            Name = property.PropertyName,
-                            Presence = PropertyPresence.None
-                        });
+                            propertyContexts.Add(new CreatorPropertyContext
+                            {
+                                Property = property,
+                                Name = property.PropertyName,
+                                Presence = PropertyPresence.None
+                            });
+                        }
                     }
                 }
             }
@@ -2076,7 +2079,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 foreach (CreatorPropertyContext propertyValue in propertyContexts)
                 {
-                    if (!propertyValue.Used)
+                    if (!propertyValue.Used && propertyValue.Presence != PropertyPresence.None)
                     {
                         contract.ExtensionDataSetter(createdObject, propertyValue.Name, propertyValue.Value);
                     }
