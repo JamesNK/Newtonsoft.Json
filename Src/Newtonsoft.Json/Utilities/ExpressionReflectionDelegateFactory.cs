@@ -212,17 +212,45 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
+        private bool isWasmFromNetStandard20Code()
+        {
+#if NETSTANDARD2_0
+            return System.Environment.MachineName == "emscripten";
+#else
+            return false;
+#endif
+        }
+
         public override Func<T, object> CreateGet<T>(PropertyInfo propertyInfo)
         {
             ValidationUtils.ArgumentNotNull(propertyInfo, nameof(propertyInfo));
 
+            MethodInfo getMethod = propertyInfo.GetGetMethod(true);
+
+#if NETSTANDARD2_0
+
+            if (isWasmFromNetStandard20Code())
+            {
+                Func<T, object> ret = (T genericTypeInstance) =>
+                {
+                    if (getMethod.IsStatic)
+                    {
+                        return (T)propertyInfo.GetValue(null);
+                    }
+                    else
+                    {
+                        return (T)propertyInfo.GetValue(genericTypeInstance);
+                    }
+                };
+
+                return ret;
+            }
+#endif
             Type instanceType = typeof(T);
             Type resultType = typeof(object);
 
             ParameterExpression parameterExpression = Expression.Parameter(instanceType, "instance");
             Expression resultExpression;
-
-            MethodInfo getMethod = propertyInfo.GetGetMethod(true);
 
             if (getMethod.IsStatic)
             {
@@ -323,6 +351,34 @@ namespace Newtonsoft.Json.Utilities
             Expression readValueParameter = EnsureCastExpression(valueParameter, propertyInfo.PropertyType);
 
             MethodInfo setMethod = propertyInfo.GetSetMethod(true);
+
+#if NETSTANDARD2_0
+
+            if (isWasmFromNetStandard20Code())
+            {
+                Func<Type, bool> IsNullable = (Type type) => type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
+
+                Action<T, object> ret = (T genericTypeInstance, object genericTypeValue) =>
+                {
+                    bool isgenericTypeNullable = IsNullable(genericTypeInstance.GetType());
+                    bool isPropertyTypeNullable = IsNullable(propertyInfo.PropertyType);
+
+                    Type notNullableGenericType = isgenericTypeNullable ? genericTypeValue.GetType().GetGenericArguments()[0] : genericTypeValue.GetType();
+                    Type notNullablePropertyType = isPropertyTypeNullable ? propertyInfo.PropertyType.GetGenericArguments()[0] : propertyInfo.PropertyType;
+
+                    if (setMethod.IsStatic)
+                    {
+                        propertyInfo.SetValue(null, genericTypeValue);
+                    }
+                    else
+                    {
+                        propertyInfo.SetValue(genericTypeInstance, genericTypeValue);
+                    }
+                };
+
+                return ret;
+            }
+#endif
 
             Expression setExpression;
             if (setMethod.IsStatic)
