@@ -52,6 +52,16 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class LinqToJsonTest : TestFixtureBase
     {
+        [Test]
+        public void EscapedQuotePath()
+        {
+            JValue v = new JValue(1);
+            JObject o = new JObject();
+            o["We're offline!"] = v;
+
+            Assert.AreEqual(@"['We\'re offline!']", v.Path);
+        }
+
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
         public class DemoClass
         {
