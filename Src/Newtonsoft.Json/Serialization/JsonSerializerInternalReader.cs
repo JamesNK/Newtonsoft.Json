@@ -995,8 +995,28 @@ namespace Newtonsoft.Json.Serialization
 
         private bool SetPropertyValue(JsonProperty property, JsonConverter propertyConverter, JsonContainerContract containerContract, JsonProperty containerProperty, JsonReader reader, object target)
         {
-            if (CalculatePropertyDetails(property, ref propertyConverter, containerContract, containerProperty, reader, target, out bool useExistingValue, out object currentValue, out JsonContract propertyContract, out bool gottenCurrentValue))
+            bool skipSettingProperty = CalculatePropertyDetails(
+                property,
+                ref propertyConverter,
+                containerContract,
+                containerProperty,
+                reader,
+                target,
+                out bool useExistingValue,
+                out object currentValue,
+                out JsonContract propertyContract,
+                out bool gottenCurrentValue,
+                out bool ignoredValue);
+
+            if (skipSettingProperty)
             {
+                // Don't set extension data if the value was ignored
+                // e.g. a null with NullValueHandling should not go in ExtensionData
+                if (ignoredValue)
+                {
+                    return true;
+                }
+
                 return false;
             }
 
@@ -1041,12 +1061,24 @@ namespace Newtonsoft.Json.Serialization
             return useExistingValue;
         }
 
-        private bool CalculatePropertyDetails(JsonProperty property, ref JsonConverter propertyConverter, JsonContainerContract containerContract, JsonProperty containerProperty, JsonReader reader, object target, out bool useExistingValue, out object currentValue, out JsonContract propertyContract, out bool gottenCurrentValue)
+        private bool CalculatePropertyDetails(
+            JsonProperty property,
+            ref JsonConverter propertyConverter,
+            JsonContainerContract containerContract,
+            JsonProperty containerProperty,
+            JsonReader reader,
+            object target,
+            out bool useExistingValue,
+            out object currentValue,
+            out JsonContract propertyContract,
+            out bool gottenCurrentValue,
+            out bool ignoredValue)
         {
             currentValue = null;
             useExistingValue = false;
             propertyContract = null;
             gottenCurrentValue = false;
+            ignoredValue = false;
 
             if (property.Ignored)
             {
@@ -1086,6 +1118,7 @@ namespace Newtonsoft.Json.Serialization
             // test tokenType here because null might not be convertible to some types, e.g. ignoring null when applied to DateTime
             if (tokenType == JsonToken.Null && ResolvedNullValueHandling(containerContract as JsonObjectContract, property) == NullValueHandling.Ignore)
             {
+                ignoredValue = true;
                 return true;
             }
 
@@ -1095,6 +1128,7 @@ namespace Newtonsoft.Json.Serialization
                 && JsonTokenUtils.IsPrimitiveToken(tokenType)
                 && MiscellaneousUtils.ValueEquals(reader.Value, property.GetResolvedDefaultValue()))
             {
+                ignoredValue = true;
                 return true;
             }
 
@@ -2283,9 +2317,9 @@ namespace Newtonsoft.Json.Serialization
                 {
                     case JsonToken.PropertyName:
                     {
-                        string memberName = reader.Value.ToString();
+                        string propertyName = reader.Value.ToString();
 
-                        if (CheckPropertyName(reader, memberName))
+                        if (CheckPropertyName(reader, propertyName))
                         {
                             continue;
                         }
@@ -2294,18 +2328,18 @@ namespace Newtonsoft.Json.Serialization
                         {
                             // attempt exact case match first
                             // then try match ignoring case
-                            JsonProperty property = contract.Properties.GetClosestMatchProperty(memberName);
+                            JsonProperty property = contract.Properties.GetClosestMatchProperty(propertyName);
 
                             if (property == null)
                             {
                                 if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                                 {
-                                    TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Could not find member '{0}' on {1}".FormatWith(CultureInfo.InvariantCulture, memberName, contract.UnderlyingType)), null);
+                                    TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(reader as IJsonLineInfo, reader.Path, "Could not find member '{0}' on {1}".FormatWith(CultureInfo.InvariantCulture, propertyName, contract.UnderlyingType)), null);
                                 }
 
                                 if (Serializer._missingMemberHandling == MissingMemberHandling.Error)
                                 {
-                                    throw JsonSerializationException.Create(reader, "Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, contract.UnderlyingType.Name));
+                                    throw JsonSerializationException.Create(reader, "Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, propertyName, contract.UnderlyingType.Name));
                                 }
 
                                 if (!reader.Read())
@@ -2313,7 +2347,7 @@ namespace Newtonsoft.Json.Serialization
                                     break;
                                 }
 
-                                SetExtensionData(contract, member, reader, memberName, newObject);
+                                SetExtensionData(contract, member, reader, propertyName, newObject);
                                 continue;
                             }
 
@@ -2325,7 +2359,7 @@ namespace Newtonsoft.Json.Serialization
                                 }
 
                                 SetPropertyPresence(reader, property, propertiesPresence);
-                                SetExtensionData(contract, member, reader, memberName, newObject);
+                                SetExtensionData(contract, member, reader, propertyName, newObject);
                             }
                             else
                             {
@@ -2338,7 +2372,7 @@ namespace Newtonsoft.Json.Serialization
 
                                 if (!reader.ReadForType(property.PropertyContract, propertyConverter != null))
                                 {
-                                    throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+                                    throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, propertyName));
                                 }
 
                                 SetPropertyPresence(reader, property, propertiesPresence);
@@ -2346,13 +2380,13 @@ namespace Newtonsoft.Json.Serialization
                                 // set extension data if property is ignored or readonly
                                 if (!SetPropertyValue(property, propertyConverter, contract, member, reader, newObject))
                                 {
-                                    SetExtensionData(contract, member, reader, memberName, newObject);
+                                    SetExtensionData(contract, member, reader, propertyName, newObject);
                                 }
                             }
                         }
                         catch (Exception ex)
                         {
-                            if (IsErrorHandled(newObject, contract, memberName, reader as IJsonLineInfo, reader.Path, ex))
+                            if (IsErrorHandled(newObject, contract, propertyName, reader as IJsonLineInfo, reader.Path, ex))
                             {
                                 HandleError(reader, true, initialDepth);
                             }

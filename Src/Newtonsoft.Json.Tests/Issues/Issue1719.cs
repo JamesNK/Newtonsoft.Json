@@ -26,6 +26,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Reflection.Emit;
@@ -48,58 +49,71 @@ using NUnit.Framework;
 namespace Newtonsoft.Json.Tests.Issues
 {
     [TestFixture]
-    public class Issue1834 : TestFixtureBase
+    public class Issue1719 : TestFixtureBase
     {
         [Test]
         public void Test()
         {
-            string json = "{'foo':'test!'}";
-            ItemWithJsonConstructor c = JsonConvert.DeserializeObject<ItemWithJsonConstructor>(json);
+            ExtensionDataTestClass a = JsonConvert.DeserializeObject<ExtensionDataTestClass>("{\"E\":null}", new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+            });
 
-            Assert.IsNull(c.ExtensionData);
+            Assert.IsNull(a.PropertyBag);
         }
 
         [Test]
-        public void Test_UnsetRequired()
+        public void Test_PreviousWorkaround()
         {
-            string json = "{'foo':'test!'}";
-            ItemWithJsonConstructorAndDefaultValue c = JsonConvert.DeserializeObject<ItemWithJsonConstructorAndDefaultValue>(json);
+            ExtensionDataTestClassWorkaround a = JsonConvert.DeserializeObject<ExtensionDataTestClassWorkaround>("{\"E\":null}", new JsonSerializerSettings
+            {
+                NullValueHandling = NullValueHandling.Ignore,
+            });
 
-            Assert.IsNull(c.ExtensionData);
+            Assert.IsNull(a.PropertyBag);
         }
 
-        public class ItemWithJsonConstructor
+        [Test]
+        public void Test_DefaultValue()
         {
-            [JsonExtensionData]
-            public IDictionary<string, JToken> ExtensionData;
-
-            [JsonConstructor]
-            private ItemWithJsonConstructor(string foo)
+            ExtensionDataWithDefaultValueTestClass a = JsonConvert.DeserializeObject<ExtensionDataWithDefaultValueTestClass>("{\"E\":2}", new JsonSerializerSettings
             {
-                Foo = foo;
-            }
+                DefaultValueHandling = DefaultValueHandling.Ignore,
+            });
 
-            [JsonProperty(PropertyName = "foo", Required = Required.Always)]
-            public string Foo { get; set; }
+            Assert.IsNull(a.PropertyBag);
         }
 
-        public class ItemWithJsonConstructorAndDefaultValue
+        class ExtensionDataTestClass
         {
+            public B? E { get; set; }
+
             [JsonExtensionData]
-            public IDictionary<string, JToken> ExtensionData;
+            public IDictionary<string, object> PropertyBag { get; set; }
+        }
 
-            [JsonConstructor]
-            private ItemWithJsonConstructorAndDefaultValue(string foo)
-            {
-                Foo = foo;
-            }
+        class ExtensionDataWithDefaultValueTestClass
+        {
+            [DefaultValue(2)]
+            public int? E { get; set; }
 
-            [JsonProperty("foo")]
-            public string Foo { get; set; }
+            [JsonExtensionData]
+            public IDictionary<string, object> PropertyBag { get; set; }
+        }
 
-            [JsonProperty(PropertyName = "bar", Required = Required.Default, DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate)]
-            [System.ComponentModel.DefaultValue("default")]
-            public string Bar { get; set; }
+        enum B
+        {
+            One,
+            Two
+        }
+
+        class ExtensionDataTestClassWorkaround
+        {
+            [JsonProperty(DefaultValueHandling = DefaultValueHandling.IgnoreAndPopulate, NullValueHandling = NullValueHandling.Include)]
+            public B? E { get; set; }
+
+            [JsonExtensionData]
+            public IDictionary<string, object> PropertyBag { get; set; }
         }
     }
 }
