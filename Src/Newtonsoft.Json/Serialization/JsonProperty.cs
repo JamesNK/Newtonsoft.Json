@@ -53,17 +53,34 @@ namespace Newtonsoft.Json.Serialization
         /// <summary>
         /// Gets or sets the name of the property.
         /// </summary>
-        /// <value>The name of the property.</value>
+        /// <value>The name of the property.</value> 
         public string PropertyName
         {
-            get => _propertyName;
+            get
+            {
+                if (IsXMLAttribute)
+                    return $"@{_propertyName}";
+                else
+                    return _propertyName;
+            }
             set
             {
-                _propertyName = value;
+                if (IsXMLAttribute)
+                {
+                    _propertyName = value.TrimStart('@');
+                }
+                else
+                {
+                    _propertyName = value;
+                }
+
                 _skipPropertyNameEscape = !JavaScriptUtils.ShouldEscapeJavaScriptString(_propertyName, JavaScriptUtils.HtmlCharEscapeFlags);
             }
         }
-
+        /// <summary>
+        /// Is attribute in XML
+        /// </summary>
+        public bool IsXMLAttribute { get; set; }
         /// <summary>
         /// Gets or sets the type that declared this property.
         /// </summary>
