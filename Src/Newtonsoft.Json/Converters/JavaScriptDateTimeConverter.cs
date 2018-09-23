@@ -91,22 +91,9 @@ namespace Newtonsoft.Json.Converters
                 throw JsonSerializationException.Create(reader, "Unexpected token or value when parsing date. Token: {0}, Value: {1}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType, reader.Value));
             }
 
-            reader.Read();
-
-            if (reader.TokenType != JsonToken.Integer)
+            if (!JavaScriptUtils.TryGetDateFromConstructorJson(reader, out DateTime d, out string errorMessage))
             {
-                throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected Integer, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
-            }
-
-            long ticks = (long)reader.Value;
-
-            DateTime d = DateTimeUtils.ConvertJavaScriptTicksToDateTime(ticks);
-
-            reader.Read();
-
-            if (reader.TokenType != JsonToken.EndConstructor)
-            {
-                throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected EndConstructor, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
+                throw JsonSerializationException.Create(reader, errorMessage);
             }
 
 #if HAVE_DATE_TIME_OFFSET
