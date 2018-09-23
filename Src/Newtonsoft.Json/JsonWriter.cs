@@ -696,32 +696,12 @@ namespace Newtonsoft.Json
 
         private void WriteConstructorDate(JsonReader reader)
         {
-						List<long> DateParams = new List<long>();
-            while (true)
+            if (!JavaScriptUtils.TryGetDateFromConstructorJson(reader, out DateTime dateTime, out string errorMessage))
             {
-                if (!reader.Read())
-                    throw JsonWriterException.Create(this, "Unexpected end when reading date constructor.", null);
-                if (reader.TokenType == JsonToken.EndConstructor)
-                    break;
-                if (reader.TokenType != JsonToken.Integer)
-                    throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected Integer, got " + reader.TokenType, null);
-                DateParams.Add((long)reader.Value);
-                if (DateParams.Count > 7)
-                    throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Wrong number of arguments", null);
+                throw JsonWriterException.Create(this, errorMessage, null);
             }
-            DateTime date;
-            if (DateParams.Count == 1)
-            {
-                date = DateTimeUtils.ConvertJavaScriptTicksToDateTime(DateParams[0]);
-            }
-            else if (DateParams.Count == 7) //Add support: new Date(2018,5,26,11,14,31,36)
-            {
-                date = new DateTime((int)DateParams[0], (int)DateParams[1] + 1, (int)DateParams[2], (int)DateParams[3],
-                    (int)DateParams[4], (int)DateParams[5], (int)DateParams[6]);
-            }
-            else
-                throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Wrong number of arguments", null);
-            WriteValue(date);
+
+            WriteValue(dateTime);
         }
 
         private void WriteEnd(JsonContainerType type)
