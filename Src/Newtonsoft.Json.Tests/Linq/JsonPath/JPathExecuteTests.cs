@@ -1453,5 +1453,38 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             List<JToken> result = rootObject.SelectTokens("$.dateObjectsArray[?(@.date == $.referenceDate)]").ToList();
             Assert.AreEqual(2, result.Count);
         }
+        [Test]
+        public void IdentityOperator()
+        {
+            JObject o = JObject.Parse(@"{
+	            'Values': [{
+
+                    'Coercible': 1,
+                    'Name': 'Number'
+
+                }, {
+		            'Coercible': '1',
+		            'Name': 'String'
+	            }]
+            }");
+
+            // just to verify expected behavior hasn't changed
+            IEnumerable<string> sanity1 = o.SelectTokens("Values[?(@.Coercible == '1')].Name").Select(x => (string)x);
+            IEnumerable<string> sanity2 = o.SelectTokens("Values[?(@.Coercible != '1')].Name").Select(x => (string)x);
+            // new behavior
+            IEnumerable<string> mustBeNumber1 = o.SelectTokens("Values[?(@.Coercible === 1)].Name").Select(x => (string)x);
+            IEnumerable<string> mustBeString1 = o.SelectTokens("Values[?(@.Coercible !== 1)].Name").Select(x => (string)x);
+            IEnumerable<string> mustBeString2 = o.SelectTokens("Values[?(@.Coercible === '1')].Name").Select(x => (string)x);
+            IEnumerable<string> mustBeNumber2 = o.SelectTokens("Values[?(@.Coercible !== '1')].Name").Select(x => (string)x);
+
+            // FAILS-- JPath returns { "String" }
+            //CollectionAssert.AreEquivalent(new[] { "Number", "String" }, sanity1);
+            // FAILS-- JPath returns { "Number" }
+            //Assert.IsTrue(!sanity2.Any());
+            Assert.AreEqual("Number", mustBeNumber1.Single());
+            Assert.AreEqual("String", mustBeString1.Single());
+            Assert.AreEqual("Number", mustBeNumber2.Single());
+            Assert.AreEqual("String", mustBeString2.Single());
+        }
     }
 }
