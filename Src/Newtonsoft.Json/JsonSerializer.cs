@@ -66,6 +66,7 @@ namespace Newtonsoft.Json
         private DateFormatHandling? _dateFormatHandling;
         private DateTimeZoneHandling? _dateTimeZoneHandling;
         private DateParseHandling? _dateParseHandling;
+        private TypeCastErrorHandling? _typeCastErrorHandling;
         private FloatFormatHandling? _floatFormatHandling;
         private FloatParseHandling? _floatParseHandling;
         private StringEscapeHandling? _stringEscapeHandling;
@@ -458,6 +459,16 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Gets or sets how type cast errors are handled by the serializer.
+        /// The default value is <see cref="Json.TypeCastErrorHandling.Throw" />.
+        /// </summary>
+        public virtual TypeCastErrorHandling TypeCastErrorHandling
+        {
+            get => _typeCastErrorHandling ?? JsonSerializerSettings.DefaultTypeCastErrorHandling;
+            set => _typeCastErrorHandling = value;
+        }
+
+        /// <summary>
         /// Gets or sets how floating point numbers, e.g. 1.0 and 9.9, are parsed when reading JSON text.
         /// The default value is <see cref="Json.FloatParseHandling.Double" />.
         /// </summary>
@@ -676,6 +687,10 @@ namespace Newtonsoft.Json
             {
                 serializer.TypeNameAssemblyFormatHandling = settings.TypeNameAssemblyFormatHandling;
             }
+            if (settings._typeCastErrorHandling != null)
+            {
+                serializer.TypeCastErrorHandling = settings.TypeCastErrorHandling;
+            }
             if (settings._preserveReferencesHandling != null)
             {
                 serializer.PreserveReferencesHandling = settings.PreserveReferencesHandling;
@@ -817,9 +832,10 @@ namespace Newtonsoft.Json
             DateTimeZoneHandling? previousDateTimeZoneHandling;
             DateParseHandling? previousDateParseHandling;
             FloatParseHandling? previousFloatParseHandling;
+            TypeCastErrorHandling? previousTypeCastErrorHandling;
             int? previousMaxDepth;
             string previousDateFormatString;
-            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
+            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousTypeCastErrorHandling, out previousMaxDepth, out previousDateFormatString);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? CreateTraceJsonReader(reader)
@@ -833,7 +849,7 @@ namespace Newtonsoft.Json
                 TraceWriter.Trace(TraceLevel.Verbose, traceJsonReader.GetDeserializedJsonMessage(), null);
             }
 
-            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString);
+            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousTypeCastErrorHandling, previousMaxDepth, previousDateFormatString);
         }
 
         /// <summary>
@@ -895,9 +911,10 @@ namespace Newtonsoft.Json
             DateTimeZoneHandling? previousDateTimeZoneHandling;
             DateParseHandling? previousDateParseHandling;
             FloatParseHandling? previousFloatParseHandling;
+            TypeCastErrorHandling? previousTypeCastErrorHandling;
             int? previousMaxDepth;
             string previousDateFormatString;
-            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
+            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousTypeCastErrorHandling, out previousMaxDepth, out previousDateFormatString);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? CreateTraceJsonReader(reader)
@@ -911,12 +928,12 @@ namespace Newtonsoft.Json
                 TraceWriter.Trace(TraceLevel.Verbose, traceJsonReader.GetDeserializedJsonMessage(), null);
             }
 
-            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousMaxDepth, previousDateFormatString);
+            ResetReader(reader, previousCulture, previousDateTimeZoneHandling, previousDateParseHandling, previousFloatParseHandling, previousTypeCastErrorHandling, previousMaxDepth, previousDateFormatString);
 
             return value;
         }
 
-        private void SetupReader(JsonReader reader, out CultureInfo previousCulture, out DateTimeZoneHandling? previousDateTimeZoneHandling, out DateParseHandling? previousDateParseHandling, out FloatParseHandling? previousFloatParseHandling, out int? previousMaxDepth, out string previousDateFormatString)
+        private void SetupReader(JsonReader reader, out CultureInfo previousCulture, out DateTimeZoneHandling? previousDateTimeZoneHandling, out DateParseHandling? previousDateParseHandling, out FloatParseHandling? previousFloatParseHandling, out TypeCastErrorHandling? previousTypeCastErrorHandling, out int? previousMaxDepth, out string previousDateFormatString)
         {
             if (_culture != null && !_culture.Equals(reader.Culture))
             {
@@ -968,6 +985,16 @@ namespace Newtonsoft.Json
                 previousMaxDepth = null;
             }
 
+            if (_typeCastErrorHandling != null && reader.TypeCastErrorHandling != _typeCastErrorHandling)
+            {
+                previousTypeCastErrorHandling = reader.TypeCastErrorHandling;
+                reader.TypeCastErrorHandling = _typeCastErrorHandling.GetValueOrDefault();
+            }
+            else
+            {
+                previousTypeCastErrorHandling = null;
+            }
+
             if (_dateFormatStringSet && reader.DateFormatString != _dateFormatString)
             {
                 previousDateFormatString = reader.DateFormatString;
@@ -987,7 +1014,7 @@ namespace Newtonsoft.Json
             }
         }
 
-        private void ResetReader(JsonReader reader, CultureInfo previousCulture, DateTimeZoneHandling? previousDateTimeZoneHandling, DateParseHandling? previousDateParseHandling, FloatParseHandling? previousFloatParseHandling, int? previousMaxDepth, string previousDateFormatString)
+        private void ResetReader(JsonReader reader, CultureInfo previousCulture, DateTimeZoneHandling? previousDateTimeZoneHandling, DateParseHandling? previousDateParseHandling, FloatParseHandling? previousFloatParseHandling, TypeCastErrorHandling? previousTypeCastErrorHandling, int? previousMaxDepth, string previousDateFormatString)
         {
             // reset reader back to previous options
             if (previousCulture != null)
@@ -1005,6 +1032,10 @@ namespace Newtonsoft.Json
             if (previousFloatParseHandling != null)
             {
                 reader.FloatParseHandling = previousFloatParseHandling.GetValueOrDefault();
+            }
+            if (previousTypeCastErrorHandling != null)
+            {
+                reader.TypeCastErrorHandling = previousTypeCastErrorHandling.GetValueOrDefault();
             }
             if (_maxDepthSet)
             {

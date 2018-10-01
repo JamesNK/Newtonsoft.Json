@@ -46,6 +46,7 @@ namespace Newtonsoft.Json
         internal const PreserveReferencesHandling DefaultPreserveReferencesHandling = PreserveReferencesHandling.None;
         internal const ConstructorHandling DefaultConstructorHandling = ConstructorHandling.Default;
         internal const TypeNameHandling DefaultTypeNameHandling = TypeNameHandling.None;
+        internal const TypeCastErrorHandling DefaultTypeCastErrorHandling = TypeCastErrorHandling.Throw;
         internal const MetadataPropertyHandling DefaultMetadataPropertyHandling = MetadataPropertyHandling.Default;
         internal static readonly StreamingContext DefaultContext;
 
@@ -85,6 +86,7 @@ namespace Newtonsoft.Json
         internal ConstructorHandling? _constructorHandling;
         internal TypeNameHandling? _typeNameHandling;
         internal MetadataPropertyHandling? _metadataPropertyHandling;
+        internal TypeCastErrorHandling? _typeCastErrorHandling;
 
         /// <summary>
         /// Gets or sets how reference loops (e.g. a class referencing itself) are handled.
@@ -174,6 +176,16 @@ namespace Newtonsoft.Json
             set => _typeNameHandling = value;
         }
 
+        /// <summary>
+        /// Gets or sets how type cast errors are handled by the serializer.
+        /// The default value is <see cref="Json.TypeCastErrorHandling.Throw" />.
+        /// </summary>
+        /// <value>The type cast error handling.</value>
+        public TypeCastErrorHandling TypeCastErrorHandling
+        {
+            get => _typeCastErrorHandling ?? DefaultTypeCastErrorHandling;
+            set => _typeCastErrorHandling = value;
+        }
         /// <summary>
         /// Gets or sets how metadata properties are used during deserialization.
         /// The default value is <see cref="Json.MetadataPropertyHandling.Default" />.

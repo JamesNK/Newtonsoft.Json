@@ -986,7 +986,22 @@ namespace Newtonsoft.Json.Serialization
                 }
                 catch (Exception ex)
                 {
-                    throw JsonSerializationException.Create(reader, "Error converting value {0} to type '{1}'.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.FormatValueForPrint(value), targetType), ex);
+                    // don't throw if we've configured the reader to ignore the errors (TypeCastErrorHandling.Ignore)
+                    if (reader._typeCastErrorHandling == TypeCastErrorHandling.Throw)
+                    {
+                        throw JsonSerializationException.Create(reader, "Error converting value {0} to type '{1}'.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.FormatValueForPrint(value), targetType), ex);
+                    }
+                    else
+                    {
+                        if (contract.IsNullable)
+                        {
+                            return null;
+                        }
+                        else
+                        {
+                            return Activator.CreateInstance(contract.NonNullableUnderlyingType);
+                        }
+                    }
                 }
             }
 
