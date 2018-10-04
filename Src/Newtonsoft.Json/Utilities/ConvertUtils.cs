@@ -524,7 +524,7 @@ namespace Newtonsoft.Json.Utilities
 
             if (fromConverter != null && fromConverter.CanConvertFrom(initialType))
             {
-                value = fromConverter.ConvertFrom(null, culture, initialValue);
+                value = fromConverter.ConvertTo(null, culture, initialValue, targetType);
                 return ConvertResult.Success;
             }
 #endif
