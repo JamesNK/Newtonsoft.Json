@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -123,7 +124,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
             return false;
         }
-        
+
         private bool MatchTokens(JToken leftResult, JToken rightResult)
         {
             if (leftResult is JValue leftValue && rightResult is JValue rightValue)
@@ -143,7 +144,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                         }
                         break;
                     case QueryOperator.StrictEquals:
-                        if (EqualsWithoutStringCoercion(leftValue, rightValue))
+                        if (EqualsWithStrictMatch(leftValue, rightValue))
                         {
                             return true;
                         }
@@ -155,7 +156,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                         }
                         break;
                     case QueryOperator.StrictNotEquals:
-                        if (!EqualsWithoutStringCoercion(leftValue, rightValue))
+                        if (!EqualsWithStrictMatch(leftValue, rightValue))
                         {
                             return true;
                         }
@@ -219,11 +220,19 @@ namespace Newtonsoft.Json.Linq.JsonPath
             return Regex.IsMatch((string)input.Value, patternText, MiscellaneousUtils.GetRegexOptions(optionsText));
         }
 
-        private bool EqualsWithStringCoercion(JValue value, JValue queryValue)
+        internal static bool EqualsWithStringCoercion(JValue value, JValue queryValue)
         {
             if (value.Equals(queryValue))
             {
                 return true;
+            }
+
+            // Handle comparing an integer with a float
+            // e.g. Comparing 1 and 1.0
+            if ((value.Type == JTokenType.Integer && queryValue.Type == JTokenType.Float)
+                || (value.Type == JTokenType.Float && queryValue.Type == JTokenType.Integer))
+            {
+                return JValue.Compare(value.Type, value.Value, queryValue.Value) == 0;
             }
 
             if (queryValue.Type != JTokenType.String)
@@ -272,65 +281,26 @@ namespace Newtonsoft.Json.Linq.JsonPath
             return string.Equals(currentValueString, queryValueString, StringComparison.Ordinal);
         }
 
-        private bool EqualsWithoutStringCoercion(JValue value, JValue queryValue)
+        internal static bool EqualsWithStrictMatch(JValue value, JValue queryValue)
         {
-            return IsStrictMatch(value, queryValue);
-        }
-        internal static bool IsStrictMatch(JToken value, JToken other)
-        {
-            // I've made this internal and static for testing purposes because I really don't get how to call the IsMatch method :/
-            /* 
-             * If Type(x) is different from Type(y), return false.
-             * If Type(x) is Undefined, return true.
-             * If Type(x) is Null, return true.
-             * If Type(x) is Number, then 
-             *     If x is NaN, return false.
-             *     If y is NaN, return false.
-             *     If x is the same Number value as y, return true.
-             *     If x is +0 and y is −0, return true.
-             *     If x is −0 and y is +0, return true.
-             *     Return false.
-             * If Type(x) is String, then return true if x and y are exactly the same sequence of characters (same length and same characters in corresponding positions); otherwise, return false.
-             * If Type(x) is Boolean, return true if x and y are both true or both false; otherwise, return false.
-             * Return true if x and y refer to the same object. Otherwise, return false.
-             */
-            if(value == null)
-                throw new ArgumentNullException(nameof(value));
-            if (other == null)
-                throw new ArgumentNullException(nameof(other));
+            Debug.Assert(value != null);
+            Debug.Assert(queryValue != null);
+
+            // Handle comparing an integer with a float
+            // e.g. Comparing 1 and 1.0
+            if ((value.Type == JTokenType.Integer && queryValue.Type == JTokenType.Float)
+                || (value.Type == JTokenType.Float && queryValue.Type == JTokenType.Integer))
+            {
+                return JValue.Compare(value.Type, value.Value, queryValue.Value) == 0;
+            }
 
             // we handle floats and integers the exact same way, so they are pseudo equivalent
-            if (value.Type != other.Type && 
-                ((value.Type != JTokenType.Integer && value.Type != JTokenType.Float) || 
-                (other.Type != JTokenType.Integer && other.Type != JTokenType.Float))) return false;
-
-            switch (value.Type)
+            if (value.Type != queryValue.Type)
             {
-                case JTokenType.Null:
-                case JTokenType.Undefined:
-                    return true;
-                case JTokenType.Integer:
-                case JTokenType.Float:
-                    return value.Value<float>() == other.Value<float>();
-                case JTokenType.String:
-                    return string.Equals(value.Value<string>(), other.Value<string>(), StringComparison.Ordinal);
-                case JTokenType.Boolean:
-                    return value.Value<bool>() == other.Value<bool>();
-                case JTokenType.Date:
-                    return value.Value<DateTime>() == other.Value<DateTime>();
-                // How the heck could this happen? Ain't no guids in ecmascript.
-                case JTokenType.Guid:
-                    return new Guid(value.Value<string>()) == new Guid(other.Value<string>());
-                case JTokenType.TimeSpan:
-                    return new TimeSpan(value.Value<long>()) == new TimeSpan(other.Value<long>());
-                // unsure of Uri; it appears (from ad hoc testing) that javascript does not consider equivalent URLs to be equal no matter what
-                // new URL("http://lol.com") === new URL("http://lol.com") returns false always
-                // also, JSON.stringify renders {} for urls. JSON.stringify({lol: new URL("http://lol.com")}) renders "{"lol":{}}"
-                // so I don't know how we could get this kind of token type
-                case JTokenType.Uri:
-                default:
-                    throw new InvalidOperationException($"Unexpected or unsupported JTokenType {value.Type}");
+                return false;
             }
+
+            return value.Equals(queryValue);
         }
     }
 }
