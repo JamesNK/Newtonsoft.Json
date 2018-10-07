@@ -1516,16 +1516,24 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     }
   ]
 }";
-            string completeStrictPath = "$.Values[?(@.Property === " + value2 + ")]";
+            string completeEqualsStrictPath = "$.Values[?(@.Property === " + value2 + ")]";
+            string completeNotEqualsStrictPath = "$.Values[?(@.Property !== " + value2 + ")]";
 
             JToken t = JToken.Parse(completeJson);
 
-            bool hasMatchStrict = t.SelectTokens(completeStrictPath).Any();
+            bool hasEqualsStrict = t.SelectTokens(completeEqualsStrictPath).Any();
             Assert.AreEqual(
                 matchStrict,
-                hasMatchStrict,
+                hasEqualsStrict,
                 $"Expected {value1} and {value2} to match: {matchStrict}"
-                + Environment.NewLine + completeJson + Environment.NewLine + completeStrictPath);
+                + Environment.NewLine + completeJson + Environment.NewLine + completeEqualsStrictPath);
+
+            bool hasNotEqualsStrict = t.SelectTokens(completeNotEqualsStrictPath).Any();
+            Assert.AreNotEqual(
+                matchStrict,
+                hasNotEqualsStrict,
+                $"Expected {value1} and {value2} to match: {!matchStrict}"
+                + Environment.NewLine + completeJson + Environment.NewLine + completeEqualsStrictPath);
         }
 
         public static IEnumerable<object[]> StrictMatchWithInverseTestData()
