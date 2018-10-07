@@ -109,7 +109,5 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(DateTimeKind.Unspecified, c3.Value.Kind);
             Assert.AreEqual(DateTimeKind.Unspecified, c4.Value.Kind);
         }
-
-
     }
 }
