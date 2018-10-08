@@ -269,6 +269,17 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual(initialJson, json);
         }
+
+        [Test]
+        public void XmlNode_UnescapeTextContent()
+        {
+            XmlDocument xmlNode = new XmlDocument();
+            xmlNode.LoadXml("<root>A &gt; B</root>");
+
+            string json = JsonConvert.SerializeXmlNode(xmlNode);
+
+            Assert.AreEqual(@"{""root"":""A > B""}", json);
+        }
 #endif
 
 #if !NET20
@@ -294,6 +305,16 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
 #if !NET20
+        [Test]
+        public void XNode_UnescapeTextContent()
+        {
+            XElement xmlNode = XElement.Parse("<root>A &gt; B</root>");
+
+            string json = JsonConvert.SerializeXNode(xmlNode);
+
+            Assert.AreEqual(@"{""root"":""A > B""}", json);
+        }
+
         [Test]
         public void XNode_Roundtrip_PropertyNameWithColon()
         {
