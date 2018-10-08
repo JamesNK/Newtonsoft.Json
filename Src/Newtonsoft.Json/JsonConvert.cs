@@ -962,7 +962,7 @@ namespace Newtonsoft.Json
         /// This attribute helps preserve arrays when converting the written XML back to JSON.
         /// </param>
         /// <param name="encodeSpecialCharacters">
-        /// A value  to indicate whether to encode special characters when converting JSON to XML.
+        /// A value to indicate whether to encode special characters when converting JSON to XML.
         /// If <c>true</c>, special characters like ':', '@', '?', '#' and '$' in JSON property names aren't used to specify
         /// XML namespaces, attributes or processing directives. Instead special characters are encoded and written
         /// as part of the XML element name.
@@ -1063,7 +1063,7 @@ namespace Newtonsoft.Json
         /// This attribute helps preserve arrays when converting the written XML back to JSON.
         /// </param>
         /// <param name="encodeSpecialCharacters">
-        /// A value  to indicate whether to encode special characters when converting JSON to XML.
+        /// A value to indicate whether to encode special characters when converting JSON to XML.
         /// If <c>true</c>, special characters like ':', '@', '?', '#' and '$' in JSON property names aren't used to specify
         /// XML namespaces, attributes or processing directives. Instead special characters are encoded and written
         /// as part of the XML element name.
