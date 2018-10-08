@@ -942,15 +942,38 @@ namespace Newtonsoft.Json
         /// <param name="value">The JSON string.</param>
         /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
         /// <param name="writeArrayAttribute">
-        /// A flag to indicate whether to write the Json.NET array attribute.
+        /// A value to indicate whether to write the Json.NET array attribute.
         /// This attribute helps preserve arrays when converting the written XML back to JSON.
         /// </param>
         /// <returns>The deserialized <see cref="XmlNode"/>.</returns>
         public static XmlDocument DeserializeXmlNode(string value, string deserializeRootElementName, bool writeArrayAttribute)
         {
+            return DeserializeXmlNode(value, deserializeRootElementName, writeArrayAttribute, false);
+        }
+
+        /// <summary>
+        /// Deserializes the <see cref="XmlNode"/> from a JSON string nested in a root element specified by <paramref name="deserializeRootElementName"/>,
+        /// writes a Json.NET array attribute for collections, and encodes special characters.
+        /// </summary>
+        /// <param name="value">The JSON string.</param>
+        /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
+        /// <param name="writeArrayAttribute">
+        /// A value to indicate whether to write the Json.NET array attribute.
+        /// This attribute helps preserve arrays when converting the written XML back to JSON.
+        /// </param>
+        /// <param name="encodeSpecialCharacters">
+        /// A value  to indicate whether to encode special characters when converting JSON to XML.
+        /// If <c>true</c>, special characters like ':', '@', '?', '#' and '$' in JSON property names aren't used to specify
+        /// XML namespaces, attributes or processing directives. Instead special characters are encoded and written
+        /// as part of the XML element name.
+        /// </param>
+        /// <returns>The deserialized <see cref="XmlNode"/>.</returns>
+        public static XmlDocument DeserializeXmlNode(string value, string deserializeRootElementName, bool writeArrayAttribute, bool encodeSpecialCharacters)
+        {
             XmlNodeConverter converter = new XmlNodeConverter();
             converter.DeserializeRootElementName = deserializeRootElementName;
             converter.WriteArrayAttribute = writeArrayAttribute;
+            converter.EncodeSpecialCharacters = encodeSpecialCharacters;
 
             return (XmlDocument)DeserializeObject(value, typeof(XmlDocument), converter);
         }
@@ -1020,15 +1043,38 @@ namespace Newtonsoft.Json
         /// <param name="value">The JSON string.</param>
         /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
         /// <param name="writeArrayAttribute">
-        /// A flag to indicate whether to write the Json.NET array attribute.
+        /// A value to indicate whether to write the Json.NET array attribute.
         /// This attribute helps preserve arrays when converting the written XML back to JSON.
         /// </param>
         /// <returns>The deserialized <see cref="XNode"/>.</returns>
         public static XDocument DeserializeXNode(string value, string deserializeRootElementName, bool writeArrayAttribute)
         {
+            return DeserializeXNode(value, deserializeRootElementName, writeArrayAttribute, false);
+        }
+
+        /// <summary>
+        /// Deserializes the <see cref="XNode"/> from a JSON string nested in a root element specified by <paramref name="deserializeRootElementName"/>,
+        /// writes a Json.NET array attribute for collections, and encodes special characters.
+        /// </summary>
+        /// <param name="value">The JSON string.</param>
+        /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
+        /// <param name="writeArrayAttribute">
+        /// A value to indicate whether to write the Json.NET array attribute.
+        /// This attribute helps preserve arrays when converting the written XML back to JSON.
+        /// </param>
+        /// <param name="encodeSpecialCharacters">
+        /// A value  to indicate whether to encode special characters when converting JSON to XML.
+        /// If <c>true</c>, special characters like ':', '@', '?', '#' and '$' in JSON property names aren't used to specify
+        /// XML namespaces, attributes or processing directives. Instead special characters are encoded and written
+        /// as part of the XML element name.
+        /// </param>
+        /// <returns>The deserialized <see cref="XNode"/>.</returns>
+        public static XDocument DeserializeXNode(string value, string deserializeRootElementName, bool writeArrayAttribute, bool encodeSpecialCharacters)
+        {
             XmlNodeConverter converter = new XmlNodeConverter();
             converter.DeserializeRootElementName = deserializeRootElementName;
             converter.WriteArrayAttribute = writeArrayAttribute;
+            converter.EncodeSpecialCharacters = encodeSpecialCharacters;
 
             return (XDocument)DeserializeObject(value, typeof(XDocument), converter);
         }
