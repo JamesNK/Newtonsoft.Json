@@ -822,11 +822,16 @@ namespace Newtonsoft.Json.Serialization
 
             if (!(contract is JsonArrayContract arrayContract))
             {
-                string message = @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type '{0}' because the type requires a {1} to deserialize correctly." + Environment.NewLine +
-                                 @"To fix this error either change the JSON to a {1} or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array." + Environment.NewLine;
-                message = message.FormatWith(CultureInfo.InvariantCulture, objectType, GetExpectedDescription(contract));
+                if (objectType == typeof(object)) {
+                    return GetContractSafe(typeof(object[])) as JsonArrayContract;
+                }
+                else {
+                    string message = @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type '{0}' because the type requires a {1} to deserialize correctly." + Environment.NewLine +
+                                     @"To fix this error either change the JSON to a {1} or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array." + Environment.NewLine;
+                    message = message.FormatWith(CultureInfo.InvariantCulture, objectType, GetExpectedDescription(contract));
 
-                throw JsonSerializationException.Create(reader, message);
+                    throw JsonSerializationException.Create(reader, message);
+                }
             }
 
             return arrayContract;
@@ -836,7 +841,7 @@ namespace Newtonsoft.Json.Serialization
         {
             object value;
 
-            if (HasNoDefinedType(contract))
+            if (HasNoDefinedTypeForArray(contract))
             {
                 return CreateJToken(reader, contract);
             }
@@ -922,6 +927,14 @@ namespace Newtonsoft.Json.Serialization
         {
             return (contract == null || contract.UnderlyingType == typeof(object) || contract.ContractType == JsonContractType.Linq
 #if HAVE_DYNAMIC
+                    || contract.UnderlyingType == typeof(IDynamicMetaObjectProvider)
+#endif
+                );
+        }
+
+        private bool HasNoDefinedTypeForArray(JsonContract contract) {
+            return (contract == null || contract.ContractType == JsonContractType.Linq
+#if !(NET35 || NET20 || PORTABLE40)
                     || contract.UnderlyingType == typeof(IDynamicMetaObjectProvider)
 #endif
                 );
