@@ -30,6 +30,7 @@ using System.Globalization;
 using System.Runtime.Serialization.Formatters;
 using Newtonsoft.Json.Serialization;
 using System.Runtime.Serialization;
+using System.Diagnostics;
 
 namespace Newtonsoft.Json
 {
@@ -445,6 +446,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonSerializerSettings"/> class.
         /// </summary>
+        [DebuggerStepThrough]
         public JsonSerializerSettings()
         {
             Converters = new List<JsonConverter>();
