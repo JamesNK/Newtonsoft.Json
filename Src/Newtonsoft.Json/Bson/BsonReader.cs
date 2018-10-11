@@ -370,6 +370,11 @@ namespace Newtonsoft.Json.Bson
                     ContainerContext context = _currentContext;
                     if (context == null)
                     {
+                        if (SupportMultipleContent)
+                        {
+                            goto case State.Start;
+                        }
+
                         return false;
                     }
 
