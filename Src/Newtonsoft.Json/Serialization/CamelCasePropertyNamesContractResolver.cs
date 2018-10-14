@@ -48,12 +48,12 @@ namespace Newtonsoft.Json.Serialization
 
         public override bool Equals(object obj)
         {
-            if (!(obj is ResolverContractKey))
+            if (!(obj is ResolverContractKey key))
             {
                 return false;
             }
 
-            return Equals((ResolverContractKey)obj);
+            return Equals(key);
         }
 
         public bool Equals(ResolverContractKey other)

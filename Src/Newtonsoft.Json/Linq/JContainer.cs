@@ -750,7 +750,7 @@ namespace Newtonsoft.Json.Linq
 
             do
             {
-                if ((parent as JProperty)?.Value != null)
+                if (parent is JProperty p && p.Value != null)
                 {
                     if (parent == this)
                     {
@@ -1041,12 +1041,11 @@ namespace Newtonsoft.Json.Linq
                 throw new JsonException("Could not determine new value to add to '{0}'.".FormatWith(CultureInfo.InvariantCulture, GetType()));
             }
 
-            if (!(args.NewObject is JToken))
+            if (!(args.NewObject is JToken newItem))
             {
                 throw new JsonException("New item to be added to collection must be compatible with {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JToken)));
             }
 
-            JToken newItem = (JToken)args.NewObject;
             Add(newItem);
 
             return newItem;

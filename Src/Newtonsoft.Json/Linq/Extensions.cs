@@ -258,12 +258,11 @@ namespace Newtonsoft.Json.Linq
                 return default;
             }
 
-            if (token is U
+            if (token is U castValue
                 // don't want to cast JValue to its interfaces, want to get the internal value
                 && typeof(U) != typeof(IComparable) && typeof(U) != typeof(IFormattable))
             {
-                // HACK
-                return (U)(object)token;
+                return castValue;
             }
             else
             {
@@ -318,9 +317,9 @@ namespace Newtonsoft.Json.Linq
             {
                 return null;
             }
-            else if (source is IJEnumerable<T>)
+            else if (source is IJEnumerable<T> customEnumerable)
             {
-                return (IJEnumerable<T>)source;
+                return customEnumerable;
             }
             else
             {

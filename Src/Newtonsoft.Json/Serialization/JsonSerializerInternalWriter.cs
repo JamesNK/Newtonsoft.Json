@@ -191,7 +191,7 @@ namespace Newtonsoft.Json.Serialization
                     break;
                 case JsonContractType.Dictionary:
                     JsonDictionaryContract dictionaryContract = (JsonDictionaryContract)valueContract;
-                    SerializeDictionary(writer, (value is IDictionary) ? (IDictionary)value : dictionaryContract.CreateWrapper(value), dictionaryContract, member, containerContract, containerProperty);
+                    SerializeDictionary(writer, (value is IDictionary dictionary) ? dictionary : dictionaryContract.CreateWrapper(value), dictionaryContract, member, containerContract, containerProperty);
                     break;
 #if HAVE_DYNAMIC
                 case JsonContractType.Dynamic:

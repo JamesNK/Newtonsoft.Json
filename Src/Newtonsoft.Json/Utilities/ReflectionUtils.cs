@@ -1113,12 +1113,12 @@ namespace Newtonsoft.Json.Utilities
 
         public override bool Equals(object obj)
         {
-            if (!(obj is TypeNameKey))
+            if (!(obj is TypeNameKey key))
             {
                 return false;
             }
 
-            return Equals((TypeNameKey)obj);
+            return Equals(key);
         }
 
         public bool Equals(TypeNameKey other)

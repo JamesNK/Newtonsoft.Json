@@ -462,9 +462,9 @@ namespace Newtonsoft.Json.Linq
         {
             ValidationUtils.ArgumentNotNull(token, nameof(token));
 
-            if (token is JProperty)
+            if (token is JProperty p)
             {
-                token = ((JProperty)token).Value;
+                token = p.Value;
             }
 
             return token.Type.ToString();

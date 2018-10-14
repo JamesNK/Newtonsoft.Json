@@ -175,23 +175,23 @@ namespace Newtonsoft.Json.Linq
             {
                 ValidationUtils.ArgumentNotNull(key, nameof(key));
 
-                if (!(key is int))
+                if (!(key is int i))
                 {
                     throw new ArgumentException("Accessed JConstructor values with invalid key value: {0}. Argument position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
                 }
 
-                return GetItem((int)key);
+                return GetItem(i);
             }
             set
             {
                 ValidationUtils.ArgumentNotNull(key, nameof(key));
 
-                if (!(key is int))
+                if (!(key is int i))
                 {
                     throw new ArgumentException("Set JConstructor values with invalid key value: {0}. Argument position index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
                 }
 
-                SetItem((int)key, value);
+                SetItem(i, value);
             }
         }
 

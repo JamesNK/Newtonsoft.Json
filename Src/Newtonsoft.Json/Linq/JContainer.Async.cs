@@ -61,7 +61,7 @@ namespace Newtonsoft.Json.Linq
 
             do
             {
-                if ((parent as JProperty)?.Value != null)
+                if (parent is JProperty p && p.Value != null)
                 {
                     if (parent == this)
                     {

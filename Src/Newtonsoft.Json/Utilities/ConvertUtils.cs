@@ -267,12 +267,12 @@ namespace Newtonsoft.Json.Utilities
 
             public override bool Equals(object obj)
             {
-                if (!(obj is TypeConvertKey))
+                if (!(obj is TypeConvertKey key))
                 {
                     return false;
                 }
 
-                return Equals((TypeConvertKey)obj);
+                return Equals(key);
             }
 
             public bool Equals(TypeConvertKey other)
