@@ -187,8 +187,7 @@ namespace Newtonsoft.Json.Linq
             {
                 foreach (T token in source)
                 {
-                    JValue value = token as JValue;
-                    if (value != null)
+                    if (token is JValue value)
                     {
                         yield return Convert<JValue, U>(value);
                     }
@@ -268,8 +267,7 @@ namespace Newtonsoft.Json.Linq
             }
             else
             {
-                JValue value = token as JValue;
-                if (value == null)
+                if (!(token is JValue value))
                 {
                     throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, token.GetType(), typeof(T)));
                 }

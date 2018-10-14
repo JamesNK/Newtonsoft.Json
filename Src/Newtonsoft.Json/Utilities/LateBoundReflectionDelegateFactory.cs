@@ -43,8 +43,7 @@ namespace Newtonsoft.Json.Utilities
         {
             ValidationUtils.ArgumentNotNull(method, nameof(method));
 
-            ConstructorInfo c = method as ConstructorInfo;
-            if (c != null)
+            if (method is ConstructorInfo c)
             {
                 // don't convert to method group to avoid medium trust issues
                 // https://github.com/JamesNK/Newtonsoft.Json/issues/476
@@ -62,8 +61,7 @@ namespace Newtonsoft.Json.Utilities
         {
             ValidationUtils.ArgumentNotNull(method, nameof(method));
 
-            ConstructorInfo c = method as ConstructorInfo;
-            if (c != null)
+            if (method is ConstructorInfo c)
             {
                 return (o, a) => c.Invoke(a);
             }

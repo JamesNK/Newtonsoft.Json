@@ -1014,16 +1014,14 @@ namespace Newtonsoft.Json
 
         bool IJsonLineInfo.HasLineInfo()
         {
-            IJsonLineInfo lineInfo = _reader as IJsonLineInfo;
-            return lineInfo != null && lineInfo.HasLineInfo();
+            return _reader is IJsonLineInfo lineInfo && lineInfo.HasLineInfo();
         }
 
         int IJsonLineInfo.LineNumber
         {
             get
             {
-                IJsonLineInfo lineInfo = _reader as IJsonLineInfo;
-                return (lineInfo != null) ? lineInfo.LineNumber : 0;
+                return (_reader is IJsonLineInfo lineInfo) ? lineInfo.LineNumber : 0;
             }
         }
 
@@ -1031,8 +1029,7 @@ namespace Newtonsoft.Json
         {
             get
             {
-                IJsonLineInfo lineInfo = _reader as IJsonLineInfo;
-                return (lineInfo != null) ? lineInfo.LinePosition : 0;
+                return (_reader is IJsonLineInfo lineInfo) ? lineInfo.LinePosition : 0;
             }
         }
     }

@@ -1030,10 +1030,9 @@ namespace Newtonsoft.Json.Linq
                 return 1;
             }
 
-            JValue value = obj as JValue;
             JTokenType comparisonType;
             object otherValue;
-            if (value != null)
+            if (obj is JValue value)
             {
                 otherValue = value.Value;
                 comparisonType = (_valueType == JTokenType.String && _valueType != value._valueType)

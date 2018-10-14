@@ -205,8 +205,7 @@ namespace Newtonsoft.Json.Schema
 
         private JsonSchema BuildSchema(JToken token)
         {
-            JObject schemaObject = token as JObject;
-            if (schemaObject == null)
+            if (!(token is JObject schemaObject))
             {
                 throw JsonException.Create(token, token.Path, "Expected object while parsing schema object, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
             }
