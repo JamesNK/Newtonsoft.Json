@@ -505,10 +505,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        public static ReflectionDelegateFactory ReflectionDelegateFactory
-        {
-            get
-            {
+        public static ReflectionDelegateFactory ReflectionDelegateFactory =>
 #if !(PORTABLE40 || PORTABLE || DOTNET || NETSTANDARD2_0)
                 if (DynamicCodeGeneration)
                 {
@@ -517,9 +514,8 @@ namespace Newtonsoft.Json.Serialization
 
                 return LateBoundReflectionDelegateFactory.Instance;
 #else
-                return ExpressionReflectionDelegateFactory.Instance;
+                ExpressionReflectionDelegateFactory.Instance;
 #endif
-            }
-        }
+
     }
 }

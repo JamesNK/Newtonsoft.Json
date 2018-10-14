@@ -158,10 +158,7 @@ namespace Newtonsoft.Json.Converters
         /// <value>
         /// 	<c>true</c> if this <see cref="JsonConverter"/> can write JSON; otherwise, <c>false</c>.
         /// </value>
-        public override bool CanWrite
-        {
-            get { return false; }
-        }
+        public override bool CanWrite => false;
     }
 }
 

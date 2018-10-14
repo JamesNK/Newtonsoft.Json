@@ -186,71 +186,71 @@ namespace Newtonsoft.Json
                     case JTokenType.None:
                         return _currentScope.Schemas;
                     case JTokenType.Object:
-                    {
-                        if (_currentScope.CurrentPropertyName == null)
                         {
-                            throw new JsonReaderException("CurrentPropertyName has not been set on scope.");
-                        }
+                            if (_currentScope.CurrentPropertyName == null)
+                            {
+                                throw new JsonReaderException("CurrentPropertyName has not been set on scope.");
+                            }
 
-                        IList<JsonSchemaModel> schemas = new List<JsonSchemaModel>();
+                            IList<JsonSchemaModel> schemas = new List<JsonSchemaModel>();
 
-                        foreach (JsonSchemaModel schema in CurrentSchemas)
-                        {
+                            foreach (JsonSchemaModel schema in CurrentSchemas)
+                            {
                                 if (schema.Properties != null && schema.Properties.TryGetValue(_currentScope.CurrentPropertyName, out JsonSchemaModel propertySchema))
                                 {
                                     schemas.Add(propertySchema);
                                 }
                                 if (schema.PatternProperties != null)
-                            {
-                                foreach (KeyValuePair<string, JsonSchemaModel> patternProperty in schema.PatternProperties)
                                 {
-                                    if (Regex.IsMatch(_currentScope.CurrentPropertyName, patternProperty.Key))
+                                    foreach (KeyValuePair<string, JsonSchemaModel> patternProperty in schema.PatternProperties)
                                     {
-                                        schemas.Add(patternProperty.Value);
+                                        if (Regex.IsMatch(_currentScope.CurrentPropertyName, patternProperty.Key))
+                                        {
+                                            schemas.Add(patternProperty.Value);
+                                        }
                                     }
+                                }
+
+                                if (schemas.Count == 0 && schema.AllowAdditionalProperties && schema.AdditionalProperties != null)
+                                {
+                                    schemas.Add(schema.AdditionalProperties);
                                 }
                             }
 
-                            if (schemas.Count == 0 && schema.AllowAdditionalProperties && schema.AdditionalProperties != null)
-                            {
-                                schemas.Add(schema.AdditionalProperties);
-                            }
+                            return schemas;
                         }
-
-                        return schemas;
-                    }
                     case JTokenType.Array:
-                    {
-                        IList<JsonSchemaModel> schemas = new List<JsonSchemaModel>();
-
-                        foreach (JsonSchemaModel schema in CurrentSchemas)
                         {
-                            if (!schema.PositionalItemsValidation)
+                            IList<JsonSchemaModel> schemas = new List<JsonSchemaModel>();
+
+                            foreach (JsonSchemaModel schema in CurrentSchemas)
                             {
-                                if (schema.Items != null && schema.Items.Count > 0)
+                                if (!schema.PositionalItemsValidation)
                                 {
-                                    schemas.Add(schema.Items[0]);
-                                }
-                            }
-                            else
-                            {
-                                if (schema.Items != null && schema.Items.Count > 0)
-                                {
-                                    if (schema.Items.Count > (_currentScope.ArrayItemCount - 1))
+                                    if (schema.Items != null && schema.Items.Count > 0)
                                     {
-                                        schemas.Add(schema.Items[_currentScope.ArrayItemCount - 1]);
+                                        schemas.Add(schema.Items[0]);
                                     }
                                 }
-
-                                if (schema.AllowAdditionalItems && schema.AdditionalItems != null)
+                                else
                                 {
-                                    schemas.Add(schema.AdditionalItems);
+                                    if (schema.Items != null && schema.Items.Count > 0)
+                                    {
+                                        if (schema.Items.Count > (_currentScope.ArrayItemCount - 1))
+                                        {
+                                            schemas.Add(schema.Items[_currentScope.ArrayItemCount - 1]);
+                                        }
+                                    }
+
+                                    if (schema.AllowAdditionalItems && schema.AdditionalItems != null)
+                                    {
+                                        schemas.Add(schema.AdditionalItems);
+                                    }
                                 }
                             }
-                        }
 
-                        return schemas;
-                    }
+                            return schemas;
+                        }
                     case JTokenType.Constructor:
                         return EmptySchemaList;
                     default:
@@ -822,11 +822,10 @@ namespace Newtonsoft.Json
             {
                 bool notDivisible;
 #if HAVE_BIG_INTEGER
-                if (value is BigInteger)
+                if (value is BigInteger i)
                 {
                     // not that this will lose any decimal point on DivisibleBy
                     // so manually raise an error if DivisibleBy is not an integer and value is not zero
-                    BigInteger i = (BigInteger)value;
                     bool divisibleNonInteger = !Math.Abs(schema.DivisibleBy.Value - Math.Truncate(schema.DivisibleBy.Value)).Equals(0);
                     if (divisibleNonInteger)
                     {
@@ -1017,20 +1016,8 @@ namespace Newtonsoft.Json
             return _reader is IJsonLineInfo lineInfo && lineInfo.HasLineInfo();
         }
 
-        int IJsonLineInfo.LineNumber
-        {
-            get
-            {
-                return (_reader is IJsonLineInfo lineInfo) ? lineInfo.LineNumber : 0;
-            }
-        }
+        int IJsonLineInfo.LineNumber => (_reader is IJsonLineInfo lineInfo) ? lineInfo.LineNumber : 0;
 
-        int IJsonLineInfo.LinePosition
-        {
-            get
-            {
-                return (_reader is IJsonLineInfo lineInfo) ? lineInfo.LinePosition : 0;
-            }
-        }
+        int IJsonLineInfo.LinePosition => (_reader is IJsonLineInfo lineInfo) ? lineInfo.LinePosition : 0;
     }
 }

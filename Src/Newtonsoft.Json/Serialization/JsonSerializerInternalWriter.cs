@@ -479,7 +479,7 @@ namespace Newtonsoft.Json.Serialization
                     JsonContract keyContract = GetContractSafe(e.Key);
                     JsonContract valueContract = GetContractSafe(e.Value);
 
-                    string propertyName = GetPropertyName(writer, e.Key, keyContract, out bool escape);
+                    string propertyName = GetPropertyName(writer, e.Key, keyContract, out _);
 
                     propertyName = (contract.ExtensionDataNameResolver != null)
                         ? contract.ExtensionDataNameResolver(propertyName)
