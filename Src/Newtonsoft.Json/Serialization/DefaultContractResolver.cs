@@ -496,15 +496,15 @@ namespace Newtonsoft.Json.Serialization
                  ? JsonTypeReflector.ReflectionDelegateFactory.CreateSet<object>(member)
                  : null;
                 Func<object> createExtensionDataDictionary = JsonTypeReflector.ReflectionDelegateFactory.CreateDefaultConstructor<object>(createdType);
-                MethodInfo addMethod = t.GetMethod("Add", new[] { keyType, valueType });
-                if (addMethod == null)
+                MethodInfo setMethod = t.GetProperty("Item", BindingFlags.Public | BindingFlags.Instance, null, valueType, new[] { keyType }, null)?.GetSetMethod();
+                if (setMethod == null)
                 {
-                    // Add is explicitly implemented and non-public
+                    // Item is explicitly implemented and non-public
                     // get from dictionary interface
-                    addMethod = dictionaryType.GetMethod("Add", new[] {keyType, valueType});
+                    setMethod = dictionaryType.GetProperty("Item", BindingFlags.Public | BindingFlags.Instance, null, valueType, new[] { keyType }, null)?.GetSetMethod();
                 }
 
-                MethodCall<object, object> setExtensionDataDictionaryValue = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(addMethod);
+                MethodCall<object, object> setExtensionDataDictionaryValue = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(setMethod);
 
                 ExtensionDataSetter extensionDataSetter = (o, key, value) =>
                 {
