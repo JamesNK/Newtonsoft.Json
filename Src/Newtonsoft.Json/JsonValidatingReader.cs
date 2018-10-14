@@ -196,12 +196,11 @@ namespace Newtonsoft.Json
 
                         foreach (JsonSchemaModel schema in CurrentSchemas)
                         {
-                            JsonSchemaModel propertySchema;
-                            if (schema.Properties != null && schema.Properties.TryGetValue(_currentScope.CurrentPropertyName, out propertySchema))
-                            {
-                                schemas.Add(propertySchema);
-                            }
-                            if (schema.PatternProperties != null)
+                                if (schema.Properties != null && schema.Properties.TryGetValue(_currentScope.CurrentPropertyName, out JsonSchemaModel propertySchema))
+                                {
+                                    schemas.Add(propertySchema);
+                                }
+                                if (schema.PatternProperties != null)
                             {
                                 foreach (KeyValuePair<string, JsonSchemaModel> patternProperty in schema.PatternProperties)
                                 {

@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Serialization
         [Obsolete("DefaultMembersSearchFlags is obsolete. To modify the members serialized inherit from DefaultContractResolver and override the GetSerializableMembers method instead.")]
         public BindingFlags DefaultMembersSearchFlags { get; set; }
 #else
-        private BindingFlags DefaultMembersSearchFlags;
+        private readonly BindingFlags DefaultMembersSearchFlags;
 #endif
 
         /// <summary>
@@ -267,9 +267,8 @@ namespace Newtonsoft.Json.Serialization
                 }
 
 #if HAVE_DATA_CONTRACTS
-                Type match;
                 // don't include EntityKey on entities objects... this is a bit hacky
-                if (objectType.AssignableToTypeName("System.Data.Objects.DataClasses.EntityObject", false, out match))
+                if (objectType.AssignableToTypeName("System.Data.Objects.DataClasses.EntityObject", false, out Type match))
                 {
                     serializableMembers = serializableMembers.Where(ShouldSerializeEntityMember).ToList();
                 }

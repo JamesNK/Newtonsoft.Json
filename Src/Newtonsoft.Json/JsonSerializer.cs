@@ -812,14 +812,14 @@ namespace Newtonsoft.Json
             ValidationUtils.ArgumentNotNull(reader, nameof(reader));
             ValidationUtils.ArgumentNotNull(target, nameof(target));
 
-            // set serialization options onto reader
-            CultureInfo previousCulture;
-            DateTimeZoneHandling? previousDateTimeZoneHandling;
-            DateParseHandling? previousDateParseHandling;
-            FloatParseHandling? previousFloatParseHandling;
-            int? previousMaxDepth;
-            string previousDateFormatString;
-            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
+            SetupReader(
+                reader,
+                out CultureInfo previousCulture,
+                out DateTimeZoneHandling? previousDateTimeZoneHandling,
+                out DateParseHandling? previousDateParseHandling,
+                out FloatParseHandling? previousFloatParseHandling,
+                out int? previousMaxDepth,
+                out string previousDateFormatString);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? CreateTraceJsonReader(reader)
@@ -890,14 +890,14 @@ namespace Newtonsoft.Json
         {
             ValidationUtils.ArgumentNotNull(reader, nameof(reader));
 
-            // set serialization options onto reader
-            CultureInfo previousCulture;
-            DateTimeZoneHandling? previousDateTimeZoneHandling;
-            DateParseHandling? previousDateParseHandling;
-            FloatParseHandling? previousFloatParseHandling;
-            int? previousMaxDepth;
-            string previousDateFormatString;
-            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
+            SetupReader(
+                reader,
+                out CultureInfo previousCulture,
+                out DateTimeZoneHandling? previousDateTimeZoneHandling,
+                out DateParseHandling? previousDateParseHandling,
+                out FloatParseHandling? previousFloatParseHandling,
+                out int? previousMaxDepth,
+                out string previousDateFormatString);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? CreateTraceJsonReader(reader)

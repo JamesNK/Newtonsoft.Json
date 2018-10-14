@@ -96,10 +96,9 @@ namespace Newtonsoft.Json.Serialization
             }
 
             // for backwards compadibility the CamelCasePropertyNamesContractResolver shares contracts between instances
-            JsonContract contract;
             ResolverContractKey key = new ResolverContractKey(GetType(), type);
             Dictionary<ResolverContractKey, JsonContract> cache = _contractCache;
-            if (cache == null || !cache.TryGetValue(key, out contract))
+            if (cache == null || !cache.TryGetValue(key, out JsonContract contract))
             {
                 contract = CreateContract(type);
 

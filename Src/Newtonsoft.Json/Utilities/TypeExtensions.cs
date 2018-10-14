@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Utilities
     {
 #if DOTNET || PORTABLE
 #if !DOTNET
-        private static BindingFlags DefaultFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
+        private static readonly BindingFlags DefaultFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
 
         public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
         {
@@ -609,8 +609,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool AssignableToTypeName(this Type type, string fullTypeName, bool searchInterfaces)
         {
-            Type match;
-            return type.AssignableToTypeName(fullTypeName, searchInterfaces, out match);
+            return type.AssignableToTypeName(fullTypeName, searchInterfaces, out _);
         }
 
         public static bool ImplementInterface(this Type type, Type interfaceType)

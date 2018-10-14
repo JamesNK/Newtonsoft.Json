@@ -126,8 +126,7 @@ namespace Newtonsoft.Json.Schema
 
         public void AddProperty(IDictionary<string, JsonSchemaNode> target, string propertyName, JsonSchema schema)
         {
-            JsonSchemaNode propertyNode;
-            target.TryGetValue(propertyName, out propertyNode);
+            target.TryGetValue(propertyName, out JsonSchemaNode propertyNode);
 
             target[propertyName] = AddSchema(propertyNode, schema);
         }
@@ -162,8 +161,7 @@ namespace Newtonsoft.Json.Schema
 
         private JsonSchemaModel BuildNodeModel(JsonSchemaNode node)
         {
-            JsonSchemaModel model;
-            if (_nodeModels.TryGetValue(node, out model))
+            if (_nodeModels.TryGetValue(node, out JsonSchemaModel model))
             {
                 return model;
             }

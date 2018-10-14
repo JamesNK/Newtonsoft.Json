@@ -793,8 +793,7 @@ namespace Newtonsoft.Json
                 return null;
             }
 
-            decimal d;
-            if (decimal.TryParse(s, NumberStyles.Number, Culture, out d))
+            if (decimal.TryParse(s, NumberStyles.Number, Culture, out decimal d))
             {
                 SetToken(JsonToken.Float, d, false);
                 return d;
