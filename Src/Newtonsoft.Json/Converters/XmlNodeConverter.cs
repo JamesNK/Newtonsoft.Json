@@ -1464,7 +1464,7 @@ namespace Newtonsoft.Json.Converters
         }
 #endregion
 
-#region Reading
+        #region Reading
         /// <summary>
         /// Reads the JSON representation of the object.
         /// </summary>
@@ -2086,9 +2086,12 @@ namespace Newtonsoft.Json.Converters
 
                             if (count == 1 && WriteArrayAttribute)
                             {
+                                MiscellaneousUtils.GetQualifiedNameParts(propertyName, out string elementPrefix, out string localName);
+                                string ns = string.IsNullOrEmpty(elementPrefix) ? manager.DefaultNamespace : manager.LookupNamespace(elementPrefix);
+
                                 foreach (IXmlNode childNode in currentNode.ChildNodes)
                                 {
-                                    if (childNode is IXmlElement element && element.LocalName == propertyName)
+                                    if (childNode is IXmlElement element && element.LocalName == localName && element.NamespaceUri == ns)
                                     {
                                         AddJsonArrayAttribute(element, document);
                                         break;
