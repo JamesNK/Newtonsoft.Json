@@ -561,17 +561,17 @@ namespace Newtonsoft.Json
                     break;
                 case JsonToken.Float:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is decimal d)
+                    if (value is decimal decimalValue)
                     {
-                        WriteValue(d);
+                        WriteValue(decimalValue);
                     }
-                    else if (value is double)
+                    else if (value is double doubleValue)
                     {
-                        WriteValue((double)value);
+                        WriteValue(doubleValue);
                     }
-                    else if (value is float)
+                    else if (value is float floatValue)
                     {
-                        WriteValue((float)value);
+                        WriteValue(floatValue);
                     }
                     else
                     {
@@ -1697,12 +1697,12 @@ namespace Newtonsoft.Json
                     InternalWriteStart(token, JsonContainerType.Constructor);
                     break;
                 case JsonToken.PropertyName:
-                    if (!(value is string))
+                    if (!(value is string s))
                     {
                         throw new ArgumentException("A name is required when setting property name state.", nameof(value));
                     }
 
-                    InternalWritePropertyName((string)value);
+                    InternalWritePropertyName(s);
                     break;
                 case JsonToken.Comment:
                     InternalWriteComment();

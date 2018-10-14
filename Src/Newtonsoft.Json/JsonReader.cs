@@ -493,8 +493,7 @@ namespace Newtonsoft.Json
                     }
                     else
                     {
-                        Uri uri = v as Uri;
-                        s = uri != null ? uri.OriginalString : v.ToString();
+                        s = v is Uri uri ? uri.OriginalString : v.ToString();
                     }
 
                     SetToken(JsonToken.String, s, false);
@@ -793,8 +792,7 @@ namespace Newtonsoft.Json
                 return null;
             }
 
-            decimal d;
-            if (decimal.TryParse(s, NumberStyles.Number, Culture, out d))
+            if (decimal.TryParse(s, NumberStyles.Number, Culture, out decimal d))
             {
                 SetToken(JsonToken.Float, d, false);
                 return d;

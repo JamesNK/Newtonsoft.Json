@@ -51,7 +51,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task FlushAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task FlushAsync(CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoFlushAsync(cancellationToken) : base.FlushAsync(cancellationToken);
         }
@@ -114,7 +114,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task CloseAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task CloseAsync(CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoCloseAsync(cancellationToken) : base.CloseAsync(cancellationToken);
         }
@@ -141,7 +141,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteEndAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteEndAsync(CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteEndInternalAsync(cancellationToken) : base.WriteEndAsync(cancellationToken);
         }
@@ -225,7 +225,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteRawAsync(string json, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteRawAsync(string json, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteRawAsync(json, cancellationToken) : base.WriteRawAsync(json, cancellationToken);
         }
@@ -242,7 +242,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteNullAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteNullAsync(CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteNullAsync(cancellationToken) : base.WriteNullAsync(cancellationToken);
         }
@@ -309,7 +309,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WritePropertyNameAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WritePropertyNameAsync(string name, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWritePropertyNameAsync(name, cancellationToken) : base.WritePropertyNameAsync(name, cancellationToken);
         }
@@ -349,7 +349,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WritePropertyNameAsync(string name, bool escape, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WritePropertyNameAsync(string name, bool escape, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWritePropertyNameAsync(name, escape, cancellationToken) : base.WritePropertyNameAsync(name, escape, cancellationToken);
         }
@@ -387,7 +387,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteStartArrayAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteStartArrayAsync(CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteStartArrayAsync(cancellationToken) : base.WriteStartArrayAsync(cancellationToken);
         }
@@ -417,7 +417,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteStartObjectAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteStartObjectAsync(CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteStartObjectAsync(cancellationToken) : base.WriteStartObjectAsync(cancellationToken);
         }
@@ -448,7 +448,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteStartConstructorAsync(string name, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteStartConstructorAsync(string name, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteStartConstructorAsync(name, cancellationToken) : base.WriteStartConstructorAsync(name, cancellationToken);
         }
@@ -469,7 +469,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteUndefinedAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteUndefinedAsync(CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteUndefinedAsync(cancellationToken) : base.WriteUndefinedAsync(cancellationToken);
         }
@@ -499,7 +499,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteWhitespaceAsync(string ws, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteWhitespaceAsync(string ws, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteWhitespaceAsync(ws, cancellationToken) : base.WriteWhitespaceAsync(ws, cancellationToken);
         }
@@ -518,7 +518,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(bool value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(bool value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -536,7 +536,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(bool? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(bool? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -554,7 +554,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(byte value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(byte value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteIntegerValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -567,7 +567,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(byte? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(byte? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -585,7 +585,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(byte[] value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(byte[] value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? (value == null ? WriteNullAsync(cancellationToken) : WriteValueNonNullAsync(value, cancellationToken)) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -607,7 +607,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(char value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(char value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -625,7 +625,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(char? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(char? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -643,7 +643,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(DateTime value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(DateTime value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -675,7 +675,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(DateTime? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(DateTime? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -693,7 +693,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(DateTimeOffset value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(DateTimeOffset value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -724,7 +724,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(DateTimeOffset? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(DateTimeOffset? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -742,7 +742,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(decimal value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(decimal value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -760,7 +760,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(decimal? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(decimal? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -778,7 +778,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(double value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(double value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteValueAsync(value, false, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -796,7 +796,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(double? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(double? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? (value.HasValue ? WriteValueAsync(value.GetValueOrDefault(), true, cancellationToken) : WriteNullAsync(cancellationToken)) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -809,7 +809,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(float value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(float value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteValueAsync(value, false, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -827,7 +827,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(float? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(float? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? (value.HasValue ? WriteValueAsync(value.GetValueOrDefault(), true, cancellationToken) : WriteNullAsync(cancellationToken)) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -840,7 +840,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(Guid value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(Guid value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -866,7 +866,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(Guid? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(Guid? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -884,7 +884,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(int value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(int value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteIntegerValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -897,7 +897,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(int? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(int? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -915,7 +915,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(long value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(long value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteIntegerValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -928,7 +928,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(long? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(long? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -953,7 +953,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(object value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(object value, CancellationToken cancellationToken = default)
         {
             if (_safeAsync)
             {
@@ -983,7 +983,7 @@ namespace Newtonsoft.Json
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
         [CLSCompliant(false)]
-        public override Task WriteValueAsync(sbyte value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(sbyte value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteIntegerValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -997,7 +997,7 @@ namespace Newtonsoft.Json
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
         [CLSCompliant(false)]
-        public override Task WriteValueAsync(sbyte? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(sbyte? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1015,7 +1015,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(short value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(short value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteIntegerValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1028,7 +1028,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(short? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(short? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1046,7 +1046,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(string value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(string value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1076,7 +1076,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(TimeSpan value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(TimeSpan value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1097,7 +1097,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(TimeSpan? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(TimeSpan? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1116,7 +1116,7 @@ namespace Newtonsoft.Json
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
         [CLSCompliant(false)]
-        public override Task WriteValueAsync(uint value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(uint value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteIntegerValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1130,7 +1130,7 @@ namespace Newtonsoft.Json
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
         [CLSCompliant(false)]
-        public override Task WriteValueAsync(uint? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(uint? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1149,7 +1149,7 @@ namespace Newtonsoft.Json
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
         [CLSCompliant(false)]
-        public override Task WriteValueAsync(ulong value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(ulong value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteIntegerValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1163,7 +1163,7 @@ namespace Newtonsoft.Json
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
         [CLSCompliant(false)]
-        public override Task WriteValueAsync(ulong? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(ulong? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1181,7 +1181,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteValueAsync(Uri value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(Uri value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? (value == null ? WriteNullAsync(cancellationToken) : WriteValueNotNullAsync(value, cancellationToken)) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1212,7 +1212,7 @@ namespace Newtonsoft.Json
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
         [CLSCompliant(false)]
-        public override Task WriteValueAsync(ushort value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(ushort value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? WriteIntegerValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1226,7 +1226,7 @@ namespace Newtonsoft.Json
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
         [CLSCompliant(false)]
-        public override Task WriteValueAsync(ushort? value, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteValueAsync(ushort? value, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
         }
@@ -1244,7 +1244,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteCommentAsync(string text, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteCommentAsync(string text, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteCommentAsync(text, cancellationToken) : base.WriteCommentAsync(text, cancellationToken);
         }
@@ -1264,7 +1264,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteEndArrayAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteEndArrayAsync(CancellationToken cancellationToken = default)
         {
             return _safeAsync ? InternalWriteEndAsync(JsonContainerType.Array, cancellationToken) : base.WriteEndArrayAsync(cancellationToken);
         }
@@ -1276,7 +1276,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteEndConstructorAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteEndConstructorAsync(CancellationToken cancellationToken = default)
         {
             return _safeAsync ? InternalWriteEndAsync(JsonContainerType.Constructor, cancellationToken) : base.WriteEndConstructorAsync(cancellationToken);
         }
@@ -1288,7 +1288,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteEndObjectAsync(CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteEndObjectAsync(CancellationToken cancellationToken = default)
         {
             return _safeAsync ? InternalWriteEndAsync(JsonContainerType.Object, cancellationToken) : base.WriteEndObjectAsync(cancellationToken);
         }
@@ -1301,7 +1301,7 @@ namespace Newtonsoft.Json
         /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
         /// execute synchronously, returning an already-completed task.</remarks>
-        public override Task WriteRawValueAsync(string json, CancellationToken cancellationToken = default(CancellationToken))
+        public override Task WriteRawValueAsync(string json, CancellationToken cancellationToken = default)
         {
             return _safeAsync ? DoWriteRawValueAsync(json, cancellationToken) : base.WriteRawValueAsync(json, cancellationToken);
         }

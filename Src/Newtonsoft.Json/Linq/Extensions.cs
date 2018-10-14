@@ -187,8 +187,7 @@ namespace Newtonsoft.Json.Linq
             {
                 foreach (T token in source)
                 {
-                    JValue value = token as JValue;
-                    if (value != null)
+                    if (token is JValue value)
                     {
                         yield return Convert<JValue, U>(value);
                     }
@@ -256,20 +255,18 @@ namespace Newtonsoft.Json.Linq
         {
             if (token == null)
             {
-                return default(U);
+                return default;
             }
 
-            if (token is U
+            if (token is U castValue
                 // don't want to cast JValue to its interfaces, want to get the internal value
                 && typeof(U) != typeof(IComparable) && typeof(U) != typeof(IFormattable))
             {
-                // HACK
-                return (U)(object)token;
+                return castValue;
             }
             else
             {
-                JValue value = token as JValue;
-                if (value == null)
+                if (!(token is JValue value))
                 {
                     throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, token.GetType(), typeof(T)));
                 }
@@ -285,7 +282,7 @@ namespace Newtonsoft.Json.Linq
                 {
                     if (value.Value == null)
                     {
-                        return default(U);
+                        return default;
                     }
 
                     targetType = Nullable.GetUnderlyingType(targetType);
@@ -320,9 +317,9 @@ namespace Newtonsoft.Json.Linq
             {
                 return null;
             }
-            else if (source is IJEnumerable<T>)
+            else if (source is IJEnumerable<T> customEnumerable)
             {
-                return (IJEnumerable<T>)source;
+                return customEnumerable;
             }
             else
             {

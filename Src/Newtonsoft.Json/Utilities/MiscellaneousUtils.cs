@@ -84,7 +84,7 @@ namespace Newtonsoft.Json.Utilities
                 return "{null}";
             }
 
-            return (value is string) ? @"""" + value.ToString() + @"""" : value.ToString();
+            return (value is string s) ? @"""" + s + @"""" : value.ToString();
         }
 
         public static int ByteArrayCompare(byte[] a1, byte[] a2)
@@ -135,21 +135,6 @@ namespace Newtonsoft.Json.Utilities
                 prefix = qualifiedName.Substring(0, colonPosition);
                 localName = qualifiedName.Substring(colonPosition + 1);
             }
-        }
-
-        internal static string FormatValueForPrint(object value)
-        {
-            if (value == null)
-            {
-                return "{null}";
-            }
-
-            if (value is string)
-            {
-                return @"""" + value + @"""";
-            }
-
-            return value.ToString();
         }
 
         internal static RegexOptions GetRegexOptions(string optionsText)

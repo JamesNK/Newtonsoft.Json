@@ -48,12 +48,12 @@ namespace Newtonsoft.Json.Serialization
 
         public override bool Equals(object obj)
         {
-            if (!(obj is ResolverContractKey))
+            if (!(obj is ResolverContractKey key))
             {
                 return false;
             }
 
-            return Equals((ResolverContractKey)obj);
+            return Equals(key);
         }
 
         public bool Equals(ResolverContractKey other)
@@ -96,10 +96,9 @@ namespace Newtonsoft.Json.Serialization
             }
 
             // for backwards compadibility the CamelCasePropertyNamesContractResolver shares contracts between instances
-            JsonContract contract;
             ResolverContractKey key = new ResolverContractKey(GetType(), type);
             Dictionary<ResolverContractKey, JsonContract> cache = _contractCache;
-            if (cache == null || !cache.TryGetValue(key, out contract))
+            if (cache == null || !cache.TryGetValue(key, out JsonContract contract))
             {
                 contract = CreateContract(type);
 

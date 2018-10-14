@@ -548,9 +548,9 @@ namespace Newtonsoft.Json.Serialization
 
                             return creator(dictionary);
                         }
-                        else if (dictionary is IWrappedDictionary)
+                        else if (dictionary is IWrappedDictionary wrappedDictionary)
                         {
-                            return ((IWrappedDictionary)dictionary).UnderlyingDictionary;
+                            return wrappedDictionary.UnderlyingDictionary;
                         }
 
                         targetDictionary = dictionary;
@@ -898,9 +898,9 @@ namespace Newtonsoft.Json.Serialization
                         return creator(list);
                     }
                 }
-                else if (list is IWrappedCollection)
+                else if (list is IWrappedCollection wrappedCollection)
                 {
-                    return ((IWrappedCollection)list).UnderlyingCollection;
+                    return wrappedCollection.UnderlyingCollection;
                 }
 
                 value = list;
@@ -912,7 +912,7 @@ namespace Newtonsoft.Json.Serialization
                     throw JsonSerializationException.Create(reader, "Cannot populate list type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.CreatedType));
                 }
 
-                value = PopulateList((arrayContract.ShouldCreateWrapper || !(existingValue is IList)) ? arrayContract.CreateWrapper(existingValue) : (IList)existingValue, reader, arrayContract, member, id);
+                value = PopulateList((arrayContract.ShouldCreateWrapper || !(existingValue is IList list)) ? arrayContract.CreateWrapper(existingValue) : list, reader, arrayContract, member, id);
             }
 
             return value;
@@ -986,7 +986,7 @@ namespace Newtonsoft.Json.Serialization
                 }
                 catch (Exception ex)
                 {
-                    throw JsonSerializationException.Create(reader, "Error converting value {0} to type '{1}'.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.FormatValueForPrint(value), targetType), ex);
+                    throw JsonSerializationException.Create(reader, "Error converting value {0} to type '{1}'.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(value), targetType), ex);
                 }
             }
 
@@ -1975,9 +1975,9 @@ namespace Newtonsoft.Json.Serialization
                         {
                             propertyPresence = PropertyPresence.Null;
                         }
-                        else if (v is string)
+                        else if (v is string s)
                         {
-                            propertyPresence = CoerceEmptyStringToNull(context.Property.PropertyType, context.Property.PropertyContract, (string)v)
+                            propertyPresence = CoerceEmptyStringToNull(context.Property.PropertyType, context.Property.PropertyContract, s)
                                 ? PropertyPresence.Null
                                 : PropertyPresence.Value;
                         }

@@ -61,7 +61,7 @@ namespace Newtonsoft.Json.Utilities
         public static Task<T> FromCanceled<T>(this CancellationToken cancellationToken)
         {
             Debug.Assert(cancellationToken.IsCancellationRequested);
-            return new Task<T>(() => default(T), cancellationToken);
+            return new Task<T>(() => default, cancellationToken);
         }
 
         // Task.Delay(0) is optimised as a cached task within the framework, and indeed

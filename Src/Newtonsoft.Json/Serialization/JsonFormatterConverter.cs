@@ -72,9 +72,9 @@ namespace Newtonsoft.Json.Serialization
         {
             ValidationUtils.ArgumentNotNull(value, nameof(value));
 
-            if (value is JValue)
+            if (value is JValue v)
             {
-                value = ((JValue)value).Value;
+                value = v.Value;
             }
 
             return System.Convert.ChangeType(value, typeCode, CultureInfo.InvariantCulture);

@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Utilities
     {
 #if DOTNET || PORTABLE
 #if !DOTNET
-        private static BindingFlags DefaultFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
+        private static readonly BindingFlags DefaultFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
 
         public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
         {
@@ -128,7 +128,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                return default(MemberTypes);
+                return default;
             }
 #endif
         }
@@ -485,20 +485,20 @@ namespace Newtonsoft.Json.Utilities
 
         private static bool TestAccessibility(MemberInfo member, BindingFlags bindingFlags)
         {
-            if (member is FieldInfo)
+            if (member is FieldInfo f)
             {
-                return TestAccessibility((FieldInfo) member, bindingFlags);
+                return TestAccessibility(f, bindingFlags);
             }
-            else if (member is MethodBase)
+            else if (member is MethodBase m)
             {
-                return TestAccessibility((MethodBase) member, bindingFlags);
+                return TestAccessibility(m, bindingFlags);
             }
-            else if (member is PropertyInfo)
+            else if (member is PropertyInfo p)
             {
-                return TestAccessibility((PropertyInfo) member, bindingFlags);
+                return TestAccessibility(p, bindingFlags);
             }
 
-            throw new Exception("Unexpected member type.");
+            throw new ArgumentOutOfRangeException("Unexpected member type.");
         }
 
         private static bool TestAccessibility(FieldInfo member, BindingFlags bindingFlags)
@@ -609,8 +609,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool AssignableToTypeName(this Type type, string fullTypeName, bool searchInterfaces)
         {
-            Type match;
-            return type.AssignableToTypeName(fullTypeName, searchInterfaces, out match);
+            return type.AssignableToTypeName(fullTypeName, searchInterfaces, out _);
         }
 
         public static bool ImplementInterface(this Type type, Type interfaceType)

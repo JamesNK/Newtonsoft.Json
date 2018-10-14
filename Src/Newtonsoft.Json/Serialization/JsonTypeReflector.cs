@@ -388,8 +388,7 @@ namespace Newtonsoft.Json.Serialization
             // no inheritance
             return (ReflectionUtils.GetAttribute<NonSerializedAttribute>(provider, false) != null);
 #else
-            FieldInfo fieldInfo = provider as FieldInfo;
-            if (fieldInfo != null && (fieldInfo.Attributes & FieldAttributes.NotSerialized) == FieldAttributes.NotSerialized)
+            if (provider is FieldInfo fieldInfo && (fieldInfo.Attributes & FieldAttributes.NotSerialized) == FieldAttributes.NotSerialized)
             {
                 return true;
             }
@@ -406,8 +405,7 @@ namespace Newtonsoft.Json.Serialization
             // no inheritance
             return (ReflectionUtils.GetAttribute<SerializableAttribute>(provider, false) != null);
 #else
-            Type type = provider as Type;
-            if (type != null && (type.GetTypeInfo().Attributes & TypeAttributes.Serializable) == TypeAttributes.Serializable)
+            if (provider is Type type && (type.GetTypeInfo().Attributes & TypeAttributes.Serializable) == TypeAttributes.Serializable)
             {
                 return true;
             }
@@ -419,14 +417,12 @@ namespace Newtonsoft.Json.Serialization
 
         public static T GetAttribute<T>(object provider) where T : Attribute
         {
-            Type type = provider as Type;
-            if (type != null)
+            if (provider is Type type)
             {
                 return GetAttribute<T>(type);
             }
 
-            MemberInfo memberInfo = provider as MemberInfo;
-            if (memberInfo != null)
+            if (provider is MemberInfo memberInfo)
             {
                 return GetAttribute<T>(memberInfo);
             }
@@ -451,7 +447,7 @@ namespace Newtonsoft.Json.Serialization
 #if HAVE_SECURITY_SAFE_CRITICAL_ATTRIBUTE
             [SecuritySafeCritical]
 #endif
-                get
+            get
             {
                 if (_dynamicCodeGeneration == null)
                 {
