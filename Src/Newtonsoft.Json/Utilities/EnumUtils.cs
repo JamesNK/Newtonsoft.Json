@@ -107,7 +107,7 @@ namespace Newtonsoft.Json.Utilities
 
             if (selectedFlagsValues.Count == 0 && enumNameValues.Values.Any(v => v == 0))
             {
-                selectedFlagsValues.Add(default(T));
+                selectedFlagsValues.Add(default);
             }
 
             return selectedFlagsValues;

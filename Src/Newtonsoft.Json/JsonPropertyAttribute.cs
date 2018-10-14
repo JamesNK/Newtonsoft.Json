@@ -92,7 +92,7 @@ namespace Newtonsoft.Json
         /// <value>The null value handling.</value>
         public NullValueHandling NullValueHandling
         {
-            get => _nullValueHandling ?? default(NullValueHandling);
+            get => _nullValueHandling ?? default;
             set => _nullValueHandling = value;
         }
 
@@ -102,7 +102,7 @@ namespace Newtonsoft.Json
         /// <value>The default value handling.</value>
         public DefaultValueHandling DefaultValueHandling
         {
-            get => _defaultValueHandling ?? default(DefaultValueHandling);
+            get => _defaultValueHandling ?? default;
             set => _defaultValueHandling = value;
         }
 
@@ -112,7 +112,7 @@ namespace Newtonsoft.Json
         /// <value>The reference loop handling.</value>
         public ReferenceLoopHandling ReferenceLoopHandling
         {
-            get => _referenceLoopHandling ?? default(ReferenceLoopHandling);
+            get => _referenceLoopHandling ?? default;
             set => _referenceLoopHandling = value;
         }
 
@@ -122,7 +122,7 @@ namespace Newtonsoft.Json
         /// <value>The object creation handling.</value>
         public ObjectCreationHandling ObjectCreationHandling
         {
-            get => _objectCreationHandling ?? default(ObjectCreationHandling);
+            get => _objectCreationHandling ?? default;
             set => _objectCreationHandling = value;
         }
 
@@ -132,7 +132,7 @@ namespace Newtonsoft.Json
         /// <value>The type name handling.</value>
         public TypeNameHandling TypeNameHandling
         {
-            get => _typeNameHandling ?? default(TypeNameHandling);
+            get => _typeNameHandling ?? default;
             set => _typeNameHandling = value;
         }
 
@@ -142,7 +142,7 @@ namespace Newtonsoft.Json
         /// <value>Whether this property's value is serialized as a reference.</value>
         public bool IsReference
         {
-            get => _isReference ?? default(bool);
+            get => _isReference ?? default;
             set => _isReference = value;
         }
 
@@ -152,7 +152,7 @@ namespace Newtonsoft.Json
         /// <value>The numeric order of serialization.</value>
         public int Order
         {
-            get => _order ?? default(int);
+            get => _order ?? default;
             set => _order = value;
         }
 
@@ -180,7 +180,7 @@ namespace Newtonsoft.Json
         /// <value>The collection's items reference loop handling.</value>
         public ReferenceLoopHandling ItemReferenceLoopHandling
         {
-            get => _itemReferenceLoopHandling ?? default(ReferenceLoopHandling);
+            get => _itemReferenceLoopHandling ?? default;
             set => _itemReferenceLoopHandling = value;
         }
 
@@ -190,7 +190,7 @@ namespace Newtonsoft.Json
         /// <value>The collection's items type name handling.</value>
         public TypeNameHandling ItemTypeNameHandling
         {
-            get => _itemTypeNameHandling ?? default(TypeNameHandling);
+            get => _itemTypeNameHandling ?? default;
             set => _itemTypeNameHandling = value;
         }
 
@@ -200,7 +200,7 @@ namespace Newtonsoft.Json
         /// <value>Whether this property's collection items are serialized as a reference.</value>
         public bool ItemIsReference
         {
-            get => _itemIsReference ?? default(bool);
+            get => _itemIsReference ?? default;
             set => _itemIsReference = value;
         }
 

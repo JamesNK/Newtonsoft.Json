@@ -256,7 +256,7 @@ namespace Newtonsoft.Json.Linq
         {
             if (token == null)
             {
-                return default(U);
+                return default;
             }
 
             if (token is U
@@ -285,7 +285,7 @@ namespace Newtonsoft.Json.Linq
                 {
                     if (value.Value == null)
                     {
-                        return default(U);
+                        return default;
                     }
 
                     targetType = Nullable.GetUnderlyingType(targetType);

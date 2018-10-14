@@ -118,7 +118,7 @@ namespace Newtonsoft.Json
             {
                 throw new JsonSerializationException("Converter cannot read JSON with the specified existing value. {0} is required.".FormatWith(CultureInfo.InvariantCulture, typeof(T)));
             }
-            return ReadJson(reader, objectType, existingIsNull ? default(T) : (T)existingValue, !existingIsNull, serializer);
+            return ReadJson(reader, objectType, existingIsNull ? default : (T)existingValue, !existingIsNull, serializer);
         }
 
         /// <summary>

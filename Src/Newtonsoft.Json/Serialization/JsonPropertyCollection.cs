@@ -144,7 +144,7 @@ namespace Newtonsoft.Json.Serialization
         {
             if (Dictionary == null)
             {
-                item = default(JsonProperty);
+                item = default;
                 return false;
             }
 

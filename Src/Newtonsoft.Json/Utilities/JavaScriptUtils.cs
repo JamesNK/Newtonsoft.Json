@@ -359,7 +359,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
 #if HAVE_ASYNC
-        public static Task WriteEscapedJavaScriptStringAsync(TextWriter writer, string s, char delimiter, bool appendDelimiters, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task WriteEscapedJavaScriptStringAsync(TextWriter writer, string s, char delimiter, bool appendDelimiters, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken = default)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -567,7 +567,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool TryGetDateFromConstructorJson(JsonReader reader, out DateTime dateTime, out string errorMessage)
         {
-            dateTime = default(DateTime);
+            dateTime = default;
             errorMessage = null;
 
             if (!TryGetDateConstructorValue(reader, out long? t1, out errorMessage) || t1 == null)

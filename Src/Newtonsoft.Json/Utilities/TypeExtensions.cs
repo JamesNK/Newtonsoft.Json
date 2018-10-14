@@ -128,7 +128,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                return default(MemberTypes);
+                return default;
             }
 #endif
         }

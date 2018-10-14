@@ -161,7 +161,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 if (!_dictionary.Contains(key))
                 {
-                    value = default(TValue);
+                    value = default;
                     return false;
                 }
                 else
