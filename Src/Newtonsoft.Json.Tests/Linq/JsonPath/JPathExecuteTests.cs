@@ -1541,7 +1541,12 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             foreach (var item in StrictMatchTestData())
             {
                 yield return new object[] { item[0], item[1], item[2] };
-                yield return new object[] { item[1], item[0], item[2] };
+
+                if (!item[0].Equals(item[1]))
+                {
+                    // Test the inverse
+                    yield return new object[] { item[1], item[0], item[2] };
+                }
             }
         }
 
@@ -1558,7 +1563,6 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             yield return new object[] { "1", "null", false };
             yield return new object[] { "null", "null", true };
             yield return new object[] { "null", "'null'", false };
-            yield return new object[] { "null", "1", false };
         }
     }
 }
