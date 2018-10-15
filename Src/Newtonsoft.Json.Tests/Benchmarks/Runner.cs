@@ -46,16 +46,13 @@ namespace Newtonsoft.Json.Tests.Benchmarks
     [TestFixture]
     public class Runner : TestFixtureBase
     {
-#if DNXCORE50
-        [Test(Skip = "Don't run with other unit tests")]
-#else
-        [Ignore("Don't run with other unit tests")]
+#if false
         [Test]
-#endif
         public void RunBenchmarks()
         {
             new BenchmarkSwitcher(typeof(Runner).GetTypeInfo().Assembly).Run(new []{ "*" });
         }
+#endif
     }
 }
 
