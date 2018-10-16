@@ -62,7 +62,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
                 writer.WriteValue("DVD read/writer");
                 writer.WriteComment("(broken)");
                 writer.WriteValue("500 gigabyte hard drive");
-                writer.WriteValue("200 gigabype hard drive");
+                writer.WriteValue("200 gigabyte hard drive");
                 writer.WriteEnd();
                 writer.WriteEndObject();
             }
@@ -75,19 +75,19 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
             //     "DVD read/writer"
             //     /*(broken)*/,
             //     "500 gigabyte hard drive",
-            //     "200 gigabype hard drive"
+            //     "200 gigabyte hard drive"
             //   ]
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""CPU"": ""Intel"",
   ""PSU"": ""500W"",
   ""Drives"": [
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }", sb.ToString());
         }

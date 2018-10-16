@@ -315,6 +315,45 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void SinglePropertyAndFilterWithRegexAndOptions()
+        {
+            JPath path = new JPath("Blah[ ?( @.name=~/hi/i ) ]");
+            Assert.AreEqual(2, path.Filters.Count);
+            Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
+            BooleanQueryExpression expressions = (BooleanQueryExpression)((QueryFilter)path.Filters[1]).Expression;
+            Assert.AreEqual(QueryOperator.RegexEquals, expressions.Operator);
+            Assert.AreEqual("/hi/i", (string)(JToken)expressions.Right);
+        }
+
+        [Test]
+        public void SinglePropertyAndFilterWithRegex()
+        {
+            JPath path = new JPath("Blah[?(@.title =~ /^.*Sword.*$/)]");
+            Assert.AreEqual(2, path.Filters.Count);
+            Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
+            BooleanQueryExpression expressions = (BooleanQueryExpression)((QueryFilter)path.Filters[1]).Expression;
+            Assert.AreEqual(QueryOperator.RegexEquals, expressions.Operator);
+            Assert.AreEqual("/^.*Sword.*$/", (string)(JToken)expressions.Right);
+        }
+
+        [Test]
+        public void SinglePropertyAndFilterWithEscapedRegex()
+        {
+            JPath path = new JPath(@"Blah[?(@.title =~ /[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g)]");
+            Assert.AreEqual(2, path.Filters.Count);
+            Assert.AreEqual("Blah", ((FieldFilter)path.Filters[0]).Name);
+            BooleanQueryExpression expressions = (BooleanQueryExpression)((QueryFilter)path.Filters[1]).Expression;
+            Assert.AreEqual(QueryOperator.RegexEquals, expressions.Operator);
+            Assert.AreEqual(@"/[\-\[\]\/\{\}\(\)\*\+\?\.\\\^\$\|]/g", (string)(JToken)expressions.Right);
+        }
+
+        [Test]
+        public void SinglePropertyAndFilterWithOpenRegex()
+        {
+            ExceptionAssert.Throws<JsonException>(() => { new JPath(@"Blah[?(@.title =~ /[\"); }, "Path ended with an open regex.");
+        }
+
+        [Test]
         public void SinglePropertyAndFilterWithUnknownEscape()
         {
             ExceptionAssert.Throws<JsonException>(() => { new JPath(@"Blah[ ?( @.name=='h\i' ) ]"); }, @"Unknown escape character: \i");

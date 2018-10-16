@@ -29,6 +29,7 @@ using Newtonsoft.Json.Bson;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Converters
 {
@@ -149,32 +150,23 @@ namespace Newtonsoft.Json.Converters
         private object ReadRegexString(JsonReader reader)
         {
             string regexText = (string)reader.Value;
-            int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
 
-            string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
-            string optionsText = regexText.Substring(patternOptionDelimiterIndex + 1);
-
-            RegexOptions options = RegexOptions.None;
-            foreach (char c in optionsText)
+            if (regexText.Length > 0 && regexText[0] == '/')
             {
-                switch (c)
+                int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
+
+                if (patternOptionDelimiterIndex > 0)
                 {
-                    case 'i':
-                        options |= RegexOptions.IgnoreCase;
-                        break;
-                    case 'm':
-                        options |= RegexOptions.Multiline;
-                        break;
-                    case 's':
-                        options |= RegexOptions.Singleline;
-                        break;
-                    case 'x':
-                        options |= RegexOptions.ExplicitCapture;
-                        break;
+                    string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
+                    string optionsText = regexText.Substring(patternOptionDelimiterIndex + 1);
+
+                    RegexOptions options = MiscellaneousUtils.GetRegexOptions(optionsText);
+
+                    return new Regex(patternText, options);
                 }
             }
 
-            return new Regex(patternText, options);
+            throw JsonSerializationException.Create(reader, "Regex pattern must be enclosed by slashes.");
         }
 
         private Regex ReadRegexObject(JsonReader reader, JsonSerializer serializer)

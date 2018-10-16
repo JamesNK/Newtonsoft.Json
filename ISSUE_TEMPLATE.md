@@ -2,8 +2,8 @@
 
 If you have questions about how to use Json.NET, please read the Json.NET documentation or ask on Stack Overflow.
 
-http://www.newtonsoft.com/json/help
-http://stackoverflow.com/questions/tagged/json.net
+https://www.newtonsoft.com/json/help
+https://stackoverflow.com/questions/tagged/json.net
 
 There are thousands of Json.NET questions on Stack Overflow with the json.net tag.
 

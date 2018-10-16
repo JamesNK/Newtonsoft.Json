@@ -175,7 +175,7 @@ namespace Newtonsoft.Json.Linq
 
             foreach (KeyValuePair<string, JToken> contentItem in o)
             {
-                JProperty existingProperty = Property(contentItem.Key);
+                JProperty existingProperty = Property(contentItem.Key, settings?.PropertyNameComparison ?? StringComparison.Ordinal);
 
                 if (existingProperty == null)
                 {
@@ -258,19 +258,49 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// Gets a <see cref="JProperty"/> the specified name.
+        /// Gets a <see cref="JProperty"/> with the specified name.
         /// </summary>
         /// <param name="name">The property name.</param>
         /// <returns>A <see cref="JProperty"/> with the specified name or <c>null</c>.</returns>
         public JProperty Property(string name)
+        {
+            return Property(name, StringComparison.Ordinal);
+        }
+
+        /// <summary>
+        /// Gets the <see cref="JProperty"/> with the specified name.
+        /// The exact name will be searched for first and if no matching property is found then
+        /// the <see cref="StringComparison"/> will be used to match a property.
+        /// </summary>
+        /// <param name="name">The property name.</param>
+        /// <param name="comparison">One of the enumeration values that specifies how the strings will be compared.</param>
+        /// <returns>A <see cref="JProperty"/> matched with the specified name or <c>null</c>.</returns>
+        public JProperty Property(string name, StringComparison comparison)
         {
             if (name == null)
             {
                 return null;
             }
 
-            _properties.TryGetValue(name, out JToken property);
-            return (JProperty)property;
+            if (_properties.TryGetValue(name, out JToken property))
+            {
+                return (JProperty)property;
+            }
+
+            // test above already uses this comparison so no need to repeat
+            if (comparison != StringComparison.Ordinal)
+            {
+                for (int i = 0; i < _properties.Count; i++)
+                {
+                    JProperty p = (JProperty)_properties[i];
+                    if (string.Equals(p.Name, name, comparison))
+                    {
+                        return p;
+                    }
+                }
+            }
+
+            return null;
         }
 
         /// <summary>
@@ -509,25 +539,9 @@ namespace Newtonsoft.Json.Linq
             }
 
             // attempt to get value via dictionary first for performance
-            JProperty property = Property(propertyName);
-            if (property != null)
-            {
-                return property.Value;
-            }
+            var property = Property(propertyName, comparison);
 
-            // test above already uses this comparison so no need to repeat
-            if (comparison != StringComparison.Ordinal)
-            {
-                foreach (JProperty p in _properties)
-                {
-                    if (string.Equals(p.Name, propertyName, comparison))
-                    {
-                        return p.Value;
-                    }
-                }
-            }
-
-            return null;
+            return property?.Value;
         }
 
         /// <summary>
@@ -780,6 +794,11 @@ namespace Newtonsoft.Json.Linq
 
         object ICustomTypeDescriptor.GetPropertyOwner(PropertyDescriptor pd)
         {
+            if (pd is JPropertyDescriptor)
+            {
+                return this;
+            }
+
             return null;
         }
         #endregion

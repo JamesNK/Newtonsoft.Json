@@ -139,6 +139,20 @@ namespace Newtonsoft.Json.Tests.Converters
             CamelCase
         }
 
+        [JsonConverter(typeof(StringEnumConverter), true, false)]
+        public enum NotAllowIntegerValuesEnum
+        {
+            Foo = 0,
+            Bar = 1
+        }
+
+        [JsonConverter(typeof(StringEnumConverter), true, true)]
+        public enum AllowIntegerValuesEnum
+        {
+            Foo = 0,
+            Bar = 1
+        }
+
         [Test]
         public void Serialize_CamelCaseFromAttribute()
         {
@@ -151,6 +165,22 @@ namespace Newtonsoft.Json.Tests.Converters
         {
             CamelCaseEnum e = JsonConvert.DeserializeObject<CamelCaseEnum>(@"""camelCase""");
             Assert.AreEqual(CamelCaseEnum.CamelCase, e);
+        }
+
+        [Test]
+        public void Deserialize_NotAllowIntegerValuesFromAttribute()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                NotAllowIntegerValuesEnum e = JsonConvert.DeserializeObject<NotAllowIntegerValuesEnum>(@"""9""");
+            });
+        }
+
+        [Test]
+        public void Deserialize_AllowIntegerValuesAttribute()
+        {
+            AllowIntegerValuesEnum e = JsonConvert.DeserializeObject<AllowIntegerValuesEnum>(@"""9""");
+            Assert.AreEqual(9, (int)e);
         }
 
 #if !NET20
@@ -201,7 +231,7 @@ namespace Newtonsoft.Json.Tests.Converters
             };
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enum"": "",third""
 }", json);
 
@@ -218,7 +248,7 @@ namespace Newtonsoft.Json.Tests.Converters
             };
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enum"": "",""
 }", json);
 

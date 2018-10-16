@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 
@@ -41,7 +42,7 @@ namespace Newtonsoft.Json
 
     internal struct JsonPosition
     {
-        private static readonly char[] SpecialCharacters = { '.', ' ', '[', ']', '(', ')' };
+        private static readonly char[] SpecialCharacters = { '.', ' ', '\'', '/', '"', '[', ']', '(', ')', '\t', '\n', '\r', '\f', '\b', '\\', '\u0085', '\u2028', '\u2029' };
 
         internal JsonContainerType Type;
         internal int Position;
@@ -70,7 +71,7 @@ namespace Newtonsoft.Json
             }
         }
 
-        internal void WriteTo(StringBuilder sb)
+        internal void WriteTo(StringBuilder sb, ref StringWriter writer, ref char[] buffer)
         {
             switch (Type)
             {
@@ -79,7 +80,14 @@ namespace Newtonsoft.Json
                     if (propertyName.IndexOfAny(SpecialCharacters) != -1)
                     {
                         sb.Append(@"['");
-                        sb.Append(propertyName);
+
+                        if (writer == null)
+                        {
+                            writer = new StringWriter(sb);
+                        }
+
+                        JavaScriptUtils.WriteEscapedJavaScriptString(writer, propertyName, '\'', false, JavaScriptUtils.SingleQuoteCharEscapeFlags, StringEscapeHandling.Default, null, ref buffer);
+
                         sb.Append(@"']");
                     }
                     else
@@ -122,16 +130,18 @@ namespace Newtonsoft.Json
             }
 
             StringBuilder sb = new StringBuilder(capacity);
+            StringWriter writer = null;
+            char[] buffer = null;
             if (positions != null)
             {
                 foreach (JsonPosition state in positions)
                 {
-                    state.WriteTo(sb);
+                    state.WriteTo(sb, ref writer, ref buffer);
                 }
             }
             if (currentPosition != null)
             {
-                currentPosition.GetValueOrDefault().WriteTo(sb);
+                currentPosition.GetValueOrDefault().WriteTo(sb, ref writer, ref buffer);
             }
 
             return sb.ToString();

@@ -2991,10 +2991,10 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
   }
 
   [Serializable]
-  internal struct Tuple<TFirst, TSecond> : IEquatable<Tuple<TFirst, TSecond>>
+  internal readonly struct Tuple<TFirst, TSecond> : IEquatable<Tuple<TFirst, TSecond>>
   {
-    public TFirst First { get; private set; }
-    public TSecond Second { get; private set; }
+    public TFirst First { get; }
+    public TSecond Second { get; }
 
     public Tuple(TFirst first, TSecond second)
       : this()

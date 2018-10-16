@@ -142,8 +142,7 @@ namespace Newtonsoft.Json.Utilities
                 callExpression = Expression.Call(readParameter, (MethodInfo)method, argsExpression);
             }
 
-            MethodInfo m = method as MethodInfo;
-            if (m != null)
+            if (method is MethodInfo m)
             {
                 if (m.ReturnType != typeof(void))
                 {

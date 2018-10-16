@@ -534,11 +534,11 @@ namespace Newtonsoft.Json.Tests.Serialization
             string iPersonJson = JsonConvert.SerializeObject(employee, Formatting.Indented,
                 new JsonSerializerSettings { ContractResolver = new IPersonContractResolver() });
 
-            StringAssert.AreEqual(@"{
-  ""FirstName"": ""Maurice"",
-  ""LastName"": ""Moss"",
-  ""BirthDate"": ""1977-12-30T01:01:01Z""
-}", iPersonJson);
+            JObject o = JObject.Parse(iPersonJson);
+
+            Assert.AreEqual("Maurice", (string)o["FirstName"]);
+            Assert.AreEqual("Moss", (string)o["LastName"]);
+            Assert.AreEqual(new DateTime(1977, 12, 30, 1, 1, 1, DateTimeKind.Utc), (DateTime)o["BirthDate"]);
         }
 
         [Test]

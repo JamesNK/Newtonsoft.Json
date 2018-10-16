@@ -30,6 +30,7 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using System.Globalization;
+using System.Text.RegularExpressions;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -83,7 +84,7 @@ namespace Newtonsoft.Json.Utilities
                 return "{null}";
             }
 
-            return (value is string) ? @"""" + value.ToString() + @"""" : value.ToString();
+            return (value is string s) ? @"""" + s + @"""" : value.ToString();
         }
 
         public static int ByteArrayCompare(byte[] a1, byte[] a2)
@@ -136,19 +137,29 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        internal static string FormatValueForPrint(object value)
+        internal static RegexOptions GetRegexOptions(string optionsText)
         {
-            if (value == null)
+            RegexOptions options = RegexOptions.None;
+            foreach (char c in optionsText)
             {
-                return "{null}";
+                switch (c)
+                {
+                    case 'i':
+                        options |= RegexOptions.IgnoreCase;
+                        break;
+                    case 'm':
+                        options |= RegexOptions.Multiline;
+                        break;
+                    case 's':
+                        options |= RegexOptions.Singleline;
+                        break;
+                    case 'x':
+                        options |= RegexOptions.ExplicitCapture;
+                        break;
+                }
             }
 
-            if (value is string)
-            {
-                return @"""" + value + @"""";
-            }
-
-            return value.ToString();
+            return options;
         }
     }
 }

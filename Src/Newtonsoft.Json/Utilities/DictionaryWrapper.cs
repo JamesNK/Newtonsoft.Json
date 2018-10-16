@@ -161,7 +161,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 if (!_dictionary.Contains(key))
                 {
-                    value = default(TValue);
+                    value = default;
                     return false;
                 }
                 else
@@ -482,7 +482,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        private struct DictionaryEnumerator<TEnumeratorKey, TEnumeratorValue> : IDictionaryEnumerator
+        private readonly struct DictionaryEnumerator<TEnumeratorKey, TEnumeratorValue> : IDictionaryEnumerator
         {
             private readonly IEnumerator<KeyValuePair<TEnumeratorKey, TEnumeratorValue>> _e;
 

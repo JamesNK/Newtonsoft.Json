@@ -61,6 +61,20 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerCollectionsTests : TestFixtureBase
     {
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40) || NETSTANDARD2_0
+        [Test]
+        public void DeserializeConcurrentDictionaryWithNullValue()
+        {
+            const string key = "id";
+            
+            var jsonValue = $"{{\"{key}\":null}}";
+
+            var deserializedObject = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(jsonValue);
+
+            Assert.IsNull(deserializedObject[key]);
+        }
+#endif
+
 #if !(NET20 || NET35)
         [Test]
         public void SerializeConcurrentQueue()
@@ -448,7 +462,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(d, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""key"": [
     {
       ""Text1"": ""value1""
@@ -1815,6 +1829,41 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(2, newName.pNumbers.Count);
             Assert.AreEqual("555-1212", newName.pNumbers[0].phoneNumber);
             Assert.AreEqual("444-1212", newName.pNumbers[1].phoneNumber);
+        }
+
+        [TestFixture]
+        public class MultipleDefinedPropertySerialization
+        {
+            [Test]
+            public void SerializePropertyDefinedInMultipleInterfaces()
+            {
+                const string propertyValue = "value";
+
+                var list = new List<ITestInterface> { new TestClass { Property = propertyValue } };
+
+                var json = JsonConvert.SerializeObject(list);
+
+                StringAssert.AreEqual($"[{{\"Property\":\"{propertyValue}\"}}]", json);
+            }
+
+            public interface IFirstInterface
+            {
+                string Property { get; set; }
+            }
+
+            public interface ISecondInterface
+            {
+                string Property { get; set; }
+            }
+
+            public interface ITestInterface : IFirstInterface, ISecondInterface
+            {
+            }
+
+            public class TestClass : ITestInterface
+            {
+                public string Property { get; set; }
+            }
         }
 
         [Test]

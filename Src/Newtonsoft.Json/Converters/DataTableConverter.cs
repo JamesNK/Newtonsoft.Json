@@ -221,6 +221,7 @@ namespace Newtonsoft.Json.Converters
                     return reader.ValueType;
                 case JsonToken.Null:
                 case JsonToken.Undefined:
+                case JsonToken.EndArray:
                     return typeof(string);
                 case JsonToken.StartArray:
                     reader.ReadAndAssert();

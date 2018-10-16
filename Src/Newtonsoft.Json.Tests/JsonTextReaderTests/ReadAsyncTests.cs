@@ -57,6 +57,49 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
     public class ReadAsyncTests : TestFixtureBase
     {
         [Test]
+        public async Task Read_EmptyStream_ReturnsFalse()
+        {
+            MemoryStream ms = new MemoryStream();
+            StreamReader sr = new StreamReader(ms);
+
+            JsonTextReader reader = new JsonTextReader(sr);
+            Assert.IsFalse(await reader.ReadAsync());
+        }
+
+        [Test]
+        public async Task ReadAsInt32Async_IntegerTooLarge_ThrowsJsonReaderException()
+        {
+            JValue token = new JValue(long.MaxValue);
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(
+                () => token.CreateReader().ReadAsInt32Async(),
+                "Could not convert to integer: 9223372036854775807. Path ''."
+            );
+        }
+
+        [Test]
+        public async Task ReadAsDecimalAsync_IntegerTooLarge_ThrowsJsonReaderException()
+        {
+            JValue token = new JValue(double.MaxValue);
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(
+                () => token.CreateReader().ReadAsDecimalAsync(),
+                "Could not convert to decimal: 1.79769313486232E+308. Path ''."
+            );
+        }
+
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
+        [Test]
+        public async Task ReadAsInt32Async_BigIntegerValue_Success()
+        {
+            JValue token = new JValue(BigInteger.Parse("1"));
+
+            int? i = await token.CreateReader().ReadAsInt32Async();
+            Assert.AreEqual(1, i);
+        }
+#endif
+
+        [Test]
         public async Task ReadMissingInt64()
         {
             string json = "{ A: \"\", B: 1, C: , D: 1.23, E: 3.45, F: null }";

@@ -210,8 +210,16 @@ namespace Newtonsoft.Json.Linq
                     SetToken(JsonToken.Undefined, ((JValue)token).Value);
                     break;
                 case JTokenType.Date:
-                    SetToken(JsonToken.Date, ((JValue)token).Value);
-                    break;
+                    {
+                        object v = ((JValue)token).Value;
+                        if (v is DateTime dt)
+                        {
+                            v = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
+                        }
+
+                        SetToken(JsonToken.Date, v);
+                        break;
+                    }
                 case JTokenType.Raw:
                     SetToken(JsonToken.Raw, ((JValue)token).Value);
                     break;
@@ -222,10 +230,11 @@ namespace Newtonsoft.Json.Linq
                     SetToken(JsonToken.String, SafeToString(((JValue)token).Value));
                     break;
                 case JTokenType.Uri:
-                    object v = ((JValue)token).Value;
-                    Uri uri = v as Uri;
-                    SetToken(JsonToken.String, uri != null ? uri.OriginalString : SafeToString(v));
-                    break;
+                    {
+                        object v = ((JValue)token).Value;
+                        SetToken(JsonToken.String, v is Uri uri ? uri.OriginalString : SafeToString(v));
+                        break;
+                    }
                 case JTokenType.TimeSpan:
                     SetToken(JsonToken.String, SafeToString(((JValue)token).Value));
                     break;

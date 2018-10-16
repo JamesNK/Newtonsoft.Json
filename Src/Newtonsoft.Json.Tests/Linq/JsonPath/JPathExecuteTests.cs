@@ -35,6 +35,7 @@ using Newtonsoft.Json.Tests.Bson;
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+using TestCaseSource = Xunit.MemberDataAttribute;
 #else
 using NUnit.Framework;
 #endif
@@ -1452,6 +1453,116 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
 
             List<JToken> result = rootObject.SelectTokens("$.dateObjectsArray[?(@.date == $.referenceDate)]").ToList();
             Assert.AreEqual(2, result.Count);
+        }
+
+        [Test]
+        public void IdentityOperator()
+        {
+            JObject o = JObject.Parse(@"{
+	            'Values': [{
+
+                    'Coercible': 1,
+                    'Name': 'Number'
+
+                }, {
+		            'Coercible': '1',
+		            'Name': 'String'
+	            }]
+            }");
+
+            // just to verify expected behavior hasn't changed
+            IEnumerable<string> sanity1 = o.SelectTokens("Values[?(@.Coercible == '1')].Name").Select(x => (string)x);
+            IEnumerable<string> sanity2 = o.SelectTokens("Values[?(@.Coercible != '1')].Name").Select(x => (string)x);
+            // new behavior
+            IEnumerable<string> mustBeNumber1 = o.SelectTokens("Values[?(@.Coercible === 1)].Name").Select(x => (string)x);
+            IEnumerable<string> mustBeString1 = o.SelectTokens("Values[?(@.Coercible !== 1)].Name").Select(x => (string)x);
+            IEnumerable<string> mustBeString2 = o.SelectTokens("Values[?(@.Coercible === '1')].Name").Select(x => (string)x);
+            IEnumerable<string> mustBeNumber2 = o.SelectTokens("Values[?(@.Coercible !== '1')].Name").Select(x => (string)x);
+
+            // FAILS-- JPath returns { "String" }
+            //CollectionAssert.AreEquivalent(new[] { "Number", "String" }, sanity1);
+            // FAILS-- JPath returns { "Number" }
+            //Assert.IsTrue(!sanity2.Any());
+            Assert.AreEqual("Number", mustBeNumber1.Single());
+            Assert.AreEqual("String", mustBeString1.Single());
+            Assert.AreEqual("Number", mustBeNumber2.Single());
+            Assert.AreEqual("String", mustBeString2.Single());
+        }
+
+        [Test]
+        public void Equals_FloatWithInt()
+        {
+            JToken t = JToken.Parse(@"{
+  ""Values"": [
+    {
+      ""Property"": 1
+    }
+  ]
+}");
+
+            Assert.IsNotNull(t.SelectToken(@"Values[?(@.Property == 1.0)]"));
+        }
+
+#if DNXCORE50
+        [Theory]
+#endif
+        [TestCaseSource(nameof(StrictMatchWithInverseTestData))]
+        public static void EqualsStrict(string value1, string value2, bool matchStrict)
+        {
+            string completeJson = @"{
+  ""Values"": [
+    {
+      ""Property"": " + value1 + @"
+    }
+  ]
+}";
+            string completeEqualsStrictPath = "$.Values[?(@.Property === " + value2 + ")]";
+            string completeNotEqualsStrictPath = "$.Values[?(@.Property !== " + value2 + ")]";
+
+            JToken t = JToken.Parse(completeJson);
+
+            bool hasEqualsStrict = t.SelectTokens(completeEqualsStrictPath).Any();
+            Assert.AreEqual(
+                matchStrict,
+                hasEqualsStrict,
+                $"Expected {value1} and {value2} to match: {matchStrict}"
+                + Environment.NewLine + completeJson + Environment.NewLine + completeEqualsStrictPath);
+
+            bool hasNotEqualsStrict = t.SelectTokens(completeNotEqualsStrictPath).Any();
+            Assert.AreNotEqual(
+                matchStrict,
+                hasNotEqualsStrict,
+                $"Expected {value1} and {value2} to match: {!matchStrict}"
+                + Environment.NewLine + completeJson + Environment.NewLine + completeEqualsStrictPath);
+        }
+
+        public static IEnumerable<object[]> StrictMatchWithInverseTestData()
+        {
+            foreach (var item in StrictMatchTestData())
+            {
+                yield return new object[] { item[0], item[1], item[2] };
+
+                if (!item[0].Equals(item[1]))
+                {
+                    // Test the inverse
+                    yield return new object[] { item[1], item[0], item[2] };
+                }
+            }
+        }
+
+        private static IEnumerable<object[]> StrictMatchTestData()
+        {
+            yield return new object[] { "1", "1", true };
+            yield return new object[] { "1", "1.0", true };
+            yield return new object[] { "1", "true", false };
+            yield return new object[] { "1", "'1'", false };
+            yield return new object[] { "'1'", "'1'", true };
+            yield return new object[] { "false", "false", true };
+            yield return new object[] { "true", "false", false };
+            yield return new object[] { "1", "1.1", false };
+            yield return new object[] { "1", "null", false };
+            yield return new object[] { "null", "null", true };
+            yield return new object[] { "null", "'null'", false };
         }
     }
 }

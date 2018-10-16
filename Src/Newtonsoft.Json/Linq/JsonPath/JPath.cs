@@ -33,6 +33,8 @@ namespace Newtonsoft.Json.Linq.JsonPath
 {
     internal class JPath
     {
+        private static readonly char[] FloatCharacters = new[] {'.', 'E', 'e'};
+
         private readonly string _expression;
         public List<PathFilter> Filters { get; }
 
@@ -601,7 +603,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     {
                         string numberText = sb.ToString();
 
-                        if (numberText.IndexOfAny(new[] { '.', 'E', 'e' }) != -1)
+                        if (numberText.IndexOfAny(FloatCharacters) != -1)
                         {
                             bool result = double.TryParse(numberText, NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var d);
                             value = d;
@@ -645,6 +647,11 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     return true;
                 }
             }
+            else if (currentChar == '/')
+            {
+                value = ReadRegexString();
+                return true;
+            }
 
             value = null;
             return false;
@@ -661,28 +668,44 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 if (currentChar == '\\' && _currentIndex + 1 < _expression.Length)
                 {
                     _currentIndex++;
+                    currentChar = _expression[_currentIndex];
 
-                    if (_expression[_currentIndex] == '\'')
+                    char resolvedChar;
+                    switch (currentChar)
                     {
-                        sb.Append('\'');
+                        case 'b':
+                            resolvedChar = '\b';
+                            break;
+                        case 't':
+                            resolvedChar = '\t';
+                            break;
+                        case 'n':
+                            resolvedChar = '\n';
+                            break;
+                        case 'f':
+                            resolvedChar = '\f';
+                            break;
+                        case 'r':
+                            resolvedChar = '\r';
+                            break;
+                        case '\\':
+                        case '"':
+                        case '\'':
+                        case '/':
+                            resolvedChar = currentChar;
+                            break;
+                        default:
+                            throw new JsonException(@"Unknown escape character: \" + currentChar);
                     }
-                    else if (_expression[_currentIndex] == '\\')
-                    {
-                        sb.Append('\\');
-                    }
-                    else
-                    {
-                        throw new JsonException(@"Unknown escape character: \" + _expression[_currentIndex]);
-                    }
+
+                    sb.Append(resolvedChar);
 
                     _currentIndex++;
                 }
                 else if (currentChar == '\'')
                 {
                     _currentIndex++;
-                    {
-                        return sb.ToString();
-                    }
+                    return sb.ToString();
                 }
                 else
                 {
@@ -692,6 +715,49 @@ namespace Newtonsoft.Json.Linq.JsonPath
             }
 
             throw new JsonException("Path ended with an open string.");
+        }
+
+        private string ReadRegexString()
+        {
+            int startIndex = _currentIndex;
+
+            _currentIndex++;
+            while (_currentIndex < _expression.Length)
+            {
+                char currentChar = _expression[_currentIndex];
+
+                // handle escaped / character
+                if (currentChar == '\\' && _currentIndex + 1 < _expression.Length)
+                {
+                    _currentIndex += 2;
+                }
+                else if (currentChar == '/')
+                {
+                    _currentIndex++;
+
+                    while (_currentIndex < _expression.Length)
+                    {
+                        currentChar = _expression[_currentIndex];
+
+                        if (char.IsLetter(currentChar))
+                        {
+                            _currentIndex++;
+                        }
+                        else
+                        {
+                            break;
+                        }
+                    }
+
+                    return _expression.Substring(startIndex, _currentIndex - startIndex);
+                }
+                else
+                {
+                    _currentIndex++;
+                }
+            }
+
+            throw new JsonException("Path ended with an open regex.");
         }
 
         private bool Match(string s)
@@ -720,10 +786,26 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 throw new JsonException("Path ended with open query.");
             }
 
+            if (Match("==="))
+            {
+                return QueryOperator.StrictEquals;
+            }
+
             if (Match("=="))
             {
                 return QueryOperator.Equals;
             }
+
+            if (Match("=~"))
+            {
+                return QueryOperator.RegexEquals;
+            }
+
+            if (Match("!=="))
+            {
+                return QueryOperator.StrictNotEquals;
+            }
+
             if (Match("!=") || Match("<>"))
             {
                 return QueryOperator.NotEquals;

@@ -44,10 +44,10 @@ namespace Newtonsoft.Json.Schema
     /// Generates a <see cref="JsonSchema"/> from a specified <see cref="Type"/>.
     /// </para>
     /// <note type="caution">
-    /// JSON Schema validation has been moved to its own package. See <see href="http://www.newtonsoft.com/jsonschema">http://www.newtonsoft.com/jsonschema</see> for more details.
+    /// JSON Schema validation has been moved to its own package. See <see href="https://www.newtonsoft.com/jsonschema">https://www.newtonsoft.com/jsonschema</see> for more details.
     /// </note>
     /// </summary>
-    [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
+    [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
     public class JsonSchemaGenerator
     {
         /// <summary>
@@ -309,7 +309,7 @@ namespace Newtonsoft.Json.Schema
                         {
                             CurrentSchema.Enum = new List<JToken>();
 
-                            TypeValuesAndNames enumValues = EnumUtils.GetEnumValuesAndNames(type);
+                            EnumInfo enumValues = EnumUtils.GetEnumValuesAndNames(type);
                             for (int i = 0; i < enumValues.Names.Length; i++)
                             {
                                 ulong v = enumValues.Values[i];

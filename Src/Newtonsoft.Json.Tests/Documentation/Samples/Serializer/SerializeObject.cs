@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             Console.WriteLine(json);
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Email"": ""james@example.com"",
   ""Active"": true,
   ""CreatedDate"": ""2013-01-20T00:00:00Z"",

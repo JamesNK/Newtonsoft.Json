@@ -157,6 +157,70 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
 
             Assert.IsFalse(compositeExpression.IsMatch(o3, o3));
         }
+        
+        [Test]
+        public void BooleanExpressionTest_RegexEqualsOperator()
+        {
+            BooleanQueryExpression e1 = new BooleanQueryExpression
+            {
+                Operator = QueryOperator.RegexEquals,
+                Right = new JValue("/foo.*d/"),
+                Left = new List<PathFilter>
+                {
+                    new ArrayIndexFilter()
+                }
+            };
+
+            Assert.IsTrue(e1.IsMatch(null, new JArray("food")));
+            Assert.IsTrue(e1.IsMatch(null, new JArray("fooood and drink")));
+            Assert.IsFalse(e1.IsMatch(null, new JArray("FOOD")));
+            Assert.IsFalse(e1.IsMatch(null, new JArray("foo", "foog", "good")));
+
+            BooleanQueryExpression e2 = new BooleanQueryExpression
+            {
+                Operator = QueryOperator.RegexEquals,
+                Right = new JValue("/Foo.*d/i"),
+                Left = new List<PathFilter>
+                {
+                    new ArrayIndexFilter()
+                }
+            };
+
+            Assert.IsTrue(e2.IsMatch(null, new JArray("food")));
+            Assert.IsTrue(e2.IsMatch(null, new JArray("fooood and drink")));
+            Assert.IsTrue(e2.IsMatch(null, new JArray("FOOD")));
+            Assert.IsFalse(e2.IsMatch(null, new JArray("foo", "foog", "good")));
+        }
+
+        [Test]
+        public void BooleanExpressionTest_RegexEqualsOperator_CornerCase()
+        {
+            BooleanQueryExpression e1 = new BooleanQueryExpression
+            {
+                Operator = QueryOperator.RegexEquals,
+                Right = new JValue("/// comment/"),
+                Left = new List<PathFilter>
+                {
+                    new ArrayIndexFilter()
+                }
+            };
+
+            Assert.IsTrue(e1.IsMatch(null, new JArray("// comment")));
+            Assert.IsFalse(e1.IsMatch(null, new JArray("//comment", "/ comment")));
+
+            BooleanQueryExpression e2 = new BooleanQueryExpression
+            {
+                Operator = QueryOperator.RegexEquals,
+                Right = new JValue("/<tag>.*</tag>/i"),
+                Left = new List<PathFilter>
+                {
+                    new ArrayIndexFilter()
+                }
+            };
+
+            Assert.IsTrue(e2.IsMatch(null, new JArray("<Tag>Test</Tag>", "")));
+            Assert.IsFalse(e2.IsMatch(null, new JArray("<tag>Test<tag>")));
+        }
 
         [Test]
         public void BooleanExpressionTest()

@@ -56,7 +56,7 @@ namespace Newtonsoft.Json
         /// <value>How the object's properties with null values are handled during serialization and deserialization.</value>
         public NullValueHandling ItemNullValueHandling
         {
-            get => _itemNullValueHandling ?? default(NullValueHandling);
+            get => _itemNullValueHandling ?? default;
             set => _itemNullValueHandling = value;
         }
 
@@ -68,7 +68,7 @@ namespace Newtonsoft.Json
         /// </value>
         public Required ItemRequired
         {
-            get => _itemRequired ?? default(Required);
+            get => _itemRequired ?? default;
             set => _itemRequired = value;
         }
 

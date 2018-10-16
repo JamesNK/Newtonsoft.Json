@@ -125,7 +125,7 @@ namespace Newtonsoft.Json
         /// </value>
         public bool IsReference
         {
-            get => _isReference ?? default(bool);
+            get => _isReference ?? default;
             set => _isReference = value;
         }
 
@@ -137,7 +137,7 @@ namespace Newtonsoft.Json
         /// </value>
         public bool ItemIsReference
         {
-            get => _itemIsReference ?? default(bool);
+            get => _itemIsReference ?? default;
             set => _itemIsReference = value;
         }
 
@@ -147,7 +147,7 @@ namespace Newtonsoft.Json
         /// <value>The reference loop handling.</value>
         public ReferenceLoopHandling ItemReferenceLoopHandling
         {
-            get => _itemReferenceLoopHandling ?? default(ReferenceLoopHandling);
+            get => _itemReferenceLoopHandling ?? default;
             set => _itemReferenceLoopHandling = value;
         }
 
@@ -157,7 +157,7 @@ namespace Newtonsoft.Json
         /// <value>The type name handling.</value>
         public TypeNameHandling ItemTypeNameHandling
         {
-            get => _itemTypeNameHandling ?? default(TypeNameHandling);
+            get => _itemTypeNameHandling ?? default;
             set => _itemTypeNameHandling = value;
         }
 

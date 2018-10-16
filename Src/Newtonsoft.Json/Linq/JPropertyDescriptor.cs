@@ -69,9 +69,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="component">The component with the property for which to retrieve the value.</param>
         public override object GetValue(object component)
         {
-            JToken token = CastInstance(component)[Name];
-
-            return token;
+            return (component as JObject)?[Name];
         }
 
         /// <summary>
@@ -89,9 +87,12 @@ namespace Newtonsoft.Json.Linq
         /// <param name="value">The new value.</param>
         public override void SetValue(object component, object value)
         {
-            JToken token = value as JToken ?? new JValue(value);
+            if (component is JObject o)
+            {
+                JToken token = value as JToken ?? new JValue(value);
 
-            CastInstance(component)[Name] = token;
+                o[Name] = token;
+            }
         }
 
         /// <summary>

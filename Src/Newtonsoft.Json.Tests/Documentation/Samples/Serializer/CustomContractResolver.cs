@@ -108,7 +108,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""LastName"": ""Deepwater-Diver""
 }", startingWithL);
         }

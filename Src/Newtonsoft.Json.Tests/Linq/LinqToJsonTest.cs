@@ -52,6 +52,16 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class LinqToJsonTest : TestFixtureBase
     {
+        [Test]
+        public void EscapedQuotePath()
+        {
+            JValue v = new JValue(1);
+            JObject o = new JObject();
+            o["We're offline!"] = v;
+
+            Assert.AreEqual(@"['We\'re offline!']", v.Path);
+        }
+
 #if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
         public class DemoClass
         {
@@ -780,14 +790,14 @@ keyword such as type of business.""
                 new Post()
                 {
                     Title = "LINQ to JSON beta",
-                    Description = "Annoucing LINQ to JSON",
+                    Description = "Announcing LINQ to JSON",
                     Link = "http://james.newtonking.com/projects/json-net.aspx",
                     Categories = new List<string>() { "Json.NET", "LINQ" }
                 },
                 new Post()
                 {
                     Title = "Json.NET 1.3 + New license + Now on CodePlex",
-                    Description = "Annoucing the release of Json.NET 1.3, the MIT license and being available on CodePlex",
+                    Description = "Announcing the release of Json.NET 1.3, the MIT license and being available on CodePlex",
                     Link = "http://james.newtonking.com/projects/json-net.aspx",
                     Categories = new List<string>() { "Json.NET", "CodePlex" }
                 }
@@ -898,7 +908,7 @@ keyword such as type of business.""
     ""item"": [
       {
         ""title"": ""Json.NET 1.3 + New license + Now on CodePlex"",
-        ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
+        ""description"": ""Announcing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
         ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
         ""category"": [
           ""Json.NET"",
@@ -907,7 +917,7 @@ keyword such as type of business.""
       },
       {
         ""title"": ""LINQ to JSON beta"",
-        ""description"": ""Annoucing LINQ to JSON"",
+        ""description"": ""Announcing LINQ to JSON"",
         ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
         ""category"": [
           ""Json.NET"",
@@ -951,7 +961,7 @@ keyword such as type of business.""
                           ""item"": [
                             {
                               ""title"": ""Json.NET 1.3 + New license + Now on CodePlex"",
-                              ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
+                              ""description"": ""Announcing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
                               ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
                               ""category"": [
                                 ""Json.NET"",
@@ -960,7 +970,7 @@ keyword such as type of business.""
                             },
                             {
                               ""title"": ""LINQ to JSON beta"",
-                              ""description"": ""Annoucing LINQ to JSON"",
+                              ""description"": ""Announcing LINQ to JSON"",
                               ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
                               ""category"": [
                                 ""Json.NET"",
@@ -1105,7 +1115,7 @@ keyword such as type of business.""
     ""item"": [
       {
         ""title"": ""Json.NET 1.3 + New license + Now on CodePlex"",
-        ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
+        ""description"": ""Announcing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
         ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
         ""category"": [
           ""Json.NET"",
@@ -1114,7 +1124,7 @@ keyword such as type of business.""
       },
       {
         ""title"": ""LINQ to JSON beta"",
-        ""description"": ""Annoucing LINQ to JSON"",
+        ""description"": ""Announcing LINQ to JSON"",
         ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
         ""category"": [
           ""Json.NET"",
@@ -1170,7 +1180,7 @@ keyword such as type of business.""
     ""item"": [
       {
         ""title"": ""Json.NET 1.3 + New license + Now on CodePlex"",
-        ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
+        ""description"": ""Announcing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
         ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
         ""category"": [
           ""Json.NET"",
@@ -1179,7 +1189,7 @@ keyword such as type of business.""
       },
       {
         ""title"": ""LINQ to JSON beta"",
-        ""description"": ""Annoucing LINQ to JSON"",
+        ""description"": ""Announcing LINQ to JSON"",
         ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
         ""category"": [
           ""Json.NET"",
@@ -1264,7 +1274,7 @@ keyword such as type of business.""
                           ""item"": [
                             {
                               ""title"": ""Json.NET 1.3 + New license + Now on CodePlex"",
-                              ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
+                              ""description"": ""Announcing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
                               ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
                               ""category"": [
                                 ""Json.NET"",
@@ -1273,7 +1283,7 @@ keyword such as type of business.""
                             },
                             {
                               ""title"": ""LINQ to JSON beta"",
-                              ""description"": ""Annoucing LINQ to JSON"",
+                              ""description"": ""Announcing LINQ to JSON"",
                               ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
                               ""category"": [
                                 ""Json.NET"",
@@ -1289,7 +1299,7 @@ keyword such as type of business.""
                           ""item"": [
                             {
                               ""title"": ""Json.NET 1.3 + New license + Now on CodePlex"",
-                              ""description"": ""Annoucing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
+                              ""description"": ""Announcing the release of Json.NET 1.3, the MIT license and being available on CodePlex"",
                               ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
                               ""category"": [
                                 ""Json.NET"",
@@ -1298,7 +1308,7 @@ keyword such as type of business.""
                             },
                             {
                               ""title"": ""LINQ to JSON beta"",
-                              ""description"": ""Annoucing LINQ to JSON"",
+                              ""description"": ""Announcing LINQ to JSON"",
                               ""link"": ""http://james.newtonking.com/projects/json-net.aspx"",
                               ""category"": [
                                 ""Json.NET"",
@@ -1451,10 +1461,8 @@ keyword such as type of business.""
         {
             JObject o = JObject.Parse("{'FooBarNoEnum':'SOME_OTHER_VALUE'}");
 
-            ExceptionAssert.Throws<ArgumentException>(() =>
-            {
-                o["FooBarNoEnum"].ToObject<FooBarNoEnum>();
-            }, "Could not convert 'SOME_OTHER_VALUE' to FooBarNoEnum.");
+            FooBarNoEnum e = o["FooBarNoEnum"].ToObject<FooBarNoEnum>();
+            Assert.AreEqual(FooBarNoEnum.SomeOtherValue, e);
         }
 #endif
 

@@ -1,7 +1,7 @@
 ﻿properties {
-  $zipFileName = "Json110r1.zip"
-  $majorVersion = "11.0"
-  $majorWithReleaseVersion = "11.0.1"
+  $zipFileName = "Json120r1.zip"
+  $majorVersion = "12.0"
+  $majorWithReleaseVersion = "12.0.1"
   $nugetPrerelease = "beta1"
   $version = GetVersion $majorWithReleaseVersion
   $packageId = "Newtonsoft.Json"
@@ -13,8 +13,8 @@
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $netCliChannel = "2.0"
-  $netCliVersion = "2.0.0"
-  $nugetUrl = "http://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
+  $netCliVersion = "2.1.402"
+  $nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 
   $baseDir  = resolve-path ..
   $buildDir = "$baseDir\Build"
@@ -23,12 +23,11 @@
   $docDir = "$baseDir\Doc"
   $releaseDir = "$baseDir\Release"
   $workingDir = "$baseDir\$workingName"
-  $workingSourceDir = "$workingDir\Src"
 
   $nugetPath = "$buildDir\Temp\nuget.exe"
-  $vswhereVersion = "2.1.4"
+  $vswhereVersion = "2.3.2"
   $vswherePath = "$buildDir\Temp\vswhere.$vswhereVersion"
-  $nunitConsoleVersion = "3.7.0"
+  $nunitConsoleVersion = "3.8.0"
   $nunitConsolePath = "$buildDir\Temp\NUnit.ConsoleRunner.$nunitConsoleVersion"
 
   $builds = @(
@@ -71,28 +70,14 @@ task Build -depends Clean {
   Write-Host -ForegroundColor Green "Found $($script:enabledBuilds.Length) enabled builds"
 
   mkdir "$buildDir\Temp" -Force
+  
+  EnsureDotNetCli
   EnsureNuGetExists
   EnsureNuGetPackage "vswhere" $vswherePath $vswhereVersion
   EnsureNuGetPackage "NUnit.ConsoleRunner" $nunitConsolePath $nunitConsoleVersion
 
   $script:msBuildPath = GetMsBuildPath
   Write-Host "MSBuild path $script:msBuildPath"
-
-  Write-Host "Copying source to working source directory $workingSourceDir"
-  robocopy $sourceDir $workingSourceDir /MIR /NFL /NDL /NP /XD bin obj TestResults AppPackages $packageDirs .vs artifacts /XF *.suo *.user *.lock.json | Out-Default
-  Copy-Item -Path $baseDir\LICENSE.md -Destination $workingDir\
-  mkdir "$workingDir\Build" -Force
-  Copy-Item -Path $buildDir\install.ps1 -Destination $workingDir\Build\
-
-  $xml = [xml](Get-Content "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj")
-  Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/PackageId" -value $packageId
-  Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/VersionPrefix" -value $majorWithReleaseVersion
-  Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/VersionSuffix" -value $nugetPrerelease
-  Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/AssemblyVersion" -value ($majorVersion + '.0.0')
-  Edit-XmlNodes -doc $xml -xpath "/Project/PropertyGroup/FileVersion" -value $version
-  $xml.save("$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj")
-
-  $projectPath = "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj"
 
   NetCliBuild
 }
@@ -103,7 +88,7 @@ task Package -depends Build {
   {
     $finalDir = $build.Framework
 
-    $sourcePath = "$workingSourceDir\Newtonsoft.Json\bin\Release\$finalDir"
+    $sourcePath = "$sourceDir\Newtonsoft.Json\bin\Release\$finalDir"
 
     if (!(Test-Path -path $sourcePath))
     {
@@ -115,14 +100,10 @@ task Package -depends Build {
 
   if ($buildNuGet)
   {
-    Write-Host -ForegroundColor Green "Creating NuGet package"
-
-    $targetFrameworks = ($script:enabledBuilds | Select-Object @{Name="Framework";Expression={$_.Framework}} | select -expand Framework) -join ";"
-
-    exec { & $script:msBuildPath "/t:pack" "/v:$msbuildVerbosity" "/p:IncludeSource=true" "/p:Configuration=Release" "/p:TargetFrameworks=`"$targetFrameworks`"" "/m" "$workingSourceDir\Newtonsoft.Json\Newtonsoft.Json.csproj" }
+    Write-Host -ForegroundColor Green "Copy NuGet package"
 
     mkdir $workingDir\NuGet
-    move -Path $workingSourceDir\Newtonsoft.Json\bin\Release\*.nupkg -Destination $workingDir\NuGet
+    move -Path $sourceDir\Newtonsoft.Json\bin\Release\*.nupkg -Destination $workingDir\NuGet
   }
 
   Write-Host "Build documentation: $buildDocumentation"
@@ -136,7 +117,7 @@ task Package -depends Build {
     Write-Host -ForegroundColor Green "Building documentation from $documentationSourcePath"
     Write-Host "Documentation output to $docOutputPath"
 
-    # Sandcastle has issues when compiling with .NET 4 MSBuild - http://shfb.codeplex.com/Thread/View.aspx?ThreadId=50652
+    # Sandcastle has issues when compiling with .NET 4 MSBuild
     exec { & $script:msBuildPath "/t:Clean;Rebuild" "/v:$msbuildVerbosity" "/p:Configuration=Release" "/p:DocumentationSourcePath=$documentationSourcePath" "/p:OutputPath=$docOutputPath" "/m" "$docDir\doc.shfbproj" | Out-Default } "Error building documentation. Check that you have Sandcastle, Sandcastle Help File Builder and HTML Help Workshop installed."
 
     move -Path $workingDir\Documentation\LastBuild.log -Destination $workingDir\Documentation.log
@@ -145,7 +126,7 @@ task Package -depends Build {
   Copy-Item -Path $docDir\readme.txt -Destination $workingDir\Package\
   Copy-Item -Path $docDir\license.txt -Destination $workingDir\Package\
 
-  robocopy $workingSourceDir $workingDir\Package\Source\Src /MIR /NFL /NDL /NJS /NC /NS /NP /XD bin obj TestResults AppPackages .vs artifacts /XF *.suo *.user *.lock.json | Out-Default
+  robocopy $sourceDir $workingDir\Package\Source\Src /MIR /NFL /NDL /NJS /NC /NS /NP /XD bin obj TestResults AppPackages .vs artifacts /XF *.suo *.user *.lock.json | Out-Default
   robocopy $buildDir $workingDir\Package\Source\Build /MIR /NFL /NDL /NJS /NC /NS /NP /XD Temp /XF runbuild.txt | Out-Default
   robocopy $docDir $workingDir\Package\Source\Doc /MIR /NFL /NDL /NJS /NC /NS /NP | Out-Default
   robocopy $toolsDir $workingDir\Package\Source\Tools /MIR /NFL /NDL /NJS /NC /NS /NP | Out-Default
@@ -163,7 +144,7 @@ task Test -depends Build {
 
 function NetCliBuild()
 {
-  $projectPath = "$workingSourceDir\Newtonsoft.Json.sln"
+  $projectPath = "$sourceDir\Newtonsoft.Json.sln"
   $libraryFrameworks = ($script:enabledBuilds | Select-Object @{Name="Framework";Expression={$_.Framework}} | select -expand Framework) -join ";"
   $testFrameworks = ($script:enabledBuilds | Select-Object @{Name="Resolved";Expression={if ($_.TestFramework -ne $null) { $_.TestFramework } else { $_.Framework }}} | select -expand Resolved) -join ";"
 
@@ -177,7 +158,22 @@ function NetCliBuild()
   Write-Host -ForegroundColor Green "Building $libraryFrameworks in $projectPath"
   Write-Host
 
-  exec { & $script:msBuildPath "/t:build" "/v:$msbuildVerbosity" $projectPath "/p:Configuration=Release" "/p:LibraryFrameworks=`"$libraryFrameworks`"" "/p:TestFrameworks=`"$testFrameworks`"" "/p:AssemblyOriginatorKeyFile=$signKeyPath" "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:AdditionalConstants=$additionalConstants" "/m" }
+  $assemblyVersion = $majorVersion + '.0.0'
+
+  exec { & $script:msBuildPath "/t:build" "/v:$msbuildVerbosity" $projectPath "/p:Configuration=Release" "/p:LibraryFrameworks=`"$libraryFrameworks`"" "/p:TestFrameworks=`"$testFrameworks`"" "/p:AssemblyOriginatorKeyFile=$signKeyPath" "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:AdditionalConstants=$additionalConstants" "/p:GeneratePackageOnBuild=$buildNuGet" "/p:ContinuousIntegrationBuild=true" "/p:PackageId=$packageId" "/p:VersionPrefix=$majorWithReleaseVersion" "/p:VersionSuffix=$nugetPrerelease" "/p:AssemblyVersion=$assemblyVersion" "/p:FileVersion=$version" "/m" }
+}
+
+function EnsureDotnetCli()
+{
+  Write-Host "Downloading dotnet-install.ps1"
+
+  # https://stackoverflow.com/questions/36265534/invoke-webrequest-ssl-fails
+  [Net.ServicePointManager]::SecurityProtocol = 'TLS12'
+  Invoke-WebRequest `
+    -Uri "https://dot.net/v1/dotnet-install.ps1" `
+    -OutFile "$buildDir\Temp\dotnet-install.ps1"
+
+  exec { & $buildDir\Temp\dotnet-install.ps1 -Channel $netCliChannel -Version $netCliVersion | Out-Default }
 }
 
 function EnsureNuGetExists()
@@ -209,11 +205,9 @@ function GetMsBuildPath()
 
 function NetCliTests($build)
 {
-  $projectPath = "$workingSourceDir\Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.csproj"
-  $location = "$workingSourceDir\Newtonsoft.Json.Tests"
+  $projectPath = "$sourceDir\Newtonsoft.Json.Tests\Newtonsoft.Json.Tests.csproj"
+  $location = "$sourceDir\Newtonsoft.Json.Tests"
   $testDir = if ($build.TestFramework -ne $null) { $build.TestFramework } else { $build.Framework }
-
-  exec { .\Tools\Dotnet\dotnet-install.ps1 -Channel $netCliChannel -Version $netCliVersion | Out-Default }
 
   try
   {
@@ -238,7 +232,7 @@ function NUnitTests($build)
 {
   $testDir = if ($build.TestFramework -ne $null) { $build.TestFramework } else { $build.Framework }
   $framework = $build.NUnitFramework
-  $testRunDir = "$workingSourceDir\Newtonsoft.Json.Tests\bin\Release\$testDir"
+  $testRunDir = "$sourceDir\Newtonsoft.Json.Tests\bin\Release\$testDir"
 
   Write-Host -ForegroundColor Green "Running NUnit tests $testDir"
   Write-Host

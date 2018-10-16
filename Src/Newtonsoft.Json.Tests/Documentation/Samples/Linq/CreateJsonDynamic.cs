@@ -69,7 +69,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""ProductName"": ""Elbow Grease"",
   ""Enabled"": true,
   ""Price"": 4.90,

@@ -1,10 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-  <Target Name="WorkAroundPackageAndProjectReferenceConflict" BeforeTargets="ResolveLockFileReferences">
-    <ItemGroup>
-      <!-- Required for https://github.com/dotnet/roslyn-project-system/issues/1386 -->
-      <ResolvedCompileFileDefinitions Remove="@(ResolvedCompileFileDefinitions)" Condition="'%(ResolvedCompileFileDefinitions.Filename)' == 'Newtonsoft.Json'" />
-    </ItemGroup>
-  </Target>
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFrameworks>net46;netcoreapp2.0</TargetFrameworks>
@@ -12,6 +6,8 @@
     <RootNamespace>Newtonsoft.Json.TestConsole</RootNamespace>
     <AssemblyName>Newtonsoft.Json.TestConsole</AssemblyName>
     <IsPackable>false</IsPackable>
+    <!-- Disabled because SourceLink isn't referenced to calculate paths -->
+    <DeterministicSourcePaths>false</DeterministicSourcePaths>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="BenchmarkDotNet.Artifacts\**" />

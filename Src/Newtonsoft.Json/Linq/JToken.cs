@@ -333,7 +333,7 @@ namespace Newtonsoft.Json.Linq
             JToken token = this[key];
 
             // null check to fix MonoTouch issue - https://github.com/dolbz/Newtonsoft.Json/commit/a24e3062846b30ee505f3271ac08862bb471b822
-            return token == null ? default(T) : Extensions.Convert<JToken, T>(token);
+            return token == null ? default : Extensions.Convert<JToken, T>(token);
         }
 
         /// <summary>
@@ -462,9 +462,9 @@ namespace Newtonsoft.Json.Linq
         {
             ValidationUtils.ArgumentNotNull(token, nameof(token));
 
-            if (token is JProperty)
+            if (token is JProperty p)
             {
-                token = ((JProperty)token).Value;
+                token = p.Value;
             }
 
             return token.Type.ToString();
@@ -2461,7 +2461,7 @@ namespace Newtonsoft.Json.Linq
                 }
             }
 
-            return default(T);
+            return default;
         }
 
         /// <summary>

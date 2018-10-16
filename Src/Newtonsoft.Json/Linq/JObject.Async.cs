@@ -82,7 +82,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="Task{TResult}"/> that represents the asynchronous load. The <see cref="Task{TResult}.Result"/>
         /// property returns a <see cref="JObject"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-        public new static Task<JObject> LoadAsync(JsonReader reader, CancellationToken cancellationToken = default(CancellationToken))
+        public new static Task<JObject> LoadAsync(JsonReader reader, CancellationToken cancellationToken = default)
         {
             return LoadAsync(reader, null, cancellationToken);
         }
@@ -97,7 +97,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="Task{TResult}"/> that represents the asynchronous load. The <see cref="Task{TResult}.Result"/>
         /// property returns a <see cref="JObject"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-        public new static async Task<JObject> LoadAsync(JsonReader reader, JsonLoadSettings settings, CancellationToken cancellationToken = default(CancellationToken))
+        public new static async Task<JObject> LoadAsync(JsonReader reader, JsonLoadSettings settings, CancellationToken cancellationToken = default)
         {
             ValidationUtils.ArgumentNotNull(reader, nameof(reader));
 

@@ -125,6 +125,79 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void DeserializeDateTime_MultipleArguments()
+        {
+            JavaScriptDateTimeConverter converter = new JavaScriptDateTimeConverter();
+
+            DateTime result;
+
+            result = JsonConvert.DeserializeObject<DateTime>("new Date(2000, 11)", converter);
+            Assert.AreEqual(new DateTime(2000, 12, 1, 0, 0, 0, 0, DateTimeKind.Utc), result);
+
+            result = JsonConvert.DeserializeObject<DateTime>("new Date(2000, 11, 12)", converter);
+            Assert.AreEqual(new DateTime(2000, 12, 12, 0, 0, 0, 0, DateTimeKind.Utc), result);
+
+            result = JsonConvert.DeserializeObject<DateTime>("new Date(2000, 11, 12, 20)", converter);
+            Assert.AreEqual(new DateTime(2000, 12, 12, 20, 0, 0, 0, DateTimeKind.Utc), result);
+
+            result = JsonConvert.DeserializeObject<DateTime>("new Date(2000, 11, 12, 20, 1)", converter);
+            Assert.AreEqual(new DateTime(2000, 12, 12, 20, 1, 0, 0, DateTimeKind.Utc), result);
+
+            result = JsonConvert.DeserializeObject<DateTime>("new Date(2000, 11, 12, 20, 1, 2)", converter);
+            Assert.AreEqual(new DateTime(2000, 12, 12, 20, 1, 2, 0, DateTimeKind.Utc), result);
+
+            result = JsonConvert.DeserializeObject<DateTime>("new Date(2000, 11, 12, 20, 1, 2, 3)", converter);
+            Assert.AreEqual(new DateTime(2000, 12, 12, 20, 1, 2, 3, DateTimeKind.Utc), result);
+
+            result = JsonConvert.DeserializeObject<DateTime>("new Date(2000, 11, 1, 0, 0, 0, 0)", converter);
+            Assert.AreEqual(new DateTime(2000, 12, 1, 0, 0, 0, 0, DateTimeKind.Utc), result);
+        }
+
+        [Test]
+        public void DeserializeDateTime_TooManyArguments()
+        {
+            JavaScriptDateTimeConverter converter = new JavaScriptDateTimeConverter();
+
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<DateTime>("new Date(1, 2, 3, 4, 5, 6, 7, 8)", converter);
+            }, "Unexpected number of arguments when reading date constructor. Path '', line 1, position 32.");
+        }
+
+        [Test]
+        public void DeserializeDateTime_NoArguments()
+        {
+            JavaScriptDateTimeConverter converter = new JavaScriptDateTimeConverter();
+
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<DateTime>("new Date()", converter);
+            }, "Date constructor has no arguments. Path '', line 1, position 10.");
+        }
+
+        [Test]
+        public void DeserializeDateTime_NotArgumentsNotClosed()
+        {
+            JavaScriptDateTimeConverter converter = new JavaScriptDateTimeConverter();
+
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<DateTime>("new Date(", converter);
+            }, "Unexpected end when reading date constructor. Path '', line 1, position 9.");
+        }
+
+        [Test]
+        public void DeserializeDateTime_NotClosed()
+        {
+            JavaScriptDateTimeConverter converter = new JavaScriptDateTimeConverter();
+
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<DateTime>("new Date(2, 3", converter);
+            }, "Unexpected end when reading date constructor. Path '[1]', line 1, position 13.");
+        }
+
+        [Test]
         public void ConverterList()
         {
             ConverterList<object> l1 = new ConverterList<object>();

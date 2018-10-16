@@ -77,7 +77,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""UserName"": ""domain\\username"",
   ""Status"": ""Deleted""
 }", json);

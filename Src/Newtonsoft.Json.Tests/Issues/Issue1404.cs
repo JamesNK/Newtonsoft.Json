@@ -28,7 +28,9 @@ using System;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Runtime.Serialization;
 using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Utilities;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -45,9 +47,13 @@ namespace Newtonsoft.Json.Tests.Issues
         [Test]
         public void Test()
         {
+            Type t = typeof(FileSystemInfo);
+
+            Assert.IsTrue(t.ImplementInterface(typeof(ISerializable)));
+
             DefaultContractResolver resolver = new DefaultContractResolver();
 
-            JsonContract contract = resolver.ResolveContract(typeof(DirectoryInfo));
+            JsonContract contract = resolver.ResolveContract(t);
 
             Assert.AreEqual(JsonContractType.Object, contract.ContractType);
         }

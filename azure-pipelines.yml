@@ -1,0 +1,48 @@
+pool:
+  vmImage: 'VS2017-Win2016'
+
+steps:
+- powershell: |
+    $basePath = resolve-path .
+    $keyPath = "$basePath\key.snk"
+    $keyData = [System.Convert]::FromBase64String($Env:KEY_DATA)
+    [System.IO.File]::WriteAllBytes($keyPath, $keyData)
+  env:
+    KEY_DATA: $(newtonsoft.keyData)
+  displayName: 'Prepare signing key'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+- powershell: |
+    $buildNumber = [int]$Env:BUILD_ID
+    write-host "Build number $buildNumber" -fore white
+    $basePath = resolve-path .
+    $keyPath = "$basePath\key.snk"
+    $sign = test-path $keyPath
+    write-host "Sign assemblies $sign" -fore white
+    $formattedBuildNumber = $buildNumber.ToString("D6")
+    $nugetPrerelease = "build$formattedBuildNumber"
+    .\Build\runbuild.ps1 -properties @{"signAssemblies"=$sign; "signKeyPath"=$keyPath; "treatWarningsAsErrors"=$true; "nugetPrerelease"=$nugetPrerelease;}
+  env:
+    BUILD_ID: $(Build.BuildId)
+  displayName: 'Run build'
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: 'NUnit'
+    testResultsFiles: '**/Working/*.xml'
+  displayName: 'Publish NUnit results'
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: 'VSTest'
+    testResultsFiles: '**/Working/*.trx'
+  displayName: 'Publish dotnet test results'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: .\Working
+    artifactName: artifacts
+    parallel: true
+    parallelCount: 8
+  displayName: 'Publish artifacts'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))

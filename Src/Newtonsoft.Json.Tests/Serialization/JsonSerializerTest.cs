@@ -441,7 +441,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 ContractResolver = new DictionaryKeyContractResolver()
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""NAME"": ""James"",
   ""AGE"": 1,
   ""ROLENAMES"": {
@@ -574,7 +574,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 ContractResolver = new IgnoredPropertiesContractResolver()
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Name!""
 }", json);
 
@@ -971,6 +971,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             JsonSerializer serializer = new JsonSerializer();
 
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.IsNotNull(serializer.Binder);
+#pragma warning restore CS0618 // Type or member is obsolete
+            Assert.IsNotNull(serializer.SerializationBinder);
+
             DefaultSerializationBinder customBinder = new DefaultSerializationBinder();
 #pragma warning disable CS0618 // Type or member is obsolete
             serializer.Binder = customBinder;
@@ -1090,6 +1095,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             JsonSerializerSettings settings = new JsonSerializerSettings();
 
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.IsNull(settings.Binder);
+#pragma warning restore CS0618 // Type or member is obsolete
+            Assert.IsNull(settings.SerializationBinder);
+
             DefaultSerializationBinder customBinder = new DefaultSerializationBinder();
 #pragma warning disable CS0618 // Type or member is obsolete
             settings.Binder = customBinder;
@@ -1204,6 +1214,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         public void JsonSerializerProxyProperties()
         {
             JsonSerializerProxy serializerProxy = new JsonSerializerProxy(new JsonSerializerInternalReader(new JsonSerializer()));
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.IsNotNull(serializerProxy.Binder);
+#pragma warning restore CS0618 // Type or member is obsolete
+            Assert.IsNotNull(serializerProxy.SerializationBinder);
 
             DefaultSerializationBinder customBinder = new DefaultSerializationBinder();
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -2892,7 +2907,7 @@ keyword such as type of business.""
 
             string json = JsonConvert.SerializeObject(o, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""IEnumerableProperty"": [
     4,
     5,

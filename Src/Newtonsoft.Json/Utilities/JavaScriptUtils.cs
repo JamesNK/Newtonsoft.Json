@@ -359,7 +359,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
 #if HAVE_ASYNC
-        public static Task WriteEscapedJavaScriptStringAsync(TextWriter writer, string s, char delimiter, bool appendDelimiters, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken = default(CancellationToken))
+        public static Task WriteEscapedJavaScriptStringAsync(TextWriter writer, string s, char delimiter, bool appendDelimiters, bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken = default)
         {
             if (cancellationToken.IsCancellationRequested)
             {
@@ -564,5 +564,90 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 #endif
+
+        public static bool TryGetDateFromConstructorJson(JsonReader reader, out DateTime dateTime, out string errorMessage)
+        {
+            dateTime = default;
+            errorMessage = null;
+
+            if (!TryGetDateConstructorValue(reader, out long? t1, out errorMessage) || t1 == null)
+            {
+                errorMessage = errorMessage ?? "Date constructor has no arguments.";
+                return false;
+            }
+            if (!TryGetDateConstructorValue(reader, out long? t2, out errorMessage))
+            {
+                return false;
+            }
+            else if (t2 != null)
+            {
+                // Only create a list when there is more than one argument
+                List<long> dateArgs = new List<long>
+                {
+                    t1.Value,
+                    t2.Value
+                };
+                while (true)
+                {
+                    if (!TryGetDateConstructorValue(reader, out long? integer, out errorMessage))
+                    {
+                        return false;
+                    }
+                    else if (integer != null)
+                    {
+                        dateArgs.Add(integer.Value);
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+
+                if (dateArgs.Count > 7)
+                {
+                    errorMessage = "Unexpected number of arguments when reading date constructor.";
+                    return false;
+                }
+
+                // Pad args out to the number used by the ctor
+                while (dateArgs.Count < 7)
+                {
+                    dateArgs.Add(0);
+                }
+
+                dateTime = new DateTime((int)dateArgs[0], (int)dateArgs[1] + 1, dateArgs[2] == 0 ? 1 : (int)dateArgs[2],
+                    (int)dateArgs[3], (int)dateArgs[4], (int)dateArgs[5], (int)dateArgs[6]);
+            }
+            else
+            {
+                dateTime = DateTimeUtils.ConvertJavaScriptTicksToDateTime(t1.Value);
+            }
+
+            return true;
+        }
+
+        private static bool TryGetDateConstructorValue(JsonReader reader, out long? integer, out string errorMessage)
+        {
+            integer = null;
+            errorMessage = null;
+
+            if (!reader.Read())
+            {
+                errorMessage = "Unexpected end when reading date constructor.";
+                return false;
+            }
+            if (reader.TokenType == JsonToken.EndConstructor)
+            {
+                return true;
+            }
+            if (reader.TokenType != JsonToken.Integer)
+            {
+                errorMessage = "Unexpected token when reading date constructor. Expected Integer, got " + reader.TokenType;
+                return false;
+            }
+
+            integer = (long)reader.Value;
+            return true;
+        }
     }
 }

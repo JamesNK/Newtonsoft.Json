@@ -788,8 +788,9 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Populates the JSON values onto the target object.
         /// </summary>
-        /// <param name="reader">The <see cref="TextReader"/> that contains the JSON structure to reader values from.</param>
+        /// <param name="reader">The <see cref="TextReader"/> that contains the JSON structure to read values from.</param>
         /// <param name="target">The target object to populate values onto.</param>
+        [DebuggerStepThrough]
         public void Populate(TextReader reader, object target)
         {
             Populate(new JsonTextReader(reader), target);
@@ -798,8 +799,9 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Populates the JSON values onto the target object.
         /// </summary>
-        /// <param name="reader">The <see cref="JsonReader"/> that contains the JSON structure to reader values from.</param>
+        /// <param name="reader">The <see cref="JsonReader"/> that contains the JSON structure to read values from.</param>
         /// <param name="target">The target object to populate values onto.</param>
+        [DebuggerStepThrough]
         public void Populate(JsonReader reader, object target)
         {
             PopulateInternal(reader, target);
@@ -810,14 +812,14 @@ namespace Newtonsoft.Json
             ValidationUtils.ArgumentNotNull(reader, nameof(reader));
             ValidationUtils.ArgumentNotNull(target, nameof(target));
 
-            // set serialization options onto reader
-            CultureInfo previousCulture;
-            DateTimeZoneHandling? previousDateTimeZoneHandling;
-            DateParseHandling? previousDateParseHandling;
-            FloatParseHandling? previousFloatParseHandling;
-            int? previousMaxDepth;
-            string previousDateFormatString;
-            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
+            SetupReader(
+                reader,
+                out CultureInfo previousCulture,
+                out DateTimeZoneHandling? previousDateTimeZoneHandling,
+                out DateParseHandling? previousDateParseHandling,
+                out FloatParseHandling? previousFloatParseHandling,
+                out int? previousMaxDepth,
+                out string previousDateFormatString);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? CreateTraceJsonReader(reader)
@@ -839,6 +841,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="reader">The <see cref="JsonReader"/> that contains the JSON structure to deserialize.</param>
         /// <returns>The <see cref="Object"/> being deserialized.</returns>
+        [DebuggerStepThrough]
         public object Deserialize(JsonReader reader)
         {
             return Deserialize(reader, null);
@@ -851,6 +854,7 @@ namespace Newtonsoft.Json
         /// <param name="reader">The <see cref="TextReader"/> containing the object.</param>
         /// <param name="objectType">The <see cref="Type"/> of object being deserialized.</param>
         /// <returns>The instance of <paramref name="objectType"/> being deserialized.</returns>
+        [DebuggerStepThrough]
         public object Deserialize(TextReader reader, Type objectType)
         {
             return Deserialize(new JsonTextReader(reader), objectType);
@@ -863,6 +867,7 @@ namespace Newtonsoft.Json
         /// <param name="reader">The <see cref="JsonReader"/> containing the object.</param>
         /// <typeparam name="T">The type of the object to deserialize.</typeparam>
         /// <returns>The instance of <typeparamref name="T"/> being deserialized.</returns>
+        [DebuggerStepThrough]
         public T Deserialize<T>(JsonReader reader)
         {
             return (T)Deserialize(reader, typeof(T));
@@ -875,6 +880,7 @@ namespace Newtonsoft.Json
         /// <param name="reader">The <see cref="JsonReader"/> containing the object.</param>
         /// <param name="objectType">The <see cref="Type"/> of object being deserialized.</param>
         /// <returns>The instance of <paramref name="objectType"/> being deserialized.</returns>
+        [DebuggerStepThrough]
         public object Deserialize(JsonReader reader, Type objectType)
         {
             return DeserializeInternal(reader, objectType);
@@ -884,14 +890,14 @@ namespace Newtonsoft.Json
         {
             ValidationUtils.ArgumentNotNull(reader, nameof(reader));
 
-            // set serialization options onto reader
-            CultureInfo previousCulture;
-            DateTimeZoneHandling? previousDateTimeZoneHandling;
-            DateParseHandling? previousDateParseHandling;
-            FloatParseHandling? previousFloatParseHandling;
-            int? previousMaxDepth;
-            string previousDateFormatString;
-            SetupReader(reader, out previousCulture, out previousDateTimeZoneHandling, out previousDateParseHandling, out previousFloatParseHandling, out previousMaxDepth, out previousDateFormatString);
+            SetupReader(
+                reader,
+                out CultureInfo previousCulture,
+                out DateTimeZoneHandling? previousDateTimeZoneHandling,
+                out DateParseHandling? previousDateParseHandling,
+                out FloatParseHandling? previousFloatParseHandling,
+                out int? previousMaxDepth,
+                out string previousDateFormatString);
 
             TraceJsonReader traceJsonReader = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
                 ? CreateTraceJsonReader(reader)
@@ -974,9 +980,9 @@ namespace Newtonsoft.Json
 
             if (reader is JsonTextReader textReader)
             {
-                if (_contractResolver is DefaultContractResolver resolver)
+                if (textReader.PropertyNameTable == null && _contractResolver is DefaultContractResolver resolver)
                 {
-                    textReader.NameTable = resolver.GetNameTable();
+                    textReader.PropertyNameTable = resolver.GetNameTable();
                 }
             }
         }
@@ -1009,9 +1015,10 @@ namespace Newtonsoft.Json
                 reader.DateFormatString = previousDateFormatString;
             }
 
-            if (reader is JsonTextReader textReader)
+            if (reader is JsonTextReader textReader && textReader.PropertyNameTable != null &&
+                _contractResolver is DefaultContractResolver resolver && textReader.PropertyNameTable == resolver.GetNameTable())
             {
-                textReader.NameTable = null;
+                textReader.PropertyNameTable = null;
             }
         }
 

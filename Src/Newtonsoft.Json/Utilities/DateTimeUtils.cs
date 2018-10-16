@@ -216,7 +216,7 @@ namespace Newtonsoft.Json.Utilities
             DateTimeParser dateTimeParser = new DateTimeParser();
             if (!dateTimeParser.Parse(text.Chars, text.StartIndex, text.Length))
             {
-                dt = default(DateTime);
+                dt = default;
                 return false;
             }
 
@@ -282,7 +282,7 @@ namespace Newtonsoft.Json.Utilities
             DateTimeParser dateTimeParser = new DateTimeParser();
             if (!dateTimeParser.Parse(text.Chars, text.StartIndex, text.Length))
             {
-                dt = default(DateTimeOffset);
+                dt = default;
                 return false;
             }
 
@@ -309,7 +309,7 @@ namespace Newtonsoft.Json.Utilities
             long ticks = d.Ticks - offset.Ticks;
             if (ticks < 0 || ticks > 3155378975999999999)
             {
-                dt = default(DateTimeOffset);
+                dt = default;
                 return false;
             }
 
@@ -373,7 +373,7 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
 
-            dt = default(DateTime);
+            dt = default;
             return false;
         }
 
@@ -409,7 +409,7 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
 
-            dt = default(DateTime);
+            dt = default;
             return false;
         }
 
@@ -446,7 +446,7 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
 
-            dt = default(DateTimeOffset);
+            dt = default;
             return false;
         }
 
@@ -484,7 +484,7 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
 
-            dt = default(DateTimeOffset);
+            dt = default;
             return false;
         }
 #endif
@@ -523,7 +523,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (!TryParseMicrosoftDate(text, out long ticks, out _, out DateTimeKind kind))
             {
-                dt = default(DateTime);
+                dt = default;
                 return false;
             }
 
@@ -555,7 +555,7 @@ namespace Newtonsoft.Json.Utilities
                 return true;
             }
 
-            dt = default(DateTime);
+            dt = default;
             return false;
         }
 
@@ -582,7 +582,7 @@ namespace Newtonsoft.Json.Utilities
                 return true;
             }
 
-            dt = default(DateTimeOffset);
+            dt = default;
             return false;
         }
 #endif
@@ -593,7 +593,7 @@ namespace Newtonsoft.Json.Utilities
 
             if (ConvertUtils.Int32TryParse(offsetText.Chars, startIndex + 1, 2, out int hours) != ParseResult.Success)
             {
-                offset = default(TimeSpan);
+                offset = default;
                 return false;
             }
 
@@ -602,7 +602,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 if (ConvertUtils.Int32TryParse(offsetText.Chars, startIndex + 3, 2, out minutes) != ParseResult.Success)
                 {
-                    offset = default(TimeSpan);
+                    offset = default;
                     return false;
                 }
             }

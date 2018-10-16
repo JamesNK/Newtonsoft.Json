@@ -62,7 +62,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
                 {
                     ["JamesNK"] = 9001,
                     ["JoC"] = 1337,
-                    ["JessicN"] = 1000
+                    ["JessicaN"] = 1000
                 }
             };
 
@@ -87,7 +87,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             //   "userPoints": {
             //     "JamesNK": 9001,
             //     "JoC": 1337,
-            //     "JessicN": 1000
+            //     "JessicaN": 1000
             //   }
             // }
             #endregion
@@ -98,7 +98,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
   ""userPoints"": {
     ""JamesNK"": 9001,
     ""JoC"": 1337,
-    ""JessicN"": 1000
+    ""JessicaN"": 1000
   }
 }", json);
         }

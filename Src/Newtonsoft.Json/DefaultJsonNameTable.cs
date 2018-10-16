@@ -25,9 +25,12 @@
 
 using System;
 
-namespace Newtonsoft.Json.Utilities
+namespace Newtonsoft.Json
 {
-    internal class PropertyNameTable
+    /// <summary>
+    /// The default JSON name table implementation.
+    /// </summary>
+    public class DefaultJsonNameTable : JsonNameTable
     {
         // used to defeat hashtable DoS attack where someone passes in lots of strings that hash to the same hash code
         private static readonly int HashCodeRandomizer;
@@ -36,17 +39,26 @@ namespace Newtonsoft.Json.Utilities
         private Entry[] _entries;
         private int _mask = 31;
 
-        static PropertyNameTable()
+        static DefaultJsonNameTable()
         {
             HashCodeRandomizer = Environment.TickCount;
         }
 
-        public PropertyNameTable()
+        /// <summary>
+        /// Initializes a new instance of the <see cref="DefaultJsonNameTable"/> class.
+        /// </summary>
+        public DefaultJsonNameTable()
         {
             _entries = new Entry[_mask + 1];
         }
 
-        public string Get(char[] key, int start, int length)
+        /// <summary>
+        /// Gets the string containing the same characters as the specified range of characters in the given array.
+        /// </summary>
+        /// <param name="key">The character array containing the name to find.</param>
+        /// <param name="start">The zero-based index into the array specifying the first character of the name.</param>
+        /// <param name="length">The number of characters in the name.</param>
+        public override string Get(char[] key, int start, int length)
         {
             if (length == 0)
             {
@@ -63,7 +75,12 @@ namespace Newtonsoft.Json.Utilities
             hashCode -= hashCode >> 17;
             hashCode -= hashCode >> 11;
             hashCode -= hashCode >> 5;
-            for (Entry entry = _entries[hashCode & _mask]; entry != null; entry = entry.Next)
+
+            // make sure index is evaluated before accessing _entries, otherwise potential race condition causing IndexOutOfRangeException
+            var index = hashCode & _mask;
+            var entries = _entries;
+
+            for (Entry entry = entries[index]; entry != null; entry = entry.Next)
             {
                 if (entry.HashCode == hashCode && TextEquals(entry.Value, key, start, length))
                 {
@@ -74,6 +91,11 @@ namespace Newtonsoft.Json.Utilities
             return null;
         }
 
+        /// <summary>
+        /// Adds the specified string into name table.
+        /// </summary>
+        /// <param name="key">The string to add.</param>
+        /// <remarks>This method is not thread-safe.</remarks>
         public string Add(string key)
         {
             if (key == null)

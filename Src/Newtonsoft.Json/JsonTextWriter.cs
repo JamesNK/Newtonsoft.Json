@@ -390,10 +390,10 @@ namespace Newtonsoft.Json
         public override void WriteValue(object value)
         {
 #if HAVE_BIG_INTEGER
-            if (value is BigInteger)
+            if (value is BigInteger i)
             {
                 InternalWriteValue(JsonToken.Integer);
-                WriteValueInternal(((BigInteger)value).ToString(CultureInfo.InvariantCulture), JsonToken.String);
+                WriteValueInternal(i.ToString(CultureInfo.InvariantCulture), JsonToken.String);
             }
             else
 #endif
