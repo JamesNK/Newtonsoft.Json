@@ -824,7 +824,7 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
-        public static TypeNameKey SplitFullyQualifiedTypeName(string fullyQualifiedTypeName)
+        public static StructMultiKey<string, string> SplitFullyQualifiedTypeName(string fullyQualifiedTypeName)
         {
             int? assemblyDelimiterIndex = GetAssemblyDelimiterIndex(fullyQualifiedTypeName);
 
@@ -842,7 +842,7 @@ namespace Newtonsoft.Json.Utilities
                 assemblyName = null;
             }
 
-            return new TypeNameKey(assemblyName, typeName);
+            return new StructMultiKey<string, string>(assemblyName, typeName);
         }
 
         private static int? GetAssemblyDelimiterIndex(string fullyQualifiedTypeName)
@@ -1092,38 +1092,6 @@ namespace Newtonsoft.Json.Utilities
 
             // possibly use IL initobj for perf here?
             return Activator.CreateInstance(type);
-        }
-    }
-
-    internal readonly struct TypeNameKey : IEquatable<TypeNameKey>
-    {
-        internal readonly string AssemblyName;
-        internal readonly string TypeName;
-
-        public TypeNameKey(string assemblyName, string typeName)
-        {
-            AssemblyName = assemblyName;
-            TypeName = typeName;
-        }
-
-        public override int GetHashCode()
-        {
-            return (AssemblyName?.GetHashCode() ?? 0) ^ (TypeName?.GetHashCode() ?? 0);
-        }
-
-        public override bool Equals(object obj)
-        {
-            if (!(obj is TypeNameKey key))
-            {
-                return false;
-            }
-
-            return Equals(key);
-        }
-
-        public bool Equals(TypeNameKey other)
-        {
-            return (AssemblyName == other.AssemblyName && TypeName == other.TypeName);
         }
     }
 }

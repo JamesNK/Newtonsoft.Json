@@ -29,6 +29,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -132,39 +133,173 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [JsonConverter(typeof(StringEnumConverter), true)]
-        public enum CamelCaseEnum
+        public enum CamelCaseEnumObsolete
         {
             This,
             Is,
             CamelCase
         }
 
-        [JsonConverter(typeof(StringEnumConverter), true, false)]
+        [JsonConverter(typeof(StringEnumConverter), typeof(CamelCaseNamingStrategy))]
+        public enum CamelCaseEnumNew
+        {
+            This,
+            Is,
+            CamelCase
+        }
+
+        [JsonConverter(typeof(StringEnumConverter), typeof(SnakeCaseNamingStrategy))]
+        public enum SnakeCaseEnumNew
+        {
+            This,
+            Is,
+            SnakeCase
+        }
+
+        [JsonConverter(typeof(StringEnumConverter), typeof(CamelCaseNamingStrategy), new object[0], false)]
         public enum NotAllowIntegerValuesEnum
         {
             Foo = 0,
             Bar = 1
         }
 
-        [JsonConverter(typeof(StringEnumConverter), true, true)]
+        [JsonConverter(typeof(StringEnumConverter), typeof(CamelCaseNamingStrategy))]
         public enum AllowIntegerValuesEnum
         {
             Foo = 0,
             Bar = 1
         }
 
+        [JsonConverter(typeof(StringEnumConverter), typeof(CamelCaseNamingStrategy), null)]
+        public enum NullArgumentInAttribute
+        {
+            Foo = 0,
+            Bar = 1
+        }
+
+        [Test]
+        public void Serialize_CamelCaseFromAttribute_Obsolete()
+        {
+            string json = JsonConvert.SerializeObject(CamelCaseEnumObsolete.CamelCase);
+            Assert.AreEqual(@"""camelCase""", json);
+        }
+
+        [Test]
+        public void NamingStrategyAndCamelCaseText()
+        {
+            StringEnumConverter converter = new StringEnumConverter();
+            Assert.IsNull(converter.NamingStrategy);
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            converter.CamelCaseText = true;
+#pragma warning restore CS0618 // Type or member is obsolete
+            Assert.IsNotNull(converter.NamingStrategy);
+            Assert.AreEqual(typeof(CamelCaseNamingStrategy), converter.NamingStrategy.GetType());
+
+            var camelCaseInstance = converter.NamingStrategy;
+#pragma warning disable CS0618 // Type or member is obsolete
+            converter.CamelCaseText = true;
+#pragma warning restore CS0618 // Type or member is obsolete
+            Assert.AreEqual(camelCaseInstance, converter.NamingStrategy);
+
+            converter.NamingStrategy = null;
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.IsFalse(converter.CamelCaseText);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            converter.NamingStrategy = new CamelCaseNamingStrategy();
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.IsTrue(converter.CamelCaseText);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            converter.NamingStrategy = new SnakeCaseNamingStrategy();
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.IsFalse(converter.CamelCaseText);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            converter.CamelCaseText = false;
+#pragma warning restore CS0618 // Type or member is obsolete
+            Assert.IsNotNull(converter.NamingStrategy);
+            Assert.AreEqual(typeof(SnakeCaseNamingStrategy), converter.NamingStrategy.GetType());
+        }
+
+        [Test]
+        public void StringEnumConverter_CamelCaseTextCtor()
+        {
+#pragma warning disable CS0618 // Type or member is obsolete
+            StringEnumConverter converter = new StringEnumConverter(true);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            Assert.IsNotNull(converter.NamingStrategy);
+            Assert.AreEqual(typeof(CamelCaseNamingStrategy), converter.NamingStrategy.GetType());
+            Assert.AreEqual(true, converter.AllowIntegerValues);
+        }
+
+        [Test]
+        public void StringEnumConverter_NamingStrategyTypeCtor()
+        {
+            StringEnumConverter converter = new StringEnumConverter(typeof(CamelCaseNamingStrategy), new object[] { true, true, true }, false);
+
+            Assert.IsNotNull(converter.NamingStrategy);
+            Assert.AreEqual(typeof(CamelCaseNamingStrategy), converter.NamingStrategy.GetType());
+            Assert.AreEqual(false, converter.AllowIntegerValues);
+            Assert.AreEqual(true, converter.NamingStrategy.OverrideSpecifiedNames);
+            Assert.AreEqual(true, converter.NamingStrategy.ProcessDictionaryKeys);
+            Assert.AreEqual(true, converter.NamingStrategy.ProcessExtensionDataNames);
+        }
+
+        [Test]
+        public void StringEnumConverter_NamingStrategyTypeCtor_Null()
+        {
+            ExceptionAssert.Throws<ArgumentNullException>(
+                () => new StringEnumConverter(null),
+                @"Value cannot be null.
+Parameter name: namingStrategyType");
+        }
+
+        [Test]
+        public void StringEnumConverter_NamingStrategyTypeWithArgsCtor_Null()
+        {
+            ExceptionAssert.Throws<ArgumentNullException>(
+                () => new StringEnumConverter(null, new object[] { true, true, true }, false),
+                @"Value cannot be null.
+Parameter name: namingStrategyType");
+        }
+
+        [Test]
+        public void Deserialize_CamelCaseFromAttribute_Obsolete()
+        {
+            CamelCaseEnumObsolete e = JsonConvert.DeserializeObject<CamelCaseEnumObsolete>(@"""camelCase""");
+            Assert.AreEqual(CamelCaseEnumObsolete.CamelCase, e);
+        }
+
         [Test]
         public void Serialize_CamelCaseFromAttribute()
         {
-            string json = JsonConvert.SerializeObject(CamelCaseEnum.CamelCase);
+            string json = JsonConvert.SerializeObject(CamelCaseEnumNew.CamelCase);
             Assert.AreEqual(@"""camelCase""", json);
         }
 
         [Test]
         public void Deserialize_CamelCaseFromAttribute()
         {
-            CamelCaseEnum e = JsonConvert.DeserializeObject<CamelCaseEnum>(@"""camelCase""");
-            Assert.AreEqual(CamelCaseEnum.CamelCase, e);
+            CamelCaseEnumNew e = JsonConvert.DeserializeObject<CamelCaseEnumNew>(@"""camelCase""");
+            Assert.AreEqual(CamelCaseEnumNew.CamelCase, e);
+        }
+
+        [Test]
+        public void Serialize_SnakeCaseFromAttribute()
+        {
+            string json = JsonConvert.SerializeObject(SnakeCaseEnumNew.SnakeCase);
+            Assert.AreEqual(@"""snake_case""", json);
+        }
+
+        [Test]
+        public void Deserialize_SnakeCaseFromAttribute()
+        {
+            SnakeCaseEnumNew e = JsonConvert.DeserializeObject<SnakeCaseEnumNew>(@"""snake_case""");
+            Assert.AreEqual(SnakeCaseEnumNew.SnakeCase, e);
         }
 
         [Test]
@@ -174,6 +309,17 @@ namespace Newtonsoft.Json.Tests.Converters
             {
                 NotAllowIntegerValuesEnum e = JsonConvert.DeserializeObject<NotAllowIntegerValuesEnum>(@"""9""");
             });
+        }
+
+        [Test]
+        public void CannotPassNullArgumentToConverter()
+        {
+            var ex = ExceptionAssert.Throws<JsonException>(() =>
+            {
+                JsonConvert.DeserializeObject<NullArgumentInAttribute>(@"""9""");
+            });
+
+            Assert.AreEqual("Cannot pass a null parameter to the constructor.", ex.InnerException.Message);
         }
 
         [Test]
@@ -311,7 +457,9 @@ namespace Newtonsoft.Json.Tests.Converters
                 NullableStoreColor2 = null
             };
 
+#pragma warning disable CS0618 // Type or member is obsolete
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+#pragma warning restore CS0618 // Type or member is obsolete
 
             StringAssert.AreEqual(@"{
   ""StoreColor"": ""red"",
@@ -474,7 +622,9 @@ namespace Newtonsoft.Json.Tests.Converters
                 Enum = FlagsTestEnum.First | FlagsTestEnum.Second
             };
 
+#pragma warning disable CS0618 // Type or member is obsolete
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+#pragma warning restore CS0618 // Type or member is obsolete
             StringAssert.AreEqual(@"{
   ""Enum"": ""first, second""
 }", json);
@@ -487,7 +637,9 @@ namespace Newtonsoft.Json.Tests.Converters
   ""Enum"": ""first, second""
 }";
 
+#pragma warning disable CS0618 // Type or member is obsolete
             EnumContainer<FlagsTestEnum> c = JsonConvert.DeserializeObject<EnumContainer<FlagsTestEnum>>(json, new StringEnumConverter { CamelCaseText = true });
+#pragma warning restore CS0618 // Type or member is obsolete
             Assert.AreEqual(FlagsTestEnum.First | FlagsTestEnum.Second, c.Enum);
         }
 
@@ -565,7 +717,9 @@ namespace Newtonsoft.Json.Tests.Converters
                     (Foo)int.MaxValue
                 };
 
+#pragma warning disable CS0618 // Type or member is obsolete
             string json1 = JsonConvert.SerializeObject(lfoo, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+#pragma warning restore CS0618 // Type or member is obsolete
 
             StringAssert.AreEqual(@"[
   ""Bat, baz"",
@@ -588,7 +742,9 @@ namespace Newtonsoft.Json.Tests.Converters
 
             List<Bar> lbar = new List<Bar>() { Bar.FooBar, Bar.Bat, Bar.SerializeAsBaz };
 
+#pragma warning disable CS0618 // Type or member is obsolete
             string json2 = JsonConvert.SerializeObject(lbar, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+#pragma warning restore CS0618 // Type or member is obsolete
 
             StringAssert.AreEqual(@"[
   ""foo_bar"",

@@ -1150,7 +1150,7 @@ namespace Newtonsoft.Json.Serialization
                     {
                         escape = true;
 
-                        if (primitiveContract.IsEnum && EnumUtils.TryToString(primitiveContract.NonNullableUnderlyingType, name, false, out string enumName))
+                        if (primitiveContract.IsEnum && EnumUtils.TryToString(primitiveContract.NonNullableUnderlyingType, name, null, out string enumName))
                         {
                             return enumName;
                         }
