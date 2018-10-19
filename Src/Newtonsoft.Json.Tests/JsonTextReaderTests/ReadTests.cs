@@ -1743,5 +1743,32 @@ third line", jsonTextReader.Value);
             {
             }
         }
+
+        [Test]
+        public void ThrowOnDuplicateKeysDeserializing()
+        {
+            string json = @"
+                {
+                    ""a"": 1,
+                    ""b"": [
+                        {
+                            ""c"": {
+                                ""d"": 1,
+                                ""d"": ""2""
+                            }
+                        }
+                    ]
+                }
+            ";
+
+            JsonLoadSettings settings = new JsonLoadSettings {DuplicatePropertyNamesHandling = DuplicatePropertyNamesHandling.Throw};
+
+            ExceptionAssert.Throws<JsonException>(() => JObject.Parse(json, settings));
+            ExceptionAssert.Throws<JsonException>(() =>
+            {
+                JsonTextReader reader = new JsonTextReader(new StringReader(json));
+                JToken.ReadFrom(reader, settings);
+            });
+        }
     }
 }
