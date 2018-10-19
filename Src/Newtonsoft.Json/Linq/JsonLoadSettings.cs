@@ -9,6 +9,7 @@ namespace Newtonsoft.Json.Linq
     {
         private CommentHandling _commentHandling;
         private LineInfoHandling _lineInfoHandling;
+        private DuplicatePropertyNamesHandling _duplicatePropertyNamesHandling;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonLoadSettings"/> class.
@@ -17,6 +18,7 @@ namespace Newtonsoft.Json.Linq
         {
             _lineInfoHandling = LineInfoHandling.Load;
             _commentHandling = CommentHandling.Ignore;
+            _duplicatePropertyNamesHandling = DuplicatePropertyNamesHandling.Ignore;
         }
 
         /// <summary>
@@ -52,6 +54,24 @@ namespace Newtonsoft.Json.Linq
                 }
 
                 _lineInfoHandling = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets how duplicate property names are handled when loading JSON.
+        /// </summary>
+        /// <value>The JSON duplicate property names handling.</value>
+        public DuplicatePropertyNamesHandling DuplicatePropertyNamesHandling
+        {
+            get => this._duplicatePropertyNamesHandling;
+            set
+            {
+                if (value< DuplicatePropertyNamesHandling.Ignore|| value> DuplicatePropertyNamesHandling.Throw)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                }
+
+                this._duplicatePropertyNamesHandling = value;
             }
         }
     }

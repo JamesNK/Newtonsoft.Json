@@ -1752,7 +1752,29 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(reader.ReadAsInt32Async(token).IsCanceled);
             Assert.IsTrue(reader.ReadAsStringAsync(token).IsCanceled);
         }
-    }
-}
 
+        [Test]
+        public async void AsyncThrowOnDuplicateKeysDeserializing()
+        {
+            string json = @"
+                {
+                    ""a"": 1,
+                    ""b"": [
+                        {
+                            ""c"": {
+                                ""d"": 1,
+                                ""d"": ""2""
+                            }
+                        }
+                    ]
+                }
+            ";
+
+            JsonLoadSettings settings = new JsonLoadSettings { DuplicatePropertyNamesHandling = DuplicatePropertyNamesHandling.Throw };
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            await ExceptionAssert.ThrowsAsync<JsonException>( async () => await JToken.ReadFromAsync(reader, settings));
+        }
+    }
+
+}
 #endif
