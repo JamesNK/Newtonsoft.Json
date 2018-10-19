@@ -160,6 +160,10 @@ namespace Newtonsoft.Json.Linq
                         }
                         else
                         {
+                            if (settings != null && settings.DuplicatePropertyNamesHandling == DuplicatePropertyNamesHandling.Throw)
+                            {
+                                throw JsonException.Create(lineInfo, property.Path, $"Property with the same name ('{propertyName}') already exists");
+                            }
                             existingPropertyWithName.Replace(property);
                         }
                         parent = property;
