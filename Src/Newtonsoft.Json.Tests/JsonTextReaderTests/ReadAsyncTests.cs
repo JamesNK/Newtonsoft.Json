@@ -1754,7 +1754,7 @@ third line", jsonTextReader.Value);
         }
 
         [Test]
-        public async void AsyncThrowOnDuplicateKeysDeserializing()
+        public async Task ThrowOnDuplicateKeysDeserializingAsync()
         {
             string json = @"
                 {
