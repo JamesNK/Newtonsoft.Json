@@ -248,46 +248,15 @@ namespace Newtonsoft.Json.Utilities
 #endif
         }
 
-        internal readonly struct TypeConvertKey : IEquatable<TypeConvertKey>
+        private static readonly ThreadSafeStore<StructMultiKey<Type, Type>, Func<object, object>> CastConverters =
+            new ThreadSafeStore<StructMultiKey<Type, Type>, Func<object, object>>(CreateCastConverter);
+
+        private static Func<object, object> CreateCastConverter(StructMultiKey<Type, Type> t)
         {
-            public Type InitialType { get; }
-
-            public Type TargetType { get; }
-
-            public TypeConvertKey(Type initialType, Type targetType)
-            {
-                InitialType = initialType;
-                TargetType = targetType;
-            }
-
-            public override int GetHashCode()
-            {
-                return InitialType.GetHashCode() ^ TargetType.GetHashCode();
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (!(obj is TypeConvertKey key))
-                {
-                    return false;
-                }
-
-                return Equals(key);
-            }
-
-            public bool Equals(TypeConvertKey other)
-            {
-                return (InitialType == other.InitialType && TargetType == other.TargetType);
-            }
-        }
-
-        private static readonly ThreadSafeStore<TypeConvertKey, Func<object, object>> CastConverters =
-            new ThreadSafeStore<TypeConvertKey, Func<object, object>>(CreateCastConverter);
-
-        private static Func<object, object> CreateCastConverter(TypeConvertKey t)
-        {
-            MethodInfo castMethodInfo = t.TargetType.GetMethod("op_Implicit", new[] { t.InitialType })
-                ?? t.TargetType.GetMethod("op_Explicit", new[] { t.InitialType });
+            Type initialType = t.Value1;
+            Type targetType = t.Value2;
+            MethodInfo castMethodInfo = targetType.GetMethod("op_Implicit", new[] { initialType })
+                ?? targetType.GetMethod("op_Explicit", new[] { initialType });
 
             if (castMethodInfo == null)
             {
@@ -630,7 +599,7 @@ namespace Newtonsoft.Json.Utilities
                     return value;
                 }
 
-                Func<object, object> castConverter = CastConverters.Get(new TypeConvertKey(valueType, targetType));
+                Func<object, object> castConverter = CastConverters.Get(new StructMultiKey<Type, Type>(valueType, targetType));
                 if (castConverter != null)
                 {
                     return castConverter(value);

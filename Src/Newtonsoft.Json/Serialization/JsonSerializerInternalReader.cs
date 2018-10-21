@@ -777,12 +777,12 @@ namespace Newtonsoft.Json.Serialization
 
             if (resolvedTypeNameHandling != TypeNameHandling.None)
             {
-                TypeNameKey typeNameKey = ReflectionUtils.SplitFullyQualifiedTypeName(qualifiedTypeName);
+                StructMultiKey<string, string> typeNameKey = ReflectionUtils.SplitFullyQualifiedTypeName(qualifiedTypeName);
 
                 Type specifiedType;
                 try
                 {
-                    specifiedType = Serializer._serializationBinder.BindToType(typeNameKey.AssemblyName, typeNameKey.TypeName);
+                    specifiedType = Serializer._serializationBinder.BindToType(typeNameKey.Value1, typeNameKey.Value2);
                 }
                 catch (Exception ex)
                 {
@@ -955,7 +955,7 @@ namespace Newtonsoft.Json.Serialization
                         {
                             if (value is string s)
                             {
-                                return EnumUtils.ParseEnum(contract.NonNullableUnderlyingType, s, false);
+                                return EnumUtils.ParseEnum(contract.NonNullableUnderlyingType, null, s, false);
                             }
                             if (ConvertUtils.IsInteger(primitiveContract.TypeCode))
                             {

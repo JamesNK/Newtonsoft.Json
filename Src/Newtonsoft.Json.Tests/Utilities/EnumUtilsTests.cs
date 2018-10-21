@@ -51,7 +51,7 @@ namespace Newtonsoft.Json.Tests.Utilities
         {
             Type enumType = expected.GetType();
 
-            Enum result = (Enum)EnumUtils.ParseEnum(enumType, value, false);
+            Enum result = (Enum)EnumUtils.ParseEnum(enumType, null, value, false);
             Assert.AreEqual(expected, result);
         }
 
@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Tests.Utilities
         {
             try
             {
-                EnumUtils.ParseEnum(enumType, value, false);
+                EnumUtils.ParseEnum(enumType, null, value, false);
             }
             catch (Exception ex) when (ex.GetType() == exceptionType)
             {
@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Tests.Utilities
         [TestCaseSource(nameof(ToString_Format_TestData))]
         public static void ToString_Format(Enum e, string expected)
         {
-            EnumUtils.TryToString(e.GetType(), e, false, out string result);
+            EnumUtils.TryToString(e.GetType(), e, null, out string result);
 
             Assert.AreEqual(expected, result);
         }

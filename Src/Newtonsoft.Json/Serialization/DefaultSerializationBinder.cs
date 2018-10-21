@@ -43,20 +43,20 @@ namespace Newtonsoft.Json.Serialization
     {
         internal static readonly DefaultSerializationBinder Instance = new DefaultSerializationBinder();
 
-        private readonly ThreadSafeStore<TypeNameKey, Type> _typeCache;
+        private readonly ThreadSafeStore<StructMultiKey<string, string>, Type> _typeCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultSerializationBinder"/> class.
         /// </summary>
         public DefaultSerializationBinder()
         {
-            _typeCache = new ThreadSafeStore<TypeNameKey, Type>(GetTypeFromTypeNameKey);
+            _typeCache = new ThreadSafeStore<StructMultiKey<string, string>, Type>(GetTypeFromTypeNameKey);
         }
 
-        private Type GetTypeFromTypeNameKey(TypeNameKey typeNameKey)
+        private Type GetTypeFromTypeNameKey(StructMultiKey<string, string> typeNameKey)
         {
-            string assemblyName = typeNameKey.AssemblyName;
-            string typeName = typeNameKey.TypeName;
+            string assemblyName = typeNameKey.Value1;
+            string typeName = typeNameKey.Value2;
 
             if (assemblyName != null)
             {
@@ -159,7 +159,7 @@ namespace Newtonsoft.Json.Serialization
                                 {
                                     string typeArgAssemblyQualifiedName = typeName.Substring(typeArgStartIndex, i - typeArgStartIndex);
 
-                                    TypeNameKey typeNameKey = ReflectionUtils.SplitFullyQualifiedTypeName(typeArgAssemblyQualifiedName);
+                                    StructMultiKey<string, string> typeNameKey = ReflectionUtils.SplitFullyQualifiedTypeName(typeArgAssemblyQualifiedName);
                                     genericTypeArguments.Add(GetTypeByName(typeNameKey));
                                 }
                                 break;
@@ -173,7 +173,7 @@ namespace Newtonsoft.Json.Serialization
             return type;
         }
 
-        private Type GetTypeByName(TypeNameKey typeNameKey)
+        private Type GetTypeByName(StructMultiKey<string, string> typeNameKey)
         {
             return _typeCache.Get(typeNameKey);
         }
@@ -188,7 +188,7 @@ namespace Newtonsoft.Json.Serialization
         /// </returns>
         public override Type BindToType(string assemblyName, string typeName)
         {
-            return GetTypeByName(new TypeNameKey(assemblyName, typeName));
+            return GetTypeByName(new StructMultiKey<string, string>(assemblyName, typeName));
         }
 
         /// <summary>

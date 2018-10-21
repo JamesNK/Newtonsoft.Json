@@ -49,9 +49,9 @@ namespace Newtonsoft.Json
         internal TypeNameHandling? _itemTypeNameHandling;
 
         /// <summary>
-        /// Gets or sets the <see cref="JsonConverter"/> used when serializing the property's collection items.
+        /// Gets or sets the <see cref="JsonConverter"/> type used when serializing the property's collection items.
         /// </summary>
-        /// <value>The collection's items <see cref="JsonConverter"/>.</value>
+        /// <value>The collection's items <see cref="JsonConverter"/> type.</value>
         public Type ItemConverterType { get; set; }
 
         /// <summary>

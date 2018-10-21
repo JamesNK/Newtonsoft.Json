@@ -198,18 +198,18 @@ namespace Newtonsoft.Json.Serialization
         /// Lookup and create an instance of the <see cref="JsonConverter"/> type described by the argument.
         /// </summary>
         /// <param name="converterType">The <see cref="JsonConverter"/> type to create.</param>
-        /// <param name="converterArgs">Optional arguments to pass to an initializing constructor of the JsonConverter.
+        /// <param name="args">Optional arguments to pass to an initializing constructor of the JsonConverter.
         /// If <c>null</c>, the default constructor is used.</param>
-        public static JsonConverter CreateJsonConverterInstance(Type converterType, object[] converterArgs)
+        public static JsonConverter CreateJsonConverterInstance(Type converterType, object[] args)
         {
             Func<object[], object> converterCreator = CreatorCache.Get(converterType);
-            return (JsonConverter)converterCreator(converterArgs);
+            return (JsonConverter)converterCreator(args);
         }
 
-        public static NamingStrategy CreateNamingStrategyInstance(Type namingStrategyType, object[] converterArgs)
+        public static NamingStrategy CreateNamingStrategyInstance(Type namingStrategyType, object[] args)
         {
             Func<object[], object> converterCreator = CreatorCache.Get(namingStrategyType);
-            return (NamingStrategy)converterCreator(converterArgs);
+            return (NamingStrategy)converterCreator(args);
         }
 
         public static NamingStrategy GetContainerNamingStrategy(JsonContainerAttribute containerAttribute)
@@ -239,10 +239,18 @@ namespace Newtonsoft.Json.Serialization
                 {
                     if (parameters != null)
                     {
-                        Type[] paramTypes = parameters.Select(param => param.GetType()).ToArray();
+                        Type[] paramTypes = parameters.Select(param =>
+                        {
+                            if (param == null)
+                            {
+                                throw new InvalidOperationException("Cannot pass a null parameter to the constructor.");
+                            }
+
+                            return param.GetType();
+                        }).ToArray();
                         ConstructorInfo parameterizedConstructorInfo = type.GetConstructor(paramTypes);
 
-                        if (null != parameterizedConstructorInfo)
+                        if (parameterizedConstructorInfo != null)
                         {
                             ObjectConstructor<object> parameterizedConstructor = ReflectionDelegateFactory.CreateParameterizedConstructor(parameterizedConstructorInfo);
                             return parameterizedConstructor(parameters);
