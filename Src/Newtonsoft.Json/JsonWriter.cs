@@ -226,6 +226,7 @@ namespace Newtonsoft.Json
         private DateTimeZoneHandling _dateTimeZoneHandling;
         private StringEscapeHandling _stringEscapeHandling;
         private FloatFormatHandling _floatFormatHandling;
+        private ByteArrayFormatHandling _byteArrayFormatHandling;
         private string _dateFormatString;
         private CultureInfo _culture;
 
@@ -260,6 +261,23 @@ namespace Newtonsoft.Json
                 }
 
                 _dateFormatHandling = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets how byte arrays are written to JSON text.
+        /// </summary>
+        public ByteArrayFormatHandling ByteArrayFormatHandling
+        {
+            get => _byteArrayFormatHandling;
+            set
+            {
+                if (value < ByteArrayFormatHandling.Base64EncodedString || value > ByteArrayFormatHandling.Array)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                }
+
+                _byteArrayFormatHandling = value;
             }
         }
 

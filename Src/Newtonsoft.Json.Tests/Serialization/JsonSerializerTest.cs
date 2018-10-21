@@ -1037,6 +1037,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             serializer.FloatParseHandling = FloatParseHandling.Decimal;
             Assert.AreEqual(FloatParseHandling.Decimal, serializer.FloatParseHandling);
 
+            serializer.ByteArrayFormatHandling = ByteArrayFormatHandling.Array;
+            Assert.AreEqual(ByteArrayFormatHandling.Array, serializer.ByteArrayFormatHandling);
+
             serializer.Formatting = Formatting.Indented;
             Assert.AreEqual(Formatting.Indented, serializer.Formatting);
 
@@ -1150,6 +1153,9 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             settings.FloatParseHandling = FloatParseHandling.Decimal;
             Assert.AreEqual(FloatParseHandling.Decimal, settings.FloatParseHandling);
+
+            settings.ByteArrayFormatHandling = ByteArrayFormatHandling.Array;
+            Assert.AreEqual(ByteArrayFormatHandling.Array, settings.ByteArrayFormatHandling);
 
             settings.Formatting = Formatting.Indented;
             Assert.AreEqual(Formatting.Indented, settings.Formatting);
@@ -1281,6 +1287,9 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             serializerProxy.FloatParseHandling = FloatParseHandling.Decimal;
             Assert.AreEqual(FloatParseHandling.Decimal, serializerProxy.FloatParseHandling);
+
+            serializerProxy.ByteArrayFormatHandling = ByteArrayFormatHandling.Array;
+            Assert.AreEqual(ByteArrayFormatHandling.Array, serializerProxy.ByteArrayFormatHandling);
 
             serializerProxy.Formatting = Formatting.Indented;
             Assert.AreEqual(Formatting.Indented, serializerProxy.Formatting);
@@ -6715,6 +6724,19 @@ This is just junk, though.";
             // [1.1,0.0,0.0]
 
             Assert.AreEqual("[1.1,0.0,0.0]", json);
+        }
+
+        [Test]
+        public void SerializeByteArrayHandling()
+        {
+            string json;
+            byte[] b = new byte[] { 1, 2, 3 };
+
+            json = JsonConvert.SerializeObject(b);
+            Assert.AreEqual("\"AQID\"", json);
+
+            json = JsonConvert.SerializeObject(b, new JsonSerializerSettings { ByteArrayFormatHandling = ByteArrayFormatHandling.Array });
+            Assert.AreEqual("[1,2,3]", json);
         }
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)

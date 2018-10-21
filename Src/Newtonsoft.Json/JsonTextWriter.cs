@@ -670,10 +670,27 @@ namespace Newtonsoft.Json
             else
             {
                 InternalWriteValue(JsonToken.Bytes);
-                _writer.Write(_quoteChar);
-                Base64Encoder.Encode(value, 0, value.Length);
-                Base64Encoder.Flush();
-                _writer.Write(_quoteChar);
+
+                if (ByteArrayFormatHandling == ByteArrayFormatHandling.Base64EncodedString)
+                {
+                    _writer.Write(_quoteChar);
+                    Base64Encoder.Encode(value, 0, value.Length);
+                    Base64Encoder.Flush();
+                    _writer.Write(_quoteChar);
+                }
+                else
+                {
+                    _writer.Write('[');
+
+                    for (int i = 0; i < value.Length; i++)
+                    {
+                        WriteIntegerValue(value[i]);
+                        if (i != value.Length - 1)
+                            WriteValueDelimiter();
+                    }
+
+                    _writer.Write(']');
+                }
             }
         }
 

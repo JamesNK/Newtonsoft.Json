@@ -192,6 +192,12 @@ namespace Newtonsoft.Json.Serialization
             set => _serializer.FloatParseHandling = value;
         }
 
+        public override ByteArrayFormatHandling ByteArrayFormatHandling 
+        {
+            get => _serializer.ByteArrayFormatHandling;
+            set => _serializer.ByteArrayFormatHandling = value;
+        }
+
         public override StringEscapeHandling StringEscapeHandling
         {
             get => _serializer.StringEscapeHandling;
