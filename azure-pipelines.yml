@@ -33,7 +33,7 @@ steps:
     SignClientUser: $(newtonsoft.signClientUser)
     SignClientSecret: $(newtonsoft.signClientSecret)
     ArtifactDirectory: .\Working
-  displayName: 'Authenticode Sign Packages'
+  displayName: 'Authenticode sign packages'
   condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), not(eq(variables['newtonsoft.signClientUser'], '')), not(eq(variables['newtonsoft.signClientSecret'], '')))
 
 - task: PublishTestResults@2
