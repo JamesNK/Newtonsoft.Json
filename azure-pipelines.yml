@@ -26,6 +26,16 @@ steps:
     BUILD_ID: $(Build.BuildId)
   displayName: 'Run build'
 
+- task: PowerShell@2
+  inputs:
+    filePath: .\Build\Sign-Package.ps1
+  env:
+    SignClientUser: $(newtonsoft.signClientUser)
+    SignClientSecret: $(newtonsoft.signClientSecret)
+    ArtifactDirectory: .\Working
+  displayName: 'Authenticode sign packages'
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'), not(eq(variables['newtonsoft.signClientUser'], '')), not(eq(variables['newtonsoft.signClientSecret'], '')))
+
 - task: PublishTestResults@2
   inputs:
     testRunner: 'NUnit'
