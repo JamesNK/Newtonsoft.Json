@@ -273,6 +273,12 @@ namespace Newtonsoft.Json.Serialization
                     serializableMembers = serializableMembers.Where(ShouldSerializeEntityMember).ToList();
                 }
 #endif
+                // don't include TargetSite on non-serializable exceptions
+                // MemberBase is problematic to serialize. Large, self referencing instances, etc
+                if (typeof(Exception).IsAssignableFrom(objectType))
+                {
+                    serializableMembers = serializableMembers.Where(m => !string.Equals(m.Name, "TargetSite", StringComparison.Ordinal)).ToList();
+                }
             }
             else
             {
