@@ -30,6 +30,7 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Converters;
 using System.Reflection;
 using System.Runtime.Versioning;
+using Newtonsoft.Json.Serialization;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -79,6 +80,22 @@ namespace Newtonsoft.Json.Tests.Issues
 
             AssertNoTargetSite(nonSerializableJson);
             AssertNoTargetSite(serializableJson);
+        }
+
+        [Test]
+        public void Test_DefaultContractResolver()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            var objectContract = (JsonObjectContract) resolver.ResolveContract(typeof(NonSerializableException));
+            Assert.IsFalse(objectContract.Properties.Contains("TargetSite"));
+
+#if (PORTABLE40 || PORTABLE || NETSTANDARD1_3) && !NETSTANDARD2_0
+            objectContract = (JsonObjectContract) resolver.ResolveContract(typeof(Exception));
+            Assert.IsFalse(objectContract.Properties.Contains("TargetSite"));
+#else
+            Assert.IsInstanceOf(typeof(JsonISerializableContract), resolver.ResolveContract(typeof(Exception)));
+#endif
         }
 
         private void AssertNoTargetSite(string json)
