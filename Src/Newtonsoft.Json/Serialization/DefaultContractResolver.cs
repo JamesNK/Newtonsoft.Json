@@ -273,6 +273,10 @@ namespace Newtonsoft.Json.Serialization
                     serializableMembers = serializableMembers.Where(ShouldSerializeEntityMember).ToList();
                 }
 #endif
+                if (typeof(Exception).IsAssignableFrom(objectType))
+                {
+                    serializableMembers = serializableMembers.Where(m => !string.Equals(m.Name, "TargetSite", StringComparison.Ordinal)).ToList();
+                }
             }
             else
             {
