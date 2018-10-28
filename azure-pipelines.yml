@@ -22,7 +22,7 @@ steps:
     write-host "Build number $buildNumber" -fore white
     $nugetPrerelease = if ($Env:SourceBranch -eq "refs/heads/master") { "build$($buildNumber.ToString("D6"))" } else { $version.Prerelease }
     write-host "Prerelease $nugetPrerelease" -fore white
-    .\Build\runbuild.ps1 -properties @{"majorVersion"="$($version.Major).0"; "majorWithReleaseVersion"="$($version.Major).0.$($version.Release)"; "nugetPrerelease"=$nugetPrerelease; "zipFileName"="Json$($version.Major)0r$($version.Release).zip"; "signAssemblies"=$sign; "signKeyPath"=$keyPath; "treatWarningsAsErrors"=$true; "nugetPrerelease"=$nugetPrerelease; "buildNuGet"=$true}
+    .\Build\runbuild.ps1 -properties @{"majorVersion"="$($version.Major).0"; "majorWithReleaseVersion"="$($version.Major).0.$($version.Release)"; "nugetPrerelease"=$nugetPrerelease; "zipFileName"="Json$($version.Major)0r$($version.Release).zip"; "signAssemblies"=$sign; "signKeyPath"=$keyPath; "treatWarningsAsErrors"=$true; "buildNuGet"=$true}
   env:
     BuildId: $(Build.BuildId)
     SourceBranch: $(Build.SourceBranch)
