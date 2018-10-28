@@ -17,7 +17,7 @@ steps:
     $keyPath = "$basePath\key.snk"
     $sign = test-path $keyPath
     write-host "Sign assemblies $sign" -fore white
-    $version = Get-Content "$PSScriptRoot\version.json" | Out-String | ConvertFrom-Json
+    $version = Get-Content .\Build\version.json | Out-String | ConvertFrom-Json
     $buildNumber = [int]$Env:BuildId
     write-host "Build number $buildNumber" -fore white
     $nugetPrerelease = if ($Env:SourceBranch -eq "refs/heads/master") { "build$($buildNumber.ToString("D6"))" } else { $version.Prerelease }
