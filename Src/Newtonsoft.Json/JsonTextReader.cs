@@ -1455,6 +1455,12 @@ namespace Newtonsoft.Json
                         // finished parsing
                         SetStateBasedOnCurrent();
                         return false;
+                    case '\x1E':
+                        _charPos++;
+
+                        // finished parsing
+                        SetStateBasedOnCurrent();
+                        return false;
                     case ' ':
                     case StringUtils.Tab:
                         // eat
