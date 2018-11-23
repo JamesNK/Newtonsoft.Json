@@ -20,7 +20,7 @@
     <PackageTags>json</PackageTags>
     <PackageIconUrl>https://www.newtonsoft.com/content/images/nugeticon.png</PackageIconUrl>
     <PackageProjectUrl>https://www.newtonsoft.com/json</PackageProjectUrl>
-    <PackageLicenseUrl>https://raw.github.com/JamesNK/Newtonsoft.Json/master/LICENSE.md</PackageLicenseUrl>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl> 
     <RootNamespace>Newtonsoft.Json</RootNamespace>
     <AssemblyName>Newtonsoft.Json</AssemblyName>
