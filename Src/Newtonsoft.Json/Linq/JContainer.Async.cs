@@ -148,25 +148,15 @@ namespace Newtonsoft.Json.Linq
                         parent.Add(v);
                         break;
                     case JsonToken.PropertyName:
-                        string propertyName = reader.Value.ToString();
-                        JProperty property = new JProperty(propertyName);
-                        property.SetLineInfo(lineInfo, settings);
-                        JObject parentObject = (JObject)parent;
-                        // handle multiple properties with the same name in JSON
-                        JProperty existingPropertyWithName = parentObject.Property(propertyName);
-                        if (existingPropertyWithName == null)
+                        JProperty property = ReadProperty(reader, settings, lineInfo, parent);
+                        if (property != null)
                         {
-                            parent.Add(property);
+                            parent = property;
                         }
                         else
                         {
-                            if (settings != null && settings.DuplicatePropertyNamesHandling == DuplicatePropertyNamesHandling.Throw)
-                            {
-                                throw JsonException.Create(lineInfo, property.Path, $"Property with the same name ('{propertyName}') already exists");
-                            }
-                            existingPropertyWithName.Replace(property);
+                            await reader.SkipAsync();
                         }
-                        parent = property;
                         break;
                     default:
                         throw new InvalidOperationException("The JsonReader should not be on a token of type {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
