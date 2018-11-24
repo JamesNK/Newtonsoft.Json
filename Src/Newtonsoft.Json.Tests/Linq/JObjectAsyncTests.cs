@@ -162,6 +162,39 @@ namespace Newtonsoft.Json.Tests.Linq
                 await JToken.ReadFromAsync(reader);
             }, "Unexpected end of content while loading JObject. Path 'short.error.code', line 6, position 14.");
         }
+
+        [Test]
+        public async Task ParseMultipleProperties_EmptySettingsAsync()
+        {
+            string json = @"{
+        ""Name"": ""Name1"",
+        ""Name"": ""Name2""
+      }";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            JObject o = (JObject)await JToken.ReadFromAsync(reader, new JsonLoadSettings());
+            string value = (string)o["Name"];
+
+            Assert.AreEqual("Name2", value);
+        }
+
+        [Test]
+        public async Task ParseMultipleProperties_IgnoreDuplicateSettingAsync()
+        {
+            string json = @"{
+        ""Name"": ""Name1"",
+        ""Name"": ""Name2""
+      }";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            JObject o = (JObject)await JToken.ReadFromAsync(reader, new JsonLoadSettings
+            {
+                DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Ignore
+            });
+            string value = (string)o["Name"];
+
+            Assert.AreEqual("Name1", value);
+        }
     }
 }
 

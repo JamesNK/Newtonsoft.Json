@@ -1761,12 +1761,11 @@ third line", jsonTextReader.Value);
                 }
             ";
 
-            JsonLoadSettings settings = new JsonLoadSettings {DuplicatePropertyNamesHandling = DuplicatePropertyNamesHandling.Throw};
+            JsonLoadSettings settings = new JsonLoadSettings {DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error};
 
-            ExceptionAssert.Throws<JsonException>(() => JObject.Parse(json, settings));
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
             ExceptionAssert.Throws<JsonException>(() =>
             {
-                JsonTextReader reader = new JsonTextReader(new StringReader(json));
                 JToken.ReadFrom(reader, settings);
             });
         }
