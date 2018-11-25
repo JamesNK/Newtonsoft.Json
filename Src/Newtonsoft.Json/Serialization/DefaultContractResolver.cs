@@ -198,6 +198,25 @@ namespace Newtonsoft.Json.Serialization
             return _contractCache.Get(type);
         }
 
+        private static bool FilterMembers(MemberInfo member)
+        {
+            if (member is PropertyInfo property)
+            {
+                if (ReflectionUtils.IsIndexedProperty(property))
+                {
+                    return false;
+                }
+
+                return !ReflectionUtils.IsByRefLikeType(property.PropertyType);
+            }
+            else if (member is FieldInfo field)
+            {
+                return !ReflectionUtils.IsByRefLikeType(field.FieldType);
+            }
+
+            return true;
+        }
+
         /// <summary>
         /// Gets the serializable members for the type.
         /// </summary>
@@ -215,7 +234,7 @@ namespace Newtonsoft.Json.Serialization
             MemberSerialization memberSerialization = JsonTypeReflector.GetObjectMemberSerialization(objectType, ignoreSerializableAttribute);
 
             IEnumerable<MemberInfo> allMembers = ReflectionUtils.GetFieldsAndProperties(objectType, BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static)
-                .Where(m => !ReflectionUtils.IsIndexedProperty(m));
+                .Where(FilterMembers);
 
             List<MemberInfo> serializableMembers = new List<MemberInfo>();
 
@@ -227,7 +246,7 @@ namespace Newtonsoft.Json.Serialization
 
 #pragma warning disable 618
                 List<MemberInfo> defaultMembers = ReflectionUtils.GetFieldsAndProperties(objectType, DefaultMembersSearchFlags)
-                    .Where(m => !ReflectionUtils.IsIndexedProperty(m)).ToList();
+                    .Where(FilterMembers).ToList();
 #pragma warning restore 618
 
                 foreach (MemberInfo member in allMembers)

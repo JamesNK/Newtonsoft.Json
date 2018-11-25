@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net451;net452;net40;net35;net20;netcoreapp2.0;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net451;net452;net40;net35;net20;netcoreapp2.1;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(TestFrameworks)'!=''">$(TestFrameworks)</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <VersionPrefix>1.0</VersionPrefix>
@@ -13,7 +13,7 @@
     <RootNamespace>Newtonsoft.Json.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
     <!-- Workaround for https://github.com/nunit/nunit3-vs-adapter/issues/296 -->
-    <DebugType Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'netcoreapp1.0' AND '$(TargetFramework)' != 'netcoreapp1.1' AND '$(TargetFramework)' != 'netcoreapp2.0'">Full</DebugType>    
+    <DebugType Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'netcoreapp1.0' AND '$(TargetFramework)' != 'netcoreapp1.1' AND '$(TargetFramework)' != 'netcoreapp2.1'">Full</DebugType>    
     <!-- Disabled because SourceLink isn't referenced to calculate paths -->
     <DeterministicSourcePaths>false</DeterministicSourcePaths>
   </PropertyGroup>
@@ -153,7 +153,7 @@
     <DefineConstants>NET20;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
     <PackageReference Include="BenchmarkDotNet" Version="0.10.10" />
     <PackageReference Include="FSharp.Core" Version="4.2.3" />
     <PackageReference Include="System.ObjectModel" Version="4.3.0" />
@@ -168,7 +168,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
   </ItemGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.0'">
+  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
     <AssemblyTitle>Json.NET Tests .NET Standard 2.0</AssemblyTitle>
     <ReferringTargetFrameworkForProjectReferences>.NETStandard,Version=v2.0</ReferringTargetFrameworkForProjectReferences>
     <DefineConstants>NETSTANDARD2_0;DNXCORE50;PORTABLE;HAVE_BENCHMARKS;$(AdditionalConstants)</DefineConstants>

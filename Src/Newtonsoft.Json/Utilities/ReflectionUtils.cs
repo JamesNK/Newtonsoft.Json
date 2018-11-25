@@ -457,25 +457,24 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        /// <summary>
-        /// Determines whether the member is an indexed property.
-        /// </summary>
-        /// <param name="member">The member.</param>
-        /// <returns>
-        /// 	<c>true</c> if the member is an indexed property; otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsIndexedProperty(MemberInfo member)
+        public static bool IsByRefLikeType(Type type)
         {
-            ValidationUtils.ArgumentNotNull(member, nameof(member));
-
-            if (member is PropertyInfo propertyInfo)
-            {
-                return IsIndexedProperty(propertyInfo);
-            }
-            else
+            if (!type.IsValueType())
             {
                 return false;
             }
+
+            // IsByRefLike flag on type is not available in netstandard2.0
+            Attribute[] attributes = GetAttributes(type, null, false);
+            for (int i = 0; i < attributes.Length; i++)
+            {
+                if (string.Equals(attributes[i].GetType().FullName, "System.Runtime.CompilerServices.IsByRefLikeAttribute", StringComparison.Ordinal))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         /// <summary>
