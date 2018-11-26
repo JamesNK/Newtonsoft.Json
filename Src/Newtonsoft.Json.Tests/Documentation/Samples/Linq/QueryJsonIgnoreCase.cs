@@ -38,66 +38,29 @@ using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
 using NUnit.Framework;
-
 #endif
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
 {
     [TestFixture]
-    public class QueryJsonSelectToken : TestFixtureBase
+    public class QueryJsonIgnoreCase : TestFixtureBase
     {
         [Test]
         public void Example()
         {
             #region Usage
-            JObject o = JObject.Parse(@"{
-              'Stores': [
-                'Lambton Quay',
-                'Willis Street'
-              ],
-              'Manufacturers': [
-                {
-                  'Name': 'Acme Co',
-                  'Products': [
-                    {
-                      'Name': 'Anvil',
-                      'Price': 50
-                    }
-                  ]
-                },
-                {
-                  'Name': 'Contoso',
-                  'Products': [
-                    {
-                      'Name': 'Elbow Grease',
-                      'Price': 99.95
-                    },
-                    {
-                      'Name': 'Headlight Fluid',
-                      'Price': 4
-                    }
-                  ]
-                }
-              ]
-            }");
+            string json = @"{
+              'name': 'James Newton-King',
+              'blog': 'http://james.newtonking.com'
+            }";
 
-            string name = (string)o.SelectToken("Manufacturers[0].Name");
+            JObject profile = JObject.Parse(json);
 
+            string name = (string)profile.GetValue("Name", StringComparison.OrdinalIgnoreCase);
             Console.WriteLine(name);
-            // Acme Co
-
-            decimal productPrice = (decimal)o.SelectToken("Manufacturers[0].Products[0].Price");
-
-            Console.WriteLine(productPrice);
-            // 50
-
-            string productName = (string)o.SelectToken("Manufacturers[1].Products[0].Name");
-
-            Console.WriteLine(productName);
-            // Elbow Grease
             #endregion
 
-            Assert.AreEqual("Elbow Grease", productName);
+            Assert.AreEqual("James Newton-King", name);
         }
     }
 }

@@ -32,7 +32,7 @@
 <linkTarget>_blank</linkTarget>
 </externalLink>.</para>
 
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Linq\QueryJsonSelectTokenJsonPath.cs" region="Usage" title="SelectToken With JSONPath" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\JsonPath\QueryJsonSelectTokenJsonPath.cs" region="Usage" title="SelectToken With JSONPath" />
       </content>
     </section>
     <section address="SelectTokenLINQ">
