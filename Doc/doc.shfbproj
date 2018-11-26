@@ -8,7 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{fd19f68e-72c8-4576-9775-b4480b0db686}</ProjectGuid>
-    <SHFBSchemaVersion>2015.6.5.0</SHFBSchemaVersion>
+    <SHFBSchemaVersion>2017.9.26.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
          Studio adds them anyway -->
     <AssemblyName>Documentation</AssemblyName>
@@ -20,7 +20,7 @@
     <ProjectSummary>
     </ProjectSummary>
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter, AutoDocumentDispose</MissingTags>
-    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected, ProtectedInternalAsProtected</VisibleItems>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected, ProtectedInternalAsProtected, EditorBrowsableNever, NonBrowsable</VisibleItems>
     <HtmlHelp1xCompilerPath>
     </HtmlHelp1xCompilerPath>
     <HtmlHelp2xCompilerPath>
@@ -97,13 +97,19 @@
   </PropertyGroup>
   <ItemGroup>
     <Content Include="icons\favicon.ico" />
+    <None Include="Samples\JsonPath\StrictEqualsQuery.aml" />
+    <None Include="Samples\JsonPath\RegexQuery.aml" />
+    <None Include="Samples\JsonPath\QueryJsonSelectTokenWithLinq.aml" />
+    <None Include="Samples\JsonPath\QueryJsonSelectTokenJsonPath.aml" />
+    <None Include="Samples\JsonPath\QueryJsonSelectTokenEscaped.aml" />
+    <None Include="Samples\JsonPath\QueryJsonSelectToken.aml" />
+    <None Include="Samples\JsonPath\ErrorWhenNoMatchQuery.aml" />
     <None Include="Samples\Serializer\CustomJsonConverterGeneric.aml" />
     <None Include="Samples\Serializer\NamingStrategyAttributes.aml" />
     <None Include="Samples\Serializer\NamingStrategySnakeCase.aml" />
     <None Include="Samples\Serializer\NamingStrategySkipSpecifiedNames.aml" />
     <None Include="Samples\Serializer\NamingStrategySkipDictionaryKeys.aml" />
     <None Include="Samples\Serializer\NamingStrategyCamelCase.aml" />
-    <None Include="Samples\Linq\QueryJsonSelectTokenEscaped.aml" />
     <None Include="Samples\Serializer\JsonConstructorAttribute.aml" />
     <None Include="Samples\Json\ReadMultipleContentWithJsonReader.aml" />
     <None Include="Samples\Serializer\SerializeImmutableCollections.aml" />
@@ -115,7 +121,6 @@
     <None Include="Samples\Serializer\DeserializeExtensionData.aml" />
     <None Include="Samples\Serializer\DeserializeDateFormatString.aml" />
     <None Include="Samples\Serializer\DefaultSettings.aml" />
-    <None Include="Samples\Linq\QueryJsonSelectTokenJsonPath.aml" />
     <None Include="Samples\Linq\MergeJson.aml" />
     <None Include="Samples\Linq\JTokenAnnotation.aml" />
     <None Include="Samples\Json\CustomJsonWriter.aml" />
@@ -142,8 +147,6 @@
     <None Include="Samples\Linq\SerializeWithLinq.aml" />
     <None Include="Samples\Linq\ReadJTokenFromBson.aml" />
     <None Include="Samples\Linq\ReadJson.aml" />
-    <None Include="Samples\Linq\QueryJsonSelectTokenWithLinq.aml" />
-    <None Include="Samples\Linq\QueryJsonSelectToken.aml" />
     <None Include="Samples\Linq\QueryJsonLinq.aml" />
     <None Include="Samples\Linq\QueryJsonDynamic.aml" />
     <None Include="Samples\Linq\QueryJson.aml" />
@@ -272,6 +275,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Samples\JsonPath\" />
     <Folder Include="icons\" />
     <Folder Include="Samples\Xml\" />
     <Folder Include="Samples\Schema\" />

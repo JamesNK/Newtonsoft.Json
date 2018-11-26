@@ -29,7 +29,7 @@
   <Topic id="ConvertingJSONandXML" visible="True" title="Converting between JSON and XML" />
   <Topic id="JsonNetVsDotNetSerializers" visible="True" title="Json.NET vs .NET Serializers" />
   <Topic id="Samples" visible="True" isExpanded="true" title="Samples">
-    <Topic id="d6e185d5-c992-44fc-8d8f-d9acc2bbec2f" visible="True" noFile="true" isExpanded="true" title="Serializing JSON">
+    <Topic id="d6e185d5-c992-44fc-8d8f-d9acc2bbec2f" visible="True" noFile="true" title="Serializing JSON">
       <Topic id="SerializeObject" visible="True" title="Serialize an Object" />
       <Topic id="SerializeCollection" visible="True" title="Serialize a Collection" />
       <Topic id="SerializeDictionary" visible="True" title="Serialize a Dictionary" />
@@ -63,7 +63,7 @@
       <Topic id="ErrorHandlingEvent" visible="True" title="ErrorHandling setting" />
       <Topic id="MaxDepth" visible="True" title="MaxDepth setting" />
       <Topic id="CustomJsonConverter" visible="True" title="Custom JsonConverter" />
-      <Topic id="CustomJsonConverterGeneric" visible="True" isSelected="true" title="Custom JsonConverter&lt;T&gt;" />
+      <Topic id="CustomJsonConverterGeneric" visible="True" title="Custom JsonConverter&lt;T&gt;" />
       <Topic id="CustomContractResolver" visible="True" title="Custom IContractResolver" />
       <Topic id="CustomTraceWriter" visible="True" title="Custom ITraceWriter" />
       <Topic id="SerializeSerializationBinder" visible="True" title="Custom SerializationBinder" />
@@ -96,7 +96,7 @@
       <Topic id="NamingStrategySkipDictionaryKeys" visible="True" title="Configure NamingStrategy dictionary serialization" />
       <Topic id="NamingStrategySkipSpecifiedNames" visible="True" title="Configure NamingStrategy property name serialization" />
     </Topic>
-    <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" title="LINQ to JSON">
+    <Topic id="68b9fad2-5436-4e35-a734-9b9d751cc3e5" visible="True" noFile="true" isExpanded="true" title="LINQ to JSON">
       <Topic id="CreateJsonManually" visible="True" title="Create JSON manually" />
       <Topic id="CreateJsonCollectionInitializer" visible="True" title="Create JSON using Collection Initializers" />
       <Topic id="CreateJsonDeclaratively" visible="True" title="Create JSON declaratively with LINQ" />
@@ -114,10 +114,6 @@
       <Topic id="QueryJson" visible="True" title="Querying JSON" />
       <Topic id="QueryJsonDynamic" visible="True" title="Querying JSON with dynamic" />
       <Topic id="QueryJsonLinq" visible="True" title="Querying JSON with LINQ" />
-      <Topic id="QueryJsonSelectToken" visible="True" title="Querying JSON with SelectToken" />
-      <Topic id="QueryJsonSelectTokenEscaped" visible="True" title="Querying JSON with SelectToken and escaped properties" />
-      <Topic id="QueryJsonSelectTokenWithLinq" visible="True" title="Querying JSON with SelectToken and LINQ" />
-      <Topic id="QueryJsonSelectTokenJsonPath" visible="True" title="Querying JSON with JSONPath" />
       <Topic id="ReadJson" visible="True" title="Read JSON from a file" />
       <Topic id="WriteToJsonFile" visible="True" title="Write JSON to a file" />
       <Topic id="ToObjectComplex" visible="True" title="Convert JSON to Collection" />
@@ -135,6 +131,15 @@
       <Topic id="CreateWriter" visible="True" title="Using JToken.CreateWriter" />
       <Topic id="ReadJTokenFromBson" visible="True" title="Read from BSON" />
       <Topic id="WriteJTokenToBson" visible="True" title="Write as BSON" />
+    </Topic>
+    <Topic id="afd615f0-b6b4-40ec-997d-2453e60a25af" visible="True" noFile="true" isExpanded="true" title="JSON Path">
+      <Topic id="QueryJsonSelectToken" visible="True" title="Querying JSON with JSON Path" />
+      <Topic id="QueryJsonSelectTokenEscaped" visible="True" title="Querying JSON with JSON Path and escaped properties" />
+      <Topic id="QueryJsonSelectTokenJsonPath" visible="True" title="Querying JSON with complex JSON Path" />
+      <Topic id="QueryJsonSelectTokenWithLinq" visible="True" title="Querying JSON with JSON Path and LINQ" />
+      <Topic id="RegexQuery" visible="True" title="JSON Path regex operator" />
+      <Topic id="StrictEqualsQuery" visible="True" title="JSON Path strict equals operator" />
+      <Topic id="ErrorWhenNoMatchQuery" visible="True" isSelected="true" title="Throw error when JSON Path not found" />
     </Topic>
     <Topic id="11cded7e-959a-4c6d-a9c9-61d571b75edc" visible="True" noFile="true" title="JSON Schema">
       <Topic id="JsonSchemaParse" visible="True" title="Parse JSON Schema from JSON" />

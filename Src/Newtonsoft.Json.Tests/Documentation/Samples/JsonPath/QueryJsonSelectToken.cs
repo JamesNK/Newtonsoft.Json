@@ -24,13 +24,6 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
-#if DNXCORE50
-using Xunit;
-using Test = Xunit.FactAttribute;
-using Assert = Newtonsoft.Json.Tests.XUnitAssert;
-#else
-using NUnit.Framework;
-#endif
 using System;
 using System.Collections.Generic;
 #if NET20
@@ -39,11 +32,19 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 using System.Linq;
 #endif
 using System.Text;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
 
-namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
+#endif
+
+namespace Newtonsoft.Json.Tests.Documentation.Samples.JsonPath
 {
     [TestFixture]
-    public class QueryJsonSelectTokenJsonPath : TestFixtureBase
+    public class QueryJsonSelectToken : TestFixtureBase
     {
         [Test]
         public void Example()
@@ -80,35 +81,23 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
               ]
             }");
 
-            // manufacturer with the name 'Acme Co'
-            JToken acme = o.SelectToken("$.Manufacturers[?(@.Name == 'Acme Co')]");
+            string name = (string)o.SelectToken("Manufacturers[0].Name");
 
-            Console.WriteLine(acme);
-            // { "Name": "Acme Co", Products: [{ "Name": "Anvil", "Price": 50 }] }
+            Console.WriteLine(name);
+            // Acme Co
 
-            // name of all products priced 50 and above
-            IEnumerable<JToken> pricyProducts = o.SelectTokens("$..Products[?(@.Price >= 50)].Name");
+            decimal productPrice = (decimal)o.SelectToken("Manufacturers[0].Products[0].Price");
 
-            foreach (JToken item in pricyProducts)
-            {
-                Console.WriteLine(item);
-            }
-            // Anvil
+            Console.WriteLine(productPrice);
+            // 50
+
+            string productName = (string)o.SelectToken("Manufacturers[1].Products[0].Name");
+
+            Console.WriteLine(productName);
             // Elbow Grease
             #endregion
 
-            StringAssert.AreEqual(@"{
-  ""Name"": ""Acme Co"",
-  ""Products"": [
-    {
-      ""Name"": ""Anvil"",
-      ""Price"": 50
-    }
-  ]
-}", acme.ToString());
-
-            Assert.AreEqual("Anvil", (string)pricyProducts.ElementAt(0));
-            Assert.AreEqual("Elbow Grease", (string)pricyProducts.ElementAt(1));
+            Assert.AreEqual("Elbow Grease", productName);
         }
     }
 }

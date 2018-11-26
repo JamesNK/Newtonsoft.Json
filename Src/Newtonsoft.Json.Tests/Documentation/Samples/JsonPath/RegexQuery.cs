@@ -40,39 +40,40 @@ using System.Linq;
 #endif
 using System.Text;
 
-namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
+namespace Newtonsoft.Json.Tests.Documentation.Samples.JsonPath
 {
     [TestFixture]
-    public class QueryJsonSelectTokenEscaped : TestFixtureBase
+    public class RegexQuery : TestFixtureBase
     {
         [Test]
         public void Example()
         {
             #region Usage
-            JObject o = JObject.Parse(@"{
-              'Space Invaders': 'Taito',
-              'Doom ]|[': 'id',
-              ""Yar's Revenge"": 'Atari',
-              'Government ""Intelligence""': 'Make-Believe'
-            }");
+            JArray packages = JArray.Parse(@"[
+              {
+                'PackageId': 'Newtonsoft.Json',
+                'Version': '11.0.1',
+                'ReleaseDate': '2018-02-17T00:00:00'
+              },
+              {
+                'PackageId': 'NUnit',
+                'Version': '3.9.0',
+                'ReleaseDate': '2017-11-10T00:00:00'
+              }
+            ]");
 
-            string spaceInvaders = (string)o.SelectToken("['Space Invaders']");
-            // Taito
+            // Find Newtonsoft packages
+            List<JToken> newtonsoftPackages = packages.SelectTokens(@"$.[?(@.PackageId =~ /^Newtonsoft\.(.*)$/)]").ToList();
 
-            string doom3 = (string)o.SelectToken("['Doom ]|[']");
-            // id
-
-            string yarsRevenge = (string)o.SelectToken("['Yar\\'s Revenge']");
-            // Atari
-
-            string governmentIntelligence = (string)o.SelectToken("['Government \"Intelligence\"']");
-            // Make-Believe
+            foreach (JToken item in newtonsoftPackages)
+            {
+                Console.WriteLine((string) item["PackageId"]);
+            }
+            // Newtonsoft.Json
             #endregion
 
-            Assert.AreEqual("Taito", spaceInvaders);
-            Assert.AreEqual("id", doom3);
-            Assert.AreEqual("Atari", yarsRevenge);
-            Assert.AreEqual("Make-Believe", governmentIntelligence);
+            Assert.AreEqual(1, newtonsoftPackages.Count);
+            Assert.AreEqual("Newtonsoft.Json", (string)newtonsoftPackages[0]["PackageId"]);
         }
     }
 }

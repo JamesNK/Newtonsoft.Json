@@ -24,6 +24,13 @@
 #endregion
 
 using Newtonsoft.Json.Linq;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
+#endif
 using System;
 using System.Collections.Generic;
 #if NET20
@@ -32,19 +39,11 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 using System.Linq;
 #endif
 using System.Text;
-#if DNXCORE50
-using Xunit;
-using Test = Xunit.FactAttribute;
-using Assert = Newtonsoft.Json.Tests.XUnitAssert;
-#else
-using NUnit.Framework;
 
-#endif
-
-namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
+namespace Newtonsoft.Json.Tests.Documentation.Samples.JsonPath
 {
     [TestFixture]
-    public class QueryJsonSelectTokenWithLinq : TestFixtureBase
+    public class QueryJsonSelectTokenJsonPath : TestFixtureBase
     {
         [Test]
         public void Example()
@@ -81,24 +80,35 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
               ]
             }");
 
-            string[] storeNames = o.SelectToken("Stores").Select(s => (string)s).ToArray();
+            // manufacturer with the name 'Acme Co'
+            JToken acme = o.SelectToken("$.Manufacturers[?(@.Name == 'Acme Co')]");
 
-            Console.WriteLine(string.Join(", ", storeNames));
-            // Lambton Quay, Willis Street
+            Console.WriteLine(acme);
+            // { "Name": "Acme Co", Products: [{ "Name": "Anvil", "Price": 50 }] }
 
-            string[] firstProductNames = o["Manufacturers"].Select(m => (string)m.SelectToken("Products[1].Name"))
-                .Where(n => n != null).ToArray();
+            // name of all products priced 50 and above
+            IEnumerable<JToken> pricyProducts = o.SelectTokens("$..Products[?(@.Price >= 50)].Name");
 
-            Console.WriteLine(string.Join(", ", firstProductNames));
-            // Headlight Fluid
-
-            decimal totalPrice = o["Manufacturers"].Sum(m => (decimal)m.SelectToken("Products[0].Price"));
-
-            Console.WriteLine(totalPrice);
-            // 149.95
+            foreach (JToken item in pricyProducts)
+            {
+                Console.WriteLine(item);
+            }
+            // Anvil
+            // Elbow Grease
             #endregion
 
-            Assert.AreEqual(149.95m, totalPrice);
+            StringAssert.AreEqual(@"{
+  ""Name"": ""Acme Co"",
+  ""Products"": [
+    {
+      ""Name"": ""Anvil"",
+      ""Price"": 50
+    }
+  ]
+}", acme.ToString());
+
+            Assert.AreEqual("Anvil", (string)pricyProducts.ElementAt(0));
+            Assert.AreEqual("Elbow Grease", (string)pricyProducts.ElementAt(1));
         }
     }
 }

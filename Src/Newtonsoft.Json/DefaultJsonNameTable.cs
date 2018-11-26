@@ -53,11 +53,12 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Gets the string containing the same characters as the specified range of characters in the given array.
+        /// Gets a string containing the same characters as the specified range of characters in the given array.
         /// </summary>
         /// <param name="key">The character array containing the name to find.</param>
         /// <param name="start">The zero-based index into the array specifying the first character of the name.</param>
         /// <param name="length">The number of characters in the name.</param>
+        /// <returns>A string containing the same characters as the specified range of characters in the given array.</returns>
         public override string Get(char[] key, int start, int length)
         {
             if (length == 0)
@@ -96,6 +97,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="key">The string to add.</param>
         /// <remarks>This method is not thread-safe.</remarks>
+        /// <returns>The resolved string.</returns>
         public string Add(string key)
         {
             if (key == null)

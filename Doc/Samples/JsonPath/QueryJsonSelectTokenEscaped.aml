@@ -7,7 +7,7 @@
     <section>
       <title>Sample</title>
       <content>
-        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\Linq\QueryJsonSelectTokenEscaped.cs" region="Usage" title="Usage" />
+        <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\Samples\JsonPath\QueryJsonSelectTokenEscaped.cs" region="Usage" title="Usage" />
       </content>
     </section>
   </developerConceptualDocument>
