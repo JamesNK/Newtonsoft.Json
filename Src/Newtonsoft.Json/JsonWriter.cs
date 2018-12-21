@@ -141,7 +141,17 @@ namespace Newtonsoft.Json
         /// Gets the top.
         /// </summary>
         /// <value>The top.</value>
+        [Obsolete("JsonWriter.Top is obsolete. Use JsonWriter.Depth instead.")]
         protected internal int Top
+        {
+            get => Depth;
+        }
+
+        /// <summary>
+        /// Gets the depth of the writer.
+        /// </summary>
+        /// <value>The depth of the writer.</value>
+        public virtual int Depth
         {
             get
             {
