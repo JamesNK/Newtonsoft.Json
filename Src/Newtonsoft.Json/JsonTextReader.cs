@@ -100,9 +100,12 @@ namespace Newtonsoft.Json
             get => _chars;
             set => _chars = value;
         }
-
-        internal int CharPos => _charPos;
 #endif
+
+        /// <summary>
+        /// Gets the reader's character position.
+        /// </summary>
+        public int CharPos => _charPos;
 
         /// <summary>
         /// Gets or sets the reader's property name table.
