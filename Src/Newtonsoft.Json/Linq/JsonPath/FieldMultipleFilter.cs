@@ -11,7 +11,12 @@ namespace Newtonsoft.Json.Linq.JsonPath
 {
     internal class FieldMultipleFilter : PathFilter
     {
-        public List<string> Names { get; set; }
+        internal List<string> Names;
+
+        public FieldMultipleFilter(List<string> names)
+        {
+            Names = names;
+        }
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
@@ -21,7 +26,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 {
                     foreach (string name in Names)
                     {
-                        JToken v = o[name];
+                        JToken? v = o[name];
 
                         if (v != null)
                         {
@@ -42,7 +47,9 @@ namespace Newtonsoft.Json.Linq.JsonPath
 #if !HAVE_STRING_JOIN_WITH_ENUMERABLE
                             .ToArray()
 #endif
+#pragma warning disable CS8602 // Possible dereference of a null reference.
                             ), t.GetType().Name));
+#pragma warning restore CS8602 // Possible dereference of a null reference.
                     }
                 }
             }

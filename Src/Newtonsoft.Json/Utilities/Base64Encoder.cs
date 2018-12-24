@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Utilities
         private readonly char[] _charsLine = new char[Base64LineSize];
         private readonly TextWriter _writer;
 
-        private byte[] _leftOverBytes;
+        private byte[]? _leftOverBytes;
         private int _leftOverBytesCount;
 
         public Base64Encoder(TextWriter writer)
@@ -128,7 +128,7 @@ namespace Newtonsoft.Json.Utilities
             int leftOverBytesCount = _leftOverBytesCount;
             while (leftOverBytesCount < 3 && count > 0)
             {
-                _leftOverBytes[leftOverBytesCount++] = buffer[index++];
+                _leftOverBytes![leftOverBytesCount++] = buffer[index++];
                 count--;
             }
 

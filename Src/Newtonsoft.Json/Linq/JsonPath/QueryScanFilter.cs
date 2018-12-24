@@ -5,7 +5,12 @@ namespace Newtonsoft.Json.Linq.JsonPath
 {
     internal class QueryScanFilter : PathFilter
     {
-        public QueryExpression Expression { get; set; }
+        internal QueryExpression Expression;
+
+        public QueryScanFilter(QueryExpression expression)
+        {
+            Expression = expression;
+        }
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
@@ -23,7 +28,9 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 }
                 else
                 {
+#pragma warning disable CS8604 // Possible null reference argument.
                     if (Expression.IsMatch(root, t))
+#pragma warning restore CS8604 // Possible null reference argument.
                     {
                         yield return t;
                     }

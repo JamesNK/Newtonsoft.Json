@@ -45,27 +45,27 @@ namespace Newtonsoft.Json.Utilities
         public const char LineFeed = '\n';
         public const char Tab = '\t';
 
-        public static string FormatWith(this string format, IFormatProvider provider, object arg0)
+        public static string FormatWith(this string format, IFormatProvider provider, object? arg0)
         {
-            return format.FormatWith(provider, new[] { arg0 });
+            return format.FormatWith(provider, new object?[] { arg0 });
         }
 
-        public static string FormatWith(this string format, IFormatProvider provider, object arg0, object arg1)
+        public static string FormatWith(this string format, IFormatProvider provider, object? arg0, object? arg1)
         {
-            return format.FormatWith(provider, new[] { arg0, arg1 });
+            return format.FormatWith(provider, new object?[] { arg0, arg1 });
         }
 
-        public static string FormatWith(this string format, IFormatProvider provider, object arg0, object arg1, object arg2)
+        public static string FormatWith(this string format, IFormatProvider provider, object? arg0, object? arg1, object? arg2)
         {
-            return format.FormatWith(provider, new[] { arg0, arg1, arg2 });
+            return format.FormatWith(provider, new object?[] { arg0, arg1, arg2 });
         }
 
-        public static string FormatWith(this string format, IFormatProvider provider, object arg0, object arg1, object arg2, object arg3)
+        public static string FormatWith(this string format, IFormatProvider provider, object? arg0, object? arg1, object? arg2, object? arg3)
         {
-            return format.FormatWith(provider, new[] { arg0, arg1, arg2, arg3 });
+            return format.FormatWith(provider, new object?[] { arg0, arg1, arg2, arg3 });
         }
 
-        private static string FormatWith(this string format, IFormatProvider provider, params object[] args)
+        private static string FormatWith(this string format, IFormatProvider provider, params object?[] args)
         {
             // leave this a private to force code to use an explicit overload
             // avoids stack memory being reserved for the object array

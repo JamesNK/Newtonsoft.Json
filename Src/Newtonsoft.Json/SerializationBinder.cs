@@ -17,7 +17,7 @@ namespace Newtonsoft.Json
         /// <param name="assemblyName">Specifies the <see cref="Assembly"/> name of the serialized object.</param>
         /// <param name="typeName">Specifies the <see cref="System.Type"/> name of the serialized object</param>
         /// <returns>The type of the object the formatter creates a new instance of.</returns>
-        public abstract Type BindToType(string assemblyName, string typeName);
+        public abstract Type BindToType(string? assemblyName, string typeName);
 
         /// <summary>
         /// When overridden in a derived class, controls the binding of a serialized object to a type.
@@ -27,8 +27,10 @@ namespace Newtonsoft.Json
         /// <param name="typeName">Specifies the <see cref="System.Type"/> name of the serialized object.</param>
         public virtual void BindToName(Type serializedType, out string assemblyName, out string typeName)
         {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
             assemblyName = null;
             typeName = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
         }
     }
 }

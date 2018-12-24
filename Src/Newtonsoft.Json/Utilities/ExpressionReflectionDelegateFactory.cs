@@ -57,7 +57,7 @@ namespace Newtonsoft.Json.Utilities
             return compiled;
         }
 
-        public override MethodCall<T, object> CreateMethodCall<T>(MethodBase method)
+        public override MethodCall<T, object?> CreateMethodCall<T>(MethodBase method)
         {
             ValidationUtils.ArgumentNotNull(method, nameof(method));
 
@@ -70,7 +70,7 @@ namespace Newtonsoft.Json.Utilities
 
             LambdaExpression lambdaExpression = Expression.Lambda(typeof(MethodCall<T, object>), callExpression, targetParameterExpression, argsParameterExpression);
 
-            MethodCall<T, object> compiled = (MethodCall<T, object>)lambdaExpression.Compile();
+            MethodCall<T, object?> compiled = (MethodCall<T, object?>)lambdaExpression.Compile();
             return compiled;
         }
 
@@ -79,9 +79,16 @@ namespace Newtonsoft.Json.Utilities
             public Expression Value;
             public ParameterExpression Variable;
             public bool IsOut;
+
+            public ByRefParameter(Expression value, ParameterExpression variable, bool isOut)
+            {
+                Value = value;
+                Variable = variable;
+                IsOut = isOut;
+            }
         }
 
-        private Expression BuildMethodCall(MethodBase method, Type type, ParameterExpression targetParameterExpression, ParameterExpression argsParameterExpression)
+        private Expression BuildMethodCall(MethodBase method, Type type, ParameterExpression? targetParameterExpression, ParameterExpression argsParameterExpression)
         {
             ParameterInfo[] parametersInfo = method.GetParameters();
 
@@ -117,7 +124,7 @@ namespace Newtonsoft.Json.Utilities
                     if (isByRef)
                     {
                         ParameterExpression variable = Expression.Variable(parameterType);
-                        refParameterMap.Add(new ByRefParameter {Value = argExpression, Variable = variable, IsOut = parameter.IsOut});
+                        refParameterMap.Add(new ByRefParameter(argExpression, variable, parameter.IsOut));
 
                         argExpression = variable;
                     }
@@ -137,7 +144,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                Expression readParameter = EnsureCastExpression(targetParameterExpression, method.DeclaringType);
+                Expression readParameter = EnsureCastExpression(targetParameterExpression!, method.DeclaringType);
 
                 callExpression = Expression.Call(readParameter, (MethodInfo)method, argsExpression);
             }
@@ -211,7 +218,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        public override Func<T, object> CreateGet<T>(PropertyInfo propertyInfo)
+        public override Func<T, object?> CreateGet<T>(PropertyInfo propertyInfo)
         {
             ValidationUtils.ArgumentNotNull(propertyInfo, nameof(propertyInfo));
 
@@ -221,7 +228,11 @@ namespace Newtonsoft.Json.Utilities
             ParameterExpression parameterExpression = Expression.Parameter(instanceType, "instance");
             Expression resultExpression;
 
-            MethodInfo getMethod = propertyInfo.GetGetMethod(true);
+            MethodInfo? getMethod = propertyInfo.GetGetMethod(true);
+            if (getMethod == null)
+            {
+                throw new ArgumentException("Property does not have a getter.");
+            }
 
             if (getMethod.IsStatic)
             {
@@ -238,11 +249,11 @@ namespace Newtonsoft.Json.Utilities
 
             LambdaExpression lambdaExpression = Expression.Lambda(typeof(Func<T, object>), resultExpression, parameterExpression);
 
-            Func<T, object> compiled = (Func<T, object>)lambdaExpression.Compile();
+            Func<T, object?> compiled = (Func<T, object?>)lambdaExpression.Compile();
             return compiled;
         }
 
-        public override Func<T, object> CreateGet<T>(FieldInfo fieldInfo)
+        public override Func<T, object?> CreateGet<T>(FieldInfo fieldInfo)
         {
             ValidationUtils.ArgumentNotNull(fieldInfo, nameof(fieldInfo));
 
@@ -262,11 +273,11 @@ namespace Newtonsoft.Json.Utilities
 
             fieldExpression = EnsureCastExpression(fieldExpression, typeof(object));
 
-            Func<T, object> compiled = Expression.Lambda<Func<T, object>>(fieldExpression, sourceParameter).Compile();
+            Func<T, object?> compiled = Expression.Lambda<Func<T, object?>>(fieldExpression, sourceParameter).Compile();
             return compiled;
         }
 
-        public override Action<T, object> CreateSet<T>(FieldInfo fieldInfo)
+        public override Action<T, object?> CreateSet<T>(FieldInfo fieldInfo)
         {
             ValidationUtils.ArgumentNotNull(fieldInfo, nameof(fieldInfo));
 
@@ -298,11 +309,11 @@ namespace Newtonsoft.Json.Utilities
 
             LambdaExpression lambdaExpression = Expression.Lambda(typeof(Action<T, object>), assignExpression, sourceParameterExpression, valueParameterExpression);
 
-            Action<T, object> compiled = (Action<T, object>)lambdaExpression.Compile();
+            Action<T, object?> compiled = (Action<T, object?>)lambdaExpression.Compile();
             return compiled;
         }
 
-        public override Action<T, object> CreateSet<T>(PropertyInfo propertyInfo)
+        public override Action<T, object?> CreateSet<T>(PropertyInfo propertyInfo)
         {
             ValidationUtils.ArgumentNotNull(propertyInfo, nameof(propertyInfo));
 
@@ -321,7 +332,11 @@ namespace Newtonsoft.Json.Utilities
             ParameterExpression valueParameter = Expression.Parameter(valueType, "value");
             Expression readValueParameter = EnsureCastExpression(valueParameter, propertyInfo.PropertyType);
 
-            MethodInfo setMethod = propertyInfo.GetSetMethod(true);
+            MethodInfo? setMethod = propertyInfo.GetSetMethod(true);
+            if (setMethod == null)
+            {
+                throw new ArgumentException("Property does not have a setter.");
+            }
 
             Expression setExpression;
             if (setMethod.IsStatic)
@@ -335,9 +350,9 @@ namespace Newtonsoft.Json.Utilities
                 setExpression = Expression.Call(readInstanceParameter, setMethod, readValueParameter);
             }
 
-            LambdaExpression lambdaExpression = Expression.Lambda(typeof(Action<T, object>), setExpression, instanceParameter, valueParameter);
+            LambdaExpression lambdaExpression = Expression.Lambda(typeof(Action<T, object?>), setExpression, instanceParameter, valueParameter);
 
-            Action<T, object> compiled = (Action<T, object>)lambdaExpression.Compile();
+            Action<T, object?> compiled = (Action<T, object?>)lambdaExpression.Compile();
             return compiled;
         }
         

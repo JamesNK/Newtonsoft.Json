@@ -46,7 +46,7 @@ namespace Newtonsoft.Json
 
         internal JsonContainerType Type;
         internal int Position;
-        internal string PropertyName;
+        internal string? PropertyName;
         internal bool HasIndex;
 
         public JsonPosition(JsonContainerType type)
@@ -62,7 +62,7 @@ namespace Newtonsoft.Json
             switch (Type)
             {
                 case JsonContainerType.Object:
-                    return PropertyName.Length + 5;
+                    return PropertyName!.Length + 5;
                 case JsonContainerType.Array:
                 case JsonContainerType.Constructor:
                     return MathUtils.IntLength((ulong)Position) + 2;
@@ -71,12 +71,12 @@ namespace Newtonsoft.Json
             }
         }
 
-        internal void WriteTo(StringBuilder sb, ref StringWriter writer, ref char[] buffer)
+        internal void WriteTo(StringBuilder sb, ref StringWriter? writer, ref char[]? buffer)
         {
             switch (Type)
             {
                 case JsonContainerType.Object:
-                    string propertyName = PropertyName;
+                    string propertyName = PropertyName!;
                     if (propertyName.IndexOfAny(SpecialCharacters) != -1)
                     {
                         sb.Append(@"['");
@@ -86,7 +86,9 @@ namespace Newtonsoft.Json
                             writer = new StringWriter(sb);
                         }
 
+#pragma warning disable CS8604 // Possible null reference argument.
                         JavaScriptUtils.WriteEscapedJavaScriptString(writer, propertyName, '\'', false, JavaScriptUtils.SingleQuoteCharEscapeFlags, StringEscapeHandling.Default, null, ref buffer);
+#pragma warning restore CS8604 // Possible null reference argument.
 
                         sb.Append(@"']");
                     }
@@ -130,8 +132,8 @@ namespace Newtonsoft.Json
             }
 
             StringBuilder sb = new StringBuilder(capacity);
-            StringWriter writer = null;
-            char[] buffer = null;
+            StringWriter? writer = null;
+            char[]? buffer = null;
             if (positions != null)
             {
                 foreach (JsonPosition state in positions)
@@ -147,7 +149,7 @@ namespace Newtonsoft.Json
             return sb.ToString();
         }
 
-        internal static string FormatMessage(IJsonLineInfo lineInfo, string path, string message)
+        internal static string FormatMessage(IJsonLineInfo? lineInfo, string path, string message)
         {
             // don't add a fullstop and space when message ends with a new line
             if (!message.EndsWith(Environment.NewLine, StringComparison.Ordinal))

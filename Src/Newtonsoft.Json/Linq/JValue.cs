@@ -31,6 +31,7 @@ using System.Globalization;
 #if HAVE_DYNAMIC
 using System.Dynamic;
 using System.Linq.Expressions;
+using System.Runtime.CompilerServices;
 #endif
 #if HAVE_BIG_INTEGER
 using System.Numerics;
@@ -47,9 +48,9 @@ namespace Newtonsoft.Json.Linq
 #endif
     {
         private JTokenType _valueType;
-        private object _value;
+        private object? _value;
 
-        internal JValue(object value, JTokenType type)
+        internal JValue(object? value, JTokenType type)
         {
             _value = value;
             _valueType = type;
@@ -188,7 +189,7 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JValue(object value)
+        public JValue(object? value)
             : this(value, GetValueType(null, value))
         {
         }
@@ -241,7 +242,7 @@ namespace Newtonsoft.Json.Linq
         }
 #endif
 
-        internal static int Compare(JTokenType valueType, object objA, object objB)
+        internal static int Compare(JTokenType valueType, object? objA, object? objB)
         {
             if (objA == objB)
             {
@@ -256,6 +257,7 @@ namespace Newtonsoft.Json.Linq
                 return -1;
             }
 
+#pragma warning disable CS8604 // Possible null reference argument.
             switch (valueType)
             {
                 case JTokenType.Integer:
@@ -267,8 +269,8 @@ namespace Newtonsoft.Json.Linq
                     }
                     if (objB is BigInteger integerB)
                     {
-                        return -CompareBigInteger(integerB, objA);
-                    }
+                            return -CompareBigInteger(integerB, objA);
+                        }
 #endif
                     if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
                     {
@@ -300,7 +302,8 @@ namespace Newtonsoft.Json.Linq
                         return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
                     }
                     return CompareFloat(objA, objB);
-                }
+#pragma warning restore CS8604 // Possible null reference argument.
+                    }
                 case JTokenType.Comment:
                 case JTokenType.String:
                 case JTokenType.Raw:
@@ -353,10 +356,10 @@ namespace Newtonsoft.Json.Linq
                         throw new ArgumentException("Object must be of type byte[].");
                     }
 
-                    byte[] bytesA = objA as byte[];
+                    byte[]? bytesA = objA as byte[];
                     Debug.Assert(bytesA != null);
 
-                    return MiscellaneousUtils.ByteArrayCompare(bytesA, bytesB);
+                    return MiscellaneousUtils.ByteArrayCompare(bytesA!, bytesB);
                 case JTokenType.Guid:
                     if (!(objB is Guid))
                     {
@@ -368,7 +371,7 @@ namespace Newtonsoft.Json.Linq
 
                     return guid1.CompareTo(guid2);
                 case JTokenType.Uri:
-                    Uri uri2 = objB as Uri;
+                    Uri? uri2 = objB as Uri;
                     if (uri2 == null)
                     {
                         throw new ArgumentException("Object must be of type Uri.");
@@ -407,7 +410,7 @@ namespace Newtonsoft.Json.Linq
         }
 
 #if HAVE_EXPRESSIONS
-        private static bool Operation(ExpressionType operation, object objA, object objB, out object result)
+        private static bool Operation(ExpressionType operation, object? objA, object? objB, out object? result)
         {
             if (objA is string || objB is string)
             {
@@ -564,7 +567,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>A <see cref="JValue"/> comment with the given value.</returns>
-        public static JValue CreateComment(string value)
+        public static JValue CreateComment(string? value)
         {
             return new JValue(value, JTokenType.Comment);
         }
@@ -597,7 +600,7 @@ namespace Newtonsoft.Json.Linq
             return new JValue(null, JTokenType.Undefined);
         }
 
-        private static JTokenType GetValueType(JTokenType? current, object value)
+        private static JTokenType GetValueType(JTokenType? current, object? value)
         {
             if (value == null)
             {
@@ -694,13 +697,13 @@ namespace Newtonsoft.Json.Linq
         /// Gets or sets the underlying token value.
         /// </summary>
         /// <value>The underlying token value.</value>
-        public object Value
+        public object? Value
         {
             get => _value;
             set
             {
-                Type currentType = _value?.GetType();
-                Type newType = value?.GetType();
+                Type? currentType = _value?.GetType();
+                Type? newType = value?.GetType();
 
                 if (currentType != newType)
                 {
@@ -720,7 +723,7 @@ namespace Newtonsoft.Json.Linq
         {
             if (converters != null && converters.Length > 0 && _value != null)
             {
-                JsonConverter matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType());
+                JsonConverter? matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType());
                 if (matchingConverter != null && matchingConverter.CanWrite)
                 {
                     matchingConverter.WriteJson(writer, _value, JsonSerializer.CreateDefault());
@@ -803,7 +806,7 @@ namespace Newtonsoft.Json.Linq
                     }
                     return;
                 case JTokenType.Bytes:
-                    writer.WriteValue((byte[])_value);
+                    writer.WriteValue((byte[]?)_value);
                     return;
                 case JTokenType.Guid:
                     writer.WriteValue((_value != null) ? (Guid?)_value : null);
@@ -812,7 +815,7 @@ namespace Newtonsoft.Json.Linq
                     writer.WriteValue((_value != null) ? (TimeSpan?)_value : null);
                     return;
                 case JTokenType.Uri:
-                    writer.WriteValue((Uri)_value);
+                    writer.WriteValue((Uri?)_value);
                     return;
             }
 
@@ -839,7 +842,9 @@ namespace Newtonsoft.Json.Linq
         /// <c>true</c> if the current object is equal to the <paramref name="other"/> parameter; otherwise, <c>false</c>.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(JValue other)
+#pragma warning disable CS8614 // Nullability of reference types in type of parameter doesn't match implicitly implemented member.
+        public bool Equals(JValue? other)
+#pragma warning restore CS8614 // Nullability of reference types in type of parameter doesn't match implicitly implemented member.
         {
             if (other == null)
             {
@@ -925,7 +930,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="String"/> that represents this instance.
         /// </returns>
-        public string ToString(string format, IFormatProvider formatProvider)
+        public string ToString(string? format, IFormatProvider formatProvider)
         {
             if (_value == null)
             {
@@ -938,7 +943,9 @@ namespace Newtonsoft.Json.Linq
             }
             else
             {
+#pragma warning disable CS8602 // Possible dereference of a null reference.
                 return _value.ToString();
+#pragma warning restore CS8602 // Possible dereference of a null reference.
             }
         }
 
@@ -957,7 +964,9 @@ namespace Newtonsoft.Json.Linq
 
         private class JValueDynamicProxy : DynamicProxy<JValue>
         {
-            public override bool TryConvert(JValue instance, ConvertBinder binder, out object result)
+#pragma warning disable CS8610 // Nullability of reference types in type of parameter doesn't match overridden member.
+            public override bool TryConvert(JValue instance, ConvertBinder binder, [NotNullWhen(true)]out object? result)
+#pragma warning restore CS8610 // Nullability of reference types in type of parameter doesn't match overridden member.
             {
                 if (binder.Type == typeof(JValue) || binder.Type == typeof(JToken))
                 {
@@ -965,7 +974,7 @@ namespace Newtonsoft.Json.Linq
                     return true;
                 }
 
-                object value = instance.Value;
+                object? value = instance.Value;
 
                 if (value == null)
                 {
@@ -977,9 +986,11 @@ namespace Newtonsoft.Json.Linq
                 return true;
             }
 
-            public override bool TryBinaryOperation(JValue instance, BinaryOperationBinder binder, object arg, out object result)
+#pragma warning disable CS8610 // Nullability of reference types in type of parameter doesn't match overridden member.
+            public override bool TryBinaryOperation(JValue instance, BinaryOperationBinder binder, object arg, [NotNullWhen(true)]out object? result)
+#pragma warning restore CS8610 // Nullability of reference types in type of parameter doesn't match overridden member.
             {
-                object compareValue = arg is JValue value ? value.Value : arg;
+                object? compareValue = arg is JValue value ? value.Value : arg;
 
                 switch (binder.Operation)
                 {
@@ -1031,7 +1042,7 @@ namespace Newtonsoft.Json.Linq
             }
 
             JTokenType comparisonType;
-            object otherValue;
+            object? otherValue;
             if (obj is JValue value)
             {
                 otherValue = value.Value;
@@ -1166,7 +1177,7 @@ namespace Newtonsoft.Json.Linq
             return (DateTime)this;
         }
 
-        object IConvertible.ToType(Type conversionType, IFormatProvider provider)
+        object? IConvertible.ToType(Type conversionType, IFormatProvider provider)
         {
             return ToObject(conversionType);
         }

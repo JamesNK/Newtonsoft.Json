@@ -243,6 +243,26 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void BeforeSelf_NoParent_ReturnEmpty()
+        {
+            JObject o = new JObject();
+
+            List<JToken> result = o.BeforeSelf().ToList();
+            Assert.AreEqual(0, result.Count);
+        }
+
+        [Test]
+        public void BeforeSelf_OnlyChild_ReturnEmpty()
+        {
+            JArray a = new JArray();
+            JObject o = new JObject();
+            a.Add(o);
+
+            List<JToken> result = o.BeforeSelf().ToList();
+            Assert.AreEqual(0, result.Count);
+        }
+
+        [Test]
         public void Casting()
         {
             Assert.AreEqual(1L, (long)(new JValue(1)));

@@ -728,6 +728,17 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void NonGenericDictionary_KeyValueTypes()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonDictionaryContract c = (JsonDictionaryContract)resolver.ResolveContract(typeof(IDictionary));
+
+            Assert.IsNull(c.DictionaryKeyType);
+            Assert.IsNull(c.DictionaryValueType);
+        }
+
+        [Test]
         public void DefaultContractResolverIgnoreIsSpecifiedTrue()
         {
             DefaultContractResolver resolver = new DefaultContractResolver();

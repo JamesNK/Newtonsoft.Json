@@ -111,7 +111,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="source">An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the source collection.</param>
         /// <param name="key">The token key.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the values of every token in the source collection with the given key.</returns>
-        public static IJEnumerable<JToken> Values(this IEnumerable<JToken> source, object key)
+        public static IJEnumerable<JToken> Values(this IEnumerable<JToken> source, object? key)
         {
             return Values<JToken, JToken>(source, key).AsJEnumerable();
         }
@@ -179,7 +179,7 @@ namespace Newtonsoft.Json.Linq
             return token.Convert<JToken, U>();
         }
 
-        internal static IEnumerable<U> Values<T, U>(this IEnumerable<T> source, object key) where T : JToken
+        internal static IEnumerable<U> Values<T, U>(this IEnumerable<T> source, object? key) where T : JToken
         {
             ValidationUtils.ArgumentNotNull(source, nameof(source));
 
@@ -193,7 +193,9 @@ namespace Newtonsoft.Json.Linq
                     }
                     else
                     {
+#pragma warning disable CS8602 // Possible dereference of a null reference.
                         foreach (JToken t in token.Children())
+#pragma warning restore CS8602 // Possible dereference of a null reference.
                         {
                             yield return t.Convert<JToken, U>();
                         }
@@ -204,7 +206,7 @@ namespace Newtonsoft.Json.Linq
             {
                 foreach (T token in source)
                 {
-                    JToken value = token[key];
+                    JToken? value = token[key];
                     if (value != null)
                     {
                         yield return value.Convert<JToken, U>();
@@ -251,11 +253,13 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        internal static U Convert<T, U>(this T token) where T : JToken
+        internal static U Convert<T, U>(this T token) where T : JToken?
         {
             if (token == null)
             {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
                 return default;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
             }
 
             if (token is U castValue
@@ -268,7 +272,9 @@ namespace Newtonsoft.Json.Linq
             {
                 if (!(token is JValue value))
                 {
+#pragma warning disable CS8602 // Possible dereference of a null reference.
                     throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, token.GetType(), typeof(T)));
+#pragma warning restore CS8602 // Possible dereference of a null reference.
                 }
 
                 if (value.Value is U u)
@@ -282,7 +288,9 @@ namespace Newtonsoft.Json.Linq
                 {
                     if (value.Value == null)
                     {
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
                         return default;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
                     }
 
                     targetType = Nullable.GetUnderlyingType(targetType);
@@ -315,7 +323,7 @@ namespace Newtonsoft.Json.Linq
         {
             if (source == null)
             {
-                return null;
+                return null!;
             }
             else if (source is IJEnumerable<T> customEnumerable)
             {
@@ -323,7 +331,9 @@ namespace Newtonsoft.Json.Linq
             }
             else
             {
+#pragma warning disable CS8604 // Possible null reference argument.
                 return new JEnumerable<T>(source);
+#pragma warning restore CS8604 // Possible null reference argument.
             }
         }
     }

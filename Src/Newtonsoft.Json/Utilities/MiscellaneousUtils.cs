@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Utilities
 
     internal static class MiscellaneousUtils
     {
-        public static bool ValueEquals(object objA, object objB)
+        public static bool ValueEquals(object? objA, object? objB)
         {
             if (objA == objB)
             {
@@ -77,14 +77,14 @@ namespace Newtonsoft.Json.Utilities
             return new ArgumentOutOfRangeException(paramName, newMessage);
         }
 
-        public static string ToString(object value)
+        public static string ToString(object? value)
         {
             if (value == null)
             {
                 return "{null}";
             }
 
-            return (value is string s) ? @"""" + s + @"""" : value.ToString();
+            return (value is string s) ? @"""" + s + @"""" : value!.ToString();
         }
 
         public static int ByteArrayCompare(byte[] a1, byte[] a2)
@@ -107,9 +107,9 @@ namespace Newtonsoft.Json.Utilities
             return 0;
         }
 
-        public static string GetPrefix(string qualifiedName)
+        public static string? GetPrefix(string qualifiedName)
         {
-            GetQualifiedNameParts(qualifiedName, out string prefix, out _);
+            GetQualifiedNameParts(qualifiedName, out string? prefix, out _);
 
             return prefix;
         }
@@ -121,7 +121,7 @@ namespace Newtonsoft.Json.Utilities
             return localName;
         }
 
-        public static void GetQualifiedNameParts(string qualifiedName, out string prefix, out string localName)
+        public static void GetQualifiedNameParts(string qualifiedName, out string? prefix, out string localName)
         {
             int colonPosition = qualifiedName.IndexOf(':');
 
@@ -140,9 +140,10 @@ namespace Newtonsoft.Json.Utilities
         internal static RegexOptions GetRegexOptions(string optionsText)
         {
             RegexOptions options = RegexOptions.None;
-            foreach (char c in optionsText)
+
+            for (int i = 0; i < optionsText.Length; i++)
             {
-                switch (c)
+                switch (optionsText[i])
                 {
                     case 'i':
                         options |= RegexOptions.IgnoreCase;

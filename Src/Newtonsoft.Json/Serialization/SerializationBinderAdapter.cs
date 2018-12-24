@@ -41,7 +41,7 @@ namespace Newtonsoft.Json.Serialization
         }
 #pragma warning restore 618
 
-        public Type BindToType(string assemblyName, string typeName)
+        public Type BindToType(string? assemblyName, string typeName)
         {
             return SerializationBinder.BindToType(assemblyName, typeName);
         }
@@ -51,8 +51,10 @@ namespace Newtonsoft.Json.Serialization
 #if HAVE_SERIALIZATION_BINDER_BIND_TO_NAME
             SerializationBinder.BindToName(serializedType, out assemblyName, out typeName);
 #else
+#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
             assemblyName = null;
             typeName = null;
+#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
 #endif
         }
     }
