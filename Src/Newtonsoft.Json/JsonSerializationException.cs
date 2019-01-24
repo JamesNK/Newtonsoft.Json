@@ -115,14 +115,25 @@ namespace Newtonsoft.Json
             LinePosition = linePosition;
         }
 
-        internal static JsonSerializationException Create(JsonReader reader, string message)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonSerializationException"/> class
+        /// with a specified error message
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        public static JsonSerializationException Create(JsonReader reader, string message)
         {
             return Create(reader, message, null);
         }
 
-        internal static JsonSerializationException Create(JsonReader reader, string message, Exception ex)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonSerializationException"/> class
+        /// with a specified error message and a reference to the inner exception that is the cause of this exception.
+        /// </summary>
+        /// <param name="message">The error message that explains the reason for the exception.</param>
+        /// <param name="innerException">The exception that is the cause of the current exception, or <c>null</c> if no inner exception is specified.</param>
+        public static JsonSerializationException Create(JsonReader reader, string message, Exception innerException)
         {
-            return Create(reader as IJsonLineInfo, reader.Path, message, ex);
+            return Create(reader as IJsonLineInfo, reader.Path, message, innerException);
         }
 
         internal static JsonSerializationException Create(IJsonLineInfo lineInfo, string path, string message, Exception ex)
