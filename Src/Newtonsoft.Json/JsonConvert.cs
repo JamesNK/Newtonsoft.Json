@@ -344,7 +344,7 @@ namespace Newtonsoft.Json
         /// Converts the <see cref="Decimal"/> to its JSON string representation.
         /// </summary>
         /// <param name="value">The value to convert.</param>
-        /// <returns>A JSON string representation of the <see cref="SByte"/>.</returns>
+        /// <returns>A JSON string representation of the <see cref="Decimal"/>.</returns>
         public static string ToString(decimal value)
         {
             return EnsureDecimalPlace(value.ToString(null, CultureInfo.InvariantCulture));
