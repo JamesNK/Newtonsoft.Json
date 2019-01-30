@@ -10,6 +10,7 @@ namespace Newtonsoft.Json.Linq
         private CommentHandling _commentHandling;
         private LineInfoHandling _lineInfoHandling;
         private DuplicatePropertyNameHandling _duplicatePropertyNameHandling;
+        private DateParseHandling _dateParseHandling;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonLoadSettings"/> class.
@@ -19,6 +20,7 @@ namespace Newtonsoft.Json.Linq
             _lineInfoHandling = LineInfoHandling.Load;
             _commentHandling = CommentHandling.Ignore;
             _duplicatePropertyNameHandling = DuplicatePropertyNameHandling.Replace;
+            _dateParseHandling = DateParseHandling.DateTime;
         }
 
         /// <summary>
@@ -75,6 +77,30 @@ namespace Newtonsoft.Json.Linq
                 }
 
                 _duplicatePropertyNameHandling = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets how date formatted strings, e.g. "\/Date(1198908717056)\/" and "2012-03-21T05:40Z", are parsed when reading JSON.
+        /// The default value is <see cref="DateParseHandling.DateTime" />.
+        /// </summary>
+        public DateParseHandling DateParseHandling
+        {
+            get => _dateParseHandling;
+            set
+            {
+                if (value < DateParseHandling.None ||
+#if HAVE_DATE_TIME_OFFSET
+                    value > DateParseHandling.DateTimeOffset
+#else
+                    value > DateParseHandling.DateTime
+#endif
+                    )
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                }
+
+                _dateParseHandling = value;
             }
         }
     }

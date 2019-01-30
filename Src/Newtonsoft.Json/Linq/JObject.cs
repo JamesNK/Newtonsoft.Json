@@ -457,6 +457,11 @@ namespace Newtonsoft.Json.Linq
         {
             using (JsonReader reader = new JsonTextReader(new StringReader(json)))
             {
+                if (settings != null)
+                {
+                    reader.DateParseHandling = settings.DateParseHandling;
+                }
+
                 JObject o = Load(reader, settings);
 
                 while (reader.Read())
