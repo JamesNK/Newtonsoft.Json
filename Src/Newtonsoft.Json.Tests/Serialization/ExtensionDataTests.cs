@@ -169,6 +169,54 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(3, (int)o1[2]);
         }
 
+
+        public class SimpleExtendableObject
+        {
+            [JsonExtensionData]
+            public IDictionary<string, object> Data { get; } = new Dictionary<string, object>();
+        }
+
+        public class ObjectWithExtendableChild
+        {
+            public SimpleExtendableObject Data;
+        }
+        [Test]
+        public void TestMissingMemberHandlingForDirectObjects()
+        {
+            string json = @"{""extensionData1"": [1,2,3]}";
+            SimpleExtendableObject e2 = JsonConvert.DeserializeObject<SimpleExtendableObject>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+            JArray o1 = (JArray)e2.Data["extensionData1"];
+            Assert.AreEqual(JTokenType.Array, o1.Type);
+        }
+
+        [Test]
+        public void TestMissingMemberHandlingForChildObjects()
+        {
+            string json = @"{""Data"":{""extensionData1"": [1,2,3]}}";
+            ObjectWithExtendableChild e3 = JsonConvert.DeserializeObject<ObjectWithExtendableChild>(json, new JsonSerializerSettings { MissingMemberHandling = MissingMemberHandling.Error });
+            JArray o1 = (JArray)e3.Data.Data["extensionData1"];
+            Assert.AreEqual(JTokenType.Array, o1.Type);
+        }
+
+
+        [Test]
+        public void TestMissingMemberHandlingForChildObjectsWithInvalidData()
+        {
+            string json = @"{""InvalidData"":{""extensionData1"": [1,2,3]}}";
+            try
+            {
+                ObjectWithExtendableChild e3 = JsonConvert.DeserializeObject<ObjectWithExtendableChild>(json, new JsonSerializerSettings {MissingMemberHandling = MissingMemberHandling.Error});
+                Assert.Fail("an exception was expected due to MissingMemberHandling.Error, and no place to Deserialize InvalidData to");
+            }
+            catch (JsonSerializationException)
+            {
+                Assert.Pass();
+            }
+
+        }
+
+
+
         public class ExtensionDataDeserializeWithNonDefaultConstructor
         {
             public ExtensionDataDeserializeWithNonDefaultConstructor(string name)
