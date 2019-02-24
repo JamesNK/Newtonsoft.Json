@@ -47,12 +47,14 @@ steps:
     testRunner: 'NUnit'
     testResultsFiles: '**/Working/*.xml'
   displayName: 'Publish NUnit results'
+  condition: succeededOrFailed()
 
 - task: PublishTestResults@2
   inputs:
     testRunner: 'VSTest'
     testResultsFiles: '**/Working/*.trx'
   displayName: 'Publish dotnet test results'
+  condition: succeededOrFailed()
 
 - task: PublishBuildArtifacts@1
   inputs:
