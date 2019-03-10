@@ -178,7 +178,7 @@ namespace Newtonsoft.Json.Utilities
 
         private static string RemoveAssemblyDetails(string fullyQualifiedTypeName)
         {
-                return SplitFullyQualifiedTypeName(fullyQualifiedTypeName).Value2;
+            return SplitFullyQualifiedTypeName(fullyQualifiedTypeName).Value2;
         }
 
         public static bool HasDefaultConstructor(Type t, bool nonPublic)
