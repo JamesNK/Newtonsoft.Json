@@ -145,16 +145,6 @@ namespace Newtonsoft.Json.Utilities
                         throw new ArgumentException("Unexpected member type '{0}' for member '{1}'.".FormatWith(CultureInfo.InvariantCulture, member.MemberType(), member.Name));
                 }
 
-                if (ReflectionUtils.CanReadMemberValue(member, false))
-                {
-                    reflectionMember.Getter = delegateFactory.CreateGet<object>(member);
-                }
-
-                if (ReflectionUtils.CanSetMemberValue(member, false, false))
-                {
-                    reflectionMember.Setter = delegateFactory.CreateSet<object>(member);
-                }
-
                 reflectionMember.MemberType = ReflectionUtils.GetMemberUnderlyingType(member);
 
                 d.Members[memberName] = reflectionMember;
