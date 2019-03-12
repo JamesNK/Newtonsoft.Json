@@ -35,7 +35,7 @@ namespace Newtonsoft.Json.Utilities
 {
     internal class LateBoundReflectionDelegateFactory : ReflectionDelegateFactory
     {
-        internal static ReflectionDelegateFactory Instance { get; } = new LateBoundReflectionDelegateFactory();
+        public static ReflectionDelegateFactory Instance { get; } = new LateBoundReflectionDelegateFactory();
 
         public override ObjectConstructor<object> CreateParameterizedConstructor(MethodBase method)
         {

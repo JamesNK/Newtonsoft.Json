@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Utilities
 {
     internal class DynamicReflectionDelegateFactory : ReflectionDelegateFactory
     {
-        internal static DynamicReflectionDelegateFactory Instance { get; } = new DynamicReflectionDelegateFactory();
+        public static DynamicReflectionDelegateFactory Instance { get; } = new DynamicReflectionDelegateFactory();
 
         private static DynamicMethod CreateDynamicMethod(string name, Type returnType, Type[] parameterTypes, Type owner)
         {
@@ -350,7 +350,7 @@ namespace Newtonsoft.Json.Utilities
             return (Action<T, object>)dynamicMethod.CreateDelegate(typeof(Action<T, object>));
         }
 
-        internal static void GenerateCreateSetFieldIL(FieldInfo fieldInfo, ILGenerator generator)
+        public static void GenerateCreateSetFieldIL(FieldInfo fieldInfo, ILGenerator generator)
         {
             if (!fieldInfo.IsStatic)
             {
@@ -382,7 +382,7 @@ namespace Newtonsoft.Json.Utilities
             return (Action<T, object>)dynamicMethod.CreateDelegate(typeof(Action<T, object>));
         }
 
-        internal static void GenerateCreateSetPropertyIL(PropertyInfo propertyInfo, ILGenerator generator)
+        public static void GenerateCreateSetPropertyIL(PropertyInfo propertyInfo, ILGenerator generator)
         {
             MethodInfo setMethod = propertyInfo.GetSetMethod(true);
             if (!setMethod.IsStatic)
