@@ -47,11 +47,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 // don't convert to method group to avoid medium trust issues
                 // https://github.com/JamesNK/Newtonsoft.Json/issues/476
-                return a =>
-                {
-                    object[] args = a;
-                    return c.Invoke(args);
-                };
+                return a => c.Invoke(a);
             }
 
             return a => method.Invoke(null, a);
