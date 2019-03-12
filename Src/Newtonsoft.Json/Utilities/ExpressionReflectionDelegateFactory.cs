@@ -37,9 +37,7 @@ namespace Newtonsoft.Json.Utilities
 {
     internal class ExpressionReflectionDelegateFactory : ReflectionDelegateFactory
     {
-        private static readonly ExpressionReflectionDelegateFactory _instance = new ExpressionReflectionDelegateFactory();
-
-        internal static ReflectionDelegateFactory Instance => _instance;
+        public static ReflectionDelegateFactory Instance { get; } = new ExpressionReflectionDelegateFactory();
 
         public override ObjectConstructor<object> CreateParameterizedConstructor(MethodBase method)
         {
