@@ -129,7 +129,7 @@ namespace Newtonsoft.Json.Linq
 
             if (_dictionary != null)
             {
-                return _dictionary.ContainsKey(key) && Remove(_dictionary[key]);
+                return _dictionary.TryGetValue(key, out var value) && Remove(value);
             }
 
             return false;
