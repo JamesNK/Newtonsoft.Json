@@ -202,6 +202,11 @@ namespace Newtonsoft.Json.Serialization
         }
 
         /// <summary>
+        /// Gets a value indicating whether <see cref="Required"/> has a value specified.
+        /// </summary>
+        public bool IsRequiredSpecified => _required != null;
+
+        /// <summary>
         /// Gets or sets a value indicating whether this property preserves object references.
         /// </summary>
         /// <value>
