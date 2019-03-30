@@ -1635,6 +1635,23 @@ Parameter name: arrayIndex");
             Assert.AreEqual("Name1", value);
         }
 
+        [Test]
+        public void ParseMultipleProperties_ReplaceDuplicateSetting()
+        {
+            string json = @"{
+        ""Name"": ""Name1"",
+        ""Name"": ""Name2""
+      }";
+
+            JObject o = JObject.Parse(json, new JsonLoadSettings
+            {
+                DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Replace
+            });
+            string value = (string)o["Name"];
+
+            Assert.AreEqual("Name2", value);
+        }
+
 #if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
         [Test]
         public void WriteObjectNullDBNullValue()
