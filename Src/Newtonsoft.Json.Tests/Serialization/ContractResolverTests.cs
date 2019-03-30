@@ -781,5 +781,36 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(null, property5.GetIsSpecified);
             Assert.AreEqual(null, property5.SetIsSpecified);
         }
+
+        [Test]
+        public void JsonRequiredAttribute()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(RequiredPropertyTestClass));
+
+            var property1 = contract.Properties["Name"];
+
+            Assert.AreEqual(Required.Always, property1.Required);
+            Assert.AreEqual(true, property1.IsRequiredSpecified);
+        }
+
+        [Test]
+        public void JsonPropertyAttribute_Required()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(RequiredObject));
+
+            var unset = contract.Properties["UnsetProperty"];
+
+            Assert.AreEqual(Required.Default, unset.Required);
+            Assert.AreEqual(false, unset.IsRequiredSpecified);
+
+            var allowNull = contract.Properties["AllowNullProperty"];
+
+            Assert.AreEqual(Required.AllowNull, allowNull.Required);
+            Assert.AreEqual(true, allowNull.IsRequiredSpecified);
+        }
     }
 }
