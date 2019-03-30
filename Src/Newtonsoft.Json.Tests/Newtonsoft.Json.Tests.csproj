@@ -168,7 +168,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.3.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="15.7.2" />
   </ItemGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
+  <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.2'">
     <AssemblyTitle>Json.NET Tests .NET Standard 2.0</AssemblyTitle>
     <ReferringTargetFrameworkForProjectReferences>.NETStandard,Version=v2.0</ReferringTargetFrameworkForProjectReferences>
     <DefineConstants>NETSTANDARD2_0;DNXCORE50;PORTABLE;HAVE_BENCHMARKS;$(AdditionalConstants)</DefineConstants>
