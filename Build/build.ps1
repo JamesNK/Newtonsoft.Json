@@ -13,7 +13,7 @@
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $netCliChannel = "2.0"
-  $netCliVersion = "2.1.500"
+  $netCliVersion = "2.1.505"
   $nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 
   $baseDir  = resolve-path ..
