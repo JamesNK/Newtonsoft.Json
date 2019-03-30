@@ -11,6 +11,10 @@ steps:
     version: 2.1.505
 
 - powershell: |
+    dotnet --info
+  displayName: 'Debug dotnet'
+
+- powershell: |
     $basePath = resolve-path .
     $keyPath = "$basePath\key.snk"
     $keyData = [System.Convert]::FromBase64String($Env:KeyData)
