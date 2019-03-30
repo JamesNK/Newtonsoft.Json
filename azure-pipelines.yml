@@ -6,10 +6,6 @@ pool:
   vmImage: 'VS2017-Win2016'
 
 steps:
-- task: DotNetCoreInstaller@0
-  inputs:
-    version: 2.1.505
-
 - powershell: |
     dotnet --info
   displayName: 'Debug dotnet'
