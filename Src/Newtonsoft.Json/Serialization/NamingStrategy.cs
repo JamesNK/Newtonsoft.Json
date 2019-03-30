@@ -133,12 +133,14 @@ namespace Newtonsoft.Json.Serialization
         protected bool Equals(NamingStrategy other)
         {
             if (other == null)
+            {
                 return false;
+            }
 
             return GetType() == other.GetType() &&
-                   ProcessDictionaryKeys == other.ProcessDictionaryKeys &&
-                   ProcessExtensionDataNames == other.ProcessExtensionDataNames &&
-                   OverrideSpecifiedNames == other.OverrideSpecifiedNames;
+                ProcessDictionaryKeys == other.ProcessDictionaryKeys &&
+                ProcessExtensionDataNames == other.ProcessExtensionDataNames &&
+                OverrideSpecifiedNames == other.OverrideSpecifiedNames;
         }
     }
 }
