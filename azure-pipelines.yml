@@ -8,7 +8,7 @@ pool:
 steps:
 - powershell: |
     dotnet --info
-  displayName: 'Debug dotnet'
+  displayName: 'Dotnet installs'
 
 - powershell: |
     $basePath = resolve-path .

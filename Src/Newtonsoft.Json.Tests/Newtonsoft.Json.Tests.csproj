@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net451;net452;net40;net35;net20;netcoreapp2.1;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net451;net452;net40;net35;net20;netcoreapp2.2;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(TestFrameworks)'!=''">$(TestFrameworks)</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <VersionPrefix>1.0</VersionPrefix>
@@ -153,7 +153,7 @@
     <DefineConstants>NET20;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
-  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
+  <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.2'">
     <PackageReference Include="BenchmarkDotNet" Version="0.10.10" />
     <PackageReference Include="FSharp.Core" Version="4.2.3" />
     <PackageReference Include="System.ObjectModel" Version="4.3.0" />
