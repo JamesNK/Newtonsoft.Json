@@ -47,6 +47,8 @@ using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json.Converters;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -811,6 +813,26 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(Required.AllowNull, allowNull.Required);
             Assert.AreEqual(true, allowNull.IsRequiredSpecified);
+        }
+
+        [Test]
+        public void InternalConverter_Object_NotSet()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(object));
+
+            Assert.IsNull(contract.InternalConverter);
+        }
+
+        [Test]
+        public void InternalConverter_Regex_Set()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonContract contract = resolver.ResolveContract(typeof(Regex));
+
+            Assert.IsInstanceOf(typeof(RegexConverter), contract.InternalConverter);
         }
     }
 }
