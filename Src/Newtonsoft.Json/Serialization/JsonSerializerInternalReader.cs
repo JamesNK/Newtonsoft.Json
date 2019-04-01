@@ -2179,7 +2179,7 @@ namespace Newtonsoft.Json.Serialization
 
                         CreatorPropertyContext creatorPropertyContext = new CreatorPropertyContext
                         {
-                            Name = reader.Value.ToString(),
+                            Name = memberName,
                             ConstructorProperty = contract.CreatorParameters.GetClosestMatchProperty(memberName),
                             Property = contract.Properties.GetClosestMatchProperty(memberName)
                         };

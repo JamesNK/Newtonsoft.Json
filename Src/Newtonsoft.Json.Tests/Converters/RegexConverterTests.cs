@@ -178,7 +178,7 @@ namespace Newtonsoft.Json.Tests.Converters
         public void DeserializeStringRegex_NoStartAndEndSlashes_Error()
         {
             string json = @"{
-  ""Regex"": ""\/abc""
+  ""Regex"": ""abc""
 }";
 
             ExceptionAssert.Throws<JsonSerializationException>(
@@ -186,7 +186,7 @@ namespace Newtonsoft.Json.Tests.Converters
                 {
                     Converters = { new RegexConverter() }
                 }),
-                "Regex pattern must be enclosed by slashes. Path 'Regex', line 2, position 18.");
+                "Regex pattern must be enclosed by slashes. Path 'Regex', line 2, position 16.");
         }
 
 #pragma warning disable 618

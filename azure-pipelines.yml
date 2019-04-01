@@ -7,6 +7,10 @@ pool:
 
 steps:
 - powershell: |
+    dotnet --info
+  displayName: 'Dotnet installs'
+
+- powershell: |
     $basePath = resolve-path .
     $keyPath = "$basePath\key.snk"
     $keyData = [System.Convert]::FromBase64String($Env:KeyData)
@@ -47,12 +51,14 @@ steps:
     testRunner: 'NUnit'
     testResultsFiles: '**/Working/*.xml'
   displayName: 'Publish NUnit results'
+  condition: succeededOrFailed()
 
 - task: PublishTestResults@2
   inputs:
     testRunner: 'VSTest'
     testResultsFiles: '**/Working/*.trx'
   displayName: 'Publish dotnet test results'
+  condition: succeededOrFailed()
 
 - task: PublishBuildArtifacts@1
   inputs:

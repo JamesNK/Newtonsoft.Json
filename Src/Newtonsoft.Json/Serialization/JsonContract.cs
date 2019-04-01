@@ -131,9 +131,12 @@ namespace Newtonsoft.Json.Serialization
         /// <value>The converter.</value>
         public JsonConverter Converter { get; set; }
 
-        // internally specified JsonConverter's to override default behavour
-        // checked for after passed in converters and attribute specified converters
-        internal JsonConverter InternalConverter { get; set; }
+        /// <summary>
+        /// Gets the internally resolved <see cref="JsonConverter"/> for the contract's type.
+        /// This converter is used as a fallback converter when no other converter is resolved.
+        /// Setting <see cref="Converter"/> will always override this converter.
+        /// </summary>
+        public JsonConverter InternalConverter { get; internal set; }
 
         /// <summary>
         /// Gets or sets all methods called immediately after deserialization of the object.
