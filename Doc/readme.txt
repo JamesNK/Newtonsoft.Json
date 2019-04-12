@@ -37,6 +37,9 @@ Json.NET has different libraries for the various .NET Framework versions.
 -net20:
   .NET 2.0, Unity
 
+-net462-unity3d:
+  .NET 4.6.2, Unity (IL2CPP compliant)
+
 -portable-net45+win8+wpa81+wp8:
   .NET 4.5, Windows Phone 8, Windows 8 Store
 
