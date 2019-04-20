@@ -383,7 +383,9 @@ namespace Newtonsoft.Json.Utilities
             // Defensively guard against a version of Linq where Enumerable.Empty<T> doesn't
             // return an array, but throw in debug versions so a better strategy can be
             // used if that ever happens.
+#pragma warning disable CA1825 // Avoid zero-length array allocations.
             return array ?? new T[0];
+#pragma warning restore CA1825 // Avoid zero-length array allocations.
         }
     }
 }

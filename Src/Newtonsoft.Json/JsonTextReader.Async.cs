@@ -820,7 +820,9 @@ namespace Newtonsoft.Json
             }
             else
             {
+#pragma warning disable CA1308 // Normalize strings to uppercase
                 throw JsonReaderException.Create(this, "Error parsing " + newToken.ToString().ToLowerInvariant() + " value.");
+#pragma warning restore CA1308 // Normalize strings to uppercase
             }
         }
 

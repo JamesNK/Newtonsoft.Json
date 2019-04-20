@@ -248,7 +248,7 @@ namespace Newtonsoft.Json.Utilities
                             continue;
                         }
 
-                        bool isEscapedUnicodeText = string.Equals(escapedValue, EscapedUnicodeText);
+                        bool isEscapedUnicodeText = string.Equals(escapedValue, EscapedUnicodeText, StringComparison.Ordinal);
 
                         if (i > lastWritePosition)
                         {

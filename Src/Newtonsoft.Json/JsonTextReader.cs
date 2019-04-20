@@ -56,8 +56,9 @@ namespace Newtonsoft.Json
     public partial class JsonTextReader : JsonReader, IJsonLineInfo
     {
         private const char UnicodeReplacementChar = '\uFFFD';
+#if HAVE_BIG_INTEGER
         private const int MaximumJavascriptIntegerCharacterLength = 380;
-
+#endif
 #if DEBUG
         internal int LargeBufferLength { get; set; } = int.MaxValue / 2;
 #else
