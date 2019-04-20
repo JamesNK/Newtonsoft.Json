@@ -3,7 +3,7 @@ trigger:
 - release/*
 
 pool:
-  vmImage: 'windows-2019'
+  vmImage: 'VS2017-Win2016'
 
 steps:
 - powershell: |
