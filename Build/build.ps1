@@ -195,10 +195,24 @@ function EnsureNuGetPackage($packageName, $packagePath, $packageVersion)
 function GetMsBuildPath()
 {
   $path = & $vswherePath\tools\vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
-  if (!($path)) {
+  if (!($path))
+  {
     throw "Could not find Visual Studio install path"
   }
-  return join-path $path 'MSBuild\15.0\Bin\MSBuild.exe'
+
+  $msBuildPath = join-path $path 'MSBuild\15.0\Bin\MSBuild.exe'
+  if (Test-Path $msBuildPath)
+  {
+    return $msBuildPath
+  }
+
+  $msBuildPath = join-path $path 'MSBuild\Current\Bin\MSBuild.exe'
+  if (Test-Path $msBuildPath)
+  {
+    return $msBuildPath
+  }
+
+  throw "Could not find MSBuild path"
 }
 
 function NetCliTests($build)
