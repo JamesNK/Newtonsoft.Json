@@ -194,7 +194,7 @@ function EnsureNuGetPackage($packageName, $packagePath, $packageVersion)
 
 function GetMsBuildPath()
 {
-  $path = & $vswherePath\tools\vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild Microsoft.VisualStudio.Component.PortableLibrary -property installationPath
+  $path = & $vswherePath\tools\vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
   if (!($path)) {
     throw "Could not find Visual Studio install path"
   }
