@@ -103,6 +103,7 @@ task Package -depends Build {
 
     mkdir $workingDir\NuGet
     move -Path $sourceDir\Newtonsoft.Json\bin\Release\*.nupkg -Destination $workingDir\NuGet
+    move -Path $sourceDir\Newtonsoft.Json\bin\Release\*.snupkg -Destination $workingDir\NuGet
   }
 
   Write-Host "Build documentation: $buildDocumentation"
