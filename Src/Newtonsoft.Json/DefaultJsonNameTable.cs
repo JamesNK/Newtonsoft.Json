@@ -121,7 +121,7 @@ namespace Newtonsoft.Json
             hashCode -= hashCode >> 5;
             for (Entry entry = _entries[hashCode & _mask]; entry != null; entry = entry.Next)
             {
-                if (entry.HashCode == hashCode && entry.Value.Equals(key))
+                if (entry.HashCode == hashCode && entry.Value.Equals(key, StringComparison.Ordinal))
                 {
                     return entry.Value;
                 }

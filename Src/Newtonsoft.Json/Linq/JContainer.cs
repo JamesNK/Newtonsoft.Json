@@ -859,7 +859,7 @@ namespace Newtonsoft.Json.Linq
 
             JObject parentObject = (JObject)parent;
             string propertyName = r.Value.ToString();
-            JProperty existingPropertyWithName = parentObject.Property(propertyName);
+            JProperty existingPropertyWithName = parentObject.Property(propertyName, StringComparison.Ordinal);
             if (existingPropertyWithName != null)
             {
                 if (duplicatePropertyNameHandling == DuplicatePropertyNameHandling.Ignore)

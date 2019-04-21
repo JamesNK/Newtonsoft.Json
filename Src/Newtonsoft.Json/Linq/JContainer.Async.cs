@@ -155,7 +155,7 @@ namespace Newtonsoft.Json.Linq
                         }
                         else
                         {
-                            await reader.SkipAsync();
+                            await reader.SkipAsync().ConfigureAwait(false);
                         }
                         break;
                     default:
