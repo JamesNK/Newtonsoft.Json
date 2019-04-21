@@ -45,6 +45,12 @@ namespace Newtonsoft.Json.Serialization
         public MemberSerialization MemberSerialization { get; set; }
 
         /// <summary>
+        /// Gets or sets the missing member handling used when deserializing this object.
+        /// </summary>
+        /// <value>The missing member handling.</value>
+        public MissingMemberHandling? MissingMemberHandling { get; set; }
+
+        /// <summary>
         /// Gets or sets a value that indicates whether the object's properties are required.
         /// </summary>
         /// <value>
