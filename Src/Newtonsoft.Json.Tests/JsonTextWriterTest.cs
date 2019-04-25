@@ -1135,6 +1135,34 @@ _____'propertyName': NaN,
         }
 
         [Test]
+        public void WriteBytesInArray_WithArrayFormatting()
+        {
+            StringBuilder sb = new StringBuilder();
+            StringWriter sw = new StringWriter(sb);
+
+            byte[] data = new byte[] { 1, 2, 3 };
+
+            using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+            {
+                jsonWriter.ByteArrayFormatHandling = ByteArrayFormatHandling.Array;
+                Assert.AreEqual(ByteArrayFormatHandling.Array, jsonWriter.ByteArrayFormatHandling);
+
+                jsonWriter.WriteStartArray();
+                jsonWriter.WriteValue(data);
+                jsonWriter.WriteValue(data);
+                jsonWriter.WriteValue((object)data);
+                jsonWriter.WriteValue((byte[])null);
+                jsonWriter.WriteValue((Uri)null);
+                jsonWriter.WriteEndArray();
+            }
+
+            string expected = "[[1,2,3],[1,2,3],[1,2,3],null,null]";
+            string result = sb.ToString();
+
+            StringAssert.AreEqual(expected, result);
+        }
+
+        [Test]
         public void Path()
         {
             StringBuilder sb = new StringBuilder();

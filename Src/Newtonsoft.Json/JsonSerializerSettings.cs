@@ -56,6 +56,7 @@ namespace Newtonsoft.Json
         internal const DateParseHandling DefaultDateParseHandling = DateParseHandling.DateTime;
         internal const FloatParseHandling DefaultFloatParseHandling = FloatParseHandling.Double;
         internal const FloatFormatHandling DefaultFloatFormatHandling = FloatFormatHandling.String;
+        internal const ByteArrayFormatHandling DefaultByteArrayFormatHandling = ByteArrayFormatHandling.Base64EncodedString;
         internal const StringEscapeHandling DefaultStringEscapeHandling = StringEscapeHandling.Default;
         internal const TypeNameAssemblyFormatHandling DefaultTypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple;
         internal static readonly CultureInfo DefaultCulture;
@@ -68,6 +69,7 @@ namespace Newtonsoft.Json
         internal DateParseHandling? _dateParseHandling;
         internal FloatFormatHandling? _floatFormatHandling;
         internal FloatParseHandling? _floatParseHandling;
+        internal ByteArrayFormatHandling? _byteArrayFormatHandling;
         internal StringEscapeHandling? _stringEscapeHandling;
         internal CultureInfo _culture;
         internal bool? _checkAdditionalContent;
@@ -402,6 +404,16 @@ namespace Newtonsoft.Json
         {
             get => _floatParseHandling ?? DefaultFloatParseHandling;
             set => _floatParseHandling = value;
+        }
+
+        /// <summary>
+        /// Gets or sets how byte arrays are written as JSON.
+        /// The default value is <see cref="Json.ByteArrayFormatHandling.Base64EncodedString" />.
+        /// </summary>
+        public ByteArrayFormatHandling ByteArrayFormatHandling
+        {
+            get => _byteArrayFormatHandling ?? DefaultByteArrayFormatHandling;
+            set => _byteArrayFormatHandling = value;
         }
 
         /// <summary>

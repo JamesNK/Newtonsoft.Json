@@ -68,6 +68,7 @@ namespace Newtonsoft.Json
         private DateParseHandling? _dateParseHandling;
         private FloatFormatHandling? _floatFormatHandling;
         private FloatParseHandling? _floatParseHandling;
+        private ByteArrayFormatHandling? _byteArrayFormatHandling;
         private StringEscapeHandling? _stringEscapeHandling;
         private CultureInfo _culture;
         private int? _maxDepth;
@@ -480,6 +481,17 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Gets or sets how byte arrays,
+        /// are written as JSON text.
+        /// The default value is <see cref="Json.ByteArrayFormatHandling.Base64EncodedString" />.
+        /// </summary>
+        public virtual ByteArrayFormatHandling ByteArrayFormatHandling
+        {
+            get => _byteArrayFormatHandling ?? JsonSerializerSettings.DefaultByteArrayFormatHandling;
+            set => _byteArrayFormatHandling = value;
+        }
+
+        /// <summary>
         /// Gets or sets how strings are escaped when writing JSON text.
         /// The default value is <see cref="Json.StringEscapeHandling.Default" />.
         /// </summary>
@@ -769,6 +781,10 @@ namespace Newtonsoft.Json
             if (settings._floatParseHandling != null)
             {
                 serializer._floatParseHandling = settings._floatParseHandling;
+            }
+            if (settings._byteArrayFormatHandling != null)
+            {
+                serializer._byteArrayFormatHandling = settings._byteArrayFormatHandling;
             }
             if (settings._stringEscapeHandling != null)
             {
@@ -1120,6 +1136,13 @@ namespace Newtonsoft.Json
                 jsonWriter.FloatFormatHandling = _floatFormatHandling.GetValueOrDefault();
             }
 
+            ByteArrayFormatHandling? previousByteArrayFormatHandling = null;
+            if (_byteArrayFormatHandling != null && jsonWriter.ByteArrayFormatHandling != _byteArrayFormatHandling)
+            {
+                previousByteArrayFormatHandling = jsonWriter.ByteArrayFormatHandling;
+                jsonWriter.ByteArrayFormatHandling = _byteArrayFormatHandling.GetValueOrDefault();
+            }
+
             StringEscapeHandling? previousStringEscapeHandling = null;
             if (_stringEscapeHandling != null && jsonWriter.StringEscapeHandling != _stringEscapeHandling)
             {
@@ -1169,6 +1192,10 @@ namespace Newtonsoft.Json
             if (previousFloatFormatHandling != null)
             {
                 jsonWriter.FloatFormatHandling = previousFloatFormatHandling.GetValueOrDefault();
+            }
+            if (previousByteArrayFormatHandling != null)
+            {
+                jsonWriter.ByteArrayFormatHandling = previousByteArrayFormatHandling.GetValueOrDefault();
             }
             if (previousStringEscapeHandling != null)
             {
