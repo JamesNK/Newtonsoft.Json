@@ -1164,6 +1164,8 @@ namespace Newtonsoft.Json.Linq
 #endif
                     break;
                 case MergeArrayHandling.Replace:
+                    if (target == content)
+                        break;
                     target.ClearItems();
                     foreach (JToken item in content)
                     {
