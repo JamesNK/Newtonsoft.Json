@@ -47,6 +47,14 @@ namespace Newtonsoft.Json.Tests.Linq
     public class MergeTests : TestFixtureBase
     {
         [Test]
+        public void MergeSelf()
+        {
+            var a = new JArray { "1", "2" };
+            a.Merge(a, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+            Assert.AreEqual(a, new JArray { "1", "2" });
+        }
+
+        [Test]
         public void MergeNullString()
         {
             var a = new JObject { ["a"] = 1 };
