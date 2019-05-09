@@ -1,5 +1,6 @@
 {
   "Major": 12,
   "Release": 2,
-  "Prerelease": null
+  "Prerelease": null,
+  "Assembly": "12.0.0.2"
 }
