@@ -49,7 +49,7 @@ namespace Newtonsoft.Json
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        /// <param name="serializer">The containing property.</param>
+        /// <param name="containerProperty">The containing property.</param>
         public void WriteJson(JsonWriter writer, object value, JsonSerializer serializer, JsonProperty containerProperty)
         {
             WriteJson(writer, value, serializer, containerProperty);
