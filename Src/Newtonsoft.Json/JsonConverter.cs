@@ -24,8 +24,9 @@
 #endregion
 
 using System;
-using Newtonsoft.Json.Utilities;
 using System.Globalization;
+using Newtonsoft.Json.Utilities;
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json
 {
@@ -41,6 +42,18 @@ namespace Newtonsoft.Json
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
         public abstract void WriteJson(JsonWriter writer, object value, JsonSerializer serializer);
+
+        /// <summary>
+        /// Writes the JSON representation of the object.
+        /// </summary>
+        /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        /// <param name="serializer">The containing property.</param>
+        public void WriteJson(JsonWriter writer, object value, JsonSerializer serializer, JsonProperty containerProperty)
+        {
+            WriteJson(writer, value, serializer, containerProperty);
+        }
 
         /// <summary>
         /// Reads the JSON representation of the object.
