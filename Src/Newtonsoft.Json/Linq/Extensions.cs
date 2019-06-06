@@ -276,6 +276,11 @@ namespace Newtonsoft.Json.Linq
                     return u;
                 }
 
+                if (value.Value.ToString() is U castString)
+                {
+                    return castString;
+                }
+
                 Type targetType = typeof(U);
 
                 if (ReflectionUtils.IsNullableType(targetType))
