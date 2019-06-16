@@ -49,7 +49,7 @@ namespace Newtonsoft.Json.Linq
         {
             if (converters != null && converters.Length > 0 && _value != null)
             {
-                JsonConverter matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType());
+                JsonConverter matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType(), true);
                 if (matchingConverter != null && matchingConverter.CanWrite)
                 {
                     // TODO: Call WriteJsonAsync when it exists.

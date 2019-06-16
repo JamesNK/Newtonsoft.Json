@@ -720,7 +720,7 @@ namespace Newtonsoft.Json.Linq
         {
             if (converters != null && converters.Length > 0 && _value != null)
             {
-                JsonConverter matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType());
+                JsonConverter matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType(), true);
                 if (matchingConverter != null && matchingConverter.CanWrite)
                 {
                     matchingConverter.WriteJson(writer, _value, JsonSerializer.CreateDefault());

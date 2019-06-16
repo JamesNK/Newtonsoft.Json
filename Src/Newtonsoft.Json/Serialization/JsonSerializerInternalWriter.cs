@@ -158,7 +158,7 @@ namespace Newtonsoft.Json.Serialization
                 containerProperty?.ItemConverter ??
                 containerContract?.ItemConverter ??
                 valueContract.Converter ??
-                Serializer.GetMatchingConverter(valueContract.UnderlyingType) ??
+                Serializer.GetMatchingConverter(valueContract.UnderlyingType, true) ??
                 valueContract.InternalConverter;
 
             if (converter != null && converter.CanWrite)

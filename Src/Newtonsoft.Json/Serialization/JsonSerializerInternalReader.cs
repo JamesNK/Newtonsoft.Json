@@ -396,7 +396,7 @@ namespace Newtonsoft.Json.Serialization
                     // class attribute converter
                     converter = contract.Converter;
                 }
-                else if ((matchingConverter = Serializer.GetMatchingConverter(contract.UnderlyingType)) != null)
+                else if ((matchingConverter = Serializer.GetMatchingConverter(contract.UnderlyingType, false)) != null)
                 {
                     // passed in converters
                     converter = matchingConverter;
