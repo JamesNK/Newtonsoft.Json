@@ -41,6 +41,44 @@ namespace Newtonsoft.Json.Converters
         private CultureInfo _culture;
 
         /// <summary>
+        /// Constructor that uses the default format.
+        /// </summary>
+        public IsoDateTimeConverter() { }
+
+        /// <summary>
+        /// Constructor for parsing dates with a custom format.
+        /// </summary>
+        /// <param name="dateTimeFormat">The date time format used when converting a date to and from JSON.</param>
+        public IsoDateTimeConverter(string dateTimeFormat)
+        {
+            _dateTimeFormat = dateTimeFormat;
+        }
+
+        /// <summary>
+        /// Constructor for parsing dates with a custom format and style.
+        /// </summary>
+        /// <param name="dateTimeFormat">The date time format used when converting a date to and from JSON.</param>
+        /// <param name="dateTimeStyles">The date time styles used when converting a date to and from JSON.</param>
+        public IsoDateTimeConverter(string dateTimeFormat, DateTimeStyles dateTimeStyles)
+        {
+            _dateTimeFormat = dateTimeFormat;
+            _dateTimeStyles = dateTimeStyles;
+        }
+
+        /// <summary>
+        /// Constructor for parsing dates with a custom format, style and culture.
+        /// </summary>
+        /// <param name="dateTimeFormat">The date time format used when converting a date to and from JSON.</param>
+        /// <param name="dateTimeStyles">The date time styles used when converting a date to and from JSON.</param>
+        /// <param name="cultureName">The name of the culture used when converting a date to and from JSON.</param>
+        public IsoDateTimeConverter(string dateTimeFormat, DateTimeStyles dateTimeStyles, string cultureName)
+        {
+            _dateTimeFormat = dateTimeFormat;
+            _dateTimeStyles = dateTimeStyles;
+            _culture = new CultureInfo(cultureName);
+        }
+
+        /// <summary>
         /// Gets or sets the date time styles used when converting a date to and from JSON.
         /// </summary>
         /// <value>The date time styles used when converting a date to and from JSON.</value>
