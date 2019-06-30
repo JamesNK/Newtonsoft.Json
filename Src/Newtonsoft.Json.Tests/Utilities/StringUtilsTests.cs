@@ -70,7 +70,6 @@ namespace Newtonsoft.Json.Tests.Utilities
         };
         private static object[] toSnakeCaseTestCases = new[]
         {
-
             new object[] {"url_value", "URLValue"},
             new object[] {"url", "URL"},
             new object[] {"id", "ID"},
@@ -115,11 +114,11 @@ namespace Newtonsoft.Json.Tests.Utilities
         [Test]
         public void ToCamelCaseTest()
         {
-            foreach (var camelCaseTestCase in toCamelCaseTestCases)
+            foreach (var testCase in toCamelCaseTestCases)
             {
-                if (camelCaseTestCase is object[] parameters)
+                if (testCase is object[] parameters)
                 {
-                    Assert.AreEqual((string)parameters[1], StringUtils.ToCamelCase((string)parameters[0]));
+                    Assert.AreEqual((string)parameters[0], StringUtils.ToCamelCase((string)parameters[1]));
                 }
             }
             
@@ -127,11 +126,11 @@ namespace Newtonsoft.Json.Tests.Utilities
         [Test]
         public void ToSnakeCaseTest()
         {
-            foreach (var camelCaseTestCase in toSnakeCaseTestCases)
+            foreach (var testCase in toSnakeCaseTestCases)
             {
-                if (camelCaseTestCase is object[] parameters)
+                if (testCase is object[] parameters)
                 {
-                    Assert.AreEqual((string)parameters[1], StringUtils.ToSnakeCase((string)parameters[0]));
+                    Assert.AreEqual((string)parameters[0], StringUtils.ToSnakeCase((string)parameters[1]));
                 }
             }
             
