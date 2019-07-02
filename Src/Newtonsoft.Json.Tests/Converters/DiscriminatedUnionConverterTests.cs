@@ -71,6 +71,46 @@ namespace Newtonsoft.Json.Tests.Converters
             }
         }
 
+        public class Union
+        {
+            public List<UnionCase> Cases;
+            public Converter<object, int> TagReader { get; set; }
+        }
+
+        public class UnionCase
+        {
+            public int Tag;
+            public string Name;
+            public PropertyInfo[] Fields;
+            public Converter<object, object[]> FieldReader;
+            public Converter<object[], object> Constructor;
+        }
+
+        private Union CreateUnion(Type t)
+        {
+            Union u = new Union();
+
+            u.TagReader = (s) => FSharpValue.PreComputeUnionTagReader(t, null).Invoke(s);
+            u.Cases = new List<UnionCase>();
+
+            UnionCaseInfo[] cases = FSharpType.GetUnionCases(t, null);
+
+            foreach (UnionCaseInfo unionCaseInfo in cases)
+            {
+                UnionCase unionCase = new UnionCase();
+                unionCase.Tag = unionCaseInfo.Tag;
+                unionCase.Name = unionCaseInfo.Name;
+                unionCase.Fields = unionCaseInfo.GetFields();
+                unionCase.FieldReader = (s) => FSharpValue.PreComputeUnionReader(unionCaseInfo, null).Invoke(s);
+                unionCase.Constructor = (s) => FSharpValue.PreComputeUnionConstructor(unionCaseInfo, null).Invoke(s);
+
+                u.Cases.Add(unionCase);
+            }
+
+            return u;
+        }
+
+#region Standard Tests
         [Test]
         public void SerializeUnionWithConverter()
         {
@@ -178,45 +218,6 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(10.0, r.width);
         }
 
-        public class Union
-        {
-            public List<UnionCase> Cases;
-            public Converter<object, int> TagReader { get; set; }
-        }
-
-        public class UnionCase
-        {
-            public int Tag;
-            public string Name;
-            public PropertyInfo[] Fields;
-            public Converter<object, object[]> FieldReader;
-            public Converter<object[], object> Constructor;
-        }
-
-        private Union CreateUnion(Type t)
-        {
-            Union u = new Union();
-
-            u.TagReader = (s) => FSharpValue.PreComputeUnionTagReader(t, null).Invoke(s);
-            u.Cases = new List<UnionCase>();
-
-            UnionCaseInfo[] cases = FSharpType.GetUnionCases(t, null);
-
-            foreach (UnionCaseInfo unionCaseInfo in cases)
-            {
-                UnionCase unionCase = new UnionCase();
-                unionCase.Tag = unionCaseInfo.Tag;
-                unionCase.Name = unionCaseInfo.Name;
-                unionCase.Fields = unionCaseInfo.GetFields();
-                unionCase.FieldReader = (s) => FSharpValue.PreComputeUnionReader(unionCaseInfo, null).Invoke(s);
-                unionCase.Constructor = (s) => FSharpValue.PreComputeUnionConstructor(unionCaseInfo, null).Invoke(s);
-
-                u.Cases.Add(unionCase);
-            }
-
-            return u;
-        }
-
         [Test]
         public void Serialize()
         {
@@ -306,6 +307,194 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(5.0, r.length);
             Assert.AreEqual(10.0, r.width);
         }
+#endregion
+
+#region DiscriminatedUnionFieldsAsRecord Tests
+        [Test]
+        public void SerializeUnionWithConverter_DiscriminatedUnionFieldsAsRecord()
+        {
+            string json = JsonConvert.SerializeObject(ShapeForDiscriminatedUnionFieldsAsRecord.NewRectangle(10.0, 5.0), new DoubleDoubleConverter());
+
+            Assert.AreEqual(@"{""Rectangle"":{""width"":20.0,""length"":10.0}}", json);
+
+            ShapeForDiscriminatedUnionFieldsAsRecord c = JsonConvert.DeserializeObject<ShapeForDiscriminatedUnionFieldsAsRecord>(json, new DoubleDoubleConverter());
+            Assert.AreEqual(true, c.IsRectangle);
+
+            ShapeForDiscriminatedUnionFieldsAsRecord.Rectangle r = (ShapeForDiscriminatedUnionFieldsAsRecord.Rectangle)c;
+
+            Assert.AreEqual(5.0, r.length);
+            Assert.AreEqual(10.0, r.width);
+        }
+
+        [Test]
+        public void SerializeBasicUnion_DiscriminatedUnionFieldsAsRecord()
+        {
+            string json = JsonConvert.SerializeObject(CurrencyForDiscriminatedUnionFieldsAsRecord.AUD);
+
+            Assert.AreEqual(@"{""AUD"":{}}", json);
+        }
+
+        [Test]
+        public void SerializePerformance_DiscriminatedUnionFieldsAsRecord()
+        {
+            List<ShapeForDiscriminatedUnionFieldsAsRecord> values = new List<ShapeForDiscriminatedUnionFieldsAsRecord>
+            {
+                ShapeForDiscriminatedUnionFieldsAsRecord.NewRectangle(10.0, 5.0),
+                ShapeForDiscriminatedUnionFieldsAsRecord.NewCircle(7.5)
+            };
+
+            string json = JsonConvert.SerializeObject(values, Formatting.Indented);
+
+            Stopwatch ts = new Stopwatch();
+            ts.Start();
+
+            for (int i = 0; i < 100; i++)
+            {
+                JsonConvert.SerializeObject(values);
+            }
+
+            ts.Stop();
+
+            Console.WriteLine(ts.Elapsed.TotalSeconds);
+        }
+
+        [Test]
+        public void DeserializePerformance_DiscriminatedUnionFieldsAsRecord()
+        {
+            string json = @"[
+  {""Rectangle"":{""width"":10.0,""length"":5.0}},
+  {""Rectangle"":{""width"":10.0,""length"":5.0}},
+  {""Rectangle"":{""width"":10.0,""length"":5.0}},
+  {""Rectangle"":{""width"":10.0,""length"":5.0}},
+  {""Rectangle"":{""width"":10.0,""length"":5.0}}
+]";
+
+            JsonConvert.DeserializeObject<List<ShapeForDiscriminatedUnionFieldsAsRecord>>(json);
+
+            Stopwatch ts = new Stopwatch();
+            ts.Start();
+
+            for (int i = 0; i < 100; i++)
+            {
+                JsonConvert.DeserializeObject<List<ShapeForDiscriminatedUnionFieldsAsRecord>>(json);
+            }
+
+            ts.Stop();
+
+            Console.WriteLine(ts.Elapsed.TotalSeconds);
+        }
+
+        [Test]
+        public void SerializeUnionWithFields_DiscriminatedUnionFieldsAsRecord()
+        {
+            string json = JsonConvert.SerializeObject(ShapeForDiscriminatedUnionFieldsAsRecord.NewRectangle(10.0, 5.0));
+
+            Assert.AreEqual(@"{""Rectangle"":{""width"":10.0,""length"":5.0}}", json);
+        }
+
+        [Test]
+        public void DeserializeBasicUnion_DiscriminatedUnionFieldsAsRecord()
+        {
+            CurrencyForDiscriminatedUnionFieldsAsRecord c = JsonConvert.DeserializeObject<CurrencyForDiscriminatedUnionFieldsAsRecord>(@"{""AUD"":{}}");
+            Assert.AreEqual(CurrencyForDiscriminatedUnionFieldsAsRecord.AUD, c);
+
+            c = JsonConvert.DeserializeObject<CurrencyForDiscriminatedUnionFieldsAsRecord>(@"{""EUR"":{}}");
+            Assert.AreEqual(CurrencyForDiscriminatedUnionFieldsAsRecord.EUR, c);
+
+            c = JsonConvert.DeserializeObject<CurrencyForDiscriminatedUnionFieldsAsRecord>(@"null");
+            Assert.AreEqual(null, c);
+        }
+
+        [Test]
+        public void DeserializeUnionWithFields_DiscriminatedUnionFieldsAsRecord()
+        {
+            ShapeForDiscriminatedUnionFieldsAsRecord c = JsonConvert.DeserializeObject<ShapeForDiscriminatedUnionFieldsAsRecord>(@"{""Rectangle"":{""width"":10.0,""length"":5.0}}");
+            Assert.AreEqual(true, c.IsRectangle);
+
+            ShapeForDiscriminatedUnionFieldsAsRecord.Rectangle r = (ShapeForDiscriminatedUnionFieldsAsRecord.Rectangle)c;
+
+            Assert.AreEqual(5.0, r.length);
+            Assert.AreEqual(10.0, r.width);
+        }
+
+        [Test]
+        public void Serialize_DiscriminatedUnionFieldsAsRecord()
+        {
+            ShapeForDiscriminatedUnionFieldsAsRecord value = ShapeForDiscriminatedUnionFieldsAsRecord.NewRectangle(10.0, 5.0);
+
+            Union union = CreateUnion(value.GetType());
+
+            int tag = union.TagReader.Invoke(value);
+
+            UnionCase caseInfo = union.Cases.Single(c => c.Tag == tag);
+
+            object[] fields = caseInfo.FieldReader.Invoke(value);
+
+            Assert.AreEqual(10d, fields[0]);
+            Assert.AreEqual(5d, fields[1]);
+        }
+
+        [Test]
+        public void Deserialize_DiscriminatedUnionFieldsAsRecord()
+        {
+            Union union = CreateUnion(typeof(ShapeForDiscriminatedUnionFieldsAsRecord.Rectangle));
+
+            UnionCase caseInfo = union.Cases.Single(c => c.Name == "Rectangle");
+
+            ShapeForDiscriminatedUnionFieldsAsRecord.Rectangle value = (ShapeForDiscriminatedUnionFieldsAsRecord.Rectangle)caseInfo.Constructor.Invoke(new object[]
+            {
+                10.0, 5.0
+            });
+
+            Assert.AreEqual("Newtonsoft.Json.Tests.TestObjects.GeometricForms.ShapeForDiscriminatedUnionFieldsAsRecord+Rectangle", value.ToString());
+            Assert.AreEqual(10, value.width);
+            Assert.AreEqual(5, value.length);
+        }
+
+        [Test]
+        public void DeserializeBasicUnion_NoMatch_DiscriminatedUnionFieldsAsRecord()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<CurrencyForDiscriminatedUnionFieldsAsRecord>(@"{""abcdefg"":{}}"), "No union type found with the name 'abcdefg'. Path 'abcdefg', line 1, position 11.");
+        }
+
+        [Test]
+        public void DeserializeBasicUnion_UnexpectedToken_DiscriminatedUnionFieldsAsRecord()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<CurrencyForDiscriminatedUnionFieldsAsRecord>(@"{""AUD"":{},""EUR"":{}}"), "Error reading discriminated union. Unexpected token: 'PropertyName'. Path 'EUR', line 1, position 16.");
+        }
+
+        [Test]
+        public void DeserializeBasicUnion_NoCaseName_DiscriminatedUnionFieldsAsRecord()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<CurrencyForDiscriminatedUnionFieldsAsRecord>(@"{}"), "No property with union name found. Path '', line 1, position 2.");
+        }
+
+        [Test]
+        public void DeserializeBasicUnion_UnexpectedEnd_DiscriminatedUnionFieldsAsRecord()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<CurrencyForDiscriminatedUnionFieldsAsRecord>(@"{""AUD"":"), "Unexpected end when reading JSON. Path 'AUD', line 1, position 7.");
+        }
+
+        [Test]
+        public void SerializeUnionWithTypeNameHandlingAndReferenceTracking_DiscriminatedUnionFieldsAsRecord()
+        {
+            string json = JsonConvert.SerializeObject(ShapeForDiscriminatedUnionFieldsAsRecord.NewRectangle(10.0, 5.0), new JsonSerializerSettings
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.All,
+                TypeNameHandling = TypeNameHandling.All
+            });
+
+            Assert.AreEqual(@"{""Rectangle"":{""width"":10.0,""length"":5.0}}", json);
+
+            ShapeForDiscriminatedUnionFieldsAsRecord c = JsonConvert.DeserializeObject<ShapeForDiscriminatedUnionFieldsAsRecord>(json);
+            Assert.AreEqual(true, c.IsRectangle);
+
+            ShapeForDiscriminatedUnionFieldsAsRecord.Rectangle r = (ShapeForDiscriminatedUnionFieldsAsRecord.Rectangle)c;
+
+            Assert.AreEqual(5.0, r.length);
+            Assert.AreEqual(10.0, r.width);
+        }
+#endregion
     }
 }
 
