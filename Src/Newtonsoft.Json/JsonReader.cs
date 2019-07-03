@@ -709,7 +709,7 @@ namespace Newtonsoft.Json
                 case JsonToken.String:
                     return ReadBooleanString((string?)Value);
                 case JsonToken.Boolean:
-                    return (bool)Value;
+                    return (bool)Value!;
             }
 
             throw JsonReaderException.Create(this, "Error reading boolean. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));

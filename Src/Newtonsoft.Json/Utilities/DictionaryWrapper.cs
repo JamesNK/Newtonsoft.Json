@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.Collections;
 using System.Threading;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -165,15 +166,13 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue(TKey key, [MaybeNull]out TValue value)
         {
             if (_dictionary != null)
             {
                 if (!_dictionary.Contains(key))
                 {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
                     value = default;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
                     return false;
                 }
                 else

@@ -33,6 +33,7 @@ using System.Collections;
 using System.Globalization;
 using System.Text;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -1113,4 +1114,9 @@ namespace System.Runtime.CompilerServices
         /// <summary>Gets the return value condition.</summary>
         public bool ReturnValue { get; }
     }
+
+    /// <summary>Specifies that an output may be null even if the corresponding type disallows it.</summary>
+    [AttributeUsage(AttributeTargets.Field | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue, Inherited = false)]
+    internal sealed class MaybeNullAttribute : Attribute
+    { }
 }

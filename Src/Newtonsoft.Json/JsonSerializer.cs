@@ -35,6 +35,7 @@ using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using System.Runtime.Serialization;
 using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
+using System.Runtime.CompilerServices;
 
 namespace Newtonsoft.Json
 {
@@ -863,6 +864,7 @@ namespace Newtonsoft.Json
         /// <typeparam name="T">The type of the object to deserialize.</typeparam>
         /// <returns>The instance of <typeparamref name="T"/> being deserialized.</returns>
         [DebuggerStepThrough]
+        [return: MaybeNull]
         public T Deserialize<T>(JsonReader reader)
         {
             return (T)Deserialize(reader, typeof(T));

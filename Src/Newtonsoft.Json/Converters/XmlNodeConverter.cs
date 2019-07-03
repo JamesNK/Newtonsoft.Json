@@ -38,6 +38,7 @@ using System.Xml.Linq;
 #endif
 using Newtonsoft.Json.Utilities;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Converters
 {

@@ -32,6 +32,7 @@ using System.Globalization;
 using System.Dynamic;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 #endif
 #if HAVE_BIG_INTEGER
 using System.Numerics;

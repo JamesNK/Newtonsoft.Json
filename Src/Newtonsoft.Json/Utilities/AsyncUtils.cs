@@ -61,9 +61,7 @@ namespace Newtonsoft.Json.Utilities
         public static Task<T> FromCanceled<T>(this CancellationToken cancellationToken)
         {
             Debug.Assert(cancellationToken.IsCancellationRequested);
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
             return new Task<T>(() => default, cancellationToken);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
         }
 
         // Task.Delay(0) is optimised as a cached task within the framework, and indeed

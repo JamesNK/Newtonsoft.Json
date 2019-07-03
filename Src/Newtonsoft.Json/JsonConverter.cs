@@ -26,6 +26,7 @@
 using System;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 
 namespace Newtonsoft.Json
 {
@@ -101,7 +102,7 @@ namespace Newtonsoft.Json
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public abstract void WriteJson(JsonWriter writer, T value, JsonSerializer serializer);
+        public abstract void WriteJson(JsonWriter writer, [MaybeNull]T value, JsonSerializer serializer);
 
         /// <summary>
         /// Reads the JSON representation of the object.
@@ -118,9 +119,7 @@ namespace Newtonsoft.Json
             {
                 throw new JsonSerializationException("Converter cannot read JSON with the specified existing value. {0} is required.".FormatWith(CultureInfo.InvariantCulture, typeof(T)));
             }
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
             return ReadJson(reader, objectType, existingIsNull ? default : (T)existingValue, !existingIsNull, serializer);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
         }
 
         /// <summary>
@@ -132,7 +131,7 @@ namespace Newtonsoft.Json
         /// <param name="hasExistingValue">The existing value has a value.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public abstract T ReadJson(JsonReader reader, Type objectType, T existingValue, bool hasExistingValue, JsonSerializer serializer);
+        public abstract T ReadJson(JsonReader reader, Type objectType, [MaybeNull]T existingValue, bool hasExistingValue, JsonSerializer serializer);
 
         /// <summary>
         /// Determines whether this instance can convert the specified object type.

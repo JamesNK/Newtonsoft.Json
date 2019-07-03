@@ -751,9 +751,9 @@ namespace Newtonsoft.Json.Linq.JsonPath
         private bool Match(string s)
         {
             int currentPosition = _currentIndex;
-            foreach (char c in s)
+            for (int i = 0; i < s.Length; i++)
             {
-                if (currentPosition < _expression.Length && _expression[currentPosition] == c)
+                if (currentPosition < _expression.Length && _expression[currentPosition] == s[i])
                 {
                     currentPosition++;
                 }

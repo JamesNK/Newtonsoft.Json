@@ -27,10 +27,8 @@ namespace Newtonsoft.Json
         /// <param name="typeName">Specifies the <see cref="System.Type"/> name of the serialized object.</param>
         public virtual void BindToName(Type serializedType, out string assemblyName, out string typeName)
         {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
             assemblyName = null;
             typeName = null;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
         }
     }
 }

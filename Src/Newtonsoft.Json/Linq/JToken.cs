@@ -38,11 +38,11 @@ using Newtonsoft.Json.Utilities;
 using System.Diagnostics;
 using System.Globalization;
 using System.Collections;
+using System.Runtime.CompilerServices;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
-
 #endif
 
 namespace Newtonsoft.Json.Linq
@@ -338,9 +338,7 @@ namespace Newtonsoft.Json.Linq
             JToken? token = this[key];
 
             // null check to fix MonoTouch issue - https://github.com/dolbz/Newtonsoft.Json/commit/a24e3062846b30ee505f3271ac08862bb471b822
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
             return token == null ? default : Extensions.Convert<JToken, T>(token);
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
         }
 
         /// <summary>
@@ -1928,6 +1926,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
         /// <returns>The new object created from the JSON value.</returns>
+        [return: MaybeNull]
         public T ToObject<T>()
         {
             return (T)ToObject(typeof(T));
@@ -2061,6 +2060,7 @@ namespace Newtonsoft.Json.Linq
         /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
         /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used when creating the object.</param>
         /// <returns>The new object created from the JSON value.</returns>
+        [return: MaybeNull]
         public T ToObject<T>(JsonSerializer jsonSerializer)
         {
             return (T)ToObject(typeof(T), jsonSerializer);

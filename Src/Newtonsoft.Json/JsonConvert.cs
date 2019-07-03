@@ -36,9 +36,9 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Text;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
 #if HAVE_XLINQ
 using System.Xml.Linq;
-
 #endif
 
 namespace Newtonsoft.Json
@@ -765,6 +765,7 @@ namespace Newtonsoft.Json
         /// <param name="converters">Converters to use while deserializing.</param>
         /// <returns>The deserialized object from the JSON string.</returns>
         [DebuggerStepThrough]
+        [return: MaybeNull]
         public static T DeserializeObject<T>(string value, params JsonConverter[] converters)
         {
             return (T)DeserializeObject(value, typeof(T), converters);
@@ -781,6 +782,7 @@ namespace Newtonsoft.Json
         /// </param>
         /// <returns>The deserialized object from the JSON string.</returns>
         [DebuggerStepThrough]
+        [return: MaybeNull]
         public static T DeserializeObject<T>(string value, JsonSerializerSettings? settings)
         {
             return (T)DeserializeObject(value, typeof(T), settings);

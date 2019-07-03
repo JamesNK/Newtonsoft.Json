@@ -27,6 +27,8 @@ using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
+using System.Runtime.CompilerServices;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -253,13 +255,12 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
+        [return: MaybeNull]
         internal static U Convert<T, U>(this T token) where T : JToken?
         {
             if (token == null)
             {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
                 return default;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
             }
 
             if (token is U castValue
@@ -272,9 +273,7 @@ namespace Newtonsoft.Json.Linq
             {
                 if (!(token is JValue value))
                 {
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                     throw new InvalidCastException("Cannot cast {0} to {1}.".FormatWith(CultureInfo.InvariantCulture, token.GetType(), typeof(T)));
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                 }
 
                 if (value.Value is U u)
@@ -288,9 +287,7 @@ namespace Newtonsoft.Json.Linq
                 {
                     if (value.Value == null)
                     {
-#pragma warning disable CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
                         return default;
-#pragma warning restore CS8625 // Cannot convert null literal to non-nullable reference or unconstrained type parameter.
                     }
 
                     targetType = Nullable.GetUnderlyingType(targetType);
