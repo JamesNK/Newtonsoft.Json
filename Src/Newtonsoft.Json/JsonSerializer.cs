@@ -36,6 +36,7 @@ using Newtonsoft.Json.Utilities;
 using System.Runtime.Serialization;
 using ErrorEventArgs = Newtonsoft.Json.Serialization.ErrorEventArgs;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json
 {

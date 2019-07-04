@@ -29,10 +29,10 @@ using System.Diagnostics;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 #if HAVE_DYNAMIC
 using System.Dynamic;
 using System.Linq.Expressions;
-using System.Diagnostics.CodeAnalysis;
 #endif
 #if HAVE_BIG_INTEGER
 using System.Numerics;
@@ -841,7 +841,7 @@ namespace Newtonsoft.Json.Linq
         /// <c>true</c> if the current object is equal to the <paramref name="other"/> parameter; otherwise, <c>false</c>.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public bool Equals([MaybeNull] JValue other)
+        public bool Equals([AllowNull] JValue other)
         {
             if (other == null)
             {

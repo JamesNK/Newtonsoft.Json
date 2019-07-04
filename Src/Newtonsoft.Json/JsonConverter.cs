@@ -27,6 +27,7 @@ using System;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json
 {
@@ -102,7 +103,7 @@ namespace Newtonsoft.Json
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public abstract void WriteJson(JsonWriter writer, [MaybeNull]T value, JsonSerializer serializer);
+        public abstract void WriteJson(JsonWriter writer, [AllowNull]T value, JsonSerializer serializer);
 
         /// <summary>
         /// Reads the JSON representation of the object.
@@ -131,7 +132,7 @@ namespace Newtonsoft.Json
         /// <param name="hasExistingValue">The existing value has a value.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public abstract T ReadJson(JsonReader reader, Type objectType, [MaybeNull]T existingValue, bool hasExistingValue, JsonSerializer serializer);
+        public abstract T ReadJson(JsonReader reader, Type objectType, [AllowNull]T existingValue, bool hasExistingValue, JsonSerializer serializer);
 
         /// <summary>
         /// Determines whether this instance can convert the specified object type.
