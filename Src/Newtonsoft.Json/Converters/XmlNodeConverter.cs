@@ -306,9 +306,7 @@ namespace Newtonsoft.Json.Converters
                     return element.HasAttributes;
                 }
 
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                 return _node.Attributes?.Count > 0;
-#pragma warning restore CS8602 // Possible dereference of a null reference.
             }
         }
 
@@ -316,9 +314,7 @@ namespace Newtonsoft.Json.Converters
         {
             get
             {
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                 XmlNode node = _node is XmlAttribute attribute ? attribute.OwnerElement : _node.ParentNode;
-#pragma warning restore CS8602 // Possible dereference of a null reference.
 
                 if (node == null)
                 {
@@ -577,9 +573,7 @@ namespace Newtonsoft.Json.Converters
             }
             else
             {
-#pragma warning disable CS8604 // Possible null reference argument.
                 return base.AppendChild(newChild);
-#pragma warning restore CS8604 // Possible null reference argument.
             }
         }
     }

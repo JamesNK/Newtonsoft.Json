@@ -65,9 +65,7 @@ namespace Newtonsoft.Json.Converters
 #pragma warning restore 618
             else
             {
-#pragma warning disable CS8604 // Possible null reference argument.
                 WriteJson(writer, regex, serializer);
-#pragma warning restore CS8604 // Possible null reference argument.
             }
         }
 

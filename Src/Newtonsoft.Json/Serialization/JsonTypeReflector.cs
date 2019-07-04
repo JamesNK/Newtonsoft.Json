@@ -435,9 +435,7 @@ namespace Newtonsoft.Json.Serialization
                 return GetAttribute<T>(memberInfo);
             }
 
-#pragma warning disable CS8604 // Possible null reference argument.
             return ReflectionUtils.GetAttribute<T>(provider, true);
-#pragma warning restore CS8604 // Possible null reference argument.
         }
 
 #if DEBUG

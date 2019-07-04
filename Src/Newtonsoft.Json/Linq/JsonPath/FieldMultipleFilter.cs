@@ -47,9 +47,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 #if !HAVE_STRING_JOIN_WITH_ENUMERABLE
                             .ToArray()
 #endif
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                             ), t.GetType().Name));
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                     }
                 }
             }

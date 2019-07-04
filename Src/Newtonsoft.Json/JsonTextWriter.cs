@@ -343,9 +343,7 @@ namespace Newtonsoft.Json
             {
                 for (int i = 0; i != newLineLen; ++i)
                 {
-#pragma warning disable CS8602 // Possible dereference of a null reference.
-                    if (writerNewLine[i] != _indentChars[i])
-#pragma warning restore CS8602 // Possible dereference of a null reference.
+                    if (writerNewLine[i] != _indentChars![i])
                     {
                         match = false;
                         break;

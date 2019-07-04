@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net40;net35;net20;netcoreapp2.2;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>
-    <!--<TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net452;net40;net35;net20;netcoreapp2.2;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>-->
+    <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net451;net452;net40;net35;net20;netcoreapp2.2;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>
+    <!--<TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net451;net452;net40;net35;net20;netcoreapp2.2;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>-->
 
 
 
@@ -48,8 +48,8 @@
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net46'">
-    <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
     <PackageReference Include="Autofac" Version="4.6.2" />
     <PackageReference Include="BenchmarkDotNet" Version="0.10.10" />
     <PackageReference Include="FSharp.Core" Version="4.2.3" />    
@@ -72,8 +72,8 @@
   </PropertyGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net451'">
-    <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
     <PackageReference Include="Autofac" Version="4.6.2" />
     <PackageReference Include="FSharp.Core" Version="4.2.3" />
     <PackageReference Include="System.Buffers" Version="4.4.0" />
@@ -95,8 +95,8 @@
   </PropertyGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net452'">
-    <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
     <PackageReference Include="Autofac" Version="4.6.2" />
     <PackageReference Include="FSharp.Core" Version="4.2.3" />
     <PackageReference Include="System.Buffers" Version="4.4.0" />
@@ -118,8 +118,8 @@
   </PropertyGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net40'">
-    <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
     <PackageReference Include="System.ValueTuple" Version="4.4.0" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Web" />
@@ -135,8 +135,8 @@
   </PropertyGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net35'">
-    <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
     <Reference Include="System.Web" />
     <Reference Include="System.Data.Linq" />
     <Reference Include="System.Data.Entity" />
@@ -150,8 +150,8 @@
   </PropertyGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net20'">
-    <PackageReference Include="NUnit" Version="3.10.1" />
-    <PackageReference Include="NUnit3TestAdapter" Version="3.10.0" />
+    <PackageReference Include="NUnit" Version="3.11.0" />
+    <PackageReference Include="NUnit3TestAdapter" Version="3.13.0" />
     <Reference Include="System.Web" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net20'">

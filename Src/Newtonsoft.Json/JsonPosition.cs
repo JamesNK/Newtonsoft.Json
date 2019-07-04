@@ -86,9 +86,7 @@ namespace Newtonsoft.Json
                             writer = new StringWriter(sb);
                         }
 
-#pragma warning disable CS8604 // Possible null reference argument.
                         JavaScriptUtils.WriteEscapedJavaScriptString(writer, propertyName, '\'', false, JavaScriptUtils.SingleQuoteCharEscapeFlags, StringEscapeHandling.Default, null, ref buffer);
-#pragma warning restore CS8604 // Possible null reference argument.
 
                         sb.Append(@"']");
                     }

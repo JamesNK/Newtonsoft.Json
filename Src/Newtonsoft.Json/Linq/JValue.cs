@@ -28,10 +28,10 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
+using System.Runtime.CompilerServices;
 #if HAVE_DYNAMIC
 using System.Dynamic;
 using System.Linq.Expressions;
-using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
 #endif
 #if HAVE_BIG_INTEGER
@@ -258,7 +258,6 @@ namespace Newtonsoft.Json.Linq
                 return -1;
             }
 
-#pragma warning disable CS8604 // Possible null reference argument.
             switch (valueType)
             {
                 case JTokenType.Integer:
@@ -303,7 +302,6 @@ namespace Newtonsoft.Json.Linq
                         return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
                     }
                     return CompareFloat(objA, objB);
-#pragma warning restore CS8604 // Possible null reference argument.
                     }
                 case JTokenType.Comment:
                 case JTokenType.String:
@@ -843,9 +841,7 @@ namespace Newtonsoft.Json.Linq
         /// <c>true</c> if the current object is equal to the <paramref name="other"/> parameter; otherwise, <c>false</c>.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-#pragma warning disable CS8614 // Nullability of reference types in type of parameter doesn't match implicitly implemented member.
-        public bool Equals(JValue? other)
-#pragma warning restore CS8614 // Nullability of reference types in type of parameter doesn't match implicitly implemented member.
+        public bool Equals([MaybeNull] JValue other)
         {
             if (other == null)
             {
@@ -944,9 +940,7 @@ namespace Newtonsoft.Json.Linq
             }
             else
             {
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                 return _value.ToString();
-#pragma warning restore CS8602 // Possible dereference of a null reference.
             }
         }
 
@@ -965,9 +959,7 @@ namespace Newtonsoft.Json.Linq
 
         private class JValueDynamicProxy : DynamicProxy<JValue>
         {
-#pragma warning disable CS8610 // Nullability of reference types in type of parameter doesn't match overridden member.
             public override bool TryConvert(JValue instance, ConvertBinder binder, [NotNullWhen(true)]out object? result)
-#pragma warning restore CS8610 // Nullability of reference types in type of parameter doesn't match overridden member.
             {
                 if (binder.Type == typeof(JValue) || binder.Type == typeof(JToken))
                 {
@@ -987,9 +979,7 @@ namespace Newtonsoft.Json.Linq
                 return true;
             }
 
-#pragma warning disable CS8610 // Nullability of reference types in type of parameter doesn't match overridden member.
             public override bool TryBinaryOperation(JValue instance, BinaryOperationBinder binder, object arg, [NotNullWhen(true)]out object? result)
-#pragma warning restore CS8610 // Nullability of reference types in type of parameter doesn't match overridden member.
             {
                 object? compareValue = arg is JValue value ? value.Value : arg;
 

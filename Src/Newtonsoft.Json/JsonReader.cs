@@ -493,9 +493,7 @@ namespace Newtonsoft.Json
                     }
                     else
                     {
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                         s = v is Uri uri ? uri.OriginalString : v.ToString();
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                     }
 
                     SetToken(JsonToken.String, s, false);

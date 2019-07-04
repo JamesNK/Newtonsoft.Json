@@ -80,9 +80,7 @@ namespace Newtonsoft.Json.Converters
             }
 #endif
 
-#pragma warning disable CS8602 // Possible dereference of a null reference.
             throw new JsonSerializationException("Unexpected value type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
-#pragma warning restore CS8602 // Possible dereference of a null reference.
         }
 
 #if HAVE_LINQ

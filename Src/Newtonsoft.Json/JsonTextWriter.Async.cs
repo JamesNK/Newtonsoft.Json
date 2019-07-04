@@ -972,9 +972,7 @@ namespace Newtonsoft.Json
                 }
 #endif
 
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                 return WriteValueAsync(this, ConvertUtils.GetTypeCode(value.GetType()), value, cancellationToken);
-#pragma warning restore CS8602 // Possible dereference of a null reference.
             }
 
             return base.WriteValueAsync(value, cancellationToken);

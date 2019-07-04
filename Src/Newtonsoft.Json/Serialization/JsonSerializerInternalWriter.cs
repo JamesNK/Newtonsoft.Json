@@ -199,9 +199,7 @@ namespace Newtonsoft.Json.Serialization
                     break;
                 case JsonContractType.Dictionary:
                     JsonDictionaryContract dictionaryContract = (JsonDictionaryContract)valueContract;
-#pragma warning disable CS8604 // Possible null reference argument.
                     SerializeDictionary(writer, (value is IDictionary dictionary) ? dictionary : dictionaryContract.CreateWrapper(value), dictionaryContract, member, containerContract, containerProperty);
-#pragma warning restore CS8604 // Possible null reference argument.
                     break;
 #if HAVE_DYNAMIC
                 case JsonContractType.Dynamic:
@@ -679,7 +677,6 @@ namespace Newtonsoft.Json.Serialization
 
         private void SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty? member, JsonContainerContract? collectionContract, JsonProperty? containerProperty)
         {
-#pragma warning disable CS8600, CS8602, CS8604
             object underlyingList = values is IWrappedCollection wrappedCollection ? wrappedCollection.UnderlyingCollection : values;
 
             OnSerializing(writer, contract, underlyingList);
@@ -739,7 +736,6 @@ namespace Newtonsoft.Json.Serialization
             _serializeStack.RemoveAt(_serializeStack.Count - 1);
 
             OnSerialized(writer, contract, underlyingList);
-#pragma warning restore CS8600, CS8602, CS8604
         }
 
         private void SerializeMultidimensionalArray(JsonWriter writer, Array values, JsonArrayContract contract, JsonProperty? member, JsonContainerContract? collectionContract, JsonProperty? containerProperty)

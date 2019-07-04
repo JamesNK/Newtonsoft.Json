@@ -68,9 +68,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 {
                     if (errorWhenNoMatch)
                     {
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                         throw new JsonException("Array slice is not valid on {0}.".FormatWith(CultureInfo.InvariantCulture, t.GetType().Name));
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                     }
                 }
             }

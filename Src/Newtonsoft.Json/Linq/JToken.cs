@@ -472,9 +472,7 @@ namespace Newtonsoft.Json.Linq
                 token = p.Value;
             }
 
-#pragma warning disable CS8602 // Possible dereference of a null reference.
             return token.Type.ToString();
-#pragma warning restore CS8602 // Possible dereference of a null reference.
         }
 
         private static bool ValidateToken(JToken o, JTokenType[] validTypes, bool nullable)
@@ -2488,9 +2486,7 @@ namespace Newtonsoft.Json.Linq
             {
                 if (!(_annotations is object[] annotations))
                 {
-#pragma warning disable CS8604 // Possible null reference argument.
                     if (type.IsInstanceOfType(_annotations))
-#pragma warning restore CS8604 // Possible null reference argument.
                     {
                         return _annotations;
                     }

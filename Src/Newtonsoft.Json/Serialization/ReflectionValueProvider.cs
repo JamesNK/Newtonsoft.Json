@@ -79,9 +79,7 @@ namespace Newtonsoft.Json.Serialization
                     throw new InvalidOperationException("Could not create getter for {0}. ByRef return values are not supported.".FormatWith(CultureInfo.InvariantCulture, propertyInfo));
                 }
 
-#pragma warning disable CS8604 // Possible null reference argument.
                 return ReflectionUtils.GetMemberValue(_memberInfo, target);
-#pragma warning restore CS8604 // Possible null reference argument.
             }
             catch (Exception ex)
             {

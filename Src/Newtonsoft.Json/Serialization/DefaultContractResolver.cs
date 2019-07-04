@@ -899,41 +899,31 @@ namespace Newtonsoft.Json.Serialization
                     if (!skipSerializing && IsValidCallback(method, parameters, typeof(OnSerializingAttribute), currentOnSerializing, ref prevAttributeType))
                     {
                         onSerializing = onSerializing ?? new List<SerializationCallback>();
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                         onSerializing.Add(JsonContract.CreateSerializationCallback(method));
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                         currentOnSerializing = method;
                     }
                     if (IsValidCallback(method, parameters, typeof(OnSerializedAttribute), currentOnSerialized, ref prevAttributeType))
                     {
                         onSerialized = onSerialized ?? new List<SerializationCallback>();
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                         onSerialized.Add(JsonContract.CreateSerializationCallback(method));
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                         currentOnSerialized = method;
                     }
                     if (IsValidCallback(method, parameters, typeof(OnDeserializingAttribute), currentOnDeserializing, ref prevAttributeType))
                     {
                         onDeserializing = onDeserializing ?? new List<SerializationCallback>();
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                         onDeserializing.Add(JsonContract.CreateSerializationCallback(method));
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                         currentOnDeserializing = method;
                     }
                     if (!skipDeserialized && IsValidCallback(method, parameters, typeof(OnDeserializedAttribute), currentOnDeserialized, ref prevAttributeType))
                     {
                         onDeserialized = onDeserialized ?? new List<SerializationCallback>();
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                         onDeserialized.Add(JsonContract.CreateSerializationCallback(method));
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                         currentOnDeserialized = method;
                     }
                     if (IsValidCallback(method, parameters, typeof(OnErrorAttribute), currentOnError, ref prevAttributeType))
                     {
                         onError = onError ?? new List<SerializationErrorCallback>();
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                         onError.Add(JsonContract.CreateSerializationErrorCallback(method));
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                         currentOnError = method;
                     }
                 }

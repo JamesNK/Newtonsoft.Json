@@ -44,9 +44,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 {
                     if (errorWhenNoMatch)
                     {
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                         throw new JsonException("Property '{0}' not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, Name ?? "*", t.GetType().Name));
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                     }
                 }
             }

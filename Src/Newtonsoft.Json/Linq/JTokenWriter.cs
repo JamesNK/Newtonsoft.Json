@@ -526,9 +526,7 @@ namespace Newtonsoft.Json.Linq
             }
             else
             {
-#pragma warning disable CS8604 // Possible null reference argument.
                 base.WriteToken(reader, writeChildren, writeDateConstructorAsDate, writeComments);
-#pragma warning restore CS8604 // Possible null reference argument.
             }
         }
     }

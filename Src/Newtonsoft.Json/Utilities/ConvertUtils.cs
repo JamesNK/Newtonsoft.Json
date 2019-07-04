@@ -323,9 +323,7 @@ namespace Newtonsoft.Json.Utilities
                 return new BigInteger(bytes);
             }
 
-#pragma warning disable CS8602 // Possible dereference of a null reference.
             throw new InvalidCastException("Cannot convert {0} to BigInteger.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
-#pragma warning restore CS8602 // Possible dereference of a null reference.
         }
 
         public static object FromBigInteger(BigInteger i, Type targetType)
@@ -510,9 +508,7 @@ namespace Newtonsoft.Json.Utilities
 #if HAVE_BIG_INTEGER
             if (targetType == typeof(BigInteger))
             {
-#pragma warning disable CS8604 // Possible null reference argument.
                 value = ToBigInteger(initialValue);
-#pragma warning restore CS8604 // Possible null reference argument.
                 return ConvertResult.Success;
             }
             if (initialValue is BigInteger integer)

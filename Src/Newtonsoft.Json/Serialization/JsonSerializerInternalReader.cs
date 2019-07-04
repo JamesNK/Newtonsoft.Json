@@ -430,13 +430,9 @@ namespace Newtonsoft.Json.Serialization
             {
                 if (!(reader is JTokenReader tokenReader))
                 {
-#pragma warning disable CS8604 // Possible null reference argument.
                     JToken t = JToken.ReadFrom(reader);
-#pragma warning restore CS8604 // Possible null reference argument.
                     tokenReader = (JTokenReader)t.CreateReader();
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                     tokenReader.Culture = reader.Culture;
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                     tokenReader.DateFormatString = reader.DateFormatString;
                     tokenReader.DateParseHandling = reader.DateParseHandling;
                     tokenReader.DateTimeZoneHandling = reader.DateTimeZoneHandling;
@@ -565,9 +561,7 @@ namespace Newtonsoft.Json.Serialization
                             return wrappedDictionary.UnderlyingDictionary;
                         }
 
-#pragma warning disable CS8600 // Converting null literal or possible null value to non-nullable type.
                             targetDictionary = dictionary;
-#pragma warning restore CS8600 // Converting null literal or possible null value to non-nullable type.
                         }
                     else
                     {
@@ -627,9 +621,7 @@ namespace Newtonsoft.Json.Serialization
 
                         if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
                         {
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                             TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(reader, reader.Path, "Resolved object reference '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, reference, newValue.GetType())), null);
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                         }
 
                         reader.Skip();
@@ -831,9 +823,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 string message = @"Cannot deserialize the current JSON array (e.g. [1,2,3]) into type '{0}' because the type requires a {1} to deserialize correctly." + Environment.NewLine +
                                  @"To fix this error either change the JSON to a {1} or change the deserialized type to an array or a type that implements a collection interface (e.g. ICollection, IList) like List<T> that can be deserialized from a JSON array. JsonArrayAttribute can also be added to the type to force it to deserialize from a JSON array." + Environment.NewLine;
-#pragma warning disable CS8604 // Possible null reference argument.
                 message = message.FormatWith(CultureInfo.InvariantCulture, objectType, GetExpectedDescription(contract));
-#pragma warning restore CS8604 // Possible null reference argument.
 
                 throw JsonSerializationException.Create(reader, message);
             }
@@ -924,9 +914,7 @@ namespace Newtonsoft.Json.Serialization
                     throw JsonSerializationException.Create(reader, "Cannot populate list type {0}.".FormatWith(CultureInfo.InvariantCulture, contract.CreatedType));
                 }
 
-#pragma warning disable CS8604 // Possible null reference argument.
                 value = PopulateList((arrayContract.ShouldCreateWrapper || !(existingValue is IList list)) ? arrayContract.CreateWrapper(existingValue) : list, reader, arrayContract, member, id);
-#pragma warning restore CS8604 // Possible null reference argument.
             }
 
             return value;
@@ -1121,9 +1109,7 @@ namespace Newtonsoft.Json.Serialization
                 {
                     propertyContract = GetContract(currentValue.GetType());
 
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                     useExistingValue = (!propertyContract.IsReadOnlyOrFixedSize && !propertyContract.UnderlyingType.IsValueType());
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                 }
             }
 
@@ -1353,7 +1339,6 @@ namespace Newtonsoft.Json.Serialization
 
         private object PopulateDictionary(IDictionary dictionary, JsonReader reader, JsonDictionaryContract contract, JsonProperty? containerProperty, string? id)
         {
-#pragma warning disable CS8600, CS8602, CS8603, CS8604
             object underlyingDictionary = dictionary is IWrappedDictionary wrappedDictionary ? wrappedDictionary.UnderlyingDictionary : dictionary;
 
             if (id != null)
@@ -1433,7 +1418,7 @@ namespace Newtonsoft.Json.Serialization
                             object? itemValue;
                             if (dictionaryValueConverter != null && dictionaryValueConverter.CanRead)
                             {
-                                itemValue = DeserializeConvertable(dictionaryValueConverter, reader, contract.DictionaryValueType, null);
+                                itemValue = DeserializeConvertable(dictionaryValueConverter, reader, contract.DictionaryValueType!, null);
                             }
                             else
                             {
@@ -1471,7 +1456,6 @@ namespace Newtonsoft.Json.Serialization
 
             OnDeserialized(reader, contract, underlyingDictionary);
             return underlyingDictionary;
-#pragma warning restore CS8600, CS8602, CS8603, CS8604
         }
 
         private object PopulateMultidimensionalArray(IList list, JsonReader reader, JsonArrayContract contract, JsonProperty? containerProperty, string? id)

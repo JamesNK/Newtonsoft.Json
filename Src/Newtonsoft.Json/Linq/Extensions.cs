@@ -195,9 +195,7 @@ namespace Newtonsoft.Json.Linq
                     }
                     else
                     {
-#pragma warning disable CS8602 // Possible dereference of a null reference.
                         foreach (JToken t in token.Children())
-#pragma warning restore CS8602 // Possible dereference of a null reference.
                         {
                             yield return t.Convert<JToken, U>();
                         }
@@ -328,9 +326,7 @@ namespace Newtonsoft.Json.Linq
             }
             else
             {
-#pragma warning disable CS8604 // Possible null reference argument.
                 return new JEnumerable<T>(source);
-#pragma warning restore CS8604 // Possible null reference argument.
             }
         }
     }

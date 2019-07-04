@@ -28,9 +28,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 }
                 else
                 {
-#pragma warning disable CS8604 // Possible null reference argument.
                     if (Expression.IsMatch(root, t))
-#pragma warning restore CS8604 // Possible null reference argument.
                     {
                         yield return t;
                     }

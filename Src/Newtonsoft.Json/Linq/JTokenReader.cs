@@ -86,9 +86,7 @@ namespace Newtonsoft.Json.Linq
                 }
                 else
                 {
-#pragma warning disable CS8604 // Possible null reference argument.
                     return ReadOver(_current);
-#pragma warning restore CS8604 // Possible null reference argument.
                 }
             }
 
