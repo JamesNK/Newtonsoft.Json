@@ -860,7 +860,12 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public override bool Equals(object obj)
         {
-            return Equals(obj as JValue);
+            if (obj is JValue v)
+            {
+                return Equals(v);
+            }
+
+            return false;
         }
 
         /// <summary>

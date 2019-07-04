@@ -201,7 +201,7 @@ namespace Newtonsoft.Json.Serialization
 #if HAVE_SERIALIZATION_BINDER_BIND_TO_NAME
         override
 #endif
-        void BindToName(Type serializedType, out string assemblyName, out string typeName)
+        void BindToName(Type serializedType, out string? assemblyName, out string? typeName)
         {
 #if !HAVE_FULL_REFLECTION
             assemblyName = serializedType.GetTypeInfo().Assembly.FullName;
