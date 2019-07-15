@@ -166,7 +166,7 @@ namespace Newtonsoft.Json.Serialization
                 containerProperty?.ItemConverter ??
                 containerContract?.ItemConverter ??
                 valueContract.Converter ??
-                Serializer.GetMatchingConverter(valueContract!.UnderlyingType) ??
+                Serializer.GetMatchingConverter(valueContract.UnderlyingType) ??
                 valueContract.InternalConverter;
 
             if (converter != null && converter.CanWrite)
@@ -175,7 +175,7 @@ namespace Newtonsoft.Json.Serialization
                 return;
             }
 
-            switch (valueContract!.ContractType)
+            switch (valueContract.ContractType)
             {
                 case JsonContractType.Object:
                     SerializeObject(writer, value, (JsonObjectContract)valueContract, member, containerContract, containerProperty);
