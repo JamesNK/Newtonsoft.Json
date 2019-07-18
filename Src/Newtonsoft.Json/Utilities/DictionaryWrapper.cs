@@ -172,7 +172,9 @@ namespace Newtonsoft.Json.Utilities
             {
                 if (!_dictionary.Contains(key))
                 {
+#pragma warning disable CS8653 // A default expression introduces a null value for a type parameter.
                     value = default;
+#pragma warning restore CS8653 // A default expression introduces a null value for a type parameter.
                     return false;
                 }
                 else
@@ -488,7 +490,9 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
+#pragma warning disable CS8601 // Possible null reference assignment.
                     GenericDictionary[(TKey)key] = (TValue)value;
+#pragma warning restore CS8601 // Possible null reference assignment.
                 }
             }
         }

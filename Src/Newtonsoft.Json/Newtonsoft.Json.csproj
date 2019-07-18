@@ -39,7 +39,7 @@
     <PackageReference Include="Microsoft.CodeAnalysis.FxCopAnalyzers" Version="2.9.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.0.0-beta2-18618-05" PrivateAssets="All" />
     <!-- Compiler to support nullable in non-preview VS2019 -->
-    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="3.2.0-beta3-final" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.Net.Compilers.Toolset" Version="3.2.0-beta4-final" PrivateAssets="All" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net45'">
     <AssemblyTitle>Json.NET</AssemblyTitle>

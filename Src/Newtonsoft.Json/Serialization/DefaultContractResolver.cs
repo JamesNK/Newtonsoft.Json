@@ -1645,7 +1645,7 @@ namespace Newtonsoft.Json.Serialization
             MethodCall<object, object?> shouldSerializeCall =
                 JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(shouldSerializeMethod);
 
-            return o => (bool)shouldSerializeCall(o);
+            return o => (bool)shouldSerializeCall(o)!;
         }
 
         private void SetIsSpecifiedActions(JsonProperty property, MemberInfo member, bool allowNonPublicAccess)
@@ -1661,7 +1661,7 @@ namespace Newtonsoft.Json.Serialization
                 return;
             }
 
-            Func<object, object?> specifiedPropertyGet = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(specifiedMember);
+            Func<object, object> specifiedPropertyGet = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(specifiedMember)!;
 
             property.GetIsSpecified = o => (bool)specifiedPropertyGet(o);
 

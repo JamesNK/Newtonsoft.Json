@@ -868,7 +868,9 @@ namespace Newtonsoft.Json
         [return: MaybeNull]
         public T Deserialize<T>(JsonReader reader)
         {
+#pragma warning disable CS8601 // Possible null reference assignment.
             return (T)Deserialize(reader, typeof(T));
+#pragma warning restore CS8601 // Possible null reference assignment.
         }
 
         /// <summary>

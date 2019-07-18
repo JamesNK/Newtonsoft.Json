@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-namespace System.Runtime.CompilerServices
+namespace System.Diagnostics.CodeAnalysis
 {
     /// <summary>Specifies that an output will not be null even if the corresponding type allows it.</summary>
     [AttributeUsage(AttributeTargets.Field | AttributeTargets.Method | AttributeTargets.Parameter | AttributeTargets.Property | AttributeTargets.ReturnValue, AllowMultiple = true)]

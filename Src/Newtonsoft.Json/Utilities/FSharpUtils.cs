@@ -37,17 +37,17 @@ namespace Newtonsoft.Json.Utilities
     internal class FSharpFunction
     {
         private readonly object? _instance;
-        private readonly MethodCall<object?, object?> _invoker;
+        private readonly MethodCall<object?, object> _invoker;
 
-        public FSharpFunction(object? instance, MethodCall<object?, object?> invoker)
+        public FSharpFunction(object? instance, MethodCall<object?, object> invoker)
         {
             _instance = instance;
             _invoker = invoker;
         }
 
-        public object? Invoke(params object[] args)
+        public object Invoke(params object[] args)
         {
-            object? o = _invoker(_instance, args);
+            object o = _invoker(_instance, args);
 
             return o;
         }
@@ -62,14 +62,14 @@ namespace Newtonsoft.Json.Utilities
         private static Type _mapType;
 
         public static Assembly FSharpCoreAssembly { get; private set; }
-        public static MethodCall<object?, object?> IsUnion { get; private set; }
-        public static MethodCall<object?, object?> GetUnionCases { get; private set; }
+        public static MethodCall<object?, object> IsUnion { get; private set; }
+        public static MethodCall<object?, object> GetUnionCases { get; private set; }
         public static MethodCall<object?, object> PreComputeUnionTagReader { get; private set; }
         public static MethodCall<object?, object> PreComputeUnionReader { get; private set; }
         public static MethodCall<object?, object> PreComputeUnionConstructor { get; private set; }
-        public static Func<object, object?> GetUnionCaseInfoDeclaringType { get; private set; }
-        public static Func<object, object?> GetUnionCaseInfoName { get; private set; }
-        public static Func<object, object?> GetUnionCaseInfoTag { get; private set; }
+        public static Func<object, object> GetUnionCaseInfoDeclaringType { get; private set; }
+        public static Func<object, object> GetUnionCaseInfoName { get; private set; }
+        public static Func<object, object> GetUnionCaseInfoTag { get; private set; }
         public static MethodCall<object, object?> GetUnionCaseInfoFields { get; private set; }
 
         public const string FSharpSetTypeName = "FSharpSet`1";
@@ -89,10 +89,10 @@ namespace Newtonsoft.Json.Utilities
                         Type fsharpType = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.FSharpType");
 
                         MethodInfo isUnionMethodInfo = GetMethodWithNonPublicFallback(fsharpType, "IsUnion", BindingFlags.Public | BindingFlags.Static);
-                        IsUnion = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object?>(isUnionMethodInfo);
+                        IsUnion = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object?>(isUnionMethodInfo)!;
 
                         MethodInfo getUnionCasesMethodInfo = GetMethodWithNonPublicFallback(fsharpType, "GetUnionCases", BindingFlags.Public | BindingFlags.Static);
-                        GetUnionCases = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object?>(getUnionCasesMethodInfo);
+                        GetUnionCases = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object?>(getUnionCasesMethodInfo)!;
 
                         Type fsharpValue = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.FSharpValue");
 
@@ -102,9 +102,9 @@ namespace Newtonsoft.Json.Utilities
 
                         Type unionCaseInfo = fsharpCoreAssembly.GetType("Microsoft.FSharp.Reflection.UnionCaseInfo");
 
-                        GetUnionCaseInfoName = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(unionCaseInfo.GetProperty("Name")!);
-                        GetUnionCaseInfoTag = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(unionCaseInfo.GetProperty("Tag")!);
-                        GetUnionCaseInfoDeclaringType = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(unionCaseInfo.GetProperty("DeclaringType")!);
+                        GetUnionCaseInfoName = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(unionCaseInfo.GetProperty("Name")!)!;
+                        GetUnionCaseInfoTag = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(unionCaseInfo.GetProperty("Tag")!)!;
+                        GetUnionCaseInfoDeclaringType = JsonTypeReflector.ReflectionDelegateFactory.CreateGet<object>(unionCaseInfo.GetProperty("DeclaringType")!)!;
                         GetUnionCaseInfoFields = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object>(unionCaseInfo.GetMethod("GetFields"));
 
                         Type listModule = fsharpCoreAssembly.GetType("Microsoft.FSharp.Collections.ListModule");
@@ -143,7 +143,7 @@ namespace Newtonsoft.Json.Utilities
             MethodInfo invokeFunc = innerMethodInfo.ReturnType.GetMethod("Invoke", BindingFlags.Public | BindingFlags.Instance);
 
             MethodCall<object?, object?> call = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object?>(innerMethodInfo);
-            MethodCall<object?, object?> invoke = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object?>(invokeFunc);
+            MethodCall<object?, object> invoke = JsonTypeReflector.ReflectionDelegateFactory.CreateMethodCall<object?>(invokeFunc)!;
 
             MethodCall<object?, object> createFunction = (target, args) =>
             {

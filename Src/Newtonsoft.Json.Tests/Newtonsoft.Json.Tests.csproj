@@ -1,12 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net451;net452;net40;net35;net20;netcoreapp2.2;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>
-    <!--<TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net451;net452;net40;net35;net20;netcoreapp2.2;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>-->
-
-
-
-
-    <!--<TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net40;net35;net20;netcoreapp2.1;netcoreapp1.1;netcoreapp1.0</TargetFrameworks>-->
     <TargetFrameworks Condition="'$(TestFrameworks)'!=''">$(TestFrameworks)</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <VersionPrefix>1.0</VersionPrefix>

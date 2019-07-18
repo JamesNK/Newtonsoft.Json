@@ -107,7 +107,7 @@ namespace Newtonsoft.Json.Converters
             {
                 UnionCase unionCase = new UnionCase(
                     (int)FSharpUtils.GetUnionCaseInfoTag(unionCaseInfo),
-                    (string)FSharpUtils.GetUnionCaseInfoName(unionCaseInfo)!,
+                    (string)FSharpUtils.GetUnionCaseInfoName(unionCaseInfo),
                     (PropertyInfo[])FSharpUtils.GetUnionCaseInfoFields(unionCaseInfo)!,
                     (FSharpFunction)FSharpUtils.PreComputeUnionReader(null, unionCaseInfo, null),
                     (FSharpFunction)FSharpUtils.PreComputeUnionConstructor(null, unionCaseInfo, null));
