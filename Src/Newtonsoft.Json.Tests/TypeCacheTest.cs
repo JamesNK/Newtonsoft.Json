@@ -14,7 +14,7 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public class TypeCacheTest
     {
-        [Test]
+        //[Test]
         public void MemoryTest()
         {
             DeserializeAndSerializeTest();
@@ -24,7 +24,7 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
-        private void DeserializeAndSerializeTest()
+        public void DeserializeAndSerializeTest()
         {
             Type dynamicType = DynamicTypeBuilder.CreateType(new Dictionary<string, Type>() { { "number1", typeof(Int64) }, { "text1", typeof(string) } });
 
