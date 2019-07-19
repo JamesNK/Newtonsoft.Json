@@ -46,8 +46,14 @@ namespace Newtonsoft.Json.Serialization
 
         public override IReferenceResolver ReferenceResolver
         {
-            get => _serializer.ReferenceResolver;
-            set => _serializer.ReferenceResolver = value;
+            get => GetInternalSerializer().ReferenceResolver;
+            set => GetInternalSerializer().ReferenceResolver = value;
+        }
+
+        public override Func<IReferenceResolver> ReferenceResolverProvider
+        {
+            get => _serializer.ReferenceResolverProvider;
+            set => _serializer.ReferenceResolverProvider = value;
         }
 
         public override ITraceWriter TraceWriter

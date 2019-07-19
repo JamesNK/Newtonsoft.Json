@@ -7945,5 +7945,42 @@ This is just junk, though.";
                 () => JsonConvert.DeserializeObject<EmptyJsonValueTestClass>("{ A: \"\", B: 1, C: 123, D: 1.23, E: , F: null }"),
                 "Unexpected character encountered while parsing value: ,. Path 'E', line 1, position 36.");
         }
+
+        [Test]
+        public void MultipleReferenceResolverUse()
+        {
+            JsonSerializer serializer = new JsonSerializer
+            {
+                PreserveReferencesHandling = PreserveReferencesHandling.All,
+                Formatting = Formatting.Indented
+            };
+
+            int[] value = { 1, 8, 12 };
+
+            string expectedJson = @"{
+  ""$id"": ""1"",
+  ""$values"": [
+    1,
+    8,
+    12
+  ]
+}";
+
+            using (StringWriter writer = new StringWriter())
+            {
+                serializer.Serialize(writer, value);
+                string json = writer.ToString();
+
+                StringAssert.AreEqual(expectedJson, json);
+            }
+
+            using (StringWriter writer = new StringWriter())
+            {
+                serializer.Serialize(writer, value);
+                string json = writer.ToString();
+
+                StringAssert.AreEqual(expectedJson, json);
+            }
+        }
     }
 }

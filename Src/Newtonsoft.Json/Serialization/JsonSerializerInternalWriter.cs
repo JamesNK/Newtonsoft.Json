@@ -267,7 +267,7 @@ namespace Newtonsoft.Json.Serialization
                 return false;
             }
 
-            return Serializer.GetReferenceResolver().IsReferenced(this, value);
+            return ReferenceResolver.IsReferenced(this, value);
         }
 
         private bool ShouldWriteProperty(object memberValue, JsonObjectContract containerContract, JsonProperty property)
@@ -366,7 +366,7 @@ namespace Newtonsoft.Json.Serialization
         {
             try
             {
-                string reference = Serializer.GetReferenceResolver().GetReference(this, value);
+                string reference = ReferenceResolver.GetReference(this, value);
 
                 return reference;
             }
