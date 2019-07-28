@@ -36,9 +36,10 @@ using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using System.Text;
 using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 #if HAVE_XLINQ
 using System.Xml.Linq;
-
 #endif
 
 namespace Newtonsoft.Json
@@ -395,7 +396,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Uri"/>.</returns>
-        public static string ToString(Uri value)
+        public static string ToString(Uri? value)
         {
             if (value == null)
             {
@@ -415,7 +416,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="String"/>.</returns>
-        public static string ToString(string value)
+        public static string ToString(string? value)
         {
             return ToString(value, '"');
         }
@@ -426,7 +427,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The value to convert.</param>
         /// <param name="delimiter">The string delimiter character.</param>
         /// <returns>A JSON string representation of the <see cref="String"/>.</returns>
-        public static string ToString(string value, char delimiter)
+        public static string ToString(string? value, char delimiter)
         {
             return ToString(value, delimiter, StringEscapeHandling.Default);
         }
@@ -438,7 +439,7 @@ namespace Newtonsoft.Json
         /// <param name="delimiter">The string delimiter character.</param>
         /// <param name="stringEscapeHandling">The string escape handling.</param>
         /// <returns>A JSON string representation of the <see cref="String"/>.</returns>
-        public static string ToString(string value, char delimiter, StringEscapeHandling stringEscapeHandling)
+        public static string ToString(string? value, char delimiter, StringEscapeHandling stringEscapeHandling)
         {
             if (delimiter != '"' && delimiter != '\'')
             {
@@ -453,7 +454,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Object"/>.</returns>
-        public static string ToString(object value)
+        public static string ToString(object? value)
         {
             if (value == null)
             {
@@ -524,9 +525,9 @@ namespace Newtonsoft.Json
         /// <param name="value">The object to serialize.</param>
         /// <returns>A JSON string representation of the object.</returns>
         [DebuggerStepThrough]
-        public static string SerializeObject(object value)
+        public static string SerializeObject(object? value)
         {
-            return SerializeObject(value, null, (JsonSerializerSettings)null);
+            return SerializeObject(value, null, (JsonSerializerSettings?)null);
         }
 
         /// <summary>
@@ -538,9 +539,9 @@ namespace Newtonsoft.Json
         /// A JSON string representation of the object.
         /// </returns>
         [DebuggerStepThrough]
-        public static string SerializeObject(object value, Formatting formatting)
+        public static string SerializeObject(object? value, Formatting formatting)
         {
-            return SerializeObject(value, formatting, (JsonSerializerSettings)null);
+            return SerializeObject(value, formatting, (JsonSerializerSettings?)null);
         }
 
         /// <summary>
@@ -550,9 +551,9 @@ namespace Newtonsoft.Json
         /// <param name="converters">A collection of converters used while serializing.</param>
         /// <returns>A JSON string representation of the object.</returns>
         [DebuggerStepThrough]
-        public static string SerializeObject(object value, params JsonConverter[] converters)
+        public static string SerializeObject(object? value, params JsonConverter[] converters)
         {
-            JsonSerializerSettings settings = (converters != null && converters.Length > 0)
+            JsonSerializerSettings? settings = (converters != null && converters.Length > 0)
                 ? new JsonSerializerSettings { Converters = converters }
                 : null;
 
@@ -567,9 +568,9 @@ namespace Newtonsoft.Json
         /// <param name="converters">A collection of converters used while serializing.</param>
         /// <returns>A JSON string representation of the object.</returns>
         [DebuggerStepThrough]
-        public static string SerializeObject(object value, Formatting formatting, params JsonConverter[] converters)
+        public static string SerializeObject(object? value, Formatting formatting, params JsonConverter[] converters)
         {
-            JsonSerializerSettings settings = (converters != null && converters.Length > 0)
+            JsonSerializerSettings? settings = (converters != null && converters.Length > 0)
                 ? new JsonSerializerSettings { Converters = converters }
                 : null;
 
@@ -586,7 +587,7 @@ namespace Newtonsoft.Json
         /// A JSON string representation of the object.
         /// </returns>
         [DebuggerStepThrough]
-        public static string SerializeObject(object value, JsonSerializerSettings settings)
+        public static string SerializeObject(object? value, JsonSerializerSettings settings)
         {
             return SerializeObject(value, null, settings);
         }
@@ -606,7 +607,7 @@ namespace Newtonsoft.Json
         /// A JSON string representation of the object.
         /// </returns>
         [DebuggerStepThrough]
-        public static string SerializeObject(object value, Type type, JsonSerializerSettings settings)
+        public static string SerializeObject(object? value, Type? type, JsonSerializerSettings? settings)
         {
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
@@ -624,7 +625,7 @@ namespace Newtonsoft.Json
         /// A JSON string representation of the object.
         /// </returns>
         [DebuggerStepThrough]
-        public static string SerializeObject(object value, Formatting formatting, JsonSerializerSettings settings)
+        public static string SerializeObject(object? value, Formatting formatting, JsonSerializerSettings? settings)
         {
             return SerializeObject(value, null, formatting, settings);
         }
@@ -645,7 +646,7 @@ namespace Newtonsoft.Json
         /// A JSON string representation of the object.
         /// </returns>
         [DebuggerStepThrough]
-        public static string SerializeObject(object value, Type type, Formatting formatting, JsonSerializerSettings settings)
+        public static string SerializeObject(object? value, Type? type, Formatting formatting, JsonSerializerSettings? settings)
         {
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
             jsonSerializer.Formatting = formatting;
@@ -653,7 +654,7 @@ namespace Newtonsoft.Json
             return SerializeObjectInternal(value, type, jsonSerializer);
         }
 
-        private static string SerializeObjectInternal(object value, Type type, JsonSerializer jsonSerializer)
+        private static string SerializeObjectInternal(object? value, Type? type, JsonSerializer jsonSerializer)
         {
             StringBuilder sb = new StringBuilder(256);
             StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
@@ -675,9 +676,9 @@ namespace Newtonsoft.Json
         /// <param name="value">The JSON to deserialize.</param>
         /// <returns>The deserialized object from the JSON string.</returns>
         [DebuggerStepThrough]
-        public static object DeserializeObject(string value)
+        public static object? DeserializeObject(string value)
         {
-            return DeserializeObject(value, null, (JsonSerializerSettings)null);
+            return DeserializeObject(value, null, (JsonSerializerSettings?)null);
         }
 
         /// <summary>
@@ -690,7 +691,7 @@ namespace Newtonsoft.Json
         /// </param>
         /// <returns>The deserialized object from the JSON string.</returns>
         [DebuggerStepThrough]
-        public static object DeserializeObject(string value, JsonSerializerSettings settings)
+        public static object? DeserializeObject(string value, JsonSerializerSettings settings)
         {
             return DeserializeObject(value, null, settings);
         }
@@ -702,9 +703,9 @@ namespace Newtonsoft.Json
         /// <param name="type">The <see cref="Type"/> of object being deserialized.</param>
         /// <returns>The deserialized object from the JSON string.</returns>
         [DebuggerStepThrough]
-        public static object DeserializeObject(string value, Type type)
+        public static object? DeserializeObject(string value, Type type)
         {
-            return DeserializeObject(value, type, (JsonSerializerSettings)null);
+            return DeserializeObject(value, type, (JsonSerializerSettings?)null);
         }
 
         /// <summary>
@@ -716,7 +717,7 @@ namespace Newtonsoft.Json
         [DebuggerStepThrough]
         public static T DeserializeObject<T>(string value)
         {
-            return DeserializeObject<T>(value, (JsonSerializerSettings)null);
+            return DeserializeObject<T>(value, (JsonSerializerSettings?)null);
         }
 
         /// <summary>
@@ -765,9 +766,12 @@ namespace Newtonsoft.Json
         /// <param name="converters">Converters to use while deserializing.</param>
         /// <returns>The deserialized object from the JSON string.</returns>
         [DebuggerStepThrough]
+        [return: MaybeNull]
         public static T DeserializeObject<T>(string value, params JsonConverter[] converters)
         {
+#pragma warning disable CS8601 // Possible null reference assignment.
             return (T)DeserializeObject(value, typeof(T), converters);
+#pragma warning restore CS8601 // Possible null reference assignment.
         }
 
         /// <summary>
@@ -781,9 +785,12 @@ namespace Newtonsoft.Json
         /// </param>
         /// <returns>The deserialized object from the JSON string.</returns>
         [DebuggerStepThrough]
-        public static T DeserializeObject<T>(string value, JsonSerializerSettings settings)
+        [return: MaybeNull]
+        public static T DeserializeObject<T>(string value, JsonSerializerSettings? settings)
         {
+#pragma warning disable CS8601 // Possible null reference assignment.
             return (T)DeserializeObject(value, typeof(T), settings);
+#pragma warning restore CS8601 // Possible null reference assignment.
         }
 
         /// <summary>
@@ -794,9 +801,9 @@ namespace Newtonsoft.Json
         /// <param name="converters">Converters to use while deserializing.</param>
         /// <returns>The deserialized object from the JSON string.</returns>
         [DebuggerStepThrough]
-        public static object DeserializeObject(string value, Type type, params JsonConverter[] converters)
+        public static object? DeserializeObject(string value, Type type, params JsonConverter[] converters)
         {
-            JsonSerializerSettings settings = (converters != null && converters.Length > 0)
+            JsonSerializerSettings? settings = (converters != null && converters.Length > 0)
                 ? new JsonSerializerSettings { Converters = converters }
                 : null;
 
@@ -813,7 +820,7 @@ namespace Newtonsoft.Json
         /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
         /// <returns>The deserialized object from the JSON string.</returns>
-        public static object DeserializeObject(string value, Type type, JsonSerializerSettings settings)
+        public static object? DeserializeObject(string value, Type? type, JsonSerializerSettings? settings)
         {
             ValidationUtils.ArgumentNotNull(value, nameof(value));
 
@@ -853,7 +860,7 @@ namespace Newtonsoft.Json
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
         /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
-        public static void PopulateObject(string value, object target, JsonSerializerSettings settings)
+        public static void PopulateObject(string value, object target, JsonSerializerSettings? settings)
         {
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
@@ -882,7 +889,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="node">The node to serialize.</param>
         /// <returns>A JSON string of the <see cref="XmlNode"/>.</returns>
-        public static string SerializeXmlNode(XmlNode node)
+        public static string SerializeXmlNode(XmlNode? node)
         {
             return SerializeXmlNode(node, Formatting.None);
         }
@@ -893,7 +900,7 @@ namespace Newtonsoft.Json
         /// <param name="node">The node to serialize.</param>
         /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <returns>A JSON string of the <see cref="XmlNode"/>.</returns>
-        public static string SerializeXmlNode(XmlNode node, Formatting formatting)
+        public static string SerializeXmlNode(XmlNode? node, Formatting formatting)
         {
             XmlNodeConverter converter = new XmlNodeConverter();
 
@@ -907,7 +914,7 @@ namespace Newtonsoft.Json
         /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <param name="omitRootObject">Omits writing the root object.</param>
         /// <returns>A JSON string of the <see cref="XmlNode"/>.</returns>
-        public static string SerializeXmlNode(XmlNode node, Formatting formatting, bool omitRootObject)
+        public static string SerializeXmlNode(XmlNode? node, Formatting formatting, bool omitRootObject)
         {
             XmlNodeConverter converter = new XmlNodeConverter { OmitRootObject = omitRootObject };
 
@@ -919,7 +926,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The JSON string.</param>
         /// <returns>The deserialized <see cref="XmlNode"/>.</returns>
-        public static XmlDocument DeserializeXmlNode(string value)
+        public static XmlDocument? DeserializeXmlNode(string value)
         {
             return DeserializeXmlNode(value, null);
         }
@@ -930,7 +937,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The JSON string.</param>
         /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
         /// <returns>The deserialized <see cref="XmlNode"/>.</returns>
-        public static XmlDocument DeserializeXmlNode(string value, string deserializeRootElementName)
+        public static XmlDocument? DeserializeXmlNode(string value, string? deserializeRootElementName)
         {
             return DeserializeXmlNode(value, deserializeRootElementName, false);
         }
@@ -946,7 +953,7 @@ namespace Newtonsoft.Json
         /// This attribute helps preserve arrays when converting the written XML back to JSON.
         /// </param>
         /// <returns>The deserialized <see cref="XmlNode"/>.</returns>
-        public static XmlDocument DeserializeXmlNode(string value, string deserializeRootElementName, bool writeArrayAttribute)
+        public static XmlDocument? DeserializeXmlNode(string value, string? deserializeRootElementName, bool writeArrayAttribute)
         {
             return DeserializeXmlNode(value, deserializeRootElementName, writeArrayAttribute, false);
         }
@@ -968,14 +975,14 @@ namespace Newtonsoft.Json
         /// as part of the XML element name.
         /// </param>
         /// <returns>The deserialized <see cref="XmlNode"/>.</returns>
-        public static XmlDocument DeserializeXmlNode(string value, string deserializeRootElementName, bool writeArrayAttribute, bool encodeSpecialCharacters)
+        public static XmlDocument? DeserializeXmlNode(string value, string? deserializeRootElementName, bool writeArrayAttribute, bool encodeSpecialCharacters)
         {
             XmlNodeConverter converter = new XmlNodeConverter();
             converter.DeserializeRootElementName = deserializeRootElementName;
             converter.WriteArrayAttribute = writeArrayAttribute;
             converter.EncodeSpecialCharacters = encodeSpecialCharacters;
 
-            return (XmlDocument)DeserializeObject(value, typeof(XmlDocument), converter);
+            return (XmlDocument?)DeserializeObject(value, typeof(XmlDocument), converter);
         }
 #endif
 
@@ -985,7 +992,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="node">The node to convert to JSON.</param>
         /// <returns>A JSON string of the <see cref="XNode"/>.</returns>
-        public static string SerializeXNode(XObject node)
+        public static string SerializeXNode(XObject? node)
         {
             return SerializeXNode(node, Formatting.None);
         }
@@ -996,7 +1003,7 @@ namespace Newtonsoft.Json
         /// <param name="node">The node to convert to JSON.</param>
         /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <returns>A JSON string of the <see cref="XNode"/>.</returns>
-        public static string SerializeXNode(XObject node, Formatting formatting)
+        public static string SerializeXNode(XObject? node, Formatting formatting)
         {
             return SerializeXNode(node, formatting, false);
         }
@@ -1008,7 +1015,7 @@ namespace Newtonsoft.Json
         /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <param name="omitRootObject">Omits writing the root object.</param>
         /// <returns>A JSON string of the <see cref="XNode"/>.</returns>
-        public static string SerializeXNode(XObject node, Formatting formatting, bool omitRootObject)
+        public static string SerializeXNode(XObject? node, Formatting formatting, bool omitRootObject)
         {
             XmlNodeConverter converter = new XmlNodeConverter { OmitRootObject = omitRootObject };
 
@@ -1020,7 +1027,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The JSON string.</param>
         /// <returns>The deserialized <see cref="XNode"/>.</returns>
-        public static XDocument DeserializeXNode(string value)
+        public static XDocument? DeserializeXNode(string value)
         {
             return DeserializeXNode(value, null);
         }
@@ -1031,7 +1038,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The JSON string.</param>
         /// <param name="deserializeRootElementName">The name of the root element to append when deserializing.</param>
         /// <returns>The deserialized <see cref="XNode"/>.</returns>
-        public static XDocument DeserializeXNode(string value, string deserializeRootElementName)
+        public static XDocument? DeserializeXNode(string value, string? deserializeRootElementName)
         {
             return DeserializeXNode(value, deserializeRootElementName, false);
         }
@@ -1047,7 +1054,7 @@ namespace Newtonsoft.Json
         /// This attribute helps preserve arrays when converting the written XML back to JSON.
         /// </param>
         /// <returns>The deserialized <see cref="XNode"/>.</returns>
-        public static XDocument DeserializeXNode(string value, string deserializeRootElementName, bool writeArrayAttribute)
+        public static XDocument? DeserializeXNode(string value, string? deserializeRootElementName, bool writeArrayAttribute)
         {
             return DeserializeXNode(value, deserializeRootElementName, writeArrayAttribute, false);
         }
@@ -1069,14 +1076,14 @@ namespace Newtonsoft.Json
         /// as part of the XML element name.
         /// </param>
         /// <returns>The deserialized <see cref="XNode"/>.</returns>
-        public static XDocument DeserializeXNode(string value, string deserializeRootElementName, bool writeArrayAttribute, bool encodeSpecialCharacters)
+        public static XDocument? DeserializeXNode(string value, string? deserializeRootElementName, bool writeArrayAttribute, bool encodeSpecialCharacters)
         {
             XmlNodeConverter converter = new XmlNodeConverter();
             converter.DeserializeRootElementName = deserializeRootElementName;
             converter.WriteArrayAttribute = writeArrayAttribute;
             converter.EncodeSpecialCharacters = encodeSpecialCharacters;
 
-            return (XDocument)DeserializeObject(value, typeof(XDocument), converter);
+            return (XDocument?)DeserializeObject(value, typeof(XDocument), converter);
         }
 #endif
         #endregion

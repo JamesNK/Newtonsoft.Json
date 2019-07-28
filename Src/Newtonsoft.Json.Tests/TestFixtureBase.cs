@@ -212,11 +212,9 @@ namespace Newtonsoft.Json.Tests
 
         public static string ResolvePath(string path)
         {
-#if !DNXCORE50
-            return Path.Combine(TestContext.CurrentContext.TestDirectory, path);
-#else
-            return path;
-#endif
+            var assemblyPath = Path.GetDirectoryName(typeof(TestFixtureBase).Assembly().Location);
+
+            return Path.Combine(assemblyPath, path);
         }
 
         protected string GetOffset(DateTime d, DateFormatHandling dateFormatHandling)

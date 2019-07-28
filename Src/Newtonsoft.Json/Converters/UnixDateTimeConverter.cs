@@ -42,7 +42,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             long seconds;
 
@@ -77,7 +77,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="existingValue">The existing property value of the JSON that is being converted.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             bool nullable = ReflectionUtils.IsNullable(objectType);
             if (reader.TokenType == JsonToken.Null)
@@ -94,11 +94,11 @@ namespace Newtonsoft.Json.Converters
 
             if (reader.TokenType == JsonToken.Integer)
             {
-                seconds = (long)reader.Value;
+                seconds = (long)reader.Value!;
             }
             else if (reader.TokenType == JsonToken.String)
             {
-                if (!long.TryParse((string)reader.Value, out seconds))
+                if (!long.TryParse((string)reader.Value!, out seconds))
                 {
                     throw JsonSerializationException.Create(reader, "Cannot convert invalid value to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
                 }

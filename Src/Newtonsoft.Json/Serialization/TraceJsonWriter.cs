@@ -144,7 +144,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        public override void WriteValue(byte[] value)
+        public override void WriteValue(byte[]? value)
         {
             _textWriter.WriteValue(value);
             _innerWriter.WriteValue(value);
@@ -321,7 +321,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        public override void WriteValue(object value)
+        public override void WriteValue(object? value)
         {
 #if HAVE_BIG_INTEGER
             if (value is BigInteger)
@@ -389,7 +389,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        public override void WriteValue(string value)
+        public override void WriteValue(string? value)
         {
             _textWriter.WriteValue(value);
             _innerWriter.WriteValue(value);
@@ -459,7 +459,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        public override void WriteValue(Uri value)
+        public override void WriteValue(Uri? value)
         {
             _textWriter.WriteValue(value);
             _innerWriter.WriteValue(value);
@@ -501,7 +501,7 @@ namespace Newtonsoft.Json.Serialization
             base.WriteWhitespace(ws);
         }
 
-        public override void WriteComment(string text)
+        public override void WriteComment(string? text)
         {
             _textWriter.WriteComment(text);
             _innerWriter.WriteComment(text);
@@ -566,7 +566,7 @@ namespace Newtonsoft.Json.Serialization
             base.WriteEndObject();
         }
 
-        public override void WriteRawValue(string json)
+        public override void WriteRawValue(string? json)
         {
             _textWriter.WriteRawValue(json);
             _innerWriter.WriteRawValue(json);
@@ -575,7 +575,7 @@ namespace Newtonsoft.Json.Serialization
             InternalWriteValue(JsonToken.Undefined);
         }
 
-        public override void WriteRaw(string json)
+        public override void WriteRaw(string? json)
         {
             _textWriter.WriteRaw(json);
             _innerWriter.WriteRaw(json);

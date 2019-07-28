@@ -41,6 +41,8 @@ using System.Linq;
 
 #endif
 
+#nullable disable
+
 namespace Newtonsoft.Json
 {
     /// <summary>

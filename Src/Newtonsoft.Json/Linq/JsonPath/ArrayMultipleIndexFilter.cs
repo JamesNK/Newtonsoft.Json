@@ -4,7 +4,12 @@ namespace Newtonsoft.Json.Linq.JsonPath
 {
     internal class ArrayMultipleIndexFilter : PathFilter
     {
-        public List<int> Indexes { get; set; }
+        internal List<int> Indexes;
+
+        public ArrayMultipleIndexFilter(List<int> indexes)
+        {
+            Indexes = indexes;
+        }
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
@@ -12,7 +17,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
             {
                 foreach (int i in Indexes)
                 {
-                    JToken v = GetTokenIndex(t, errorWhenNoMatch, i);
+                    JToken? v = GetTokenIndex(t, errorWhenNoMatch, i);
 
                     if (v != null)
                     {

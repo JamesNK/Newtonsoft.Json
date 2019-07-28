@@ -47,12 +47,12 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private ErrorContext _currentErrorContext;
-        private BidirectionalDictionary<string, object> _mappings;
+        private ErrorContext? _currentErrorContext;
+        private BidirectionalDictionary<string, object>? _mappings;
 
         internal readonly JsonSerializer Serializer;
-        internal readonly ITraceWriter TraceWriter;
-        protected JsonSerializerProxy InternalSerializer;
+        internal readonly ITraceWriter? TraceWriter;
+        protected JsonSerializerProxy? InternalSerializer;
 
         protected JsonSerializerInternalBase(JsonSerializer serializer)
         {
@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        protected NullValueHandling ResolvedNullValueHandling(JsonObjectContract containerContract, JsonProperty property)
+        protected NullValueHandling ResolvedNullValueHandling(JsonObjectContract? containerContract, JsonProperty property)
         {
             NullValueHandling resolvedNullValueHandling =
                 property.NullValueHandling
@@ -91,7 +91,7 @@ namespace Newtonsoft.Json.Serialization
             return resolvedNullValueHandling;
         }
 
-        private ErrorContext GetErrorContext(object currentObject, object member, string path, Exception error)
+        private ErrorContext GetErrorContext(object? currentObject, object? member, string path, Exception error)
         {
             if (_currentErrorContext == null)
             {
@@ -116,7 +116,7 @@ namespace Newtonsoft.Json.Serialization
             _currentErrorContext = null;
         }
 
-        protected bool IsErrorHandled(object currentObject, JsonContract contract, object keyValue, IJsonLineInfo lineInfo, string path, Exception ex)
+        protected bool IsErrorHandled(object? currentObject, JsonContract? contract, object? keyValue, IJsonLineInfo? lineInfo, string path, Exception ex)
         {
             ErrorContext errorContext = GetErrorContext(currentObject, keyValue, path, ex);
 

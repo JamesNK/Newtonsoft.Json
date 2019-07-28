@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="Task"/> that represents the asynchronous write operation.</returns>
         public override async Task WriteToAsync(JsonWriter writer, CancellationToken cancellationToken, params JsonConverter[] converters)
         {
-            await writer.WriteStartConstructorAsync(_name, cancellationToken).ConfigureAwait(false);
+            await writer.WriteStartConstructorAsync(_name ?? string.Empty, cancellationToken).ConfigureAwait(false);
 
             for (int i = 0; i < _values.Count; i++)
             {
@@ -76,7 +76,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="Task{TResult}"/> that represents the asynchronous load. The <see cref="Task{TResult}.Result"/>
         /// property returns a <see cref="JConstructor"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-        public new static async Task<JConstructor> LoadAsync(JsonReader reader, JsonLoadSettings settings, CancellationToken cancellationToken = default)
+        public new static async Task<JConstructor> LoadAsync(JsonReader reader, JsonLoadSettings? settings, CancellationToken cancellationToken = default)
         {
             if (reader.TokenType == JsonToken.None)
             {
@@ -93,7 +93,7 @@ namespace Newtonsoft.Json.Linq
                 throw JsonReaderException.Create(reader, "Error reading JConstructor from JsonReader. Current JsonReader item is not a constructor: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
 
-            JConstructor c = new JConstructor((string)reader.Value);
+            JConstructor c = new JConstructor((string)reader.Value!);
             c.SetLineInfo(reader as IJsonLineInfo, settings);
 
             await c.ReadTokenFromAsync(reader, settings, cancellationToken).ConfigureAwait(false);

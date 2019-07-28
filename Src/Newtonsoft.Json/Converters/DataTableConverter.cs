@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             if (value == null)
             {
@@ -54,7 +54,7 @@ namespace Newtonsoft.Json.Converters
             }
 
             DataTable table = (DataTable)value;
-            DefaultContractResolver resolver = serializer.ContractResolver as DefaultContractResolver;
+            DefaultContractResolver? resolver = serializer.ContractResolver as DefaultContractResolver;
 
             writer.WriteStartArray();
 
@@ -87,7 +87,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -106,7 +106,7 @@ namespace Newtonsoft.Json.Converters
             // populate the name from the property name
             if (reader.TokenType == JsonToken.PropertyName)
             {
-                dt.TableName = (string)reader.Value;
+                dt.TableName = (string)reader.Value!;
 
                 reader.ReadAndAssert();
 
@@ -140,7 +140,7 @@ namespace Newtonsoft.Json.Converters
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
-                string columnName = (string)reader.Value;
+                string columnName = (string)reader.Value!;
 
                 reader.ReadAndAssert();
 
@@ -177,7 +177,7 @@ namespace Newtonsoft.Json.Converters
                         reader.ReadAndAssert();
                     }
 
-                    List<object> o = new List<object>();
+                    List<object?> o = new List<object?>();
 
                     while (reader.TokenType != JsonToken.EndArray)
                     {
@@ -218,7 +218,7 @@ namespace Newtonsoft.Json.Converters
                 case JsonToken.String:
                 case JsonToken.Date:
                 case JsonToken.Bytes:
-                    return reader.ValueType;
+                    return reader.ValueType!;
                 case JsonToken.Null:
                 case JsonToken.Undefined:
                 case JsonToken.EndArray:

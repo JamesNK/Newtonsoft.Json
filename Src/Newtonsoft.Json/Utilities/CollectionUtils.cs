@@ -116,17 +116,17 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
-        public static ConstructorInfo ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType)
+        public static ConstructorInfo? ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType)
         {
             Type genericConstructorArgument = typeof(IList<>).MakeGenericType(collectionItemType);
 
             return ResolveEnumerableCollectionConstructor(collectionType, collectionItemType, genericConstructorArgument);
         }
 
-        public static ConstructorInfo ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType, Type constructorArgumentType)
+        public static ConstructorInfo? ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType, Type constructorArgumentType)
         {
             Type genericEnumerable = typeof(IEnumerable<>).MakeGenericType(collectionItemType);
-            ConstructorInfo match = null;
+            ConstructorInfo? match = null;
 
             foreach (ConstructorInfo constructor in collectionType.GetConstructors(BindingFlags.Public | BindingFlags.Instance))
             {
@@ -248,6 +248,7 @@ namespace Newtonsoft.Json.Utilities
                     return i;
                 }
             }
+
             return -1;
         }
 
@@ -378,7 +379,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
         public static T[] ArrayEmpty<T>()
         {
-            T[] array = Enumerable.Empty<T>() as T[];
+            T[]? array = Enumerable.Empty<T>() as T[];
             Debug.Assert(array != null);
             // Defensively guard against a version of Linq where Enumerable.Empty<T> doesn't
             // return an array, but throw in debug versions so a better strategy can be
