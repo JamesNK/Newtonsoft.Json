@@ -28,7 +28,7 @@
       <content>
         <para>SelectToken supports JSONPath queries. Find out more about JSONPath <externalLink>
 <linkText>here</linkText>
-<linkUri>http://goessner.net/articles/JsonPath/</linkUri>
+<linkUri>https://goessner.net/articles/JsonPath/</linkUri>
 <linkTarget>_blank</linkTarget>
 </externalLink>.</para>
 
