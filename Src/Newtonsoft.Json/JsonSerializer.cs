@@ -845,7 +845,7 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Deserializes the JSON structure contained by the specified <see cref="StringReader"/>
+        /// Deserializes the JSON structure contained by the specified <see cref="TextReader"/>
         /// into an instance of the specified type.
         /// </summary>
         /// <param name="reader">The <see cref="TextReader"/> containing the object.</param>
