@@ -744,16 +744,15 @@ namespace Newtonsoft.Json.Linq
 
         PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
         {
-            var propertiesArray = new PropertyDescriptor[Count];
-            var i = 0;
+            PropertyDescriptor[] propertiesArray = new PropertyDescriptor[Count];
+            int i = 0;
             foreach (KeyValuePair<string, JToken?> propertyValue in this)
             {
                 propertiesArray[i] = new JPropertyDescriptor(propertyValue.Key);
                 i++;
             }
 
-            var descriptors = new PropertyDescriptorCollection(propertiesArray);
-            return descriptors;
+            return new PropertyDescriptorCollection(propertiesArray);
         }
 
         AttributeCollection ICustomTypeDescriptor.GetAttributes()
