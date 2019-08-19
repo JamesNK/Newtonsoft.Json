@@ -14,7 +14,7 @@
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $assemblyVersion = if ($assemblyVersion) {$assemblyVersion} else {$majorVersion + '.0.0'}
   $netCliChannel = "2.0"
-  $netCliVersion = "3.0.100-preview8-013317"
+  $netCliVersion = "3.0.100-preview9-013927"
   $nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 
   $baseDir  = resolve-path ..
@@ -31,7 +31,7 @@
   $nunitConsolePath = "$buildDir\Temp\NUnit.ConsoleRunner.$nunitConsoleVersion"
 
   $builds = @(
-    @{Framework = "netstandard2.0"; TestsFunction = "NetCliTests"; TestFramework = "netcoreapp2.2"; Enabled=$true},
+    @{Framework = "netstandard2.0"; TestsFunction = "NetCliTests"; TestFramework = "netcoreapp3.0"; Enabled=$true},
     @{Framework = "netstandard1.3"; TestsFunction = "NetCliTests"; TestFramework = "netcoreapp1.1"; Enabled=$true},
     @{Framework = "netstandard1.0"; TestsFunction = "NetCliTests"; TestFramework = "netcoreapp1.0"; Enabled=$true},
     @{Framework = "net45"; TestsFunction = "NUnitTests"; TestFramework = "net46"; NUnitFramework="net-4.0"; Enabled=$true},

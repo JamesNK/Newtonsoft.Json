@@ -310,8 +310,10 @@ namespace Newtonsoft.Json.Tests.Linq
             {
                 contains = o.ContainsKey(null);
                 Assert.AreEqual(false, contains);
-            }, @"Value cannot be null.
-Parameter name: propertyName");
+            },
+            @"Value cannot be null.
+Parameter name: propertyName",
+            "Value cannot be null. (Parameter 'propertyName')");
         }
 
         [Test]
@@ -359,8 +361,10 @@ Parameter name: propertyName");
             {
                 JObject o = new JObject();
                 ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(null, 0);
-            }, @"Value cannot be null.
-Parameter name: array");
+            },
+            @"Value cannot be null.
+Parameter name: array",
+            "Value cannot be null. (Parameter 'array')");
         }
 
         [Test]
@@ -370,8 +374,10 @@ Parameter name: array");
             {
                 JObject o = new JObject();
                 ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[1], -1);
-            }, @"arrayIndex is less than 0.
-Parameter name: arrayIndex");
+            },
+            @"arrayIndex is less than 0.
+Parameter name: arrayIndex",
+            "arrayIndex is less than 0. (Parameter 'arrayIndex')");
         }
 
         [Test]

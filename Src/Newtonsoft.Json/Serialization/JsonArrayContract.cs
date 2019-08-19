@@ -117,7 +117,10 @@ namespace Newtonsoft.Json.Serialization
             : base(underlyingType)
         {
             ContractType = JsonContractType.Array;
-            IsArray = CreatedType.IsArray;
+
+            // netcoreapp3.0 uses EmptyPartition for empty enumerable. Treat as an empty array.
+            IsArray = CreatedType.IsArray ||
+                (NonNullableUnderlyingType.IsGenericType() && NonNullableUnderlyingType.GetGenericTypeDefinition().FullName == "System.Linq.EmptyPartition`1");
 
             bool canDeserialize;
 
@@ -129,7 +132,7 @@ namespace Newtonsoft.Json.Serialization
                 _genericCollectionDefinitionType = typeof(List<>).MakeGenericType(CollectionItemType);
 
                 canDeserialize = true;
-                IsMultidimensionalArray = (IsArray && UnderlyingType.GetArrayRank() > 1);
+                IsMultidimensionalArray = (CreatedType.IsArray && UnderlyingType.GetArrayRank() > 1);
             }
             else if (typeof(IList).IsAssignableFrom(NonNullableUnderlyingType))
             {

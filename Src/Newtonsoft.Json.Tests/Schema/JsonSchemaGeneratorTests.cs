@@ -381,12 +381,12 @@ namespace Newtonsoft.Json.Tests.Schema
 #endif
             };
 
-            JsonSchema schema = generator.Generate(typeof(Version), true);
+            JsonSchema schema = generator.Generate(typeof(VersionOld), true);
 
             string json = schema.ToString();
 
             StringAssert.AreEqual(@"{
-  ""id"": ""System.Version"",
+  ""id"": ""Newtonsoft.Json.Tests.TestObjects.VersionOld"",
   ""type"": [
     ""object"",
     ""null""
