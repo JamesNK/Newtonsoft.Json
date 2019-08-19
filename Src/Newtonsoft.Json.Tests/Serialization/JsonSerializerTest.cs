@@ -2258,7 +2258,24 @@ keyword such as type of business.""
             string json = JsonConvert.SerializeObject(new ConverableMembers(), Formatting.Indented);
 
             string expected = null;
-#if !(PORTABLE || DNXCORE50) || NETSTANDARD2_0
+#if NETSTANDARD2_0
+            expected = @"{
+  ""String"": ""string"",
+  ""Int32"": 2147483647,
+  ""UInt32"": 4294967295,
+  ""Byte"": 255,
+  ""SByte"": 127,
+  ""Short"": 32767,
+  ""UShort"": 65535,
+  ""Long"": 9223372036854775807,
+  ""ULong"": 9223372036854775807,
+  ""Double"": 1.7976931348623157E+308,
+  ""Float"": 3.4028235E+38,
+  ""DBNull"": null,
+  ""Bool"": true,
+  ""Char"": ""\u0000""
+}";
+#elif !(PORTABLE || DNXCORE50)
             expected = @"{
   ""String"": ""string"",
   ""Int32"": 2147483647,
@@ -2276,7 +2293,7 @@ keyword such as type of business.""
   ""Char"": ""\u0000""
 }";
 #else
-      expected = @"{
+            expected = @"{
   ""String"": ""string"",
   ""Int32"": 2147483647,
   ""UInt32"": 4294967295,
@@ -5884,7 +5901,8 @@ Path '', line 1, position 1.");
                 new[]
                 {
                     "Value cannot be null." + Environment.NewLine + "Parameter name: value",
-                    "Argument cannot be null." + Environment.NewLine + "Parameter name: value" // mono
+                    "Argument cannot be null." + Environment.NewLine + "Parameter name: value", // mono
+                    "Value cannot be null. (Parameter 'value')"
                 });
         }
 
@@ -5896,7 +5914,8 @@ Path '', line 1, position 1.");
                 new[]
                 {
                     "Value cannot be null." + Environment.NewLine + "Parameter name: value",
-                    "Argument cannot be null." + Environment.NewLine + "Parameter name: value" // mono
+                    "Argument cannot be null." + Environment.NewLine + "Parameter name: value", // mono
+                    "Value cannot be null. (Parameter 'value')"
                 });
         }
 

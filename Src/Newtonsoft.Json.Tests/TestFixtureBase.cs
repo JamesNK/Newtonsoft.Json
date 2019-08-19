@@ -373,7 +373,7 @@ namespace Newtonsoft.Json.Tests
             {
                 action();
 
-                Assert.Fail("Exception of type {0} expected. No exception thrown.", typeof(TException).Name);
+                Assert.Fail("Exception of type " + typeof(TException).Name + " expected. No exception thrown.");
                 return null;
             }
             catch (TException ex)
@@ -406,7 +406,7 @@ namespace Newtonsoft.Json.Tests
             {
                 await action();
 
-                Assert.Fail("Exception of type {0} expected. No exception thrown.", typeof(TException).Name);
+                Assert.Fail("Exception of type " + typeof(TException).Name + " expected. No exception thrown.");
                 return null;
             }
             catch (TException ex)
