@@ -81,7 +81,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Occurs when the <see cref="JsonSerializer"/> errors during serialization and deserialization.
         /// </summary>
-        public virtual event EventHandler<ErrorEventArgs> Error;
+        public virtual event EventHandler<ErrorEventArgs>? Error;
 
         /// <summary>
         /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.

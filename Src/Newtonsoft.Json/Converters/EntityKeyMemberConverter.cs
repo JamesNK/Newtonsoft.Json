@@ -28,6 +28,7 @@ using System;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
+using System.Diagnostics;
 
 namespace Newtonsoft.Json.Converters
 {
@@ -42,7 +43,7 @@ namespace Newtonsoft.Json.Converters
         private const string TypePropertyName = "Type";
         private const string ValuePropertyName = "Value";
 
-        private static ReflectionObject _reflectionObject;
+        private static ReflectionObject? _reflectionObject;
 
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -59,6 +60,7 @@ namespace Newtonsoft.Json.Converters
             }
 
             EnsureReflectionObject(value.GetType());
+            Debug.Assert(_reflectionObject != null);
 
             DefaultContractResolver? resolver = serializer.ContractResolver as DefaultContractResolver;
 
@@ -115,6 +117,7 @@ namespace Newtonsoft.Json.Converters
         public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             EnsureReflectionObject(objectType);
+            Debug.Assert(_reflectionObject != null);
 
             object entityKeyMember = _reflectionObject.Creator!();
 

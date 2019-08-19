@@ -38,6 +38,7 @@ using System.Runtime.CompilerServices;
 using System.Text;
 using System.Globalization;
 using Newtonsoft.Json.Serialization;
+using System.Diagnostics;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -53,10 +54,10 @@ namespace Newtonsoft.Json.Utilities
             private const string CSharpArgumentInfoFlagsTypeName = "Microsoft.CSharp.RuntimeBinder.CSharpArgumentInfoFlags, " + CSharpAssemblyName;
             private const string CSharpBinderFlagsTypeName = "Microsoft.CSharp.RuntimeBinder.CSharpBinderFlags, " + CSharpAssemblyName;
 
-            private static object _getCSharpArgumentInfoArray;
-            private static object _setCSharpArgumentInfoArray;
-            private static MethodCall<object?, object?> _getMemberCall;
-            private static MethodCall<object?, object?> _setMemberCall;
+            private static object? _getCSharpArgumentInfoArray;
+            private static object? _setCSharpArgumentInfoArray;
+            private static MethodCall<object?, object?>? _getMemberCall;
+            private static MethodCall<object?, object?>? _setMemberCall;
             private static bool _init;
 
             private static void Init()
@@ -116,6 +117,8 @@ namespace Newtonsoft.Json.Utilities
             {
 #if !HAVE_REFLECTION_BINDER
                 Init();
+                Debug.Assert(_getMemberCall != null);
+                Debug.Assert(_getCSharpArgumentInfoArray != null);
                 return (CallSiteBinder)_getMemberCall(null, 0, name, context, _getCSharpArgumentInfoArray)!;
 #else
                 return Binder.GetMember(
@@ -127,6 +130,8 @@ namespace Newtonsoft.Json.Utilities
             {
 #if !HAVE_REFLECTION_BINDER
                 Init();
+                Debug.Assert(_setMemberCall != null);
+                Debug.Assert(_setCSharpArgumentInfoArray != null);
                 return (CallSiteBinder)_setMemberCall(null, 0, name, context, _setCSharpArgumentInfoArray)!;
 #else
                 return Binder.SetMember(

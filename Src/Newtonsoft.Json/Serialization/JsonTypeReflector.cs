@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Serialization
 
 #if !(NET20 || DOTNET)
         private static readonly ThreadSafeStore<Type, Type?> AssociatedMetadataTypesCache = new ThreadSafeStore<Type, Type?>(GetAssociateMetadataTypeFromAttribute);
-        private static ReflectionObject _metadataTypeAttributeReflectionObject;
+        private static ReflectionObject? _metadataTypeAttributeReflectionObject;
 #endif
 
         public static T? GetCachedAttribute<T>(object attributeProvider) where T : Attribute

@@ -318,7 +318,7 @@ namespace Newtonsoft.Json.Serialization
             if (!HasParameterizedCreatorInternal && underlyingType.Name == FSharpUtils.FSharpListTypeName)
             {
                 FSharpUtils.EnsureInitialized(underlyingType.Assembly());
-                _parameterizedCreator = FSharpUtils.CreateSeq(CollectionItemType!);
+                _parameterizedCreator = FSharpUtils.Instance.CreateSeq(CollectionItemType!);
             }
         }
 #endif

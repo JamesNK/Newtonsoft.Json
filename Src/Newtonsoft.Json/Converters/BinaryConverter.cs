@@ -28,6 +28,7 @@ using System;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using System.Collections.Generic;
+using System.Diagnostics;
 #if HAVE_ADO_NET
 using System.Data.SqlTypes;
 #endif
@@ -42,7 +43,7 @@ namespace Newtonsoft.Json.Converters
 #if HAVE_LINQ
         private const string BinaryTypeName = "System.Data.Linq.Binary";
         private const string BinaryToArrayName = "ToArray";
-        private static ReflectionObject _reflectionObject;
+        private static ReflectionObject? _reflectionObject;
 #endif
 
         /// <summary>
@@ -70,6 +71,8 @@ namespace Newtonsoft.Json.Converters
             if (value.GetType().FullName == BinaryTypeName)
             {
                 EnsureReflectionObject(value.GetType());
+                Debug.Assert(_reflectionObject != null);
+
                 return (byte[])_reflectionObject.GetValue(value, BinaryToArrayName)!;
             }
 #endif
@@ -139,6 +142,7 @@ namespace Newtonsoft.Json.Converters
             if (t.FullName == BinaryTypeName)
             {
                 EnsureReflectionObject(t);
+                Debug.Assert(_reflectionObject != null);
 
                 return _reflectionObject.Creator!(data);
             }

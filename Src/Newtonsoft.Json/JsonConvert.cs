@@ -59,7 +59,7 @@ namespace Newtonsoft.Json
         /// To serialize without using any default settings create a <see cref="JsonSerializer"/> with
         /// <see cref="JsonSerializer.Create()"/>.
         /// </summary>
-        public static Func<JsonSerializerSettings> DefaultSettings { get; set; }
+        public static Func<JsonSerializerSettings>? DefaultSettings { get; set; }
 
         /// <summary>
         /// Represents JavaScript's boolean value <c>true</c> as a string. This field is read-only.

@@ -37,7 +37,7 @@ namespace Newtonsoft.Json.Serialization
     {
         private static readonly object TypeContractCacheLock = new object();
         private static readonly DefaultJsonNameTable NameTable = new DefaultJsonNameTable();
-        private static Dictionary<StructMultiKey<Type, Type>, JsonContract> _contractCache;
+        private static Dictionary<StructMultiKey<Type, Type>, JsonContract>? _contractCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CamelCasePropertyNamesContractResolver"/> class.
@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Serialization
 
             // for backwards compadibility the CamelCasePropertyNamesContractResolver shares contracts between instances
             StructMultiKey<Type, Type> key = new StructMultiKey<Type, Type>(GetType(), type);
-            Dictionary<StructMultiKey<Type, Type>, JsonContract> cache = _contractCache;
+            Dictionary<StructMultiKey<Type, Type>, JsonContract>? cache = _contractCache;
             if (cache == null || !cache.TryGetValue(key, out JsonContract contract))
             {
                 contract = CreateContract(type);

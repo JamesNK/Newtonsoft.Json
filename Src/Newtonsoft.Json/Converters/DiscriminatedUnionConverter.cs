@@ -89,28 +89,28 @@ namespace Newtonsoft.Json.Converters
             // need to get declaring type to avoid duplicate Unions in cache
 
             // hacky but I can't find an API to get the declaring type without GetUnionCases
-            object[] cases = (object[])FSharpUtils.GetUnionCases(null, t, null)!;
+            object[] cases = (object[])FSharpUtils.Instance.GetUnionCases(null, t, null)!;
 
             object caseInfo = cases.First();
 
-            Type unionType = (Type)FSharpUtils.GetUnionCaseInfoDeclaringType(caseInfo)!;
+            Type unionType = (Type)FSharpUtils.Instance.GetUnionCaseInfoDeclaringType(caseInfo)!;
             return unionType;
         }
 
         private static Union CreateUnion(Type t)
         {
-            Union u = new Union((FSharpFunction)FSharpUtils.PreComputeUnionTagReader(null, t, null), new List<UnionCase>());
+            Union u = new Union((FSharpFunction)FSharpUtils.Instance.PreComputeUnionTagReader(null, t, null), new List<UnionCase>());
 
-            object[] cases = (object[])FSharpUtils.GetUnionCases(null, t, null)!;
+            object[] cases = (object[])FSharpUtils.Instance.GetUnionCases(null, t, null)!;
 
             foreach (object unionCaseInfo in cases)
             {
                 UnionCase unionCase = new UnionCase(
-                    (int)FSharpUtils.GetUnionCaseInfoTag(unionCaseInfo),
-                    (string)FSharpUtils.GetUnionCaseInfoName(unionCaseInfo),
-                    (PropertyInfo[])FSharpUtils.GetUnionCaseInfoFields(unionCaseInfo)!,
-                    (FSharpFunction)FSharpUtils.PreComputeUnionReader(null, unionCaseInfo, null),
-                    (FSharpFunction)FSharpUtils.PreComputeUnionConstructor(null, unionCaseInfo, null));
+                    (int)FSharpUtils.Instance.GetUnionCaseInfoTag(unionCaseInfo),
+                    (string)FSharpUtils.Instance.GetUnionCaseInfoName(unionCaseInfo),
+                    (PropertyInfo[])FSharpUtils.Instance.GetUnionCaseInfoFields(unionCaseInfo)!,
+                    (FSharpFunction)FSharpUtils.Instance.PreComputeUnionReader(null, unionCaseInfo, null),
+                    (FSharpFunction)FSharpUtils.Instance.PreComputeUnionConstructor(null, unionCaseInfo, null));
 
                 u.Cases.Add(unionCase);
             }
@@ -290,7 +290,7 @@ namespace Newtonsoft.Json.Converters
                 return false;
             }
 
-            return (bool)FSharpUtils.IsUnion(null, objectType, null);
+            return (bool)FSharpUtils.Instance.IsUnion(null, objectType, null);
         }
     }
 }

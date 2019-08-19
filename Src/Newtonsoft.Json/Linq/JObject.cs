@@ -72,13 +72,13 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Occurs when a property value changes.
         /// </summary>
-        public event PropertyChangedEventHandler PropertyChanged;
+        public event PropertyChangedEventHandler? PropertyChanged;
 
 #if HAVE_INOTIFY_PROPERTY_CHANGING
         /// <summary>
         /// Occurs when a property value is changing.
         /// </summary>
-        public event PropertyChangingEventHandler PropertyChanging;
+        public event PropertyChangingEventHandler? PropertyChanging;
 #endif
 
         /// <summary>

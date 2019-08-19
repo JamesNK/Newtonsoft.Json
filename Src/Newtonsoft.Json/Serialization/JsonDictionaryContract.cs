@@ -179,7 +179,7 @@ namespace Newtonsoft.Json.Serialization
                 if (!HasParameterizedCreatorInternal && underlyingType.Name == FSharpUtils.FSharpMapTypeName)
                 {
                     FSharpUtils.EnsureInitialized(underlyingType.Assembly());
-                    _parameterizedCreator = FSharpUtils.CreateMap(keyType, valueType);
+                    _parameterizedCreator = FSharpUtils.Instance.CreateMap(keyType, valueType);
                 }
 #endif
             }

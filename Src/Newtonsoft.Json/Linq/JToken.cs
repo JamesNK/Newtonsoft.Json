@@ -59,7 +59,7 @@ namespace Newtonsoft.Json.Linq
         , IDynamicMetaObjectProvider
 #endif
     {
-        private static JTokenEqualityComparer _equalityComparer;
+        private static JTokenEqualityComparer? _equalityComparer;
 
         private JContainer? _parent;
         private JToken? _previous;
