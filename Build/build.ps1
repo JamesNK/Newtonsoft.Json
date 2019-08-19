@@ -14,7 +14,7 @@
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $assemblyVersion = if ($assemblyVersion) {$assemblyVersion} else {$majorVersion + '.0.0'}
   $netCliChannel = "2.0"
-  $netCliVersion = "3.0.100-preview8-013317"
+  $netCliVersion = "3.0.100-preview9-013927"
   $nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
 
   $baseDir  = resolve-path ..
