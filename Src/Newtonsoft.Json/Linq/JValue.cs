@@ -154,7 +154,7 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JValue(string value)
+        public JValue(string? value)
             : this(value, JTokenType.String)
         {
         }
@@ -172,7 +172,7 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JValue(Uri value)
+        public JValue(Uri? value)
             : this(value, (value != null) ? JTokenType.Uri : JTokenType.Null)
         {
         }
@@ -576,7 +576,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>A <see cref="JValue"/> string with the given value.</returns>
-        public static JValue CreateString(string value)
+        public static JValue CreateString(string? value)
         {
             return new JValue(value, JTokenType.String);
         }
