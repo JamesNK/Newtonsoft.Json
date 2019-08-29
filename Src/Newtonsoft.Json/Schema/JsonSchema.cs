@@ -30,6 +30,8 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 
+#nullable disable
+
 namespace Newtonsoft.Json.Schema
 {
     /// <summary>
@@ -241,7 +243,9 @@ namespace Newtonsoft.Json.Schema
 
         internal string Location { get; set; }
 
+#pragma warning disable CA1305 // Specify IFormatProvider
         private readonly string _internalId = Guid.NewGuid().ToString("N");
+#pragma warning restore CA1305 // Specify IFormatProvider
 
         internal string InternalId => _internalId;
 

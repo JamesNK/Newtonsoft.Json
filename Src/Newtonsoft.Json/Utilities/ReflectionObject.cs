@@ -39,37 +39,37 @@ namespace Newtonsoft.Json.Utilities
 {
     internal class ReflectionMember
     {
-        public Type MemberType { get; set; }
-        public Func<object, object> Getter { get; set; }
-        public Action<object, object> Setter { get; set; }
+        public Type? MemberType { get; set; }
+        public Func<object, object?>? Getter { get; set; }
+        public Action<object, object?>? Setter { get; set; }
     }
 
     internal class ReflectionObject
     {
-        public ObjectConstructor<object> Creator { get; }
+        public ObjectConstructor<object>? Creator { get; }
         public IDictionary<string, ReflectionMember> Members { get; }
 
-        private ReflectionObject(ObjectConstructor<object> creator)
+        private ReflectionObject(ObjectConstructor<object>? creator)
         {
             Members = new Dictionary<string, ReflectionMember>();
             Creator = creator;
         }
 
-        public object GetValue(object target, string member)
+        public object? GetValue(object target, string member)
         {
-            Func<object, object> getter = Members[member].Getter;
+            Func<object, object?> getter = Members[member].Getter!;
             return getter(target);
         }
 
-        public void SetValue(object target, string member, object value)
+        public void SetValue(object target, string member, object? value)
         {
-            Action<object, object> setter = Members[member].Setter;
+            Action<object, object?> setter = Members[member].Setter!;
             setter(target, value);
         }
 
         public Type GetType(string member)
         {
-            return Members[member].MemberType;
+            return Members[member].MemberType!;
         }
 
         public static ReflectionObject Create(Type t, params string[] memberNames)
@@ -77,11 +77,11 @@ namespace Newtonsoft.Json.Utilities
             return Create(t, null, memberNames);
         }
 
-        public static ReflectionObject Create(Type t, MethodBase creator, params string[] memberNames)
+        public static ReflectionObject Create(Type t, MethodBase? creator, params string[] memberNames)
         {
             ReflectionDelegateFactory delegateFactory = JsonTypeReflector.ReflectionDelegateFactory;
 
-            ObjectConstructor<object> creatorConstructor = null;
+            ObjectConstructor<object>? creatorConstructor = null;
             if (creator != null)
             {
                 creatorConstructor = delegateFactory.CreateParameterizedConstructor(creator);
@@ -131,28 +131,18 @@ namespace Newtonsoft.Json.Utilities
                             ParameterInfo[] parameters = method.GetParameters();
                             if (parameters.Length == 0 && method.ReturnType != typeof(void))
                             {
-                                MethodCall<object, object> call = delegateFactory.CreateMethodCall<object>(method);
+                                MethodCall<object, object?> call = delegateFactory.CreateMethodCall<object>(method);
                                 reflectionMember.Getter = target => call(target);
                             }
                             else if (parameters.Length == 1 && method.ReturnType == typeof(void))
                             {
-                                MethodCall<object, object> call = delegateFactory.CreateMethodCall<object>(method);
+                                MethodCall<object, object?> call = delegateFactory.CreateMethodCall<object>(method);
                                 reflectionMember.Setter = (target, arg) => call(target, arg);
                             }
                         }
                         break;
                     default:
                         throw new ArgumentException("Unexpected member type '{0}' for member '{1}'.".FormatWith(CultureInfo.InvariantCulture, member.MemberType(), member.Name));
-                }
-
-                if (ReflectionUtils.CanReadMemberValue(member, false))
-                {
-                    reflectionMember.Getter = delegateFactory.CreateGet<object>(member);
-                }
-
-                if (ReflectionUtils.CanSetMemberValue(member, false, false))
-                {
-                    reflectionMember.Setter = delegateFactory.CreateSet<object>(member);
                 }
 
                 reflectionMember.MemberType = ReflectionUtils.GetMemberUnderlyingType(member);

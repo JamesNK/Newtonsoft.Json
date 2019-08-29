@@ -34,14 +34,14 @@ namespace Newtonsoft.Json.Linq
     public class JTokenReader : JsonReader, IJsonLineInfo
     {
         private readonly JToken _root;
-        private string _initialPath;
-        private JToken _parent;
-        private JToken _current;
+        private string? _initialPath;
+        private JToken? _parent;
+        private JToken? _current;
 
         /// <summary>
         /// Gets the <see cref="JToken"/> at the reader's current position.
         /// </summary>
-        public JToken CurrentToken => _current;
+        public JToken? CurrentToken => _current;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JTokenReader"/> class.
@@ -54,8 +54,12 @@ namespace Newtonsoft.Json.Linq
             _root = token;
         }
 
-        // this is used by json.net schema
-        internal JTokenReader(JToken token, string initialPath)
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JTokenReader"/> class.
+        /// </summary>
+        /// <param name="token">The token to read from.</param>
+        /// <param name="initialPath">The initial path of the token. It is prepended to the returned <see cref="Path"/>.</param>
+        public JTokenReader(JToken token, string initialPath)
             : this(token)
         {
             _initialPath = initialPath;
@@ -98,8 +102,8 @@ namespace Newtonsoft.Json.Linq
                 return ReadToEnd();
             }
 
-            JToken next = t.Next;
-            if ((next == null || next == t) || t == t.Parent.Last)
+            JToken? next = t.Next;
+            if ((next == null || next == t) || t == t.Parent!.Last)
             {
                 if (t.Parent == null)
                 {
@@ -142,7 +146,7 @@ namespace Newtonsoft.Json.Linq
 
         private bool ReadInto(JContainer c)
         {
-            JToken firstChild = c.First;
+            JToken? firstChild = c.First;
             if (firstChild == null)
             {
                 return SetEnd(c);
@@ -211,7 +215,7 @@ namespace Newtonsoft.Json.Linq
                     break;
                 case JTokenType.Date:
                     {
-                        object v = ((JValue)token).Value;
+                        object? v = ((JValue)token).Value;
                         if (v is DateTime dt)
                         {
                             v = DateTimeUtils.EnsureDateTime(dt, DateTimeZoneHandling);
@@ -231,7 +235,7 @@ namespace Newtonsoft.Json.Linq
                     break;
                 case JTokenType.Uri:
                     {
-                        object v = ((JValue)token).Value;
+                        object? v = ((JValue)token).Value;
                         SetToken(JsonToken.String, v is Uri uri ? uri.OriginalString : SafeToString(v));
                         break;
                     }
@@ -243,7 +247,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        private string SafeToString(object value)
+        private string? SafeToString(object? value)
         {
             return value?.ToString();
         }
@@ -255,7 +259,7 @@ namespace Newtonsoft.Json.Linq
                 return false;
             }
 
-            IJsonLineInfo info = _current;
+            IJsonLineInfo? info = _current;
             return (info != null && info.HasLineInfo());
         }
 
@@ -268,7 +272,7 @@ namespace Newtonsoft.Json.Linq
                     return 0;
                 }
 
-                IJsonLineInfo info = _current;
+                IJsonLineInfo? info = _current;
                 if (info != null)
                 {
                     return info.LineNumber;
@@ -287,7 +291,7 @@ namespace Newtonsoft.Json.Linq
                     return 0;
                 }
 
-                IJsonLineInfo info = _current;
+                IJsonLineInfo? info = _current;
                 if (info != null)
                 {
                     return info.LinePosition;

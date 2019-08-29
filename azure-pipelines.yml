@@ -3,9 +3,13 @@ trigger:
 - release/*
 
 pool:
-  vmImage: 'VS2017-Win2016'
+  vmImage: 'windows-2019'
 
 steps:
+- powershell: |
+    dotnet --info
+  displayName: 'Dotnet installs'
+
 - powershell: |
     $basePath = resolve-path .
     $keyPath = "$basePath\key.snk"
@@ -26,7 +30,9 @@ steps:
     write-host "Build number $buildNumber" -fore white
     $nugetPrerelease = if ($Env:SourceBranch.StartsWith("refs/heads/release/")) { $version.Prerelease } else { "build$($buildNumber.ToString("D6"))" }
     write-host "Prerelease $nugetPrerelease" -fore white
-    .\Build\runbuild.ps1 -properties @{"majorVersion"="$($version.Major).0"; "majorWithReleaseVersion"="$($version.Major).0.$($version.Release)"; "nugetPrerelease"=$nugetPrerelease; "zipFileName"="Json$($version.Major)0r$($version.Release).zip"; "signAssemblies"=$sign; "signKeyPath"=$keyPath; "treatWarningsAsErrors"=$true; "buildNuGet"=$true}
+    $assemblyVersion = if ($version.Assembly) { $version.Assembly } else { "$($version.Major).0.0.0" }
+    write-host "Assembly $assemblyVersion" -fore white
+    .\Build\runbuild.ps1 -properties @{"majorVersion"="$($version.Major).0"; "majorWithReleaseVersion"="$($version.Major).0.$($version.Release)"; "nugetPrerelease"=$nugetPrerelease; "assemblyVersion"=$assemblyVersion; "zipFileName"="Json$($version.Major)0r$($version.Release).zip"; "signAssemblies"=$sign; "signKeyPath"=$keyPath; "treatWarningsAsErrors"=$true; "buildNuGet"=$true}
   env:
     BuildId: $(Build.BuildId)
     SourceBranch: $(Build.SourceBranch)
@@ -47,12 +53,14 @@ steps:
     testRunner: 'NUnit'
     testResultsFiles: '**/Working/*.xml'
   displayName: 'Publish NUnit results'
+  condition: succeededOrFailed()
 
 - task: PublishTestResults@2
   inputs:
     testRunner: 'VSTest'
     testResultsFiles: '**/Working/*.trx'
   displayName: 'Publish dotnet test results'
+  condition: succeededOrFailed()
 
 - task: PublishBuildArtifacts@1
   inputs:

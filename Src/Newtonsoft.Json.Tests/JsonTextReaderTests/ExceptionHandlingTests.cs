@@ -363,7 +363,8 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
                 new string[]
                 {
                     "Value cannot be null." + Environment.NewLine + "Parameter name: reader",
-                    "Argument cannot be null." + Environment.NewLine + "Parameter name: reader" // Mono
+                    "Argument cannot be null." + Environment.NewLine + "Parameter name: reader", // Mono
+                    "Value cannot be null. (Parameter 'reader')"
                 });
         }
 

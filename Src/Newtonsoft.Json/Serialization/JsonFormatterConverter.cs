@@ -36,9 +36,9 @@ namespace Newtonsoft.Json.Serialization
     {
         private readonly JsonSerializerInternalReader _reader;
         private readonly JsonISerializableContract _contract;
-        private readonly JsonProperty _member;
+        private readonly JsonProperty? _member;
 
-        public JsonFormatterConverter(JsonSerializerInternalReader reader, JsonISerializableContract contract, JsonProperty member)
+        public JsonFormatterConverter(JsonSerializerInternalReader reader, JsonISerializableContract contract, JsonProperty? member)
         {
             ValidationUtils.ArgumentNotNull(reader, nameof(reader));
             ValidationUtils.ArgumentNotNull(contract, nameof(contract));
@@ -56,7 +56,7 @@ namespace Newtonsoft.Json.Serialization
             return (T)System.Convert.ChangeType(v.Value, typeof(T), CultureInfo.InvariantCulture);
         }
 
-        public object Convert(object value, Type type)
+        public object? Convert(object value, Type type)
         {
             ValidationUtils.ArgumentNotNull(value, nameof(value));
 
@@ -72,12 +72,9 @@ namespace Newtonsoft.Json.Serialization
         {
             ValidationUtils.ArgumentNotNull(value, nameof(value));
 
-            if (value is JValue v)
-            {
-                value = v.Value;
-            }
+            object? resolvedValue = (value is JValue v) ? v.Value : value;
 
-            return System.Convert.ChangeType(value, typeCode, CultureInfo.InvariantCulture);
+            return System.Convert.ChangeType(resolvedValue, typeCode, CultureInfo.InvariantCulture);
         }
 
         public bool ToBoolean(object value)

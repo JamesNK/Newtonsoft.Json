@@ -43,19 +43,19 @@ namespace Newtonsoft.Json.Serialization
     {
         internal static readonly DefaultSerializationBinder Instance = new DefaultSerializationBinder();
 
-        private readonly ThreadSafeStore<StructMultiKey<string, string>, Type> _typeCache;
+        private readonly ThreadSafeStore<StructMultiKey<string?, string>, Type> _typeCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultSerializationBinder"/> class.
         /// </summary>
         public DefaultSerializationBinder()
         {
-            _typeCache = new ThreadSafeStore<StructMultiKey<string, string>, Type>(GetTypeFromTypeNameKey);
+            _typeCache = new ThreadSafeStore<StructMultiKey<string?, string>, Type>(GetTypeFromTypeNameKey);
         }
 
-        private Type GetTypeFromTypeNameKey(StructMultiKey<string, string> typeNameKey)
+        private Type GetTypeFromTypeNameKey(StructMultiKey<string?, string> typeNameKey)
         {
-            string assemblyName = typeNameKey.Value1;
+            string? assemblyName = typeNameKey.Value1;
             string typeName = typeNameKey.Value2;
 
             if (assemblyName != null)
@@ -96,7 +96,7 @@ namespace Newtonsoft.Json.Serialization
                     throw new JsonSerializationException("Could not load assembly '{0}'.".FormatWith(CultureInfo.InvariantCulture, assemblyName));
                 }
 
-                Type type = assembly.GetType(typeName);
+                Type? type = assembly.GetType(typeName);
                 if (type == null)
                 {
                     // if generic type, try manually parsing the type arguments for the case of dynamically loaded assemblies
@@ -127,9 +127,9 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private Type GetGenericTypeFromTypeName(string typeName, Assembly assembly)
+        private Type? GetGenericTypeFromTypeName(string typeName, Assembly assembly)
         {
-            Type type = null;
+            Type? type = null;
             int openBracketIndex = typeName.IndexOf('[');
             if (openBracketIndex >= 0)
             {
@@ -159,7 +159,7 @@ namespace Newtonsoft.Json.Serialization
                                 {
                                     string typeArgAssemblyQualifiedName = typeName.Substring(typeArgStartIndex, i - typeArgStartIndex);
 
-                                    StructMultiKey<string, string> typeNameKey = ReflectionUtils.SplitFullyQualifiedTypeName(typeArgAssemblyQualifiedName);
+                                    StructMultiKey<string?, string> typeNameKey = ReflectionUtils.SplitFullyQualifiedTypeName(typeArgAssemblyQualifiedName);
                                     genericTypeArguments.Add(GetTypeByName(typeNameKey));
                                 }
                                 break;
@@ -173,7 +173,7 @@ namespace Newtonsoft.Json.Serialization
             return type;
         }
 
-        private Type GetTypeByName(StructMultiKey<string, string> typeNameKey)
+        private Type GetTypeByName(StructMultiKey<string?, string> typeNameKey)
         {
             return _typeCache.Get(typeNameKey);
         }
@@ -186,9 +186,9 @@ namespace Newtonsoft.Json.Serialization
         /// <returns>
         /// The type of the object the formatter creates a new instance of.
         /// </returns>
-        public override Type BindToType(string assemblyName, string typeName)
+        public override Type BindToType(string? assemblyName, string typeName)
         {
-            return GetTypeByName(new StructMultiKey<string, string>(assemblyName, typeName));
+            return GetTypeByName(new StructMultiKey<string?, string>(assemblyName, typeName));
         }
 
         /// <summary>
@@ -201,7 +201,7 @@ namespace Newtonsoft.Json.Serialization
 #if HAVE_SERIALIZATION_BINDER_BIND_TO_NAME
         override
 #endif
-        void BindToName(Type serializedType, out string assemblyName, out string typeName)
+        void BindToName(Type serializedType, out string? assemblyName, out string? typeName)
         {
 #if !HAVE_FULL_REFLECTION
             assemblyName = serializedType.GetTypeInfo().Assembly.FullName;

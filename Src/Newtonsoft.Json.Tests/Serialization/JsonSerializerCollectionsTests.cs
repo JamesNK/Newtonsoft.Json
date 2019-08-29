@@ -164,7 +164,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             Dictionary<float, int> dictionary = new Dictionary<float, int> { { float.MaxValue, 1 } };
             string output = JsonConvert.SerializeObject(dictionary);
+#if !NETSTANDARD2_0
             Assert.AreEqual(@"{""3.40282347E+38"":1}", output);
+#else
+            Assert.AreEqual(@"{""3.4028235E+38"":1}", output);
+#endif
 
             Dictionary<float, int> deserializedValue = JsonConvert.DeserializeObject<Dictionary<float, int>>(output);
             Assert.AreEqual(float.MaxValue, deserializedValue.First().Key);
@@ -2107,6 +2111,26 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(2, values.Count);
         }
 #endif
+
+        [Test]
+        public void DeserializeEmptyEnumerable_NoItems()
+        {
+            ValuesClass c = JsonConvert.DeserializeObject<ValuesClass>(@"{""Values"":[]}");
+            Assert.AreEqual(0, c.Values.Count());
+        }
+
+        [Test]
+        public void DeserializeEmptyEnumerable_HasItems()
+        {
+            ValuesClass c = JsonConvert.DeserializeObject<ValuesClass>(@"{""Values"":[""hello""]}");
+            Assert.AreEqual(1, c.Values.Count());
+            Assert.AreEqual("hello", c.Values.ElementAt(0));
+        }
+
+        public class ValuesClass
+        {
+            public IEnumerable<string> Values { get; set; } = Enumerable.Empty<string>();
+        }
 
         [Test]
         public void DeserializeConstructorWithReadonlyArrayProperty()

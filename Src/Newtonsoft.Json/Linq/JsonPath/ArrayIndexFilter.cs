@@ -14,7 +14,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
             {
                 if (Index != null)
                 {
-                    JToken v = GetTokenIndex(t, errorWhenNoMatch, Index.GetValueOrDefault());
+                    JToken? v = GetTokenIndex(t, errorWhenNoMatch, Index.GetValueOrDefault());
 
                     if (v != null)
                     {

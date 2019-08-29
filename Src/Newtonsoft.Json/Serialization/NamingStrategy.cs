@@ -101,5 +101,46 @@ namespace Newtonsoft.Json.Serialization
         /// <param name="name">The property name to resolve.</param>
         /// <returns>The resolved property name.</returns>
         protected abstract string ResolvePropertyName(string name);
+
+        /// <summary>
+        /// Hash code calculation
+        /// </summary>
+        /// <returns></returns>
+        public override int GetHashCode()
+        {
+            unchecked
+            {
+                var hashCode = GetType().GetHashCode();     // make sure different types do not result in equal values
+                hashCode = (hashCode * 397) ^ ProcessDictionaryKeys.GetHashCode();
+                hashCode = (hashCode * 397) ^ ProcessExtensionDataNames.GetHashCode();
+                hashCode = (hashCode * 397) ^ OverrideSpecifiedNames.GetHashCode();
+                return hashCode;
+            }
+        }
+
+        /// <summary>
+        /// Object equality implementation
+        /// </summary>
+        /// <param name="obj"></param>
+        /// <returns></returns>
+        public override bool Equals(object obj) => Equals(obj as NamingStrategy);
+
+        /// <summary>
+        /// Compare to another NamingStrategy
+        /// </summary>
+        /// <param name="other"></param>
+        /// <returns></returns>
+        protected bool Equals(NamingStrategy? other)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return GetType() == other.GetType() &&
+                ProcessDictionaryKeys == other.ProcessDictionaryKeys &&
+                ProcessExtensionDataNames == other.ProcessExtensionDataNames &&
+                OverrideSpecifiedNames == other.OverrideSpecifiedNames;
+        }
     }
 }

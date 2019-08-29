@@ -26,6 +26,8 @@
 using System.Collections;
 using System.Collections.Generic;
 
+#nullable disable
+
 namespace Newtonsoft.Json.Bson
 {
     internal abstract class BsonToken

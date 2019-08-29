@@ -67,13 +67,13 @@ namespace Newtonsoft.Json.Serialization
     /// <param name="o">The object to set extension data on.</param>
     /// <param name="key">The extension data key.</param>
     /// <param name="value">The extension data value.</param>
-    public delegate void ExtensionDataSetter(object o, string key, object value);
+    public delegate void ExtensionDataSetter(object o, string key, object? value);
 
     /// <summary>
     /// Gets extension data for an object during serialization.
     /// </summary>
     /// <param name="o">The object to set extension data on.</param>
-    public delegate IEnumerable<KeyValuePair<object, object>> ExtensionDataGetter(object o);
+    public delegate IEnumerable<KeyValuePair<object, object>>? ExtensionDataGetter(object o);
 
     /// <summary>
     /// Contract details for a <see cref="System.Type"/> used by the <see cref="JsonSerializer"/>.
@@ -90,11 +90,11 @@ namespace Newtonsoft.Json.Serialization
         internal bool IsSealed;
         internal bool IsInstantiable;
 
-        private List<SerializationCallback> _onDeserializedCallbacks;
-        private IList<SerializationCallback> _onDeserializingCallbacks;
-        private IList<SerializationCallback> _onSerializedCallbacks;
-        private IList<SerializationCallback> _onSerializingCallbacks;
-        private IList<SerializationErrorCallback> _onErrorCallbacks;
+        private List<SerializationCallback>? _onDeserializedCallbacks;
+        private List<SerializationCallback>? _onDeserializingCallbacks;
+        private List<SerializationCallback>? _onSerializedCallbacks;
+        private List<SerializationCallback>? _onSerializingCallbacks;
+        private List<SerializationErrorCallback>? _onErrorCallbacks;
         private Type _createdType;
 
         /// <summary>
@@ -112,6 +112,7 @@ namespace Newtonsoft.Json.Serialization
             get => _createdType;
             set
             {
+                ValidationUtils.ArgumentNotNull(value, nameof(value));
                 _createdType = value;
 
                 IsSealed = _createdType.IsSealed();
@@ -129,11 +130,14 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the default <see cref="JsonConverter" /> for this contract.
         /// </summary>
         /// <value>The converter.</value>
-        public JsonConverter Converter { get; set; }
+        public JsonConverter? Converter { get; set; }
 
-        // internally specified JsonConverter's to override default behavour
-        // checked for after passed in converters and attribute specified converters
-        internal JsonConverter InternalConverter { get; set; }
+        /// <summary>
+        /// Gets the internally resolved <see cref="JsonConverter"/> for the contract's type.
+        /// This converter is used as a fallback converter when no other converter is resolved.
+        /// Setting <see cref="Converter"/> will always override this converter.
+        /// </summary>
+        public JsonConverter? InternalConverter { get; internal set; }
 
         /// <summary>
         /// Gets or sets all methods called immediately after deserialization of the object.
@@ -224,7 +228,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the default creator method used to create the object.
         /// </summary>
         /// <value>The default creator method used to create the object.</value>
-        public Func<object> DefaultCreator { get; set; }
+        public Func<object>? DefaultCreator { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether the default creator is non-public.
@@ -246,7 +250,7 @@ namespace Newtonsoft.Json.Serialization
              
             NonNullableUnderlyingType = (IsNullable && ReflectionUtils.IsNullableType(underlyingType)) ? Nullable.GetUnderlyingType(underlyingType) : underlyingType;
 
-            CreatedType = NonNullableUnderlyingType;
+            _createdType = CreatedType = NonNullableUnderlyingType;
 
             IsConvertable = ConvertUtils.IsConvertible(NonNullableUnderlyingType);
             IsEnum = NonNullableUnderlyingType.IsEnum();

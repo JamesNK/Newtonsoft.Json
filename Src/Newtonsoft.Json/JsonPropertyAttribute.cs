@@ -52,7 +52,7 @@ namespace Newtonsoft.Json
         /// Gets or sets the <see cref="JsonConverter"/> type used when serializing the property's collection items.
         /// </summary>
         /// <value>The collection's items <see cref="JsonConverter"/> type.</value>
-        public Type ItemConverterType { get; set; }
+        public Type? ItemConverterType { get; set; }
 
         /// <summary>
         /// The parameter list to use when constructing the <see cref="JsonConverter"/> described by <see cref="ItemConverterType"/>.
@@ -65,13 +65,13 @@ namespace Newtonsoft.Json
         /// [JsonProperty(ItemConverterType = typeof(MyContainerConverter), ItemConverterParameters = new object[] { 123, "Four" })]
         /// </code>
         /// </example>
-        public object[] ItemConverterParameters { get; set; }
+        public object[]? ItemConverterParameters { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="Type"/> of the <see cref="NamingStrategy"/>.
         /// </summary>
         /// <value>The <see cref="Type"/> of the <see cref="NamingStrategy"/>.</value>
-        public Type NamingStrategyType { get; set; }
+        public Type? NamingStrategyType { get; set; }
 
         /// <summary>
         /// The parameter list to use when constructing the <see cref="NamingStrategy"/> described by <see cref="JsonPropertyAttribute.NamingStrategyType"/>.
@@ -84,7 +84,7 @@ namespace Newtonsoft.Json
         /// [JsonProperty(NamingStrategyType = typeof(MyNamingStrategy), NamingStrategyParameters = new object[] { 123, "Four" })]
         /// </code>
         /// </example>
-        public object[] NamingStrategyParameters { get; set; }
+        public object[]? NamingStrategyParameters { get; set; }
 
         /// <summary>
         /// Gets or sets the null value handling used when serializing this property.
@@ -172,7 +172,7 @@ namespace Newtonsoft.Json
         /// Gets or sets the name of the property.
         /// </summary>
         /// <value>The name of the property.</value>
-        public string PropertyName { get; set; }
+        public string? PropertyName { get; set; }
 
         /// <summary>
         /// Gets or sets the reference loop handling used when serializing the property's collection items.

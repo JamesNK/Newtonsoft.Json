@@ -36,6 +36,8 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using Newtonsoft.Json.Serialization;
+using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -44,9 +46,9 @@ namespace Newtonsoft.Json.Utilities
         private const char EnumSeparatorChar = ',';
         private const string EnumSeparatorString = ", ";
 
-        private static readonly ThreadSafeStore<StructMultiKey<Type, NamingStrategy>, EnumInfo> ValuesAndNamesPerEnum = new ThreadSafeStore<StructMultiKey<Type, NamingStrategy>, EnumInfo>(InitializeValuesAndNames);
+        private static readonly ThreadSafeStore<StructMultiKey<Type, NamingStrategy?>, EnumInfo> ValuesAndNamesPerEnum = new ThreadSafeStore<StructMultiKey<Type, NamingStrategy?>, EnumInfo>(InitializeValuesAndNames);
 
-        private static EnumInfo InitializeValuesAndNames(StructMultiKey<Type, NamingStrategy> key)
+        private static EnumInfo InitializeValuesAndNames(StructMultiKey<Type, NamingStrategy?> key)
         {
             Type enumType = key.Value1;
             string[] names = Enum.GetNames(enumType);
@@ -56,7 +58,7 @@ namespace Newtonsoft.Json.Utilities
             for (int i = 0; i < names.Length; i++)
             {
                 string name = names[i];
-                FieldInfo f = enumType.GetField(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static);
+                FieldInfo f = enumType.GetField(name, BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Static)!;
                 values[i] = ToUInt64(f.GetValue(null));
 
                 string resolvedName;
@@ -119,14 +121,14 @@ namespace Newtonsoft.Json.Utilities
 
         // Used by Newtonsoft.Json.Schema
         private static CamelCaseNamingStrategy _camelCaseNamingStrategy = new CamelCaseNamingStrategy();
-        public static bool TryToString(Type enumType, object value, bool camelCase, out string name)
+        public static bool TryToString(Type enumType, object value, bool camelCase, [NotNullWhen(true)]out string? name)
         {
             return TryToString(enumType, value, camelCase ? _camelCaseNamingStrategy : null, out name);
         }
 
-        public static bool TryToString(Type enumType, object value, NamingStrategy namingStrategy, out string name)
+        public static bool TryToString(Type enumType, object value, NamingStrategy? namingStrategy, [NotNullWhen(true)]out string? name)
         {
-            EnumInfo enumInfo = ValuesAndNamesPerEnum.Get(new StructMultiKey<Type, NamingStrategy>(enumType, namingStrategy));
+            EnumInfo enumInfo = ValuesAndNamesPerEnum.Get(new StructMultiKey<Type, NamingStrategy?>(enumType, namingStrategy));
             ulong v = ToUInt64(value);
 
             if (!enumInfo.IsFlags)
@@ -149,7 +151,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        private static string InternalFlagsFormat(EnumInfo entry, ulong result)
+        private static string? InternalFlagsFormat(EnumInfo entry, ulong result)
         {
             string[] resolvedNames = entry.ResolvedNames;
             ulong[] values = entry.Values;
@@ -185,7 +187,7 @@ namespace Newtonsoft.Json.Utilities
                 index--;
             }
 
-            string returnString;
+            string? returnString;
             if (result != 0)
             {
                 // We were unable to represent this number as a bitwise or of valid flags
@@ -213,7 +215,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static EnumInfo GetEnumValuesAndNames(Type enumType)
         {
-            return ValuesAndNamesPerEnum.Get(new StructMultiKey<Type, NamingStrategy>(enumType, null));
+            return ValuesAndNamesPerEnum.Get(new StructMultiKey<Type, NamingStrategy?>(enumType, null));
         }
 
         private static ulong ToUInt64(object value)
@@ -249,7 +251,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        public static object ParseEnum(Type enumType, NamingStrategy namingStrategy, string value, bool disallowNumber)
+        public static object ParseEnum(Type enumType, NamingStrategy? namingStrategy, string value, bool disallowNumber)
         {
             ValidationUtils.ArgumentNotNull(enumType, nameof(enumType));
             ValidationUtils.ArgumentNotNull(value, nameof(value));
@@ -259,7 +261,7 @@ namespace Newtonsoft.Json.Utilities
                 throw new ArgumentException("Type provided must be an Enum.", nameof(enumType));
             }
 
-            EnumInfo entry = ValuesAndNamesPerEnum.Get(new StructMultiKey<Type, NamingStrategy>(enumType, namingStrategy));
+            EnumInfo entry = ValuesAndNamesPerEnum.Get(new StructMultiKey<Type, NamingStrategy?>(enumType, namingStrategy));
             string[] enumNames = entry.Names;
             string[] resolvedNames = entry.ResolvedNames;
             ulong[] enumValues = entry.Values;
@@ -292,7 +294,7 @@ namespace Newtonsoft.Json.Utilities
                 Type underlyingType = Enum.GetUnderlyingType(enumType);
 
                 value = value.Trim();
-                object temp = null;
+                object? temp = null;
 
                 try
                 {

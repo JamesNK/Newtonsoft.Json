@@ -23,24 +23,42 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
+#if !(NET20 || NET35 || NET40)
+using System.Collections;
+using System.Collections.Generic;
+using System.Collections.Immutable;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
+#endif
 
-#nullable disable
-
-namespace Newtonsoft.Json.Bson
+namespace Newtonsoft.Json.Tests.Issues
 {
-    internal enum BsonBinaryType : byte
+    public class Issue1984
     {
-        Binary = 0x00,
-        Function = 0x01,
+        [Test]
+        public void Test_NullValue()
+        {
+            var actual = JsonConvert.DeserializeObject<A>("{ Values: null}");
+            Assert.IsNotNull(actual);
+            Assert.IsNull(actual.Values);
+        }
 
-        [Obsolete("This type has been deprecated in the BSON specification. Use Binary instead.")]
-        BinaryOld = 0x02,
-
-        [Obsolete("This type has been deprecated in the BSON specification. Use Uuid instead.")]
-        UuidOld = 0x03,
-        Uuid = 0x04,
-        Md5 = 0x05,
-        UserDefined = 0x80
+        [Test]
+        public void Test_WithoutValue()
+        {
+            var actual = JsonConvert.DeserializeObject<A>("{ }");
+            Assert.IsNotNull(actual);
+            Assert.IsNull(actual.Values);
+        }
+        
+        public class A
+        {
+            public ImmutableArray<string>? Values { get; set; }
+        }
     }
 }
+#endif

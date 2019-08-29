@@ -8,9 +8,8 @@ namespace Newtonsoft.Json.Linq.JsonPath
     {
         public abstract IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch);
 
-        protected static JToken GetTokenIndex(JToken t, bool errorWhenNoMatch, int index)
+        protected static JToken? GetTokenIndex(JToken t, bool errorWhenNoMatch, int index)
         {
-
             if (t is JArray a)
             {
                 if (a.Count <= index)
@@ -50,7 +49,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
             }
         }
 
-        protected static JToken GetNextScanValue(JToken originalParent, JToken container, JToken value)
+        protected static JToken? GetNextScanValue(JToken originalParent, JToken? container, JToken? value)
         {
             // step into container's values
             if (container != null && container.HasValues)
@@ -60,7 +59,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
             else
             {
                 // finished container, move to parent
-                while (value != null && value != originalParent && value == value.Parent.Last)
+                while (value != null && value != originalParent && value == value.Parent!.Last)
                 {
                     value = value.Parent;
                 }

@@ -40,12 +40,12 @@ namespace Newtonsoft.Json.Utilities
 
         internal static Task<bool> ToAsync(this bool value) => value ? True : False;
 
-        public static Task CancelIfRequestedAsync(this CancellationToken cancellationToken)
+        public static Task? CancelIfRequestedAsync(this CancellationToken cancellationToken)
         {
             return cancellationToken.IsCancellationRequested ? FromCanceled(cancellationToken) : null;
         }
 
-        public static Task<T> CancelIfRequestedAsync<T>(this CancellationToken cancellationToken)
+        public static Task<T>? CancelIfRequestedAsync<T>(this CancellationToken cancellationToken)
         {
             return cancellationToken.IsCancellationRequested ? FromCanceled<T>(cancellationToken) : null;
         }
@@ -61,7 +61,9 @@ namespace Newtonsoft.Json.Utilities
         public static Task<T> FromCanceled<T>(this CancellationToken cancellationToken)
         {
             Debug.Assert(cancellationToken.IsCancellationRequested);
+#pragma warning disable CS8653 // A default expression introduces a null value for a type parameter.
             return new Task<T>(() => default, cancellationToken);
+#pragma warning restore CS8653 // A default expression introduces a null value for a type parameter.
         }
 
         // Task.Delay(0) is optimised as a cached task within the framework, and indeed
@@ -75,7 +77,7 @@ namespace Newtonsoft.Json.Utilities
             return cancellationToken.IsCancellationRequested ? FromCanceled(cancellationToken) : writer.WriteAsync(value);
         }
 
-        public static Task WriteAsync(this TextWriter writer, string value, CancellationToken cancellationToken)
+        public static Task WriteAsync(this TextWriter writer, string? value, CancellationToken cancellationToken)
         {
             Debug.Assert(writer != null);
             return cancellationToken.IsCancellationRequested ? FromCanceled(cancellationToken) : writer.WriteAsync(value);

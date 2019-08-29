@@ -1490,6 +1490,23 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         }
 
         [Test]
+        public void QueryWithEscapedPath()
+        {
+            JToken t = JToken.Parse(@"{
+""Property"": [
+          {
+            ""@Name"": ""x"",
+            ""@Value"": ""y"",
+            ""@Type"": ""FindMe""
+          }
+   ]
+}");
+
+            var tokens = t.SelectTokens("$..[?(@.['@Type'] == 'FindMe')]").ToList();
+            Assert.AreEqual(1, tokens.Count);
+        }
+
+        [Test]
         public void Equals_FloatWithInt()
         {
             JToken t = JToken.Parse(@"{
