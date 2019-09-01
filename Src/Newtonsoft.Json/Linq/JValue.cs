@@ -887,6 +887,10 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Returns a <see cref="String"/> that represents this instance.
         /// </summary>
+        /// <remarks>
+        /// <c>ToString()</c> returns a non-JSON string value for tokens with a type of <see cref="JTokenType.String"/>.
+        /// If you want the JSON for all token types then you should use <see cref="WriteTo(JsonWriter, JsonConverter[])"/>.
+        /// </remarks>
         /// <returns>
         /// A <see cref="String"/> that represents this instance.
         /// </returns>

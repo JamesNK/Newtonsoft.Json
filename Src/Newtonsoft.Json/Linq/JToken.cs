@@ -420,6 +420,10 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Returns the indented JSON for this token.
         /// </summary>
+        /// <remarks>
+        /// <c>ToString()</c> returns a non-JSON string value for tokens with a type of <see cref="JTokenType.String"/>.
+        /// If you want the JSON for all token types then you should use <see cref="WriteTo(JsonWriter, JsonConverter[])"/>.
+        /// </remarks>
         /// <returns>
         /// The indented JSON for this token.
         /// </returns>
