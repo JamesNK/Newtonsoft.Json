@@ -2208,7 +2208,7 @@ namespace Newtonsoft.Json
                                         throw ThrowReaderError("Input string '{0}' is not a valid decimal.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                                     }
                                 }
-                                else
+                                else if (_floatParseHandling == FloatParseHandling.Double)
                                 {
                                     string number = _stringReference.ToString();
 
@@ -2220,6 +2220,10 @@ namespace Newtonsoft.Json
                                     {
                                         throw ThrowReaderError("Input string '{0}' is not a valid number.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                                     }
+                                }
+                                else
+                                {
+                                    numberValue = _stringReference.ToString();
                                 }
 
                                 numberType = JsonToken.Float;

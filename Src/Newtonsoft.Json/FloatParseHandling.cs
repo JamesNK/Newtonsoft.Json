@@ -38,6 +38,11 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Floating point numbers are parsed to <see cref="Decimal"/>.
         /// </summary>
-        Decimal = 1
+        Decimal = 1,
+
+        /// <summary>
+        /// Floating point numbers are parsed to <see cref="string"/>.
+        /// </summary>
+        String = 2
     }
 }
