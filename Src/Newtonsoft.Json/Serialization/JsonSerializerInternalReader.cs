@@ -2079,12 +2079,19 @@ namespace Newtonsoft.Json.Serialization
                             object? createdObjectCollection = property.ValueProvider!.GetValue(createdObject);
                             if (createdObjectCollection != null)
                             {
-                                IList createdObjectCollectionWrapper = (propertyArrayContract.ShouldCreateWrapper) ? propertyArrayContract.CreateWrapper(createdObjectCollection) : (IList)createdObjectCollection;
-                                IList newValues = (propertyArrayContract.ShouldCreateWrapper) ? propertyArrayContract.CreateWrapper(value) : (IList)value;
+                                propertyArrayContract = (JsonArrayContract)GetContract(createdObjectCollection.GetType());
 
-                                foreach (object newValue in newValues)
+                                IList createdObjectCollectionWrapper = (propertyArrayContract.ShouldCreateWrapper) ? propertyArrayContract.CreateWrapper(createdObjectCollection) : (IList)createdObjectCollection;
+
+                                // Don't attempt to populate array/read-only list
+                                if (!createdObjectCollectionWrapper.IsFixedSize)
                                 {
-                                    createdObjectCollectionWrapper.Add(newValue);
+                                    IList newValues = (propertyArrayContract.ShouldCreateWrapper) ? propertyArrayContract.CreateWrapper(value) : (IList)value;
+
+                                    foreach (object newValue in newValues)
+                                    {
+                                        createdObjectCollectionWrapper.Add(newValue);
+                                    }
                                 }
                             }
                         }
