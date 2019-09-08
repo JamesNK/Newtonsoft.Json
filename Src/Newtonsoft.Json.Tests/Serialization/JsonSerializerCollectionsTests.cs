@@ -63,6 +63,29 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
 #if !(NET35 || NET20 || PORTABLE || PORTABLE40) || NETSTANDARD2_0
         [Test]
+        public void DeserializeNonGenericListTypeAndReadOnlyListViaConstructor()
+        {
+            ConstructorCollectionContainer a = JsonConvert.DeserializeObject<ConstructorCollectionContainer>("{'a':1,'b':['aaa'],'c':['aaa']}");
+
+            Assert.AreEqual(1, a.A);
+            Assert.AreEqual(1, a.B.Count());
+            Assert.AreEqual("aaa", a.B.ElementAt(0));
+            Assert.AreEqual(0, a.C.Count());
+        }
+
+        public class ConstructorCollectionContainer
+        {
+            public int A { get; }
+            public IEnumerable<string> B { get; } = new SortedSet<string>();
+            public IEnumerable<string> C { get; } = new List<string>().AsReadOnly();
+
+            public ConstructorCollectionContainer(int a)
+            {
+                this.A = a;
+            }
+        }
+
+        [Test]
         public void DeserializeConcurrentDictionaryWithNullValue()
         {
             const string key = "id";
