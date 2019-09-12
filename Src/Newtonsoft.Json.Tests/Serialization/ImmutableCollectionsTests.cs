@@ -304,6 +304,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsTrue(l.Contains("3"));
             Assert.IsTrue(l.Contains("II"));
             Assert.IsTrue(l.Contains("One"));
+
+            Assert.IsTrue(l is ImmutableHashSet<string>);
         }
         #endregion
 
