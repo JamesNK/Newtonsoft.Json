@@ -397,6 +397,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("One", l[1]);
             Assert.AreEqual("II", l[2]);
             Assert.AreEqual("3", l[3]);
+
+            Assert.IsTrue(l is ImmutableDictionary<int, string>);
         }
         #endregion
 

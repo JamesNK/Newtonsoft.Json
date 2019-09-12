@@ -106,7 +106,7 @@ namespace Newtonsoft.Json.Utilities
 
         private static readonly IList<ImmutableCollectionTypeInfo> DictionaryContractImmutableCollectionDefinitions = new List<ImmutableCollectionTypeInfo>
         {
-            new ImmutableCollectionTypeInfo(ImmutableDictionaryGenericInterfaceTypeName, ImmutableSortedDictionaryGenericTypeName, ImmutableSortedDictionaryTypeName),
+            new ImmutableCollectionTypeInfo(ImmutableDictionaryGenericInterfaceTypeName, ImmutableDictionaryGenericTypeName, ImmutableDictionaryTypeName),
             new ImmutableCollectionTypeInfo(ImmutableSortedDictionaryGenericTypeName, ImmutableSortedDictionaryGenericTypeName, ImmutableSortedDictionaryTypeName),
             new ImmutableCollectionTypeInfo(ImmutableDictionaryGenericTypeName, ImmutableDictionaryGenericTypeName, ImmutableDictionaryTypeName)
         };
