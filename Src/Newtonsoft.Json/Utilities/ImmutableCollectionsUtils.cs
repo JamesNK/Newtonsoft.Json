@@ -90,7 +90,7 @@ namespace Newtonsoft.Json.Utilities
             new ImmutableCollectionTypeInfo(ImmutableQueueGenericTypeName, ImmutableQueueGenericTypeName, ImmutableQueueTypeName),
             new ImmutableCollectionTypeInfo(ImmutableStackGenericInterfaceTypeName, ImmutableStackGenericTypeName, ImmutableStackTypeName),
             new ImmutableCollectionTypeInfo(ImmutableStackGenericTypeName, ImmutableStackGenericTypeName, ImmutableStackTypeName),
-            new ImmutableCollectionTypeInfo(ImmutableSetGenericInterfaceTypeName, ImmutableSortedSetGenericTypeName, ImmutableSortedSetTypeName),
+            new ImmutableCollectionTypeInfo(ImmutableSetGenericInterfaceTypeName, ImmutableHashSetGenericTypeName, ImmutableHashSetTypeName),
             new ImmutableCollectionTypeInfo(ImmutableSortedSetGenericTypeName, ImmutableSortedSetGenericTypeName, ImmutableSortedSetTypeName),
             new ImmutableCollectionTypeInfo(ImmutableHashSetGenericTypeName, ImmutableHashSetGenericTypeName, ImmutableHashSetTypeName),
             new ImmutableCollectionTypeInfo(ImmutableArrayGenericTypeName, ImmutableArrayGenericTypeName, ImmutableArrayTypeName)
