@@ -12,6 +12,6 @@
         /// <param name="start">The zero-based index into the array specifying the first character of the name.</param>
         /// <param name="length">The number of characters in the name.</param>
         /// <returns>A string containing the same characters as the specified range of characters in the given array.</returns>
-        public abstract string Get(char[] key, int start, int length);
+        public abstract string? Get(char[] key, int start, int length);
     }
 }

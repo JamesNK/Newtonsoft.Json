@@ -89,7 +89,7 @@ namespace Newtonsoft.Json.Linq
         /// that were read from the reader. The runtime type of the token is determined
         /// by the token type of the first token encountered in the reader.
         /// </returns>
-        public static async Task<JToken> ReadFromAsync(JsonReader reader, JsonLoadSettings settings, CancellationToken cancellationToken = default)
+        public static async Task<JToken> ReadFromAsync(JsonReader reader, JsonLoadSettings? settings, CancellationToken cancellationToken = default)
         {
             ValidationUtils.ArgumentNotNull(reader, nameof(reader));
 
@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Linq
                 }
             }
 
-            IJsonLineInfo lineInfo = reader as IJsonLineInfo;
+            IJsonLineInfo? lineInfo = reader as IJsonLineInfo;
 
             switch (reader.TokenType)
             {
@@ -123,7 +123,7 @@ namespace Newtonsoft.Json.Linq
                     v.SetLineInfo(lineInfo, settings);
                     return v;
                 case JsonToken.Comment:
-                    v = JValue.CreateComment(reader.Value.ToString());
+                    v = JValue.CreateComment(reader.Value?.ToString());
                     v.SetLineInfo(lineInfo, settings);
                     return v;
                 case JsonToken.Null:
@@ -168,7 +168,7 @@ namespace Newtonsoft.Json.Linq
         /// that were read from the reader. The runtime type of the token is determined
         /// by the token type of the first token encountered in the reader.
         /// </returns>
-        public static Task<JToken> LoadAsync(JsonReader reader, JsonLoadSettings settings, CancellationToken cancellationToken = default)
+        public static Task<JToken> LoadAsync(JsonReader reader, JsonLoadSettings? settings, CancellationToken cancellationToken = default)
         {
             return ReadFromAsync(reader, settings, cancellationToken);
         }

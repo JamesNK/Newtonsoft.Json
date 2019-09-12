@@ -35,13 +35,13 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <param name="target">The target to set the value on.</param>
         /// <param name="value">The value to set on the target.</param>
-        void SetValue(object target, object value);
+        void SetValue(object target, object? value);
 
         /// <summary>
         /// Gets the value.
         /// </summary>
         /// <param name="target">The target to get the value from.</param>
         /// <returns>The value.</returns>
-        object GetValue(object target);
+        object? GetValue(object target);
     }
 }

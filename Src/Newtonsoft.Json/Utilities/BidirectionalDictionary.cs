@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (_firstToSecond.TryGetValue(first, out TSecond existingSecond))
             {
-                if (!existingSecond.Equals(second))
+                if (!existingSecond!.Equals(second))
                 {
                     throw new ArgumentException(_duplicateFirstErrorMessage.FormatWith(CultureInfo.InvariantCulture, first));
                 }
@@ -71,7 +71,7 @@ namespace Newtonsoft.Json.Utilities
 
             if (_secondToFirst.TryGetValue(second, out TFirst existingFirst))
             {
-                if (!existingFirst.Equals(first))
+                if (!existingFirst!.Equals(first))
                 {
                     throw new ArgumentException(_duplicateSecondErrorMessage.FormatWith(CultureInfo.InvariantCulture, second));
                 }

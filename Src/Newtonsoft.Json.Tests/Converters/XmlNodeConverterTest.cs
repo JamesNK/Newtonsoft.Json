@@ -161,6 +161,14 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void XmlNode_Null()
+        {
+            string json = JsonConvert.SerializeXmlNode(null);
+
+            Assert.AreEqual("null", json);
+        }
+
+        [Test]
         public void XmlNode_Roundtrip_PropertyNameWithColon()
         {
             const string initialJson = @"{""Be:fore:After!"":""Value!""}";
@@ -305,6 +313,14 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
 #if !NET20
+        [Test]
+        public void XNode_Null()
+        {
+            string json = JsonConvert.SerializeXNode(null);
+
+            Assert.AreEqual("null", json);
+        }
+
         [Test]
         public void XNode_UnescapeTextContent()
         {

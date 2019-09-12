@@ -46,7 +46,7 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JRaw"/> class.
         /// </summary>
         /// <param name="rawJson">The raw json.</param>
-        public JRaw(object rawJson)
+        public JRaw(object? rawJson)
             : base(rawJson, JTokenType.Raw)
         {
         }

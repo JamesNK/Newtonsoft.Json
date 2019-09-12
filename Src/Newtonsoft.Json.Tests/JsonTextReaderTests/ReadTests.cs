@@ -89,7 +89,8 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             ExceptionAssert.Throws<JsonReaderException>(
                 () => token.CreateReader().ReadAsDecimal(),
-                "Could not convert to decimal: 1.79769313486232E+308. Path ''."
+                "Could not convert to decimal: 1.79769313486232E+308. Path ''.",
+                "Could not convert to decimal: 1.7976931348623157E+308. Path ''."
             );
         }
 

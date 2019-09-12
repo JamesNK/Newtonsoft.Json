@@ -45,6 +45,12 @@ namespace Newtonsoft.Json.Serialization
         public MemberSerialization MemberSerialization { get; set; }
 
         /// <summary>
+        /// Gets or sets the missing member handling used when deserializing this object.
+        /// </summary>
+        /// <value>The missing member handling.</value>
+        public MissingMemberHandling? MissingMemberHandling { get; set; }
+
+        /// <summary>
         /// Gets or sets a value that indicates whether the object's properties are required.
         /// </summary>
         /// <value>
@@ -85,13 +91,13 @@ namespace Newtonsoft.Json.Serialization
         /// This function is called with a collection of arguments which are defined by the <see cref="JsonObjectContract.CreatorParameters"/> collection.
         /// </summary>
         /// <value>The function used to create the object.</value>
-        public ObjectConstructor<object> OverrideCreator
+        public ObjectConstructor<object>? OverrideCreator
         {
             get => _overrideCreator;
             set => _overrideCreator = value;
         }
 
-        internal ObjectConstructor<object> ParameterizedCreator
+        internal ObjectConstructor<object>? ParameterizedCreator
         {
             get => _parameterizedCreator;
             set => _parameterizedCreator = value;
@@ -100,17 +106,17 @@ namespace Newtonsoft.Json.Serialization
         /// <summary>
         /// Gets or sets the extension data setter.
         /// </summary>
-        public ExtensionDataSetter ExtensionDataSetter { get; set; }
+        public ExtensionDataSetter? ExtensionDataSetter { get; set; }
 
         /// <summary>
         /// Gets or sets the extension data getter.
         /// </summary>
-        public ExtensionDataGetter ExtensionDataGetter { get; set; }
+        public ExtensionDataGetter? ExtensionDataGetter { get; set; }
 
         /// <summary>
         /// Gets or sets the extension data value type.
         /// </summary>
-        public Type ExtensionDataValueType
+        public Type? ExtensionDataValueType
         {
             get => _extensionDataValueType;
             set
@@ -124,14 +130,14 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the extension data name resolver.
         /// </summary>
         /// <value>The extension data name resolver.</value>
-        public Func<string, string> ExtensionDataNameResolver { get; set; }
+        public Func<string, string>? ExtensionDataNameResolver { get; set; }
 
         internal bool ExtensionDataIsJToken;
         private bool? _hasRequiredOrDefaultValueProperties;
-        private ObjectConstructor<object> _overrideCreator;
-        private ObjectConstructor<object> _parameterizedCreator;
-        private JsonPropertyCollection _creatorParameters;
-        private Type _extensionDataValueType;
+        private ObjectConstructor<object>? _overrideCreator;
+        private ObjectConstructor<object>? _parameterizedCreator;
+        private JsonPropertyCollection? _creatorParameters;
+        private Type? _extensionDataValueType;
 
         internal bool HasRequiredOrDefaultValueProperties
         {

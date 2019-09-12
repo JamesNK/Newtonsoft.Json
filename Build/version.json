@@ -1,5 +1,6 @@
 {
   "Major": 12,
-  "Release": 2,
-  "Prerelease": "beta1"
+  "Release": 3,
+  "Prerelease": "beta1",
+  "Assembly": null
 }

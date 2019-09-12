@@ -41,12 +41,12 @@ namespace Newtonsoft.Json.Serialization
         }
 #pragma warning restore 618
 
-        public Type BindToType(string assemblyName, string typeName)
+        public Type BindToType(string? assemblyName, string typeName)
         {
             return SerializationBinder.BindToType(assemblyName, typeName);
         }
 
-        public void BindToName(Type serializedType, out string assemblyName, out string typeName)
+        public void BindToName(Type serializedType, out string? assemblyName, out string? typeName)
         {
 #if HAVE_SERIALIZATION_BINDER_BIND_TO_NAME
             SerializationBinder.BindToName(serializedType, out assemblyName, out typeName);

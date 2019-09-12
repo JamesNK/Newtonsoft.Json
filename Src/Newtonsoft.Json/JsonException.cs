@@ -63,7 +63,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="message">The error message that explains the reason for the exception.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or <c>null</c> if no inner exception is specified.</param>
-        public JsonException(string message, Exception innerException)
+        public JsonException(string message, Exception? innerException)
             : base(message, innerException)
         {
         }

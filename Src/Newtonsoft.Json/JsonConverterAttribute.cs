@@ -47,7 +47,7 @@ namespace Newtonsoft.Json
         /// The parameter list to use when constructing the <see cref="JsonConverter"/> described by <see cref="ConverterType"/>.
         /// If <c>null</c>, the default constructor is used.
         /// </summary>
-        public object[] ConverterParameters { get; }
+        public object[]? ConverterParameters { get; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonConverterAttribute"/> class.
