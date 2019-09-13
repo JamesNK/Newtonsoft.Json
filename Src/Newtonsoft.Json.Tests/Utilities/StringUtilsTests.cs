@@ -98,5 +98,34 @@ namespace Newtonsoft.Json.Tests.Utilities
             Assert.AreEqual("9999-12-31_t23:59:59.9999999_z", StringUtils.ToSnakeCase("9999-12-31T23:59:59.9999999Z"));
             Assert.AreEqual("hi!!_this_is_text._time_to_test.", StringUtils.ToSnakeCase("Hi!! This is text. Time to test."));
         }
+
+        [Test]
+        public void ToKebabCaseTest()
+        {
+            Assert.AreEqual("url-value", StringUtils.ToKebabCase("URLValue"));
+            Assert.AreEqual("url", StringUtils.ToKebabCase("URL"));
+            Assert.AreEqual("id", StringUtils.ToKebabCase("ID"));
+            Assert.AreEqual("i", StringUtils.ToKebabCase("I"));
+            Assert.AreEqual("", StringUtils.ToKebabCase(""));
+            Assert.AreEqual(null, StringUtils.ToKebabCase(null));
+            Assert.AreEqual("person", StringUtils.ToKebabCase("Person"));
+            Assert.AreEqual("i-phone", StringUtils.ToKebabCase("iPhone"));
+            Assert.AreEqual("i-phone", StringUtils.ToKebabCase("IPhone"));
+            Assert.AreEqual("i-phone", StringUtils.ToKebabCase("I Phone"));
+            Assert.AreEqual("i-phone", StringUtils.ToKebabCase("I  Phone"));
+            Assert.AreEqual("i-phone", StringUtils.ToKebabCase(" IPhone"));
+            Assert.AreEqual("i-phone", StringUtils.ToKebabCase(" IPhone "));
+            Assert.AreEqual("is-cia", StringUtils.ToKebabCase("IsCIA"));
+            Assert.AreEqual("vm-q", StringUtils.ToKebabCase("VmQ"));
+            Assert.AreEqual("xml2-json", StringUtils.ToKebabCase("Xml2Json"));
+            Assert.AreEqual("ke-ba-bc-as-e", StringUtils.ToKebabCase("KeBaBcAsE"));
+            Assert.AreEqual("ke-b--a-bc-as-e", StringUtils.ToKebabCase("KeB--aBcAsE"));
+            Assert.AreEqual("ke-b--a-bc-as-e", StringUtils.ToKebabCase("KeB-- aBcAsE"));
+            Assert.AreEqual("already-kebab-case-", StringUtils.ToKebabCase("already-kebab-case- "));
+            Assert.AreEqual("is-json-property", StringUtils.ToKebabCase("IsJSONProperty"));
+            Assert.AreEqual("shouting-case", StringUtils.ToKebabCase("SHOUTING-CASE"));
+            Assert.AreEqual("9999-12-31-t23:59:59.9999999-z", StringUtils.ToKebabCase("9999-12-31T23:59:59.9999999Z"));
+            Assert.AreEqual("hi!!-this-is-text.-time-to-test.", StringUtils.ToKebabCase("Hi!! This is text. Time to test."));
+        }
     }
 }
