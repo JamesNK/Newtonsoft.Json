@@ -197,7 +197,11 @@ namespace Newtonsoft.Json.Utilities
             return c;
         }
 
-        internal enum SnakeCaseState
+        public static string ToSnakeCase(string s) => ToSeparatedCase(s, '_');
+
+        public static string ToKebabCase(string s) => ToSeparatedCase(s, '-');
+
+        private enum SeparatedCaseState
         {
             Start,
             Lower,
@@ -205,7 +209,7 @@ namespace Newtonsoft.Json.Utilities
             NewWord
         }
 
-        public static string ToSnakeCase(string s)
+        private static string ToSeparatedCase(string s, char separator)
         {
             if (string.IsNullOrEmpty(s))
             {
@@ -213,35 +217,35 @@ namespace Newtonsoft.Json.Utilities
             }
 
             StringBuilder sb = new StringBuilder();
-            SnakeCaseState state = SnakeCaseState.Start;
+            SeparatedCaseState state = SeparatedCaseState.Start;
 
             for (int i = 0; i < s.Length; i++)
             {
                 if (s[i] == ' ')
                 {
-                    if (state != SnakeCaseState.Start)
+                    if (state != SeparatedCaseState.Start)
                     {
-                        state = SnakeCaseState.NewWord;
+                        state = SeparatedCaseState.NewWord;
                     }
                 }
                 else if (char.IsUpper(s[i]))
                 {
                     switch (state)
                     {
-                        case SnakeCaseState.Upper:
+                        case SeparatedCaseState.Upper:
                             bool hasNext = (i + 1 < s.Length);
                             if (i > 0 && hasNext)
                             {
                                 char nextChar = s[i + 1];
-                                if (!char.IsUpper(nextChar) && nextChar != '_')
+                                if (!char.IsUpper(nextChar) && nextChar != separator)
                                 {
-                                    sb.Append('_');
+                                    sb.Append(separator);
                                 }
                             }
                             break;
-                        case SnakeCaseState.Lower:
-                        case SnakeCaseState.NewWord:
-                            sb.Append('_');
+                        case SeparatedCaseState.Lower:
+                        case SeparatedCaseState.NewWord:
+                            sb.Append(separator);
                             break;
                     }
 
@@ -253,22 +257,22 @@ namespace Newtonsoft.Json.Utilities
 #endif
                     sb.Append(c);
 
-                    state = SnakeCaseState.Upper;
+                    state = SeparatedCaseState.Upper;
                 }
-                else if (s[i] == '_')
+                else if (s[i] == separator)
                 {
-                    sb.Append('_');
-                    state = SnakeCaseState.Start;
+                    sb.Append(separator);
+                    state = SeparatedCaseState.Start;
                 }
                 else
                 {
-                    if (state == SnakeCaseState.NewWord)
+                    if (state == SeparatedCaseState.NewWord)
                     {
-                        sb.Append('_');
+                        sb.Append(separator);
                     }
 
                     sb.Append(s[i]);
-                    state = SnakeCaseState.Lower;
+                    state = SeparatedCaseState.Lower;
                 }
             }
 

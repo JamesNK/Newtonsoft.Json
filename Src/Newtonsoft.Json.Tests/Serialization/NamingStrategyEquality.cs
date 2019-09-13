@@ -97,6 +97,25 @@ namespace Newtonsoft.Json.Tests.Serialization
             CheckInequality<SnakeCaseNamingStrategy>(true, true, true);
         }
 
+        [Test]
+        public void KebabCaseStrategyEquality()
+        {
+            var s1 = new KebabCaseNamingStrategy();
+            var s2 = new KebabCaseNamingStrategy();
+            Assert.IsTrue(s1.Equals(s2));
+            Assert.IsTrue(s1.GetHashCode() == s2.GetHashCode());
+        }
+
+        [Test]
+        public void KebabCaseNamingStrategyEqualityVariants()
+        {
+            CheckInequality<KebabCaseNamingStrategy>(false, false, true);
+            CheckInequality<KebabCaseNamingStrategy>(false, true, false);
+            CheckInequality<KebabCaseNamingStrategy>(true, false, false);
+            CheckInequality<KebabCaseNamingStrategy>(false, true, true);
+            CheckInequality<KebabCaseNamingStrategy>(true, true, false);
+            CheckInequality<KebabCaseNamingStrategy>(true, true, true);
+        }
 
         [Test]
         public void DifferentStrategyEquality()
