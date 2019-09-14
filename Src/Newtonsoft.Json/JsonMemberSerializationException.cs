@@ -31,16 +31,6 @@ using System.Text;
 namespace Newtonsoft.Json
 {
     /// <summary>
-    /// The types of errors related to members
-    /// </summary>
-    public enum MemberErrorType {
-        NoMemberError=0,
-        RequiredNotFound=1,
-        RequiredIsNull=2,
-        MissingMember=3
-    }
-
-    /// <summary>
     /// The exception thrown when an error occurs during JSON serialization or deserialization.
     /// </summary>
 #if HAVE_BINARY_EXCEPTION_SERIALIZATION
@@ -53,13 +43,13 @@ namespace Newtonsoft.Json
         /// Gets the member error type for a required or missing member.
         /// </summary>
         /// <value>The name of the missing JSON member.</value>
-        public MemberErrorType MemberErrorType { get; }
+        public MemberSerializationError MemberErrorType { get; }
 
         /// <summary>
         /// Gets the name of the Json member.
         /// </summary>
         /// <value>The name of the JSON member.</value>
-        public string Name { get; }
+        public string MemberName { get; }
 
         /// <summary>
         /// Gets the object type name of the Json member.
@@ -122,7 +112,7 @@ namespace Newtonsoft.Json
         /// <param name="memberName">The name of the member being parsed where the error occurred.</param>
         /// <param name="objectTypeName">The name of the type of object being serialized where the error occurred.</param>
         /// <param name="innerException">The exception that is the cause of the current exception, or <c>null</c> if no inner exception is specified.</param>
-        public JsonMemberSerializationException(string message, string path, int lineNumber, int linePosition, MemberErrorType memberErrorType, string memberName, string objectTypeName, Exception? innerException)
+        public JsonMemberSerializationException(string message, string path, int lineNumber, int linePosition, MemberSerializationError memberErrorType, string memberName, string objectTypeName, Exception innerException)
             : base(message, path, lineNumber, linePosition, innerException)
         {
             MemberErrorType = memberErrorType;
@@ -130,19 +120,20 @@ namespace Newtonsoft.Json
             ObjectTypeName = objectTypeName;
         }
 
-        internal static JsonMemberSerializationException Create(JsonReader reader, string message, MemberErrorType memberErrorType, string memberName, string objectTypeName)
+        internal static JsonMemberSerializationException Create(JsonReader reader, MemberSerializationError memberErrorType, string memberName, string objectTypeName, string message)
         {
-            return Create(reader, message, memberErrorType, memberName, objectTypeName, null);
+            return Create(reader, memberErrorType, memberName, objectTypeName, message, null);
         }
 
-        internal static JsonMemberSerializationException Create(JsonReader reader, string message, MemberErrorType memberErrorType, string memberName, string objectTypeName, Exception? ex)
+        internal static JsonMemberSerializationException Create(JsonReader reader, MemberSerializationError memberErrorType, string memberName, string objectTypeName, string message, Exception ex)
         {
-            return Create(reader as IJsonLineInfo, reader.Path, message, memberErrorType, memberName, objectTypeName, ex);
+            return Create(reader as IJsonLineInfo, reader.Path, memberErrorType, memberName, objectTypeName, message, ex);
         }
 
-        internal static JsonMemberSerializationException Create(IJsonLineInfo? lineInfo, string path, string message, MemberErrorType memberErrorType, string memberName, string objectTypeName, Exception? ex)
+        internal static JsonMemberSerializationException Create(IJsonLineInfo lineInfo, string path, MemberSerializationError memberErrorType, string memberName, string objectTypeName, string message, Exception ex)
         {
-            return new JsonMemberSerializationException(message, path, lineNumber, linePosition, memberErrorType, memberName, objectTypeName, ex);
+            var e = JsonSerializationException.Create(lineInfo, path, message, ex);
+            return new JsonMemberSerializationException(e.Message, path, e.LineNumber, e.LinePosition, memberErrorType, memberName, objectTypeName, ex);
         }
     }
 }
