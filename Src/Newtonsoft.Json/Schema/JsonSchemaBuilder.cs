@@ -221,7 +221,7 @@ namespace Newtonsoft.Json.Schema
             }
 
             string location = token.Path.Replace(".", "/").Replace("[", "/").Replace("]", string.Empty);
-            if (!string.IsNullOrEmpty(location))
+            if (!StringUtils.IsNullOrEmpty(location))
             {
                 location = "/" + location;
             }

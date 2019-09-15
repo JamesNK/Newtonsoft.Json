@@ -73,7 +73,7 @@ namespace Newtonsoft.Json.Serialization
         /// <param name="property">The property to add to the collection.</param>
         public void AddProperty(JsonProperty property)
         {
-            Debug.Assert(property.PropertyName != null);
+            MiscellaneousUtils.Assert(property.PropertyName != null);
 
             if (Contains(property.PropertyName))
             {

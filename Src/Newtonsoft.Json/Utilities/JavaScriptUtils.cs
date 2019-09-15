@@ -153,7 +153,7 @@ namespace Newtonsoft.Json.Utilities
                 writer.Write(delimiter);
             }
 
-            if (!string.IsNullOrEmpty(s))
+            if (!StringUtils.IsNullOrEmpty(s))
             {
                 int lastWritePosition = FirstCharToEscape(s, charEscapeFlags, stringEscapeHandling);
                 if (lastWritePosition == -1)
@@ -266,7 +266,7 @@ namespace Newtonsoft.Json.Utilities
                                 // copy it over when creating new buffer
                                 if (isEscapedUnicodeText)
                                 {
-                                    Debug.Assert(writeBuffer != null, "Write buffer should never be null because it is set when the escaped unicode text is encountered.");
+                                    MiscellaneousUtils.Assert(writeBuffer != null, "Write buffer should never be null because it is set when the escaped unicode text is encountered.");
 
                                     Array.Copy(writeBuffer, newBuffer, UnicodeTextLength);
                                 }
@@ -293,7 +293,7 @@ namespace Newtonsoft.Json.Utilities
                         }
                     }
 
-                    Debug.Assert(lastWritePosition != 0);
+                    MiscellaneousUtils.Assert(lastWritePosition != 0);
                     length = s.Length - lastWritePosition;
                     if (length > 0)
                     {
@@ -374,7 +374,7 @@ namespace Newtonsoft.Json.Utilities
                 return WriteEscapedJavaScriptStringWithDelimitersAsync(writer, s, delimiter, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
             }
 
-            if (string.IsNullOrEmpty(s))
+            if (StringUtils.IsNullOrEmpty(s))
             {
                 return cancellationToken.CancelIfRequestedAsync() ?? AsyncUtils.CompletedTask;
             }
@@ -391,7 +391,7 @@ namespace Newtonsoft.Json.Utilities
                 return WriteEscapedJavaScriptStringWithDelimitersAsync(task, writer, s, delimiter, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
             }
 
-            if (!string.IsNullOrEmpty(s))
+            if (!StringUtils.IsNullOrEmpty(s))
             {
                 task = WriteEscapedJavaScriptStringWithoutDelimitersAsync(writer, s, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
                 if (task.IsCompletedSucessfully())
@@ -409,7 +409,7 @@ namespace Newtonsoft.Json.Utilities
         {
             await task.ConfigureAwait(false);
 
-            if (!string.IsNullOrEmpty(s))
+            if (!StringUtils.IsNullOrEmpty(s))
             {
                 await WriteEscapedJavaScriptStringWithoutDelimitersAsync(writer, s, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken).ConfigureAwait(false);
             }

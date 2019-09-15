@@ -28,6 +28,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -44,6 +45,11 @@ namespace Newtonsoft.Json.Utilities
         public const char CarriageReturn = '\r';
         public const char LineFeed = '\n';
         public const char Tab = '\t';
+
+        public static bool IsNullOrEmpty([NotNullWhen(false)] string? value)
+        {
+            return string.IsNullOrEmpty(value);
+        }
 
         public static string FormatWith(this string format, IFormatProvider provider, object? arg0)
         {
@@ -148,7 +154,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static string ToCamelCase(string s)
         {
-            if (string.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
+            if (StringUtils.IsNullOrEmpty(s) || !char.IsUpper(s[0]))
             {
                 return s;
             }
@@ -207,7 +213,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static string ToSnakeCase(string s)
         {
-            if (string.IsNullOrEmpty(s))
+            if (StringUtils.IsNullOrEmpty(s))
             {
                 return s;
             }

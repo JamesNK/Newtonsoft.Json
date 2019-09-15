@@ -71,7 +71,7 @@ namespace Newtonsoft.Json.Converters
             if (value.GetType().FullName == BinaryTypeName)
             {
                 EnsureReflectionObject(value.GetType());
-                Debug.Assert(_reflectionObject != null);
+                MiscellaneousUtils.Assert(_reflectionObject != null);
 
                 return (byte[])_reflectionObject.GetValue(value, BinaryToArrayName)!;
             }
@@ -142,7 +142,7 @@ namespace Newtonsoft.Json.Converters
             if (t.FullName == BinaryTypeName)
             {
                 EnsureReflectionObject(t);
-                Debug.Assert(_reflectionObject != null);
+                MiscellaneousUtils.Assert(_reflectionObject != null);
 
                 return _reflectionObject.Creator!(data);
             }

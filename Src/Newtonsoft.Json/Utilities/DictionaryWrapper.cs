@@ -80,7 +80,7 @@ namespace Newtonsoft.Json.Utilities
         {
             get
             {
-                Debug.Assert(_genericDictionary != null);
+                MiscellaneousUtils.Assert(_genericDictionary != null);
                 return _genericDictionary;
             }
         }

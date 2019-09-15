@@ -364,7 +364,7 @@ namespace Newtonsoft.Json.Utilities
                     }
                 }
 
-                if (!string.IsNullOrEmpty(dateFormatString))
+                if (!StringUtils.IsNullOrEmpty(dateFormatString))
                 {
                     if (TryParseDateTimeExact(s.ToString(), dateTimeZoneHandling, dateFormatString, culture, out dt))
                     {
@@ -400,7 +400,7 @@ namespace Newtonsoft.Json.Utilities
                     }
                 }
 
-                if (!string.IsNullOrEmpty(dateFormatString))
+                if (!StringUtils.IsNullOrEmpty(dateFormatString))
                 {
                     if (TryParseDateTimeExact(s, dateTimeZoneHandling, dateFormatString, culture, out dt))
                     {
@@ -437,7 +437,7 @@ namespace Newtonsoft.Json.Utilities
                     }
                 }
 
-                if (!string.IsNullOrEmpty(dateFormatString))
+                if (!StringUtils.IsNullOrEmpty(dateFormatString))
                 {
                     if (TryParseDateTimeOffsetExact(s.ToString(), dateFormatString, culture, out dt))
                     {
@@ -475,7 +475,7 @@ namespace Newtonsoft.Json.Utilities
                     }
                 }
 
-                if (!string.IsNullOrEmpty(dateFormatString))
+                if (!StringUtils.IsNullOrEmpty(dateFormatString))
                 {
                     if (TryParseDateTimeOffsetExact(s, dateFormatString, culture, out dt))
                     {
@@ -620,7 +620,7 @@ namespace Newtonsoft.Json.Utilities
         #region Write
         internal static void WriteDateTimeString(TextWriter writer, DateTime value, DateFormatHandling format, string? formatString, CultureInfo culture)
         {
-            if (string.IsNullOrEmpty(formatString))
+            if (StringUtils.IsNullOrEmpty(formatString))
             {
                 char[] chars = new char[64];
                 int pos = WriteDateTimeString(chars, 0, value, null, value.Kind, format);
@@ -753,7 +753,7 @@ namespace Newtonsoft.Json.Utilities
 #if HAVE_DATE_TIME_OFFSET
         internal static void WriteDateTimeOffsetString(TextWriter writer, DateTimeOffset value, DateFormatHandling format, string? formatString, CultureInfo culture)
         {
-            if (string.IsNullOrEmpty(formatString))
+            if (StringUtils.IsNullOrEmpty(formatString))
             {
                 char[] chars = new char[64];
                 int pos = WriteDateTimeString(chars, 0, (format == DateFormatHandling.IsoDateFormat) ? value.DateTime : value.UtcDateTime, value.Offset, DateTimeKind.Local, format);

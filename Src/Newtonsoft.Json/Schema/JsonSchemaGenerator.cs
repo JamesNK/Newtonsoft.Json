@@ -175,7 +175,7 @@ namespace Newtonsoft.Json.Schema
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
-            if (!string.IsNullOrEmpty(containerAttribute?.Title))
+            if (!StringUtils.IsNullOrEmpty(containerAttribute?.Title))
             {
                 return containerAttribute.Title;
             }
@@ -187,7 +187,7 @@ namespace Newtonsoft.Json.Schema
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
-            if (!string.IsNullOrEmpty(containerAttribute?.Description))
+            if (!StringUtils.IsNullOrEmpty(containerAttribute?.Description))
             {
                 return containerAttribute.Description;
             }
@@ -204,7 +204,7 @@ namespace Newtonsoft.Json.Schema
         {
             JsonContainerAttribute containerAttribute = JsonTypeReflector.GetCachedAttribute<JsonContainerAttribute>(type);
 
-            if (!string.IsNullOrEmpty(containerAttribute?.Id))
+            if (!StringUtils.IsNullOrEmpty(containerAttribute?.Id))
             {
                 return containerAttribute.Id;
             }
@@ -232,7 +232,7 @@ namespace Newtonsoft.Json.Schema
             string resolvedId = GetTypeId(type, false);
             string explicitId = GetTypeId(type, true);
 
-            if (!string.IsNullOrEmpty(resolvedId))
+            if (!StringUtils.IsNullOrEmpty(resolvedId))
             {
                 JsonSchema resolvedSchema = _resolver.GetSchema(resolvedId);
                 if (resolvedSchema != null)

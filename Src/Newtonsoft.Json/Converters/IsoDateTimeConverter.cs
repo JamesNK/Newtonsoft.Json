@@ -57,7 +57,7 @@ namespace Newtonsoft.Json.Converters
         public string? DateTimeFormat
         {
             get => _dateTimeFormat ?? string.Empty;
-            set => _dateTimeFormat = (string.IsNullOrEmpty(value)) ? null : value;
+            set => _dateTimeFormat = (StringUtils.IsNullOrEmpty(value)) ? null : value;
         }
 
         /// <summary>
@@ -162,7 +162,7 @@ namespace Newtonsoft.Json.Converters
 
             string? dateText = reader.Value?.ToString();
 
-            if (string.IsNullOrEmpty(dateText) && nullable)
+            if (StringUtils.IsNullOrEmpty(dateText) && nullable)
             {
                 return null;
             }
@@ -170,7 +170,7 @@ namespace Newtonsoft.Json.Converters
 #if HAVE_DATE_TIME_OFFSET
             if (t == typeof(DateTimeOffset))
             {
-                if (!string.IsNullOrEmpty(_dateTimeFormat))
+                if (!StringUtils.IsNullOrEmpty(_dateTimeFormat))
                 {
                     return DateTimeOffset.ParseExact(dateText, _dateTimeFormat, Culture, _dateTimeStyles);
                 }
@@ -181,7 +181,7 @@ namespace Newtonsoft.Json.Converters
             }
 #endif
 
-            if (!string.IsNullOrEmpty(_dateTimeFormat))
+            if (!StringUtils.IsNullOrEmpty(_dateTimeFormat))
             {
                 return DateTime.ParseExact(dateText, _dateTimeFormat, Culture, _dateTimeStyles);
             }
