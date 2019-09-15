@@ -633,7 +633,7 @@ namespace Newtonsoft.Json
             InternalWriteValue(JsonToken.Date);
             value = DateTimeUtils.EnsureDateTime(value, DateTimeZoneHandling);
 
-            if (string.IsNullOrEmpty(DateFormatString))
+            if (StringUtils.IsNullOrEmpty(DateFormatString))
             {
                 int length = WriteValueToBuffer(value);
 
@@ -650,7 +650,7 @@ namespace Newtonsoft.Json
         private int WriteValueToBuffer(DateTime value)
         {
             EnsureWriteBuffer();
-            Debug.Assert(_writeBuffer != null);
+            MiscellaneousUtils.Assert(_writeBuffer != null);
 
             int pos = 0;
             _writeBuffer[pos++] = _quoteChar;
@@ -688,7 +688,7 @@ namespace Newtonsoft.Json
         {
             InternalWriteValue(JsonToken.Date);
 
-            if (string.IsNullOrEmpty(DateFormatString))
+            if (StringUtils.IsNullOrEmpty(DateFormatString))
             {
                 int length = WriteValueToBuffer(value);
 
@@ -705,7 +705,7 @@ namespace Newtonsoft.Json
         private int WriteValueToBuffer(DateTimeOffset value)
         {
             EnsureWriteBuffer();
-            Debug.Assert(_writeBuffer != null);
+            MiscellaneousUtils.Assert(_writeBuffer != null);
 
             int pos = 0;
             _writeBuffer[pos++] = _quoteChar;
@@ -842,7 +842,7 @@ namespace Newtonsoft.Json
             }
 
             EnsureWriteBuffer();
-            Debug.Assert(_writeBuffer != null);
+            MiscellaneousUtils.Assert(_writeBuffer != null);
 
             int totalLength = MathUtils.IntLength(value);
 
@@ -894,7 +894,7 @@ namespace Newtonsoft.Json
         private int WriteNumberToBuffer(uint value, bool negative)
         {
             EnsureWriteBuffer();
-            Debug.Assert(_writeBuffer != null);
+            MiscellaneousUtils.Assert(_writeBuffer != null);
 
             int totalLength = MathUtils.IntLength(value);
 

@@ -117,8 +117,8 @@ namespace Newtonsoft.Json.Utilities
             {
 #if !HAVE_REFLECTION_BINDER
                 Init();
-                Debug.Assert(_getMemberCall != null);
-                Debug.Assert(_getCSharpArgumentInfoArray != null);
+                MiscellaneousUtils.Assert(_getMemberCall != null);
+                MiscellaneousUtils.Assert(_getCSharpArgumentInfoArray != null);
                 return (CallSiteBinder)_getMemberCall(null, 0, name, context, _getCSharpArgumentInfoArray)!;
 #else
                 return Binder.GetMember(
@@ -130,8 +130,8 @@ namespace Newtonsoft.Json.Utilities
             {
 #if !HAVE_REFLECTION_BINDER
                 Init();
-                Debug.Assert(_setMemberCall != null);
-                Debug.Assert(_setCSharpArgumentInfoArray != null);
+                MiscellaneousUtils.Assert(_setMemberCall != null);
+                MiscellaneousUtils.Assert(_setCSharpArgumentInfoArray != null);
                 return (CallSiteBinder)_setMemberCall(null, 0, name, context, _setCSharpArgumentInfoArray)!;
 #else
                 return Binder.SetMember(

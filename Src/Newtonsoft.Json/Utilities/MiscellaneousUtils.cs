@@ -31,6 +31,8 @@ using System.Reflection;
 using System.Text;
 using System.Globalization;
 using System.Text.RegularExpressions;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -38,6 +40,12 @@ namespace Newtonsoft.Json.Utilities
 
     internal static class MiscellaneousUtils
     {
+        [Conditional("DEBUG")]
+        public static void Assert([DoesNotReturnIf(false)] bool condition, string? message = null)
+        {
+            Debug.Assert(condition, message);
+        }
+
         public static bool ValueEquals(object? objA, object? objB)
         {
             if (objA == objB)

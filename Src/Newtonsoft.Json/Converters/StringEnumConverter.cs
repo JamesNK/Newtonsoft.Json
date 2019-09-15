@@ -230,7 +230,7 @@ namespace Newtonsoft.Json.Converters
                 {
                     string? enumText = reader.Value?.ToString();
 
-                    if (string.IsNullOrEmpty(enumText) && isNullable)
+                    if (StringUtils.IsNullOrEmpty(enumText) && isNullable)
                     {
                         return null;
                     }

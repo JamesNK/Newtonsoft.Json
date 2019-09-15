@@ -356,7 +356,7 @@ namespace Newtonsoft.Json.Linq
                     }
 
                     byte[]? bytesA = objA as byte[];
-                    Debug.Assert(bytesA != null);
+                    MiscellaneousUtils.Assert(bytesA != null);
 
                     return MiscellaneousUtils.ByteArrayCompare(bytesA!, bytesB);
                 case JTokenType.Guid:

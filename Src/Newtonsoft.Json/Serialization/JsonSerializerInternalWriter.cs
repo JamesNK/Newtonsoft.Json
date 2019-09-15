@@ -159,7 +159,7 @@ namespace Newtonsoft.Json.Serialization
                 return;
             }
 
-            Debug.Assert(valueContract != null);
+            MiscellaneousUtils.Assert(valueContract != null);
 
             JsonConverter? converter =
                 member?.Converter ??
@@ -252,7 +252,7 @@ namespace Newtonsoft.Json.Serialization
                 return false;
             }
 
-            Debug.Assert(valueContract != null);
+            MiscellaneousUtils.Assert(valueContract != null);
 
             if (valueContract.ContractType == JsonContractType.Primitive || valueContract.ContractType == JsonContractType.String)
             {
@@ -304,7 +304,7 @@ namespace Newtonsoft.Json.Serialization
                 return true;
             }
 
-            Debug.Assert(contract != null);
+            MiscellaneousUtils.Assert(contract != null);
 
             if (contract.ContractType == JsonContractType.Primitive || contract.ContractType == JsonContractType.String)
             {

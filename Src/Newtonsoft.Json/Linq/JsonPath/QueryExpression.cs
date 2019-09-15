@@ -294,8 +294,8 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
         internal static bool EqualsWithStrictMatch(JValue value, JValue queryValue)
         {
-            Debug.Assert(value != null);
-            Debug.Assert(queryValue != null);
+            MiscellaneousUtils.Assert(value != null);
+            MiscellaneousUtils.Assert(queryValue != null);
 
             // Handle comparing an integer with a float
             // e.g. Comparing 1 and 1.0

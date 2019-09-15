@@ -765,7 +765,7 @@ namespace Newtonsoft.Json.Linq
                     parent = parent.Parent;
                 }
 
-                Debug.Assert(parent != null);
+                MiscellaneousUtils.Assert(parent != null);
 
                 switch (r.TokenType)
                 {

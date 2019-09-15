@@ -122,7 +122,7 @@ namespace Newtonsoft.Json.Linq
                         throw new IndexOutOfRangeException();
                     }
 
-                    Debug.Assert(_token != null);
+                    MiscellaneousUtils.Assert(_token != null);
                     return _token;
                 }
                 set

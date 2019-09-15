@@ -165,7 +165,7 @@ namespace Newtonsoft.Json
             int currentIndentCount = Top * _indentation;
 
             int newLineLen = SetIndentChars();
-            Debug.Assert(_indentChars != null);
+            MiscellaneousUtils.Assert(_indentChars != null);
 
             if (currentIndentCount <= IndentCharBufferSize)
             {
@@ -177,7 +177,7 @@ namespace Newtonsoft.Json
 
         private async Task WriteIndentAsync(int currentIndentCount, int newLineLen, CancellationToken cancellationToken)
         {
-            Debug.Assert(_indentChars != null);
+            MiscellaneousUtils.Assert(_indentChars != null);
 
             await _writer.WriteAsync(_indentChars, 0, newLineLen + Math.Min(currentIndentCount, IndentCharBufferSize), cancellationToken).ConfigureAwait(false);
 
@@ -657,7 +657,7 @@ namespace Newtonsoft.Json
             await InternalWriteValueAsync(JsonToken.Date, cancellationToken).ConfigureAwait(false);
             value = DateTimeUtils.EnsureDateTime(value, DateTimeZoneHandling);
 
-            if (string.IsNullOrEmpty(DateFormatString))
+            if (StringUtils.IsNullOrEmpty(DateFormatString))
             {
                 int length = WriteValueToBuffer(value);
 
@@ -706,7 +706,7 @@ namespace Newtonsoft.Json
         {
             await InternalWriteValueAsync(JsonToken.Date, cancellationToken).ConfigureAwait(false);
 
-            if (string.IsNullOrEmpty(DateFormatString))
+            if (StringUtils.IsNullOrEmpty(DateFormatString))
             {
                 int length = WriteValueToBuffer(value);
 
