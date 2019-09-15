@@ -370,13 +370,31 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void CoercedEmptyStringWithRequired()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Binding>("{requiredProperty:''}"); }, "Required property 'RequiredProperty' expects a value but got null. Path '', line 1, position 21.");
+            ExceptionAssert.ValidateThrows<JsonMemberSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<Binding>("{requiredProperty:''}");
+            },
+            (ex) =>
+            {
+                Assert.AreEqual(MemberSerializationError.RequiredIsNull, ex.MemberErrorType);
+                Assert.AreEqual("RequiredProperty", ex.MemberName);
+                Assert.AreEqual("Binding", ex.ObjectTypeName);
+            }, "Required property 'RequiredProperty' on object of type 'Binding' expects a value but got null. Path '', line 1, position 21.");
         }
 
         [Test]
         public void CoercedEmptyStringWithRequired_DisallowNull()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Binding_DisallowNull>("{requiredProperty:''}"); }, "Required property 'RequiredProperty' expects a non-null value. Path '', line 1, position 21.");
+            ExceptionAssert.ValidateThrows<JsonMemberSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<Binding_DisallowNull>("{requiredProperty:''}");
+            },
+            (ex) =>
+            {
+                Assert.AreEqual(MemberSerializationError.RequiredIsNull, ex.MemberErrorType);
+                Assert.AreEqual("RequiredProperty", ex.MemberName);
+                Assert.AreEqual("Binding_DisallowNull", ex.ObjectTypeName);
+            }, "Required property 'RequiredProperty' on object of type 'Binding_DisallowNull' expects a non-null value. Path '', line 1, position 21.");
         }
 
         [Test]
@@ -389,7 +407,16 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void CoercedEmptyStringWithRequiredConstructor()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<FooRequired>("{Bars:''}"); }, "Required property 'Bars' expects a value but got null. Path '', line 1, position 9.");
+            ExceptionAssert.ValidateThrows<JsonMemberSerializationException>(() =>
+            {
+                JsonConvert.DeserializeObject<FooRequired>("{Bars:''}");
+            },
+            (ex) =>
+            {
+                Assert.AreEqual(MemberSerializationError.RequiredIsNull, ex.MemberErrorType);
+                Assert.AreEqual("Bars", ex.MemberName);
+                Assert.AreEqual("FooRequired", ex.ObjectTypeName);
+            }, "Required property 'Bars' on object of type 'FooRequired' expects a value but got null. Path '', line 1, position 9.");
         }
 
         [Test]
@@ -419,7 +446,10 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void Serialize_ItemRequired_DisallowedNull()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.SerializeObject(new DictionaryWithNoNull()); }, "Cannot write a null value for property 'Name'. Property requires a non-null value. Path ''.");
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                JsonConvert.SerializeObject(new DictionaryWithNoNull());
+            }, "Cannot write a null value for property 'Name'. Property requires a non-null value. Path ''.");
         }
 
         [Test]
@@ -513,13 +543,13 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(@"{""Name"":""Name!""}", json);
 
-            ExceptionAssert.Throws<JsonSerializationException>(
+            ExceptionAssert.Throws<JsonMemberSerializationException>(
                 () => JsonConvert.DeserializeObject<RequiredPropertyTestClass>(@"{}"),
-                "Required property 'Name' not found in JSON. Path '', line 1, position 2.");
+                "Required property 'Name' on object of type 'RequiredPropertyTestClass' not found in JSON. Path '', line 1, position 2.");
 
-            ExceptionAssert.Throws<JsonSerializationException>(
+            ExceptionAssert.Throws<JsonMemberSerializationException>(
                 () => JsonConvert.DeserializeObject<RequiredPropertyTestClass>(@"{""Name"":null}"),
-                "Required property 'Name' expects a value but got null. Path '', line 1, position 13.");
+                "Required property 'Name' on object of type 'RequiredPropertyTestClass' expects a value but got null. Path '', line 1, position 13.");
 
             RequiredPropertyTestClass c3 = JsonConvert.DeserializeObject<RequiredPropertyTestClass>(@"{""Name"":""Name!""}");
 
@@ -541,9 +571,9 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(@"{""Name"":""Name!""}", json);
 
-            ExceptionAssert.Throws<JsonSerializationException>(
+            ExceptionAssert.Throws<JsonMemberSerializationException>(
                 () => JsonConvert.DeserializeObject<RequiredPropertyConstructorTestClass>(@"{}"),
-                "Required property 'Name' not found in JSON. Path '', line 1, position 2.");
+                "Required property 'Name' on object of type 'RequiredPropertyConstructorTestClass' not found in JSON. Path '', line 1, position 2.");
 
             RequiredPropertyConstructorTestClass c3 = JsonConvert.DeserializeObject<RequiredPropertyConstructorTestClass>(@"{""Name"":""Name!""}");
 
@@ -2722,9 +2752,12 @@ keyword such as type of business.""
                 JsonConvert.DeserializeObject<RequiredMembersClass>(json);
                 Assert.Fail();
             }
-            catch (JsonSerializationException ex)
+            catch (JsonMemberSerializationException ex)
             {
-                Assert.IsTrue(ex.Message.StartsWith("Required property 'FirstName' expects a value but got null. Path ''"));
+                Assert.AreEqual(MemberSerializationError.RequiredIsNull, ex.MemberErrorType);
+                Assert.AreEqual("FirstName", ex.MemberName);
+                Assert.AreEqual("RequiredMembersClass", ex.ObjectTypeName);
+                Assert.IsTrue(ex.Message.StartsWith("Required property 'FirstName' on object of type 'RequiredMembersClass' expects a value but got null. Path ''"));
             }
         }
 
@@ -2759,7 +2792,7 @@ keyword such as type of business.""
             }
             catch (JsonSerializationException ex)
             {
-                Assert.IsTrue(ex.Message.StartsWith("Required property 'LastName' not found in JSON. Path ''"));
+                Assert.IsTrue(ex.Message.StartsWith("Required property 'LastName' on object of type 'RequiredMembersClass' not found in JSON. Path ''"));
             }
         }
 
@@ -2984,7 +3017,7 @@ keyword such as type of business.""
             }
             catch (JsonSerializationException ex)
             {
-                Assert.IsTrue(ex.Message.StartsWith("Required property 'TestProperty2' not found in JSON. Path ''"));
+                Assert.IsTrue(ex.Message.StartsWith("Required property 'TestProperty2' on object of type 'ConstructorAndRequiredTestClass' not found in JSON. Path ''"));
             }
         }
 
@@ -6115,10 +6148,10 @@ Path '', line 1, position 1.");
 
             Assert.IsNotNull(o);
             Assert.AreEqual(4, errors.Count);
-            Assert.IsTrue(errors[0].StartsWith("Required property 'NonAttributeProperty' not found in JSON. Path ''"));
-            Assert.IsTrue(errors[1].StartsWith("Required property 'UnsetProperty' not found in JSON. Path ''"));
-            Assert.IsTrue(errors[2].StartsWith("Required property 'AllowNullProperty' not found in JSON. Path ''"));
-            Assert.IsTrue(errors[3].StartsWith("Required property 'AlwaysProperty' not found in JSON. Path ''"));
+            Assert.IsTrue(errors[0].StartsWith("Required property 'NonAttributeProperty' on object of type 'RequiredObject' not found in JSON. Path ''"));
+            Assert.IsTrue(errors[1].StartsWith("Required property 'UnsetProperty' on object of type 'RequiredObject' not found in JSON. Path ''"));
+            Assert.IsTrue(errors[2].StartsWith("Required property 'AllowNullProperty' on object of type 'RequiredObject' not found in JSON. Path ''"));
+            Assert.IsTrue(errors[3].StartsWith("Required property 'AlwaysProperty' on object of type 'RequiredObject' not found in JSON. Path ''"));
         }
 
         [Test]
@@ -6140,9 +6173,9 @@ Path '', line 1, position 1.");
 
             Assert.IsNotNull(o);
             Assert.AreEqual(3, errors.Count);
-            Assert.IsTrue(errors[0].StartsWith("Required property 'NonAttributeProperty' expects a value but got null. Path ''"));
-            Assert.IsTrue(errors[1].StartsWith("Required property 'UnsetProperty' expects a value but got null. Path ''"));
-            Assert.IsTrue(errors[2].StartsWith("Required property 'AlwaysProperty' expects a value but got null. Path ''"));
+            Assert.IsTrue(errors[0].StartsWith("Required property 'NonAttributeProperty' on object of type 'RequiredObject' expects a value but got null. Path ''"));
+            Assert.IsTrue(errors[1].StartsWith("Required property 'UnsetProperty' on object of type 'RequiredObject' expects a value but got null. Path ''"));
+            Assert.IsTrue(errors[2].StartsWith("Required property 'AlwaysProperty' on object of type 'RequiredObject' expects a value but got null. Path ''"));
         }
 
         [Test]
