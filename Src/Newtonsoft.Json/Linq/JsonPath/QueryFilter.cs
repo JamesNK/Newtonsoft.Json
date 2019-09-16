@@ -5,7 +5,12 @@ namespace Newtonsoft.Json.Linq.JsonPath
 {
     internal class QueryFilter : PathFilter
     {
-        public QueryExpression Expression { get; set; }
+        internal QueryExpression Expression;
+
+        public QueryFilter(QueryExpression expression)
+        {
+            Expression = expression;
+        }
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {

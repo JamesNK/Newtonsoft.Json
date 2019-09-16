@@ -28,6 +28,8 @@ using Newtonsoft.Json.Bson;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 
+#nullable disable
+
 namespace Newtonsoft.Json.Converters
 {
     /// <summary>

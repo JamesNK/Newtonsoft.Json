@@ -1406,19 +1406,9 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
             });
 
-            StringAssert.AreEqual(@"{
-  ""$type"": "":::MESSAGE:::, AssemblyName"",
-  ""Address"": ""jamesnk@testtown.com"",
-  ""Body"": {
-    ""$type"": "":::VERSION:::, AssemblyName"",
-    ""Major"": 1,
-    ""Minor"": 2,
-    ""Build"": 3,
-    ""Revision"": 4,
-    ""MajorRevision"": 0,
-    ""MinorRevision"": 4
-  }
-}", json);
+            JObject o = JObject.Parse(json);
+
+            Assert.AreEqual(":::MESSAGE:::, AssemblyName", (string)o["$type"]);
         }
 
         public class MetroBinder : SerializationBinder

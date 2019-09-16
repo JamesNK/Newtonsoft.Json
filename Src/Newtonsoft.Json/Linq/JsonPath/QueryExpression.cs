@@ -32,7 +32,12 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
     internal abstract class QueryExpression
     {
-        public QueryOperator Operator { get; set; }
+        internal QueryOperator Operator;
+
+        public QueryExpression(QueryOperator @operator)
+        {
+            Operator = @operator;
+        }
 
         public abstract bool IsMatch(JToken root, JToken t);
     }
@@ -41,7 +46,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
     {
         public List<QueryExpression> Expressions { get; set; }
 
-        public CompositeExpression()
+        public CompositeExpression(QueryOperator @operator) : base(@operator)
         {
             Expressions = new List<QueryExpression>();
         }
@@ -76,10 +81,16 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
     internal class BooleanQueryExpression : QueryExpression
     {
-        public object Left { get; set; }
-        public object Right { get; set; }
+        public readonly object Left;
+        public readonly object? Right;
 
-        private IEnumerable<JToken> GetResult(JToken root, JToken t, object o)
+        public BooleanQueryExpression(QueryOperator @operator, object left, object? right) : base(@operator)
+        {
+            Left = left;
+            Right = right;
+        }
+
+        private IEnumerable<JToken> GetResult(JToken root, JToken t, object? o)
         {
             if (o is JToken resultToken)
             {
@@ -211,13 +222,13 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 return false;
             }
 
-            string regexText = (string)pattern.Value;
+            string regexText = (string)pattern.Value!;
             int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
 
             string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
             string optionsText = regexText.Substring(patternOptionDelimiterIndex + 1);
 
-            return Regex.IsMatch((string)input.Value, patternText, MiscellaneousUtils.GetRegexOptions(optionsText));
+            return Regex.IsMatch((string)input.Value!, patternText, MiscellaneousUtils.GetRegexOptions(optionsText));
         }
 
         internal static bool EqualsWithStringCoercion(JValue value, JValue queryValue)
@@ -240,7 +251,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 return false;
             }
 
-            string queryValueString = (string)queryValue.Value;
+            string queryValueString = (string)queryValue.Value!;
 
             string currentValueString;
 
@@ -258,21 +269,21 @@ namespace Newtonsoft.Json.Linq.JsonPath
                         else
 #endif
                         {
-                            DateTimeUtils.WriteDateTimeString(writer, (DateTime)value.Value, DateFormatHandling.IsoDateFormat, null, CultureInfo.InvariantCulture);
+                            DateTimeUtils.WriteDateTimeString(writer, (DateTime)value.Value!, DateFormatHandling.IsoDateFormat, null, CultureInfo.InvariantCulture);
                         }
 
                         currentValueString = writer.ToString();
                     }
                     break;
                 case JTokenType.Bytes:
-                    currentValueString = Convert.ToBase64String((byte[])value.Value);
+                    currentValueString = Convert.ToBase64String((byte[])value.Value!);
                     break;
                 case JTokenType.Guid:
                 case JTokenType.TimeSpan:
-                    currentValueString = value.Value.ToString();
+                    currentValueString = value.Value!.ToString();
                     break;
                 case JTokenType.Uri:
-                    currentValueString = ((Uri)value.Value).OriginalString;
+                    currentValueString = ((Uri)value.Value!).OriginalString;
                     break;
                 default:
                     return false;

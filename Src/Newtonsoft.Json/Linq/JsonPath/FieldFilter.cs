@@ -6,7 +6,12 @@ namespace Newtonsoft.Json.Linq.JsonPath
 {
     internal class FieldFilter : PathFilter
     {
-        public string Name { get; set; }
+        internal string? Name;
+
+        public FieldFilter(string? name)
+        {
+            Name = name;
+        }
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
         {
@@ -16,7 +21,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 {
                     if (Name != null)
                     {
-                        JToken v = o[Name];
+                        JToken? v = o[Name];
 
                         if (v != null)
                         {
@@ -29,9 +34,9 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     }
                     else
                     {
-                        foreach (KeyValuePair<string, JToken> p in o)
+                        foreach (KeyValuePair<string, JToken?> p in o)
                         {
-                            yield return p.Value;
+                            yield return p.Value!;
                         }
                     }
                 }

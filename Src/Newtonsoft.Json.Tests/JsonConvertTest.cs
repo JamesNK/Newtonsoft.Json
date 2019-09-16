@@ -1563,14 +1563,15 @@ namespace Newtonsoft.Json.Tests
             public int Overload { get; set; }
         }
 
-        [Test]
-        public void JsonConverterConstructor_OverloadsWithBaseTypes()
-        {
-            OverloadWithBaseType value = new OverloadWithBaseType();
-            string json = JsonConvert.SerializeObject(value);
+        //[Test]
+        //[Ignore("https://github.com/dotnet/roslyn/issues/36974")]
+        //public void JsonConverterConstructor_OverloadsWithBaseTypes()
+        //{
+        //    OverloadWithBaseType value = new OverloadWithBaseType();
+        //    string json = JsonConvert.SerializeObject(value);
 
-            Assert.AreEqual("{\"Overload\":\"IList<string>\"}", json);
-        }
+        //    Assert.AreEqual("{\"Overload\":\"IList<string>\"}", json);
+        //}
 
 
         [Test]

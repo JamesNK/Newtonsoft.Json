@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Serialization
         /// <param name="assemblyName">Specifies the <see cref="Assembly"/> name of the serialized object.</param>
         /// <param name="typeName">Specifies the <see cref="System.Type"/> name of the serialized object</param>
         /// <returns>The type of the object the formatter creates a new instance of.</returns>
-        Type BindToType(string assemblyName, string typeName);
+        Type BindToType(string? assemblyName, string typeName);
 
         /// <summary>
         /// When implemented, controls the binding of a serialized object to a type.
@@ -48,6 +48,6 @@ namespace Newtonsoft.Json.Serialization
         /// <param name="serializedType">The type of the object the formatter creates a new instance of.</param>
         /// <param name="assemblyName">Specifies the <see cref="Assembly"/> name of the serialized object.</param>
         /// <param name="typeName">Specifies the <see cref="System.Type"/> name of the serialized object.</param>
-        void BindToName(Type serializedType, out string assemblyName, out string typeName);
+        void BindToName(Type serializedType, out string? assemblyName, out string? typeName);
     }
 }

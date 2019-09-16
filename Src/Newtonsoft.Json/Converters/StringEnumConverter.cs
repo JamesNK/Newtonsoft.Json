@@ -82,7 +82,7 @@ namespace Newtonsoft.Json.Converters
         /// Gets or sets the naming strategy used to resolve how enum text is written.
         /// </summary>
         /// <value>The naming strategy used to resolve how enum text is written.</value>
-        public NamingStrategy NamingStrategy { get; set; }
+        public NamingStrategy? NamingStrategy { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether integer values are allowed when serializing and deserializing.
@@ -175,7 +175,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             if (value == null)
             {
@@ -185,7 +185,7 @@ namespace Newtonsoft.Json.Converters
 
             Enum e = (Enum)value;
 
-            if (!EnumUtils.TryToString(e.GetType(), value, NamingStrategy, out string enumName))
+            if (!EnumUtils.TryToString(e.GetType(), value, NamingStrategy, out string? enumName))
             {
                 if (!AllowIntegerValues)
                 {
@@ -209,7 +209,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -228,14 +228,14 @@ namespace Newtonsoft.Json.Converters
             {
                 if (reader.TokenType == JsonToken.String)
                 {
-                    string enumText = reader.Value.ToString();
+                    string? enumText = reader.Value?.ToString();
 
-                    if (enumText == string.Empty && isNullable)
+                    if (string.IsNullOrEmpty(enumText) && isNullable)
                     {
                         return null;
                     }
 
-                    return EnumUtils.ParseEnum(t, NamingStrategy, enumText, !AllowIntegerValues);
+                    return EnumUtils.ParseEnum(t, NamingStrategy, enumText!, !AllowIntegerValues);
                 }
 
                 if (reader.TokenType == JsonToken.Integer)

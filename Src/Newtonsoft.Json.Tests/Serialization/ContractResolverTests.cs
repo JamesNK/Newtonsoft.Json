@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -725,6 +726,17 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 return Prop4Specified?.Invoke() ?? false;
             }
+        }
+
+        [Test]
+        public void NonGenericDictionary_KeyValueTypes()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonDictionaryContract c = (JsonDictionaryContract)resolver.ResolveContract(typeof(IDictionary));
+
+            Assert.IsNull(c.DictionaryKeyType);
+            Assert.IsNull(c.DictionaryValueType);
         }
 
         [Test]

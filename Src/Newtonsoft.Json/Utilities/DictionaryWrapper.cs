@@ -27,11 +27,13 @@ using System;
 using System.Collections.Generic;
 using System.Collections;
 using System.Threading;
+using System.Diagnostics;
+using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
-
 #endif
 
 namespace Newtonsoft.Json.Utilities
@@ -44,12 +46,12 @@ namespace Newtonsoft.Json.Utilities
 
     internal class DictionaryWrapper<TKey, TValue> : IDictionary<TKey, TValue>, IWrappedDictionary
     {
-        private readonly IDictionary _dictionary;
-        private readonly IDictionary<TKey, TValue> _genericDictionary;
+        private readonly IDictionary? _dictionary;
+        private readonly IDictionary<TKey, TValue>? _genericDictionary;
 #if HAVE_READ_ONLY_COLLECTIONS
-        private readonly IReadOnlyDictionary<TKey, TValue> _readOnlyDictionary;
+        private readonly IReadOnlyDictionary<TKey, TValue>? _readOnlyDictionary;
 #endif
-        private object _syncRoot;
+        private object? _syncRoot;
 
         public DictionaryWrapper(IDictionary dictionary)
         {
@@ -73,6 +75,15 @@ namespace Newtonsoft.Json.Utilities
             _readOnlyDictionary = dictionary;
         }
 #endif
+
+        internal IDictionary<TKey, TValue> GenericDictionary
+        {
+            get
+            {
+                Debug.Assert(_genericDictionary != null);
+                return _genericDictionary;
+            }
+        }
 
         public void Add(TKey key, TValue value)
         {
@@ -104,7 +115,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                return _genericDictionary.ContainsKey(key);
+                return GenericDictionary.ContainsKey(key);
             }
         }
 
@@ -124,7 +135,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    return _genericDictionary.Keys;
+                    return GenericDictionary.Keys;
                 }
             }
         }
@@ -151,17 +162,19 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                return _genericDictionary.Remove(key);
+                return GenericDictionary.Remove(key);
             }
         }
 
-        public bool TryGetValue(TKey key, out TValue value)
+        public bool TryGetValue(TKey key, [MaybeNull]out TValue value)
         {
             if (_dictionary != null)
             {
                 if (!_dictionary.Contains(key))
                 {
+#pragma warning disable CS8653 // A default expression introduces a null value for a type parameter.
                     value = default;
+#pragma warning restore CS8653 // A default expression introduces a null value for a type parameter.
                     return false;
                 }
                 else
@@ -178,7 +191,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                return _genericDictionary.TryGetValue(key, out value);
+                return GenericDictionary.TryGetValue(key, out value);
             }
         }
 
@@ -198,7 +211,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    return _genericDictionary.Values;
+                    return GenericDictionary.Values;
                 }
             }
         }
@@ -219,7 +232,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    return _genericDictionary[key];
+                    return GenericDictionary[key];
                 }
             }
             set
@@ -236,7 +249,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    _genericDictionary[key] = value;
+                    GenericDictionary[key] = value;
                 }
             }
         }
@@ -273,7 +286,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                _genericDictionary.Clear();
+                GenericDictionary.Clear();
             }
         }
 
@@ -291,7 +304,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                return _genericDictionary.Contains(item);
+                return GenericDictionary.Contains(item);
             }
         }
 
@@ -322,7 +335,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                _genericDictionary.CopyTo(array, arrayIndex);
+                GenericDictionary.CopyTo(array, arrayIndex);
             }
         }
 
@@ -342,7 +355,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    return _genericDictionary.Count;
+                    return GenericDictionary.Count;
                 }
             }
         }
@@ -363,7 +376,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    return _genericDictionary.IsReadOnly;
+                    return GenericDictionary.IsReadOnly;
                 }
             }
         }
@@ -399,7 +412,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                return _genericDictionary.Remove(item);
+                return GenericDictionary.Remove(item);
             }
         }
 
@@ -417,7 +430,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                return _genericDictionary.GetEnumerator();
+                return GenericDictionary.GetEnumerator();
             }
         }
 
@@ -440,11 +453,11 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                _genericDictionary.Add((TKey)key, (TValue)value);
+                GenericDictionary.Add((TKey)key, (TValue)value);
             }
         }
 
-        object IDictionary.this[object key]
+        object? IDictionary.this[object key]
         {
             get
             {
@@ -460,7 +473,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    return _genericDictionary[(TKey)key];
+                    return GenericDictionary[(TKey)key];
                 }
             }
             set
@@ -477,7 +490,9 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    _genericDictionary[(TKey)key] = (TValue)value;
+#pragma warning disable CS8601 // Possible null reference assignment.
+                    GenericDictionary[(TKey)key] = (TValue)value;
+#pragma warning restore CS8601 // Possible null reference assignment.
                 }
             }
         }
@@ -525,7 +540,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                return new DictionaryEnumerator<TKey, TValue>(_genericDictionary.GetEnumerator());
+                return new DictionaryEnumerator<TKey, TValue>(GenericDictionary.GetEnumerator());
             }
         }
 
@@ -543,7 +558,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                return _dictionary.Contains(key);
+                return _dictionary!.Contains(key);
             }
         }
 
@@ -563,7 +578,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    return _dictionary.IsFixedSize;
+                    return _dictionary!.IsFixedSize;
                 }
             }
         }
@@ -584,7 +599,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    return _dictionary.Keys;
+                    return _dictionary!.Keys;
                 }
             }
         }
@@ -603,7 +618,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                _genericDictionary.Remove((TKey)key);
+                GenericDictionary.Remove((TKey)key);
             }
         }
 
@@ -623,7 +638,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    return _dictionary.Values;
+                    return _dictionary!.Values;
                 }
             }
         }
@@ -642,7 +657,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                _genericDictionary.CopyTo((KeyValuePair<TKey, TValue>[])array, index);
+                GenericDictionary.CopyTo((KeyValuePair<TKey, TValue>[])array, index);
             }
         }
 
@@ -690,7 +705,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
                 else
                 {
-                    return _genericDictionary;
+                    return GenericDictionary;
                 }
             }
         }

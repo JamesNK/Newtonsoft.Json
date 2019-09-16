@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
+using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 #if HAVE_DYNAMIC
 using System.Dynamic;
 using System.Linq.Expressions;
@@ -47,9 +49,9 @@ namespace Newtonsoft.Json.Linq
 #endif
     {
         private JTokenType _valueType;
-        private object _value;
+        private object? _value;
 
-        internal JValue(object value, JTokenType type)
+        internal JValue(object? value, JTokenType type)
         {
             _value = value;
             _valueType = type;
@@ -152,7 +154,7 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JValue(string value)
+        public JValue(string? value)
             : this(value, JTokenType.String)
         {
         }
@@ -170,7 +172,7 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JValue(Uri value)
+        public JValue(Uri? value)
             : this(value, (value != null) ? JTokenType.Uri : JTokenType.Null)
         {
         }
@@ -188,7 +190,7 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JValue"/> class with the given value.
         /// </summary>
         /// <param name="value">The value.</param>
-        public JValue(object value)
+        public JValue(object? value)
             : this(value, GetValueType(null, value))
         {
         }
@@ -241,7 +243,7 @@ namespace Newtonsoft.Json.Linq
         }
 #endif
 
-        internal static int Compare(JTokenType valueType, object objA, object objB)
+        internal static int Compare(JTokenType valueType, object? objA, object? objB)
         {
             if (objA == objB)
             {
@@ -267,8 +269,8 @@ namespace Newtonsoft.Json.Linq
                     }
                     if (objB is BigInteger integerB)
                     {
-                        return -CompareBigInteger(integerB, objA);
-                    }
+                            return -CompareBigInteger(integerB, objA);
+                        }
 #endif
                     if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
                     {
@@ -300,7 +302,7 @@ namespace Newtonsoft.Json.Linq
                         return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
                     }
                     return CompareFloat(objA, objB);
-                }
+                    }
                 case JTokenType.Comment:
                 case JTokenType.String:
                 case JTokenType.Raw:
@@ -353,10 +355,10 @@ namespace Newtonsoft.Json.Linq
                         throw new ArgumentException("Object must be of type byte[].");
                     }
 
-                    byte[] bytesA = objA as byte[];
+                    byte[]? bytesA = objA as byte[];
                     Debug.Assert(bytesA != null);
 
-                    return MiscellaneousUtils.ByteArrayCompare(bytesA, bytesB);
+                    return MiscellaneousUtils.ByteArrayCompare(bytesA!, bytesB);
                 case JTokenType.Guid:
                     if (!(objB is Guid))
                     {
@@ -368,7 +370,7 @@ namespace Newtonsoft.Json.Linq
 
                     return guid1.CompareTo(guid2);
                 case JTokenType.Uri:
-                    Uri uri2 = objB as Uri;
+                    Uri? uri2 = objB as Uri;
                     if (uri2 == null)
                     {
                         throw new ArgumentException("Object must be of type Uri.");
@@ -407,7 +409,7 @@ namespace Newtonsoft.Json.Linq
         }
 
 #if HAVE_EXPRESSIONS
-        private static bool Operation(ExpressionType operation, object objA, object objB, out object result)
+        private static bool Operation(ExpressionType operation, object? objA, object? objB, out object? result)
         {
             if (objA is string || objB is string)
             {
@@ -564,7 +566,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>A <see cref="JValue"/> comment with the given value.</returns>
-        public static JValue CreateComment(string value)
+        public static JValue CreateComment(string? value)
         {
             return new JValue(value, JTokenType.Comment);
         }
@@ -574,7 +576,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         /// <returns>A <see cref="JValue"/> string with the given value.</returns>
-        public static JValue CreateString(string value)
+        public static JValue CreateString(string? value)
         {
             return new JValue(value, JTokenType.String);
         }
@@ -597,7 +599,7 @@ namespace Newtonsoft.Json.Linq
             return new JValue(null, JTokenType.Undefined);
         }
 
-        private static JTokenType GetValueType(JTokenType? current, object value)
+        private static JTokenType GetValueType(JTokenType? current, object? value)
         {
             if (value == null)
             {
@@ -694,13 +696,13 @@ namespace Newtonsoft.Json.Linq
         /// Gets or sets the underlying token value.
         /// </summary>
         /// <value>The underlying token value.</value>
-        public object Value
+        public object? Value
         {
             get => _value;
             set
             {
-                Type currentType = _value?.GetType();
-                Type newType = value?.GetType();
+                Type? currentType = _value?.GetType();
+                Type? newType = value?.GetType();
 
                 if (currentType != newType)
                 {
@@ -720,7 +722,7 @@ namespace Newtonsoft.Json.Linq
         {
             if (converters != null && converters.Length > 0 && _value != null)
             {
-                JsonConverter matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType());
+                JsonConverter? matchingConverter = JsonSerializer.GetMatchingConverter(converters, _value.GetType());
                 if (matchingConverter != null && matchingConverter.CanWrite)
                 {
                     matchingConverter.WriteJson(writer, _value, JsonSerializer.CreateDefault());
@@ -803,7 +805,7 @@ namespace Newtonsoft.Json.Linq
                     }
                     return;
                 case JTokenType.Bytes:
-                    writer.WriteValue((byte[])_value);
+                    writer.WriteValue((byte[]?)_value);
                     return;
                 case JTokenType.Guid:
                     writer.WriteValue((_value != null) ? (Guid?)_value : null);
@@ -812,7 +814,7 @@ namespace Newtonsoft.Json.Linq
                     writer.WriteValue((_value != null) ? (TimeSpan?)_value : null);
                     return;
                 case JTokenType.Uri:
-                    writer.WriteValue((Uri)_value);
+                    writer.WriteValue((Uri?)_value);
                     return;
             }
 
@@ -839,7 +841,7 @@ namespace Newtonsoft.Json.Linq
         /// <c>true</c> if the current object is equal to the <paramref name="other"/> parameter; otherwise, <c>false</c>.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public bool Equals(JValue other)
+        public bool Equals([AllowNull] JValue other)
         {
             if (other == null)
             {
@@ -858,7 +860,12 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public override bool Equals(object obj)
         {
-            return Equals(obj as JValue);
+            if (obj is JValue v)
+            {
+                return Equals(v);
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -880,6 +887,10 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Returns a <see cref="String"/> that represents this instance.
         /// </summary>
+        /// <remarks>
+        /// <c>ToString()</c> returns a non-JSON string value for tokens with a type of <see cref="JTokenType.String"/>.
+        /// If you want the JSON for all token types then you should use <see cref="WriteTo(JsonWriter, JsonConverter[])"/>.
+        /// </remarks>
         /// <returns>
         /// A <see cref="String"/> that represents this instance.
         /// </returns>
@@ -925,7 +936,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="String"/> that represents this instance.
         /// </returns>
-        public string ToString(string format, IFormatProvider formatProvider)
+        public string ToString(string? format, IFormatProvider formatProvider)
         {
             if (_value == null)
             {
@@ -957,7 +968,7 @@ namespace Newtonsoft.Json.Linq
 
         private class JValueDynamicProxy : DynamicProxy<JValue>
         {
-            public override bool TryConvert(JValue instance, ConvertBinder binder, out object result)
+            public override bool TryConvert(JValue instance, ConvertBinder binder, [NotNullWhen(true)]out object? result)
             {
                 if (binder.Type == typeof(JValue) || binder.Type == typeof(JToken))
                 {
@@ -965,7 +976,7 @@ namespace Newtonsoft.Json.Linq
                     return true;
                 }
 
-                object value = instance.Value;
+                object? value = instance.Value;
 
                 if (value == null)
                 {
@@ -977,9 +988,9 @@ namespace Newtonsoft.Json.Linq
                 return true;
             }
 
-            public override bool TryBinaryOperation(JValue instance, BinaryOperationBinder binder, object arg, out object result)
+            public override bool TryBinaryOperation(JValue instance, BinaryOperationBinder binder, object arg, [NotNullWhen(true)]out object? result)
             {
-                object compareValue = arg is JValue value ? value.Value : arg;
+                object? compareValue = arg is JValue value ? value.Value : arg;
 
                 switch (binder.Operation)
                 {
@@ -1031,7 +1042,7 @@ namespace Newtonsoft.Json.Linq
             }
 
             JTokenType comparisonType;
-            object otherValue;
+            object? otherValue;
             if (obj is JValue value)
             {
                 otherValue = value.Value;
@@ -1166,7 +1177,7 @@ namespace Newtonsoft.Json.Linq
             return (DateTime)this;
         }
 
-        object IConvertible.ToType(Type conversionType, IFormatProvider provider)
+        object? IConvertible.ToType(Type conversionType, IFormatProvider provider)
         {
             return ToObject(conversionType);
         }

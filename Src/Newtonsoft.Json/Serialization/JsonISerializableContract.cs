@@ -38,7 +38,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the <see cref="ISerializable"/> object constructor.
         /// </summary>
         /// <value>The <see cref="ISerializable"/> object constructor.</value>
-        public ObjectConstructor<object> ISerializableCreator { get; set; }
+        public ObjectConstructor<object>? ISerializableCreator { get; set; }
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonISerializableContract"/> class.

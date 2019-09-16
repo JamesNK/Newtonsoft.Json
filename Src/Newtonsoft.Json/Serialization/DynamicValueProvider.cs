@@ -42,8 +42,8 @@ namespace Newtonsoft.Json.Serialization
     public class DynamicValueProvider : IValueProvider
     {
         private readonly MemberInfo _memberInfo;
-        private Func<object, object> _getter;
-        private Action<object, object> _setter;
+        private Func<object, object?>? _getter;
+        private Action<object, object?>? _setter;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DynamicValueProvider"/> class.
@@ -60,7 +60,7 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <param name="target">The target to set the value on.</param>
         /// <param name="value">The value to set on the target.</param>
-        public void SetValue(object target, object value)
+        public void SetValue(object target, object? value)
         {
             try
             {
@@ -98,7 +98,7 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <param name="target">The target to get the value from.</param>
         /// <returns>The value.</returns>
-        public object GetValue(object target)
+        public object? GetValue(object target)
         {
             try
             {
