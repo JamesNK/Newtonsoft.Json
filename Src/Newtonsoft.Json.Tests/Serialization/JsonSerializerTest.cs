@@ -2790,7 +2790,7 @@ keyword such as type of business.""
                 JsonConvert.DeserializeObject<RequiredMembersClass>(json);
                 Assert.Fail();
             }
-            catch (JsonSerializationException ex)
+            catch (JsonMemberSerializationException ex)
             {
                 Assert.IsTrue(ex.Message.StartsWith("Required property 'LastName' on object of type 'RequiredMembersClass' not found in JSON. Path ''"));
             }
