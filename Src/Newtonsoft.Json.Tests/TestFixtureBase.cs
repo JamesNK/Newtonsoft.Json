@@ -407,7 +407,7 @@ namespace Newtonsoft.Json.Tests
         }
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
-            public static async Task<TException> ThrowsAsync<TException>(Func<Task> action, params string[] possibleMessages)
+        public static async Task<TException> ThrowsAsync<TException>(Func<Task> action, params string[] possibleMessages)
             where TException : Exception
         {
             try
