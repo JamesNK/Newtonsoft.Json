@@ -65,10 +65,16 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
                     MissingMemberHandling = MissingMemberHandling.Error
                 });
             }
-            catch (JsonSerializationException ex)
+            catch (JsonMemberSerializationException ex)
             {
                 Console.WriteLine(ex.Message);
                 // Could not find member 'DeletedDate' on object of type 'Account'. Path 'DeletedDate', line 4, position 23.
+                Console.WriteLine(ex.MemberErrorType);
+                // Missing
+                Console.WriteLine(ex.MemberName);
+                // DeletedDate
+                Console.WriteLine(ex.ObjectTypeName);
+                // Account
             }
             #endregion
         }

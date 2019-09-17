@@ -6152,12 +6152,15 @@ Path '', line 1, position 1.");
         public void ObjectRequiredDeserializeMissing()
         {
             string json = "{}";
-            IList<string> errors = new List<string>();
+            IList<JsonMemberSerializationException> errors = new List<JsonMemberSerializationException>();
 
             EventHandler<Newtonsoft.Json.Serialization.ErrorEventArgs> error = (s, e) =>
             {
-                errors.Add(e.ErrorContext.Error.Message);
-                e.ErrorContext.Handled = true;
+                if (e.ErrorContext.Error is JsonMemberSerializationException)
+                {
+                    errors.Add((JsonMemberSerializationException)e.ErrorContext.Error);
+                    e.ErrorContext.Handled = true;
+                }
             };
 
             var o = JsonConvert.DeserializeObject<RequiredObject>(json, new JsonSerializerSettings
@@ -6167,22 +6170,37 @@ Path '', line 1, position 1.");
 
             Assert.IsNotNull(o);
             Assert.AreEqual(4, errors.Count);
-            Assert.IsTrue(errors[0].StartsWith("Required property 'NonAttributeProperty' on object of type 'RequiredObject' not found in JSON. Path ''"));
-            Assert.IsTrue(errors[1].StartsWith("Required property 'UnsetProperty' on object of type 'RequiredObject' not found in JSON. Path ''"));
-            Assert.IsTrue(errors[2].StartsWith("Required property 'AllowNullProperty' on object of type 'RequiredObject' not found in JSON. Path ''"));
-            Assert.IsTrue(errors[3].StartsWith("Required property 'AlwaysProperty' on object of type 'RequiredObject' not found in JSON. Path ''"));
+            Assert.IsTrue(errors[0].Message.StartsWith("Required property 'NonAttributeProperty' on object of type 'RequiredObject' not found in JSON. Path ''"));
+            Assert.AreEqual(MemberSerializationError.RequiredNotFound, errors[0].MemberErrorType);
+            Assert.AreEqual("RequiredObject", errors[0].ObjectTypeName);
+            Assert.AreEqual("NonAttributeProperty", errors[0].MemberName);
+            Assert.IsTrue(errors[1].Message.StartsWith("Required property 'UnsetProperty' on object of type 'RequiredObject' not found in JSON. Path ''"));
+            Assert.AreEqual(MemberSerializationError.RequiredNotFound, errors[1].MemberErrorType);
+            Assert.AreEqual("RequiredObject", errors[1].ObjectTypeName);
+            Assert.AreEqual("UnsetProperty", errors[1].MemberName);
+            Assert.IsTrue(errors[2].Message.StartsWith("Required property 'AllowNullProperty' on object of type 'RequiredObject' not found in JSON. Path ''"));
+            Assert.AreEqual(MemberSerializationError.RequiredNotFound, errors[2].MemberErrorType);
+            Assert.AreEqual("RequiredObject", errors[2].ObjectTypeName);
+            Assert.AreEqual("AllowNullProperty", errors[2].MemberName);
+            Assert.IsTrue(errors[3].Message.StartsWith("Required property 'AlwaysProperty' on object of type 'RequiredObject' not found in JSON. Path ''"));
+            Assert.AreEqual(MemberSerializationError.RequiredNotFound, errors[3].MemberErrorType);
+            Assert.AreEqual("RequiredObject", errors[3].ObjectTypeName);
+            Assert.AreEqual("AlwaysProperty", errors[3].MemberName);
         }
 
         [Test]
         public void ObjectRequiredDeserializeNull()
         {
             string json = "{'NonAttributeProperty':null,'UnsetProperty':null,'AllowNullProperty':null,'AlwaysProperty':null}";
-            IList<string> errors = new List<string>();
+            IList<JsonMemberSerializationException> errors = new List<JsonMemberSerializationException>();
 
             EventHandler<Newtonsoft.Json.Serialization.ErrorEventArgs> error = (s, e) =>
             {
-                errors.Add(e.ErrorContext.Error.Message);
-                e.ErrorContext.Handled = true;
+                if (e.ErrorContext.Error is JsonMemberSerializationException)
+                {
+                    errors.Add((JsonMemberSerializationException)e.ErrorContext.Error);
+                    e.ErrorContext.Handled = true;
+                }
             };
 
             var o = JsonConvert.DeserializeObject<RequiredObject>(json, new JsonSerializerSettings
@@ -6192,9 +6210,18 @@ Path '', line 1, position 1.");
 
             Assert.IsNotNull(o);
             Assert.AreEqual(3, errors.Count);
-            Assert.IsTrue(errors[0].StartsWith("Required property 'NonAttributeProperty' on object of type 'RequiredObject' expects a value but got null. Path ''"));
-            Assert.IsTrue(errors[1].StartsWith("Required property 'UnsetProperty' on object of type 'RequiredObject' expects a value but got null. Path ''"));
-            Assert.IsTrue(errors[2].StartsWith("Required property 'AlwaysProperty' on object of type 'RequiredObject' expects a value but got null. Path ''"));
+            Assert.IsTrue(errors[0].Message.StartsWith("Required property 'NonAttributeProperty' on object of type 'RequiredObject' expects a value but got null. Path ''"));
+            Assert.AreEqual(MemberSerializationError.RequiredIsNull, errors[0].MemberErrorType);
+            Assert.AreEqual("RequiredObject", errors[0].ObjectTypeName);
+            Assert.AreEqual("NonAttributeProperty", errors[0].MemberName);
+            Assert.IsTrue(errors[1].Message.StartsWith("Required property 'UnsetProperty' on object of type 'RequiredObject' expects a value but got null. Path ''"));
+            Assert.AreEqual(MemberSerializationError.RequiredIsNull, errors[1].MemberErrorType);
+            Assert.AreEqual("RequiredObject", errors[1].ObjectTypeName);
+            Assert.AreEqual("UnsetProperty", errors[1].MemberName);
+            Assert.IsTrue(errors[2].Message.StartsWith("Required property 'AlwaysProperty' on object of type 'RequiredObject' expects a value but got null. Path ''"));
+            Assert.AreEqual(MemberSerializationError.RequiredIsNull, errors[2].MemberErrorType);
+            Assert.AreEqual("RequiredObject", errors[2].ObjectTypeName);
+            Assert.AreEqual("AlwaysProperty", errors[2].MemberName);
         }
 
         [Test]

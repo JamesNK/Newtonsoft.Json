@@ -206,7 +206,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void MissingMemberHandling_RootObject()
         {
-            IList<string> errors = new List<string>();
+            IList<JsonMemberSerializationException> errors = new List<JsonMemberSerializationException>();
 
             JsonSerializerSettings settings = new JsonSerializerSettings
             {
@@ -215,9 +215,11 @@ namespace Newtonsoft.Json.Tests.Serialization
                 MissingMemberHandling = MissingMemberHandling.Error,
                 Error = (sender, args) =>
                 {
-                    // A more concrete error type would be nice but we are limited by Newtonsofts library here.
-                    errors.Add(args.ErrorContext.Error.Message);
-                    args.ErrorContext.Handled = true;
+                    if (args.ErrorContext.Error is JsonMemberSerializationException)
+                    {
+                        errors.Add((JsonMemberSerializationException)args.ErrorContext.Error);
+                        args.ErrorContext.Handled = true;
+                    }
                 }
             };
 
@@ -226,13 +228,16 @@ namespace Newtonsoft.Json.Tests.Serialization
             JsonConvert.PopulateObject(@"{nameERROR:{""first"":""hi""}}", p, settings);
 
             Assert.AreEqual(1, errors.Count);
-            Assert.AreEqual("Could not find member 'nameERROR' on object of type 'Person'. Path 'nameERROR', line 1, position 11.", errors[0]);
+            Assert.AreEqual("Could not find member 'nameERROR' on object of type 'Person'. Path 'nameERROR', line 1, position 11.", errors[0].Message);
+            Assert.AreEqual(MemberSerializationError.Missing, errors[0].MemberErrorType);
+            Assert.AreEqual("nameERROR", errors[0].MemberName);
+            Assert.AreEqual("Person", errors[0].ObjectTypeName);
         }
 
         [Test]
         public void MissingMemberHandling_InnerObject()
         {
-            IList<string> errors = new List<string>();
+            IList<JsonMemberSerializationException> errors = new List<JsonMemberSerializationException>();
 
             JsonSerializerSettings settings = new JsonSerializerSettings
             {
@@ -241,9 +246,11 @@ namespace Newtonsoft.Json.Tests.Serialization
                 MissingMemberHandling = MissingMemberHandling.Error,
                 Error = (sender, args) =>
                 {
-                    // A more concrete error type would be nice but we are limited by Newtonsofts library here.
-                    errors.Add(args.ErrorContext.Error.Message);
-                    args.ErrorContext.Handled = true;
+                    if (args.ErrorContext.Error is JsonMemberSerializationException)
+                    {
+                        errors.Add((JsonMemberSerializationException)args.ErrorContext.Error);
+                        args.ErrorContext.Handled = true;
+                    }
                 }
             };
 
@@ -252,7 +259,10 @@ namespace Newtonsoft.Json.Tests.Serialization
             JsonConvert.PopulateObject(@"{name:{""firstERROR"":""hi""}}", p, settings);
 
             Assert.AreEqual(1, errors.Count);
-            Assert.AreEqual("Could not find member 'firstERROR' on object of type 'Name'. Path 'name.firstERROR', line 1, position 20.", errors[0]);
+            Assert.AreEqual("Could not find member 'firstERROR' on object of type 'Name'. Path 'name.firstERROR', line 1, position 20.", errors[0].Message);
+            Assert.AreEqual(MemberSerializationError.Missing, errors[0].MemberErrorType);
+            Assert.AreEqual("firstERROR", errors[0].MemberName);
+            Assert.AreEqual("Name", errors[0].ObjectTypeName);
         }
 
         [JsonObject(MissingMemberHandling = MissingMemberHandling.Ignore)]
