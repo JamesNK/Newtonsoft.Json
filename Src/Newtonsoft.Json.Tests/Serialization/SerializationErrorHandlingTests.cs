@@ -507,8 +507,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             serializer.Deserialize(new JsonTextReader(new StringReader(json)), typeof(MyTypeWithRequiredMembers));
 
             Assert.AreEqual(2, errors.Count);
-            Assert.IsTrue(errors[0].StartsWith(" - Required1 - Required property 'Required1' not found in JSON. Path '', line 1, position 2."));
-            Assert.IsTrue(errors[1].StartsWith(" - Required2 - Required property 'Required2' not found in JSON. Path '', line 1, position 2."));
+            Assert.IsTrue(errors[0].StartsWith(" - Required1 - Required property 'Required1' on object of type 'MyTypeWithRequiredMembers' not found in JSON. Path '', line 1, position 2."));
+            Assert.IsTrue(errors[1].StartsWith(" - Required2 - Required property 'Required2' on object of type 'MyTypeWithRequiredMembers' not found in JSON. Path '', line 1, position 2."));
         }
 
         [Test]

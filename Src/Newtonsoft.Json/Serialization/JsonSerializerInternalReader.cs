@@ -2240,7 +2240,7 @@ namespace Newtonsoft.Json.Serialization
 
                             if ((contract.MissingMemberHandling ?? Serializer._missingMemberHandling) == MissingMemberHandling.Error)
                             {
-                                throw JsonSerializationException.Create(reader, "Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, objectType.Name));
+                                throw JsonMemberSerializationException.Create(reader, MemberSerializationError.Missing, memberName, objectType.Name, "Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, memberName, objectType.Name));
                             }
                         }
 
@@ -2359,7 +2359,7 @@ namespace Newtonsoft.Json.Serialization
 
                                 if ((contract.MissingMemberHandling ?? Serializer._missingMemberHandling) == MissingMemberHandling.Error)
                                 {
-                                    throw JsonSerializationException.Create(reader, "Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, propertyName, contract.UnderlyingType.Name));
+                                    throw JsonMemberSerializationException.Create(reader, MemberSerializationError.Missing, propertyName, contract.UnderlyingType.Name, "Could not find member '{0}' on object of type '{1}'".FormatWith(CultureInfo.InvariantCulture, propertyName, contract.UnderlyingType.Name));
                                 }
 
                                 if (!reader.Read())
@@ -2530,7 +2530,7 @@ namespace Newtonsoft.Json.Serialization
                         case PropertyPresence.None:
                             if (resolvedRequired == Required.AllowNull || resolvedRequired == Required.Always)
                             {
-                                throw JsonSerializationException.Create(reader, "Required property '{0}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+                                throw JsonMemberSerializationException.Create(reader, MemberSerializationError.RequiredNotFound, property.PropertyName, contract.UnderlyingType.Name, "Required property '{0}' on object of type '{1}' not found in JSON.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, contract.UnderlyingType.Name));
                             }
 
                             if (setDefaultValue && !property.Ignored)
@@ -2549,11 +2549,11 @@ namespace Newtonsoft.Json.Serialization
                         case PropertyPresence.Null:
                             if (resolvedRequired == Required.Always)
                             {
-                                throw JsonSerializationException.Create(reader, "Required property '{0}' expects a value but got null.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+                                throw JsonMemberSerializationException.Create(reader, MemberSerializationError.RequiredIsNull, property.PropertyName, contract.UnderlyingType.Name, "Required property '{0}' on object of type '{1}' expects a value but got null.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, contract.UnderlyingType.Name));
                             }
                             if (resolvedRequired == Required.DisallowNull)
                             {
-                                throw JsonSerializationException.Create(reader, "Required property '{0}' expects a non-null value.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+                                throw JsonMemberSerializationException.Create(reader, MemberSerializationError.RequiredIsNull, property.PropertyName, contract.UnderlyingType.Name, "Required property '{0}' on object of type '{1}' expects a non-null value.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName, contract.UnderlyingType.Name));
                             }
                             break;
                     }

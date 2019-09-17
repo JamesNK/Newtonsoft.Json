@@ -366,7 +366,7 @@ namespace Newtonsoft.Json.Tests
 
     public static class ExceptionAssert
     {
-        public static TException Throws<TException>(Action action, params string[] possibleMessages)
+        public static TException ValidateThrows<TException>(Action action, Action<TException> exceptionValidationAction, params string[] possibleMessages)
             where TException : Exception
         {
             try
@@ -378,6 +378,8 @@ namespace Newtonsoft.Json.Tests
             }
             catch (TException ex)
             {
+                exceptionValidationAction?.Invoke(ex);
+
                 if (possibleMessages == null || possibleMessages.Length == 0)
                 {
                     return ex;
@@ -396,6 +398,12 @@ namespace Newtonsoft.Json.Tests
             {
                 throw new Exception(string.Format("Exception of type {0} expected; got exception of type {1}.", typeof(TException).Name, ex.GetType().Name), ex);
             }
+        }
+
+        public static TException Throws<TException>(Action action, params string[] possibleMessages)
+            where TException : Exception
+        {
+            return ValidateThrows<TException>(action, null, possibleMessages);
         }
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
