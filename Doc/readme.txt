@@ -52,6 +52,8 @@ Json.NET has different libraries for the various .NET Framework versions.
 -netstandard2.0:
   .NET Standard 2.0
 
+-netstandard2.1:
+  .NET Standard 2.1
 
 Notes:
 

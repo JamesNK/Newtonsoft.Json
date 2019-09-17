@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
+#if !(DNXCORE50 || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -47,7 +47,7 @@ namespace Newtonsoft.Json.Tests.Issues
     [TestFixture]
     public class Issue1327 : TestFixtureBase
     {
-#if !PORTABLE || NETSTANDARD2_0
+#if !PORTABLE || NETSTANDARD2_0 || NETSTANDARD2_1
         public class PersonWithXmlNode
         {
             public XmlNode TestXml { get; set; }
@@ -71,7 +71,7 @@ namespace Newtonsoft.Json.Tests.Issues
         }
 #endif
 
-#if !PORTABLE || NETSTANDARD2_0
+#if !PORTABLE || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void Test_XmlNode()
         {

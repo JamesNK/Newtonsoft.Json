@@ -36,7 +36,7 @@ using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 using NUnit.Framework;
 #endif
 using System.IO;
-#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0 || NETSTANDARD2_1 || NETSTANDARD2_1
 using System.Numerics;
 #endif
 using Newtonsoft.Json.Linq;
@@ -757,7 +757,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(1d, await reader.ReadAsDoubleAsync());
         }
 
-#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public async Task ReadAsBoolean_BigInteger_SuccessAsync()
         {

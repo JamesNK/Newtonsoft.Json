@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class JObjectTests : TestFixtureBase
     {
-#if !(NET35 || NET20 || PORTABLE40) || NETSTANDARD2_0
+#if !(NET35 || NET20 || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void EmbedJValueStringInNewJObject()
         {
@@ -743,7 +743,7 @@ Parameter name: arrayIndex",
             Assert.AreEqual(p4, l[1]);
         }
 
-#if !(NET20 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(NET20 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void PropertyChanging()
         {
@@ -1286,7 +1286,7 @@ Parameter name: arrayIndex",
             }, "Can not add property Test3 to Newtonsoft.Json.Linq.JObject. Property with the same name already exists on object.");
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void IBindingListSortDirection()
         {
@@ -1481,7 +1481,7 @@ Parameter name: arrayIndex",
         }
 #endif
 
-#if !(NET20 || NET35 || PORTABLE40) || NETSTANDARD2_0
+#if !(NET20 || NET35 || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void CollectionChanged()
         {
@@ -1658,7 +1658,7 @@ Parameter name: arrayIndex",
             Assert.AreEqual("Name2", value);
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void WriteObjectNullDBNullValue()
         {
@@ -1770,7 +1770,7 @@ Parameter name: arrayIndex",
             }, "Unexpected end of content while loading JObject. Path 'short.error.code', line 6, position 14.");
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void GetProperties()
         {
@@ -2095,7 +2095,7 @@ Parameter name: arrayIndex",
                 "Additional text encountered after finished reading JSON content: [. Path '', line 3, position 0.");
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void GetPropertyOwner_ReturnsJObject()
         {

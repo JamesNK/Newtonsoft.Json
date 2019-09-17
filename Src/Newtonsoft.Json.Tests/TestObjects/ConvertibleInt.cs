@@ -27,7 +27,7 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0 || NETSTANDARD2_1
     public struct ConvertibleInt : IConvertible
     {
         private readonly int _value;

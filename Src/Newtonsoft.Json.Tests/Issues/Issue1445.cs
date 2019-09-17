@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(PORTABLE) || NETSTANDARD2_0
+#if !(PORTABLE) || NETSTANDARD2_0 || NETSTANDARD2_1
 using System;
 using System.Data;
 using System.Linq;

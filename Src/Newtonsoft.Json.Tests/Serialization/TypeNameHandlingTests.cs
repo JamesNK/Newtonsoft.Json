@@ -28,7 +28,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
-#if !(PORTABLE || PORTABLE40) || NETSTANDARD2_0
+#if !(PORTABLE || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
 using System.Collections.ObjectModel;
 #if !(NET35 || NET20)
 using System.Dynamic;
@@ -1335,7 +1335,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             CollectionAssert.AreEquivalent(data, d);
         }
 
-#if !(DNXCORE50) || NETSTANDARD2_0
+#if !(DNXCORE50) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void ISerializableTypeNameHandlingTest()
         {
@@ -1875,7 +1875,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-#if !(DNXCORE50) || NETSTANDARD2_0
+#if !(DNXCORE50) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void SerializeDeserialize_DictionaryContextContainsGuid_DeserializesItemAsGuid()
         {
@@ -2304,7 +2304,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public string SomeProperty { get; set; }
     }
 
-#if !(DNXCORE50) || NETSTANDARD2_0
+#if !(DNXCORE50) || NETSTANDARD2_0 || NETSTANDARD2_1
     public class ParentParent
     {
         [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto)]
@@ -2372,7 +2372,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public int Quantity { get; set; }
     }
 
-#if !(DNXCORE50) || NETSTANDARD2_0
+#if !(DNXCORE50) || NETSTANDARD2_0 || NETSTANDARD2_1
     public class SerializableWrapper
     {
         public object Content { get; set; }

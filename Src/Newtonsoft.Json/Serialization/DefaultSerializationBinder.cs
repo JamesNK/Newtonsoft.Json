@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Serialization
                 {
                     // if generic type, try manually parsing the type arguments for the case of dynamically loaded assemblies
                     // example generic typeName format: System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
-                    if (typeName.IndexOf('`') >= 0)
+                    if (typeName.IndexOf("`", StringComparison.CurrentCulture) >= 0)
                     {
                         try
                         {
@@ -127,6 +127,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1307:SpecifyStringComparison")]
         private Type? GetGenericTypeFromTypeName(string typeName, Assembly assembly)
         {
             Type? type = null;

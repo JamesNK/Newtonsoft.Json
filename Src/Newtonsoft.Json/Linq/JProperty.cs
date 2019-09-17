@@ -35,6 +35,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents a JSON property.
     /// </summary>
+    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1307:SpecifyStringComparison")]
     public partial class JProperty : JContainer
     {
         #region JPropertyList
@@ -351,9 +352,11 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1307:SpecifyStringComparison")]
         internal override int GetDeepHashCode()
         {
-            return _name.GetHashCode() ^ (Value?.GetDeepHashCode() ?? 0);
+            var a = _name.GetHashCode();
+            return a ^ (Value?.GetDeepHashCode() ?? 0);
         }
 
         /// <summary>

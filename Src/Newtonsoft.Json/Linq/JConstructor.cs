@@ -200,6 +200,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1307:SpecifyStringComparison")]
         internal override int GetDeepHashCode()
         {
             return (_name?.GetHashCode() ?? 0) ^ ContentsHashCode();

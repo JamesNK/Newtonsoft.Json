@@ -24,11 +24,11 @@
 #endregion
 
 using System;
-#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NETSTANDARD2_1
 using System.Buffers;
 #endif
 using System.Collections.Generic;
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
 using System.Data;
 #endif
 using System.IO;
@@ -596,7 +596,7 @@ namespace Newtonsoft.Json.Tests
 }", json);
         }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void ArrayPooling()
         {
@@ -614,7 +614,7 @@ namespace Newtonsoft.Json.Tests
         }
 #endif
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void SerializeDataTable()
         {
@@ -681,7 +681,7 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(1, newtonsoftPackages.Count);
         }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public async Task AsyncDemo()
         {
@@ -705,7 +705,7 @@ namespace Newtonsoft.Json.Tests
 #endif
     }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NETSTANDARD2_1
     public class JsonArrayPool : IArrayPool<char>
     {
         public static readonly JsonArrayPool Instance = new JsonArrayPool();

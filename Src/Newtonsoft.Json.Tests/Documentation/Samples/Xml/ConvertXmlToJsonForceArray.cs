@@ -36,7 +36,7 @@ using NUnit.Framework;
 
 #endif
 
-#if !(NET20 || DNXCORE50 || PORTABLE || PORTABLE40) || NETSTANDARD2_0
+#if !(NET20 || DNXCORE50 || PORTABLE || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Xml
 {

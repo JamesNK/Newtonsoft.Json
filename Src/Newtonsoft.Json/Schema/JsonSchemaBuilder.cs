@@ -40,6 +40,7 @@ using Newtonsoft.Json.Linq;
 namespace Newtonsoft.Json.Schema
 {
     [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
+    //[System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1307:SpecifyStringComparison")]
     internal class JsonSchemaBuilder
     {
         private readonly IList<JsonSchema> _stack;
@@ -87,6 +88,7 @@ namespace Newtonsoft.Json.Schema
             return schema;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1307:SpecifyStringComparison")]
         private string UnescapeReference(string reference)
         {
             return Uri.UnescapeDataString(reference).Replace("~1", "/").Replace("~0", "~");
@@ -205,6 +207,7 @@ namespace Newtonsoft.Json.Schema
             return schema;
         }
 
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Globalization", "CA1307:SpecifyStringComparison")]
         private JsonSchema BuildSchema(JToken token)
         {
             if (!(token is JObject schemaObject))

@@ -39,7 +39,7 @@ using NUnit.Framework;
 
 #endif
 
-#if !(DNXCORE50 || NET20) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(DNXCORE50 || NET20) || NETSTANDARD1_3 || NETSTANDARD2_0 || NETSTANDARD2_1
 
 namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
 {
