@@ -351,7 +351,7 @@ namespace Newtonsoft.Json.Serialization
 
         private static bool CoerceEmptyStringToNull(Type? objectType, JsonContract? contract, string s)
         {
-            return string.IsNullOrEmpty(s) && objectType != null && objectType != typeof(string) && objectType != typeof(object) && contract != null && contract.IsNullable;
+            return StringUtils.IsNullOrEmpty(s) && objectType != null && objectType != typeof(string) && objectType != typeof(object) && contract != null && contract.IsNullable;
         }
 
         internal string GetExpectedDescription(JsonContract contract)
@@ -464,8 +464,8 @@ namespace Newtonsoft.Json.Serialization
                 return CreateJObject(reader);
             }
 
-            Debug.Assert(resolvedObjectType != null);
-            Debug.Assert(contract != null);
+            MiscellaneousUtils.Assert(resolvedObjectType != null);
+            MiscellaneousUtils.Assert(contract != null);
 
             switch (contract.ContractType)
             {
@@ -840,8 +840,8 @@ namespace Newtonsoft.Json.Serialization
                 return CreateJToken(reader, contract);
             }
 
-            Debug.Assert(objectType != null);
-            Debug.Assert(contract != null);
+            MiscellaneousUtils.Assert(objectType != null);
+            MiscellaneousUtils.Assert(contract != null);
 
             JsonArrayContract arrayContract = EnsureArrayContract(reader, objectType, contract);
 
@@ -936,7 +936,7 @@ namespace Newtonsoft.Json.Serialization
                 return value;
             }
 
-            Debug.Assert(contract != null);
+            MiscellaneousUtils.Assert(contract != null);
             Type? valueType = ReflectionUtils.GetObjectType(value);
 
             // type of value and type of target don't match

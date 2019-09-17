@@ -307,7 +307,7 @@ namespace Newtonsoft.Json.Serialization
         internal void WritePropertyName(JsonWriter writer)
         {
             string? propertyName = PropertyName;
-            Debug.Assert(propertyName != null);
+            MiscellaneousUtils.Assert(propertyName != null);
 
             if (_skipPropertyNameEscape)
             {

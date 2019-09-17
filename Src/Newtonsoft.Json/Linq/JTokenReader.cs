@@ -315,9 +315,9 @@ namespace Newtonsoft.Json.Linq
                     _initialPath = _root.Path;
                 }
 
-                if (!string.IsNullOrEmpty(_initialPath))
+                if (!StringUtils.IsNullOrEmpty(_initialPath))
                 {
-                    if (string.IsNullOrEmpty(path))
+                    if (StringUtils.IsNullOrEmpty(path))
                     {
                         return _initialPath;
                     }

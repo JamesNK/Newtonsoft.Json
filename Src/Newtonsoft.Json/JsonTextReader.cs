@@ -138,7 +138,7 @@ namespace Newtonsoft.Json
 
         private void SetNewLine(bool hasNextChar)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             if (hasNextChar && _chars[_charPos] == StringUtils.LineFeed)
             {
@@ -252,7 +252,7 @@ namespace Newtonsoft.Json
 
         private void ShiftBufferIfNeeded()
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             // once in the last 10% of the buffer, or buffer is already very large then
             // shift the remaining content to the start to avoid unnecessarily increasing
@@ -280,7 +280,7 @@ namespace Newtonsoft.Json
 
         private void PrepareBufferForReadData(bool append, int charsRequired)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             // char buffer is full
             if (_charsUsed + charsRequired >= _chars.Length - 1)
@@ -345,7 +345,7 @@ namespace Newtonsoft.Json
             }
 
             PrepareBufferForReadData(append, charsRequired);
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             int attemptCharReadCount = _chars.Length - _charsUsed - 1;
 
@@ -414,7 +414,7 @@ namespace Newtonsoft.Json
         public override bool Read()
         {
             EnsureBuffer();
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             while (true)
             {
@@ -497,7 +497,7 @@ namespace Newtonsoft.Json
         public override byte[]? ReadAsBytes()
         {
             EnsureBuffer();
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             bool isWrapped = false;
 
@@ -603,7 +603,7 @@ namespace Newtonsoft.Json
         private object? ReadStringValue(ReadType readType)
         {
             EnsureBuffer();
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             switch (_currentState)
             {
@@ -770,7 +770,7 @@ namespace Newtonsoft.Json
         public override bool? ReadAsBoolean()
         {
             EnsureBuffer();
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             switch (_currentState)
             {
@@ -908,7 +908,7 @@ namespace Newtonsoft.Json
         private object? ReadNumberValue(ReadType readType)
         {
             EnsureBuffer();
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             switch (_currentState)
             {
@@ -1062,7 +1062,7 @@ namespace Newtonsoft.Json
 
         private void HandleNull()
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             if (EnsureChars(1, true))
             {
@@ -1084,7 +1084,7 @@ namespace Newtonsoft.Json
 
         private void ReadFinished()
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             if (EnsureChars(0, false))
             {
@@ -1135,7 +1135,7 @@ namespace Newtonsoft.Json
 
         private void ReadStringIntoBuffer(char quote)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             int charPos = _charPos;
             int initialPosition = _charPos;
@@ -1290,7 +1290,7 @@ namespace Newtonsoft.Json
 
         private void FinishReadStringIntoBuffer(int charPos, int initialPosition, int lastWritePosition)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             if (initialPosition == lastWritePosition)
             {
@@ -1313,7 +1313,7 @@ namespace Newtonsoft.Json
 
         private void WriteCharToBuffer(char writeChar, int lastWritePosition, int writeToPosition)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             if (writeToPosition > lastWritePosition)
             {
@@ -1325,7 +1325,7 @@ namespace Newtonsoft.Json
 
         private char ConvertUnicode(bool enoughChars)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             if (enoughChars)
             {
@@ -1353,7 +1353,7 @@ namespace Newtonsoft.Json
 
         private void ReadNumberIntoBuffer()
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             int charPos = _charPos;
 
@@ -1439,7 +1439,7 @@ namespace Newtonsoft.Json
 
         private bool ParsePostValue(bool ignoreComments)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             while (true)
             {
@@ -1521,7 +1521,7 @@ namespace Newtonsoft.Json
 
         private bool ParseObject()
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             while (true)
             {
@@ -1577,7 +1577,7 @@ namespace Newtonsoft.Json
 
         private bool ParseProperty()
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             char firstChar = _chars[_charPos];
             char quoteChar;
@@ -1640,7 +1640,7 @@ namespace Newtonsoft.Json
 
         private void ParseUnquotedProperty()
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             int initialPosition = _charPos;
 
@@ -1673,7 +1673,7 @@ namespace Newtonsoft.Json
 
         private bool ReadUnquotedPropertyReportIfDone(char currentChar, int initialPosition)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             if (ValidIdentifierChar(currentChar))
             {
@@ -1692,7 +1692,7 @@ namespace Newtonsoft.Json
 
         private bool ParseValue()
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             while (true)
             {
@@ -1834,7 +1834,7 @@ namespace Newtonsoft.Json
 
         private void EatWhitespace()
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             while (true)
             {
@@ -1877,7 +1877,7 @@ namespace Newtonsoft.Json
 
         private void ParseConstructor()
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             if (MatchValueWithTrailingSeparator("new"))
             {
@@ -1963,7 +1963,7 @@ namespace Newtonsoft.Json
         private void ParseNumber(ReadType readType)
         {
             ShiftBufferIfNeeded();
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             char firstChar = _chars[_charPos];
             int initialPosition = _charPos;
@@ -1975,7 +1975,7 @@ namespace Newtonsoft.Json
 
         private void ParseReadNumber(ReadType readType, char firstChar, int initialPosition)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             // set state to PostValue now so that if there is an error parsing the number then the reader can continue
             SetPostValueState(true);
@@ -2257,7 +2257,7 @@ namespace Newtonsoft.Json
 
         private void ParseComment(bool setToken)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             // should have already parsed / character before reaching this method
             _charPos++;
@@ -2364,7 +2364,7 @@ namespace Newtonsoft.Json
 
         private bool MatchValue(bool enoughChars, string value)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             if (!enoughChars)
             {
@@ -2388,7 +2388,7 @@ namespace Newtonsoft.Json
 
         private bool MatchValueWithTrailingSeparator(string value)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             // will match value and then move to the next character, checking that it is a separator character
             bool match = MatchValue(value);
@@ -2408,7 +2408,7 @@ namespace Newtonsoft.Json
 
         private bool IsSeparator(char c)
         {
-            Debug.Assert(_chars != null);
+            MiscellaneousUtils.Assert(_chars != null);
 
             switch (c)
             {

@@ -445,7 +445,7 @@ namespace Newtonsoft.Json
 
         internal int? ReadInt32String(string? s)
         {
-            if (string.IsNullOrEmpty(s))
+            if (StringUtils.IsNullOrEmpty(s))
             {
                 SetToken(JsonToken.Null, null, false);
                 return null;
@@ -656,7 +656,7 @@ namespace Newtonsoft.Json
 
         internal double? ReadDoubleString(string? s)
         {
-            if (string.IsNullOrEmpty(s))
+            if (StringUtils.IsNullOrEmpty(s))
             {
                 SetToken(JsonToken.Null, null, false);
                 return null;
@@ -715,7 +715,7 @@ namespace Newtonsoft.Json
 
         internal bool? ReadBooleanString(string? s)
         {
-            if (string.IsNullOrEmpty(s))
+            if (StringUtils.IsNullOrEmpty(s))
             {
                 SetToken(JsonToken.Null, null, false);
                 return null;
@@ -786,7 +786,7 @@ namespace Newtonsoft.Json
 
         internal decimal? ReadDecimalString(string? s)
         {
-            if (string.IsNullOrEmpty(s))
+            if (StringUtils.IsNullOrEmpty(s))
             {
                 SetToken(JsonToken.Null, null, false);
                 return null;
@@ -840,7 +840,7 @@ namespace Newtonsoft.Json
 
         internal DateTime? ReadDateTimeString(string? s)
         {
-            if (string.IsNullOrEmpty(s))
+            if (StringUtils.IsNullOrEmpty(s))
             {
                 SetToken(JsonToken.Null, null, false);
                 return null;
@@ -895,7 +895,7 @@ namespace Newtonsoft.Json
 
         internal DateTimeOffset? ReadDateTimeOffsetString(string? s)
         {
-            if (string.IsNullOrEmpty(s))
+            if (StringUtils.IsNullOrEmpty(s))
             {
                 SetToken(JsonToken.Null, null, false);
                 return null;

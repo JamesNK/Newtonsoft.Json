@@ -273,7 +273,7 @@ namespace Newtonsoft.Json.Serialization
         {
             if (_genericWrapperCreator == null)
             {
-                Debug.Assert(_genericCollectionDefinitionType != null);
+                MiscellaneousUtils.Assert(_genericCollectionDefinitionType != null);
 
                 _genericWrapperType = typeof(CollectionWrapper<>).MakeGenericType(CollectionItemType);
 

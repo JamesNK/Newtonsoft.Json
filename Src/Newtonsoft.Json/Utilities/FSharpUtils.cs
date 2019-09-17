@@ -94,7 +94,7 @@ namespace Newtonsoft.Json.Utilities
         {
             get
             {
-                Debug.Assert(_instance != null);
+                MiscellaneousUtils.Assert(_instance != null);
                 return _instance;
             }
         }
