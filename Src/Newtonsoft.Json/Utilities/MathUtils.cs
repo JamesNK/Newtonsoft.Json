@@ -1,4 +1,5 @@
 #region License
+
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -21,11 +22,10 @@
 // WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
-#endregion
+
+#endregion License
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -33,88 +33,7 @@ namespace Newtonsoft.Json.Utilities
     {
         public static int IntLength(ulong i)
         {
-            if (i < 10000000000)
-            {
-                if (i < 10)
-                {
-                    return 1;
-                }
-                if (i < 100)
-                {
-                    return 2;
-                }
-                if (i < 1000)
-                {
-                    return 3;
-                }
-                if (i < 10000)
-                {
-                    return 4;
-                }
-                if (i < 100000)
-                {
-                    return 5;
-                }
-                if (i < 1000000)
-                {
-                    return 6;
-                }
-                if (i < 10000000)
-                {
-                    return 7;
-                }
-                if (i < 100000000)
-                {
-                    return 8;
-                }
-                if (i < 1000000000)
-                {
-                    return 9;
-                }
-
-                return 10;
-            }
-            else
-            {
-                if (i < 100000000000)
-                {
-                    return 11;
-                }
-                if (i < 1000000000000)
-                {
-                    return 12;
-                }
-                if (i < 10000000000000)
-                {
-                    return 13;
-                }
-                if (i < 100000000000000)
-                {
-                    return 14;
-                }
-                if (i < 1000000000000000)
-                {
-                    return 15;
-                }
-                if (i < 10000000000000000)
-                {
-                    return 16;
-                }
-                if (i < 100000000000000000)
-                {
-                    return 17;
-                }
-                if (i < 1000000000000000000)
-                {
-                    return 18;
-                }
-                if (i < 10000000000000000000)
-                {
-                    return 19;
-                }
-
-                return 20;
-            }
+            return 1 + (int)Math.Floor(Math.Log10(i));
         }
 
         public static char IntToHex(int n)
