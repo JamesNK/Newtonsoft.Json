@@ -123,6 +123,29 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void ParseAndToStringWithFloatingNumbersAsDouble()
+        {
+            JObject o = (JObject)JToken.Parse(@"{""x"":100.50,""y"":200.400}");
+            string json = o.ToString(Formatting.None);
+
+            Assert.AreEqual(@"{""x"":100.5,""y"":200.4}", json);
+        }
+
+        [Test]
+        public void ParseAndToStringWithFloatingNumbersAsDecimal()
+        {
+            JObject o = (JObject)JToken.Parse(@"{""x"":100.50,""y"":200.400}",
+                new JsonTextReaderSettings
+                {
+                    FloatParseHandling = FloatParseHandling.Decimal,
+                });
+
+            string json = o.ToString(Formatting.None);
+
+            Assert.AreEqual(@"{""x"":100.50,""y"":200.400}", json);
+        }
+
+        [Test]
         public void Parent()
         {
             JArray v = new JArray(new JConstructor("TestConstructor"), new JValue(new DateTime(2000, 12, 20)));

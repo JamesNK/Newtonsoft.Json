@@ -647,5 +647,28 @@ Parameter name: index",
             Assert.AreEqual(true, ((IJsonLineInfo)a[1]).HasLineInfo());
             Assert.AreEqual(true, ((IJsonLineInfo)a[2]).HasLineInfo());
         }
+
+        [Test]
+        public void ParseAndToStringWithFloatingNumbersAsDouble()
+        {
+            JArray a = JArray.Parse("[1.0,2.00,3.000]");
+            string json = a.ToString(Formatting.None);
+
+            Assert.AreEqual("[1.0,2.0,3.0]", json);
+        }
+
+        [Test]
+        public void ParseAndToStringWithFloatingNumbersAsDecimal()
+        {
+            JArray a = JArray.Parse("[1.0,2.00,3.000]",
+                new JsonTextReaderSettings
+                {
+                    FloatParseHandling = FloatParseHandling.Decimal,
+                });
+
+            string json = a.ToString(Formatting.None);
+
+            Assert.AreEqual("[1.0,2.00,3.000]", json);
+        }
     }
 }

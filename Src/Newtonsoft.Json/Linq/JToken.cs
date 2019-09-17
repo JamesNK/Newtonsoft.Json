@@ -2184,7 +2184,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JToken"/> populated from the string that contains JSON.</returns>
         public static JToken Parse(string json)
         {
-            return Parse(json, null);
+            return Parse(json, null, null);
         }
 
         /// <summary>
@@ -2196,9 +2196,42 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JToken"/> populated from the string that contains JSON.</returns>
         public static JToken Parse(string json, JsonLoadSettings? settings)
         {
+            return Parse(json, settings, null);
+        }
+
+        /// <summary>
+        /// Load a <see cref="JToken"/> from a string that contains JSON.
+        /// </summary>
+        /// <param name="json">A <see cref="String"/> that contains JSON.</param>
+        /// <param name="readerSettings">The <see cref="JsonTextReaderSettings"/> used to read the JSON.
+        /// If this is <c>null</c>, default read settings will be used.</param>
+        /// <returns>A <see cref="JToken"/> populated from the string that contains JSON.</returns>
+        public static JToken Parse(string json, JsonTextReaderSettings? readerSettings)
+        {
+            return Parse(json, null, readerSettings);
+        }
+
+        /// <summary>
+        /// Load a <see cref="JToken"/> from a string that contains JSON.
+        /// </summary>
+        /// <param name="json">A <see cref="String"/> that contains JSON.</param>
+        /// <param name="loadSettings">The <see cref="JsonLoadSettings"/> used to load the JSON.
+        /// If this is <c>null</c>, default load settings will be used.</param>
+        /// <param name="readerSettings">The <see cref="JsonTextReaderSettings"/> used to read the JSON.
+        /// If this is <c>null</c>, default read settings will be used.</param>
+        /// <returns>A <see cref="JToken"/> populated from the string that contains JSON.</returns>
+        public static JToken Parse(string json, JsonLoadSettings? loadSettings, JsonTextReaderSettings? readerSettings)
+        {
             using (JsonReader reader = new JsonTextReader(new StringReader(json)))
             {
-                JToken t = Load(reader, settings);
+                if (!(readerSettings is null))
+                {
+                    reader.DateTimeZoneHandling = readerSettings.DateTimeZoneHandling;
+                    reader.DateParseHandling = readerSettings.DateParseHandling;
+                    reader.FloatParseHandling = readerSettings.FloatParseHandling;
+                }
+
+                JToken t = Load(reader, loadSettings);
 
                 while (reader.Read())
                 {
