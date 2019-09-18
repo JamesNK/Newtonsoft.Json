@@ -145,7 +145,11 @@ namespace Newtonsoft.Json.Serialization
             return property;
         }
 
+#if NETSTANDARD2_1
+        public override bool TryGetValue(string key, [NotNullWhen(true)]out JsonProperty? item)
+#else
         private bool TryGetValue(string key, [NotNullWhen(true)]out JsonProperty? item)
+#endif
         {
             if (Dictionary == null)
             {
