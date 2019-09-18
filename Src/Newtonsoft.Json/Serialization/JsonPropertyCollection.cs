@@ -145,11 +145,8 @@ namespace Newtonsoft.Json.Serialization
             return property;
         }
 
-#if NETSTANDARD2_1
-        public override bool TryGetValue(string key, [NotNullWhen(true)]out JsonProperty? item)
-#else
+#if !NETSTANDARD2_1
         private bool TryGetValue(string key, [NotNullWhen(true)]out JsonProperty? item)
-#endif
         {
             if (Dictionary == null)
             {
@@ -159,6 +156,7 @@ namespace Newtonsoft.Json.Serialization
 
             return Dictionary.TryGetValue(key, out item);
         }
+#endif
 
         /// <summary>
         /// Gets a property by property name.
