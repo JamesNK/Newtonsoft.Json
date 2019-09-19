@@ -31,9 +31,33 @@ namespace Newtonsoft.Json.Utilities
 {
     internal static class MathUtils
     {
+        private static ulong[] UlongMins = 
+            new UInt64[] {
+                10UL,
+                100UL,
+                1000UL,
+                10000UL,
+                100000UL,
+                1000000UL,
+                10000000UL,
+                100000000UL,
+                1000000000UL,
+                10000000000UL,
+                100000000000UL,
+                1000000000000UL,
+                10000000000000UL,
+                100000000000000UL,
+                1000000000000000UL,
+                10000000000000000UL,
+                100000000000000000UL,
+                1000000000000000000UL,
+                10000000000000000000UL
+            };
+
         public static int IntLength(ulong i)
         {
-            return 1 + (int)Math.Floor(Math.Log10(i));
+            var count = UlongMins.IndexOf(iMin => i < iMin);
+            return count < 0 ? 20 : count + 1;
         }
 
         public static char IntToHex(int n)
