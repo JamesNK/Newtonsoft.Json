@@ -56,8 +56,8 @@ namespace Newtonsoft.Json.Utilities
 
         public static int IntLength(ulong i)
         {
-            var zeroCount = UlongMins.IndexOf(iMin => i < iMin);
-            return zeroCount < 0 ? 20 : zeroCount + 1;
+            var iFound = UlongMins.IndexOf(iMin => i < iMin);
+            return iFound < 0 ? 20 : iFound + 1;
         }
 
         public static char IntToHex(int n)
