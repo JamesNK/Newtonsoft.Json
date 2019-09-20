@@ -62,8 +62,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (!mappings.TryGetBySecond(value, out string reference))
             {
-                _referenceCount++;
-                reference = _referenceCount.ToString(CultureInfo.InvariantCulture);
+                reference = Interlocked.Increment(ref _referenceCount).ToString(CultureInfo.InvariantCulture);
                 mappings.Set(reference, value);
             }
 
