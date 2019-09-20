@@ -37,66 +37,104 @@ namespace Newtonsoft.Json.Tests.Utilities
     [TestFixture]
     public class StringUtilsTests : TestFixtureBase
     {
-        [Test]
-        public void ToCamelCaseTest()
+        private static object[] toCamelCaseTestCases = new[]
         {
-            Assert.AreEqual("urlValue", StringUtils.ToCamelCase("URLValue"));
-            Assert.AreEqual("url", StringUtils.ToCamelCase("URL"));
-            Assert.AreEqual("id", StringUtils.ToCamelCase("ID"));
-            Assert.AreEqual("i", StringUtils.ToCamelCase("I"));
-            Assert.AreEqual("", StringUtils.ToCamelCase(""));
-            Assert.AreEqual(null, StringUtils.ToCamelCase(null));
-            Assert.AreEqual("person", StringUtils.ToCamelCase("Person"));
-            Assert.AreEqual("iPhone", StringUtils.ToCamelCase("iPhone"));
-            Assert.AreEqual("iPhone", StringUtils.ToCamelCase("IPhone"));
-            Assert.AreEqual("i Phone", StringUtils.ToCamelCase("I Phone"));
-            Assert.AreEqual("i  Phone", StringUtils.ToCamelCase("I  Phone"));
-            Assert.AreEqual(" IPhone", StringUtils.ToCamelCase(" IPhone"));
-            Assert.AreEqual(" IPhone ", StringUtils.ToCamelCase(" IPhone "));
-            Assert.AreEqual("isCIA", StringUtils.ToCamelCase("IsCIA"));
-            Assert.AreEqual("vmQ", StringUtils.ToCamelCase("VmQ"));
-            Assert.AreEqual("xml2Json", StringUtils.ToCamelCase("Xml2Json"));
-            Assert.AreEqual("snAkEcAsE", StringUtils.ToCamelCase("SnAkEcAsE"));
-            Assert.AreEqual("snA__kEcAsE", StringUtils.ToCamelCase("SnA__kEcAsE"));
-            Assert.AreEqual("snA__ kEcAsE", StringUtils.ToCamelCase("SnA__ kEcAsE"));
-            Assert.AreEqual("already_snake_case_ ", StringUtils.ToCamelCase("already_snake_case_ "));
-            Assert.AreEqual("isJSONProperty", StringUtils.ToCamelCase("IsJSONProperty"));
-            Assert.AreEqual("shoutinG_CASE", StringUtils.ToCamelCase("SHOUTING_CASE"));
-            Assert.AreEqual("9999-12-31T23:59:59.9999999Z", StringUtils.ToCamelCase("9999-12-31T23:59:59.9999999Z"));
-            Assert.AreEqual("hi!! This is text. Time to test.", StringUtils.ToCamelCase("Hi!! This is text. Time to test."));
-            Assert.AreEqual("building", StringUtils.ToCamelCase("BUILDING"));
-            Assert.AreEqual("building Property", StringUtils.ToCamelCase("BUILDING Property"));
-            Assert.AreEqual("building Property", StringUtils.ToCamelCase("Building Property"));
-            Assert.AreEqual("building PROPERTY", StringUtils.ToCamelCase("BUILDING PROPERTY"));
+            new object[] {"urlValue", "URLValue"},
+            new object[] {"url", "URL"},
+            new object[] {"id", "ID"},
+            new object[] {"i", "I"},
+            new object[] {"", ""},
+            new object[] {null, null},
+            new object[] {"person", "Person"},
+            new object[] {"iPhone", "iPhone"},
+            new object[] {"iPhone", "IPhone"},
+            new object[] {"i Phone", "I Phone"},
+            new object[] {"i  Phone", "I  Phone"},
+            new object[] {" IPhone", " IPhone"},
+            new object[] {" IPhone ", " IPhone "},
+            new object[] {"isCIA", "IsCIA"},
+            new object[] {"vmQ", "VmQ"},
+            new object[] {"xml2Json", "Xml2Json"},
+            new object[] {"snAkEcAsE", "SnAkEcAsE"},
+            new object[] {"snA__kEcAsE", "SnA__kEcAsE"},
+            new object[] {"snA__ kEcAsE", "SnA__ kEcAsE"},
+            new object[] {"already_snake_case_ ", "already_snake_case_ "},
+            new object[] {"isJSONProperty", "IsJSONProperty"},
+            new object[] {"shoutinG_CASE", "SHOUTING_CASE"},
+            new object[] {"9999-12-31T23:59:59.9999999Z", "9999-12-31T23:59:59.9999999Z"},
+            new object[] {"hi!! This is text. Time to test.", "Hi!! This is text. Time to test."},
+            new object[] {"building", "BUILDING"},
+            new object[] {"building Property", "BUILDING Property"},
+            new object[] {"building Property", "Building Property"},
+            new object[] {"building PROPERTY", "BUILDING PROPERTY"}
+        };
+        private static object[] toSnakeCaseTestCases = new[]
+        {
+            new object[] {"url_value", "URLValue"},
+            new object[] {"url", "URL"},
+            new object[] {"id", "ID"},
+            new object[] {"i", "I"},
+            new object[] {"", ""},
+            new object[] {null, null},
+            new object[] {"person", "Person"},
+            new object[] {"i_phone", "iPhone"},
+            new object[] {"i_phone", "IPhone"},
+            new object[] {"i_phone", "I Phone"},
+            new object[] {"i_phone", "I  Phone"},
+            new object[] {"i_phone", " IPhone"},
+            new object[] {"i_phone", " IPhone "},
+            new object[] {"is_cia", "IsCIA"},
+            new object[] {"vm_q", "VmQ"},
+            new object[] {"xml2_json", "Xml2Json"},
+            new object[] {"sn_ak_ec_as_e", "SnAkEcAsE"},
+            new object[] {"sn_a__k_ec_as_e", "SnA__kEcAsE"},
+            new object[] {"sn_a__k_ec_as_e", "SnA__ kEcAsE"},
+            new object[] {"already_snake_case_", "already_snake_case_ "},
+            new object[] {"is_json_property", "IsJSONProperty"},
+            new object[] {"shouting_case", "SHOUTING_CASE"},
+            new object[] {"9999-12-31_t23:59:59.9999999_z", "9999-12-31T23:59:59.9999999Z"},
+            new object[] {"hi!!_this_is_text._time_to_test.", "Hi!! This is text. Time to test."}
+        };
+
+#if NETFRAMEWORK
+        [Test]
+        [TestCaseSource(nameof(toCamelCaseTestCases))]
+        public void ToCamelCaseTest(string expected, string input)
+        {
+            Assert.AreEqual(expected, StringUtils.ToCamelCase(input));
         }
 
         [Test]
+        [TestCaseSource(nameof(toSnakeCaseTestCases))]
+        public void ToSnakeCaseTest(string expected, string input)
+        {
+            Assert.AreEqual(expected, StringUtils.ToSnakeCase(input));
+        }
+#else
+        [Test]
+        public void ToCamelCaseTest()
+        {
+            foreach (var testCase in toCamelCaseTestCases)
+            {
+                if (testCase is object[] parameters)
+                {
+                    Assert.AreEqual((string)parameters[0], StringUtils.ToCamelCase((string)parameters[1]));
+                }
+            }
+            
+        }
+        [Test]
         public void ToSnakeCaseTest()
         {
-            Assert.AreEqual("url_value", StringUtils.ToSnakeCase("URLValue"));
-            Assert.AreEqual("url", StringUtils.ToSnakeCase("URL"));
-            Assert.AreEqual("id", StringUtils.ToSnakeCase("ID"));
-            Assert.AreEqual("i", StringUtils.ToSnakeCase("I"));
-            Assert.AreEqual("", StringUtils.ToSnakeCase(""));
-            Assert.AreEqual(null, StringUtils.ToSnakeCase(null));
-            Assert.AreEqual("person", StringUtils.ToSnakeCase("Person"));
-            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase("iPhone"));
-            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase("IPhone"));
-            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase("I Phone"));
-            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase("I  Phone"));
-            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase(" IPhone"));
-            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase(" IPhone "));
-            Assert.AreEqual("is_cia", StringUtils.ToSnakeCase("IsCIA"));
-            Assert.AreEqual("vm_q", StringUtils.ToSnakeCase("VmQ"));
-            Assert.AreEqual("xml2_json", StringUtils.ToSnakeCase("Xml2Json"));
-            Assert.AreEqual("sn_ak_ec_as_e", StringUtils.ToSnakeCase("SnAkEcAsE"));
-            Assert.AreEqual("sn_a__k_ec_as_e", StringUtils.ToSnakeCase("SnA__kEcAsE"));
-            Assert.AreEqual("sn_a__k_ec_as_e", StringUtils.ToSnakeCase("SnA__ kEcAsE"));
-            Assert.AreEqual("already_snake_case_", StringUtils.ToSnakeCase("already_snake_case_ "));
-            Assert.AreEqual("is_json_property", StringUtils.ToSnakeCase("IsJSONProperty"));
-            Assert.AreEqual("shouting_case", StringUtils.ToSnakeCase("SHOUTING_CASE"));
-            Assert.AreEqual("9999-12-31_t23:59:59.9999999_z", StringUtils.ToSnakeCase("9999-12-31T23:59:59.9999999Z"));
-            Assert.AreEqual("hi!!_this_is_text._time_to_test.", StringUtils.ToSnakeCase("Hi!! This is text. Time to test."));
+            foreach (var testCase in toSnakeCaseTestCases)
+            {
+                if (testCase is object[] parameters)
+                {
+                    Assert.AreEqual((string)parameters[0], StringUtils.ToSnakeCase((string)parameters[1]));
+                }
+            }
+            
         }
+#endif
     }
 }
