@@ -90,6 +90,12 @@ namespace Newtonsoft.Json.Linq
                 }
             }
 
+            // The current value could already be the root value if it is a comment
+            if (_current == _root)
+            {
+                return false;
+            }
+
             _current = _root;
             SetToken(_current);
             return true;
