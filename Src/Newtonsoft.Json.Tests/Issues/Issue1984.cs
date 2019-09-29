@@ -37,6 +37,7 @@ using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests.Issues
 {
+    [TestFixture]
     public class Issue1984
     {
         [Test]
