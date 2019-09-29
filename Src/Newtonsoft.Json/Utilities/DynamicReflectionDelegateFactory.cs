@@ -93,6 +93,9 @@ namespace Newtonsoft.Json.Utilities
             LocalBuilder localConvertible = generator.DeclareLocal(typeof(IConvertible));
             LocalBuilder localObject = generator.DeclareLocal(typeof(object));
 
+            OpCode variableAddressOpCode = args.Length < 256 ? OpCodes.Ldloca_S : OpCodes.Ldloca;
+            OpCode variableLoadOpCode = args.Length < 256 ? OpCodes.Ldloc_S : OpCodes.Ldloc;
+
             for (int i = 0; i < args.Length; i++)
             {
                 ParameterInfo parameter = args[i];
@@ -118,7 +121,7 @@ namespace Newtonsoft.Json.Utilities
                             generator.Emit(OpCodes.Brtrue_S, skipSettingDefault);
 
                             // parameter has no value, initialize to default
-                            generator.Emit(OpCodes.Ldloca_S, localVariable);
+                            generator.Emit(variableAddressOpCode, localVariable);
                             generator.Emit(OpCodes.Initobj, parameterType);
                             generator.Emit(OpCodes.Br_S, finishedProcessingParameter);
 
@@ -138,7 +141,7 @@ namespace Newtonsoft.Json.Utilities
                         }
                     }
 
-                    generator.Emit(OpCodes.Ldloca_S, localVariable);
+                    generator.Emit(variableAddressOpCode, localVariable);
                 }
                 else if (parameterType.IsValueType())
                 {
@@ -156,9 +159,9 @@ namespace Newtonsoft.Json.Utilities
 
                     // parameter has no value, initialize to default
                     LocalBuilder localVariable = generator.DeclareLocal(parameterType);
-                    generator.Emit(OpCodes.Ldloca_S, localVariable);
+                    generator.Emit(variableAddressOpCode, localVariable);
                     generator.Emit(OpCodes.Initobj, parameterType);
-                    generator.Emit(OpCodes.Ldloc_S, localVariable);
+                    generator.Emit(variableLoadOpCode, localVariable);
                     generator.Emit(OpCodes.Br_S, finishedProcessingParameter);
 
                     // argument has value, try to convert it to parameter type
