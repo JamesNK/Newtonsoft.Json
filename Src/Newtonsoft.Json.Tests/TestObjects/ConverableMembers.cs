@@ -41,7 +41,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
         public ulong ULong = long.MaxValue;
         public double Double = double.MaxValue;
         public float Float = float.MaxValue;
-#if !(PORTABLE || DNXCORE50) || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50) || NETSTANDARD2_0 || NETSTANDARD2_1
         public DBNull DBNull = DBNull.Value;
 #endif
         public bool Bool = true;

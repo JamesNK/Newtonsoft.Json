@@ -28,7 +28,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(DNXCORE50) || NETSTANDARD2_0
+#if !(DNXCORE50) || NETSTANDARD2_0 || NETSTANDARD2_1
     public class MailAddressReadConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)

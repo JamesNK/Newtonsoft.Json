@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(dynamicObject.ChildObject.Text, d.ChildObject.Text);
         }
 
-#if !(PORTABLE || PORTABLE40) || NETSTANDARD2_0
+#if !(PORTABLE || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void SerializeDynamicObjectWithObjectTracking()
         {

@@ -28,7 +28,7 @@ using System.Text;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(DNXCORE50) || NETSTANDARD2_0
+#if !(DNXCORE50) || NETSTANDARD2_0 || NETSTANDARD2_1
     public class EncodingReadConverter : JsonConverter
     {
         public override bool CanConvert(Type objectType)

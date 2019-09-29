@@ -300,6 +300,7 @@ namespace Newtonsoft.Json
             return EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar, nullable);
         }
 
+        [SuppressMessage("Message does not apply to unicode char comparisons", "CA1307:SpecifyStringComparison")]
         private static string EnsureDecimalPlace(double value, string text)
         {
             if (double.IsNaN(value) || double.IsInfinity(value) || text.IndexOf('.') != -1 || text.IndexOf('E') != -1 || text.IndexOf('e') != -1)
@@ -310,6 +311,7 @@ namespace Newtonsoft.Json
             return text + ".0";
         }
 
+        [SuppressMessage("Microsoft.Globalization", "CA1307:SpecifyStringComparison")]
         private static string EnsureDecimalPlace(string text)
         {
             if (text.IndexOf('.') != -1)

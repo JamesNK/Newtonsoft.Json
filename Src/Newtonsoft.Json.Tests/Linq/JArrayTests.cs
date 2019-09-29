@@ -447,7 +447,7 @@ Parameter name: index",
             }
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0 || NETSTANDARD2_1
         [Test]
         public void ITypedListGetItemProperties()
         {
