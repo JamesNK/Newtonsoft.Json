@@ -118,6 +118,8 @@ namespace Newtonsoft.Json.Linq.JsonPath
                         }
 
                         filters.Add(ParseIndexer(currentChar, scan));
+                        scan = false;
+
                         _currentIndex++;
                         currentPartStartIndex = _currentIndex;
                         followingIndexer = true;
