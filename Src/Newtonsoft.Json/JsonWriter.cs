@@ -666,10 +666,17 @@ namespace Newtonsoft.Json
                 && writeChildren
                 && reader.Read());
 
-            if (initialDepth < CalculateWriteTokenFinalDepth(reader))
+            if (IsWriteTokenIncomplete(reader, writeChildren, initialDepth))
             {
                 throw JsonWriterException.Create(this, "Unexpected end when reading token.", null);
             }
+        }
+
+        private bool IsWriteTokenIncomplete(JsonReader reader, bool writeChildren, int initialDepth)
+        {
+            int finalDepth = CalculateWriteTokenFinalDepth(reader);
+            return initialDepth < finalDepth ||
+                (writeChildren && initialDepth == finalDepth && JsonTokenUtils.IsStartToken(reader.TokenType));
         }
 
         private int CalculateWriteTokenInitialDepth(JsonReader reader)

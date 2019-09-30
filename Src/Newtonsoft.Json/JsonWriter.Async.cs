@@ -785,7 +785,7 @@ namespace Newtonsoft.Json
                 && writeChildren
                 && await reader.ReadAsync(cancellationToken).ConfigureAwait(false));
 
-            if (initialDepth < CalculateWriteTokenFinalDepth(reader))
+            if (IsWriteTokenIncomplete(reader, writeChildren, initialDepth))
             {
                 throw JsonWriterException.Create(this, "Unexpected end when reading token.", null);
             }
