@@ -1007,6 +1007,11 @@ namespace Newtonsoft.Json.Serialization
                 return true;
             }
 
+            if (HasFlag(resolvedTypeNameHandling, TypeNameHandling.RootObject) && _serializeStack.Count == _rootLevel && typeNameHandlingFlag == TypeNameHandling.Objects)
+            {
+                return true;
+            }
+
             // instance type and the property's type's contract default type are different (no need to put the type in JSON because the type will be created by default)
             if (HasFlag(resolvedTypeNameHandling, TypeNameHandling.Auto))
             {

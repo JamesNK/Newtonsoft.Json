@@ -335,6 +335,23 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void SerializeRootTypeNameRootObjectWithJsonConvert()
+        {
+            string json = JsonConvert.SerializeObject(new WagePerson(), Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.RootObject
+            });
+
+            StringAssert.AreEqual(@"{
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Organization.WagePerson, Newtonsoft.Json.Tests"",
+  ""HourlyWage"": 0.0,
+  ""Name"": null,
+  ""BirthDate"": ""0001-01-01T00:00:00"",
+  ""LastModified"": ""0001-01-01T00:00:00""
+}", json);
+        }
+
+        [Test]
         public void SerializeRootTypeNameAutoWithJsonConvert_Generic()
         {
             string json = JsonConvert.SerializeObject(new WagePerson(), typeof(object), Formatting.Indented, new JsonSerializerSettings
