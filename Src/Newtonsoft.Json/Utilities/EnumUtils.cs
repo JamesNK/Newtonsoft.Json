@@ -54,6 +54,7 @@ namespace Newtonsoft.Json.Utilities
             string[] names = Enum.GetNames(enumType);
             string[] resolvedNames = new string[names.Length];
             ulong[] values = new ulong[names.Length];
+            bool hasSpecifiedName;
 
             for (int i = 0; i < names.Length; i++)
             {
@@ -63,10 +64,12 @@ namespace Newtonsoft.Json.Utilities
 
                 string resolvedName;
 #if HAVE_DATA_CONTRACTS
-                resolvedName = f.GetCustomAttributes(typeof(EnumMemberAttribute), true)
+                string specifiedName = f.GetCustomAttributes(typeof(EnumMemberAttribute), true)
                          .Cast<EnumMemberAttribute>()
                          .Select(a => a.Value)
-                         .SingleOrDefault() ?? f.Name;
+                         .SingleOrDefault();
+                hasSpecifiedName = specifiedName != null;
+                resolvedName = specifiedName ?? name;
 
                 if (Array.IndexOf(resolvedNames, resolvedName, 0, i) != -1)
                 {
@@ -74,10 +77,11 @@ namespace Newtonsoft.Json.Utilities
                 }
 #else
                 resolvedName = name;
+                hasSpecifiedName = false;
 #endif
 
                 resolvedNames[i] = key.Value2 != null
-                    ? key.Value2.GetPropertyName(resolvedName, false)
+                    ? key.Value2.GetPropertyName(resolvedName, hasSpecifiedName)
                     : resolvedName;
             }
 
