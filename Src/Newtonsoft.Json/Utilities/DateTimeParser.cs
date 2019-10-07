@@ -87,6 +87,7 @@ namespace Newtonsoft.Json.Utilities
         private static readonly int Lz_zz;
 
         private const short MaxFractionDigits = 7;
+        private const short MaxParsableFractionDigits = 20;
 
         public bool Parse(char[] text, int startIndex, int length)
         {
@@ -139,9 +140,10 @@ namespace Newtonsoft.Json.Utilities
             if (ParseChar(start, '.'))
             {
                 Fraction = 0;
+                int numberOfParsedDigits = 0;
                 int numberOfDigits = 0;
 
-                while (++start < _end && numberOfDigits < MaxFractionDigits)
+                while (++start < _end && numberOfParsedDigits < MaxParsableFractionDigits)
                 {
                     int digit = _text[start] - '0';
                     if (digit < 0 || digit > 9)
@@ -149,9 +151,18 @@ namespace Newtonsoft.Json.Utilities
                         break;
                     }
 
-                    Fraction = (Fraction * 10) + digit;
+                    if (numberOfDigits < MaxFractionDigits)
+                    {
+                        Fraction = (Fraction * 10) + digit;
 
-                    numberOfDigits++;
+                        numberOfDigits++;
+                    }
+                    else if (numberOfParsedDigits == MaxFractionDigits && digit >= 5)
+                    {
+                        Fraction += 1; // rounding up
+                    }
+
+                    numberOfParsedDigits++;
                 }
 
                 if (numberOfDigits < MaxFractionDigits)
