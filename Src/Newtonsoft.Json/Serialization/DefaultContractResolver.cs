@@ -1011,17 +1011,6 @@ namespace Newtonsoft.Json.Serialization
             JsonDictionaryContract contract = new JsonDictionaryContract(objectType);
             InitializeContract(contract);
 
-            JsonContainerAttribute? containerAttribute = JsonTypeReflector.GetAttribute<JsonContainerAttribute>(objectType);
-            if (containerAttribute?.NamingStrategyType != null)
-            {
-                NamingStrategy namingStrategy = JsonTypeReflector.GetContainerNamingStrategy(containerAttribute)!;
-                contract.DictionaryKeyResolver = s => namingStrategy.GetDictionaryKey(s);
-            }
-            else
-            {
-                contract.DictionaryKeyResolver = ResolveDictionaryKey;
-            }
-
             ConstructorInfo? overrideConstructor = GetAttributeConstructor(contract.NonNullableUnderlyingType);
 
             if (overrideConstructor != null)
@@ -1524,12 +1513,14 @@ namespace Newtonsoft.Json.Serialization
             if (namingStrategy != null)
             {
                 property.PropertyName = namingStrategy.GetPropertyName(mappedName, hasSpecifiedName);
+                property.DictionaryKeyResolver = namingStrategy.GetDictionaryKey;
             }
             else
             {
                 property.PropertyName = ResolvePropertyName(mappedName);
+                property.DictionaryKeyResolver = ResolveDictionaryKey;
             }
-            
+
             property.UnderlyingName = name;
 
             bool hasMemberAttribute = false;

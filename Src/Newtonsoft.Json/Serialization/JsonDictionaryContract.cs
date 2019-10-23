@@ -24,11 +24,11 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
-using System.Collections;
 
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -41,12 +41,6 @@ namespace Newtonsoft.Json.Serialization
     /// </summary>
     public class JsonDictionaryContract : JsonContainerContract
     {
-        /// <summary>
-        /// Gets or sets the dictionary key resolver.
-        /// </summary>
-        /// <value>The dictionary key resolver.</value>
-        public Func<string, string>? DictionaryKeyResolver { get; set; }
-
         /// <summary>
         /// Gets the <see cref="System.Type"/> of the dictionary keys.
         /// </summary>
