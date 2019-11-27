@@ -2201,28 +2201,31 @@ namespace Newtonsoft.Json.Serialization
                         propertyValues.Add(creatorPropertyContext);
 
                         JsonProperty? property = creatorPropertyContext.ConstructorProperty ?? creatorPropertyContext.Property;
-                        if (property != null && !property.Ignored)
+                        if (property != null)
                         {
-                            if (property.PropertyContract == null)
+                            if (!property.Ignored)
                             {
-                                property.PropertyContract = GetContractSafe(property.PropertyType);
-                            }
+                                if (property.PropertyContract == null)
+                                {
+                                    property.PropertyContract = GetContractSafe(property.PropertyType);
+                                }
 
-                            JsonConverter? propertyConverter = GetConverter(property.PropertyContract, property.Converter, contract, containerProperty);
+                                JsonConverter? propertyConverter = GetConverter(property.PropertyContract, property.Converter, contract, containerProperty);
 
-                            if (!reader.ReadForType(property.PropertyContract, propertyConverter != null))
-                            {
-                                throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
-                            }
+                                if (!reader.ReadForType(property.PropertyContract, propertyConverter != null))
+                                {
+                                    throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+                                }
 
-                            if (propertyConverter != null && propertyConverter.CanRead)
-                            {
-                                creatorPropertyContext.Value = DeserializeConvertable(propertyConverter, reader, property.PropertyType!, null);
-                            }
-                            else
-                            {
-                                creatorPropertyContext.Value = CreateValueInternal(reader, property.PropertyType, property.PropertyContract, property, contract, containerProperty, null);
-                            }
+                                if (propertyConverter != null && propertyConverter.CanRead)
+                                {
+                                    creatorPropertyContext.Value = DeserializeConvertable(propertyConverter, reader, property.PropertyType!, null);
+                                }
+                                else
+                                {
+                                    creatorPropertyContext.Value = CreateValueInternal(reader, property.PropertyType, property.PropertyContract, property, contract, containerProperty, null);
+                                }
+                            }     
 
                             continue;
                         }
