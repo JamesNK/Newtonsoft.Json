@@ -3,7 +3,7 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>This sample serializes an object to JSON with <codeEntityReference>T:Newtonsoft.Json.NullValueHandling</codeEntityReference>
-      set to Ignore so that properties with a default value aren't included in the JSON result.</para>
+      set to Ignore so that properties with a default value of null aren't included in the JSON result.</para>
     </introduction>
     <section>
       <title>Sample</title>
