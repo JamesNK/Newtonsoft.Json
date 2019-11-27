@@ -2225,9 +2225,9 @@ namespace Newtonsoft.Json.Serialization
                                 {
                                     creatorPropertyContext.Value = CreateValueInternal(reader, property.PropertyType, property.PropertyContract, property, contract, containerProperty, null);
                                 }
-                            }     
-
-                            continue;
+                                
+                                continue;
+                            }
                         }
                         else
                         {
