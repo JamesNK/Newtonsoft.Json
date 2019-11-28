@@ -4530,7 +4530,22 @@ Path '', line 1, position 1.");
         {
             string json = @"{""First"":""First"",""Second"":2,""Ignored"":{""Name"":""James""},""AdditionalContent"":{""LOL"":true}}";
 
-            ConstructorCompexIgnoredProperty cc = JsonConvert.DeserializeObject<ConstructorCompexIgnoredProperty>(json);
+            var cc = JsonConvert.DeserializeObject<ConstructorCompexIgnoredProperty>(json);
+            Assert.AreEqual("First", cc.First);
+            Assert.AreEqual(2, cc.Second);
+            Assert.AreEqual(null, cc.Ignored);
+        }
+        
+        [Test]
+        public void DeserializeIgnoredPropertyInConstructorWithoutThrowingMissingMemberError()
+        {
+            string json = @"{""First"":""First"",""Second"":2,""Ignored"":{""Name"":""James""}}";
+
+            var cc = JsonConvert.DeserializeObject<ConstructorCompexIgnoredProperty>(
+                json, , new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Error
+                });
             Assert.AreEqual("First", cc.First);
             Assert.AreEqual(2, cc.Second);
             Assert.AreEqual(null, cc.Ignored);
