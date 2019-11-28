@@ -4542,7 +4542,7 @@ Path '', line 1, position 1.");
             string json = @"{""First"":""First"",""Second"":2,""Ignored"":{""Name"":""James""}}";
 
             var cc = JsonConvert.DeserializeObject<ConstructorCompexIgnoredProperty>(
-                json, , new JsonSerializerSettings
+                json, new JsonSerializerSettings
                 {
                     MissingMemberHandling = MissingMemberHandling.Error
                 });
