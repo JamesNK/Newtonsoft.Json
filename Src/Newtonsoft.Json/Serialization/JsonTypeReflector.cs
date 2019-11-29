@@ -515,12 +515,14 @@ namespace Newtonsoft.Json.Serialization
         {
             get
             {
-#if !(PORTABLE40 || PORTABLE || DOTNET || NETSTANDARD2_0)
+#if !(PORTABLE40 || PORTABLE || DOTNET || NETSTANDARD2_0 || UNITY_LTS)
                 if (DynamicCodeGeneration)
                 {
                     return DynamicReflectionDelegateFactory.Instance;
                 }
-
+                
+                return LateBoundReflectionDelegateFactory.Instance;
+#elif UNITY_LTS
                 return LateBoundReflectionDelegateFactory.Instance;
 #else
                 return ExpressionReflectionDelegateFactory.Instance;
