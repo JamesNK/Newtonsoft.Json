@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net451;net452;net40;net35;net20;netcoreapp3.0;netcoreapp2.2;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net40;net35;net20;netcoreapp3.0;netcoreapp2.2;netcoreapp2.1</TargetFrameworks>
     <TargetFrameworks Condition="'$(TestFrameworks)'!=''">$(TestFrameworks)</TargetFrameworks>
     <LangVersion>8.0</LangVersion>
     <VersionPrefix>1.0</VersionPrefix>
@@ -63,52 +63,6 @@
     <AssemblyTitle>Json.NET Tests</AssemblyTitle>
     <ReferringTargetFrameworkForProjectReferences>.NETFramework,Version=v4.5</ReferringTargetFrameworkForProjectReferences>
     <DefineConstants>NET45;HAVE_BENCHMARKS;$(AdditionalConstants)</DefineConstants>
-  </PropertyGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)'=='net451'">
-    <PackageReference Include="NUnit" Version="$(NunitPackageVersion)" />
-    <PackageReference Include="NUnit3TestAdapter" Version="$(Nunit3TestAdapterPackageVersion)" />
-    <PackageReference Include="Autofac" Version="$(AutofacPackageVersion)" />
-    <PackageReference Include="FSharp.Core" Version="$(FSharpCorePackageVersion)" />
-    <PackageReference Include="System.Buffers" Version="$(SystemBuffersPackageVersion)" />
-    <PackageReference Include="System.Collections.Immutable" Version="$(SystemCollectionsImmutablePackageVersion)" />
-    <PackageReference Include="System.ValueTuple" Version="$(SystemValueTuplePackageVersion)" />
-    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Data.Entity" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Data.DataSetExtensions" />
-  </ItemGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='net451'">
-    <AssemblyTitle>Json.NET Tests Portable .NET 4.0</AssemblyTitle>
-    <ReferringTargetFrameworkForProjectReferences>.NETPortable,Version=v0.0,Profile=Profile328</ReferringTargetFrameworkForProjectReferences>
-    <DefineConstants>PORTABLE40;$(AdditionalConstants)</DefineConstants>
-  </PropertyGroup>
-  
-  <ItemGroup Condition="'$(TargetFramework)'=='net452'">
-    <PackageReference Include="NUnit" Version="$(NunitPackageVersion)" />
-    <PackageReference Include="NUnit3TestAdapter" Version="$(Nunit3TestAdapterPackageVersion)" />
-    <PackageReference Include="Autofac" Version="$(AutofacPackageVersion)" />
-    <PackageReference Include="FSharp.Core" Version="$(FSharpCorePackageVersion)" />
-    <PackageReference Include="System.Buffers" Version="$(SystemBuffersPackageVersion)" />
-    <PackageReference Include="System.Collections.Immutable" Version="$(SystemCollectionsImmutablePackageVersion)" />
-    <PackageReference Include="System.ValueTuple" Version="$(SystemValueTuplePackageVersion)" />
-    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Web" />
-    <Reference Include="System.Data.Linq" />
-    <Reference Include="System.Data.Entity" />
-    <Reference Include="System.ComponentModel.DataAnnotations" />
-    <Reference Include="System.Web.Extensions" />
-    <Reference Include="System.Data.DataSetExtensions" />
-  </ItemGroup>
-  <PropertyGroup Condition="'$(TargetFramework)'=='net452'">
-    <AssemblyTitle>Json.NET Tests Portable</AssemblyTitle>
-    <ReferringTargetFrameworkForProjectReferences>.NETPortable,Version=v0.0,Profile=Profile259</ReferringTargetFrameworkForProjectReferences>
-    <DefineConstants>PORTABLE;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net40'">
