@@ -169,17 +169,13 @@ namespace Newtonsoft.Json.Utilities
                 }
 
                 bool hasNext = (i + 1 < chars.Length);
-                if (i > 0 && hasNext && !char.IsUpper(chars[i + 1]) && !char.IsDigit(chars[i + 1]))
+                if (i > 0 && hasNext && !char.IsUpper(chars[i + 1]))
                 {
-                    // if the next character is a space, which is not considered uppercase 
-                    // (otherwise we wouldn't be here...)
-                    // we want to ensure that the following:
-                    // 'FOO bar' is rewritten as 'foo bar', and not as 'foO bar'
-                    // The code was written in such a way that the first word in uppercase
-                    // ends when if finds an uppercase letter followed by a lowercase letter.
-                    // now a ' ' (space, (char)32) is considered not upper
-                    // but in that case we still want our current character to become lowercase
-                    if (char.IsSeparator(chars[i + 1]))
+                    // We want to ensure that the following:
+                    // 'FOO bar' is rewritten as 'foo bar', and not as 'foO bar'.
+                    // 'FOO_bar' is rewritten as 'foo_bar', and not as 'foO_bar'.
+                    // 'FOO1' is rewritten as 'foo1', and not as 'foO1'.
+                    if (!char.IsLower(chars[i + 1]))
                     {
                         chars[i] = ToLower(chars[i]);
                     }
