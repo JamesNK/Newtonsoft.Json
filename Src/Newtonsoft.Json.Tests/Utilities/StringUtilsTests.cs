@@ -68,6 +68,7 @@ namespace Newtonsoft.Json.Tests.Utilities
             Assert.AreEqual("building Property", StringUtils.ToCamelCase("BUILDING Property"));
             Assert.AreEqual("building Property", StringUtils.ToCamelCase("Building Property"));
             Assert.AreEqual("building PROPERTY", StringUtils.ToCamelCase("BUILDING PROPERTY"));
+            Assert.AreEqual("text1", StringUtils.ToCamelCase("TEXT1"));
         }
 
         [Test]
