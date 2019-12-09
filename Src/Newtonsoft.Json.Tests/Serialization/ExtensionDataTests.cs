@@ -1086,5 +1086,197 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("foo", (string)deserialize.ExtensionData["Foo"]["$values"][0]);
             Assert.AreEqual("bar", (string)deserialize.ExtensionData["Foo"]["$values"][1]);
         }
+
+        public class StringExtensionDataTestClass
+        {
+            [JsonExtensionData]
+            public SortedDictionary<string, string> ExtensionData;
+        }
+
+        [Test]
+        public void RoundTripStringExtensionData()
+        {
+            string json = @"{""item1"":""value1"",""item2"":""value2""}";
+            var c = JsonConvert.DeserializeObject<StringExtensionDataTestClass>(json);
+
+            Assert.AreEqual(2, c.ExtensionData.Count);
+            Assert.AreEqual("value1", c.ExtensionData["item1"]);
+            Assert.AreEqual("value2", c.ExtensionData["item2"]);
+
+            string serialized = JsonConvert.SerializeObject(c);
+
+            Assert.AreEqual(json, serialized);
+        }
+
+        public class DateTimeExtensionDataTestClass
+        {
+            [JsonExtensionData]
+            public SortedDictionary<string, DateTime> ExtensionData;
+        }
+
+        [Test]
+        public void RoundTripDateTimeExtensionData()
+        {
+            string json = @"{""end"":""2019-12-09T17:31:25Z"",""start"":""2019-12-09T17:30:57Z""}";
+            var c = JsonConvert.DeserializeObject<DateTimeExtensionDataTestClass>(json);
+
+            Assert.AreEqual(2, c.ExtensionData.Count);
+            Assert.AreEqual(new DateTime(2019, 12, 9, 17, 31, 25), c.ExtensionData["end"]);
+            Assert.AreEqual(new DateTime(2019, 12, 9, 17, 30, 57), c.ExtensionData["start"]);
+
+            string serialized = JsonConvert.SerializeObject(c);
+
+            Assert.AreEqual(json, serialized);
+        }
+
+        public class ConstructedTestClass
+        {
+            public ConstructedTestClass(int prop)
+            {
+                this.Prop = prop;
+            }
+
+            public int Prop { get; }
+        }
+
+        public class ConstructedExtensionDataTestClass
+        {
+            [JsonExtensionData]
+            public SortedDictionary<string, ConstructedTestClass> ExtensionData;
+        }
+
+        [Test]
+        public void RoundTripConstructedExtensionData()
+        {
+            string json = @"{""item1"":{""Prop"":99}}";
+            var c = JsonConvert.DeserializeObject<ConstructedExtensionDataTestClass>(json);
+
+            Assert.AreEqual(1, c.ExtensionData.Count);
+            Assert.AreEqual(99, c.ExtensionData["item1"].Prop);
+
+            string serialized = JsonConvert.SerializeObject(c);
+
+            Assert.AreEqual(json, serialized);
+        }
+
+        public class InheritedExtensionDataTestClass
+        {
+            [JsonExtensionData]
+            public SortedDictionary<string, Person> ExtensionData;
+        }
+
+        [Test]
+        public void RoundTripInheritedExtensionDataWithType()
+        {
+            string json = @"{
+  ""Jim"": {
+    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Organization.WagePerson, Newtonsoft.Json.Tests"",
+    ""HourlyWage"": 2.0,
+    ""Name"": ""Jim Bob"",
+    ""BirthDate"": ""0001-01-01T00:00:00"",
+    ""LastModified"": ""0001-01-01T00:00:00""
+  }
+}";
+
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                TypeNameHandling = TypeNameHandling.Auto,
+            };
+
+            var c = JsonConvert.DeserializeObject<InheritedExtensionDataTestClass>(json, settings);
+
+            Assert.AreEqual(1, c.ExtensionData.Count);
+            Assert.AreEqual(typeof(WagePerson), c.ExtensionData["Jim"].GetType());
+
+            string serialized = JsonConvert.SerializeObject(c, settings);
+
+            Assert.AreEqual(json, serialized);
+        }
+
+        [Test]
+        public void RoundTripInheritedExtensionDataWithoutType()
+        {
+            string json = @"{
+  ""Jim"": {
+    ""$type"": ""Newtonsoft.Json.Tests.TestObjects.Organization.WagePerson, Newtonsoft.Json.Tests"",
+    ""HourlyWage"": 2.0,
+    ""Name"": ""Jim Bob"",
+    ""BirthDate"": ""0001-01-01T00:00:00"",
+    ""LastModified"": ""0001-01-01T00:00:00""
+  }
+}";
+
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented,
+                TypeNameHandling = TypeNameHandling.None,
+            };
+
+            var c = JsonConvert.DeserializeObject<InheritedExtensionDataTestClass>(json, settings);
+
+            Assert.AreEqual(1, c.ExtensionData.Count);
+            Assert.AreEqual(typeof(Person), c.ExtensionData["Jim"].GetType());
+
+            string serialized = JsonConvert.SerializeObject(c, settings);
+
+            Assert.AreEqual(@"{
+  ""Jim"": {
+    ""Name"": ""Jim Bob"",
+    ""BirthDate"": ""0001-01-01T00:00:00"",
+    ""LastModified"": ""0001-01-01T00:00:00""
+  }
+}", serialized);
+        }
+
+        public class DictionaryExtensionDataTestClass
+        {
+            [JsonExtensionData]
+            public SortedDictionary<string, SortedDictionary<string, string>> ExtensionData;
+        }
+
+        [Test]
+        public void RoundTripDictionaryExtensionData()
+        {
+            string json = @"{""Parent1"":{""Child1"":""Value1""}}";
+
+            var c = JsonConvert.DeserializeObject<DictionaryExtensionDataTestClass>(json);
+
+            Assert.AreEqual(1, c.ExtensionData.Count);
+            Assert.AreEqual(1, c.ExtensionData["Parent1"].Count);
+            Assert.AreEqual("Value1", c.ExtensionData["Parent1"]["Child1"]);
+
+            string serialized = JsonConvert.SerializeObject(c);
+
+            Assert.AreEqual(json, serialized);
+        }
+
+        [Test]
+        public void RoundTripDictionaryExtensionDataWithNaming()
+        {
+            string json = @"{""Parent1"":{""Child1"":""Value1""}}";
+
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                ContractResolver = new DefaultContractResolver
+                {
+                    NamingStrategy = new CamelCaseNamingStrategy
+                    {
+                        ProcessDictionaryKeys = true,
+                        ProcessExtensionDataNames = true,
+                    },
+                },
+            };
+
+            var c = JsonConvert.DeserializeObject<DictionaryExtensionDataTestClass>(json, settings);
+
+            Assert.AreEqual(1, c.ExtensionData.Count);
+            Assert.AreEqual(1, c.ExtensionData["Parent1"].Count);
+            Assert.AreEqual("Value1", c.ExtensionData["Parent1"]["Child1"]);
+
+            string serialized = JsonConvert.SerializeObject(c, settings);
+
+            Assert.AreEqual(@"{""parent1"":{""child1"":""Value1""}}", serialized);
+        }
     }
 }
