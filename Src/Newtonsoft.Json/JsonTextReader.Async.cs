@@ -1677,13 +1677,14 @@ namespace Newtonsoft.Json
         private async Task ReadIntoWrappedTypeObjectAsync(CancellationToken cancellationToken)
         {
             await ReaderReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
-            if (Value != null && Value.ToString() == JsonTypeReflector.TypePropertyName)
+
+            if (Value != null && Value.ToString() == _jsonTypeReflectorProperties.TypePropertyName)
             {
                 await ReaderReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
                 if (Value != null && Value.ToString().StartsWith("System.Byte[]", StringComparison.Ordinal))
                 {
                     await ReaderReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
-                    if (Value.ToString() == JsonTypeReflector.ValuePropertyName)
+                    if (Value.ToString() == _jsonTypeReflectorProperties.ValuePropertyName)
                     {
                         return;
                     }

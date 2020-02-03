@@ -139,7 +139,7 @@ namespace Newtonsoft.Json.Serialization
                 {
                     writer.WriteStartObject();
                     WriteTypeProperty(writer, contract.CreatedType);
-                    writer.WritePropertyName(JsonTypeReflector.ValuePropertyName, false);
+                    writer.WritePropertyName(Serializer._jsonTypeReflectorProperties.ValuePropertyName, false);
 
                     JsonWriter.WriteValue(writer, contract.TypeCode, value);
 
@@ -375,7 +375,7 @@ namespace Newtonsoft.Json.Serialization
             }
 
             writer.WriteStartObject();
-            writer.WritePropertyName(JsonTypeReflector.RefPropertyName, false);
+            writer.WritePropertyName(Serializer._jsonTypeReflectorProperties.RefPropertyName, false);
             writer.WriteValue(reference);
             writer.WriteEndObject();
         }
@@ -612,7 +612,7 @@ namespace Newtonsoft.Json.Serialization
                 TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "Writing object reference Id '{0}' for {1}.".FormatWith(CultureInfo.InvariantCulture, reference, type)), null);
             }
 
-            writer.WritePropertyName(JsonTypeReflector.IdPropertyName, false);
+            writer.WritePropertyName(Serializer._jsonTypeReflectorProperties.IdPropertyName, false);
             writer.WriteValue(reference);
         }
 
@@ -624,8 +624,8 @@ namespace Newtonsoft.Json.Serialization
             {
                 TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "Writing type name '{0}' for {1}.".FormatWith(CultureInfo.InvariantCulture, typeName, type)), null);
             }
-
-            writer.WritePropertyName(JsonTypeReflector.TypePropertyName, false);
+            
+            writer.WritePropertyName(Serializer._jsonTypeReflectorProperties.TypePropertyName, false);
             writer.WriteValue(typeName);
         }
 
@@ -836,7 +836,7 @@ namespace Newtonsoft.Json.Serialization
                 {
                     WriteTypeProperty(writer, values.GetType());
                 }
-                writer.WritePropertyName(JsonTypeReflector.ArrayValuesPropertyName, false);
+                writer.WritePropertyName(Serializer._jsonTypeReflectorProperties.ArrayValuesPropertyName, false);
             }
 
             if (contract.ItemContract == null)

@@ -834,6 +834,7 @@ namespace Newtonsoft.Json
 
             using (JsonTextReader reader = new JsonTextReader(new StringReader(value)))
             {
+                reader._jsonTypeReflectorProperties = jsonSerializer._jsonTypeReflectorProperties;
                 return jsonSerializer.Deserialize(reader, type);
             }
         }

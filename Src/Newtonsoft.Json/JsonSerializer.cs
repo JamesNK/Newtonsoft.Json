@@ -48,6 +48,7 @@ namespace Newtonsoft.Json
     {
         internal TypeNameHandling _typeNameHandling;
         internal TypeNameAssemblyFormatHandling _typeNameAssemblyFormatHandling;
+        internal TypeNameProperties _typeNameProperties;
         internal PreserveReferencesHandling _preserveReferencesHandling;
         internal ReferenceLoopHandling _referenceLoopHandling;
         internal MissingMemberHandling _missingMemberHandling;
@@ -77,6 +78,8 @@ namespace Newtonsoft.Json
         private bool? _checkAdditionalContent;
         private string? _dateFormatString;
         private bool _dateFormatStringSet;
+
+        internal JsonTypeReflectorProperties _jsonTypeReflectorProperties = new JsonTypeReflectorProperties();
 
         /// <summary>
         /// Occurs when the <see cref="JsonSerializer"/> errors during serialization and deserialization.
@@ -188,6 +191,31 @@ namespace Newtonsoft.Json
                 }
 
                 _typeNameHandling = value;
+            }
+        }
+
+        /// <summary>
+        /// Gets or sets the properties to use when serializing typename information.
+        /// The default value is <see cref="Json.TypeNameProperties.Default" />
+        /// </summary>
+        public virtual TypeNameProperties TypeNameProperties
+        {
+            get => _typeNameProperties;
+            set
+            {
+                if (value < TypeNameProperties.Default || value > TypeNameProperties.Mongo)
+                {
+                    throw new ArgumentOutOfRangeException(nameof(value));
+                }
+
+                _typeNameProperties = value;
+                if(_typeNameProperties == TypeNameProperties.Mongo)
+                {
+                    _jsonTypeReflectorProperties = new MongoJsonTypeReflectorProperties();
+                } else
+                {
+                    _jsonTypeReflectorProperties = new JsonTypeReflectorProperties();
+                }
             }
         }
 
@@ -562,6 +590,7 @@ namespace Newtonsoft.Json
             _preserveReferencesHandling = JsonSerializerSettings.DefaultPreserveReferencesHandling;
             _constructorHandling = JsonSerializerSettings.DefaultConstructorHandling;
             _typeNameHandling = JsonSerializerSettings.DefaultTypeNameHandling;
+            _typeNameProperties = JsonSerializerSettings.DefaultTypeNameProperties;
             _metadataPropertyHandling = JsonSerializerSettings.DefaultMetadataPropertyHandling;
             _context = JsonSerializerSettings.DefaultContext;
             _serializationBinder = DefaultSerializationBinder.Instance;
@@ -664,6 +693,10 @@ namespace Newtonsoft.Json
             if (settings._typeNameHandling != null)
             {
                 serializer.TypeNameHandling = settings.TypeNameHandling;
+            }
+            if (settings._typeNameProperties != null)
+            {
+                serializer.TypeNameProperties = settings.TypeNameProperties;
             }
             if (settings._metadataPropertyHandling != null)
             {

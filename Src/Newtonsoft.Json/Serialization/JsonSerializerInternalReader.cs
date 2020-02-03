@@ -97,7 +97,7 @@ namespace Newtonsoft.Json.Serialization
                 string? id = null;
                 if (Serializer.MetadataPropertyHandling != MetadataPropertyHandling.Ignore
                     && reader.TokenType == JsonToken.PropertyName
-                    && string.Equals(reader.Value!.ToString(), JsonTypeReflector.IdPropertyName, StringComparison.Ordinal))
+                    && string.Equals(reader.Value!.ToString(), Serializer._jsonTypeReflectorProperties.IdPropertyName, StringComparison.Ordinal))
                 {
                     reader.ReadAndAssert();
                     id = reader.Value?.ToString();
@@ -498,7 +498,7 @@ namespace Newtonsoft.Json.Serialization
                     // if the content is inside $value then read past it
                     if (Serializer.MetadataPropertyHandling != MetadataPropertyHandling.Ignore
                         && reader.TokenType == JsonToken.PropertyName
-                        && string.Equals(reader.Value!.ToString(), JsonTypeReflector.ValuePropertyName, StringComparison.Ordinal))
+                        && string.Equals(reader.Value!.ToString(), Serializer._jsonTypeReflectorProperties.ValuePropertyName, StringComparison.Ordinal))
                     {
                         reader.ReadAndAssert();
 
@@ -598,13 +598,13 @@ namespace Newtonsoft.Json.Serialization
             {
                 JObject current = (JObject)reader.CurrentToken!;
 
-                JProperty? refProperty = current.Property(JsonTypeReflector.RefPropertyName, StringComparison.Ordinal);
+                JProperty? refProperty = current.Property(Serializer._jsonTypeReflectorProperties.RefPropertyName, StringComparison.Ordinal);
                 if (refProperty != null)
                 {
                     JToken refToken = refProperty.Value;
                     if (refToken.Type != JTokenType.String && refToken.Type != JTokenType.Null)
                     {
-                        throw JsonSerializationException.Create(refToken, refToken.Path, "JSON reference {0} property must have a string or null value.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName), null);
+                        throw JsonSerializationException.Create(refToken, refToken.Path, "JSON reference {0} property must have a string or null value.".FormatWith(CultureInfo.InvariantCulture, Serializer._jsonTypeReflectorProperties.RefPropertyName), null);
                     }
 
                     string? reference = (string?)refProperty;
@@ -614,7 +614,7 @@ namespace Newtonsoft.Json.Serialization
                         JToken? additionalContent = refProperty.Next ?? refProperty.Previous;
                         if (additionalContent != null)
                         {
-                            throw JsonSerializationException.Create(additionalContent, additionalContent.Path, "Additional content found in JSON reference object. A JSON reference object should only have a {0} property.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName), null);
+                            throw JsonSerializationException.Create(additionalContent, additionalContent.Path, "Additional content found in JSON reference object. A JSON reference object should only have a {0} property.".FormatWith(CultureInfo.InvariantCulture, Serializer._jsonTypeReflectorProperties.RefPropertyName), null);
                         }
 
                         newValue = Serializer.GetReferenceResolver().ResolveReference(this, reference);
@@ -628,7 +628,7 @@ namespace Newtonsoft.Json.Serialization
                         return true;
                     }
                 }
-                JToken? typeToken = current[JsonTypeReflector.TypePropertyName];
+                JToken? typeToken = current[Serializer._jsonTypeReflectorProperties.TypePropertyName];
                 if (typeToken != null)
                 {
                     string? qualifiedTypeName = (string?)typeToken;
@@ -636,7 +636,7 @@ namespace Newtonsoft.Json.Serialization
                     typeTokenReader.ReadAndAssert();
                     ResolveTypeName(typeTokenReader, ref objectType, ref contract, member, containerContract, containerMember, qualifiedTypeName!);
 
-                    JToken? valueToken = current[JsonTypeReflector.ValuePropertyName];
+                    JToken? valueToken = current[Serializer._jsonTypeReflectorProperties.ValuePropertyName];
                     if (valueToken != null)
                     {
                         while (true)
@@ -644,7 +644,7 @@ namespace Newtonsoft.Json.Serialization
                             reader.ReadAndAssert();
                             if (reader.TokenType == JsonToken.PropertyName)
                             {
-                                if ((string)reader.Value! == JsonTypeReflector.ValuePropertyName)
+                                if ((string)reader.Value! == Serializer._jsonTypeReflectorProperties.ValuePropertyName)
                                 {
                                     return false;
                                 }
@@ -655,12 +655,12 @@ namespace Newtonsoft.Json.Serialization
                         }
                     }
                 }
-                JToken? idToken = current[JsonTypeReflector.IdPropertyName];
+                JToken? idToken = current[Serializer._jsonTypeReflectorProperties.IdPropertyName];
                 if (idToken != null)
                 {
                     id = (string?)idToken;
                 }
-                JToken? valuesToken = current[JsonTypeReflector.ArrayValuesPropertyName];
+                JToken? valuesToken = current[Serializer._jsonTypeReflectorProperties.ArrayValuesPropertyName];
                 if (valuesToken != null)
                 {
                     JsonReader listReader = valuesToken.CreateReader();
@@ -685,7 +685,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 string propertyName = reader.Value!.ToString();
 
-                if (propertyName.Length > 0 && propertyName[0] == '$')
+                if (propertyName.Length > 0 && propertyName.StartsWith(Serializer._jsonTypeReflectorProperties.GetReflectionPropertyPrefix(), StringComparison.Ordinal))
                 {
                     // read metadata properties
                     // $type, $id, $ref, etc
@@ -695,12 +695,12 @@ namespace Newtonsoft.Json.Serialization
                     {
                         propertyName = reader.Value!.ToString();
 
-                        if (string.Equals(propertyName, JsonTypeReflector.RefPropertyName, StringComparison.Ordinal))
+                        if (string.Equals(propertyName, Serializer._jsonTypeReflectorProperties.RefPropertyName, StringComparison.Ordinal))
                         {
                             reader.ReadAndAssert();
                             if (reader.TokenType != JsonToken.String && reader.TokenType != JsonToken.Null)
                             {
-                                throw JsonSerializationException.Create(reader, "JSON reference {0} property must have a string or null value.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName));
+                                throw JsonSerializationException.Create(reader, "JSON reference {0} property must have a string or null value.".FormatWith(CultureInfo.InvariantCulture, Serializer._jsonTypeReflectorProperties.RefPropertyName));
                             }
 
                             string? reference = reader.Value?.ToString();
@@ -711,7 +711,7 @@ namespace Newtonsoft.Json.Serialization
                             {
                                 if (reader.TokenType == JsonToken.PropertyName)
                                 {
-                                    throw JsonSerializationException.Create(reader, "Additional content found in JSON reference object. A JSON reference object should only have a {0} property.".FormatWith(CultureInfo.InvariantCulture, JsonTypeReflector.RefPropertyName));
+                                    throw JsonSerializationException.Create(reader, "Additional content found in JSON reference object. A JSON reference object should only have a {0} property.".FormatWith(CultureInfo.InvariantCulture, Serializer._jsonTypeReflectorProperties.RefPropertyName));
                                 }
 
                                 newValue = Serializer.GetReferenceResolver().ResolveReference(this, reference);
@@ -728,7 +728,7 @@ namespace Newtonsoft.Json.Serialization
                                 metadataProperty = true;
                             }
                         }
-                        else if (string.Equals(propertyName, JsonTypeReflector.TypePropertyName, StringComparison.Ordinal))
+                        else if (string.Equals(propertyName, Serializer._jsonTypeReflectorProperties.TypePropertyName, StringComparison.Ordinal))
                         {
                             reader.ReadAndAssert();
                             string qualifiedTypeName = reader.Value!.ToString();
@@ -739,7 +739,7 @@ namespace Newtonsoft.Json.Serialization
 
                             metadataProperty = true;
                         }
-                        else if (string.Equals(propertyName, JsonTypeReflector.IdPropertyName, StringComparison.Ordinal))
+                        else if (string.Equals(propertyName, Serializer._jsonTypeReflectorProperties.IdPropertyName, StringComparison.Ordinal))
                         {
                             reader.ReadAndAssert();
 
@@ -748,7 +748,7 @@ namespace Newtonsoft.Json.Serialization
                             reader.ReadAndAssert();
                             metadataProperty = true;
                         }
-                        else if (string.Equals(propertyName, JsonTypeReflector.ArrayValuesPropertyName, StringComparison.Ordinal))
+                        else if (string.Equals(propertyName, Serializer._jsonTypeReflectorProperties.ArrayValuesPropertyName, StringComparison.Ordinal))
                         {
                             reader.ReadAndAssert();
                             object? list = CreateList(reader, objectType, contract, member, existingValue, id);
@@ -2472,12 +2472,11 @@ namespace Newtonsoft.Json.Serialization
         {
             if (Serializer.MetadataPropertyHandling == MetadataPropertyHandling.ReadAhead)
             {
-                switch (memberName)
-                {
-                    case JsonTypeReflector.IdPropertyName:
-                    case JsonTypeReflector.RefPropertyName:
-                    case JsonTypeReflector.TypePropertyName:
-                    case JsonTypeReflector.ArrayValuesPropertyName:
+                if (memberName == Serializer._jsonTypeReflectorProperties.IdPropertyName
+                    || memberName == Serializer._jsonTypeReflectorProperties.RefPropertyName
+                    || memberName == Serializer._jsonTypeReflectorProperties.TypePropertyName
+                    || memberName == Serializer._jsonTypeReflectorProperties.ArrayValuesPropertyName
+                    ){ 
                         reader.Skip();
                         return true;
                 }

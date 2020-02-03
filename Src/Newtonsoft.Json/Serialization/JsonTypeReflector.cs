@@ -42,17 +42,17 @@ using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Serialization
 {
-    internal static class JsonTypeReflector
-    {
+
+    internal static class JsonTypeReflector {
+        public const string obsolete_IdPropertyName = "$id";
+        public const string obsolete_RefPropertyName = "$ref";
+        public const string obsolete_TypePropertyName = "$type";
+        public const string obsolete_ValuePropertyName = "$value";
+        public const string obsolete_ArrayValuesPropertyName = "$values";
+
+
         private static bool? _dynamicCodeGeneration;
         private static bool? _fullyTrusted;
-
-        public const string IdPropertyName = "$id";
-        public const string RefPropertyName = "$ref";
-        public const string TypePropertyName = "$type";
-        public const string ValuePropertyName = "$value";
-        public const string ArrayValuesPropertyName = "$values";
-
         public const string ShouldSerializePrefix = "ShouldSerialize";
         public const string SpecifiedPostfix = "Specified";
 
@@ -528,4 +528,5 @@ namespace Newtonsoft.Json.Serialization
             }
         }
     }
+ 
 }

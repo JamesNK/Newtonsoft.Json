@@ -57,7 +57,7 @@ namespace Newtonsoft.Json.Schema
             if (schema.Id != null && _resolver.GetSchema(schema.Id) != null)
             {
                 _writer.WriteStartObject();
-                _writer.WritePropertyName(JsonTypeReflector.RefPropertyName);
+                _writer.WritePropertyName(JsonTypeReflector.obsolete_RefPropertyName);
                 _writer.WriteValue(schema.Id);
                 _writer.WriteEndObject();
             }
