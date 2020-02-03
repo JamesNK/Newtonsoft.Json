@@ -177,6 +177,11 @@ namespace Newtonsoft.Json
             set => _typeNameHandling = value;
         }
 
+        /// <summary>
+        /// Gets or sets how type name metadata is serialized to json.
+        /// The default value is <see cref="Json.TypeNameProperties.Default"/>
+        /// For compatibility with MongoDB set to <see cref="Json.TypeNameProperties.Mongo"/>
+        /// </summary>
         public TypeNameProperties TypeNameProperties
         {
             get => _typeNameProperties ?? DefaultTypeNameProperties;
