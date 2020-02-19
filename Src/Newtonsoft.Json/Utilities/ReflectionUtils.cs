@@ -147,14 +147,14 @@ namespace Newtonsoft.Json.Utilities
             return v?.GetType();
         }
 
-        public static string GetTypeName(Type t, TypeNameAssemblyFormatHandling assemblyFormat, ISerializationBinder? binder)
+        public static string? GetTypeName(Type t, TypeNameAssemblyFormatHandling assemblyFormat, ISerializationBinder? binder)
         {
-            string fullyQualifiedTypeName = GetFullyQualifiedTypeName(t, binder);
+            string? fullyQualifiedTypeName = GetFullyQualifiedTypeName(t, binder);
 
             switch (assemblyFormat)
             {
                 case TypeNameAssemblyFormatHandling.Simple:
-                    return RemoveAssemblyDetails(fullyQualifiedTypeName);
+                    return fullyQualifiedTypeName != null ? RemoveAssemblyDetails(fullyQualifiedTypeName) : null;
                 case TypeNameAssemblyFormatHandling.Full:
                     return fullyQualifiedTypeName;
                 default:
@@ -162,7 +162,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        private static string GetFullyQualifiedTypeName(Type t, ISerializationBinder? binder)
+        private static string? GetFullyQualifiedTypeName(Type t, ISerializationBinder? binder)
         {
             if (binder != null)
             {
@@ -174,6 +174,11 @@ namespace Newtonsoft.Json.Utilities
                     return t.AssemblyQualifiedName;
                 }
 #endif
+                if (assemblyName == null && typeName == null)
+                {
+                    return null;
+                }
+
                 return typeName + (assemblyName == null ? "" : ", " + assemblyName);
             }
 

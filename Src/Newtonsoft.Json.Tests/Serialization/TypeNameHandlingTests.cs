@@ -943,6 +943,105 @@ namespace Newtonsoft.Json.Tests.Serialization
                 return Type.GetType(resolvedTypeName, true);
             }
         }
+
+        [Test]
+        public void SerializeUsingCustomBinderNullDiscriminator()
+        {
+            // This serialization binder will not provide a type discriminator for the Customer type, but will do so for the Purchase type
+            PotentiallyNullTypeNameSerializationBinder binder = new PotentiallyNullTypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests");
+
+            IList<object> values = new List<object>
+            {
+                new Customer
+                {
+                    Name = "Caroline Customer"
+                },
+                new Purchase
+                {
+                    ProductName = "Elbow Grease",
+                    Price = 5.99m,
+                    Quantity = 1
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+#pragma warning disable CS0618 // Type or member is obsolete
+                Binder = binder
+#pragma warning restore CS0618 // Type or member is obsolete
+            });
+
+            //[
+            //  {
+            //    "Name": "Caroline Customer"
+            //  },
+            //  {
+            //    "$type": "Purchase",
+            //    "ProductName": "Elbow Grease",
+            //    "Price": 5.99,
+            //    "Quantity": 1
+            //  }
+            //]
+
+            StringAssert.AreEqual(@"[
+  {
+    ""Name"": ""Caroline Customer""
+  },
+  {
+    ""$type"": ""Purchase"",
+    ""ProductName"": ""Elbow Grease"",
+    ""Price"": 5.99,
+    ""Quantity"": 1
+  }
+]", json);
+
+            IList<object> newValues = JsonConvert.DeserializeObject<IList<object>>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+#pragma warning disable CS0618 // Type or member is obsolete
+                Binder = new PotentiallyNullTypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests")
+#pragma warning restore CS0618 // Type or member is obsolete
+            });
+
+            // No type discriminator was included for this element, so it cannot be deserialized beyond 'object'
+            CustomAssert.IsInstanceOfType(typeof(object), newValues[0]);
+
+            CustomAssert.IsInstanceOfType(typeof(Purchase), newValues[1]);
+            Purchase purchase = (Purchase)newValues[1];
+            Assert.AreEqual("Elbow Grease", purchase.ProductName);
+        }
+
+        public class PotentiallyNullTypeNameSerializationBinder : SerializationBinder
+        {
+            public string TypeFormat { get; private set; }
+
+            public PotentiallyNullTypeNameSerializationBinder(string typeFormat)
+            {
+                TypeFormat = typeFormat;
+            }
+
+            public override void BindToName(Type serializedType, out string assemblyName, out string typeName)
+            {
+                assemblyName = null;
+
+                if (serializedType == typeof(Customer))
+                {
+                    typeName = null;
+                }
+                else
+                {
+                    typeName = serializedType.Name;
+                }
+            }
+
+            public override Type BindToType(string assemblyName, string typeName)
+            {
+                string resolvedTypeName = string.Format(TypeFormat, typeName);
+
+                return Type.GetType(resolvedTypeName, true);
+            }
+        }
 #endif
 
         [Test]
@@ -1024,6 +1123,101 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 assemblyName = null;
                 typeName = serializedType.Name;
+            }
+
+            public Type BindToType(string assemblyName, string typeName)
+            {
+                string resolvedTypeName = string.Format(TypeFormat, typeName);
+
+                return Type.GetType(resolvedTypeName, true);
+            }
+        }
+
+        [Test]
+        public void NewSerializeUsingCustomBinderNullDiscriminator()
+        {
+            // This serialization binder will not provide a type discriminator for the Customer type, but will do so for the Purchase type
+            NewPotentiallyNullTypeNameSerializationBinder binder = new NewPotentiallyNullTypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests");
+
+            IList<object> values = new List<object>
+            {
+                new Customer
+                {
+                    Name = "Caroline Customer"
+                },
+                new Purchase
+                {
+                    ProductName = "Elbow Grease",
+                    Price = 5.99m,
+                    Quantity = 1
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                SerializationBinder = binder
+            });
+
+            //[
+            //  {
+            //    "Name": "Caroline Customer"
+            //  },
+            //  {
+            //    "$type": "Purchase",
+            //    "ProductName": "Elbow Grease",
+            //    "Price": 5.99,
+            //    "Quantity": 1
+            //  }
+            //]
+
+            StringAssert.AreEqual(@"[
+  {
+    ""Name"": ""Caroline Customer""
+  },
+  {
+    ""$type"": ""Purchase"",
+    ""ProductName"": ""Elbow Grease"",
+    ""Price"": 5.99,
+    ""Quantity"": 1
+  }
+]", json);
+
+            IList<object> newValues = JsonConvert.DeserializeObject<IList<object>>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                SerializationBinder = new NewPotentiallyNullTypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests")
+            });
+
+            // No type discriminator was included for this element, so it cannot be deserialized beyond 'object'
+            CustomAssert.IsInstanceOfType(typeof(object), newValues[0]);
+
+            CustomAssert.IsInstanceOfType(typeof(Purchase), newValues[1]);
+            Purchase purchase = (Purchase)newValues[1];
+            Assert.AreEqual("Elbow Grease", purchase.ProductName);
+        }
+
+        public class NewPotentiallyNullTypeNameSerializationBinder : ISerializationBinder
+        {
+            public string TypeFormat { get; private set; }
+
+            public NewPotentiallyNullTypeNameSerializationBinder(string typeFormat)
+            {
+                TypeFormat = typeFormat;
+            }
+
+            public void BindToName(Type serializedType, out string assemblyName, out string typeName)
+            {
+                assemblyName = null;
+
+                if (serializedType == typeof(Customer))
+                {
+                    typeName = null;
+                }
+                else
+                {
+                    typeName = serializedType.Name;
+                }
             }
 
             public Type BindToType(string assemblyName, string typeName)
