@@ -1005,7 +1005,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             });
 
             // No type discriminator was included for this element, so it cannot be deserialized beyond 'object'
-            CustomAssert.IsInstanceOfType(typeof(object), newValues[0]);
+            CustomAssert.IsInstanceOfType(typeof(JObject), newValues[0]);
 
             CustomAssert.IsInstanceOfType(typeof(Purchase), newValues[1]);
             Purchase purchase = (Purchase)newValues[1];
@@ -1063,6 +1063,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
             };
 
+
             string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Auto,
@@ -1100,7 +1101,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             });
 
             // No type discriminator was included for this element, so it cannot be deserialized beyond 'object'
-            CustomAssert.IsInstanceOfType(typeof(object), newValues[0]);
+            CustomAssert.IsInstanceOfType(typeof(JObject), newValues[0]);
 
             CustomAssert.IsInstanceOfType(typeof(Purchase), newValues[1]);
             Purchase purchase = (Purchase)newValues[1];
