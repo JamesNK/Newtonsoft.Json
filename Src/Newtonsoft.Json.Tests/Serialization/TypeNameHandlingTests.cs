@@ -1042,96 +1042,6 @@ namespace Newtonsoft.Json.Tests.Serialization
                 return Type.GetType(resolvedTypeName, true);
             }
         }
-#endif
-
-        [Test]
-        public void NewSerializeUsingCustomBinder()
-        {
-            NewTypeNameSerializationBinder binder = new NewTypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests");
-
-            IList<object> values = new List<object>
-            {
-                new Customer
-                {
-                    Name = "Caroline Customer"
-                },
-                new Purchase
-                {
-                    ProductName = "Elbow Grease",
-                    Price = 5.99m,
-                    Quantity = 1
-                }
-            };
-
-            string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-                SerializationBinder = binder
-            });
-
-            //[
-            //  {
-            //    "$type": "Customer",
-            //    "Name": "Caroline Customer"
-            //  },
-            //  {
-            //    "$type": "Purchase",
-            //    "ProductName": "Elbow Grease",
-            //    "Price": 5.99,
-            //    "Quantity": 1
-            //  }
-            //]
-
-            StringAssert.AreEqual(@"[
-  {
-    ""$type"": ""Customer"",
-    ""Name"": ""Caroline Customer""
-  },
-  {
-    ""$type"": ""Purchase"",
-    ""ProductName"": ""Elbow Grease"",
-    ""Price"": 5.99,
-    ""Quantity"": 1
-  }
-]", json);
-
-            IList<object> newValues = JsonConvert.DeserializeObject<IList<object>>(json, new JsonSerializerSettings
-            {
-                TypeNameHandling = TypeNameHandling.Auto,
-                SerializationBinder = new NewTypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests")
-            });
-
-            CustomAssert.IsInstanceOfType(typeof(Customer), newValues[0]);
-            Customer customer = (Customer)newValues[0];
-            Assert.AreEqual("Caroline Customer", customer.Name);
-
-            CustomAssert.IsInstanceOfType(typeof(Purchase), newValues[1]);
-            Purchase purchase = (Purchase)newValues[1];
-            Assert.AreEqual("Elbow Grease", purchase.ProductName);
-        }
-
-        public class NewTypeNameSerializationBinder : ISerializationBinder
-        {
-            public string TypeFormat { get; private set; }
-
-            public NewTypeNameSerializationBinder(string typeFormat)
-            {
-                TypeFormat = typeFormat;
-            }
-
-            public void BindToName(Type serializedType, out string assemblyName, out string typeName)
-            {
-                assemblyName = null;
-                typeName = serializedType.Name;
-            }
-
-            public Type BindToType(string assemblyName, string typeName)
-            {
-                string resolvedTypeName = string.Format(TypeFormat, typeName);
-
-                return Type.GetType(resolvedTypeName, true);
-            }
-        }
 
         [Test]
         public void NewSerializeUsingCustomBinderNullDiscriminator()
@@ -1227,6 +1137,96 @@ namespace Newtonsoft.Json.Tests.Serialization
                 return Type.GetType(resolvedTypeName, true);
             }
         }
+#endif
+
+        [Test]
+        public void NewSerializeUsingCustomBinder()
+        {
+            NewTypeNameSerializationBinder binder = new NewTypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests");
+
+            IList<object> values = new List<object>
+            {
+                new Customer
+                {
+                    Name = "Caroline Customer"
+                },
+                new Purchase
+                {
+                    ProductName = "Elbow Grease",
+                    Price = 5.99m,
+                    Quantity = 1
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(values, Formatting.Indented, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                SerializationBinder = binder
+            });
+
+            //[
+            //  {
+            //    "$type": "Customer",
+            //    "Name": "Caroline Customer"
+            //  },
+            //  {
+            //    "$type": "Purchase",
+            //    "ProductName": "Elbow Grease",
+            //    "Price": 5.99,
+            //    "Quantity": 1
+            //  }
+            //]
+
+            StringAssert.AreEqual(@"[
+  {
+    ""$type"": ""Customer"",
+    ""Name"": ""Caroline Customer""
+  },
+  {
+    ""$type"": ""Purchase"",
+    ""ProductName"": ""Elbow Grease"",
+    ""Price"": 5.99,
+    ""Quantity"": 1
+  }
+]", json);
+
+            IList<object> newValues = JsonConvert.DeserializeObject<IList<object>>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                SerializationBinder = new NewTypeNameSerializationBinder("Newtonsoft.Json.Tests.Serialization.{0}, Newtonsoft.Json.Tests")
+            });
+
+            CustomAssert.IsInstanceOfType(typeof(Customer), newValues[0]);
+            Customer customer = (Customer)newValues[0];
+            Assert.AreEqual("Caroline Customer", customer.Name);
+
+            CustomAssert.IsInstanceOfType(typeof(Purchase), newValues[1]);
+            Purchase purchase = (Purchase)newValues[1];
+            Assert.AreEqual("Elbow Grease", purchase.ProductName);
+        }
+
+        public class NewTypeNameSerializationBinder : ISerializationBinder
+        {
+            public string TypeFormat { get; private set; }
+
+            public NewTypeNameSerializationBinder(string typeFormat)
+            {
+                TypeFormat = typeFormat;
+            }
+
+            public void BindToName(Type serializedType, out string assemblyName, out string typeName)
+            {
+                assemblyName = null;
+                typeName = serializedType.Name;
+            }
+
+            public Type BindToType(string assemblyName, string typeName)
+            {
+                string resolvedTypeName = string.Format(TypeFormat, typeName);
+
+                return Type.GetType(resolvedTypeName, true);
+            }
+        }       
 
         [Test]
         public void CollectionWithAbstractItems()
