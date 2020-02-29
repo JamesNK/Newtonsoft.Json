@@ -39,215 +39,133 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     public class DataTableConverter : JsonConverter
     {
-        /// <summary>
-        /// Writes the JSON representation of the object.
-        /// </summary>
-        /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
-        /// <param name="value">The value.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
-        {
-            if (value == null)
-            {
-                writer.WriteNull();
-                return;
-            }
+		/// <summary>
+		/// Writes the JSON representation of the object.
+		/// </summary>
+		/// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
+		/// <param name="value">The value.</param>
+		/// <param name="serializer">The calling serializer.</param>
+		public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+		{
+			DataTable table = (DataTable)value;
+			DefaultContractResolver resolver = serializer.ContractResolver as DefaultContractResolver;
 
-            DataTable table = (DataTable)value;
-            DefaultContractResolver? resolver = serializer.ContractResolver as DefaultContractResolver;
+			writer.WriteStartObject();
 
-            writer.WriteStartArray();
+			writer.WritePropertyName("Columns");
+			serializer.Serialize(writer, GetColumnDataTypes(table));
 
-            foreach (DataRow row in table.Rows)
-            {
-                writer.WriteStartObject();
-                foreach (DataColumn column in row.Table.Columns)
-                {
-                    object columnValue = row[column];
+			writer.WritePropertyName("Rows");
+			writer.WriteStartArray();
 
-                    if (serializer.NullValueHandling == NullValueHandling.Ignore && (columnValue == null || columnValue == DBNull.Value))
-                    {
-                        continue;
-                    }
+			foreach (DataRow row in table.Rows)
+			{
+				serializer.Serialize(writer, row.ItemArray);
+			}
 
-                    writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(column.ColumnName) : column.ColumnName);
-                    serializer.Serialize(writer, columnValue);
-                }
-                writer.WriteEndObject();
-            }
+			writer.WriteEndArray();
+			writer.WriteEndObject();
+		}
 
-            writer.WriteEndArray();
-        }
+		/// <summary>
+		/// Reads the JSON representation of the object.
+		/// </summary>
+		/// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
+		/// <param name="objectType">Type of the object.</param>
+		/// <param name="existingValue">The existing value of object being read.</param>
+		/// <param name="serializer">The calling serializer.</param>
+		/// <returns>The object value.</returns>
+		public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+		{
+			if (reader.TokenType == JsonToken.Null)
+			{
+				return null;
+			}
 
-        /// <summary>
-        /// Reads the JSON representation of the object.
-        /// </summary>
-        /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
-        /// <param name="objectType">Type of the object.</param>
-        /// <param name="existingValue">The existing value of object being read.</param>
-        /// <param name="serializer">The calling serializer.</param>
-        /// <returns>The object value.</returns>
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
+			DataTable dataTable = existingValue as DataTable;
 
-            if (!(existingValue is DataTable dt))
-            {
-                // handle typed datasets
-                dt = (objectType == typeof(DataTable))
-                    ? new DataTable()
-                    : (DataTable)Activator.CreateInstance(objectType);
-            }
+			if (dataTable == null)
+			{
+				// handle typed datasets
+				dataTable = (objectType == typeof(DataTable))
+						? new DataTable()
+						: (DataTable)Activator.CreateInstance(objectType);
+			}
 
-            // DataTable is inside a DataSet
-            // populate the name from the property name
-            if (reader.TokenType == JsonToken.PropertyName)
-            {
-                dt.TableName = (string)reader.Value!;
+			// DataTable is inside a DataSet
+			// populate the name from the property name
+			if (reader.TokenType == JsonToken.PropertyName)
+			{
+				dataTable.TableName = (string)reader.Value;
 
-                reader.ReadAndAssert();
+				reader.Read();
 
-                if (reader.TokenType == JsonToken.Null)
-                {
-                    return dt;
-                }
-            }
+				if (reader.TokenType == JsonToken.Null)
+				{
+					return dataTable;
+				}
+			}
 
-            if (reader.TokenType != JsonToken.StartArray)
-            {
-                throw JsonSerializationException.Create(reader, "Unexpected JSON token when reading DataTable. Expected StartArray, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
-            }
+			if (reader.TokenType == JsonToken.StartObject)
+			{
+				reader.Read();
+				if (reader.TokenType == JsonToken.PropertyName && (string)reader.Value == "Columns")
+				{
+					reader.Read();
 
-            reader.ReadAndAssert();
+					Dictionary<string, string> columnTypes = new Dictionary<string, string>();
+					columnTypes = serializer.Deserialize<Dictionary<string, string>>(reader);
 
-            while (reader.TokenType != JsonToken.EndArray)
-            {
-                CreateRow(reader, dt, serializer);
+					foreach (KeyValuePair<string, string> column in columnTypes)
+					{
+						dataTable.Columns.Add(column.Key, Type.GetType(column.Value));
+					}
+				}
+				reader.Read();
+				reader.Read();
+			}
 
-                reader.ReadAndAssert();
-            }
+			if (reader.TokenType != JsonToken.StartArray)
+			{
+				throw new JsonSerializationException($"Unexpected JSON token when reading DataTable. Expected StartArray, got {reader.TokenType}.");
+			}
 
-            return dt;
-        }
+			reader.Read();
 
-        private static void CreateRow(JsonReader reader, DataTable dt, JsonSerializer serializer)
-        {
-            DataRow dr = dt.NewRow();
-            reader.ReadAndAssert();
+			while (reader.TokenType != JsonToken.EndArray)
+			{
+				DataRow dr = dataTable.NewRow();
+				dr.ItemArray = serializer.Deserialize<System.Object[]>(reader);
+				dataTable.Rows.Add(dr);
 
-            while (reader.TokenType == JsonToken.PropertyName)
-            {
-                string columnName = (string)reader.Value!;
+				reader.Read();
+			}
 
-                reader.ReadAndAssert();
+			reader.Read();
 
-                DataColumn column = dt.Columns[columnName];
-                if (column == null)
-                {
-                    Type columnType = GetColumnDataType(reader);
-                    column = new DataColumn(columnName, columnType);
-                    dt.Columns.Add(column);
-                }
+			return dataTable;
+		}
 
-                if (column.DataType == typeof(DataTable))
-                {
-                    if (reader.TokenType == JsonToken.StartArray)
-                    {
-                        reader.ReadAndAssert();
-                    }
+		private static Dictionary<string, string> GetColumnDataTypes(DataTable dt)
+		{
+			Dictionary<string, string> columnTypes = new Dictionary<string, string>();
+			foreach (DataColumn column in dt.Columns)
+				columnTypes.Add(column.ColumnName, column.DataType.FullName);
 
-                    DataTable nestedDt = new DataTable();
+			return columnTypes;
+		}
 
-                    while (reader.TokenType != JsonToken.EndArray)
-                    {
-                        CreateRow(reader, nestedDt, serializer);
-
-                        reader.ReadAndAssert();
-                    }
-
-                    dr[columnName] = nestedDt;
-                }
-                else if (column.DataType.IsArray && column.DataType != typeof(byte[]))
-                {
-                    if (reader.TokenType == JsonToken.StartArray)
-                    {
-                        reader.ReadAndAssert();
-                    }
-
-                    List<object?> o = new List<object?>();
-
-                    while (reader.TokenType != JsonToken.EndArray)
-                    {
-                        o.Add(reader.Value);
-                        reader.ReadAndAssert();
-                    }
-
-                    Array destinationArray = Array.CreateInstance(column.DataType.GetElementType(), o.Count);
-                    ((IList)o).CopyTo(destinationArray, 0);
-
-                    dr[columnName] = destinationArray;
-                }
-                else
-                {
-                    object columnValue = (reader.Value != null)
-                        ? serializer.Deserialize(reader, column.DataType) ?? DBNull.Value
-                        : DBNull.Value;
-
-                    dr[columnName] = columnValue;
-                }
-
-                reader.ReadAndAssert();
-            }
-
-            dr.EndEdit();
-            dt.Rows.Add(dr);
-        }
-
-        private static Type GetColumnDataType(JsonReader reader)
-        {
-            JsonToken tokenType = reader.TokenType;
-
-            switch (tokenType)
-            {
-                case JsonToken.Integer:
-                case JsonToken.Boolean:
-                case JsonToken.Float:
-                case JsonToken.String:
-                case JsonToken.Date:
-                case JsonToken.Bytes:
-                    return reader.ValueType!;
-                case JsonToken.Null:
-                case JsonToken.Undefined:
-                case JsonToken.EndArray:
-                    return typeof(string);
-                case JsonToken.StartArray:
-                    reader.ReadAndAssert();
-                    if (reader.TokenType == JsonToken.StartObject)
-                    {
-                        return typeof(DataTable); // nested datatable
-                    }
-
-                    Type arrayType = GetColumnDataType(reader);
-                    return arrayType.MakeArrayType();
-                default:
-                    throw JsonSerializationException.Create(reader, "Unexpected JSON token when reading DataTable: {0}".FormatWith(CultureInfo.InvariantCulture, tokenType));
-            }
-        }
-
-        /// <summary>
-        /// Determines whether this instance can convert the specified value type.
-        /// </summary>
-        /// <param name="valueType">Type of the value.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified value type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type valueType)
-        {
-            return typeof(DataTable).IsAssignableFrom(valueType);
-        }
+		/// <summary>
+		/// Determines whether this instance can convert the specified value type.
+		/// </summary>
+		/// <param name="valueType">Type of the value.</param>
+		/// <returns>
+		/// 	<c>true</c> if this instance can convert the specified value type; otherwise, <c>false</c>.
+		/// </returns>
+		public override bool CanConvert(Type valueType)
+		{
+			return typeof(DataTable).IsAssignableFrom(valueType);
+		}
     }
 }
 
