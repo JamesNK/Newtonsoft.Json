@@ -195,7 +195,7 @@ namespace Newtonsoft.Json.Utilities
 
         private static char ToLower(char c)
         {
-#if HAVE_CHAR_TO_STRING_WITH_CULTURE
+#if HAVE_CHAR_TO_LOWER_WITH_CULTURE
             c = char.ToLower(c, CultureInfo.InvariantCulture);
 #else
             c = char.ToLowerInvariant(c);
