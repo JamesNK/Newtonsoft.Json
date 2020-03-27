@@ -2140,5 +2140,40 @@ Parameter name: arrayIndex",
             // Return exact match without ignoring case
             Assert.AreEqual("name", a.Property("name", StringComparison.Ordinal).Name);
         }
+
+#if NET20
+#else
+        [Test]
+        public void JObect_Keeps_TimeZone()
+        {
+            // Arrange
+            var testObject = new { EndDate = new DateTimeOffset(2020, 1, 1, 0, 0, 0, 0, TimeSpan.Zero) };
+            var expected = testObject.EndDate.ToString();
+            var json = JsonConvert.SerializeObject(testObject);
+            var settings = new JsonLoadSettings { DateParseHandling = DateParseHandling.DateTimeOffset };
+
+            // Act
+            var jObj = JObject.Parse(json, settings);
+
+            // Assert
+            Assert.AreEqual(expected, jObj["EndDate"].ToString());
+        }
+
+        [Test]
+        public void JObect_Keeps_TimeZone_Minus6()
+        {
+            // Arrange
+            var testObject = new { EndDate = new DateTimeOffset(2020, 1, 1, 0, 0, 0, 0, TimeSpan.FromHours(-6)) };
+            var expected = testObject.EndDate.ToString();
+            var json = JsonConvert.SerializeObject(testObject);
+            var settings = new JsonLoadSettings { DateParseHandling = DateParseHandling.DateTimeOffset };
+
+            // Act
+            var jObj = JObject.Parse(json, settings);
+
+            // Assert
+            Assert.AreEqual(expected, jObj["EndDate"].ToString());
+        }
+#endif
     }
 }
