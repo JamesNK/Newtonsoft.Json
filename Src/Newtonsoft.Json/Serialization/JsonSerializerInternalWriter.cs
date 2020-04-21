@@ -472,6 +472,7 @@ namespace Newtonsoft.Json.Serialization
                         continue;
                     }
 
+                    property.WriteComment(writer);
                     property.WritePropertyName(writer);
                     SerializeValue(writer, memberValue, memberContract, property, contract, member);
                 }

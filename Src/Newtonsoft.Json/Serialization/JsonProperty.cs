@@ -246,6 +246,12 @@ namespace Newtonsoft.Json.Serialization
         public TypeNameHandling? TypeNameHandling { get; set; }
 
         /// <summary>
+        /// Gets or sets or sets the comment of the property that is written above the property name.
+        /// </summary>
+        /// <value>The contents of the comment.</value>
+        public string? Comment { get; set; }
+
+        /// <summary>
         /// Gets or sets a predicate used to determine whether the property should be serialized.
         /// </summary>
         /// <value>A predicate used to determine whether the property should be serialized.</value>
@@ -316,6 +322,15 @@ namespace Newtonsoft.Json.Serialization
             else
             {
                 writer.WritePropertyName(propertyName);
+            }
+        }
+
+        internal void WriteComment(JsonWriter writer)
+        {
+            string? comment = Comment;
+            if (comment != null)
+            {
+                writer.WriteComment(" " + comment + " ");
             }
         }
     }

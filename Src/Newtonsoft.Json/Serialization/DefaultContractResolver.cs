@@ -769,6 +769,7 @@ namespace Newtonsoft.Json.Serialization
                 property.ReferenceLoopHandling = property.ReferenceLoopHandling ?? matchingMemberProperty.ReferenceLoopHandling;
                 property.ObjectCreationHandling = property.ObjectCreationHandling ?? matchingMemberProperty.ObjectCreationHandling;
                 property.TypeNameHandling = property.TypeNameHandling ?? matchingMemberProperty.TypeNameHandling;
+                property.Comment = property.Comment ?? matchingMemberProperty.Comment;
             }
 
             return property;
@@ -1544,6 +1545,7 @@ namespace Newtonsoft.Json.Serialization
                 property.ObjectCreationHandling = propertyAttribute._objectCreationHandling;
                 property.TypeNameHandling = propertyAttribute._typeNameHandling;
                 property.IsReference = propertyAttribute._isReference;
+                property.Comment = propertyAttribute.Comment;
 
                 property.ItemIsReference = propertyAttribute._itemIsReference;
                 property.ItemConverter = propertyAttribute.ItemConverterType != null ? JsonTypeReflector.CreateJsonConverterInstance(propertyAttribute.ItemConverterType, propertyAttribute.ItemConverterParameters) : null;

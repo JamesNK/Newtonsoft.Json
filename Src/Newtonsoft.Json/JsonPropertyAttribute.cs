@@ -47,6 +47,7 @@ namespace Newtonsoft.Json
         internal bool? _itemIsReference;
         internal ReferenceLoopHandling? _itemReferenceLoopHandling;
         internal TypeNameHandling? _itemTypeNameHandling;
+        internal string? _comment;
 
         /// <summary>
         /// Gets or sets the <see cref="JsonConverter"/> type used when serializing the property's collection items.
@@ -202,6 +203,16 @@ namespace Newtonsoft.Json
         {
             get => _itemIsReference ?? default;
             set => _itemIsReference = value;
+        }
+
+        /// <summary>
+        /// Gets or sets or sets the comment of the property that is written above the property name.
+        /// </summary>
+        /// <value>The contents of the comment.</value>
+        public string? Comment
+        {
+            get => _comment ?? default;
+            set => _comment = value;
         }
 
         /// <summary>
