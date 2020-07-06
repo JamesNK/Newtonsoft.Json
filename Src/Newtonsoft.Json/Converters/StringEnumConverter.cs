@@ -55,7 +55,7 @@ namespace Newtonsoft.Json.Converters
         [Obsolete("StringEnumConverter.CamelCaseText is obsolete. Set StringEnumConverter.NamingStrategy with CamelCaseNamingStrategy instead.")]
         public bool CamelCaseText
         {
-            get => (NamingStrategy is CamelCaseNamingStrategy);
+            get => NamingStrategy is CamelCaseNamingStrategy;
             set
             {
                 if (value)
@@ -173,7 +173,6 @@ namespace Newtonsoft.Json.Converters
         {
             return EnumUtils.ParseEnum(destinationPropertyType, NamingStrategy, inputEnumText!, !AllowIntegerValues);
         }
-
     }
 
     /// <summary>
