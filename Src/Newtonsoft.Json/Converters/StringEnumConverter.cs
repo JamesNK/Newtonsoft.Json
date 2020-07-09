@@ -234,7 +234,7 @@ namespace Newtonsoft.Json.Converters
                     throw JsonSerializationException.Create(null, writer.ContainerPath, "Integer representations of enums are not allowed, and no string representation can be constructed for value {0}.".FormatWith(CultureInfo.InvariantCulture, e.ToString("D")), null);
                 }
 
-                // enum value has no name so write number
+                // Enum value has no name so write number
                 writer.WriteValue((int)value);
             }
             else
