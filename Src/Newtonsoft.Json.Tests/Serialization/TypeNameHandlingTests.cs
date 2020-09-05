@@ -576,6 +576,29 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        // Type information should be ignored for contracts with TypeNameHandling set to TypeNameHandling.None
+        public void DeserializeObjectWithGenericIListUsingContractTypeNameHandling()
+        {
+            string json = @"{
+  ""Foo"": ""a"",
+  ""Bar"": {
+                ""$type"": ""System.NonExistentType[], mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089"",
+                ""$values"": [15]
+    }
+}";
+
+            ClassWithIList value = (ClassWithIList)JsonConvert.DeserializeObject(json, typeof(ClassWithIList), new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto,
+                ContractResolver = new OmitArrayTypesContractResolver(),
+            });
+
+            Assert.AreEqual("a", value.Foo);
+            Assert.AreEqual(1, value.Bar.Count);
+            Assert.AreEqual(15, value.Bar[0]);
+        }
+
+        [Test]
         public void DeserializeWithBadTypeName()
         {
             string employeeRef = typeof(EmployeeReference).AssemblyQualifiedName;
@@ -733,6 +756,30 @@ namespace Newtonsoft.Json.Tests.Serialization
     ""$type"": """ + productListTypeName + @""",
     ""$values"": []
   }
+}", json);
+        }
+
+        [Test]
+        public void SerializeObjectWithGenericIListUsingContractTypeNameHandling()
+        {
+            ClassWithIList container = new ClassWithIList("a", new long[] { 15 });
+
+            string json = JsonConvert.SerializeObject(container, Formatting.Indented,
+                new JsonSerializerSettings
+                {
+                    NullValueHandling = NullValueHandling.Ignore,
+                    TypeNameHandling = TypeNameHandling.Auto,
+                    ContractResolver = new OmitArrayTypesContractResolver(),
+#pragma warning disable 618
+                    TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
+#pragma warning restore 618
+                });
+
+            StringAssert.AreEqual(@"{
+  ""Foo"": ""a"",
+  ""Bar"": [
+    15
+  ]
 }", json);
         }
 
@@ -2552,5 +2599,15 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
     }
 #endif
+
+    public class OmitArrayTypesContractResolver : DefaultContractResolver
+    {
+        protected override JsonArrayContract CreateArrayContract(Type objectType)
+        {
+            JsonArrayContract result = base.CreateArrayContract(objectType);
+            result.TypeNameHandling = TypeNameHandling.None;
+            return result;
+        }
+    }
 }
 #endif

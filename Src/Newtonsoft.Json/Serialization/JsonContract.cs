@@ -140,6 +140,12 @@ namespace Newtonsoft.Json.Serialization
         public JsonConverter? InternalConverter { get; internal set; }
 
         /// <summary>
+        /// Gets or sets the type name handling.
+        /// </summary>
+        /// <value>The type name handling.</value>
+        public TypeNameHandling? TypeNameHandling { get; set; }
+
+        /// <summary>
         /// Gets or sets all methods called immediately after deserialization of the object.
         /// </summary>
         /// <value>The methods called immediately after deserialization of the object.</value>
