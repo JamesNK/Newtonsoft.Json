@@ -767,12 +767,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = JsonConvert.SerializeObject(container, Formatting.Indented,
                 new JsonSerializerSettings
                 {
-                    NullValueHandling = NullValueHandling.Ignore,
                     TypeNameHandling = TypeNameHandling.Auto,
-                    ContractResolver = new OmitArrayTypesContractResolver(),
-#pragma warning disable 618
-                    TypeNameAssemblyFormat = FormatterAssemblyStyle.Full
-#pragma warning restore 618
+                    ContractResolver = new OmitArrayTypesContractResolver()
                 });
 
             StringAssert.AreEqual(@"{
