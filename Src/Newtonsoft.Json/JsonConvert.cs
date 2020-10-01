@@ -654,6 +654,39 @@ namespace Newtonsoft.Json
             return SerializeObjectInternal(value, type, jsonSerializer);
         }
 
+        /// <summary>
+        /// Serializes the specified object to a JSON string using a type, formatting and <see cref="JsonSerializerSettings"/>.
+        /// </summary>
+        /// <param name="value">The object to serialize.</param>
+        /// <param name="formatting">Indicates how the output should be formatted.</param>
+        /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
+        /// <param name="quoteName">Gets or sets a value indicating whether object names will be surrounded with quotes.</param>
+        /// <param name="safeStructure">Gets or sets a value indicating whether object will be serializes as string or keeping the original structure.</param>
+        /// If this is <c>null</c>, default serialization settings will be used.</param>
+        /// <param name="type">
+        /// The type of the value being serialized.
+        /// This parameter is used when <see cref="JsonSerializer.TypeNameHandling"/> is <see cref="TypeNameHandling.Auto"/> to write out the type name if the type of the value does not match.
+        /// Specifying the type is optional.
+        /// </param>
+        /// <returns>
+        /// A JSON string representation of the object.
+        /// </returns>
+        [DebuggerStepThrough]
+        public static string SerializeAsJsObject(object? value, Type? type, Formatting formatting, JsonSerializerSettings? settings, bool quoteName=true, bool safeStructure=false)
+        {
+            StringBuilder builder = new StringBuilder();
+            JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
+            jsonSerializer.Formatting = formatting;
+            StringWriter stringWriter = new StringWriter(builder);
+            using (var jsonWriter = new JsonTextWriter(stringWriter))
+            {
+                jsonWriter.Formatting = Formatting.Indented;
+                jsonWriter.QuoteName = false;
+                jsonSerializer.Serialize(jsonWriter, value);             
+            }
+            return safeStructure? builder.ToString() : stringWriter.ToString();
+        }
+
         private static string SerializeObjectInternal(object? value, Type? type, JsonSerializer jsonSerializer)
         {
             StringBuilder sb = new StringBuilder(256);
@@ -661,7 +694,6 @@ namespace Newtonsoft.Json
             using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
             {
                 jsonWriter.Formatting = jsonSerializer.Formatting;
-
                 jsonSerializer.Serialize(jsonWriter, value, type);
             }
 
