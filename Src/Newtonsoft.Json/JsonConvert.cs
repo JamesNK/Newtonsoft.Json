@@ -694,6 +694,7 @@ namespace Newtonsoft.Json
             using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
             {
                 jsonWriter.Formatting = jsonSerializer.Formatting;
+
                 jsonSerializer.Serialize(jsonWriter, value, type);
             }
 
