@@ -277,25 +277,26 @@ namespace Newtonsoft.Json.Tests
 
 #if DNXCORE50
         protected TestFixtureBase()
+        {
+            // suppress writing to console with dotnet test to keep build log size small
+            Console.SetOut(new StringWriter());
+
+            JsonConvert.DefaultSettings = null;
+        }
 #else
         [SetUp]
         protected void TestSetup()
-#endif
         {
-#if !(DNXCORE50)
             //CultureInfo turkey = CultureInfo.CreateSpecificCulture("tr");
             //Thread.CurrentThread.CurrentCulture = turkey;
             //Thread.CurrentThread.CurrentUICulture = turkey;
 
             Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
             Thread.CurrentThread.CurrentUICulture = CultureInfo.InvariantCulture;
-#else
-            // suppress writing to console with dotnet test to keep build log size small
-            Console.SetOut(new StringWriter());
-#endif
 
             JsonConvert.DefaultSettings = null;
         }
+#endif
 
         protected void WriteEscapedJson(string json)
         {

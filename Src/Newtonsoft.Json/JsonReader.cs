@@ -184,13 +184,13 @@ namespace Newtonsoft.Json
             get => _dateParseHandling;
             set
             {
-                if (value < DateParseHandling.None ||
 #if HAVE_DATE_TIME_OFFSET
-                    value > DateParseHandling.DateTimeOffset
+                bool valueExceedsDateTime = value > DateParseHandling.DateTimeOffset;
 #else
-                    value > DateParseHandling.DateTime
+                bool valueExceedsDateTime = value > DateParseHandling.DateTime;
 #endif
-                    )
+
+                if (value < DateParseHandling.None || valueExceedsDateTime)
                 {
                     throw new ArgumentOutOfRangeException(nameof(value));
                 }
