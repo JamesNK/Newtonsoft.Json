@@ -136,6 +136,7 @@ namespace Newtonsoft.Json
         /// <param name="hasExistingValue">The existing value has a value.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
+        [return: MaybeNull]
         public abstract T ReadJson(JsonReader reader, Type objectType, [AllowNull]T existingValue, bool hasExistingValue, JsonSerializer serializer);
 
         /// <summary>
