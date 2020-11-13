@@ -334,7 +334,7 @@ namespace Newtonsoft.Json.Linq
         /// <typeparam name="T">The type to convert the token to.</typeparam>
         /// <param name="key">The token key.</param>
         /// <returns>The converted token value.</returns>
-        public virtual T Value<T>(object key)
+        public virtual T? Value<T>(object key)
         {
             JToken? token = this[key];
 
@@ -378,7 +378,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <typeparam name="T">The type to convert the values to.</typeparam>
         /// <returns>A <see cref="IEnumerable{T}"/> containing the child values of this <see cref="JToken"/>, in document order.</returns>
-        public virtual IEnumerable<T> Values<T>()
+        public virtual IEnumerable<T?> Values<T>()
         {
             throw new InvalidOperationException("Cannot access child value on {0}.".FormatWith(CultureInfo.InvariantCulture, GetType()));
         }
@@ -1929,8 +1929,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
         /// <returns>The new object created from the JSON value.</returns>
-        [return: MaybeNull]
-        public T ToObject<T>()
+        public T? ToObject<T>()
         {
 #pragma warning disable CS8601 // Possible null reference assignment.
             return (T)ToObject(typeof(T));
@@ -2065,8 +2064,7 @@ namespace Newtonsoft.Json.Linq
         /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
         /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used when creating the object.</param>
         /// <returns>The new object created from the JSON value.</returns>
-        [return: MaybeNull]
-        public T ToObject<T>(JsonSerializer jsonSerializer)
+        public T? ToObject<T>(JsonSerializer jsonSerializer)
         {
 #pragma warning disable CS8601 // Possible null reference assignment.
             return (T)ToObject(typeof(T), jsonSerializer);

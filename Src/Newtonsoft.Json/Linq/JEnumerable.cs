@@ -88,7 +88,7 @@ namespace Newtonsoft.Json.Linq
                     return JEnumerable<JToken>.Empty;
                 }
 
-                return new JEnumerable<JToken>(_enumerable.Values<T, JToken>(key));
+                return new JEnumerable<JToken>(_enumerable.Values<T, JToken>(key)!);
             }
         }
 
