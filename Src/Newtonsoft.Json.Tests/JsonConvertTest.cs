@@ -792,13 +792,13 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(@"\/Date(" + DateTimeUtils.ConvertDateTimeToJavaScriptTicks(millisecondsLocal) + GetOffset(millisecondsLocal, DateFormatHandling.MicrosoftDateFormat) + @")\/", result.MsDateUnspecified);
             Assert.AreEqual(@"\/Date(" + DateTimeUtils.ConvertDateTimeToJavaScriptTicks(millisecondsLocal) + @")\/", result.MsDateUtc);
 
-            DateTime ticksLocal = new DateTime(634663873826822481, DateTimeKind.Local);
+            DateTime ticksLocal = new DateTime(636556897826822481, DateTimeKind.Local);
             localToUtcDate = ticksLocal.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFFK");
 
             result = TestDateTime("DateTime Local with ticks", ticksLocal);
-            Assert.AreEqual("2012-03-03T16:03:02.6822481" + GetOffset(ticksLocal, DateFormatHandling.IsoDateFormat), result.IsoDateRoundtrip);
-            Assert.AreEqual("2012-03-03T16:03:02.6822481" + GetOffset(ticksLocal, DateFormatHandling.IsoDateFormat), result.IsoDateLocal);
-            Assert.AreEqual("2012-03-03T16:03:02.6822481", result.IsoDateUnspecified);
+            Assert.AreEqual("2018-03-03T16:03:02.6822481" + GetOffset(ticksLocal, DateFormatHandling.IsoDateFormat), result.IsoDateRoundtrip);
+            Assert.AreEqual("2018-03-03T16:03:02.6822481" + GetOffset(ticksLocal, DateFormatHandling.IsoDateFormat), result.IsoDateLocal);
+            Assert.AreEqual("2018-03-03T16:03:02.6822481", result.IsoDateUnspecified);
             Assert.AreEqual(localToUtcDate, result.IsoDateUtc);
             Assert.AreEqual(@"\/Date(" + DateTimeUtils.ConvertDateTimeToJavaScriptTicks(ticksLocal) + GetOffset(ticksLocal, DateFormatHandling.MicrosoftDateFormat) + @")\/", result.MsDateRoundtrip);
             Assert.AreEqual(@"\/Date(" + DateTimeUtils.ConvertDateTimeToJavaScriptTicks(ticksLocal) + GetOffset(ticksLocal, DateFormatHandling.MicrosoftDateFormat) + @")\/", result.MsDateLocal);
