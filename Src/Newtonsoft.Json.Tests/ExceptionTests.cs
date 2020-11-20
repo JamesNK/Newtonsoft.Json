@@ -113,7 +113,9 @@ namespace Newtonsoft.Json.Tests
             using (var memoryStream = new MemoryStream())
             {
                 var binaryFormatter = new BinaryFormatter();
+#pragma warning disable SYSLIB0011 // Type or member is obsolete
                 binaryFormatter.Serialize(memoryStream, exception);
+#pragma warning restore SYSLIB0011 // Type or member is obsolete
             }
         }
 #endif

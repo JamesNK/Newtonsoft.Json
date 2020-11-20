@@ -528,7 +528,7 @@ namespace Newtonsoft.Json.Serialization
             OnSerialized(writer, contract, value);
         }
 
-        private bool CalculatePropertyValues(JsonWriter writer, object value, JsonContainerContract contract, JsonProperty? member, JsonProperty property, [NotNullWhen(true)]out JsonContract? memberContract, [NotNullWhen(true)]out object? memberValue)
+        private bool CalculatePropertyValues(JsonWriter writer, object value, JsonContainerContract contract, JsonProperty? member, JsonProperty property, [NotNullWhen(true)]out JsonContract? memberContract, out object? memberValue)
         {
             if (!property.Ignored && property.Readable && ShouldSerialize(writer, property, value) && IsSpecified(writer, property, value))
             {
@@ -542,14 +542,14 @@ namespace Newtonsoft.Json.Serialization
 
                 if (ShouldWriteProperty(memberValue, contract as JsonObjectContract, property))
                 {
-                    if (ShouldWriteReference(memberValue, property, memberContract!, contract, member))
+                    if (ShouldWriteReference(memberValue, property, memberContract, contract, member))
                     {
                         property.WritePropertyName(writer);
                         WriteReference(writer, memberValue!);
                         return false;
                     }
 
-                    if (!CheckForCircularReference(writer, memberValue, property, memberContract!, contract, member))
+                    if (!CheckForCircularReference(writer, memberValue, property, memberContract, contract, member))
                     {
                         return false;
                     }
@@ -568,7 +568,9 @@ namespace Newtonsoft.Json.Serialization
                         }
                     }
 
+#pragma warning disable CS8762 // Parameter must have a non-null value when exiting in some condition.
                     return true;
+#pragma warning restore CS8762 // Parameter must have a non-null value when exiting in some condition.
                 }
             }
 

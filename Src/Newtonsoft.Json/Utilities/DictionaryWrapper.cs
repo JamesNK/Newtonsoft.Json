@@ -166,7 +166,9 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        public bool TryGetValue(TKey key, [MaybeNull]out TValue value)
+#pragma warning disable CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
+        public bool TryGetValue(TKey key, out TValue? value)
+#pragma warning restore CS8767 // Nullability of reference types in type of parameter doesn't match implicitly implemented member (possibly because of nullability attributes).
         {
             if (_dictionary != null)
             {

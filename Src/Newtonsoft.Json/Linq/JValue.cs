@@ -841,7 +841,7 @@ namespace Newtonsoft.Json.Linq
         /// <c>true</c> if the current object is equal to the <paramref name="other"/> parameter; otherwise, <c>false</c>.
         /// </returns>
         /// <param name="other">An object to compare with this object.</param>
-        public bool Equals([AllowNull] JValue other)
+        public bool Equals(JValue? other)
         {
             if (other == null)
             {
