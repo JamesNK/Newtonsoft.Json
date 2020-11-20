@@ -179,9 +179,9 @@ namespace Newtonsoft.Json.Utilities
 
         internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime, TimeSpan offset)
         {
-            long universialTicks = ToUniversalTicks(dateTime, offset);
+            long universalTicks = ToUniversalTicks(dateTime, offset);
 
-            return UniversialTicksToJavaScriptTicks(universialTicks);
+            return UniversalTicksToJavaScriptTicks(universalTicks);
         }
 
         internal static long ConvertDateTimeToJavaScriptTicks(DateTime dateTime)
@@ -193,12 +193,12 @@ namespace Newtonsoft.Json.Utilities
         {
             long ticks = (convertToUtc) ? ToUniversalTicks(dateTime) : dateTime.Ticks;
 
-            return UniversialTicksToJavaScriptTicks(ticks);
+            return UniversalTicksToJavaScriptTicks(ticks);
         }
 
-        private static long UniversialTicksToJavaScriptTicks(long universialTicks)
+        private static long UniversalTicksToJavaScriptTicks(long universalTicks)
         {
-            long javaScriptTicks = (universialTicks - InitialJavaScriptDateTicks) / 10000;
+            long javaScriptTicks = (universalTicks - InitialJavaScriptDateTicks) / 10000;
 
             return javaScriptTicks;
         }
