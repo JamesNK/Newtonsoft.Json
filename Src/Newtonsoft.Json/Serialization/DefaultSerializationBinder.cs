@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -87,6 +87,20 @@ namespace Newtonsoft.Json.Serialization
                             assembly = a;
                             break;
                         }
+                    }
+                }
+#endif
+
+#if NETFRAMEWORK
+                // Handle cross-platform .NET Framework to .NET Core 
+                // NET Framework uses mscorlib.dll while .NET core uses System.Private.CoreLib.dll
+                // Type.GetType() automatically handles resolution from mscorlib to System.Private.CoreLib.dll
+                // but not the other way around, we need to handle that manually that here on .NET Framework systems which use mscorlib
+                if (assembly == null) 
+                {
+                    if (assemblyName == "System.Private.CoreLib") 
+                    {
+                        assembly = Assembly.Load(new AssemblyName("mscorlib"));
                     }
                 }
 #endif
