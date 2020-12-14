@@ -587,7 +587,7 @@ namespace Newtonsoft.Json
         /// A JSON string representation of the object.
         /// </returns>
         [DebuggerStepThrough]
-        public static string SerializeObject(object? value, JsonSerializerSettings settings)
+        public static string SerializeObject(object? value, JsonSerializerSettings? settings)
         {
             return SerializeObject(value, null, settings);
         }
