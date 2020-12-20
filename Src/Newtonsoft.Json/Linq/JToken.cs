@@ -2704,5 +2704,17 @@ namespace Newtonsoft.Json.Linq
                 }
             }
         }
+
+        internal void CopyAnnotations(JToken target, JToken source)
+        {
+            if (source._annotations is object[] annotations)
+            {
+                target._annotations = annotations.ToArray();
+            }
+            else
+            {
+                target._annotations = source._annotations;
+            }
+        }
     }
 }

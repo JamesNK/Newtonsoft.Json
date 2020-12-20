@@ -257,6 +257,39 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(new Uri("http://www.google.com/"), i);
         }
 
+        [Test]
+        public void AnnotationsAreCopied()
+        {
+            JObject o = new JObject();
+            o.AddAnnotation("string!");
+            AssertCloneCopy(o, "string!");
+
+            JProperty p = new JProperty("Name", "Content");
+            p.AddAnnotation("string!");
+            AssertCloneCopy(p, "string!");
+
+            JArray a = new JArray();
+            a.AddAnnotation("string!");
+            AssertCloneCopy(a, "string!");
+
+            JConstructor c = new JConstructor("Test");
+            c.AddAnnotation("string!");
+            AssertCloneCopy(c, "string!");
+
+            JValue v = new JValue(true);
+            v.AddAnnotation("string!");
+            AssertCloneCopy(v, "string!");
+
+            JRaw r = new JRaw("raw");
+            r.AddAnnotation("string!");
+            AssertCloneCopy(r, "string!");
+        }
+
+        private void AssertCloneCopy<T>(JToken t, T annotation) where T : class
+        {
+            Assert.AreEqual(annotation, t.DeepClone().Annotation<T>());
+        }
+
 #if !NET20
         [Test]
         public void Example()

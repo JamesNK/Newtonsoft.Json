@@ -64,6 +64,7 @@ namespace Newtonsoft.Json.Linq
         public JValue(JValue other)
             : this(other.Value, other.Type)
         {
+            CopyAnnotations(this, other);
         }
 
         /// <summary>
