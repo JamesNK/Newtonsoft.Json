@@ -285,6 +285,24 @@ namespace Newtonsoft.Json.Tests.Linq
             AssertCloneCopy(r, "string!");
         }
 
+        [Test]
+        public void MultipleAnnotationsAreCopied()
+        {
+            Version version = new Version(1, 2, 3, 4);
+
+            JObject o = new JObject();
+            o.AddAnnotation("string!");
+            o.AddAnnotation(version);
+
+            JObject o2 = (JObject)o.DeepClone();
+            Assert.AreEqual("string!", o2.Annotation<string>());
+            Assert.AreEqual(version, o2.Annotation<Version>());
+
+            o2.RemoveAnnotations<Version>();
+            Assert.AreEqual(1, o.Annotations<Version>().Count());
+            Assert.AreEqual(0, o2.Annotations<Version>().Count());
+        }
+
         private void AssertCloneCopy<T>(JToken t, T annotation) where T : class
         {
             Assert.AreEqual(annotation, t.DeepClone().Annotation<T>());
