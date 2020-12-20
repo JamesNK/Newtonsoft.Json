@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Tests.Issues
 		{
 			// With a value of 150, this stackoverflows when run in .NET Core and passes when run in .NET Framework.
 			// Even much higher values (e. g. 500) pass on .NET Framework without incident.
-			const int MaxDepth = 500;
+			const int MaxDepth = 150;
 
 			var path = new List<string>();
 
@@ -62,7 +62,7 @@ namespace Newtonsoft.Json.Tests.Issues
 			var exception = ExceptionAssert.Throws<JsonReaderException>(() => JsonConvert.DeserializeObject<Nested>(serialized, new JsonSerializerSettings { MaxDepth = MaxDepth }));
 			
 			string joinedPath = string.Join(".", Enumerable.Repeat("Inner", MaxDepth).ToArray());
-			string message = $@"The reader's MaxDepth of 500 has been exceeded. Path '{joinedPath}', line 1, position 4501.";
+			string message = $@"The reader's MaxDepth of 150 has been exceeded. Path '{joinedPath}', line 1, position 1351.";
 			Assert.AreEqual(message, exception.Message);
 		}
 
