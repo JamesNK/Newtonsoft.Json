@@ -27,6 +27,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
@@ -37,14 +39,16 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
         private readonly string _expression;
         public List<PathFilter> Filters { get; }
+        public readonly TimeSpan? RegexSingleMatchTimeout = default;
 
         private int _currentIndex;
 
-        public JPath(string expression)
+        public JPath(string expression, TimeSpan? regexSingleMatchTimeout = default)
         {
             ValidationUtils.ArgumentNotNull(expression, nameof(expression));
             _expression = expression;
             Filters = new List<PathFilter>();
+            RegexSingleMatchTimeout = regexSingleMatchTimeout;
 
             ParseMain();
         }
@@ -509,7 +513,8 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     right = ParseSide();
                 }
 
-                BooleanQueryExpression booleanExpression = new BooleanQueryExpression(op, left, right);
+
+                var booleanExpression = new BooleanQueryExpression(op, left, right, RegexSingleMatchTimeout);
 
                 if (_expression[_currentIndex] == ')')
                 {
