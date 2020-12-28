@@ -44,6 +44,7 @@ using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
+using System.Threading;
 #endif
 
 namespace Newtonsoft.Json.Linq
@@ -485,7 +486,7 @@ namespace Newtonsoft.Json.Linq
             return (Array.IndexOf(validTypes, o.Type) != -1) || (nullable && (o.Type == JTokenType.Null || o.Type == JTokenType.Undefined));
         }
 
-#region Cast from operators
+        #region Cast from operators
         /// <summary>
         /// Performs an explicit conversion from <see cref="Newtonsoft.Json.Linq.JToken"/> to <see cref="System.Boolean"/>.
         /// </summary>
@@ -1497,9 +1498,9 @@ namespace Newtonsoft.Json.Linq
             return ConvertUtils.ToBigInteger(v.Value);
         }
 #endif
-#endregion
+        #endregion
 
-#region Cast to operators
+        #region Cast to operators
         /// <summary>
         /// Performs an implicit conversion from <see cref="Boolean"/> to <see cref="JToken"/>.
         /// </summary>
@@ -1863,7 +1864,7 @@ namespace Newtonsoft.Json.Linq
         {
             return new JValue(value);
         }
-#endregion
+        #endregion
 
         IEnumerator IEnumerable.GetEnumerator()
         {
@@ -2336,6 +2337,35 @@ namespace Newtonsoft.Json.Linq
             return token;
         }
 
+#if HAVE_REGEX_TIMEOUTS
+        /// <summary>
+        /// Selects a <see cref="JToken"/> using a JSONPath expression. Selects the token that matches the object path.
+        /// </summary>
+        /// <param name="path">
+        /// A <see cref="String"/> that contains a JSONPath expression.
+        /// </param>
+        /// <param name="errorWhenNoMatch">A flag to indicate whether an error should be thrown if no tokens are found when evaluating part of the expression.</param>
+        /// <param name="singleMatchTimeout">the time after which a single call to regex.ismatch must complete, default is forever</param>
+        /// <returns>A <see cref="JToken"/>.</returns>
+        public JToken? SelectToken(string path, bool errorWhenNoMatch, TimeSpan? singleMatchTimeout = default)
+        {
+            JPath p = new JPath(path, singleMatchTimeout);
+
+            JToken? token = null;
+            foreach (JToken t in p.Evaluate(this, this, errorWhenNoMatch))
+            {
+                if (token != null)
+                {
+                    throw new JsonException("Path returned multiple tokens.");
+                }
+
+                token = t;
+            }
+
+            return token;
+        }
+#endif
+
         /// <summary>
         /// Selects a collection of elements using a JSONPath expression.
         /// </summary>
@@ -2358,9 +2388,50 @@ namespace Newtonsoft.Json.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
         public IEnumerable<JToken> SelectTokens(string path, bool errorWhenNoMatch)
         {
-            JPath p = new JPath(path);
+            var p = new JPath(path);
             return p.Evaluate(this, this, errorWhenNoMatch);
         }
+
+#if HAVE_REGEX_TIMEOUTS
+        /// <summary>
+        /// Selects a collection of elements using a JSONPath expression.
+        /// </summary>
+        /// <param name="path">
+        /// A <see cref="String"/> that contains a JSONPath expression.
+        /// </param>
+        /// <param name="errorWhenNoMatch">A flag to indicate whether an error should be thrown if no tokens are found when evaluating part of the expression.</param>
+        /// <param name="singleRegexMatchTimeout">
+        /// for every token that matches a jpath, the time a regex is permitted to run 
+        /// against that token before timeout
+        /// </param>
+        /// <param name="globalRegexMatchTimeout">
+        /// the time this method should wait for the given jpath regex to match all tokens.
+        /// worst case expected execution time roughly globalRegexMatchTimeout + Min(singleRegexMatchTimeout, globalRegexMatchTimeout)
+        /// </param>
+        /// <exception cref="System.Text.RegularExpressions.RegexMatchTimeoutException">if single call timeout exceeded</exception>"
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
+        public IEnumerable<JToken> SelectTokens(string path,
+            bool errorWhenNoMatch,
+            TimeSpan? singleRegexMatchTimeout = default,
+            TimeSpan? globalRegexMatchTimeout = default)
+        {
+            var singleTimeout = singleRegexMatchTimeout ?? Timeout.InfiniteTimeSpan;
+            var globalTimeout = globalRegexMatchTimeout ?? Timeout.InfiniteTimeSpan;
+            if (globalTimeout != Timeout.InfiniteTimeSpan && globalTimeout < singleTimeout)
+            {
+                singleTimeout = globalTimeout;
+            }
+            
+            using var cts = new CancellationTokenSource(globalTimeout);
+            var p = new JPath(path, singleTimeout);
+            var results = p.Evaluate(this, this, errorWhenNoMatch);
+            foreach (var result in results)
+            {
+                cts.Token.ThrowIfCancellationRequested();
+                yield return result;
+            }
+        }
+#endif
 
 #if HAVE_DYNAMIC
         /// <summary>
