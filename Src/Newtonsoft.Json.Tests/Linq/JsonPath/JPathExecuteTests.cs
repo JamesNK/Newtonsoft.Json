@@ -31,6 +31,10 @@ using System.Numerics;
 #endif
 using Newtonsoft.Json.Linq.JsonPath;
 using Newtonsoft.Json.Tests.Bson;
+#if HAVE_BOGUS || HAVE_REGEX_TIMEOUTS
+using System.Text.RegularExpressions;
+using Bogus;
+#endif
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -44,7 +48,6 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
-
 #endif
 
 namespace Newtonsoft.Json.Tests.Linq.JsonPath
@@ -52,6 +55,22 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
     [TestFixture]
     public class JPathExecuteTests : TestFixtureBase
     {
+        public static readonly string RegexBacktrackingPattern =
+            "(?<time>(.*?))[|].*(?<placeholder4>(.*?))[|].*(?<source>(.*?))[|].*(?<level>[1-3])[|].*(?<message>(.*?))[|].*[|].*[|].*(?<placeholder1>(.*?))[|].*[|].*(?<placeholder2>(.*?))[|].*(?<placeholder3>(.*))";
+#if HAVE_BOGUS || HAVE_REGEX_TIMEOUTS
+        private readonly Faker _faker = new Faker();
+        private JArray _regexBacktrackingData = new JArray();
+
+        public JPathExecuteTests()
+        {
+            for (var i = 0; i < 30; i++)
+            {
+                var value = $"{_faker.Date.Past()}|1|{_faker.Lorem.Words()}|3|{_faker.Lorem.Sentences(3, ". ")}|||.\\{_faker.Lorem.Word()}.cpp||{_faker.Random.UShort()}|-1";
+                _regexBacktrackingData.Add(new JObject(new JProperty("b", value)));
+            }
+        }
+#endif
+
         [Test]
         public void GreaterThanIssue1518()
         {
@@ -70,6 +89,44 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
             var dd = jObj.SelectToken("$..[?(@.usingmem>21438)]");//null,21,438
             Assert.AreEqual(jObj, dd);
         }
+
+#if HAVE_REGEX_TIMEOUTS
+        [Test]
+        public void GlobalMatchSlowRegexTimeoutRespected()
+        {
+            Xunit.Assert.Throws<OperationCanceledException>(() =>
+            {
+                 var tokens = _regexBacktrackingData.SelectTokens($"[?(@.b =~ /{RegexBacktrackingPattern}/)]",
+                     errorWhenNoMatch: false,
+                     singleRegexMatchTimeout: default,
+                     globalRegexMatchTimeout: TimeSpan.FromMilliseconds(3));
+                tokens.Count();
+            });
+        }
+
+        [Test]
+        public void SingleMatchSlowRegexTimeoutRespected()
+        {
+            Xunit.Assert.Throws<RegexMatchTimeoutException>(() =>
+            {
+                var tokens = _regexBacktrackingData.SelectTokens($"[?(@.b =~ /{RegexBacktrackingPattern}/)]",
+                     errorWhenNoMatch: false,
+                     singleRegexMatchTimeout: TimeSpan.FromMilliseconds(3),
+                     globalRegexMatchTimeout: default);
+                tokens.Count();
+            });
+        }
+#endif
+
+#if HAVE_BOGUS
+        [Test]
+        public void JPathSlowRegexWithoutTimeoutsCanBeSlow()
+        {
+            var tokens = _regexBacktrackingData.SelectTokens($"[?(@.b =~ /{RegexBacktrackingPattern}/)]",
+                errorWhenNoMatch: false);
+            Assert.AreEqual(_regexBacktrackingData.Count(), tokens.Count());
+        }
+#endif
 
         [Test]
         public void GreaterThanWithIntegerParameterAndStringValue()

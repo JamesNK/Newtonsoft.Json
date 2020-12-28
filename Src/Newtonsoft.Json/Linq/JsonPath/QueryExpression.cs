@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
+using System.Threading;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -83,6 +84,10 @@ namespace Newtonsoft.Json.Linq.JsonPath
     {
         public readonly object Left;
         public readonly object? Right;
+        internal TimeSpan? SingleMatchTimeout;
+#if HAVE_REGEX_TIMEOUTS
+        public Lazy<CancellationTokenSource> AllMatchesCancellationToken;
+#endif
 
         public BooleanQueryExpression(QueryOperator @operator, object left, object? right) : base(@operator)
         {
@@ -143,7 +148,12 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 switch (Operator)
                 {
                     case QueryOperator.RegexEquals:
+#if HAVE_REGEX_TIMEOUTS
+                        if (RegexEquals(leftValue, rightValue, SingleMatchTimeout, AllMatchesCancellationToken))
+#else
+
                         if (RegexEquals(leftValue, rightValue))
+#endif
                         {
                             return true;
                         }
@@ -215,7 +225,14 @@ namespace Newtonsoft.Json.Linq.JsonPath
             return false;
         }
 
+#if HAVE_REGEX_TIMEOUTS
+        private static bool RegexEquals(JValue input, 
+            JValue pattern,
+            TimeSpan? regexMatchTimeout, 
+            Lazy<CancellationTokenSource> cts)
+#else
         private static bool RegexEquals(JValue input, JValue pattern)
+#endif
         {
             if (input.Type != JTokenType.String || pattern.Type != JTokenType.String)
             {
@@ -228,7 +245,13 @@ namespace Newtonsoft.Json.Linq.JsonPath
             string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
             string optionsText = regexText.Substring(patternOptionDelimiterIndex + 1);
 
+#if HAVE_REGEX_TIMEOUTS
+            cts.Value.Token.ThrowIfCancellationRequested();
+            var timeout = regexMatchTimeout ?? Regex.InfiniteMatchTimeout;
+            return Regex.IsMatch((string)input.Value!, patternText, MiscellaneousUtils.GetRegexOptions(optionsText), timeout);
+#else
             return Regex.IsMatch((string)input.Value!, patternText, MiscellaneousUtils.GetRegexOptions(optionsText));
+#endif
         }
 
         internal static bool EqualsWithStringCoercion(JValue value, JValue queryValue)

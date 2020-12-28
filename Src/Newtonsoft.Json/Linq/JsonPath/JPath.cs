@@ -27,6 +27,8 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
+using System.Text.RegularExpressions;
+using System.Threading;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
@@ -37,14 +39,29 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
         private readonly string _expression;
         public List<PathFilter> Filters { get; }
+#if HAVE_REGEX_TIMEOUTS
+        public TimeSpan? RegexSingleMatchTimeout = default;
+        public TimeSpan? RegexAllMatchesTimeout { get; }
+        public Lazy<CancellationTokenSource> RegexAllMatchesCancellationTokenSource { get; }
+#endif
 
         private int _currentIndex;
 
-        public JPath(string expression)
+        public JPath(string expression,
+            TimeSpan? regexSingleMatchTimeout = default,
+            TimeSpan? regexAllMatchesTimeout = default)
         {
             ValidationUtils.ArgumentNotNull(expression, nameof(expression));
             _expression = expression;
             Filters = new List<PathFilter>();
+#if HAVE_REGEX_TIMEOUTS
+            RegexSingleMatchTimeout = regexSingleMatchTimeout;
+            RegexAllMatchesTimeout = regexAllMatchesTimeout;
+            // linq expressions can be evaluated/used well into future, 
+            // so only start the cancellation token when its used
+            RegexAllMatchesCancellationTokenSource = 
+                new (() => new(RegexAllMatchesTimeout ?? Timeout.InfiniteTimeSpan));
+#endif
 
             ParseMain();
         }
@@ -509,7 +526,16 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     right = ParseSide();
                 }
 
-                BooleanQueryExpression booleanExpression = new BooleanQueryExpression(op, left, right);
+
+#if HAVE_REGEX_TIMEOUTS
+                var booleanExpression = new BooleanQueryExpression(op, left, right)
+                {
+                    SingleMatchTimeout = RegexSingleMatchTimeout,
+                    AllMatchesCancellationToken = RegexAllMatchesCancellationTokenSource,
+                };
+#else
+                var booleanExpression = new BooleanQueryExpression(op, left, right);
+#endif
 
                 if (_expression[_currentIndex] == ')')
                 {
