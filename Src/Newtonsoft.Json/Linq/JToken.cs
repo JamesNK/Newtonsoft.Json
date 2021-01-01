@@ -1931,9 +1931,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>The new object created from the JSON value.</returns>
         public T? ToObject<T>()
         {
-#pragma warning disable CS8601 // Possible null reference assignment.
-            return (T)ToObject(typeof(T));
-#pragma warning restore CS8601 // Possible null reference assignment.
+            return (T?)ToObject(typeof(T));
         }
 
         /// <summary>
@@ -2066,9 +2064,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>The new object created from the JSON value.</returns>
         public T? ToObject<T>(JsonSerializer jsonSerializer)
         {
-#pragma warning disable CS8601 // Possible null reference assignment.
-            return (T)ToObject(typeof(T), jsonSerializer);
-#pragma warning restore CS8601 // Possible null reference assignment.
+            return (T?)ToObject(typeof(T), jsonSerializer);
         }
 
         /// <summary>

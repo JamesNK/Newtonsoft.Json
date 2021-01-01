@@ -94,9 +94,7 @@ namespace Newtonsoft.Json
             {
                 throw new JsonSerializationException("Converter cannot write specified value to JSON. {0} is required.".FormatWith(CultureInfo.InvariantCulture, typeof(T)));
             }
-#pragma warning disable CS8601 // Possible null reference assignment.
-            WriteJson(writer, (T)value, serializer);
-#pragma warning restore CS8601 // Possible null reference assignment.
+            WriteJson(writer, (T?)value, serializer);
         }
 
         /// <summary>
@@ -122,9 +120,7 @@ namespace Newtonsoft.Json
             {
                 throw new JsonSerializationException("Converter cannot read JSON with the specified existing value. {0} is required.".FormatWith(CultureInfo.InvariantCulture, typeof(T)));
             }
-#pragma warning disable CS8601 // Possible null reference assignment.
-            return ReadJson(reader, objectType, existingIsNull ? default : (T)existingValue, !existingIsNull, serializer);
-#pragma warning restore CS8601 // Possible null reference assignment.
+            return ReadJson(reader, objectType, existingIsNull ? default : (T?)existingValue, !existingIsNull, serializer);
         }
 
         /// <summary>

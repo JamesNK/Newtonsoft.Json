@@ -958,7 +958,11 @@ namespace Newtonsoft.Json.Serialization
                         {
                             if (value is string s)
                             {
-                                return EnumUtils.ParseEnum(contract.NonNullableUnderlyingType, null, s, false);
+                                return EnumUtils.ParseEnum(
+                                    contract.NonNullableUnderlyingType,
+                                    null,
+                                    s,
+                                    false);
                             }
                             if (ConvertUtils.IsInteger(primitiveContract.TypeCode))
                             {
@@ -1387,7 +1391,7 @@ namespace Newtonsoft.Json.Serialization
                                     {
                                         keyValue = DateTimeUtils.TryParseDateTime(keyValue.ToString(), reader.DateTimeZoneHandling, reader.DateFormatString, reader.Culture, out DateTime dt)
                                             ? dt
-                                            : EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract!, contract.DictionaryKeyType)!;
+                                            : EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType)!;
                                         break;
                                     }
 #if HAVE_DATE_TIME_OFFSET
@@ -1396,12 +1400,14 @@ namespace Newtonsoft.Json.Serialization
                                     {
                                         keyValue = DateTimeUtils.TryParseDateTimeOffset(keyValue.ToString(), reader.DateFormatString, reader.Culture, out DateTimeOffset dt)
                                             ? dt
-                                            : EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract!, contract.DictionaryKeyType)!;
+                                            : EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType)!;
                                         break;
                                     }
 #endif
                                     default:
-                                        keyValue = EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract!, contract.DictionaryKeyType)!;
+                                        keyValue = contract.KeyContract != null && contract.KeyContract.IsEnum
+                                            ? EnumUtils.ParseEnum(contract.KeyContract.NonNullableUnderlyingType, (Serializer._contractResolver as DefaultContractResolver)?.NamingStrategy, keyValue.ToString(), false)
+                                            : EnsureType(reader, keyValue, CultureInfo.InvariantCulture, contract.KeyContract, contract.DictionaryKeyType)!;
                                         break;
                                 }
                             }
