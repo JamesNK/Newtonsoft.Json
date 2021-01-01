@@ -257,6 +257,57 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(new Uri("http://www.google.com/"), i);
         }
 
+        [Test]
+        public void AnnotationsAreCopied()
+        {
+            JObject o = new JObject();
+            o.AddAnnotation("string!");
+            AssertCloneCopy(o, "string!");
+
+            JProperty p = new JProperty("Name", "Content");
+            p.AddAnnotation("string!");
+            AssertCloneCopy(p, "string!");
+
+            JArray a = new JArray();
+            a.AddAnnotation("string!");
+            AssertCloneCopy(a, "string!");
+
+            JConstructor c = new JConstructor("Test");
+            c.AddAnnotation("string!");
+            AssertCloneCopy(c, "string!");
+
+            JValue v = new JValue(true);
+            v.AddAnnotation("string!");
+            AssertCloneCopy(v, "string!");
+
+            JRaw r = new JRaw("raw");
+            r.AddAnnotation("string!");
+            AssertCloneCopy(r, "string!");
+        }
+
+        [Test]
+        public void MultipleAnnotationsAreCopied()
+        {
+            Version version = new Version(1, 2, 3, 4);
+
+            JObject o = new JObject();
+            o.AddAnnotation("string!");
+            o.AddAnnotation(version);
+
+            JObject o2 = (JObject)o.DeepClone();
+            Assert.AreEqual("string!", o2.Annotation<string>());
+            Assert.AreEqual(version, o2.Annotation<Version>());
+
+            o2.RemoveAnnotations<Version>();
+            Assert.AreEqual(1, o.Annotations<Version>().Count());
+            Assert.AreEqual(0, o2.Annotations<Version>().Count());
+        }
+
+        private void AssertCloneCopy<T>(JToken t, T annotation) where T : class
+        {
+            Assert.AreEqual(annotation, t.DeepClone().Annotation<T>());
+        }
+
 #if !NET20
         [Test]
         public void Example()

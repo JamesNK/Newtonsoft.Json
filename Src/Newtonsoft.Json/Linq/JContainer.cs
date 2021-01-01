@@ -117,6 +117,8 @@ namespace Newtonsoft.Json.Linq
                 AddInternal(i, child, false);
                 i++;
             }
+
+            CopyAnnotations(this, other);
         }
 
         internal void CheckReentrancy()
