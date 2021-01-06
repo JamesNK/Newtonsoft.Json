@@ -118,21 +118,21 @@ namespace Newtonsoft.Json.Serialization
             Type? keyType;
             Type? valueType;
 
-            if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IDictionary<,>), out _genericCollectionDefinitionType))
+            if (ReflectionUtils.ImplementsGenericDefinition(NonNullableUnderlyingType, typeof(IDictionary<,>), out _genericCollectionDefinitionType))
             {
                 keyType = _genericCollectionDefinitionType.GetGenericArguments()[0];
                 valueType = _genericCollectionDefinitionType.GetGenericArguments()[1];
 
-                if (ReflectionUtils.IsGenericDefinition(UnderlyingType, typeof(IDictionary<,>)))
+                if (ReflectionUtils.IsGenericDefinition(NonNullableUnderlyingType, typeof(IDictionary<,>)))
                 {
                     CreatedType = typeof(Dictionary<,>).MakeGenericType(keyType, valueType);
                 }
-                else if (underlyingType.IsGenericType())
+                else if (NonNullableUnderlyingType.IsGenericType())
                 {
                     // ConcurrentDictionary<,> + IDictionary setter + null value = error
                     // wrap to use generic setter
                     // https://github.com/JamesNK/Newtonsoft.Json/issues/1582
-                    Type typeDefinition = underlyingType.GetGenericTypeDefinition();
+                    Type typeDefinition = NonNullableUnderlyingType.GetGenericTypeDefinition();
                     if (typeDefinition.FullName == JsonTypeReflector.ConcurrentDictionaryTypeName)
                     {
                         ShouldCreateWrapper = true;
@@ -140,17 +140,17 @@ namespace Newtonsoft.Json.Serialization
                 }
 
 #if HAVE_READ_ONLY_COLLECTIONS
-                IsReadOnlyOrFixedSize = ReflectionUtils.InheritsGenericDefinition(underlyingType, typeof(ReadOnlyDictionary<,>));
+                IsReadOnlyOrFixedSize = ReflectionUtils.InheritsGenericDefinition(NonNullableUnderlyingType, typeof(ReadOnlyDictionary<,>));
 #endif
 
             }
 #if HAVE_READ_ONLY_COLLECTIONS
-            else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IReadOnlyDictionary<,>), out _genericCollectionDefinitionType))
+            else if (ReflectionUtils.ImplementsGenericDefinition(NonNullableUnderlyingType, typeof(IReadOnlyDictionary<,>), out _genericCollectionDefinitionType))
             {
                 keyType = _genericCollectionDefinitionType.GetGenericArguments()[0];
                 valueType = _genericCollectionDefinitionType.GetGenericArguments()[1];
 
-                if (ReflectionUtils.IsGenericDefinition(UnderlyingType, typeof(IReadOnlyDictionary<,>)))
+                if (ReflectionUtils.IsGenericDefinition(NonNullableUnderlyingType, typeof(IReadOnlyDictionary<,>)))
                 {
                     CreatedType = typeof(ReadOnlyDictionary<,>).MakeGenericType(keyType, valueType);
                 }
@@ -160,9 +160,9 @@ namespace Newtonsoft.Json.Serialization
 #endif
             else
             {
-                ReflectionUtils.GetDictionaryKeyValueTypes(UnderlyingType, out keyType, out valueType);
+                ReflectionUtils.GetDictionaryKeyValueTypes(NonNullableUnderlyingType, out keyType, out valueType);
 
-                if (UnderlyingType == typeof(IDictionary))
+                if (NonNullableUnderlyingType == typeof(IDictionary))
                 {
                     CreatedType = typeof(Dictionary<object, object>);
                 }
@@ -176,9 +176,9 @@ namespace Newtonsoft.Json.Serialization
                     typeof(IDictionary<,>).MakeGenericType(keyType, valueType));
 
 #if HAVE_FSHARP_TYPES
-                if (!HasParameterizedCreatorInternal && underlyingType.Name == FSharpUtils.FSharpMapTypeName)
+                if (!HasParameterizedCreatorInternal && NonNullableUnderlyingType.Name == FSharpUtils.FSharpMapTypeName)
                 {
-                    FSharpUtils.EnsureInitialized(underlyingType.Assembly());
+                    FSharpUtils.EnsureInitialized(NonNullableUnderlyingType.Assembly());
                     _parameterizedCreator = FSharpUtils.Instance.CreateMap(keyType, valueType);
                 }
 #endif
@@ -207,7 +207,7 @@ namespace Newtonsoft.Json.Serialization
             if (DictionaryKeyType != null && 
                 DictionaryValueType != null &&
                 ImmutableCollectionsUtils.TryBuildImmutableForDictionaryContract(
-                    underlyingType,
+                    NonNullableUnderlyingType,
                     DictionaryKeyType,
                     DictionaryValueType,
                     out Type? immutableCreatedType,
