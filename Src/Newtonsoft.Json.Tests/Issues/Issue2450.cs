@@ -83,7 +83,7 @@ namespace Newtonsoft.Json.Tests.Issues
             private readonly IDictionary<string, object> _dict;
             public Dict(IDictionary<string, object> dict) => _dict = dict;
 
-            public object? this[string key] => _dict[key];
+            public object this[string key] => _dict[key];
             public IEnumerable<string> Keys => _dict.Keys;
             public IEnumerable<object> Values => _dict.Values;
             public int Count => _dict.Count;
