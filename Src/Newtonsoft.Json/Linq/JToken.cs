@@ -44,7 +44,6 @@ using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
-using System.Threading;
 #endif
 
 namespace Newtonsoft.Json.Linq
@@ -2308,7 +2307,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JToken"/>, or <c>null</c>.</returns>
         public JToken? SelectToken(string path)
         {
-            return SelectToken(path, false);
+            return SelectToken(path, settings: null);
         }
 
         /// <summary>
@@ -2321,38 +2320,27 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JToken"/>.</returns>
         public JToken? SelectToken(string path, bool errorWhenNoMatch)
         {
-            JPath p = new JPath(path);
+            JsonSelectSettings? settings = errorWhenNoMatch
+                ? new JsonSelectSettings { ErrorWhenNoMatch = true }
+                : null;
 
-            JToken? token = null;
-            foreach (JToken t in p.Evaluate(this, this, errorWhenNoMatch))
-            {
-                if (token != null)
-                {
-                    throw new JsonException("Path returned multiple tokens.");
-                }
-
-                token = t;
-            }
-
-            return token;
+            return SelectToken(path, settings);
         }
 
-#if HAVE_REGEX_TIMEOUTS
         /// <summary>
         /// Selects a <see cref="JToken"/> using a JSONPath expression. Selects the token that matches the object path.
         /// </summary>
         /// <param name="path">
         /// A <see cref="String"/> that contains a JSONPath expression.
         /// </param>
-        /// <param name="errorWhenNoMatch">A flag to indicate whether an error should be thrown if no tokens are found when evaluating part of the expression.</param>
-        /// <param name="singleMatchTimeout">the time after which a single call to regex.ismatch must complete, default is forever</param>
+        /// <param name="settings">The <see cref="JsonSelectSettings"/> used to select tokens.</param>
         /// <returns>A <see cref="JToken"/>.</returns>
-        public JToken? SelectToken(string path, bool errorWhenNoMatch, TimeSpan? singleMatchTimeout = default)
+        public JToken? SelectToken(string path, JsonSelectSettings? settings)
         {
-            JPath p = new JPath(path, singleMatchTimeout);
+            JPath p = new JPath(path);
 
             JToken? token = null;
-            foreach (JToken t in p.Evaluate(this, this, errorWhenNoMatch))
+            foreach (JToken t in p.Evaluate(this, this, settings))
             {
                 if (token != null)
                 {
@@ -2364,7 +2352,6 @@ namespace Newtonsoft.Json.Linq
 
             return token;
         }
-#endif
 
         /// <summary>
         /// Selects a collection of elements using a JSONPath expression.
@@ -2375,7 +2362,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
         public IEnumerable<JToken> SelectTokens(string path)
         {
-            return SelectTokens(path, false);
+            return SelectTokens(path, settings: null);
         }
 
         /// <summary>
@@ -2388,50 +2375,26 @@ namespace Newtonsoft.Json.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
         public IEnumerable<JToken> SelectTokens(string path, bool errorWhenNoMatch)
         {
-            var p = new JPath(path);
-            return p.Evaluate(this, this, errorWhenNoMatch);
+            JsonSelectSettings? settings = errorWhenNoMatch
+                ? new JsonSelectSettings { ErrorWhenNoMatch = true }
+                : null;
+
+            return SelectTokens(path, settings);
         }
 
-#if HAVE_REGEX_TIMEOUTS
         /// <summary>
         /// Selects a collection of elements using a JSONPath expression.
         /// </summary>
         /// <param name="path">
         /// A <see cref="String"/> that contains a JSONPath expression.
         /// </param>
-        /// <param name="errorWhenNoMatch">A flag to indicate whether an error should be thrown if no tokens are found when evaluating part of the expression.</param>
-        /// <param name="singleRegexMatchTimeout">
-        /// for every token that matches a jpath, the time a regex is permitted to run 
-        /// against that token before timeout
-        /// </param>
-        /// <param name="globalRegexMatchTimeout">
-        /// the time this method should wait for the given jpath regex to match all tokens.
-        /// worst case expected execution time roughly globalRegexMatchTimeout + Min(singleRegexMatchTimeout, globalRegexMatchTimeout)
-        /// </param>
-        /// <exception cref="System.Text.RegularExpressions.RegexMatchTimeoutException">if single call timeout exceeded</exception>"
+        /// <param name="settings">The <see cref="JsonSelectSettings"/> used to select tokens.</param>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
-        public IEnumerable<JToken> SelectTokens(string path,
-            bool errorWhenNoMatch,
-            TimeSpan? singleRegexMatchTimeout = default,
-            TimeSpan? globalRegexMatchTimeout = default)
+        public IEnumerable<JToken> SelectTokens(string path, JsonSelectSettings? settings)
         {
-            var singleTimeout = singleRegexMatchTimeout ?? Timeout.InfiniteTimeSpan;
-            var globalTimeout = globalRegexMatchTimeout ?? Timeout.InfiniteTimeSpan;
-            if (globalTimeout != Timeout.InfiniteTimeSpan && globalTimeout < singleTimeout)
-            {
-                singleTimeout = globalTimeout;
-            }
-            
-            using var cts = new CancellationTokenSource(globalTimeout);
-            var p = new JPath(path, singleTimeout);
-            var results = p.Evaluate(this, this, errorWhenNoMatch);
-            foreach (var result in results)
-            {
-                cts.Token.ThrowIfCancellationRequested();
-                yield return result;
-            }
+            var p = new JPath(path);
+            return p.Evaluate(this, this, settings);
         }
-#endif
 
 #if HAVE_DYNAMIC
         /// <summary>
