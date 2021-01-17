@@ -27,8 +27,6 @@ using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Text;
-using System.Text.RegularExpressions;
-using System.Threading;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
@@ -39,16 +37,14 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
         private readonly string _expression;
         public List<PathFilter> Filters { get; }
-        public readonly TimeSpan? RegexSingleMatchTimeout = default;
 
         private int _currentIndex;
 
-        public JPath(string expression, TimeSpan? regexSingleMatchTimeout = default)
+        public JPath(string expression)
         {
             ValidationUtils.ArgumentNotNull(expression, nameof(expression));
             _expression = expression;
             Filters = new List<PathFilter>();
-            RegexSingleMatchTimeout = regexSingleMatchTimeout;
 
             ParseMain();
         }
@@ -513,8 +509,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                     right = ParseSide();
                 }
 
-
-                var booleanExpression = new BooleanQueryExpression(op, left, right, RegexSingleMatchTimeout);
+                BooleanQueryExpression booleanExpression = new BooleanQueryExpression(op, left, right);
 
                 if (_expression[_currentIndex] == ')')
                 {
@@ -879,17 +874,17 @@ namespace Newtonsoft.Json.Linq.JsonPath
             }
         }
 
-        internal IEnumerable<JToken> Evaluate(JToken root, JToken t, bool errorWhenNoMatch)
+        internal IEnumerable<JToken> Evaluate(JToken root, JToken t, JsonSelectSettings? settings)
         {
-            return Evaluate(Filters, root, t, errorWhenNoMatch);
+            return Evaluate(Filters, root, t, settings);
         }
 
-        internal static IEnumerable<JToken> Evaluate(List<PathFilter> filters, JToken root, JToken t, bool errorWhenNoMatch)
+        internal static IEnumerable<JToken> Evaluate(List<PathFilter> filters, JToken root, JToken t, JsonSelectSettings? settings)
         {
             IEnumerable<JToken> current = new[] { t };
             foreach (PathFilter filter in filters)
             {
-                current = filter.ExecuteFilter(root, current, errorWhenNoMatch);
+                current = filter.ExecuteFilter(root, current, settings);
             }
 
             return current;

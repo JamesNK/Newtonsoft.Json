@@ -62,7 +62,7 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net46'">
     <AssemblyTitle>Json.NET Tests</AssemblyTitle>
     <ReferringTargetFrameworkForProjectReferences>.NETFramework,Version=v4.5</ReferringTargetFrameworkForProjectReferences>
-    <DefineConstants>NET45;HAVE_BENCHMARKS;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>NET45;HAVE_BENCHMARKS;HAVE_REGEX_TIMEOUTS;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net40'">
@@ -76,7 +76,6 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="System.Data.DataSetExtensions" />
-    <PackageReference Include="Bogus" Version="$(BogusPackageVersion)" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='net40'">
     <AssemblyTitle>Json.NET Tests .NET 4.0</AssemblyTitle>
@@ -122,10 +121,7 @@
     <PackageReference Include="xunit" Version="$(XunitPackageVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualStudioPackageVersion)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNETTestSdkPackageVersion)" />
-    <PackageReference Include="Bogus" Version="$(BogusPackageVersion)" />
-    <PackageReference Include="Nito.AsyncEx.Tasks" Version="$(AsyncExPackageVersion)" />
   </ItemGroup>
-
   <PropertyGroup Condition="'$(TargetFramework)'=='net5.0'">
     <AssemblyTitle>Json.NET Tests .NET Standard 2.0</AssemblyTitle>
     <ReferringTargetFrameworkForProjectReferences>.NETStandard,Version=v2.0</ReferringTargetFrameworkForProjectReferences>
@@ -146,8 +142,6 @@
     <PackageReference Include="xunit" Version="$(XunitPackageVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualStudioPackageVersion)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNETTestSdkPackageVersion)" />
-    <PackageReference Include="Bogus" Version="$(BogusPackageVersion)" />
-    <PackageReference Include="Nito.AsyncEx.Tasks" Version="$(AsyncExPackageVersion)" />
   </ItemGroup>
   <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
     <AssemblyTitle>Json.NET Tests .NET Standard 1.3</AssemblyTitle>
@@ -168,10 +162,7 @@
     <PackageReference Include="xunit" Version="$(XunitPackageVersion)" />
     <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualStudioPackageVersion)" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNETTestSdkPackageVersion)" />
-    <PackageReference Include="Bogus" Version="$(BogusPackageVersion)" />
-    <PackageReference Include="Nito.AsyncEx.Tasks" Version="$(AsyncExPackageVersion)" />
   </ItemGroup>
-
   <PropertyGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
     <AssemblyTitle>Json.NET Tests .NET Standard 1.0</AssemblyTitle>
     <ReferringTargetFrameworkForProjectReferences>.NETStandard,Version=v1.0</ReferringTargetFrameworkForProjectReferences>

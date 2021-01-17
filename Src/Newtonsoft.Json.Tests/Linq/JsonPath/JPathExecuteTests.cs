@@ -32,11 +32,7 @@ using System.Numerics;
 using Newtonsoft.Json.Linq.JsonPath;
 using Newtonsoft.Json.Tests.Bson;
 #if HAVE_REGEX_TIMEOUTS
-using Bogus;
-using Nito.AsyncEx;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
-using System.Threading;
 #endif
 #if DNXCORE50
 using Xunit;
@@ -81,68 +77,20 @@ namespace Newtonsoft.Json.Tests.Linq.JsonPath
         [Test]
         public void BacktrackingRegex_SingleMatch_TimeoutRespected()
         {
-            var RegexBacktrackingPattern = "(?<a>(.*?))[|].*(?<b>(.*?))[|].*(?<c>(.*?))[|].*(?<d>[1-3])[|].*(?<e>(.*?))[|].*[|].*[|].*(?<f>(.*?))[|].*[|].*(?<g>(.*?))[|].*(?<h>(.*))";
+            const string RegexBacktrackingPattern = "(?<a>(.*?))[|].*(?<b>(.*?))[|].*(?<c>(.*?))[|].*(?<d>[1-3])[|].*(?<e>(.*?))[|].*[|].*[|].*(?<f>(.*?))[|].*[|].*(?<g>(.*?))[|].*(?<h>(.*))";
 
-            var faker = new Faker();
             var regexBacktrackingData = new JArray();
+            regexBacktrackingData.Add(new JObject(new JProperty("b", @"15/04/2020 8:18:03 PM|1|System.String[]|3|Libero eligendi magnam ut inventore.. Quaerat et sit voluptatibus repellendus blanditiis aliquam ut.. Quidem qui ut sint in ex et tempore.|||.\iste.cpp||46018|-1")));
 
-            for (var i = 0; i < 1000; i++)
+            ExceptionAssert.Throws<RegexMatchTimeoutException>(() =>
             {
-                var value = $"{faker.Date.Past()}|1|{faker.Lorem.Words()}|3|{faker.Lorem.Sentences(3, ". ")}|||.\\{faker.Lorem.Word()}.cpp||{faker.Random.UShort()}|-1";
-                regexBacktrackingData.Add(new JObject(new JProperty("b", value)));
-            }
-
-            Xunit.Assert.Throws<RegexMatchTimeoutException>(() =>
-            {
-                var tokens = regexBacktrackingData.SelectTokens(
+                regexBacktrackingData.SelectTokens(
                     $"[?(@.b =~ /{RegexBacktrackingPattern}/)]",
-                    errorWhenNoMatch: false,
-                    singleRegexMatchTimeout: TimeSpan.FromSeconds(.01)).ToArray();
+                    new JsonSelectSettings
+                    {
+                        RegexMatchTimeout = TimeSpan.FromSeconds(0.01)
+                    }).ToArray();
             });
-        }
-
-        [Test]
-        public void BacktrackingRegex_GlobalMatch_TimeoutRespected()
-        {
-            var faker = new Faker();
-            var regexBacktrackingData = new JArray();
-            for (var i = 0; i < 1000; i++)
-            {
-                var value = $"{faker.Date.Past()}|1|{faker.Lorem.Words()}|3|{faker.Lorem.Sentences(3, ". ")}|||.\\{faker.Lorem.Word()}.cpp||{faker.Random.UShort()}|-1";
-                regexBacktrackingData.Add(new JObject(new JProperty("b", value)));
-            }
-            var RegexBacktrackingPattern = "(?<i>(.*?))[|].*(?<b>(.*?))[|].*(?<c>(.*?))[|].*(?<d>[1-3])[|].*(?<e>(.*?))[|].*[|].*[|].*(?<f>(.*?))[|].*[|].*(?<g>(.*?))[|].*(?<h>(.*))";
-            var jpathExpression = $"[?(@.b =~ /{RegexBacktrackingPattern}/c)]";
-
-            var exceptionThrow = Xunit.Assert.ThrowsAny<Exception>(() =>
-            {
-                var tokens = regexBacktrackingData.SelectTokens(
-                    jpathExpression,
-                    errorWhenNoMatch: false,
-                    singleRegexMatchTimeout: TimeSpan.FromSeconds(2),
-                    globalRegexMatchTimeout: TimeSpan.FromSeconds(.5)).ToArray();
-            });
-            Assert.IsTrue(exceptionThrow is OperationCanceledException or RegexMatchTimeoutException);
-        }
-
-        [Test]
-        public async Task BacktrackingRegexCanBeVerySlowWithoutTimeouts()
-        {
-            var RegexBacktrackingPattern = "(?<j>(.*?))[|].*(?<b>(.*?))[|].*(?<c>(.*?))[|].*(?<d>[1-3])[|].*(?<e>(.*?))[|].*[|].*[|].*(?<f>(.*?))[|].*[|].*(?<g>(.*?))[|].*(?<h>(.*))";
-            var faker = new Faker();
-            var regexBacktrackingData = new JArray();
-
-            for (var i = 0; i < 10; i++)
-            {
-                var value = $"{faker.Date.Past()}|1|{faker.Lorem.Words()}|3|{faker.Lorem.Sentences(3, ". ")}|||.\\{faker.Lorem.Word()}.cpp||{faker.Random.UShort()}|-1";
-                regexBacktrackingData.Add(new JObject(new JProperty("b", value)));
-            }
-
-            var selectTokenTask = Task.Run(() => regexBacktrackingData.SelectTokens($"[?(@.b =~ /{RegexBacktrackingPattern}/)]").ToArray());
-            using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(.3));
-            using var ctts = new CancellationTokenTaskSource<bool>(cts.Token);
-            var finishedTask = await Task.WhenAny(selectTokenTask, ctts.Task);
-            Assert.AreEqual(finishedTask, ctts.Task);
         }
 #endif
 

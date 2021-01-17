@@ -165,11 +165,6 @@ namespace Newtonsoft.Json.Utilities
                     case 'x':
                         options |= RegexOptions.ExplicitCapture;
                         break;
-#if HAVE_REGEX_TIMEOUTS && (NETSTANDARD1_3 || NETSTANDARD2_0)
-                    case 'c':
-                        options |= RegexOptions.Compiled;
-                        break;
-#endif
                 }
             }
 
