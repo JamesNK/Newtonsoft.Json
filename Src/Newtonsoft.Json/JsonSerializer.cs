@@ -514,7 +514,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets or sets the maximum depth allowed when reading JSON. Reading past this depth will throw a <see cref="JsonReaderException"/>.
         /// A null value means there is no maximum.
-        /// The default value is <c>null</c>.
+        /// The default value is <c>128</c>.
         /// </summary>
         public virtual int? MaxDepth
         {
