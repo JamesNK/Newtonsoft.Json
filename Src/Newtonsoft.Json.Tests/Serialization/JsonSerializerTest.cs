@@ -7995,5 +7995,43 @@ This is just junk, though.";
                 () => JsonConvert.DeserializeObject<EmptyJsonValueTestClass>("{ A: \"\", B: 1, C: 123, D: 1.23, E: , F: null }"),
                 "Unexpected character encountered while parsing value: ,. Path 'E', line 1, position 36.");
         }
+
+        [Test]
+        public void SetMaxDepth_DepthExceeded()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("[[['text']]]"));
+            Assert.AreEqual(128, reader.MaxDepth);
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            Assert.AreEqual(128, settings.MaxDepth);
+            Assert.AreEqual(false, settings._maxDepthSet);
+
+            settings.MaxDepth = 2;
+            Assert.AreEqual(2, settings.MaxDepth);
+            Assert.AreEqual(true, settings._maxDepthSet);
+
+            JsonSerializer serializer = JsonSerializer.Create(settings);
+            Assert.AreEqual(2, serializer.MaxDepth);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => serializer.Deserialize(reader),
+                "The reader's MaxDepth of 2 has been exceeded. Path '[0][0]', line 1, position 3.");
+        }
+
+        [Test]
+        public void SetMaxDepth_DepthNotExceeded()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("['text']"));
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+
+            settings.MaxDepth = 2;
+
+            JsonSerializer serializer = JsonSerializer.Create(settings);
+            Assert.AreEqual(2, serializer.MaxDepth);
+
+            serializer.Deserialize(reader);
+
+            Assert.AreEqual(128, reader.MaxDepth);
+        }
     }
 }
