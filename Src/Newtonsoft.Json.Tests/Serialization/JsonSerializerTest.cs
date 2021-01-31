@@ -8006,6 +8006,9 @@ This is just junk, though.";
             Assert.AreEqual(128, settings.MaxDepth);
             Assert.AreEqual(false, settings._maxDepthSet);
 
+            // Default should be the same
+            Assert.AreEqual(reader.MaxDepth, settings.MaxDepth);
+
             settings.MaxDepth = 2;
             Assert.AreEqual(2, settings.MaxDepth);
             Assert.AreEqual(true, settings._maxDepthSet);
