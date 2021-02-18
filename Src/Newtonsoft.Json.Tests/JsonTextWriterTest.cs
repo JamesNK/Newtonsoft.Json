@@ -1217,7 +1217,7 @@ _____'propertyName': NaN,
         {
             JsonWriter.State[][] stateArray = JsonWriter.BuildStateArray();
 
-            var valueStates = JsonWriter.StateArrayTempate[7];
+            var valueStates = JsonWriter.StateArrayTemplate[7];
 
             foreach (JsonToken valueToken in GetValues(typeof(JsonToken)))
             {
