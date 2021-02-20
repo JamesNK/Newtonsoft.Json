@@ -392,5 +392,28 @@ namespace Newtonsoft.Json.Tests.Linq
 
             Assert.AreEqual(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc), dt);
         }
+
+        [Test]
+        public void WriteTokenDirect()
+        {
+            JToken token;
+
+            using (JTokenWriter jsonWriter = new JTokenWriter())
+            {
+                jsonWriter.WriteToken(JsonToken.StartArray);
+                jsonWriter.WriteToken(JsonToken.Integer, 1);
+                jsonWriter.WriteToken(JsonToken.StartObject);
+                jsonWriter.WriteToken(JsonToken.PropertyName, "integer");
+                jsonWriter.WriteToken(JsonToken.Integer, int.MaxValue);
+                jsonWriter.WriteToken(JsonToken.PropertyName, "null-string");
+                jsonWriter.WriteToken(JsonToken.String, null);
+                jsonWriter.WriteToken(JsonToken.EndObject);
+                jsonWriter.WriteToken(JsonToken.EndArray);
+
+                token = jsonWriter.Token;
+            }
+
+            Assert.AreEqual(@"[1,{""integer"":2147483647,""null-string"":null}]", token.ToString(Formatting.None));
+        }
     }
 }
