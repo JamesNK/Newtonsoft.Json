@@ -329,7 +329,7 @@ namespace Newtonsoft.Json
             _dateTimeZoneHandling = DateTimeZoneHandling.RoundtripKind;
             _dateParseHandling = DateParseHandling.DateTime;
             _floatParseHandling = FloatParseHandling.Double;
-            _maxDepth = 128;
+            _maxDepth = 64;
 
             CloseInput = true;
         }
