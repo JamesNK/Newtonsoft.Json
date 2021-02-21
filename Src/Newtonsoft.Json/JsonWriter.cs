@@ -579,8 +579,9 @@ namespace Newtonsoft.Json
                     }
                     break;
                 case JsonToken.String:
-                    ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    WriteValue(value.ToString());
+                    // Allow for a null string. This matches JTokenReader behavior which can read
+                    // a JsonToken.String with a null value.
+                    WriteValue(value?.ToString());
                     break;
                 case JsonToken.Boolean:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
