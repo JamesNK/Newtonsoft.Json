@@ -61,7 +61,7 @@ namespace Newtonsoft.Json
         internal static readonly CultureInfo DefaultCulture;
         internal const bool DefaultCheckAdditionalContent = false;
         internal const string DefaultDateFormatString = @"yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
-        internal const int DefaultMaxDepth = 128;
+        internal const int DefaultMaxDepth = 64;
 
         internal Formatting? _formatting;
         internal DateFormatHandling? _dateFormatHandling;
