@@ -195,7 +195,7 @@ namespace Newtonsoft.Json.Serialization
                         type = (member as PropertyInfo)?.PropertyType ?? (member as FieldInfo)?.FieldType;
                         if (type != null)
                         {
-                            Type genericMemberType = GetMembersGenericType(member);
+                            Type? genericMemberType = GetMembersGenericType(member!);
                             if (genericMemberType?.IsGenericParameter == true)
                             {
                                 typeGenericArguments = new[] { type };
@@ -256,61 +256,67 @@ namespace Newtonsoft.Json.Serialization
         /// If <c>null</c>, the default constructor is used.</param>
         /// <param name="collectionType">The collection type.</param>
         /// <param name="member">The type member.</param>
-        public static JsonConverter CreateJsonConverterInstance(Type converterType, object[]? converterArgs, Type collectionType, MemberInfo? member)
+        public static JsonConverter CreateJsonConverterInstance(Type converterType, object[]? args, Type? collectionType, MemberInfo? member)
         {
-            if (converterType.IsGenericTypeDefinition())
+            if (converterType.IsGenericTypeDefinition() && collectionType != null)
             {
-                Type collectionItemType;
+                Type? collectionItemType;
                 Type[]? typeGenericArguments = null;
                 if (CollectionUtils.IsDictionaryType(collectionType))
                 {
                     ReflectionUtils.GetDictionaryKeyValueTypes(collectionType, out _, out collectionItemType);
-                    if (member != null)
+                    if (collectionItemType != null)
                     {
-                        Type? genericMemberType = GetMembersGenericType(member);
-                        if (genericMemberType != null)
+                        if (member != null)
                         {
-                            ReflectionUtils.GetDictionaryKeyValueTypes(genericMemberType, out _, out Type genericCollectionItemType);
-                            if (genericCollectionItemType.IsGenericParameter)
+                            Type? genericMemberType = GetMembersGenericType(member);
+                            if (genericMemberType != null)
+                            {
+                                ReflectionUtils.GetDictionaryKeyValueTypes(genericMemberType, out _, out Type? genericCollectionItemType);
+                                if (genericCollectionItemType?.IsGenericParameter == true)
+                                {
+                                    typeGenericArguments = new[] { collectionItemType };
+                                }
+                            }
+                        }
+                        else if (collectionType.IsGenericType() && !collectionType.IsGenericTypeDefinition())
+                        {
+                            Type genericCollectionType = collectionType.GetGenericTypeDefinition();
+                            ReflectionUtils.GetDictionaryKeyValueTypes(genericCollectionType, out _, out Type? genericCollectionItemType);
+                            if (genericCollectionItemType?.IsGenericParameter == true)
                             {
                                 typeGenericArguments = new[] { collectionItemType };
                             }
-                        }
-                    }
-                    else if (collectionType.IsGenericType() && !collectionType.IsGenericTypeDefinition())
-                    {
-                        Type genericCollectionType = collectionType.GetGenericTypeDefinition();
-                        ReflectionUtils.GetDictionaryKeyValueTypes(genericCollectionType, out _, out Type genericCollectionItemType);
-                        if (genericCollectionItemType.IsGenericParameter)
-                        {
-                            typeGenericArguments = new[] { collectionItemType };
                         }
                     }
                 }
                 else
                 {
                     collectionItemType = ReflectionUtils.GetCollectionItemType(collectionType);
-                    if (member != null)
+                    if (collectionItemType != null)
                     {
-                        Type genericMemberType = GetMembersGenericType(member);
-                        if (genericMemberType != null && ReflectionUtils.GetCollectionItemType(genericMemberType).IsGenericParameter)
+                        if (member != null)
                         {
-                            typeGenericArguments = new[] { collectionItemType };
+                            Type? genericMemberType = GetMembersGenericType(member);
+                            if (genericMemberType != null && ReflectionUtils.GetCollectionItemType(genericMemberType)?.IsGenericParameter == true)
+                            {
+                                typeGenericArguments = new[] { collectionItemType };
+                            }
                         }
-                    }
-                    else if (collectionType.IsGenericType() && !collectionType.IsGenericTypeDefinition())
-                    {
-                        Type genericCollectionType = collectionType.GetGenericTypeDefinition();
-                        if (ReflectionUtils.GetCollectionItemType(genericCollectionType).IsGenericParameter)
+                        else if (collectionType.IsGenericType() && !collectionType.IsGenericTypeDefinition())
                         {
-                            typeGenericArguments = new[] { collectionItemType };
+                            Type genericCollectionType = collectionType.GetGenericTypeDefinition();
+                            if (ReflectionUtils.GetCollectionItemType(genericCollectionType)?.IsGenericParameter == true)
+                            {
+                                typeGenericArguments = new[] { collectionItemType };
+                            }
                         }
                     }
                 }
 
                 if (typeGenericArguments == null)
                 {
-                    if (!collectionItemType.IsGenericType() || collectionItemType.IsGenericTypeDefinition())
+                    if (collectionItemType?.IsGenericType() != true || collectionItemType.IsGenericTypeDefinition())
                     {
                         throw new JsonSerializationException("Could not create generic converter {0}. Converter was specified for items in collection {1} and item type {2} that does not have type arguments.".FormatWith(CultureInfo.InvariantCulture, converterType, collectionType, collectionItemType));
                     }
@@ -327,7 +333,7 @@ namespace Newtonsoft.Json.Serialization
                 converterType = converterType.MakeGenericType(typeGenericArguments);
             }
             Func<object[]?, object> converterCreator = CreatorCache.Get(converterType);
-            return (JsonConverter)converterCreator(converterArgs);
+            return (JsonConverter)converterCreator(args);
         }
 
         public static NamingStrategy CreateNamingStrategyInstance(Type namingStrategyType, object[]? args)

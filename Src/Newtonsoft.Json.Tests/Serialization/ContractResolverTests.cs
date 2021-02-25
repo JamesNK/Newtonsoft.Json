@@ -847,6 +847,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsInstanceOf(typeof(RegexConverter), contract.InternalConverter);
         }
 
+        [Test]
         public void JsonConverterAttribute_TypeGenericConverter()
         {
             DefaultContractResolver resolver = new DefaultContractResolver();
