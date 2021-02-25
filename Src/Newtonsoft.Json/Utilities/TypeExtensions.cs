@@ -26,6 +26,8 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
+using System.Diagnostics.CodeAnalysis;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -38,14 +40,14 @@ namespace Newtonsoft.Json.Utilities
     {
 #if DOTNET || PORTABLE
 #if !DOTNET
-        private static BindingFlags DefaultFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
+        private static readonly BindingFlags DefaultFlags = BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
 
-        public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
+        public static MethodInfo? GetGetMethod(this PropertyInfo propertyInfo)
         {
             return propertyInfo.GetGetMethod(false);
         }
 
-        public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo, bool nonPublic)
+        public static MethodInfo? GetGetMethod(this PropertyInfo propertyInfo, bool nonPublic)
         {
             MethodInfo getMethod = propertyInfo.GetMethod;
             if (getMethod != null && (getMethod.IsPublic || nonPublic))
@@ -56,12 +58,12 @@ namespace Newtonsoft.Json.Utilities
             return null;
         }
 
-        public static MethodInfo GetSetMethod(this PropertyInfo propertyInfo)
+        public static MethodInfo? GetSetMethod(this PropertyInfo propertyInfo)
         {
             return propertyInfo.GetSetMethod(false);
         }
 
-        public static MethodInfo GetSetMethod(this PropertyInfo propertyInfo, bool nonPublic)
+        public static MethodInfo? GetSetMethod(this PropertyInfo propertyInfo, bool nonPublic)
         {
             MethodInfo setMethod = propertyInfo.SetMethod;
             if (setMethod != null && (setMethod.IsPublic || nonPublic))
@@ -85,7 +87,7 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
-        public static bool IsInstanceOfType(this Type type, object o)
+        public static bool IsInstanceOfType(this Type type, object? o)
         {
             if (o == null)
             {
@@ -128,7 +130,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                return default(MemberTypes);
+                return default;
             }
 #endif
         }
@@ -215,7 +217,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
 #if (PORTABLE40 || DOTNET || PORTABLE)
-        public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags, object placeholder1, Type propertyType, IList<Type> indexParameters, object placeholder2)
+        public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags, object? placeholder1, Type propertyType, IList<Type> indexParameters, object? placeholder2)
         {
             IEnumerable<PropertyInfo> propertyInfos = type.GetProperties(bindingFlags);
 
@@ -289,12 +291,12 @@ namespace Newtonsoft.Json.Utilities
             return type.GetMethod(null, parameterTypes);
         }
 
-        public static MethodInfo GetMethod(this Type type, string name, IList<Type> parameterTypes)
+        public static MethodInfo GetMethod(this Type type, string? name, IList<Type> parameterTypes)
         {
             return type.GetMethod(name, DefaultFlags, null, parameterTypes, null);
         }
 
-        public static MethodInfo GetMethod(this Type type, string name, BindingFlags bindingFlags, object placeHolder1, IList<Type> parameterTypes, object placeHolder2)
+        public static MethodInfo GetMethod(this Type type, string? name, BindingFlags bindingFlags, object? placeHolder1, IList<Type> parameterTypes, object? placeHolder2)
         {
             return MethodBinder.SelectMethod(type.GetTypeInfo().DeclaredMethods.Where(m => (name == null || m.Name == name) && TestAccessibility(m, bindingFlags)), parameterTypes);
         }
@@ -314,7 +316,7 @@ namespace Newtonsoft.Json.Utilities
             return type.GetConstructor(DefaultFlags, null, parameterTypes, null);
         }
 
-        public static ConstructorInfo GetConstructor(this Type type, BindingFlags bindingFlags, object placeholder1, IList<Type> parameterTypes, object placeholder2)
+        public static ConstructorInfo GetConstructor(this Type type, BindingFlags bindingFlags, object? placeholder1, IList<Type> parameterTypes, object? placeholder2)
         {
             return MethodBinder.SelectMethod(type.GetConstructors(bindingFlags), parameterTypes);
         }
@@ -338,12 +340,12 @@ namespace Newtonsoft.Json.Utilities
                 TestAccessibility(m, bindingFlags)).ToArray();
         }
 
-        public static FieldInfo GetField(this Type type, string member)
+        public static FieldInfo? GetField(this Type type, string member)
         {
             return type.GetField(member, DefaultFlags);
         }
 
-        public static FieldInfo GetField(this Type type, string member, BindingFlags bindingFlags)
+        public static FieldInfo? GetField(this Type type, string member, BindingFlags bindingFlags)
         {
             FieldInfo field = type.GetTypeInfo().GetDeclaredField(member);
             if (field == null || !TestAccessibility(field, bindingFlags))
@@ -363,20 +365,33 @@ namespace Newtonsoft.Json.Utilities
             return properties.Where(p => TestAccessibility(p, bindingFlags));
         }
 
+        private static bool ContainsMemberName(IEnumerable<MemberInfo> members, string name)
+        {
+            foreach (MemberInfo memberInfo in members)
+            {
+                if (memberInfo.Name == name)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private static IList<MemberInfo> GetMembersRecursive(this TypeInfo type)
         {
-            TypeInfo t = type;
-            IList<MemberInfo> members = new List<MemberInfo>();
+            TypeInfo? t = type;
+            List<MemberInfo> members = new List<MemberInfo>();
             while (t != null)
             {
                 foreach (MemberInfo member in t.DeclaredMembers)
                 {
-                    if (!members.Any(p => p.Name == member.Name))
+                    if (!ContainsMemberName(members, member.Name))
                     {
                         members.Add(member);
                     }
                 }
-                t = (t.BaseType != null) ? t.BaseType.GetTypeInfo() : null;
+                t = t.BaseType?.GetTypeInfo();
             }
 
             return members;
@@ -384,18 +399,18 @@ namespace Newtonsoft.Json.Utilities
 
         private static IList<PropertyInfo> GetPropertiesRecursive(this TypeInfo type)
         {
-            TypeInfo t = type;
-            IList<PropertyInfo> properties = new List<PropertyInfo>();
+            TypeInfo? t = type;
+            List<PropertyInfo> properties = new List<PropertyInfo>();
             while (t != null)
             {
                 foreach (PropertyInfo member in t.DeclaredProperties)
                 {
-                    if (!properties.Any(p => p.Name == member.Name))
+                    if (!ContainsMemberName(properties, member.Name))
                     {
                         properties.Add(member);
                     }
                 }
-                t = (t.BaseType != null) ? t.BaseType.GetTypeInfo() : null;
+                t = t.BaseType?.GetTypeInfo();
             }
 
             return properties;
@@ -403,18 +418,18 @@ namespace Newtonsoft.Json.Utilities
 
         private static IList<FieldInfo> GetFieldsRecursive(this TypeInfo type)
         {
-            TypeInfo t = type;
-            IList<FieldInfo> fields = new List<FieldInfo>();
+            TypeInfo? t = type;
+            List<FieldInfo> fields = new List<FieldInfo>();
             while (t != null)
             {
                 foreach (FieldInfo member in t.DeclaredFields)
                 {
-                    if (!fields.Any(p => p.Name == member.Name))
+                    if (!ContainsMemberName(fields, member.Name))
                     {
                         fields.Add(member);
                     }
                 }
-                t = (t.BaseType != null) ? t.BaseType.GetTypeInfo() : null;
+                t = t.BaseType?.GetTypeInfo();
             }
 
             return fields;
@@ -425,12 +440,12 @@ namespace Newtonsoft.Json.Utilities
             return type.GetTypeInfo().DeclaredMethods;
         }
 
-        public static PropertyInfo GetProperty(this Type type, string name)
+        public static PropertyInfo? GetProperty(this Type type, string name)
         {
             return type.GetProperty(name, DefaultFlags);
         }
 
-        public static PropertyInfo GetProperty(this Type type, string name, BindingFlags bindingFlags)
+        public static PropertyInfo? GetProperty(this Type type, string name, BindingFlags bindingFlags)
         {
             PropertyInfo property = type.GetTypeInfo().GetDeclaredProperty(name);
             if (property == null || !TestAccessibility(property, bindingFlags))
@@ -472,20 +487,20 @@ namespace Newtonsoft.Json.Utilities
 
         private static bool TestAccessibility(MemberInfo member, BindingFlags bindingFlags)
         {
-            if (member is FieldInfo)
+            if (member is FieldInfo f)
             {
-                return TestAccessibility((FieldInfo) member, bindingFlags);
+                return TestAccessibility(f, bindingFlags);
             }
-            else if (member is MethodBase)
+            else if (member is MethodBase m)
             {
-                return TestAccessibility((MethodBase) member, bindingFlags);
+                return TestAccessibility(m, bindingFlags);
             }
-            else if (member is PropertyInfo)
+            else if (member is PropertyInfo p)
             {
-                return TestAccessibility((PropertyInfo) member, bindingFlags);
+                return TestAccessibility(p, bindingFlags);
             }
 
-            throw new Exception("Unexpected member type.");
+            throw new ArgumentOutOfRangeException("Unexpected member type.");
         }
 
         private static bool TestAccessibility(FieldInfo member, BindingFlags bindingFlags)
@@ -564,7 +579,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
         }
 
-        public static bool AssignableToTypeName(this Type type, string fullTypeName, bool searchInterfaces, out Type match)
+        public static bool AssignableToTypeName(this Type type, string fullTypeName, bool searchInterfaces, [NotNullWhen(true)]out Type? match)
         {
             Type current = type;
 
@@ -597,8 +612,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool AssignableToTypeName(this Type type, string fullTypeName, bool searchInterfaces)
         {
-            Type match;
-            return type.AssignableToTypeName(fullTypeName, searchInterfaces, out match);
+            return type.AssignableToTypeName(fullTypeName, searchInterfaces, out _);
         }
 
         public static bool ImplementInterface(this Type type, Type interfaceType)

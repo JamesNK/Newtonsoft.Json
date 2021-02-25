@@ -32,6 +32,8 @@ using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
 
+#nullable disable
+
 namespace Newtonsoft.Json.Bson
 {
     /// <summary>
@@ -370,6 +372,11 @@ namespace Newtonsoft.Json.Bson
                     ContainerContext context = _currentContext;
                     if (context == null)
                     {
+                        if (SupportMultipleContent)
+                        {
+                            goto case State.Start;
+                        }
+
                         return false;
                     }
 

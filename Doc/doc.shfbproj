@@ -8,7 +8,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{fd19f68e-72c8-4576-9775-b4480b0db686}</ProjectGuid>
-    <SHFBSchemaVersion>2015.6.5.0</SHFBSchemaVersion>
+    <SHFBSchemaVersion>2017.9.26.0</SHFBSchemaVersion>
     <!-- AssemblyName, Name, and RootNamespace are not used by SHFB but Visual
          Studio adds them anyway -->
     <AssemblyName>Documentation</AssemblyName>
@@ -20,7 +20,7 @@
     <ProjectSummary>
     </ProjectSummary>
     <MissingTags>Summary, Parameter, Returns, AutoDocumentCtors, Namespace, TypeParameter, AutoDocumentDispose</MissingTags>
-    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected, ProtectedInternalAsProtected</VisibleItems>
+    <VisibleItems>InheritedMembers, InheritedFrameworkMembers, Protected, SealedProtected, ProtectedInternalAsProtected, EditorBrowsableNever, NonBrowsable</VisibleItems>
     <HtmlHelp1xCompilerPath>
     </HtmlHelp1xCompilerPath>
     <HtmlHelp2xCompilerPath>
@@ -48,7 +48,7 @@
       <NamespaceSummaryItem name="Newtonsoft.Json.Linq" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement LINQ to JSON.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Newtonsoft.Json.Linq.ComponentModel" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq.ComponentModel&lt;/b&gt; namespace provides classes for LINQ to JSON databinding.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Newtonsoft.Json.Schema" isDocumented="True">&lt;para&gt;The &lt;b&gt;Newtonsoft.Json.Schema&lt;/b&gt; namespace provides classes that are used to implement JSON schema.&lt;/para&gt;
-        &lt;para&gt;&lt;b&gt;Obsolete.&lt;/b&gt; JSON Schema validation has been moved to its own package. See &lt;a href="http://www.newtonsoft.com/jsonschema"&gt;http://www.newtonsoft.com/jsonschema&lt;/a&gt; for more details.&lt;/para&gt;</NamespaceSummaryItem>
+        &lt;para&gt;&lt;b&gt;Obsolete.&lt;/b&gt; JSON Schema validation has been moved to its own package. See &lt;a href="https://www.newtonsoft.com/jsonschema"&gt;https://www.newtonsoft.com/jsonschema&lt;/a&gt; for more details.&lt;/para&gt;</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Newtonsoft.Json.Serialization" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used when serializing and deserializing JSON.</NamespaceSummaryItem>
       <NamespaceSummaryItem name="Newtonsoft.Json.Utilities" isDocumented="False" />
       <NamespaceSummaryItem name="Newtonsoft.Json.Bson" isDocumented="True">The &lt;b&gt;Newtonsoft.Json.Linq&lt;/b&gt; namespace provides classes that are used to implement BSON.</NamespaceSummaryItem>
@@ -62,7 +62,7 @@
           <outputPaths>{@HelpFormatOutputPaths}</outputPaths>
           <allowMissingSource value="false" />
           <removeRegionMarkers value="false" />
-          <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="0" numberLines="true" outlining="false" keepSeeTags="false" defaultTitle="true" />
+          <colorizer syntaxFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xml" styleFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.xsl" stylesheet="{@SHFBFolder}PresentationStyles\Colorizer\highlight.css" scriptFile="{@SHFBFolder}PresentationStyles\Colorizer\highlight.js" disabled="{@DisableCodeBlockComponent}" language="cs" tabSize="0" numberLines="false" outlining="false" keepSeeTags="false" defaultTitle="true" />
         </component>
       </ComponentConfig>
     </ComponentConfigurations>
@@ -96,17 +96,20 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
   </PropertyGroup>
   <ItemGroup>
-    <Content Include="donate.gif" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="icons\favicon.ico" />
+    <None Include="Samples\JsonPath\StrictEqualsQuery.aml" />
+    <None Include="Samples\JsonPath\RegexQuery.aml" />
+    <None Include="Samples\JsonPath\QueryJsonSelectTokenWithLinq.aml" />
+    <None Include="Samples\JsonPath\QueryJsonSelectTokenJsonPath.aml" />
+    <None Include="Samples\JsonPath\QueryJsonSelectTokenEscaped.aml" />
+    <None Include="Samples\JsonPath\QueryJsonSelectToken.aml" />
+    <None Include="Samples\JsonPath\ErrorWhenNoMatchQuery.aml" />
     <None Include="Samples\Serializer\CustomJsonConverterGeneric.aml" />
     <None Include="Samples\Serializer\NamingStrategyAttributes.aml" />
     <None Include="Samples\Serializer\NamingStrategySnakeCase.aml" />
     <None Include="Samples\Serializer\NamingStrategySkipSpecifiedNames.aml" />
     <None Include="Samples\Serializer\NamingStrategySkipDictionaryKeys.aml" />
     <None Include="Samples\Serializer\NamingStrategyCamelCase.aml" />
-    <None Include="Samples\Linq\QueryJsonSelectTokenEscaped.aml" />
     <None Include="Samples\Serializer\JsonConstructorAttribute.aml" />
     <None Include="Samples\Json\ReadMultipleContentWithJsonReader.aml" />
     <None Include="Samples\Serializer\SerializeImmutableCollections.aml" />
@@ -118,7 +121,6 @@
     <None Include="Samples\Serializer\DeserializeExtensionData.aml" />
     <None Include="Samples\Serializer\DeserializeDateFormatString.aml" />
     <None Include="Samples\Serializer\DefaultSettings.aml" />
-    <None Include="Samples\Linq\QueryJsonSelectTokenJsonPath.aml" />
     <None Include="Samples\Linq\MergeJson.aml" />
     <None Include="Samples\Linq\JTokenAnnotation.aml" />
     <None Include="Samples\Json\CustomJsonWriter.aml" />
@@ -145,8 +147,6 @@
     <None Include="Samples\Linq\SerializeWithLinq.aml" />
     <None Include="Samples\Linq\ReadJTokenFromBson.aml" />
     <None Include="Samples\Linq\ReadJson.aml" />
-    <None Include="Samples\Linq\QueryJsonSelectTokenWithLinq.aml" />
-    <None Include="Samples\Linq\QueryJsonSelectToken.aml" />
     <None Include="Samples\Linq\QueryJsonLinq.aml" />
     <None Include="Samples\Linq\QueryJsonDynamic.aml" />
     <None Include="Samples\Linq\QueryJson.aml" />
@@ -275,6 +275,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Samples\JsonPath\" />
     <Folder Include="icons\" />
     <Folder Include="Samples\Xml\" />
     <Folder Include="Samples\Schema\" />

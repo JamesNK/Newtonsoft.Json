@@ -69,7 +69,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Cpu"": ""Intel"",
   ""Memory"": 32,
   ""Drives"": [

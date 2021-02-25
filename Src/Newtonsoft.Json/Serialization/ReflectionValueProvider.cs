@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <param name="target">The target to set the value on.</param>
         /// <param name="value">The value to set on the target.</param>
-        public void SetValue(object target, object value)
+        public void SetValue(object target, object? value)
         {
             try
             {
@@ -69,10 +69,16 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <param name="target">The target to get the value from.</param>
         /// <returns>The value.</returns>
-        public object GetValue(object target)
+        public object? GetValue(object target)
         {
             try
             {
+                // https://github.com/dotnet/corefx/issues/26053
+                if (_memberInfo is PropertyInfo propertyInfo && propertyInfo.PropertyType.IsByRef)
+                {
+                    throw new InvalidOperationException("Could not create getter for {0}. ByRef return values are not supported.".FormatWith(CultureInfo.InvariantCulture, propertyInfo));
+                }
+
                 return ReflectionUtils.GetMemberValue(_memberInfo, target);
             }
             catch (Exception ex)

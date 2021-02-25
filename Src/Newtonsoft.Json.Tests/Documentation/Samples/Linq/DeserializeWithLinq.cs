@@ -93,7 +93,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Linq
             // <p>Content!</p>
             #endregion
 
-            Assert.AreEqual(@"<h3>Title!</h3>
+            StringAssert.AreEqual(@"<h3>Title!</h3>
 <p>Content!</p>", blogPosts[0].Body);
         }
     }

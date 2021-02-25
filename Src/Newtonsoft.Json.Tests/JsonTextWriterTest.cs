@@ -44,6 +44,7 @@ using NUnit.Framework;
 #endif
 using Newtonsoft.Json;
 using System.IO;
+using System.Reflection;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -156,7 +157,7 @@ namespace Newtonsoft.Json.Tests
 
             string result = o.ToString();
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""BodyHtml"": ""<h3>Title!</h3>\r\n                                                                                                    <p>Content!</p>""
 }", result);
         }
@@ -397,7 +398,7 @@ namespace Newtonsoft.Json.Tests
                 jsonWriter.WriteValue("DVD read/writer");
                 jsonWriter.WriteComment("(broken)");
                 jsonWriter.WriteValue("500 gigabyte hard drive");
-                jsonWriter.WriteValue("200 gigabype hard drive");
+                jsonWriter.WriteValue("200 gigabyte hard drive");
                 jsonWriter.WriteEndObject();
                 Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
             }
@@ -409,7 +410,7 @@ namespace Newtonsoft.Json.Tests
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }";
             string result = sb.ToString();
@@ -437,7 +438,7 @@ namespace Newtonsoft.Json.Tests
                 jsonWriter.WriteValue("DVD read/writer");
                 jsonWriter.WriteComment("(broken)");
                 jsonWriter.WriteValue("500 gigabyte hard drive");
-                jsonWriter.WriteValue("200 gigabype hard drive");
+                jsonWriter.WriteValue("200 gigabyte hard drive");
                 jsonWriter.Close();
             }
 
@@ -448,7 +449,7 @@ namespace Newtonsoft.Json.Tests
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }";
             string result = sb.ToString();
@@ -476,7 +477,7 @@ namespace Newtonsoft.Json.Tests
                 jsonWriter.WriteValue("DVD read/writer");
                 jsonWriter.WriteComment("(broken)");
                 jsonWriter.WriteValue("500 gigabyte hard drive");
-                jsonWriter.WriteValue("200 gigabype hard drive");
+                jsonWriter.WriteValue("200 gigabyte hard drive");
                 jsonWriter.WriteEnd();
                 jsonWriter.WriteEndObject();
                 Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
@@ -489,7 +490,7 @@ namespace Newtonsoft.Json.Tests
             //     "DVD read/writer"
             //     /*(broken)*/,
             //     "500 gigabyte hard drive",
-            //     "200 gigabype hard drive"
+            //     "200 gigabyte hard drive"
             //   ]
             // }
 
@@ -500,7 +501,7 @@ namespace Newtonsoft.Json.Tests
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }";
             string result = sb.ToString();
@@ -879,7 +880,12 @@ namespace Newtonsoft.Json.Tests
                 jsonWriter.WriteEndArray();
             }
 
+#if !(NETSTANDARD2_0 || NETSTANDARD1_3)
             Assert.AreEqual(@"[0.0,0.0,0.1,1.0,1.000001,1E-06,4.94065645841247E-324,Infinity,-Infinity,NaN,1.7976931348623157E+308,-1.7976931348623157E+308,Infinity,-Infinity,NaN]", sb.ToString());
+#else
+            Assert.AreEqual(@"[0.0,0.0,0.1,1.0,1.000001,1E-06,5E-324,Infinity,-Infinity,NaN,1.7976931348623157E+308,-1.7976931348623157E+308,Infinity,-Infinity,NaN]", sb.ToString());
+#endif
+
         }
 
         [Test]
@@ -939,13 +945,15 @@ namespace Newtonsoft.Json.Tests
                 jsonWriter.WriteToken(JsonToken.StartArray);
                 jsonWriter.WriteToken(JsonToken.Integer, 1);
                 jsonWriter.WriteToken(JsonToken.StartObject);
-                jsonWriter.WriteToken(JsonToken.PropertyName, "string");
+                jsonWriter.WriteToken(JsonToken.PropertyName, "integer");
                 jsonWriter.WriteToken(JsonToken.Integer, int.MaxValue);
+                jsonWriter.WriteToken(JsonToken.PropertyName, "null-string");
+                jsonWriter.WriteToken(JsonToken.String, null);
                 jsonWriter.WriteToken(JsonToken.EndObject);
                 jsonWriter.WriteToken(JsonToken.EndArray);
             }
 
-            Assert.AreEqual(@"[1,{""string"":2147483647}]", sb.ToString());
+            Assert.AreEqual(@"[1,{""integer"":2147483647,""null-string"":null}]", sb.ToString());
         }
 
         [Test]
@@ -961,7 +969,7 @@ namespace Newtonsoft.Json.Tests
                 ExceptionAssert.Throws<FormatException>(() => { jsonWriter.WriteToken(JsonToken.Integer, "three"); }, "Input string was not in a correct format.");
 
                 ExceptionAssert.Throws<ArgumentNullException>(() => { jsonWriter.WriteToken(JsonToken.Integer); }, @"Value cannot be null.
-Parameter name: value");
+Parameter name: value", "Value cannot be null. (Parameter 'value')");
             }
         }
 
@@ -1211,9 +1219,9 @@ _____'propertyName': NaN,
         {
             JsonWriter.State[][] stateArray = JsonWriter.BuildStateArray();
 
-            var valueStates = JsonWriter.StateArrayTempate[7];
+            var valueStates = JsonWriter.StateArrayTemplate[7];
 
-            foreach (JsonToken valueToken in EnumUtils.GetValues(typeof(JsonToken)))
+            foreach (JsonToken valueToken in GetValues(typeof(JsonToken)))
             {
                 switch (valueToken)
                 {
@@ -1229,6 +1237,24 @@ _____'propertyName': NaN,
                         break;
                 }
             }
+        }
+
+        private static IList<object> GetValues(Type enumType)
+        {
+            if (!enumType.IsEnum())
+            {
+                throw new ArgumentException("Type {0} is not an enum.".FormatWith(CultureInfo.InvariantCulture, enumType.Name), nameof(enumType));
+            }
+
+            List<object> values = new List<object>();
+
+            foreach (FieldInfo field in enumType.GetFields(System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.Static))
+            {
+                object value = field.GetValue(enumType);
+                values.Add(value);
+            }
+
+            return values;
         }
 
         [Test]

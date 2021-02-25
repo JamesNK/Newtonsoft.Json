@@ -25,12 +25,11 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
-using System.Text.RegularExpressions;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Serialization;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -70,6 +69,18 @@ namespace Newtonsoft.Json.Tests.Converters
             Negative = -1,
             Zero = 0,
             Positive = 1
+        }
+
+        [Flags]
+        public enum NegativeFlagsEnum
+        {
+            NegativeFour = -4,
+            NegativeTwo = -2,
+            NegativeOne = -1,
+            Zero = 0,
+            One = 1,
+            Two = 2,
+            Four = 4
         }
 
 #if !NET20
@@ -115,26 +126,207 @@ namespace Newtonsoft.Json.Tests.Converters
             public NegativeEnum Value2 { get; set; }
         }
 
+        public class NegativeFlagsEnumClass
+        {
+            public NegativeFlagsEnum Value1 { get; set; }
+            public NegativeFlagsEnum Value2 { get; set; }
+        }
+
         [JsonConverter(typeof(StringEnumConverter), true)]
-        public enum CamelCaseEnum
+        public enum CamelCaseEnumObsolete
         {
             This,
             Is,
             CamelCase
         }
 
+        [JsonConverter(typeof(StringEnumConverter), typeof(CamelCaseNamingStrategy))]
+        public enum CamelCaseEnumNew
+        {
+            This,
+            Is,
+            CamelCase
+        }
+
+        [JsonConverter(typeof(StringEnumConverter), typeof(SnakeCaseNamingStrategy))]
+        public enum SnakeCaseEnumNew
+        {
+            This,
+            Is,
+            SnakeCase
+        }
+
+        [JsonConverter(typeof(StringEnumConverter), typeof(CamelCaseNamingStrategy), new object[0], false)]
+        public enum NotAllowIntegerValuesEnum
+        {
+            Foo = 0,
+            Bar = 1
+        }
+
+        [JsonConverter(typeof(StringEnumConverter), typeof(CamelCaseNamingStrategy))]
+        public enum AllowIntegerValuesEnum
+        {
+            Foo = 0,
+            Bar = 1
+        }
+
+        [JsonConverter(typeof(StringEnumConverter), typeof(CamelCaseNamingStrategy), null)]
+        public enum NullArgumentInAttribute
+        {
+            Foo = 0,
+            Bar = 1
+        }
+
+        [Test]
+        public void Serialize_CamelCaseFromAttribute_Obsolete()
+        {
+            string json = JsonConvert.SerializeObject(CamelCaseEnumObsolete.CamelCase);
+            Assert.AreEqual(@"""camelCase""", json);
+        }
+
+        [Test]
+        public void NamingStrategyAndCamelCaseText()
+        {
+            StringEnumConverter converter = new StringEnumConverter();
+            Assert.IsNull(converter.NamingStrategy);
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            converter.CamelCaseText = true;
+#pragma warning restore CS0618 // Type or member is obsolete
+            Assert.IsNotNull(converter.NamingStrategy);
+            Assert.AreEqual(typeof(CamelCaseNamingStrategy), converter.NamingStrategy.GetType());
+
+            var camelCaseInstance = converter.NamingStrategy;
+#pragma warning disable CS0618 // Type or member is obsolete
+            converter.CamelCaseText = true;
+#pragma warning restore CS0618 // Type or member is obsolete
+            Assert.AreEqual(camelCaseInstance, converter.NamingStrategy);
+
+            converter.NamingStrategy = null;
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.IsFalse(converter.CamelCaseText);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            converter.NamingStrategy = new CamelCaseNamingStrategy();
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.IsTrue(converter.CamelCaseText);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            converter.NamingStrategy = new SnakeCaseNamingStrategy();
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.IsFalse(converter.CamelCaseText);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            converter.CamelCaseText = false;
+#pragma warning restore CS0618 // Type or member is obsolete
+            Assert.IsNotNull(converter.NamingStrategy);
+            Assert.AreEqual(typeof(SnakeCaseNamingStrategy), converter.NamingStrategy.GetType());
+        }
+
+        [Test]
+        public void StringEnumConverter_CamelCaseTextCtor()
+        {
+#pragma warning disable CS0618 // Type or member is obsolete
+            StringEnumConverter converter = new StringEnumConverter(true);
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            Assert.IsNotNull(converter.NamingStrategy);
+            Assert.AreEqual(typeof(CamelCaseNamingStrategy), converter.NamingStrategy.GetType());
+            Assert.AreEqual(true, converter.AllowIntegerValues);
+        }
+
+        [Test]
+        public void StringEnumConverter_NamingStrategyTypeCtor()
+        {
+            StringEnumConverter converter = new StringEnumConverter(typeof(CamelCaseNamingStrategy), new object[] { true, true, true }, false);
+
+            Assert.IsNotNull(converter.NamingStrategy);
+            Assert.AreEqual(typeof(CamelCaseNamingStrategy), converter.NamingStrategy.GetType());
+            Assert.AreEqual(false, converter.AllowIntegerValues);
+            Assert.AreEqual(true, converter.NamingStrategy.OverrideSpecifiedNames);
+            Assert.AreEqual(true, converter.NamingStrategy.ProcessDictionaryKeys);
+            Assert.AreEqual(true, converter.NamingStrategy.ProcessExtensionDataNames);
+        }
+
+        [Test]
+        public void StringEnumConverter_NamingStrategyTypeCtor_Null()
+        {
+            ExceptionAssert.Throws<ArgumentNullException>(
+                () => new StringEnumConverter(null),
+                @"Value cannot be null.
+Parameter name: namingStrategyType", "Value cannot be null. (Parameter 'namingStrategyType')");
+        }
+
+        [Test]
+        public void StringEnumConverter_NamingStrategyTypeWithArgsCtor_Null()
+        {
+            ExceptionAssert.Throws<ArgumentNullException>(
+                () => new StringEnumConverter(null, new object[] { true, true, true }, false),
+                @"Value cannot be null.
+Parameter name: namingStrategyType", "Value cannot be null. (Parameter 'namingStrategyType')");
+        }
+
+        [Test]
+        public void Deserialize_CamelCaseFromAttribute_Obsolete()
+        {
+            CamelCaseEnumObsolete e = JsonConvert.DeserializeObject<CamelCaseEnumObsolete>(@"""camelCase""");
+            Assert.AreEqual(CamelCaseEnumObsolete.CamelCase, e);
+        }
+
         [Test]
         public void Serialize_CamelCaseFromAttribute()
         {
-            string json = JsonConvert.SerializeObject(CamelCaseEnum.CamelCase);
+            string json = JsonConvert.SerializeObject(CamelCaseEnumNew.CamelCase);
             Assert.AreEqual(@"""camelCase""", json);
         }
 
         [Test]
         public void Deserialize_CamelCaseFromAttribute()
         {
-            CamelCaseEnum e = JsonConvert.DeserializeObject<CamelCaseEnum>(@"""camelCase""");
-            Assert.AreEqual(CamelCaseEnum.CamelCase, e);
+            CamelCaseEnumNew e = JsonConvert.DeserializeObject<CamelCaseEnumNew>(@"""camelCase""");
+            Assert.AreEqual(CamelCaseEnumNew.CamelCase, e);
+        }
+
+        [Test]
+        public void Serialize_SnakeCaseFromAttribute()
+        {
+            string json = JsonConvert.SerializeObject(SnakeCaseEnumNew.SnakeCase);
+            Assert.AreEqual(@"""snake_case""", json);
+        }
+
+        [Test]
+        public void Deserialize_SnakeCaseFromAttribute()
+        {
+            SnakeCaseEnumNew e = JsonConvert.DeserializeObject<SnakeCaseEnumNew>(@"""snake_case""");
+            Assert.AreEqual(SnakeCaseEnumNew.SnakeCase, e);
+        }
+
+        [Test]
+        public void Deserialize_NotAllowIntegerValuesFromAttribute()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                NotAllowIntegerValuesEnum e = JsonConvert.DeserializeObject<NotAllowIntegerValuesEnum>(@"""9""");
+            });
+        }
+
+        [Test]
+        public void CannotPassNullArgumentToConverter()
+        {
+            var ex = ExceptionAssert.Throws<JsonException>(() =>
+            {
+                JsonConvert.DeserializeObject<NullArgumentInAttribute>(@"""9""");
+            });
+
+            Assert.AreEqual("Cannot pass a null parameter to the constructor.", ex.InnerException.Message);
+        }
+
+        [Test]
+        public void Deserialize_AllowIntegerValuesAttribute()
+        {
+            AllowIntegerValuesEnum e = JsonConvert.DeserializeObject<AllowIntegerValuesEnum>(@"""9""");
+            Assert.AreEqual(9, (int)e);
         }
 
 #if !NET20
@@ -185,7 +377,7 @@ namespace Newtonsoft.Json.Tests.Converters
             };
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enum"": "",third""
 }", json);
 
@@ -202,12 +394,19 @@ namespace Newtonsoft.Json.Tests.Converters
             };
 
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter());
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Enum"": "",""
 }", json);
 
             EnumContainer<NamedEnumWithComma> c2 = JsonConvert.DeserializeObject<EnumContainer<NamedEnumWithComma>>(json, new StringEnumConverter());
             Assert.AreEqual(NamedEnumWithComma.JustComma, c2.Enum);
+        }
+
+        [Test]
+        public void NamedEnumCommaCaseInsensitiveTest()
+        {
+            EnumContainer<NamedEnumWithComma> c2 = JsonConvert.DeserializeObject<EnumContainer<NamedEnumWithComma>>(@"{""Enum"":"",THIRD""}", new StringEnumConverter());
+            Assert.AreEqual(NamedEnumWithComma.Third, c2.Enum);
         }
 
         [Test]
@@ -232,10 +431,12 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeEnumClass()
         {
-            EnumClass enumClass = new EnumClass();
-            enumClass.StoreColor = StoreColor.Red;
-            enumClass.NullableStoreColor1 = StoreColor.White;
-            enumClass.NullableStoreColor2 = null;
+            EnumClass enumClass = new EnumClass()
+            {
+                StoreColor = StoreColor.Red,
+                NullableStoreColor1 = StoreColor.White,
+                NullableStoreColor2 = null
+            };
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
 
@@ -249,12 +450,16 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeEnumClassWithCamelCase()
         {
-            EnumClass enumClass = new EnumClass();
-            enumClass.StoreColor = StoreColor.Red;
-            enumClass.NullableStoreColor1 = StoreColor.DarkGoldenrod;
-            enumClass.NullableStoreColor2 = null;
+            EnumClass enumClass = new EnumClass()
+            {
+                StoreColor = StoreColor.Red,
+                NullableStoreColor1 = StoreColor.DarkGoldenrod,
+                NullableStoreColor2 = null
+            };
 
+#pragma warning disable CS0618 // Type or member is obsolete
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+#pragma warning restore CS0618 // Type or member is obsolete
 
             StringAssert.AreEqual(@"{
   ""StoreColor"": ""red"",
@@ -266,10 +471,12 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeEnumClassUndefined()
         {
-            EnumClass enumClass = new EnumClass();
-            enumClass.StoreColor = (StoreColor)1000;
-            enumClass.NullableStoreColor1 = (StoreColor)1000;
-            enumClass.NullableStoreColor2 = null;
+            EnumClass enumClass = new EnumClass()
+            {
+                StoreColor = (StoreColor)1000,
+                NullableStoreColor1 = (StoreColor)1000,
+                NullableStoreColor2 = null
+            };
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
 
@@ -283,10 +490,12 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void SerializeFlagEnum()
         {
-            EnumClass enumClass = new EnumClass();
-            enumClass.StoreColor = StoreColor.Red | StoreColor.White;
-            enumClass.NullableStoreColor1 = StoreColor.White & StoreColor.Yellow;
-            enumClass.NullableStoreColor2 = StoreColor.Red | StoreColor.White | StoreColor.Black;
+            EnumClass enumClass = new EnumClass()
+            {
+                StoreColor = StoreColor.Red | StoreColor.White,
+                NullableStoreColor1 = StoreColor.White & StoreColor.Yellow,
+                NullableStoreColor2 = StoreColor.Red | StoreColor.White | StoreColor.Black
+            };
 
             string json = JsonConvert.SerializeObject(enumClass, Formatting.Indented, new StringEnumConverter());
 
@@ -298,11 +507,42 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void SerializeNegativeFlagsEnum()
+        {
+            NegativeFlagsEnumClass negativeEnumClass = new NegativeFlagsEnumClass();
+            negativeEnumClass.Value1 = NegativeFlagsEnum.NegativeFour | NegativeFlagsEnum.NegativeTwo;
+            negativeEnumClass.Value2 = NegativeFlagsEnum.Two | NegativeFlagsEnum.Four;
+
+            string json = JsonConvert.SerializeObject(negativeEnumClass, Formatting.Indented, new StringEnumConverter());
+
+            StringAssert.AreEqual(@"{
+  ""Value1"": ""NegativeTwo"",
+  ""Value2"": ""Two, Four""
+}", json);
+        }
+
+        [Test]
+        public void DeserializeNegativeFlagsEnum()
+        {
+            string json = @"{
+  ""Value1"": ""NegativeFour,NegativeTwo"",
+  ""Value2"": ""NegativeFour,Four""
+}";
+
+            NegativeFlagsEnumClass negativeEnumClass = JsonConvert.DeserializeObject<NegativeFlagsEnumClass>(json, new StringEnumConverter());
+
+            Assert.AreEqual(NegativeFlagsEnum.NegativeFour | NegativeFlagsEnum.NegativeTwo, negativeEnumClass.Value1);
+            Assert.AreEqual(NegativeFlagsEnum.NegativeFour | NegativeFlagsEnum.Four, negativeEnumClass.Value2);
+        }
+
+        [Test]
         public void SerializeNegativeEnum()
         {
-            NegativeEnumClass negativeEnumClass = new NegativeEnumClass();
-            negativeEnumClass.Value1 = NegativeEnum.Negative;
-            negativeEnumClass.Value2 = (NegativeEnum)int.MinValue;
+            NegativeEnumClass negativeEnumClass = new NegativeEnumClass()
+            {
+                Value1 = NegativeEnum.Negative,
+                Value2 = (NegativeEnum)int.MinValue
+            };
 
             string json = JsonConvert.SerializeObject(negativeEnumClass, Formatting.Indented, new StringEnumConverter());
 
@@ -382,7 +622,9 @@ namespace Newtonsoft.Json.Tests.Converters
                 Enum = FlagsTestEnum.First | FlagsTestEnum.Second
             };
 
+#pragma warning disable CS0618 // Type or member is obsolete
             string json = JsonConvert.SerializeObject(c, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+#pragma warning restore CS0618 // Type or member is obsolete
             StringAssert.AreEqual(@"{
   ""Enum"": ""first, second""
 }", json);
@@ -395,7 +637,9 @@ namespace Newtonsoft.Json.Tests.Converters
   ""Enum"": ""first, second""
 }";
 
+#pragma warning disable CS0618 // Type or member is obsolete
             EnumContainer<FlagsTestEnum> c = JsonConvert.DeserializeObject<EnumContainer<FlagsTestEnum>>(json, new StringEnumConverter { CamelCaseText = true });
+#pragma warning restore CS0618 // Type or member is obsolete
             Assert.AreEqual(FlagsTestEnum.First | FlagsTestEnum.Second, c.Enum);
         }
 
@@ -473,7 +717,9 @@ namespace Newtonsoft.Json.Tests.Converters
                     (Foo)int.MaxValue
                 };
 
+#pragma warning disable CS0618 // Type or member is obsolete
             string json1 = JsonConvert.SerializeObject(lfoo, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+#pragma warning restore CS0618 // Type or member is obsolete
 
             StringAssert.AreEqual(@"[
   ""Bat, baz"",
@@ -496,7 +742,9 @@ namespace Newtonsoft.Json.Tests.Converters
 
             List<Bar> lbar = new List<Bar>() { Bar.FooBar, Bar.Bat, Bar.SerializeAsBaz };
 
+#pragma warning disable CS0618 // Type or member is obsolete
             string json2 = JsonConvert.SerializeObject(lbar, Formatting.Indented, new StringEnumConverter { CamelCaseText = true });
+#pragma warning restore CS0618 // Type or member is obsolete
 
             StringAssert.AreEqual(@"[
   ""foo_bar"",
@@ -690,17 +938,78 @@ namespace Newtonsoft.Json.Tests.Converters
         public void DeserializeEnumWithDifferentCases()
         {
             EnumWithDifferentCases e = JsonConvert.DeserializeObject<EnumWithDifferentCases>(@"""M""", new StringEnumConverter());
-
             Assert.AreEqual(EnumWithDifferentCases.M, e);
 
             e = JsonConvert.DeserializeObject<EnumWithDifferentCases>(@"""m""", new StringEnumConverter());
-
-            // unfortunatly Enum.Parse with ignoreCase will find the first match rather than the best match
-            // it would be great to find a way around this
-            Assert.AreEqual(EnumWithDifferentCases.M, e);
+            Assert.AreEqual(EnumWithDifferentCases.m, e);
         }
 
 #if !NET20
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum EnumMemberDoesNotMatchName
+        {
+            [EnumMember(Value = "first_value")]
+            First
+        }
+
+        [Test]
+        public void DeserializeEnumCaseIncensitive_ByEnumMemberValue_UpperCase()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberDoesNotMatchName>(@"""FIRST_VALUE""", new StringEnumConverter());
+            Assert.AreEqual(EnumMemberDoesNotMatchName.First, e);
+        }
+
+        [Test]
+        public void DeserializeEnumCaseIncensitive_ByEnumMemberValue_MixedCase()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberDoesNotMatchName>(@"""First_Value""", new StringEnumConverter());
+            Assert.AreEqual(EnumMemberDoesNotMatchName.First, e);
+        }
+
+        [Test]
+        public void DeserializeEnumCaseIncensitive_ByName_LowerCase()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberDoesNotMatchName>(@"""first""", new StringEnumConverter());
+            Assert.AreEqual(EnumMemberDoesNotMatchName.First, e);
+        }
+
+        [Test]
+        public void DeserializeEnumCaseIncensitive_ByName_UperCase()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberDoesNotMatchName>(@"""FIRST""", new StringEnumConverter());
+            Assert.AreEqual(EnumMemberDoesNotMatchName.First, e);
+        }
+
+        [Test]
+        public void DeserializeEnumCaseIncensitive_FromAttribute()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberDoesNotMatchName>(@"""FIRST_VALUE""");
+            Assert.AreEqual(EnumMemberDoesNotMatchName.First, e);
+        }
+
+        [JsonConverter(typeof(StringEnumConverter))]
+        public enum EnumMemberWithDiffrentCases
+        {
+            [EnumMember(Value = "first_value")]
+            First,
+            [EnumMember(Value = "second_value")]
+            first
+        }
+
+        [Test]
+        public void DeserializeEnumMemberWithDifferentCasing_ByEnumMemberValue_First()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberWithDiffrentCases>(@"""first_value""", new StringEnumConverter());
+            Assert.AreEqual(EnumMemberWithDiffrentCases.First, e);
+        }
+
+        [Test]
+        public void DeserializeEnumMemberWithDifferentCasing_ByEnumMemberValue_Second()
+        {
+            var e = JsonConvert.DeserializeObject<EnumMemberWithDiffrentCases>(@"""second_value""", new StringEnumConverter());
+            Assert.AreEqual(EnumMemberWithDiffrentCases.first, e);
+        }
+
         [DataContract(Name = "DateFormats")]
         public enum EnumMemberWithDifferentCases
         {

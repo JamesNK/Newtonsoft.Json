@@ -30,6 +30,9 @@ using System.ComponentModel;
 using System.Reflection;
 using System.Text;
 using System.Globalization;
+using System.Text.RegularExpressions;
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -37,7 +40,13 @@ namespace Newtonsoft.Json.Utilities
 
     internal static class MiscellaneousUtils
     {
-        public static bool ValueEquals(object objA, object objB)
+        [Conditional("DEBUG")]
+        public static void Assert([DoesNotReturnIf(false)] bool condition, string? message = null)
+        {
+            Debug.Assert(condition, message);
+        }
+
+        public static bool ValueEquals(object? objA, object? objB)
         {
             if (objA == objB)
             {
@@ -76,14 +85,14 @@ namespace Newtonsoft.Json.Utilities
             return new ArgumentOutOfRangeException(paramName, newMessage);
         }
 
-        public static string ToString(object value)
+        public static string ToString(object? value)
         {
             if (value == null)
             {
                 return "{null}";
             }
 
-            return (value is string) ? @"""" + value.ToString() + @"""" : value.ToString();
+            return (value is string s) ? @"""" + s + @"""" : value!.ToString();
         }
 
         public static int ByteArrayCompare(byte[] a1, byte[] a2)
@@ -106,9 +115,9 @@ namespace Newtonsoft.Json.Utilities
             return 0;
         }
 
-        public static string GetPrefix(string qualifiedName)
+        public static string? GetPrefix(string qualifiedName)
         {
-            GetQualifiedNameParts(qualifiedName, out string prefix, out _);
+            GetQualifiedNameParts(qualifiedName, out string? prefix, out _);
 
             return prefix;
         }
@@ -120,7 +129,7 @@ namespace Newtonsoft.Json.Utilities
             return localName;
         }
 
-        public static void GetQualifiedNameParts(string qualifiedName, out string prefix, out string localName)
+        public static void GetQualifiedNameParts(string qualifiedName, out string? prefix, out string localName)
         {
             int colonPosition = qualifiedName.IndexOf(':');
 
@@ -136,19 +145,30 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        internal static string FormatValueForPrint(object value)
+        internal static RegexOptions GetRegexOptions(string optionsText)
         {
-            if (value == null)
+            RegexOptions options = RegexOptions.None;
+
+            for (int i = 0; i < optionsText.Length; i++)
             {
-                return "{null}";
+                switch (optionsText[i])
+                {
+                    case 'i':
+                        options |= RegexOptions.IgnoreCase;
+                        break;
+                    case 'm':
+                        options |= RegexOptions.Multiline;
+                        break;
+                    case 's':
+                        options |= RegexOptions.Singleline;
+                        break;
+                    case 'x':
+                        options |= RegexOptions.ExplicitCapture;
+                        break;
+                }
             }
 
-            if (value is string)
-            {
-                return @"""" + value + @"""";
-            }
-
-            return value.ToString();
+            return options;
         }
     }
 }

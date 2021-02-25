@@ -40,12 +40,12 @@ namespace Newtonsoft.Json.Utilities
 
         internal static Task<bool> ToAsync(this bool value) => value ? True : False;
 
-        public static Task CancelIfRequestedAsync(this CancellationToken cancellationToken)
+        public static Task? CancelIfRequestedAsync(this CancellationToken cancellationToken)
         {
             return cancellationToken.IsCancellationRequested ? FromCanceled(cancellationToken) : null;
         }
 
-        public static Task<T> CancelIfRequestedAsync<T>(this CancellationToken cancellationToken)
+        public static Task<T>? CancelIfRequestedAsync<T>(this CancellationToken cancellationToken)
         {
             return cancellationToken.IsCancellationRequested ? FromCanceled<T>(cancellationToken) : null;
         }
@@ -54,14 +54,16 @@ namespace Newtonsoft.Json.Utilities
         // previous frameworks.
         public static Task FromCanceled(this CancellationToken cancellationToken)
         {
-            Debug.Assert(cancellationToken.IsCancellationRequested);
+            MiscellaneousUtils.Assert(cancellationToken.IsCancellationRequested);
             return new Task(() => {}, cancellationToken);
         }
 
         public static Task<T> FromCanceled<T>(this CancellationToken cancellationToken)
         {
-            Debug.Assert(cancellationToken.IsCancellationRequested);
-            return new Task<T>(() => default(T), cancellationToken);
+            MiscellaneousUtils.Assert(cancellationToken.IsCancellationRequested);
+#pragma warning disable CS8603 // Possible null reference return.
+            return new Task<T>(() => default, cancellationToken);
+#pragma warning restore CS8603 // Possible null reference return.
         }
 
         // Task.Delay(0) is optimised as a cached task within the framework, and indeed
@@ -71,25 +73,25 @@ namespace Newtonsoft.Json.Utilities
 
         public static Task WriteAsync(this TextWriter writer, char value, CancellationToken cancellationToken)
         {
-            Debug.Assert(writer != null);
+            MiscellaneousUtils.Assert(writer != null);
             return cancellationToken.IsCancellationRequested ? FromCanceled(cancellationToken) : writer.WriteAsync(value);
         }
 
-        public static Task WriteAsync(this TextWriter writer, string value, CancellationToken cancellationToken)
+        public static Task WriteAsync(this TextWriter writer, string? value, CancellationToken cancellationToken)
         {
-            Debug.Assert(writer != null);
+            MiscellaneousUtils.Assert(writer != null);
             return cancellationToken.IsCancellationRequested ? FromCanceled(cancellationToken) : writer.WriteAsync(value);
         }
 
         public static Task WriteAsync(this TextWriter writer, char[] value, int start, int count, CancellationToken cancellationToken)
         {
-            Debug.Assert(writer != null);
+            MiscellaneousUtils.Assert(writer != null);
             return cancellationToken.IsCancellationRequested ? FromCanceled(cancellationToken) : writer.WriteAsync(value, start, count);
         }
 
         public static Task<int> ReadAsync(this TextReader reader, char[] buffer, int index, int count, CancellationToken cancellationToken)
         {
-            Debug.Assert(reader != null);
+            MiscellaneousUtils.Assert(reader != null);
             return cancellationToken.IsCancellationRequested ? FromCanceled<int>(cancellationToken) : reader.ReadAsync(buffer, index, count);
         }
 

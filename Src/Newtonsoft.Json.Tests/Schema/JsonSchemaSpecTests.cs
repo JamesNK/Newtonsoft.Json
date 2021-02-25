@@ -24,7 +24,6 @@
 #endregion
 
 #pragma warning disable 618
-#if !(DNXCORE50)
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -35,9 +34,16 @@ using System.Linq;
 #endif
 using System.Reflection;
 using System.Text;
-using NUnit.Framework;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Schema;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+using TestCaseSource = Xunit.MemberDataAttribute;
+#else
+using NUnit.Framework;
+#endif
 
 namespace Newtonsoft.Json.Tests.Schema
 {
@@ -60,7 +66,10 @@ namespace Newtonsoft.Json.Tests.Schema
     [TestFixture]
     public class JsonSchemaSpecTests : TestFixtureBase
     {
-        [TestCaseSourceAttribute(nameof(GetSpecTestDetails))]
+#if DNXCORE50
+        [Theory]
+#endif
+        [TestCaseSource(nameof(GetSpecTestDetails))]
         public void SpecTest(JsonSchemaSpecTest jsonSchemaSpecTest)
         {
             JsonSchema s = JsonSchema.Read(jsonSchemaSpecTest.Schema.CreateReader());
@@ -72,13 +81,12 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.AreEqual(jsonSchemaSpecTest.IsValid, v, jsonSchemaSpecTest.TestCaseDescription + " - " + jsonSchemaSpecTest.TestDescription + " - errors: " + string.Join(", ", errorMessages));
         }
 
-        public static IList<JsonSchemaSpecTest> GetSpecTestDetails()
+        public static IList<object[]> GetSpecTestDetails()
         {
             IList<JsonSchemaSpecTest> specTests = new List<JsonSchemaSpecTest>();
 
             // get test files location relative to the test project dll
-            string baseDirectory = AppDomain.CurrentDomain.BaseDirectory;
-            string baseTestPath = Path.Combine(baseDirectory, Path.Combine("Schema", "Specs"));
+            string baseTestPath = ResolvePath(Path.Combine("Schema", "Specs"));
 
             string[] testFiles = Directory.GetFiles(baseTestPath, "*.json", SearchOption.AllDirectories);
 
@@ -115,10 +123,8 @@ namespace Newtonsoft.Json.Tests.Schema
                                              && s.TestCaseDescription != "when types includes a schema it should fully validate the schema"
                                              && s.TestCaseDescription != "types can include schemas").ToList();
 
-            return specTests;
+            return specTests.Select(s => new object[] { s }).ToList();
         }
     }
 }
-
-#endif
 #pragma warning restore 618

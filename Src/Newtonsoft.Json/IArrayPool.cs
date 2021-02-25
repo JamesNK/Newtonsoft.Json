@@ -17,6 +17,6 @@
         /// Return an array to the pool.
         /// </summary>
         /// <param name="array">The array that is being returned.</param>
-        void Return(T[] array);
+        void Return(T[]? array);
     }
 }

@@ -48,17 +48,32 @@ namespace Newtonsoft.Json.Converters
         #region UnionDefinition
         internal class Union
         {
-            public List<UnionCase> Cases;
-            public FSharpFunction TagReader { get; set; }
+            public readonly FSharpFunction TagReader;
+            public readonly List<UnionCase> Cases;
+
+            public Union(FSharpFunction tagReader, List<UnionCase> cases)
+            {
+                TagReader = tagReader;
+                Cases = cases;
+            }
         }
 
         internal class UnionCase
         {
-            public int Tag;
-            public string Name;
-            public PropertyInfo[] Fields;
-            public FSharpFunction FieldReader;
-            public FSharpFunction Constructor;
+            public readonly int Tag;
+            public readonly string Name;
+            public readonly PropertyInfo[] Fields;
+            public readonly FSharpFunction FieldReader;
+            public readonly FSharpFunction Constructor;
+
+            public UnionCase(int tag, string name, PropertyInfo[] fields, FSharpFunction fieldReader, FSharpFunction constructor)
+            {
+                Tag = tag;
+                Name = name;
+                Fields = fields;
+                FieldReader = fieldReader;
+                Constructor = constructor;
+            }
         }
         #endregion
 
@@ -74,31 +89,28 @@ namespace Newtonsoft.Json.Converters
             // need to get declaring type to avoid duplicate Unions in cache
 
             // hacky but I can't find an API to get the declaring type without GetUnionCases
-            object[] cases = (object[])FSharpUtils.GetUnionCases(null, t, null);
+            object[] cases = (object[])FSharpUtils.Instance.GetUnionCases(null, t, null)!;
 
             object caseInfo = cases.First();
 
-            Type unionType = (Type)FSharpUtils.GetUnionCaseInfoDeclaringType(caseInfo);
+            Type unionType = (Type)FSharpUtils.Instance.GetUnionCaseInfoDeclaringType(caseInfo)!;
             return unionType;
         }
 
         private static Union CreateUnion(Type t)
         {
-            Union u = new Union();
+            Union u = new Union((FSharpFunction)FSharpUtils.Instance.PreComputeUnionTagReader(null, t, null), new List<UnionCase>());
 
-            u.TagReader = (FSharpFunction)FSharpUtils.PreComputeUnionTagReader(null, t, null);
-            u.Cases = new List<UnionCase>();
-
-            object[] cases = (object[])FSharpUtils.GetUnionCases(null, t, null);
+            object[] cases = (object[])FSharpUtils.Instance.GetUnionCases(null, t, null)!;
 
             foreach (object unionCaseInfo in cases)
             {
-                UnionCase unionCase = new UnionCase();
-                unionCase.Tag = (int)FSharpUtils.GetUnionCaseInfoTag(unionCaseInfo);
-                unionCase.Name = (string)FSharpUtils.GetUnionCaseInfoName(unionCaseInfo);
-                unionCase.Fields = (PropertyInfo[])FSharpUtils.GetUnionCaseInfoFields(unionCaseInfo);
-                unionCase.FieldReader = (FSharpFunction)FSharpUtils.PreComputeUnionReader(null, unionCaseInfo, null);
-                unionCase.Constructor = (FSharpFunction)FSharpUtils.PreComputeUnionConstructor(null, unionCaseInfo, null);
+                UnionCase unionCase = new UnionCase(
+                    (int)FSharpUtils.Instance.GetUnionCaseInfoTag(unionCaseInfo),
+                    (string)FSharpUtils.Instance.GetUnionCaseInfoName(unionCaseInfo),
+                    (PropertyInfo[])FSharpUtils.Instance.GetUnionCaseInfoFields(unionCaseInfo)!,
+                    (FSharpFunction)FSharpUtils.Instance.PreComputeUnionReader(null, unionCaseInfo, null),
+                    (FSharpFunction)FSharpUtils.Instance.PreComputeUnionConstructor(null, unionCaseInfo, null));
 
                 u.Cases.Add(unionCase);
             }
@@ -112,9 +124,15 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            DefaultContractResolver resolver = serializer.ContractResolver as DefaultContractResolver;
+            if (value == null)
+            {
+                writer.WriteNull();
+                return;
+            }
+
+            DefaultContractResolver? resolver = serializer.ContractResolver as DefaultContractResolver;
 
             Type unionType = UnionTypeLookupCache.Get(value.GetType());
             Union union = UnionCache.Get(unionType);
@@ -127,7 +145,7 @@ namespace Newtonsoft.Json.Converters
             writer.WriteValue(caseInfo.Name);
             if (caseInfo.Fields != null && caseInfo.Fields.Length > 0)
             {
-                object[] fields = (object[])caseInfo.FieldReader.Invoke(value);
+                object[] fields = (object[])caseInfo.FieldReader.Invoke(value)!;
 
                 writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(FieldsPropertyName) : FieldsPropertyName);
                 writer.WriteStartArray();
@@ -148,30 +166,30 @@ namespace Newtonsoft.Json.Converters
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
             {
                 return null;
             }
 
-            UnionCase caseInfo = null;
-            string caseName = null;
-            JArray fields = null;
+            UnionCase? caseInfo = null;
+            string? caseName = null;
+            JArray? fields = null;
 
             // start object
             reader.ReadAndAssert();
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
-                string propertyName = reader.Value.ToString();
+                string propertyName = reader.Value!.ToString();
                 if (string.Equals(propertyName, CasePropertyName, StringComparison.OrdinalIgnoreCase))
                 {
                     reader.ReadAndAssert();
 
                     Union union = UnionCache.Get(objectType);
 
-                    caseName = reader.Value.ToString();
+                    caseName = reader.Value!.ToString();
 
                     caseInfo = union.Cases.SingleOrDefault(c => c.Name == caseName);
 
@@ -203,7 +221,7 @@ namespace Newtonsoft.Json.Converters
                 throw JsonSerializationException.Create(reader, "No '{0}' property with union name found.".FormatWith(CultureInfo.InvariantCulture, CasePropertyName));
             }
 
-            object[] typedFieldValues = new object[caseInfo.Fields.Length];
+            object?[] typedFieldValues = new object?[caseInfo.Fields.Length];
 
             if (caseInfo.Fields.Length > 0 && fields == null)
             {
@@ -272,7 +290,7 @@ namespace Newtonsoft.Json.Converters
                 return false;
             }
 
-            return (bool)FSharpUtils.IsUnion(null, objectType, null);
+            return (bool)FSharpUtils.Instance.IsUnion(null, objectType, null);
         }
     }
 }

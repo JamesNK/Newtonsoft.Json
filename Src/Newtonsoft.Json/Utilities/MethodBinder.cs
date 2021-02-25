@@ -126,7 +126,7 @@ namespace Newtonsoft.Json.Utilities
             }
 
             // check if the last parameter is ParamArray
-            Type paramArrayType = null;
+            Type? paramArrayType = null;
 
             if (enableParamArray)
             {
@@ -211,7 +211,7 @@ namespace Newtonsoft.Json.Utilities
                     return 1;
                 }
 
-                Type paramArrayType1 = null, paramArrayType2 = null;
+                Type? paramArrayType1 = null, paramArrayType2 = null;
 
                 if (_enableParamArray)
                 {

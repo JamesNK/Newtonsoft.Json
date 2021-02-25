@@ -11,9 +11,14 @@ namespace Newtonsoft.Json.Linq.JsonPath
 {
     internal class FieldMultipleFilter : PathFilter
     {
-        public List<string> Names { get; set; }
+        internal List<string> Names;
 
-        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, bool errorWhenNoMatch)
+        public FieldMultipleFilter(List<string> names)
+        {
+            Names = names;
+        }
+
+        public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, JsonSelectSettings? settings)
         {
             foreach (JToken t in current)
             {
@@ -21,14 +26,14 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 {
                     foreach (string name in Names)
                     {
-                        JToken v = o[name];
+                        JToken? v = o[name];
 
                         if (v != null)
                         {
                             yield return v;
                         }
 
-                        if (errorWhenNoMatch)
+                        if (settings?.ErrorWhenNoMatch ?? false)
                         {
                             throw new JsonException("Property '{0}' does not exist on JObject.".FormatWith(CultureInfo.InvariantCulture, name));
                         }
@@ -36,7 +41,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
                 }
                 else
                 {
-                    if (errorWhenNoMatch)
+                    if (settings?.ErrorWhenNoMatch ?? false)
                     {
                         throw new JsonException("Properties {0} not valid on {1}.".FormatWith(CultureInfo.InvariantCulture, string.Join(", ", Names.Select(n => "'" + n + "'")
 #if !HAVE_STRING_JOIN_WITH_ENUMERABLE

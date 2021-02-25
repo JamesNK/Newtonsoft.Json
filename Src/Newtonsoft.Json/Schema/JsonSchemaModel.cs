@@ -28,9 +28,11 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 
+#nullable disable
+
 namespace Newtonsoft.Json.Schema
 {
-    [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
+    [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
     internal class JsonSchemaModel
     {
         public bool Required { get; set; }

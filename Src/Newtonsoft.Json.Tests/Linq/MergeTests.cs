@@ -47,6 +47,30 @@ namespace Newtonsoft.Json.Tests.Linq
     public class MergeTests : TestFixtureBase
     {
         [Test]
+        public void MergeArraySelf()
+        {
+            var a = new JArray { "1", "2" };
+            a.Merge(a, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+            Assert.AreEqual(new JArray { "1", "2" }, a);
+        }
+
+        [Test]
+        public void MergeObjectSelf()
+        {
+            var a = new JObject
+            {
+                ["1"] = 1,
+                ["2"] = 2
+            };
+            a.Merge(a, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+            Assert.AreEqual(new JObject
+            {
+                ["1"] = 1,
+                ["2"] = 2
+            }, a);
+        }
+
+        [Test]
         public void MergeNullString()
         {
             var a = new JObject { ["a"] = 1 };
@@ -665,6 +689,41 @@ namespace Newtonsoft.Json.Tests.Linq
             });
 
             StringAssert.AreEqual(newJson, newFoo.ToString());
+        }
+
+        [Test]
+        public void Merge_IgnorePropertyCase()
+        {
+            JObject o1 = JObject.Parse(@"{
+                                          'Id': '1',
+                                          'Words': [ 'User' ]
+                                        }");
+            JObject o2 = JObject.Parse(@"{
+                                            'Id': '1',
+                                            'words': [ 'Name' ]
+                                        }");
+
+            o1.Merge(o2, new JsonMergeSettings
+            {
+                MergeArrayHandling = MergeArrayHandling.Concat,
+                MergeNullValueHandling = MergeNullValueHandling.Merge,
+                PropertyNameComparison = StringComparison.OrdinalIgnoreCase
+            });
+
+            Assert.IsNull(o1["words"]);
+            Assert.IsNotNull(o1["Words"]);
+
+            JArray words = (JArray)o1["Words"];
+            Assert.AreEqual("User", (string)words[0]);
+            Assert.AreEqual("Name", (string)words[1]);
+        }
+
+        [Test]
+        public void MergeSettingsComparisonDefault()
+        {
+            JsonMergeSettings settings = new JsonMergeSettings();
+
+            Assert.AreEqual(StringComparison.Ordinal, settings.PropertyNameComparison);
         }
     }
 }

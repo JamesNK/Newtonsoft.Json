@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Linq
         #region JPropertyList
         private class JPropertyList : IList<JToken>
         {
-            internal JToken _token;
+            internal JToken? _token;
 
             public IEnumerator<JToken> GetEnumerator()
             {
@@ -115,13 +115,24 @@ namespace Newtonsoft.Json.Linq
 
             public JToken this[int index]
             {
-                get => (index == 0) ? _token : null;
+                get
+                {
+                    if (index != 0)
+                    {
+                        throw new IndexOutOfRangeException();
+                    }
+
+                    MiscellaneousUtils.Assert(_token != null);
+                    return _token;
+                }
                 set
                 {
-                    if (index == 0)
+                    if (index != 0)
                     {
-                        _token = value;
+                        throw new IndexOutOfRangeException();
                     }
+
+                    _token = value;
                 }
             }
         }
@@ -153,7 +164,7 @@ namespace Newtonsoft.Json.Linq
         public JToken Value
         {
             [DebuggerStepThrough]
-            get { return _content._token; }
+            get { return _content._token!; }
             set
             {
                 CheckReentrancy();
@@ -191,7 +202,7 @@ namespace Newtonsoft.Json.Linq
             return Value;
         }
 
-        internal override void SetItem(int index, JToken item)
+        internal override void SetItem(int index, JToken? item)
         {
             if (index != 0)
             {
@@ -203,14 +214,14 @@ namespace Newtonsoft.Json.Linq
                 return;
             }
 
-            ((JObject)Parent)?.InternalPropertyChanging(this);
+            ((JObject?)Parent)?.InternalPropertyChanging(this);
 
             base.SetItem(0, item);
 
-            ((JObject)Parent)?.InternalPropertyChanged(this);
+            ((JObject?)Parent)?.InternalPropertyChanged(this);
         }
 
-        internal override bool RemoveItem(JToken item)
+        internal override bool RemoveItem(JToken? item)
         {
             throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
         }
@@ -220,12 +231,17 @@ namespace Newtonsoft.Json.Linq
             throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
         }
 
-        internal override int IndexOfItem(JToken item)
+        internal override int IndexOfItem(JToken? item)
         {
+            if (item == null)
+            {
+                return -1;
+            }
+
             return _content.IndexOf(item);
         }
 
-        internal override void InsertItem(int index, JToken item, bool skipParentCheck)
+        internal override void InsertItem(int index, JToken? item, bool skipParentCheck)
         {
             // don't add comments to JProperty
             if (item != null && item.Type == JTokenType.Comment)
@@ -241,14 +257,14 @@ namespace Newtonsoft.Json.Linq
             base.InsertItem(0, item, false);
         }
 
-        internal override bool ContainsItem(JToken item)
+        internal override bool ContainsItem(JToken? item)
         {
             return (Value == item);
         }
 
-        internal override void MergeItem(object content, JsonMergeSettings settings)
+        internal override void MergeItem(object content, JsonMergeSettings? settings)
         {
-            JToken value = (content as JProperty)?.Value;
+            JToken? value = (content as JProperty)?.Value;
 
             if (value != null && value.Type != JTokenType.Null)
             {
@@ -304,7 +320,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="name">The property name.</param>
         /// <param name="content">The property content.</param>
-        public JProperty(string name, object content)
+        public JProperty(string name, object? content)
         {
             ValidationUtils.ArgumentNotNull(name, nameof(name));
 
@@ -357,7 +373,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
         /// If this is <c>null</c>, default load settings will be used.</param>
         /// <returns>A <see cref="JProperty"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-        public new static JProperty Load(JsonReader reader, JsonLoadSettings settings)
+        public new static JProperty Load(JsonReader reader, JsonLoadSettings? settings)
         {
             if (reader.TokenType == JsonToken.None)
             {
@@ -374,7 +390,7 @@ namespace Newtonsoft.Json.Linq
                 throw JsonReaderException.Create(reader, "Error reading JProperty from JsonReader. Current JsonReader item is not a property: {0}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
 
-            JProperty p = new JProperty((string)reader.Value);
+            JProperty p = new JProperty((string)reader.Value!);
             p.SetLineInfo(reader as IJsonLineInfo, settings);
 
             p.ReadTokenFrom(reader, settings);

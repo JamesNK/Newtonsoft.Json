@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Globalization;
+using System.IO;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 
@@ -41,11 +42,11 @@ namespace Newtonsoft.Json
 
     internal struct JsonPosition
     {
-        private static readonly char[] SpecialCharacters = { '.', ' ', '[', ']', '(', ')' };
+        private static readonly char[] SpecialCharacters = { '.', ' ', '\'', '/', '"', '[', ']', '(', ')', '\t', '\n', '\r', '\f', '\b', '\\', '\u0085', '\u2028', '\u2029' };
 
         internal JsonContainerType Type;
         internal int Position;
-        internal string PropertyName;
+        internal string? PropertyName;
         internal bool HasIndex;
 
         public JsonPosition(JsonContainerType type)
@@ -61,7 +62,7 @@ namespace Newtonsoft.Json
             switch (Type)
             {
                 case JsonContainerType.Object:
-                    return PropertyName.Length + 5;
+                    return PropertyName!.Length + 5;
                 case JsonContainerType.Array:
                 case JsonContainerType.Constructor:
                     return MathUtils.IntLength((ulong)Position) + 2;
@@ -70,16 +71,23 @@ namespace Newtonsoft.Json
             }
         }
 
-        internal void WriteTo(StringBuilder sb)
+        internal void WriteTo(StringBuilder sb, ref StringWriter? writer, ref char[]? buffer)
         {
             switch (Type)
             {
                 case JsonContainerType.Object:
-                    string propertyName = PropertyName;
+                    string propertyName = PropertyName!;
                     if (propertyName.IndexOfAny(SpecialCharacters) != -1)
                     {
                         sb.Append(@"['");
-                        sb.Append(propertyName);
+
+                        if (writer == null)
+                        {
+                            writer = new StringWriter(sb);
+                        }
+
+                        JavaScriptUtils.WriteEscapedJavaScriptString(writer, propertyName, '\'', false, JavaScriptUtils.SingleQuoteCharEscapeFlags, StringEscapeHandling.Default, null, ref buffer);
+
                         sb.Append(@"']");
                     }
                     else
@@ -122,22 +130,24 @@ namespace Newtonsoft.Json
             }
 
             StringBuilder sb = new StringBuilder(capacity);
+            StringWriter? writer = null;
+            char[]? buffer = null;
             if (positions != null)
             {
                 foreach (JsonPosition state in positions)
                 {
-                    state.WriteTo(sb);
+                    state.WriteTo(sb, ref writer, ref buffer);
                 }
             }
             if (currentPosition != null)
             {
-                currentPosition.GetValueOrDefault().WriteTo(sb);
+                currentPosition.GetValueOrDefault().WriteTo(sb, ref writer, ref buffer);
             }
 
             return sb.ToString();
         }
 
-        internal static string FormatMessage(IJsonLineInfo lineInfo, string path, string message)
+        internal static string FormatMessage(IJsonLineInfo? lineInfo, string path, string message)
         {
             // don't add a fullstop and space when message ends with a new line
             if (!message.EndsWith(Environment.NewLine, StringComparison.Ordinal))

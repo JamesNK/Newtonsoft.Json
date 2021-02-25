@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -47,6 +48,8 @@ using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
+using System.Text.RegularExpressions;
+using Newtonsoft.Json.Converters;
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
@@ -534,11 +537,11 @@ namespace Newtonsoft.Json.Tests.Serialization
             string iPersonJson = JsonConvert.SerializeObject(employee, Formatting.Indented,
                 new JsonSerializerSettings { ContractResolver = new IPersonContractResolver() });
 
-            StringAssert.AreEqual(@"{
-  ""FirstName"": ""Maurice"",
-  ""LastName"": ""Moss"",
-  ""BirthDate"": ""1977-12-30T01:01:01Z""
-}", iPersonJson);
+            JObject o = JObject.Parse(iPersonJson);
+
+            Assert.AreEqual("Maurice", (string)o["FirstName"]);
+            Assert.AreEqual("Moss", (string)o["LastName"]);
+            Assert.AreEqual(new DateTime(1977, 12, 30, 1, 1, 1, DateTimeKind.Utc), (DateTime)o["BirthDate"]);
         }
 
         [Test]
@@ -726,6 +729,17 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void NonGenericDictionary_KeyValueTypes()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonDictionaryContract c = (JsonDictionaryContract)resolver.ResolveContract(typeof(IDictionary));
+
+            Assert.IsNull(c.DictionaryKeyType);
+            Assert.IsNull(c.DictionaryValueType);
+        }
+
+        [Test]
         public void DefaultContractResolverIgnoreIsSpecifiedTrue()
         {
             DefaultContractResolver resolver = new DefaultContractResolver();
@@ -783,6 +797,56 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void JsonRequiredAttribute()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(RequiredPropertyTestClass));
+
+            var property1 = contract.Properties["Name"];
+
+            Assert.AreEqual(Required.Always, property1.Required);
+            Assert.AreEqual(true, property1.IsRequiredSpecified);
+        }
+
+        [Test]
+        public void JsonPropertyAttribute_Required()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(RequiredObject));
+
+            var unset = contract.Properties["UnsetProperty"];
+
+            Assert.AreEqual(Required.Default, unset.Required);
+            Assert.AreEqual(false, unset.IsRequiredSpecified);
+
+            var allowNull = contract.Properties["AllowNullProperty"];
+
+            Assert.AreEqual(Required.AllowNull, allowNull.Required);
+            Assert.AreEqual(true, allowNull.IsRequiredSpecified);
+        }
+
+        [Test]
+        public void InternalConverter_Object_NotSet()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(object));
+
+            Assert.IsNull(contract.InternalConverter);
+        }
+
+        [Test]
+        public void InternalConverter_Regex_Set()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            JsonContract contract = resolver.ResolveContract(typeof(Regex));
+
+            Assert.IsInstanceOf(typeof(RegexConverter), contract.InternalConverter);
+        }
+
         public void JsonConverterAttribute_TypeGenericConverter()
         {
             DefaultContractResolver resolver = new DefaultContractResolver();

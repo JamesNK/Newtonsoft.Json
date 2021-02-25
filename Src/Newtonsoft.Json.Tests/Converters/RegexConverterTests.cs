@@ -82,7 +82,9 @@ namespace Newtonsoft.Json.Tests.Converters
 
             string json = JsonConvert.SerializeObject(regex, Formatting.Indented, new JsonSerializerSettings
             {
+#pragma warning disable CS0618 // Type or member is obsolete
                 Converters = { new RegexConverter(), new StringEnumConverter() { CamelCaseText = true } },
+#pragma warning restore CS0618 // Type or member is obsolete
                 ContractResolver = new CamelCasePropertyNamesContractResolver()
             });
 
@@ -124,6 +126,67 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual("(hi)", r.Regex.ToString());
             Assert.AreEqual(RegexOptions.IgnoreCase | RegexOptions.ExplicitCapture, r.Regex.Options);
+        }
+
+        [Test]
+        public void DeserializeStringRegex()
+        {
+            string json = @"{
+  ""Regex"": ""\/abc\/""
+}";
+
+            RegexTestClass c = JsonConvert.DeserializeObject<RegexTestClass>(json, new JsonSerializerSettings
+            {
+                Converters = { new RegexConverter() }
+            });
+
+            Assert.AreEqual("abc", c.Regex.ToString());
+            Assert.AreEqual(RegexOptions.None, c.Regex.Options);
+        }
+
+        [Test]
+        public void DeserializeStringRegex_NoStartSlash_Error()
+        {
+            string json = @"{
+  ""Regex"": ""abc\/""
+}";
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<RegexTestClass>(json, new JsonSerializerSettings
+                {
+                    Converters = { new RegexConverter() }
+                }),
+                "Regex pattern must be enclosed by slashes. Path 'Regex', line 2, position 18.");
+        }
+
+        [Test]
+        public void DeserializeStringRegex_NoEndSlash_Error()
+        {
+            string json = @"{
+  ""Regex"": ""\/abc""
+}";
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<RegexTestClass>(json, new JsonSerializerSettings
+                {
+                    Converters = {new RegexConverter()}
+                }),
+                "Regex pattern must be enclosed by slashes. Path 'Regex', line 2, position 18.");
+        }
+
+        [Test]
+        public void DeserializeStringRegex_NoStartAndEndSlashes_Error()
+        {
+            string json = @"{
+  ""Regex"": ""abc""
+}";
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => JsonConvert.DeserializeObject<RegexTestClass>(json, new JsonSerializerSettings
+                {
+                    Converters = { new RegexConverter() }
+                }),
+                "Regex pattern must be enclosed by slashes. Path 'Regex', line 2, position 16.");
         }
 
 #pragma warning disable 618

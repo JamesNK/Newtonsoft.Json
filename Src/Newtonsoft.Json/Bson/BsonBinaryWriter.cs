@@ -29,6 +29,8 @@ using System.IO;
 using System.Text;
 using Newtonsoft.Json.Utilities;
 
+#nullable disable
+
 namespace Newtonsoft.Json.Bson
 {
     internal class BsonBinaryWriter
@@ -135,9 +137,8 @@ namespace Newtonsoft.Json.Bson
 
                     long ticks = 0;
 
-                    if (value.Value is DateTime)
+                    if (value.Value is DateTime dateTime)
                     {
-                        DateTime dateTime = (DateTime)value.Value;
                         if (DateTimeKindHandling == DateTimeKind.Utc)
                         {
                             dateTime = dateTime.ToUniversalTime();

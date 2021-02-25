@@ -62,7 +62,7 @@ namespace Newtonsoft.Json
         // array that gives a new state based on the current state an the token being written
         private static readonly State[][] StateArray;
 
-        internal static readonly State[][] StateArrayTempate = new[]
+        internal static readonly State[][] StateArrayTemplate = new[]
         {
             //                                      Start                    PropertyName            ObjectStart         Object            ArrayStart              Array                   ConstructorStart        Constructor             Closed       Error
             //
@@ -78,15 +78,18 @@ namespace Newtonsoft.Json
 
         internal static State[][] BuildStateArray()
         {
-            List<State[]> allStates = StateArrayTempate.ToList();
-            State[] errorStates = StateArrayTempate[0];
-            State[] valueStates = StateArrayTempate[7];
+            List<State[]> allStates = StateArrayTemplate.ToList();
+            State[] errorStates = StateArrayTemplate[0];
+            State[] valueStates = StateArrayTemplate[7];
 
-            foreach (JsonToken valueToken in EnumUtils.GetValues(typeof(JsonToken)))
+            EnumInfo enumValuesAndNames = EnumUtils.GetEnumValuesAndNames(typeof(JsonToken));
+
+            foreach (ulong valueToken in enumValuesAndNames.Values)
             {
                 if (allStates.Count <= (int)valueToken)
                 {
-                    switch (valueToken)
+                    JsonToken token = (JsonToken)valueToken;
+                    switch (token)
                     {
                         case JsonToken.Integer:
                         case JsonToken.Float:
@@ -113,7 +116,7 @@ namespace Newtonsoft.Json
             StateArray = BuildStateArray();
         }
 
-        private List<JsonPosition> _stack;
+        private List<JsonPosition>? _stack;
         private JsonPosition _currentPosition;
         private State _currentState;
         private Formatting _formatting;
@@ -215,7 +218,7 @@ namespace Newtonsoft.Json
 
                 JsonPosition? current = insideContainer ? (JsonPosition?)_currentPosition : null;
 
-                return JsonPosition.BuildPath(_stack, current);
+                return JsonPosition.BuildPath(_stack!, current);
             }
         }
 
@@ -223,8 +226,8 @@ namespace Newtonsoft.Json
         private DateTimeZoneHandling _dateTimeZoneHandling;
         private StringEscapeHandling _stringEscapeHandling;
         private FloatFormatHandling _floatFormatHandling;
-        private string _dateFormatString;
-        private CultureInfo _culture;
+        private string? _dateFormatString;
+        private CultureInfo? _culture;
 
         /// <summary>
         /// Gets or sets a value indicating how JSON text output should be formatted.
@@ -322,7 +325,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets or sets how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatted when writing JSON text.
         /// </summary>
-        public string DateFormatString
+        public string? DateFormatString
         {
             get => _dateFormatString;
             set => _dateFormatString = value;
@@ -519,7 +522,7 @@ namespace Newtonsoft.Json
         /// A value is only required for tokens that have an associated value, e.g. the <see cref="String"/> property name for <see cref="JsonToken.PropertyName"/>.
         /// <c>null</c> can be passed to the method for tokens that don't have a value, e.g. <see cref="JsonToken.StartObject"/>.
         /// </param>
-        public void WriteToken(JsonToken token, object value)
+        public void WriteToken(JsonToken token, object? value)
         {
             switch (token)
             {
@@ -558,17 +561,17 @@ namespace Newtonsoft.Json
                     break;
                 case JsonToken.Float:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    if (value is decimal d)
+                    if (value is decimal decimalValue)
                     {
-                        WriteValue(d);
+                        WriteValue(decimalValue);
                     }
-                    else if (value is double)
+                    else if (value is double doubleValue)
                     {
-                        WriteValue((double)value);
+                        WriteValue(doubleValue);
                     }
-                    else if (value is float)
+                    else if (value is float floatValue)
                     {
-                        WriteValue((float)value);
+                        WriteValue(floatValue);
                     }
                     else
                     {
@@ -576,8 +579,9 @@ namespace Newtonsoft.Json
                     }
                     break;
                 case JsonToken.String:
-                    ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    WriteValue(value.ToString());
+                    // Allow for a null string. This matches JTokenReader behavior which can read
+                    // a JsonToken.String with a null value.
+                    WriteValue(value?.ToString());
                     break;
                 case JsonToken.Boolean:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
@@ -622,7 +626,7 @@ namespace Newtonsoft.Json
                     }
                     else
                     {
-                        WriteValue((byte[])value);
+                        WriteValue((byte[])value!);
                     }
                     break;
                 default:
@@ -646,7 +650,7 @@ namespace Newtonsoft.Json
             do
             {
                 // write a JValue date when the constructor is for a date
-                if (writeDateConstructorAsDate && reader.TokenType == JsonToken.StartConstructor && string.Equals(reader.Value.ToString(), "Date", StringComparison.Ordinal))
+                if (writeDateConstructorAsDate && reader.TokenType == JsonToken.StartConstructor && string.Equals(reader.Value?.ToString(), "Date", StringComparison.Ordinal))
                 {
                     WriteConstructorDate(reader);
                 }
@@ -663,10 +667,17 @@ namespace Newtonsoft.Json
                 && writeChildren
                 && reader.Read());
 
-            if (initialDepth < CalculateWriteTokenFinalDepth(reader))
+            if (IsWriteTokenIncomplete(reader, writeChildren, initialDepth))
             {
                 throw JsonWriterException.Create(this, "Unexpected end when reading token.", null);
             }
+        }
+
+        private bool IsWriteTokenIncomplete(JsonReader reader, bool writeChildren, int initialDepth)
+        {
+            int finalDepth = CalculateWriteTokenFinalDepth(reader);
+            return initialDepth < finalDepth ||
+                (writeChildren && initialDepth == finalDepth && JsonTokenUtils.IsStartToken(reader.TokenType));
         }
 
         private int CalculateWriteTokenInitialDepth(JsonReader reader)
@@ -693,28 +704,12 @@ namespace Newtonsoft.Json
 
         private void WriteConstructorDate(JsonReader reader)
         {
-            if (!reader.Read())
+            if (!JavaScriptUtils.TryGetDateFromConstructorJson(reader, out DateTime dateTime, out string? errorMessage))
             {
-                throw JsonWriterException.Create(this, "Unexpected end when reading date constructor.", null);
-            }
-            if (reader.TokenType != JsonToken.Integer)
-            {
-                throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected Integer, got " + reader.TokenType, null);
+                throw JsonWriterException.Create(this, errorMessage, null);
             }
 
-            long ticks = (long)reader.Value;
-            DateTime date = DateTimeUtils.ConvertJavaScriptTicksToDateTime(ticks);
-
-            if (!reader.Read())
-            {
-                throw JsonWriterException.Create(this, "Unexpected end when reading date constructor.", null);
-            }
-            if (reader.TokenType != JsonToken.EndConstructor)
-            {
-                throw JsonWriterException.Create(this, "Unexpected token when reading date constructor. Expected EndConstructor, got " + reader.TokenType, null);
-            }
-
-            WriteValue(date);
+            WriteValue(dateTime);
         }
 
         private void WriteEnd(JsonContainerType type)
@@ -800,7 +795,7 @@ namespace Newtonsoft.Json
                 {
                     int currentLevel = top - i;
 
-                    if (_stack[currentLevel].Type == type)
+                    if (_stack![currentLevel].Type == type)
                     {
                         levelsToComplete = i + 2;
                         break;
@@ -922,7 +917,7 @@ namespace Newtonsoft.Json
         /// Writes raw JSON without changing the writer's state.
         /// </summary>
         /// <param name="json">The raw JSON to write.</param>
-        public virtual void WriteRaw(string json)
+        public virtual void WriteRaw(string? json)
         {
             InternalWriteRaw();
         }
@@ -931,7 +926,7 @@ namespace Newtonsoft.Json
         /// Writes raw JSON where a value is expected and updates the writer's state.
         /// </summary>
         /// <param name="json">The raw JSON to write.</param>
-        public virtual void WriteRawValue(string json)
+        public virtual void WriteRawValue(string? json)
         {
             // hack. want writer to change state as if a value had been written
             UpdateScopeWithFinishedValue();
@@ -943,7 +938,7 @@ namespace Newtonsoft.Json
         /// Writes a <see cref="String"/> value.
         /// </summary>
         /// <param name="value">The <see cref="String"/> value to write.</param>
-        public virtual void WriteValue(string value)
+        public virtual void WriteValue(string? value)
         {
             InternalWriteValue(JsonToken.String);
         }
@@ -1389,7 +1384,7 @@ namespace Newtonsoft.Json
         /// Writes a <see cref="Byte"/>[] value.
         /// </summary>
         /// <param name="value">The <see cref="Byte"/>[] value to write.</param>
-        public virtual void WriteValue(byte[] value)
+        public virtual void WriteValue(byte[]? value)
         {
             if (value == null)
             {
@@ -1405,7 +1400,7 @@ namespace Newtonsoft.Json
         /// Writes a <see cref="Uri"/> value.
         /// </summary>
         /// <param name="value">The <see cref="Uri"/> value to write.</param>
-        public virtual void WriteValue(Uri value)
+        public virtual void WriteValue(Uri? value)
         {
             if (value == null)
             {
@@ -1422,7 +1417,7 @@ namespace Newtonsoft.Json
         /// An error will raised if the value cannot be written as a single JSON token.
         /// </summary>
         /// <param name="value">The <see cref="Object"/> value to write.</param>
-        public virtual void WriteValue(object value)
+        public virtual void WriteValue(object? value)
         {
             if (value == null)
             {
@@ -1448,7 +1443,7 @@ namespace Newtonsoft.Json
         /// Writes a comment <c>/*...*/</c> containing the specified text.
         /// </summary>
         /// <param name="text">Text to place inside the comment.</param>
-        public virtual void WriteComment(string text)
+        public virtual void WriteComment(string? text)
         {
             InternalWriteComment();
         }
@@ -1605,7 +1600,8 @@ namespace Newtonsoft.Json
 
                     case PrimitiveTypeCode.DecimalNullable:
                         writer.WriteValue((value == null) ? (decimal?)null : (decimal)value);
-                        break;
+                        return;
+
                     case PrimitiveTypeCode.Guid:
                         writer.WriteValue((Guid)value);
                         return;
@@ -1654,15 +1650,7 @@ namespace Newtonsoft.Json
 #if HAVE_ICONVERTIBLE
                         if (value is IConvertible convertible)
                         {
-                            // the value is a non-standard IConvertible
-                            // convert to the underlying value and retry
-
-                            TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertible);
-
-                            // if convertible has an underlying typecode of Object then attempt to convert it to a string
-                            typeCode = typeInformation.TypeCode == PrimitiveTypeCode.Object ? PrimitiveTypeCode.String : typeInformation.TypeCode;
-                            Type resolvedType = typeInformation.TypeCode == PrimitiveTypeCode.Object ? typeof(string) : typeInformation.Type;
-                            value = convertible.ToType(resolvedType, CultureInfo.InvariantCulture);
+                            ResolveConvertibleValue(convertible, out typeCode, out value);
                             continue;
                         }
 #endif
@@ -1678,6 +1666,20 @@ namespace Newtonsoft.Json
                 }
             }
         }
+
+#if HAVE_ICONVERTIBLE
+        private static void ResolveConvertibleValue(IConvertible convertible, out PrimitiveTypeCode typeCode, out object value)
+        {
+            // the value is a non-standard IConvertible
+            // convert to the underlying value and retry
+            TypeInformation typeInformation = ConvertUtils.GetTypeInformation(convertible);
+
+            // if convertible has an underlying typecode of Object then attempt to convert it to a string
+            typeCode = typeInformation.TypeCode == PrimitiveTypeCode.Object ? PrimitiveTypeCode.String : typeInformation.TypeCode;
+            Type resolvedType = typeInformation.TypeCode == PrimitiveTypeCode.Object ? typeof(string) : typeInformation.Type;
+            value = convertible.ToType(resolvedType, CultureInfo.InvariantCulture);
+        }
+#endif
 
         private static JsonWriterException CreateUnsupportedTypeException(JsonWriter writer, object value)
         {
@@ -1703,12 +1705,12 @@ namespace Newtonsoft.Json
                     InternalWriteStart(token, JsonContainerType.Constructor);
                     break;
                 case JsonToken.PropertyName:
-                    if (!(value is string))
+                    if (!(value is string s))
                     {
                         throw new ArgumentException("A name is required when setting property name state.", nameof(value));
                     }
 
-                    InternalWritePropertyName((string)value);
+                    InternalWritePropertyName(s);
                     break;
                 case JsonToken.Comment:
                     InternalWriteComment();

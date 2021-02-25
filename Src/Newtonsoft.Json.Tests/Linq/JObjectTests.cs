@@ -310,8 +310,10 @@ namespace Newtonsoft.Json.Tests.Linq
             {
                 contains = o.ContainsKey(null);
                 Assert.AreEqual(false, contains);
-            }, @"Value cannot be null.
-Parameter name: propertyName");
+            },
+            @"Value cannot be null.
+Parameter name: propertyName",
+            "Value cannot be null. (Parameter 'propertyName')");
         }
 
         [Test]
@@ -359,8 +361,10 @@ Parameter name: propertyName");
             {
                 JObject o = new JObject();
                 ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(null, 0);
-            }, @"Value cannot be null.
-Parameter name: array");
+            },
+            @"Value cannot be null.
+Parameter name: array",
+            "Value cannot be null. (Parameter 'array')");
         }
 
         [Test]
@@ -370,8 +374,10 @@ Parameter name: array");
             {
                 JObject o = new JObject();
                 ((ICollection<KeyValuePair<string, JToken>>)o).CopyTo(new KeyValuePair<string, JToken>[1], -1);
-            }, @"arrayIndex is less than 0.
-Parameter name: arrayIndex");
+            },
+            @"arrayIndex is less than 0.
+Parameter name: arrayIndex",
+            "arrayIndex is less than 0. (Parameter 'arrayIndex')");
         }
 
         [Test]
@@ -1604,6 +1610,54 @@ Parameter name: arrayIndex");
             Assert.AreEqual("Name2", value);
         }
 
+        [Test]
+        public void ParseMultipleProperties_EmptySettings()
+        {
+            string json = @"{
+        ""Name"": ""Name1"",
+        ""Name"": ""Name2""
+      }";
+
+            JObject o = JObject.Parse(json, new JsonLoadSettings());
+            string value = (string)o["Name"];
+
+            Assert.AreEqual("Name2", value);
+        }
+
+        [Test]
+        public void ParseMultipleProperties_IgnoreDuplicateSetting()
+        {
+            string json = @"{
+        ""Name"": ""Name1"",
+        ""Name"": ""Name2""
+      }";
+
+            JObject o = JObject.Parse(json, new JsonLoadSettings
+            {
+                DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Ignore
+            });
+            string value = (string)o["Name"];
+
+            Assert.AreEqual("Name1", value);
+        }
+
+        [Test]
+        public void ParseMultipleProperties_ReplaceDuplicateSetting()
+        {
+            string json = @"{
+        ""Name"": ""Name1"",
+        ""Name"": ""Name2""
+      }";
+
+            JObject o = JObject.Parse(json, new JsonLoadSettings
+            {
+                DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Replace
+            });
+            string value = (string)o["Name"];
+
+            Assert.AreEqual("Name2", value);
+        }
+
 #if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
         [Test]
         public void WriteObjectNullDBNullValue()
@@ -2039,6 +2093,52 @@ Parameter name: arrayIndex");
 
             ExceptionAssert.Throws<JsonReaderException>(() => JObject.Parse(json),
                 "Additional text encountered after finished reading JSON content: [. Path '', line 3, position 0.");
+        }
+
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
+        [Test]
+        public void GetPropertyOwner_ReturnsJObject()
+        {
+            ICustomTypeDescriptor o = new JObject
+            {
+                ["prop1"] = 1
+            };
+
+            PropertyDescriptorCollection properties = o.GetProperties();
+            Assert.AreEqual(1, properties.Count);
+
+            PropertyDescriptor pd = properties[0];      
+            Assert.AreEqual("prop1", pd.Name);
+
+            object owner = o.GetPropertyOwner(pd);
+            Assert.AreEqual(o, owner);
+
+            object value = pd.GetValue(owner);
+            Assert.AreEqual(1, (int)(JToken)value);
+        }
+#endif
+
+        [Test]
+        public void Property()
+        {
+            JObject a = new JObject();
+            a["Name"] = "Name!";
+            a["name"] = "name!";
+            a["title"] = "Title!";
+
+            Assert.AreEqual(null, a.Property("NAME", StringComparison.Ordinal));
+            Assert.AreEqual(null, a.Property("NAME"));
+            Assert.AreEqual(null, a.Property("TITLE"));
+            Assert.AreEqual(null, a.Property(null, StringComparison.Ordinal));
+            Assert.AreEqual(null, a.Property(null, StringComparison.OrdinalIgnoreCase));
+            Assert.AreEqual(null, a.Property(null));
+
+            // Return first match when ignoring case
+            Assert.AreEqual("Name", a.Property("NAME", StringComparison.OrdinalIgnoreCase).Name);
+            // Return exact match before ignoring case
+            Assert.AreEqual("name", a.Property("name", StringComparison.OrdinalIgnoreCase).Name);
+            // Return exact match without ignoring case
+            Assert.AreEqual("name", a.Property("name", StringComparison.Ordinal).Name);
         }
     }
 }

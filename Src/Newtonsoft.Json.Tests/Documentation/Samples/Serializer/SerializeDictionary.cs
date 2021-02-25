@@ -61,7 +61,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""James"": 9001,
   ""Jo"": 3474,
   ""Jess"": 11926

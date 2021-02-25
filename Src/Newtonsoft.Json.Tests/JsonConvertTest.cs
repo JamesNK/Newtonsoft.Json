@@ -121,13 +121,17 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void PopulateObjectWithOnlyComment()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            var ex = ExceptionAssert.Throws<JsonSerializationException>(() =>
             {
                 string json = @"// file header";
 
                 PopulateTestObject o = new PopulateTestObject();
                 JsonConvert.PopulateObject(json, o);
             }, "No JSON content found. Path '', line 1, position 14.");
+
+            Assert.AreEqual(1, ex.LineNumber);
+            Assert.AreEqual(14, ex.LinePosition);
+            Assert.AreEqual(string.Empty, ex.Path);
         }
 
         [Test]
@@ -174,11 +178,11 @@ namespace Newtonsoft.Json.Tests
                 reader.Read();
 
                 JsonTextReader jsonTextReader = (JsonTextReader)reader;
-                Assert.IsNotNull(jsonTextReader.NameTable);
+                Assert.IsNotNull(jsonTextReader.PropertyNameTable);
 
                 string s = serializer.Deserialize<string>(reader);
                 Assert.AreEqual("hi", s);
-                Assert.IsNotNull(jsonTextReader.NameTable);
+                Assert.IsNotNull(jsonTextReader.PropertyNameTable);
 
                 NameTableTestClass o = new NameTableTestClass
                 {
@@ -200,14 +204,38 @@ namespace Newtonsoft.Json.Tests
             StringReader sr = new StringReader("{'property':'hi'}");
             JsonTextReader jsonTextReader = new JsonTextReader(sr);
 
-            Assert.IsNull(jsonTextReader.NameTable);
+            Assert.IsNull(jsonTextReader.PropertyNameTable);
 
             JsonSerializer serializer = new JsonSerializer();
             serializer.Converters.Add(new NameTableTestClassConverter());
             NameTableTestClass o = serializer.Deserialize<NameTableTestClass>(jsonTextReader);
 
-            Assert.IsNull(jsonTextReader.NameTable);
+            Assert.IsNull(jsonTextReader.PropertyNameTable);
             Assert.AreEqual("hi", o.Value);
+        }
+
+        public class CustonNameTable : JsonNameTable
+        {
+            public override string Get(char[] key, int start, int length)
+            {
+                return "_" + new string(key, start, length);
+            }
+        }
+
+        [Test]
+        public void CustonNameTableTest()
+        {
+            StringReader sr = new StringReader("{'property':'hi'}");
+            JsonTextReader jsonTextReader = new JsonTextReader(sr);
+
+            Assert.IsNull(jsonTextReader.PropertyNameTable);
+            var nameTable = jsonTextReader.PropertyNameTable = new CustonNameTable();
+
+            JsonSerializer serializer = new JsonSerializer();
+            Dictionary<string, string> o = serializer.Deserialize<Dictionary<string, string>>(jsonTextReader);
+            Assert.AreEqual("hi", o["_property"]);
+
+            Assert.AreEqual(nameTable, jsonTextReader.PropertyNameTable);
         }
 
         [Test]
@@ -764,13 +792,13 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(@"\/Date(" + DateTimeUtils.ConvertDateTimeToJavaScriptTicks(millisecondsLocal) + GetOffset(millisecondsLocal, DateFormatHandling.MicrosoftDateFormat) + @")\/", result.MsDateUnspecified);
             Assert.AreEqual(@"\/Date(" + DateTimeUtils.ConvertDateTimeToJavaScriptTicks(millisecondsLocal) + @")\/", result.MsDateUtc);
 
-            DateTime ticksLocal = new DateTime(634663873826822481, DateTimeKind.Local);
+            DateTime ticksLocal = new DateTime(636556897826822481, DateTimeKind.Local);
             localToUtcDate = ticksLocal.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFFK");
 
             result = TestDateTime("DateTime Local with ticks", ticksLocal);
-            Assert.AreEqual("2012-03-03T16:03:02.6822481" + GetOffset(ticksLocal, DateFormatHandling.IsoDateFormat), result.IsoDateRoundtrip);
-            Assert.AreEqual("2012-03-03T16:03:02.6822481" + GetOffset(ticksLocal, DateFormatHandling.IsoDateFormat), result.IsoDateLocal);
-            Assert.AreEqual("2012-03-03T16:03:02.6822481", result.IsoDateUnspecified);
+            Assert.AreEqual("2018-03-03T16:03:02.6822481" + GetOffset(ticksLocal, DateFormatHandling.IsoDateFormat), result.IsoDateRoundtrip);
+            Assert.AreEqual("2018-03-03T16:03:02.6822481" + GetOffset(ticksLocal, DateFormatHandling.IsoDateFormat), result.IsoDateLocal);
+            Assert.AreEqual("2018-03-03T16:03:02.6822481", result.IsoDateUnspecified);
             Assert.AreEqual(localToUtcDate, result.IsoDateUtc);
             Assert.AreEqual(@"\/Date(" + DateTimeUtils.ConvertDateTimeToJavaScriptTicks(ticksLocal) + GetOffset(ticksLocal, DateFormatHandling.MicrosoftDateFormat) + @")\/", result.MsDateRoundtrip);
             Assert.AreEqual(@"\/Date(" + DateTimeUtils.ConvertDateTimeToJavaScriptTicks(ticksLocal) + GetOffset(ticksLocal, DateFormatHandling.MicrosoftDateFormat) + @")\/", result.MsDateLocal);
@@ -1137,12 +1165,8 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(typeof(DateTime), jsonReader.ValueType);
         }
 
-#if DNXCORE50
-        [Test(Skip = "Don't run with other unit tests")]
-#else
-        [Ignore("Don't run with other unit tests")]
+#if false
         [Test]
-#endif
         public void StackOverflowTest()
         {
             StringBuilder sb = new StringBuilder();
@@ -1164,6 +1188,7 @@ namespace Newtonsoft.Json.Tests
             JsonSerializer serializer = new JsonSerializer() { };
             serializer.Deserialize<Nest>(new JsonTextReader(new StringReader(json)));
         }
+#endif
 
         public class Nest
         {
@@ -1538,14 +1563,15 @@ namespace Newtonsoft.Json.Tests
             public int Overload { get; set; }
         }
 
-        [Test]
-        public void JsonConverterConstructor_OverloadsWithBaseTypes()
-        {
-            OverloadWithBaseType value = new OverloadWithBaseType();
-            string json = JsonConvert.SerializeObject(value);
+        //[Test]
+        //[Ignore("https://github.com/dotnet/roslyn/issues/36974")]
+        //public void JsonConverterConstructor_OverloadsWithBaseTypes()
+        //{
+        //    OverloadWithBaseType value = new OverloadWithBaseType();
+        //    string json = JsonConvert.SerializeObject(value);
 
-            Assert.AreEqual("{\"Overload\":\"IList<string>\"}", json);
-        }
+        //    Assert.AreEqual("{\"Overload\":\"IList<string>\"}", json);
+        //}
 
 
         [Test]

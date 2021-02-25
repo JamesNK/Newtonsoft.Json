@@ -28,6 +28,7 @@ using System;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using System.Collections.Generic;
+using System.Diagnostics;
 #if HAVE_ADO_NET
 using System.Data.SqlTypes;
 #endif
@@ -42,7 +43,7 @@ namespace Newtonsoft.Json.Converters
 #if HAVE_LINQ
         private const string BinaryTypeName = "System.Data.Linq.Binary";
         private const string BinaryToArrayName = "ToArray";
-        private static ReflectionObject _reflectionObject;
+        private static ReflectionObject? _reflectionObject;
 #endif
 
         /// <summary>
@@ -51,7 +52,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
             if (value == null)
             {
@@ -70,7 +71,9 @@ namespace Newtonsoft.Json.Converters
             if (value.GetType().FullName == BinaryTypeName)
             {
                 EnsureReflectionObject(value.GetType());
-                return (byte[])_reflectionObject.GetValue(value, BinaryToArrayName);
+                MiscellaneousUtils.Assert(_reflectionObject != null);
+
+                return (byte[])_reflectionObject.GetValue(value, BinaryToArrayName)!;
             }
 #endif
 #if HAVE_ADO_NET
@@ -101,7 +104,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -123,7 +126,7 @@ namespace Newtonsoft.Json.Converters
             {
                 // current token is already at base64 string
                 // unable to call ReadAsBytes so do it the old fashion way
-                string encodedData = reader.Value.ToString();
+                string encodedData = reader.Value!.ToString();
                 data = Convert.FromBase64String(encodedData);
             }
             else
@@ -139,8 +142,9 @@ namespace Newtonsoft.Json.Converters
             if (t.FullName == BinaryTypeName)
             {
                 EnsureReflectionObject(t);
+                MiscellaneousUtils.Assert(_reflectionObject != null);
 
-                return _reflectionObject.Creator(data);
+                return _reflectionObject.Creator!(data);
             }
 #endif
 

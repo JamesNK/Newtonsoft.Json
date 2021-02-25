@@ -31,6 +31,7 @@ using System.Globalization;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
+using System.Diagnostics;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -49,7 +50,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets the <see cref="System.Type"/> of the collection items.
         /// </summary>
         /// <value>The <see cref="System.Type"/> of the collection items.</value>
-        public Type CollectionItemType { get; }
+        public Type? CollectionItemType { get; }
 
         /// <summary>
         /// Gets a value indicating whether the collection type is a multidimensional array.
@@ -57,26 +58,26 @@ namespace Newtonsoft.Json.Serialization
         /// <value><c>true</c> if the collection type is a multidimensional array; otherwise, <c>false</c>.</value>
         public bool IsMultidimensionalArray { get; }
 
-        private readonly Type _genericCollectionDefinitionType;
+        private readonly Type? _genericCollectionDefinitionType;
 
-        private Type _genericWrapperType;
-        private ObjectConstructor<object> _genericWrapperCreator;
-        private Func<object> _genericTemporaryCollectionCreator;
+        private Type? _genericWrapperType;
+        private ObjectConstructor<object>? _genericWrapperCreator;
+        private Func<object>? _genericTemporaryCollectionCreator;
 
         internal bool IsArray { get; }
         internal bool ShouldCreateWrapper { get; }
         internal bool CanDeserialize { get; private set; }
 
-        private readonly ConstructorInfo _parameterizedConstructor;
+        private readonly ConstructorInfo? _parameterizedConstructor;
 
-        private ObjectConstructor<object> _parameterizedCreator;
-        private ObjectConstructor<object> _overrideCreator;
+        private ObjectConstructor<object>? _parameterizedCreator;
+        private ObjectConstructor<object>? _overrideCreator;
 
-        internal ObjectConstructor<object> ParameterizedCreator
+        internal ObjectConstructor<object>? ParameterizedCreator
         {
             get
             {
-                if (_parameterizedCreator == null)
+                if (_parameterizedCreator == null && _parameterizedConstructor != null)
                 {
                     _parameterizedCreator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(_parameterizedConstructor);
                 }
@@ -89,7 +90,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the function used to create the object. When set this function will override <see cref="JsonContract.DefaultCreator"/>.
         /// </summary>
         /// <value>The function used to create the object.</value>
-        public ObjectConstructor<object> OverrideCreator
+        public ObjectConstructor<object>? OverrideCreator
         {
             get => _overrideCreator;
             set
@@ -116,11 +117,14 @@ namespace Newtonsoft.Json.Serialization
             : base(underlyingType)
         {
             ContractType = JsonContractType.Array;
-            IsArray = CreatedType.IsArray;
+
+            // netcoreapp3.0 uses EmptyPartition for empty enumerable. Treat as an empty array.
+            IsArray = CreatedType.IsArray ||
+                (NonNullableUnderlyingType.IsGenericType() && NonNullableUnderlyingType.GetGenericTypeDefinition().FullName == "System.Linq.EmptyPartition`1");
 
             bool canDeserialize;
 
-            Type tempCollectionType;
+            Type? tempCollectionType;
             if (IsArray)
             {
                 CollectionItemType = ReflectionUtils.GetCollectionItemType(UnderlyingType);
@@ -128,60 +132,60 @@ namespace Newtonsoft.Json.Serialization
                 _genericCollectionDefinitionType = typeof(List<>).MakeGenericType(CollectionItemType);
 
                 canDeserialize = true;
-                IsMultidimensionalArray = (IsArray && UnderlyingType.GetArrayRank() > 1);
+                IsMultidimensionalArray = (CreatedType.IsArray && UnderlyingType.GetArrayRank() > 1);
             }
-            else if (typeof(IList).IsAssignableFrom(underlyingType))
+            else if (typeof(IList).IsAssignableFrom(NonNullableUnderlyingType))
             {
-                if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(ICollection<>), out _genericCollectionDefinitionType))
+                if (ReflectionUtils.ImplementsGenericDefinition(NonNullableUnderlyingType, typeof(ICollection<>), out _genericCollectionDefinitionType))
                 {
                     CollectionItemType = _genericCollectionDefinitionType.GetGenericArguments()[0];
                 }
                 else
                 {
-                    CollectionItemType = ReflectionUtils.GetCollectionItemType(underlyingType);
+                    CollectionItemType = ReflectionUtils.GetCollectionItemType(NonNullableUnderlyingType);
                 }
 
-                if (underlyingType == typeof(IList))
+                if (NonNullableUnderlyingType == typeof(IList))
                 {
                     CreatedType = typeof(List<object>);
                 }
 
                 if (CollectionItemType != null)
                 {
-                    _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(underlyingType, CollectionItemType);
+                    _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(NonNullableUnderlyingType, CollectionItemType);
                 }
 
-                IsReadOnlyOrFixedSize = ReflectionUtils.InheritsGenericDefinition(underlyingType, typeof(ReadOnlyCollection<>));
+                IsReadOnlyOrFixedSize = ReflectionUtils.InheritsGenericDefinition(NonNullableUnderlyingType, typeof(ReadOnlyCollection<>));
                 canDeserialize = true;
             }
-            else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(ICollection<>), out _genericCollectionDefinitionType))
+            else if (ReflectionUtils.ImplementsGenericDefinition(NonNullableUnderlyingType, typeof(ICollection<>), out _genericCollectionDefinitionType))
             {
                 CollectionItemType = _genericCollectionDefinitionType.GetGenericArguments()[0];
 
-                if (ReflectionUtils.IsGenericDefinition(underlyingType, typeof(ICollection<>))
-                    || ReflectionUtils.IsGenericDefinition(underlyingType, typeof(IList<>)))
+                if (ReflectionUtils.IsGenericDefinition(NonNullableUnderlyingType, typeof(ICollection<>))
+                    || ReflectionUtils.IsGenericDefinition(NonNullableUnderlyingType, typeof(IList<>)))
                 {
                     CreatedType = typeof(List<>).MakeGenericType(CollectionItemType);
                 }
 
 #if HAVE_ISET
-                if (ReflectionUtils.IsGenericDefinition(underlyingType, typeof(ISet<>)))
+                if (ReflectionUtils.IsGenericDefinition(NonNullableUnderlyingType, typeof(ISet<>)))
                 {
                     CreatedType = typeof(HashSet<>).MakeGenericType(CollectionItemType);
                 }
 #endif
 
-                _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(underlyingType, CollectionItemType);
+                _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(NonNullableUnderlyingType, CollectionItemType);
                 canDeserialize = true;
                 ShouldCreateWrapper = true;
             }
 #if HAVE_READ_ONLY_COLLECTIONS
-            else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IReadOnlyCollection<>), out tempCollectionType))
+            else if (ReflectionUtils.ImplementsGenericDefinition(NonNullableUnderlyingType, typeof(IReadOnlyCollection<>), out tempCollectionType))
             {
                 CollectionItemType = tempCollectionType.GetGenericArguments()[0];
 
-                if (ReflectionUtils.IsGenericDefinition(underlyingType, typeof(IReadOnlyCollection<>))
-                    || ReflectionUtils.IsGenericDefinition(underlyingType, typeof(IReadOnlyList<>)))
+                if (ReflectionUtils.IsGenericDefinition(NonNullableUnderlyingType, typeof(IReadOnlyCollection<>))
+                    || ReflectionUtils.IsGenericDefinition(NonNullableUnderlyingType, typeof(IReadOnlyList<>)))
                 {
                     CreatedType = typeof(ReadOnlyCollection<>).MakeGenericType(CollectionItemType);
                 }
@@ -190,14 +194,14 @@ namespace Newtonsoft.Json.Serialization
                 _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(CreatedType, CollectionItemType);
 
 #if HAVE_FSHARP_TYPES
-                StoreFSharpListCreatorIfNecessary(underlyingType);
+                StoreFSharpListCreatorIfNecessary(NonNullableUnderlyingType);
 #endif
 
                 IsReadOnlyOrFixedSize = true;
                 canDeserialize = HasParameterizedCreatorInternal;
             }
 #endif
-            else if (ReflectionUtils.ImplementsGenericDefinition(underlyingType, typeof(IEnumerable<>), out tempCollectionType))
+            else if (ReflectionUtils.ImplementsGenericDefinition(NonNullableUnderlyingType, typeof(IEnumerable<>), out tempCollectionType))
             {
                 CollectionItemType = tempCollectionType.GetGenericArguments()[0];
 
@@ -206,13 +210,13 @@ namespace Newtonsoft.Json.Serialization
                     CreatedType = typeof(List<>).MakeGenericType(CollectionItemType);
                 }
 
-                _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(underlyingType, CollectionItemType);
+                _parameterizedConstructor = CollectionUtils.ResolveEnumerableCollectionConstructor(NonNullableUnderlyingType, CollectionItemType);
 
 #if HAVE_FSHARP_TYPES
-                StoreFSharpListCreatorIfNecessary(underlyingType);
+                StoreFSharpListCreatorIfNecessary(NonNullableUnderlyingType);
 #endif
 
-                if (underlyingType.IsGenericType() && underlyingType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
+                if (NonNullableUnderlyingType.IsGenericType() && NonNullableUnderlyingType.GetGenericTypeDefinition() == typeof(IEnumerable<>))
                 {
                     _genericCollectionDefinitionType = tempCollectionType;
 
@@ -251,11 +255,12 @@ namespace Newtonsoft.Json.Serialization
             }
 #endif
 
-            if (ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(
-                underlyingType,
+            if (CollectionItemType != null &&
+                ImmutableCollectionsUtils.TryBuildImmutableForArrayContract(
+                NonNullableUnderlyingType,
                 CollectionItemType,
-                out Type immutableCreatedType,
-                out ObjectConstructor<object> immutableParameterizedCreator))
+                out Type? immutableCreatedType,
+                out ObjectConstructor<object>? immutableParameterizedCreator))
             {
                 CreatedType = immutableCreatedType;
                 _parameterizedCreator = immutableParameterizedCreator;
@@ -268,6 +273,8 @@ namespace Newtonsoft.Json.Serialization
         {
             if (_genericWrapperCreator == null)
             {
+                MiscellaneousUtils.Assert(_genericCollectionDefinitionType != null);
+
                 _genericWrapperType = typeof(CollectionWrapper<>).MakeGenericType(CollectionItemType);
 
                 Type constructorArgument;
@@ -311,7 +318,7 @@ namespace Newtonsoft.Json.Serialization
             if (!HasParameterizedCreatorInternal && underlyingType.Name == FSharpUtils.FSharpListTypeName)
             {
                 FSharpUtils.EnsureInitialized(underlyingType.Assembly());
-                _parameterizedCreator = FSharpUtils.CreateSeq(CollectionItemType);
+                _parameterizedCreator = FSharpUtils.Instance.CreateSeq(CollectionItemType!);
             }
         }
 #endif

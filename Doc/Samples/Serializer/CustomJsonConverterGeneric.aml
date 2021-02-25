@@ -2,8 +2,8 @@
 <topic id="CustomJsonConverterGeneric" revisionNumber="1">
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
-      <para>This sample creates a custom <codeEntityReference>T:Newtonsoft.Json.JsonConverter{T}</codeEntityReference>
-      that overrides serialization to add a keys property.</para>
+      <para>This sample creates a custom converter from <c>JsonConverter&lt;T&gt;</c>
+      that overrides serialization for the <c>Version</c> class with a custom display string.</para>
     </introduction>
     <section>
       <title>Sample</title>

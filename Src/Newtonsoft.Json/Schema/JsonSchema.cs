@@ -30,6 +30,8 @@ using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
 
+#nullable disable
+
 namespace Newtonsoft.Json.Schema
 {
     /// <summary>
@@ -37,10 +39,10 @@ namespace Newtonsoft.Json.Schema
     /// An in-memory representation of a JSON Schema.
     /// </para>
     /// <note type="caution">
-    /// JSON Schema validation has been moved to its own package. See <see href="http://www.newtonsoft.com/jsonschema">http://www.newtonsoft.com/jsonschema</see> for more details.
+    /// JSON Schema validation has been moved to its own package. See <see href="https://www.newtonsoft.com/jsonschema">https://www.newtonsoft.com/jsonschema</see> for more details.
     /// </note>
     /// </summary>
-    [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
+    [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
     public class JsonSchema
     {
         /// <summary>
@@ -241,7 +243,9 @@ namespace Newtonsoft.Json.Schema
 
         internal string Location { get; set; }
 
+#pragma warning disable CA1305 // Specify IFormatProvider
         private readonly string _internalId = Guid.NewGuid().ToString("N");
+#pragma warning restore CA1305 // Specify IFormatProvider
 
         internal string InternalId => _internalId;
 

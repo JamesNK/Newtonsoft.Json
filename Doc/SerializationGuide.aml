@@ -240,7 +240,8 @@
       <content>
         <!-- Uncomment this to create a sub-section outline
         <autoOutline /> -->
-        <para>Types that implement ISerializable are serialized as JSON objects. When serializing, only the values returned from
+        <para>Types that implement <codeEntityReference>T:System.Runtime.Serialization.ISerializable</codeEntityReference> and
+        are marked with <codeEntityReference>T:System.SerializableAttribute</codeEntityReference> are serialized as JSON objects. When serializing, only the values returned from
         ISerializable.GetObjectData are used; members on the type are ignored. When deserializing, the constructor with a
         SerializationInfo and StreamingContext is called, passing the JSON object's values.</para>
         <para>In situations where this behavior is not wanted, the JsonObjectAttribute can be placed on a .NET type that

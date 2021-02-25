@@ -32,9 +32,11 @@ using System.Linq;
 
 #endif
 
+#nullable disable
+
 namespace Newtonsoft.Json.Schema
 {
-    [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
+    [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
     internal class JsonSchemaModelBuilder
     {
         private JsonSchemaNodeCollection _nodes = new JsonSchemaNodeCollection();
@@ -126,8 +128,7 @@ namespace Newtonsoft.Json.Schema
 
         public void AddProperty(IDictionary<string, JsonSchemaNode> target, string propertyName, JsonSchema schema)
         {
-            JsonSchemaNode propertyNode;
-            target.TryGetValue(propertyName, out propertyNode);
+            target.TryGetValue(propertyName, out JsonSchemaNode propertyNode);
 
             target[propertyName] = AddSchema(propertyNode, schema);
         }
@@ -162,8 +163,7 @@ namespace Newtonsoft.Json.Schema
 
         private JsonSchemaModel BuildNodeModel(JsonSchemaNode node)
         {
-            JsonSchemaModel model;
-            if (_nodeModels.TryGetValue(node, out model))
+            if (_nodeModels.TryGetValue(node, out JsonSchemaModel model))
             {
                 return model;
             }

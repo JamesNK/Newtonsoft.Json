@@ -68,16 +68,16 @@ namespace Newtonsoft.Json.Serialization
             return value;
         }
 
-        public override string ReadAsString()
+        public override string? ReadAsString()
         {
-            string value = _innerReader.ReadAsString();
+            string? value = _innerReader.ReadAsString();
             WriteCurrentToken();
             return value;
         }
 
-        public override byte[] ReadAsBytes()
+        public override byte[]? ReadAsBytes()
         {
-            byte[] value = _innerReader.ReadAsBytes();
+            byte[]? value = _innerReader.ReadAsBytes();
             WriteCurrentToken();
             return value;
         }
@@ -136,9 +136,9 @@ namespace Newtonsoft.Json.Serialization
 
         public override JsonToken TokenType => _innerReader.TokenType;
 
-        public override object Value => _innerReader.Value;
+        public override object? Value => _innerReader.Value;
 
-        public override Type ValueType => _innerReader.ValueType;
+        public override Type ?ValueType => _innerReader.ValueType;
 
         public override void Close()
         {
@@ -150,20 +150,8 @@ namespace Newtonsoft.Json.Serialization
             return _innerReader is IJsonLineInfo lineInfo && lineInfo.HasLineInfo();
         }
 
-        int IJsonLineInfo.LineNumber
-        {
-            get
-            {
-                return (_innerReader is IJsonLineInfo lineInfo) ? lineInfo.LineNumber : 0;
-            }
-        }
+        int IJsonLineInfo.LineNumber => (_innerReader is IJsonLineInfo lineInfo) ? lineInfo.LineNumber : 0;
 
-        int IJsonLineInfo.LinePosition
-        {
-            get
-            {
-                return (_innerReader is IJsonLineInfo lineInfo) ? lineInfo.LinePosition : 0;
-            }
-        }
+        int IJsonLineInfo.LinePosition => (_innerReader is IJsonLineInfo lineInfo) ? lineInfo.LinePosition : 0;
     }
 }

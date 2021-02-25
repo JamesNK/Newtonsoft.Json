@@ -68,7 +68,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
             // }
             #endregion
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""OnLoadFunction"": OnLoad,
   ""OnUnloadFunction"": function(e) { alert(e); }
 }", json);

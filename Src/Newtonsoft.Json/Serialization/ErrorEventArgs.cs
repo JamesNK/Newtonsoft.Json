@@ -36,7 +36,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets the current object the error event is being raised against.
         /// </summary>
         /// <value>The current object the error event is being raised against.</value>
-        public object CurrentObject { get; }
+        public object? CurrentObject { get; }
 
         /// <summary>
         /// Gets the error context.
@@ -49,7 +49,7 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <param name="currentObject">The current object.</param>
         /// <param name="errorContext">The error context.</param>
-        public ErrorEventArgs(object currentObject, ErrorContext errorContext)
+        public ErrorEventArgs(object? currentObject, ErrorContext errorContext)
         {
             CurrentObject = currentObject;
             ErrorContext = errorContext;

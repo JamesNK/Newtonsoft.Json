@@ -34,7 +34,8 @@ namespace Newtonsoft.Json
     public sealed class JsonObjectAttribute : JsonContainerAttribute
     {
         private MemberSerialization _memberSerialization = MemberSerialization.OptOut;
-        
+        internal MissingMemberHandling? _missingMemberHandling;
+
         // yuck. can't set nullable properties on an attribute in C#
         // have to use this approach to get an unset default state
         internal Required? _itemRequired;
@@ -51,12 +52,22 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Gets or sets the missing member handling used when deserializing this object.
+        /// </summary>
+        /// <value>The missing member handling.</value>
+        public MissingMemberHandling MissingMemberHandling
+        {
+            get => _missingMemberHandling ?? default;
+            set => _missingMemberHandling = value;
+        }
+
+        /// <summary>
         /// Gets or sets how the object's properties with null values are handled during serialization and deserialization.
         /// </summary>
         /// <value>How the object's properties with null values are handled during serialization and deserialization.</value>
         public NullValueHandling ItemNullValueHandling
         {
-            get => _itemNullValueHandling ?? default(NullValueHandling);
+            get => _itemNullValueHandling ?? default;
             set => _itemNullValueHandling = value;
         }
 
@@ -68,7 +79,7 @@ namespace Newtonsoft.Json
         /// </value>
         public Required ItemRequired
         {
-            get => _itemRequired ?? default(Required);
+            get => _itemRequired ?? default;
             set => _itemRequired = value;
         }
 

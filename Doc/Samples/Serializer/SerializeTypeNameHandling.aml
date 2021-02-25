@@ -3,7 +3,7 @@
   <developerConceptualDocument xmlns="http://ddue.schemas.microsoft.com/authoring/2003/5" xmlns:xlink="http://www.w3.org/1999/xlink">
     <introduction>
       <para>This sample uses the <codeEntityReference>T:Newtonsoft.Json.TypeNameHandling</codeEntityReference>
-      setting to include type information when serializing JSON and read type information so that the create types are created when deserializing JSON.</para>
+      setting to include type information when serializing JSON and read type information so that the correct types are created when deserializing JSON.</para>
     </introduction>
     <section>
       <title>Sample</title>

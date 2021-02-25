@@ -35,9 +35,11 @@ using System.Linq;
 
 #endif
 
+#nullable disable
+
 namespace Newtonsoft.Json.Schema
 {
-    [Obsolete("JSON Schema validation has been moved to its own package. See http://www.newtonsoft.com/jsonschema for more details.")]
+    [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
     internal class JsonSchemaWriter
     {
         private readonly JsonWriter _writer;

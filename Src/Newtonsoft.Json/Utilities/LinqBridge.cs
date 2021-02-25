@@ -35,6 +35,8 @@ using System.Diagnostics;
 using System.Globalization;
 using Newtonsoft.Json.Serialization;
 
+#nullable disable
+
 namespace Newtonsoft.Json.Utilities.LinqBridge
 {
   /// <summary>
@@ -375,7 +377,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       Func<TSource> empty)
     {
       CheckNotNull(source, "source");
-      Debug.Assert(empty != null);
+      MiscellaneousUtils.Assert(empty != null);
 
       var list = source as IList<TSource>; // optimized case for lists
       if (list != null)
@@ -1362,7 +1364,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       Func<TSource, TSource, bool> lesser)
     {
       CheckNotNull(source, "source");
-      Debug.Assert(lesser != null);
+      MiscellaneousUtils.Assert(lesser != null);
 
       return source.Aggregate((a, item) => lesser(a, item) ? a : item);
     }
@@ -1376,7 +1378,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
       TSource? seed, Func<TSource?, TSource?, bool> lesser) where TSource : struct
     {
       CheckNotNull(source, "source");
-      Debug.Assert(lesser != null);
+      MiscellaneousUtils.Assert(lesser != null);
 
       return source.Aggregate(seed, (a, item) => lesser(a, item) ? a : item);
       //  == MinMaxImpl(Repeat<TSource?>(null, 1).Concat(source), lesser);
@@ -1440,7 +1442,7 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
 
     private static IEnumerable<T> Renumerable<T>(this IEnumerator<T> e)
     {
-      Debug.Assert(e != null);
+      MiscellaneousUtils.Assert(e != null);
 
       do
       {
@@ -2991,10 +2993,10 @@ namespace Newtonsoft.Json.Utilities.LinqBridge
   }
 
   [Serializable]
-  internal struct Tuple<TFirst, TSecond> : IEquatable<Tuple<TFirst, TSecond>>
+  internal readonly struct Tuple<TFirst, TSecond> : IEquatable<Tuple<TFirst, TSecond>>
   {
-    public TFirst First { get; private set; }
-    public TSecond Second { get; private set; }
+    public TFirst First { get; }
+    public TSecond Second { get; }
 
     public Tuple(TFirst first, TSecond second)
       : this()

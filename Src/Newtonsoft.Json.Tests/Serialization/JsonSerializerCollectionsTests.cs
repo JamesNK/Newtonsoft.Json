@@ -61,6 +61,43 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonSerializerCollectionsTests : TestFixtureBase
     {
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40) || NETSTANDARD2_0
+        [Test]
+        public void DeserializeNonGenericListTypeAndReadOnlyListViaConstructor()
+        {
+            ConstructorCollectionContainer a = JsonConvert.DeserializeObject<ConstructorCollectionContainer>("{'a':1,'b':['aaa'],'c':['aaa']}");
+
+            Assert.AreEqual(1, a.A);
+            Assert.AreEqual(1, a.B.Count());
+            Assert.AreEqual("aaa", a.B.ElementAt(0));
+            Assert.AreEqual(0, a.C.Count());
+        }
+
+        public class ConstructorCollectionContainer
+        {
+            public int A { get; }
+            public IEnumerable<string> B { get; } = new SortedSet<string>();
+            public IEnumerable<string> C { get; } = new List<string>().AsReadOnly();
+
+            public ConstructorCollectionContainer(int a)
+            {
+                this.A = a;
+            }
+        }
+
+        [Test]
+        public void DeserializeConcurrentDictionaryWithNullValue()
+        {
+            const string key = "id";
+            
+            var jsonValue = $"{{\"{key}\":null}}";
+
+            var deserializedObject = JsonConvert.DeserializeObject<ConcurrentDictionary<string, string>>(jsonValue);
+
+            Assert.IsNull(deserializedObject[key]);
+        }
+#endif
+
 #if !(NET20 || NET35)
         [Test]
         public void SerializeConcurrentQueue()
@@ -150,7 +187,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             Dictionary<float, int> dictionary = new Dictionary<float, int> { { float.MaxValue, 1 } };
             string output = JsonConvert.SerializeObject(dictionary);
+#if !(NETSTANDARD2_0 || NETSTANDARD1_3)
             Assert.AreEqual(@"{""3.40282347E+38"":1}", output);
+#else
+            Assert.AreEqual(@"{""3.4028235E+38"":1}", output);
+#endif
 
             Dictionary<float, int> deserializedValue = JsonConvert.DeserializeObject<Dictionary<float, int>>(output);
             Assert.AreEqual(float.MaxValue, deserializedValue.First().Key);
@@ -448,7 +489,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             string json = JsonConvert.SerializeObject(d, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""key"": [
     {
       ""Text1"": ""value1""
@@ -1817,6 +1858,41 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("444-1212", newName.pNumbers[1].phoneNumber);
         }
 
+        [TestFixture]
+        public class MultipleDefinedPropertySerialization
+        {
+            [Test]
+            public void SerializePropertyDefinedInMultipleInterfaces()
+            {
+                const string propertyValue = "value";
+
+                var list = new List<ITestInterface> { new TestClass { Property = propertyValue } };
+
+                var json = JsonConvert.SerializeObject(list);
+
+                StringAssert.AreEqual($"[{{\"Property\":\"{propertyValue}\"}}]", json);
+            }
+
+            public interface IFirstInterface
+            {
+                string Property { get; set; }
+            }
+
+            public interface ISecondInterface
+            {
+                string Property { get; set; }
+            }
+
+            public interface ITestInterface : IFirstInterface, ISecondInterface
+            {
+            }
+
+            public class TestClass : ITestInterface
+            {
+                public string Property { get; set; }
+            }
+        }
+
         [Test]
         public void CustomCollectionSerialization()
         {
@@ -2058,6 +2134,26 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(2, values.Count);
         }
 #endif
+
+        [Test]
+        public void DeserializeEmptyEnumerable_NoItems()
+        {
+            ValuesClass c = JsonConvert.DeserializeObject<ValuesClass>(@"{""Values"":[]}");
+            Assert.AreEqual(0, c.Values.Count());
+        }
+
+        [Test]
+        public void DeserializeEmptyEnumerable_HasItems()
+        {
+            ValuesClass c = JsonConvert.DeserializeObject<ValuesClass>(@"{""Values"":[""hello""]}");
+            Assert.AreEqual(1, c.Values.Count());
+            Assert.AreEqual("hello", c.Values.ElementAt(0));
+        }
+
+        public class ValuesClass
+        {
+            public IEnumerable<string> Values { get; set; } = Enumerable.Empty<string>();
+        }
 
         [Test]
         public void DeserializeConstructorWithReadonlyArrayProperty()

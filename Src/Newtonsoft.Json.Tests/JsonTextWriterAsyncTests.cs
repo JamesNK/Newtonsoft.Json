@@ -201,6 +201,32 @@ namespace Newtonsoft.Json.Tests
     ]
 }", sw.ToString());
         }
+
+        [Test]
+        public async Task WriteLazy_Property()
+        {
+            LazyStringWriter sw = new LazyStringWriter(CultureInfo.InvariantCulture);
+
+            using (JsonTextWriter writer = new JsonTextWriter(sw))
+            {
+                writer.Indentation = 4;
+                writer.Formatting = Formatting.Indented;
+
+                await writer.WriteStartArrayAsync();
+
+                await writer.WriteStartObjectAsync();
+
+                await writer.WritePropertyNameAsync("IncompleteProp");
+
+                await writer.WriteEndArrayAsync();
+            }
+
+            StringAssert.AreEqual(@"[
+    {
+        ""IncompleteProp"": null
+    }
+]", sw.ToString());
+        }
 #endif
 
         [Test]
@@ -509,7 +535,7 @@ namespace Newtonsoft.Json.Tests
                 await jsonWriter.WriteValueAsync("DVD read/writer");
                 await jsonWriter.WriteCommentAsync("(broken)");
                 await jsonWriter.WriteValueAsync("500 gigabyte hard drive");
-                await jsonWriter.WriteValueAsync("200 gigabype hard drive");
+                await jsonWriter.WriteValueAsync("200 gigabyte hard drive");
                 await jsonWriter.WriteEndObjectAsync();
                 Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
             }
@@ -521,7 +547,7 @@ namespace Newtonsoft.Json.Tests
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }";
             string result = sb.ToString();
@@ -549,7 +575,7 @@ namespace Newtonsoft.Json.Tests
                 await jsonWriter.WriteValueAsync("DVD read/writer");
                 await jsonWriter.WriteCommentAsync("(broken)");
                 await jsonWriter.WriteValueAsync("500 gigabyte hard drive");
-                await jsonWriter.WriteValueAsync("200 gigabype hard drive");
+                await jsonWriter.WriteValueAsync("200 gigabyte hard drive");
                 await jsonWriter.CloseAsync();
             }
 
@@ -560,7 +586,7 @@ namespace Newtonsoft.Json.Tests
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }";
             string result = sb.ToString();
@@ -588,7 +614,7 @@ namespace Newtonsoft.Json.Tests
                 await jsonWriter.WriteValueAsync("DVD read/writer");
                 await jsonWriter.WriteCommentAsync("(broken)");
                 await jsonWriter.WriteValueAsync("500 gigabyte hard drive");
-                await jsonWriter.WriteValueAsync("200 gigabype hard drive");
+                await jsonWriter.WriteValueAsync("200 gigabyte hard drive");
                 await jsonWriter.WriteEndAsync();
                 await jsonWriter.WriteEndObjectAsync();
                 Assert.AreEqual(WriteState.Start, jsonWriter.WriteState);
@@ -601,7 +627,7 @@ namespace Newtonsoft.Json.Tests
             //     "DVD read/writer"
             //     /*(broken)*/,
             //     "500 gigabyte hard drive",
-            //     "200 gigabype hard drive"
+            //     "200 gigabyte hard drive"
             //   ]
             // }
 
@@ -612,7 +638,7 @@ namespace Newtonsoft.Json.Tests
     ""DVD read/writer""
     /*(broken)*/,
     ""500 gigabyte hard drive"",
-    ""200 gigabype hard drive""
+    ""200 gigabyte hard drive""
   ]
 }";
             string result = sb.ToString();
@@ -992,7 +1018,11 @@ namespace Newtonsoft.Json.Tests
                 await jsonWriter.WriteEndArrayAsync();
             }
 
+#if !(NETSTANDARD2_0 || NETSTANDARD1_3)
             Assert.AreEqual(@"[0.0,0.0,0.1,1.0,1.000001,1E-06,4.94065645841247E-324,Infinity,-Infinity,NaN,1.7976931348623157E+308,-1.7976931348623157E+308,Infinity,-Infinity,NaN]", sb.ToString());
+#else
+            Assert.AreEqual(@"[0.0,0.0,0.1,1.0,1.000001,1E-06,5E-324,Infinity,-Infinity,NaN,1.7976931348623157E+308,-1.7976931348623157E+308,Infinity,-Infinity,NaN]", sb.ToString());
+#endif
         }
 
         [Test]
@@ -1068,7 +1098,7 @@ namespace Newtonsoft.Json.Tests
                 await ExceptionAssert.ThrowsAsync<FormatException>(async () => { await jsonWriter.WriteTokenAsync(JsonToken.Integer, "three"); }, "Input string was not in a correct format.");
 
                 await ExceptionAssert.ThrowsAsync<ArgumentNullException>(async () => { await jsonWriter.WriteTokenAsync(JsonToken.Integer); }, @"Value cannot be null.
-Parameter name: value");
+Parameter name: value", "Value cannot be null. (Parameter 'value')");
             }
         }
 

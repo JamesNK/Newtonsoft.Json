@@ -441,7 +441,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 ContractResolver = new DictionaryKeyContractResolver()
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""NAME"": ""James"",
   ""AGE"": 1,
   ""ROLENAMES"": {
@@ -574,7 +574,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 ContractResolver = new IgnoredPropertiesContractResolver()
             });
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""Name"": ""Name!""
 }", json);
 
@@ -971,6 +971,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             JsonSerializer serializer = new JsonSerializer();
 
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.IsNotNull(serializer.Binder);
+#pragma warning restore CS0618 // Type or member is obsolete
+            Assert.IsNotNull(serializer.SerializationBinder);
+
             DefaultSerializationBinder customBinder = new DefaultSerializationBinder();
 #pragma warning disable CS0618 // Type or member is obsolete
             serializer.Binder = customBinder;
@@ -1090,6 +1095,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             JsonSerializerSettings settings = new JsonSerializerSettings();
 
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.IsNull(settings.Binder);
+#pragma warning restore CS0618 // Type or member is obsolete
+            Assert.IsNull(settings.SerializationBinder);
+
             DefaultSerializationBinder customBinder = new DefaultSerializationBinder();
 #pragma warning disable CS0618 // Type or member is obsolete
             settings.Binder = customBinder;
@@ -1204,6 +1214,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         public void JsonSerializerProxyProperties()
         {
             JsonSerializerProxy serializerProxy = new JsonSerializerProxy(new JsonSerializerInternalReader(new JsonSerializer()));
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.IsNotNull(serializerProxy.Binder);
+#pragma warning restore CS0618 // Type or member is obsolete
+            Assert.IsNotNull(serializerProxy.SerializationBinder);
 
             DefaultSerializationBinder customBinder = new DefaultSerializationBinder();
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -2243,7 +2258,40 @@ keyword such as type of business.""
             string json = JsonConvert.SerializeObject(new ConverableMembers(), Formatting.Indented);
 
             string expected = null;
-#if !(PORTABLE || DNXCORE50) || NETSTANDARD2_0
+#if (NETSTANDARD2_0)
+            expected = @"{
+  ""String"": ""string"",
+  ""Int32"": 2147483647,
+  ""UInt32"": 4294967295,
+  ""Byte"": 255,
+  ""SByte"": 127,
+  ""Short"": 32767,
+  ""UShort"": 65535,
+  ""Long"": 9223372036854775807,
+  ""ULong"": 9223372036854775807,
+  ""Double"": 1.7976931348623157E+308,
+  ""Float"": 3.4028235E+38,
+  ""DBNull"": null,
+  ""Bool"": true,
+  ""Char"": ""\u0000""
+}";
+#elif NETSTANDARD1_3
+            expected = @"{
+  ""String"": ""string"",
+  ""Int32"": 2147483647,
+  ""UInt32"": 4294967295,
+  ""Byte"": 255,
+  ""SByte"": 127,
+  ""Short"": 32767,
+  ""UShort"": 65535,
+  ""Long"": 9223372036854775807,
+  ""ULong"": 9223372036854775807,
+  ""Double"": 1.7976931348623157E+308,
+  ""Float"": 3.4028235E+38,
+  ""Bool"": true,
+  ""Char"": ""\u0000""
+}";
+#elif !(PORTABLE || DNXCORE50) || NETSTANDARD1_3
             expected = @"{
   ""String"": ""string"",
   ""Int32"": 2147483647,
@@ -2261,7 +2309,7 @@ keyword such as type of business.""
   ""Char"": ""\u0000""
 }";
 #else
-      expected = @"{
+            expected = @"{
   ""String"": ""string"",
   ""Int32"": 2147483647,
   ""UInt32"": 4294967295,
@@ -2892,7 +2940,7 @@ keyword such as type of business.""
 
             string json = JsonConvert.SerializeObject(o, Formatting.Indented);
 
-            Assert.AreEqual(@"{
+            StringAssert.AreEqual(@"{
   ""IEnumerableProperty"": [
     4,
     5,
@@ -4498,7 +4546,22 @@ Path '', line 1, position 1.");
         {
             string json = @"{""First"":""First"",""Second"":2,""Ignored"":{""Name"":""James""},""AdditionalContent"":{""LOL"":true}}";
 
-            ConstructorCompexIgnoredProperty cc = JsonConvert.DeserializeObject<ConstructorCompexIgnoredProperty>(json);
+            var cc = JsonConvert.DeserializeObject<ConstructorCompexIgnoredProperty>(json);
+            Assert.AreEqual("First", cc.First);
+            Assert.AreEqual(2, cc.Second);
+            Assert.AreEqual(null, cc.Ignored);
+        }
+        
+        [Test]
+        public void DeserializeIgnoredPropertyInConstructorWithoutThrowingMissingMemberError()
+        {
+            string json = @"{""First"":""First"",""Second"":2,""Ignored"":{""Name"":""James""}}";
+
+            var cc = JsonConvert.DeserializeObject<ConstructorCompexIgnoredProperty>(
+                json, new JsonSerializerSettings
+                {
+                    MissingMemberHandling = MissingMemberHandling.Error
+                });
             Assert.AreEqual("First", cc.First);
             Assert.AreEqual(2, cc.Second);
             Assert.AreEqual(null, cc.Ignored);
@@ -5869,7 +5932,8 @@ Path '', line 1, position 1.");
                 new[]
                 {
                     "Value cannot be null." + Environment.NewLine + "Parameter name: value",
-                    "Argument cannot be null." + Environment.NewLine + "Parameter name: value" // mono
+                    "Argument cannot be null." + Environment.NewLine + "Parameter name: value", // mono
+                    "Value cannot be null. (Parameter 'value')"
                 });
         }
 
@@ -5881,7 +5945,8 @@ Path '', line 1, position 1.");
                 new[]
                 {
                     "Value cannot be null." + Environment.NewLine + "Parameter name: value",
-                    "Argument cannot be null." + Environment.NewLine + "Parameter name: value" // mono
+                    "Argument cannot be null." + Environment.NewLine + "Parameter name: value", // mono
+                    "Value cannot be null. (Parameter 'value')"
                 });
         }
 
@@ -6277,8 +6342,8 @@ Path '', line 1, position 1.");
         {
             IDictionary<DateTime, int> dic1 = new Dictionary<DateTime, int>
             {
-                { new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc), 1 },
-                { new DateTime(2013, 12, 12, 12, 12, 12, DateTimeKind.Utc), 2 }
+                { new DateTime(2020, 12, 12, 12, 12, 12, DateTimeKind.Utc), 1 },
+                { new DateTime(2023, 12, 12, 12, 12, 12, DateTimeKind.Utc), 2 }
             };
 
             string json = JsonConvert.SerializeObject(dic1, Formatting.Indented, new JsonSerializerSettings
@@ -6296,8 +6361,8 @@ Path '', line 1, position 1.");
             });
 
             Assert.AreEqual(2, dic2.Count);
-            Assert.AreEqual(1, dic2[new DateTime(2000, 12, 12, 12, 12, 12, DateTimeKind.Utc)]);
-            Assert.AreEqual(2, dic2[new DateTime(2013, 12, 12, 12, 12, 12, DateTimeKind.Utc)]);
+            Assert.AreEqual(1, dic2[new DateTime(2020, 12, 12, 12, 12, 12, DateTimeKind.Utc)]);
+            Assert.AreEqual(2, dic2[new DateTime(2023, 12, 12, 12, 12, 12, DateTimeKind.Utc)]);
         }
 
         [Test]
@@ -7929,6 +7994,47 @@ This is just junk, though.";
             ExceptionAssert.Throws<JsonReaderException>(
                 () => JsonConvert.DeserializeObject<EmptyJsonValueTestClass>("{ A: \"\", B: 1, C: 123, D: 1.23, E: , F: null }"),
                 "Unexpected character encountered while parsing value: ,. Path 'E', line 1, position 36.");
+        }
+
+        [Test]
+        public void SetMaxDepth_DepthExceeded()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("[[['text']]]"));
+            Assert.AreEqual(64, reader.MaxDepth);
+
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            Assert.AreEqual(64, settings.MaxDepth);
+            Assert.AreEqual(false, settings._maxDepthSet);
+
+            // Default should be the same
+            Assert.AreEqual(reader.MaxDepth, settings.MaxDepth);
+
+            settings.MaxDepth = 2;
+            Assert.AreEqual(2, settings.MaxDepth);
+            Assert.AreEqual(true, settings._maxDepthSet);
+
+            JsonSerializer serializer = JsonSerializer.Create(settings);
+            Assert.AreEqual(2, serializer.MaxDepth);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => serializer.Deserialize(reader),
+                "The reader's MaxDepth of 2 has been exceeded. Path '[0][0]', line 1, position 3.");
+        }
+
+        [Test]
+        public void SetMaxDepth_DepthNotExceeded()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("['text']"));
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+
+            settings.MaxDepth = 2;
+
+            JsonSerializer serializer = JsonSerializer.Create(settings);
+            Assert.AreEqual(2, serializer.MaxDepth);
+
+            serializer.Deserialize(reader);
+
+            Assert.AreEqual(64, reader.MaxDepth);
         }
     }
 }

@@ -1,0 +1,72 @@
+trigger:
+- master
+- release/*
+
+pool:
+  vmImage: 'windows-2019'
+
+steps:
+- powershell: |
+    dotnet --info
+  displayName: 'Dotnet installs'
+
+- powershell: |
+    $basePath = resolve-path .
+    $keyPath = "$basePath\key.snk"
+    $keyData = [System.Convert]::FromBase64String($Env:KeyData)
+    [System.IO.File]::WriteAllBytes($keyPath, $keyData)
+  env:
+    KeyData: $(newtonsoft.keyData)
+  displayName: 'Prepare signing key'
+  condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
+
+- powershell: |
+    $basePath = resolve-path .
+    $keyPath = "$basePath\key.snk"
+    $sign = test-path $keyPath
+    write-host "Sign assemblies $sign" -fore white
+    $version = Get-Content .\Build\version.json | Out-String | ConvertFrom-Json
+    $buildNumber = [int]$Env:BuildId
+    write-host "Build number $buildNumber" -fore white
+    $nugetPrerelease = if ($Env:SourceBranch.StartsWith("refs/heads/release/")) { $version.Prerelease } else { "build$($buildNumber.ToString("D6"))" }
+    write-host "Prerelease $nugetPrerelease" -fore white
+    $assemblyVersion = if ($version.Assembly) { $version.Assembly } else { "$($version.Major).0.0.0" }
+    write-host "Assembly $assemblyVersion" -fore white
+    .\Build\runbuild.ps1 -properties @{"majorVersion"="$($version.Major).0"; "majorWithReleaseVersion"="$($version.Major).0.$($version.Release)"; "nugetPrerelease"=$nugetPrerelease; "assemblyVersion"=$assemblyVersion; "zipFileName"="Json$($version.Major)0r$($version.Release).zip"; "signAssemblies"=$sign; "signKeyPath"=$keyPath; "treatWarningsAsErrors"=$true; "buildNuGet"=$true; "ensureNetCliSdk"=$false}
+  env:
+    BuildId: $(Build.BuildId)
+    SourceBranch: $(Build.SourceBranch)
+  displayName: 'Run build'
+
+- task: PowerShell@2
+  inputs:
+    filePath: .\Build\Sign-Package.ps1
+  env:
+    SignClientUser: $(newtonsoft.signClientUser)
+    SignClientSecret: $(newtonsoft.signClientSecret)
+    ArtifactDirectory: .\Working
+  displayName: 'Authenticode sign packages'
+  condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['newtonsoft.signClientUser'], '')), not(eq(variables['newtonsoft.signClientSecret'], '')))
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: 'NUnit'
+    testResultsFiles: '**/Working/*.xml'
+  displayName: 'Publish NUnit results'
+  condition: succeededOrFailed()
+
+- task: PublishTestResults@2
+  inputs:
+    testRunner: 'VSTest'
+    testResultsFiles: '**/Working/*.trx'
+  displayName: 'Publish dotnet test results'
+  condition: succeededOrFailed()
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    pathtoPublish: .\Working
+    artifactName: artifacts
+    parallel: true
+    parallelCount: 8
+  displayName: 'Publish artifacts'
+  condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))

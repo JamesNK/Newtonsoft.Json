@@ -17,8 +17,8 @@
     </listItem>
     <listItem>
         <para><legacyBold>JSON Schema</legacyBold> - Loading schemas and validating JSON. Note that JSON Schema validation has been moved to its own package. See <externalLink>
-        <linkText>http://www.newtonsoft.com/jsonschema</linkText>
-        <linkUri>http://www.newtonsoft.com/jsonschema</linkUri>
+        <linkText>https://www.newtonsoft.com/jsonschema</linkText>
+        <linkUri>https://www.newtonsoft.com/jsonschema</linkUri>
         <linkTarget>_blank</linkTarget>
       </externalLink>
       for more details.</para>

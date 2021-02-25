@@ -35,6 +35,8 @@ using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
 using System.Globalization;
 
+#nullable disable
+
 namespace Newtonsoft.Json.Bson
 {
     /// <summary>
@@ -205,8 +207,7 @@ namespace Newtonsoft.Json.Bson
         {
             if (_parent != null)
             {
-                BsonObject bo = _parent as BsonObject;
-                if (bo != null)
+                if (_parent is BsonObject bo)
                 {
                     bo.Add(_propertyName, token);
                     _propertyName = null;
@@ -237,10 +238,10 @@ namespace Newtonsoft.Json.Bson
         public override void WriteValue(object value)
         {
 #if HAVE_BIG_INTEGER
-            if (value is BigInteger)
+            if (value is BigInteger i)
             {
                 SetWriteState(JsonToken.Integer, null);
-                AddToken(new BsonBinary(((BigInteger)value).ToByteArray(), BsonBinaryType.Binary));
+                AddToken(new BsonBinary(i.ToByteArray(), BsonBinaryType.Binary));
             }
             else
 #endif
