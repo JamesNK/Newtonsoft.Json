@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System;
 using System.Reflection;
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
@@ -31,9 +32,9 @@ namespace Newtonsoft.Json.Tests.TestObjects
 {
     public class JsonPropertyConverterContractResolver : DefaultContractResolver
     {
-        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        protected override JsonProperty CreateProperty(Type type, MemberInfo member, MemberSerialization memberSerialization)
         {
-            JsonProperty property = base.CreateProperty(member, memberSerialization);
+            JsonProperty property = base.CreateProperty(type, member, memberSerialization);
             if (property.PropertyName == "JavaScriptDate")
             {
                 property.Converter = new JavaScriptDateTimeConverter();

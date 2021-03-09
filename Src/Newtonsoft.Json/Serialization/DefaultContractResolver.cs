@@ -1372,7 +1372,7 @@ namespace Newtonsoft.Json.Serialization
 
             foreach (MemberInfo member in members)
             {
-                JsonProperty property = CreateProperty(member, memberSerialization);
+                JsonProperty property = CreateProperty(type, member, memberSerialization);
 
                 if (property != null)
                 {
@@ -1426,10 +1426,11 @@ namespace Newtonsoft.Json.Serialization
         /// <summary>
         /// Creates a <see cref="JsonProperty"/> for the given <see cref="MemberInfo"/>.
         /// </summary>
+        /// <param name="type">The type to create the property for.</param>
         /// <param name="memberSerialization">The member's parent <see cref="MemberSerialization"/>.</param>
         /// <param name="member">The member to create a <see cref="JsonProperty"/> for.</param>
         /// <returns>A created <see cref="JsonProperty"/> for the given <see cref="MemberInfo"/>.</returns>
-        protected virtual JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        protected virtual JsonProperty CreateProperty(Type type, MemberInfo member, MemberSerialization memberSerialization)
         {
             JsonProperty property = new JsonProperty();
             property.PropertyType = ReflectionUtils.GetMemberUnderlyingType(member);

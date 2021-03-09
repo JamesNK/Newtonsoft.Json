@@ -624,9 +624,9 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
         public static new readonly ShouldDeserializeContractResolver Instance = new ShouldDeserializeContractResolver();
 
-        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        protected override JsonProperty CreateProperty(Type type, MemberInfo member, MemberSerialization memberSerialization)
         {
-            JsonProperty property = base.CreateProperty(member, memberSerialization);
+            JsonProperty property = base.CreateProperty(type, member, memberSerialization);
 
             MethodInfo shouldDeserializeMethodInfo = member.DeclaringType.GetMethod("ShouldDeserialize" + member.Name);
 

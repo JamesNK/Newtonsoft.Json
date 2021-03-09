@@ -797,6 +797,19 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void DefaultContractResolverExposesCorrectTypeToCreatePropertyMethod()
+        {
+            VehicleContractResolver resolver = new VehicleContractResolver();
+
+            JsonObjectContract trainContract = (JsonObjectContract)resolver.ResolveContract(typeof(Train));            
+            JsonObjectContract aircraftContract = (JsonObjectContract)resolver.ResolveContract(typeof(Aircraft));            
+
+            Assert.IsTrue(trainContract.Properties[nameof(Vehicle.Registration)].Ignored);
+            Assert.IsFalse(aircraftContract.Properties[nameof(Vehicle.Registration)].Ignored);
+        }
+
+
+        [Test]
         public void JsonRequiredAttribute()
         {
             DefaultContractResolver resolver = new DefaultContractResolver();

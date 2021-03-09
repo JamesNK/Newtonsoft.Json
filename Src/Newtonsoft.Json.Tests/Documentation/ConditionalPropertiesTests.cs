@@ -62,9 +62,9 @@ namespace Newtonsoft.Json.Tests.Documentation
     {
         public new static readonly ShouldSerializeContractResolver Instance = new ShouldSerializeContractResolver();
 
-        protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+        protected override JsonProperty CreateProperty(Type type, MemberInfo member, MemberSerialization memberSerialization)
         {
-            JsonProperty property = base.CreateProperty(member, memberSerialization);
+            JsonProperty property = base.CreateProperty(type, member, memberSerialization);
 
             if (property.DeclaringType == typeof(Employee) && property.PropertyName == "Manager")
             {

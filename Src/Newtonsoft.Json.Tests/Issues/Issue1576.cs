@@ -81,9 +81,9 @@ namespace Newtonsoft.Json.Tests.Issues
 
         public class CustomContractResolver : DefaultContractResolver
         {
-            protected override JsonProperty CreateProperty(MemberInfo member, MemberSerialization memberSerialization)
+            protected override JsonProperty CreateProperty(Type type, MemberInfo member, MemberSerialization memberSerialization)
             {
-                var property = base.CreateProperty(member, memberSerialization);
+                var property = base.CreateProperty(type, member, memberSerialization);
 
                 if (member.Name == "Items")
                 {
