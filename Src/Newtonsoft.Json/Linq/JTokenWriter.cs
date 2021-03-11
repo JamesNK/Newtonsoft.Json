@@ -196,6 +196,9 @@ namespace Newtonsoft.Json.Linq
         {
             if (_parent != null)
             {
+                // TryAdd will return false if an invalid JToken type is added.
+                // For example, a JComment can't be added to a JObject.
+                // If there is an invalid JToken type then skip it.
                 if (_parent.TryAdd(value))
                 {
                     _current = _parent.Last;
