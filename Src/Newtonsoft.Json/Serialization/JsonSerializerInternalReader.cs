@@ -238,6 +238,15 @@ namespace Newtonsoft.Json.Serialization
                 token = writer.Token;
             }
 
+            if (contract != null && token != null)
+            {
+                if (!contract.UnderlyingType.IsAssignableFrom(token.GetType()))
+                {
+                    throw JsonSerializationException.Create(reader, "Deserialized JSON type '{0}' is not compatible with expected type '{1}'."
+                        .FormatWith(CultureInfo.InvariantCulture, token.GetType().FullName, contract.UnderlyingType.FullName));
+                }
+            }
+
             return token;
         }
 
