@@ -240,7 +240,7 @@ namespace Newtonsoft.Json.Linq
             }
 
             int index = _parent.IndexOfItem(this);
-            _parent.AddInternal(index + 1, content, false);
+            _parent.TryAddInternal(index + 1, content, false);
         }
 
         /// <summary>
@@ -255,7 +255,7 @@ namespace Newtonsoft.Json.Linq
             }
 
             int index = _parent.IndexOfItem(this);
-            _parent.AddInternal(index, content, false);
+            _parent.TryAddInternal(index, content, false);
         }
 
         /// <summary>

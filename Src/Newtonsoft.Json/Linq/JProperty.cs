@@ -241,12 +241,12 @@ namespace Newtonsoft.Json.Linq
             return _content.IndexOf(item);
         }
 
-        internal override void InsertItem(int index, JToken? item, bool skipParentCheck)
+        internal override bool InsertItem(int index, JToken? item, bool skipParentCheck)
         {
             // don't add comments to JProperty
             if (item != null && item.Type == JTokenType.Comment)
             {
-                return;
+                return false;
             }
 
             if (Value != null)
@@ -254,7 +254,7 @@ namespace Newtonsoft.Json.Linq
                 throw new JsonException("{0} cannot have multiple values.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
             }
 
-            base.InsertItem(0, item, false);
+            return base.InsertItem(0, item, false);
         }
 
         internal override bool ContainsItem(JToken? item)

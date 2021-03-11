@@ -196,12 +196,14 @@ namespace Newtonsoft.Json.Linq
         {
             if (_parent != null)
             {
-                _parent.Add(value);
-                _current = _parent.Last;
-
-                if (_parent.Type == JTokenType.Property)
+                if (_parent.TryAdd(value))
                 {
-                    _parent = _parent.Parent;
+                    _current = _parent.Last;
+
+                    if (_parent.Type == JTokenType.Property)
+                    {
+                        _parent = _parent.Parent;
+                    }
                 }
             }
             else
