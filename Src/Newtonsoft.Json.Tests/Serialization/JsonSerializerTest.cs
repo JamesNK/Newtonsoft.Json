@@ -7996,14 +7996,10 @@ This is just junk, though.";
         public void SetMaxDepth_DepthExceeded()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader("[[['text']]]"));
-            Assert.AreEqual(64, reader.MaxDepth);
 
             JsonSerializerSettings settings = new JsonSerializerSettings();
             Assert.AreEqual(64, settings.MaxDepth);
             Assert.AreEqual(false, settings._maxDepthSet);
-
-            // Default should be the same
-            Assert.AreEqual(reader.MaxDepth, settings.MaxDepth);
 
             settings.MaxDepth = 2;
             Assert.AreEqual(2, settings.MaxDepth);
@@ -8029,8 +8025,6 @@ This is just junk, though.";
             Assert.AreEqual(2, serializer.MaxDepth);
 
             serializer.Deserialize(reader);
-
-            Assert.AreEqual(64, reader.MaxDepth);
         }
     }
 }
