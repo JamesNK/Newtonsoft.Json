@@ -23,23 +23,55 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-using System;
-using System.Diagnostics;
-using BenchmarkDotNet.Running;
+//using System;
+//using System.Diagnostics;
+//using BenchmarkDotNet.Running;
+//using Newtonsoft.Json;
+//using Newtonsoft.Json.Tests.Benchmarks;
+//using System.Reflection;
+
+//namespace Newtonsoft.Json.TestConsole
+//{
+//    public class Program
+//    {
+//        public static void Main(string[] args)
+//        {
+//            var attribute = (AssemblyFileVersionAttribute)typeof(JsonConvert).GetTypeInfo().Assembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute));
+//            Console.WriteLine("Json.NET Version: " + attribute.Version);
+
+//            new BenchmarkSwitcher(new [] { typeof(LowLevelBenchmarks) }).Run(new[] { "*" });
+//        }
+//    }
+//}
 using Newtonsoft.Json;
-using Newtonsoft.Json.Tests.Benchmarks;
-using System.Reflection;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
-namespace Newtonsoft.Json.TestConsole
+public class AClass
 {
-    public class Program
-    {
-        public static void Main(string[] args)
-        {
-            var attribute = (AssemblyFileVersionAttribute)typeof(JsonConvert).GetTypeInfo().Assembly.GetCustomAttribute(typeof(AssemblyFileVersionAttribute));
-            Console.WriteLine("Json.NET Version: " + attribute.Version);
+    private static List<string> DefaultListValue = new List<string>() { "123456789" };
 
-            new BenchmarkSwitcher(new [] { typeof(LowLevelBenchmarks) }).Run(new[] { "*" });
-        }
+    public List<string> List { get; set; } =DefaultListValue; 
+
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Console.WriteLine("Hello World!");
+
+        List<AClass> beforeList = new List<AClass>();
+
+        var beforeA = new AClass();
+        beforeList.Add(beforeA);
+
+        var str = JsonConvert.SerializeObject(beforeList);
+
+        List<AClass> afterList = JsonConvert.DeserializeObject<List<AClass>>(str);
+
+        var afterA = afterList.FirstOrDefault();
+        Console.ReadKey();
     }
 }

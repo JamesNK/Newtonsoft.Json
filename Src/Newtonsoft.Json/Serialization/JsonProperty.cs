@@ -137,6 +137,11 @@ namespace Newtonsoft.Json.Serialization
         public bool Ignored { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether this <see cref="JsonProperty"/> is ignored.
+        /// </summary>
+        /// <value><c>true</c> if IgnoredInitValue; otherwise, <c>false</c>.</value>
+        public bool IgnoredInitValue { get; set; }
+        /// <summary>
         /// Gets or sets a value indicating whether this <see cref="JsonProperty"/> is readable.
         /// </summary>
         /// <value><c>true</c> if readable; otherwise, <c>false</c>.</value>
@@ -303,6 +308,7 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <value>The collection's items reference loop handling.</value>
         public ReferenceLoopHandling? ItemReferenceLoopHandling { get; set; }
+
 
         internal void WritePropertyName(JsonWriter writer)
         {

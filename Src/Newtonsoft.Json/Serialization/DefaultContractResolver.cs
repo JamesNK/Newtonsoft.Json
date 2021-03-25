@@ -1606,6 +1606,11 @@ namespace Newtonsoft.Json.Serialization
                 property.Ignored = (hasJsonIgnoreAttribute || !hasMemberAttribute);
             }
 
+            bool hasIgnoredInitValueAttribute = JsonTypeReflector.GetAttribute<JsonIgnoredInitValueAttribute>(attributeProvider) != null;
+
+            property.IgnoredInitValue = hasIgnoredInitValueAttribute;
+
+
             // resolve converter for property
             // the class type might have a converter but the property converter takes precedence
             property.Converter = JsonTypeReflector.GetJsonConverter(attributeProvider);

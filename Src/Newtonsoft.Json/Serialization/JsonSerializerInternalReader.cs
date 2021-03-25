@@ -1122,7 +1122,7 @@ namespace Newtonsoft.Json.Serialization
                 {
                     propertyContract = GetContract(currentValue.GetType());
 
-                    useExistingValue = (!propertyContract.IsReadOnlyOrFixedSize && !propertyContract.UnderlyingType.IsValueType());
+                    useExistingValue = (!property.IgnoredInitValue) && (!propertyContract.IsReadOnlyOrFixedSize && !propertyContract.UnderlyingType.IsValueType());
                 }
             }
 
