@@ -8032,5 +8032,63 @@ This is just junk, though.";
 
             Assert.AreEqual(64, reader.MaxDepth);
         }
+
+        [Test]
+        public void SetMaxDepth_DefaultDepthExceeded()
+        {
+            string json = GetNestedJson(150);
+
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JsonConvert.DeserializeObject<JObject>(json),
+                "The reader's MaxDepth of 64 has been exceeded. Path '0.1.2.3.4.5.6.7.8.9.10.11.12.13.14.15.16.17.18.19.20.21.22.23.24.25.26.27.28.29.30.31.32.33.34.35.36.37.38.39.40.41.42.43.44.45.46.47.48.49.50.51.52.53.54.55.56.57.58.59.60.61.62.63', line 65, position 135.");
+        }
+
+        [Test]
+        public void SetMaxDepth_IncreasedDepthNotExceeded()
+        {
+            string json = GetNestedJson(150);
+
+            JObject o = JsonConvert.DeserializeObject<JObject>(json, new JsonSerializerSettings { MaxDepth = 150 });
+            int depth = GetDepth(o);
+
+            Assert.AreEqual(150, depth);
+        }
+
+        private static int GetDepth(JToken o)
+        {
+            int depth = 1;
+            while (o.First != null)
+            {
+                o = o.First;
+                if (o.Type == JTokenType.Object)
+                {
+                    depth++;
+                }
+            }
+
+            return depth;
+        }
+
+        [Test]
+        public void SetMaxDepth_NullDepthNotExceeded()
+        {
+            string json = GetNestedJson(150);
+
+            JObject o = JsonConvert.DeserializeObject<JObject>(json, new JsonSerializerSettings { MaxDepth = null });
+            int depth = GetDepth(o);
+
+            Assert.AreEqual(150, depth);
+        }
+
+        [Test]
+        public void SetMaxDepth_MaxValueDepthNotExceeded()
+        {
+            string json = GetNestedJson(150);
+
+            JObject o = JsonConvert.DeserializeObject<JObject>(json, new JsonSerializerSettings { MaxDepth = int.MaxValue });
+            int depth = GetDepth(o);
+
+            Assert.AreEqual(150, depth);
+        }
     }
 }

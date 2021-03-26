@@ -1770,5 +1770,44 @@ third line", jsonTextReader.Value);
                 JToken.ReadFrom(reader, settings);
             });
         }
+
+        [Test]
+        public void MaxDepth_GreaterThanDefault()
+        {
+            string json = GetNestedJson(150);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.MaxDepth = 150;
+
+            while (reader.Read())
+            {
+            }
+        }
+
+        [Test]
+        public void MaxDepth_Null()
+        {
+            string json = GetNestedJson(150);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.MaxDepth = null;
+
+            while (reader.Read())
+            {
+            }
+        }
+
+        [Test]
+        public void MaxDepth_MaxValue()
+        {
+            string json = GetNestedJson(150);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.MaxDepth = int.MaxValue;
+
+            while (reader.Read())
+            {
+            }
+        }
     }
 }

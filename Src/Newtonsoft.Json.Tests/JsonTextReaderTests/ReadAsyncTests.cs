@@ -1776,6 +1776,45 @@ third line", jsonTextReader.Value);
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
             await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => await JToken.ReadFromAsync(reader, settings));
         }
+
+        [Test]
+        public async Task MaxDepth_GreaterThanDefaultAsync()
+        {
+            string json = GetNestedJson(150);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.MaxDepth = 150;
+
+            while (await reader.ReadAsync())
+            {
+            }
+        }
+
+        [Test]
+        public async Task MaxDepth_NullAsync()
+        {
+            string json = GetNestedJson(150);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.MaxDepth = null;
+
+            while (await reader.ReadAsync())
+            {
+            }
+        }
+
+        [Test]
+        public async Task MaxDepth_MaxValueAsync()
+        {
+            string json = GetNestedJson(150);
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            reader.MaxDepth = int.MaxValue;
+
+            while (await reader.ReadAsync())
+            {
+            }
+        }
     }
 }
 #endif
