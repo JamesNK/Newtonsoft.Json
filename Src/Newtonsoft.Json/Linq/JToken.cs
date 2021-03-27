@@ -45,6 +45,7 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 #else
 using System.Linq;
 #endif
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -2079,6 +2080,11 @@ namespace Newtonsoft.Json.Linq
 
             using (JTokenReader jsonReader = new JTokenReader(this))
             {
+                if (jsonSerializer is JsonSerializerProxy proxy)
+                {
+                    proxy._serializer.SetupReader(jsonReader, out _, out _, out _, out _, out _, out _);
+                }
+
                 return jsonSerializer.Deserialize(jsonReader, objectType);
             }
         }

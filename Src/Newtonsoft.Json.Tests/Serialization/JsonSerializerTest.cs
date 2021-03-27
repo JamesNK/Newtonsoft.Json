@@ -8054,21 +8054,6 @@ This is just junk, though.";
             Assert.AreEqual(150, depth);
         }
 
-        private static int GetDepth(JToken o)
-        {
-            int depth = 1;
-            while (o.First != null)
-            {
-                o = o.First;
-                if (o.Type == JTokenType.Object)
-                {
-                    depth++;
-                }
-            }
-
-            return depth;
-        }
-
         [Test]
         public void SetMaxDepth_NullDepthNotExceeded()
         {
@@ -8089,6 +8074,21 @@ This is just junk, though.";
             int depth = GetDepth(o);
 
             Assert.AreEqual(150, depth);
+        }
+
+        private static int GetDepth(JToken o)
+        {
+            int depth = 1;
+            while (o.First != null)
+            {
+                o = o.First;
+                if (o.Type == JTokenType.Object)
+                {
+                    depth++;
+                }
+            }
+
+            return depth;
         }
     }
 }
