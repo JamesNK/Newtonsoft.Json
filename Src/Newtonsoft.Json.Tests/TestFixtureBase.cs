@@ -36,6 +36,7 @@ using System.Runtime.Serialization.Json;
 #endif
 using System.Text;
 using System.Threading;
+using Newtonsoft.Json.Linq;
 #if DNXCORE50
 using Xunit;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
@@ -305,6 +306,21 @@ namespace Newtonsoft.Json.Tests
         protected string EscapeJson(string json)
         {
             return @"@""" + json.Replace(@"""", @"""""") + @"""";
+        }
+
+        protected string GetNestedJson(int depth)
+        {
+            JObject root = new JObject();
+            JObject current = root;
+            for (int i = 0; i < depth - 1; i++)
+            {
+                JObject nested = new JObject();
+                current[i.ToString()] = nested;
+
+                current = nested;
+            }
+
+            return root.ToString();
         }
     }
 
