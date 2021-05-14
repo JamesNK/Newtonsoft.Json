@@ -1113,7 +1113,8 @@ namespace Newtonsoft.Json.Serialization
 
             if ((objectCreationHandling != ObjectCreationHandling.Replace)
                 && (tokenType == JsonToken.StartArray || tokenType == JsonToken.StartObject || propertyConverter != null)
-                && property.Readable)
+                && property.Readable
+                && property.PropertyContract.ContractType != JsonContractType.Linq)
             {
                 currentValue = property.ValueProvider!.GetValue(target);
                 gottenCurrentValue = true;
