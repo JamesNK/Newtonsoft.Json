@@ -8090,18 +8090,5 @@ This is just junk, though.";
 
             return depth;
         }
-
-        [Test]
-        public void DeserializeMismatchLinqTypeProperty_ReplaceValue()
-        {
-            Something something = JsonConvert.DeserializeObject<Something>("{ \"foo\": [] }");
-
-            Assert.AreEqual(JTokenType.Array, something.Foo.Type);
-        }
-
-        private class Something
-        {
-            public JToken Foo { get; set; } = JValue.CreateNull();
-        }
     }
 }
