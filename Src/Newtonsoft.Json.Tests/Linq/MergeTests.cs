@@ -51,9 +51,11 @@ namespace Newtonsoft.Json.Tests.Linq
         {
             var a = new JObject();
 
-            var ex = ExceptionAssert.Throws<ArgumentException>(() => a.Merge(new Version()));
-            Assert.AreEqual(@"Could not determine JSON object type for type System.Version.
-Parameter name: content", ex.Message);
+            ExceptionAssert.Throws<ArgumentException>(
+                () => a.Merge(new Version()),
+                @"Could not determine JSON object type for type System.Version.
+Parameter name: content",
+                @"Could not determine JSON object type for type System.Version. (Parameter 'content')");
         }
 
         [Test]
