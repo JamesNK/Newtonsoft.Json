@@ -47,6 +47,16 @@ namespace Newtonsoft.Json.Tests.Linq
     public class MergeTests : TestFixtureBase
     {
         [Test]
+        public void MergeInvalidObject()
+        {
+            var a = new JObject();
+
+            var ex = ExceptionAssert.Throws<ArgumentException>(() => a.Merge(new Version()));
+            Assert.AreEqual(@"Could not determine JSON object type for type System.Version.
+Parameter name: content", ex.Message);
+        }
+
+        [Test]
         public void MergeArraySelf()
         {
             var a = new JArray { "1", "2" };
@@ -68,6 +78,38 @@ namespace Newtonsoft.Json.Tests.Linq
                 ["1"] = 1,
                 ["2"] = 2
             }, a);
+        }
+
+        [Test]
+        public void MergeArrayIntoArray_Replace()
+        {
+            var a = new JArray { "1", "2" };
+            a.Merge(new string[] { "3", "4" }, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Replace });
+            Assert.AreEqual(new JArray { "3", "4" }, a);
+        }
+
+        [Test]
+        public void MergeArrayIntoArray_Concat()
+        {
+            var a = new JArray { "1", "2" };
+            a.Merge(new string[] { "3", "4" }, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Concat });
+            Assert.AreEqual(new JArray { "1", "2", "3", "4" }, a);
+        }
+
+        [Test]
+        public void MergeArrayIntoArray_Union()
+        {
+            var a = new JArray { "1", "2" };
+            a.Merge(new string[] { "2", "3", "4" }, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Union });
+            Assert.AreEqual(new JArray { "1", "2", "3", "4" }, a);
+        }
+
+        [Test]
+        public void MergeArrayIntoArray_Merge()
+        {
+            var a = new JArray { "1", "2" };
+            a.Merge(new string[] { "2" }, new JsonMergeSettings { MergeArrayHandling = MergeArrayHandling.Merge });
+            Assert.AreEqual(new JArray { "2", "2" }, a);
         }
 
         [Test]

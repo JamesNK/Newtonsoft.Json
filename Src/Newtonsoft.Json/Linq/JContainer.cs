@@ -723,8 +723,14 @@ namespace Newtonsoft.Json.Linq
         /// Merge the specified content into this <see cref="JToken"/>.
         /// </summary>
         /// <param name="content">The content to be merged.</param>
-        public void Merge(object content)
+        public void Merge(object? content)
         {
+            if (content == null)
+            {
+                return;
+            }
+
+            ValidateContent(content);
             MergeItem(content, null);
         }
 
@@ -733,9 +739,29 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="content">The content to be merged.</param>
         /// <param name="settings">The <see cref="JsonMergeSettings"/> used to merge the content.</param>
-        public void Merge(object content, JsonMergeSettings? settings)
+        public void Merge(object? content, JsonMergeSettings? settings)
         {
+            if (content == null)
+            {
+                return;
+            }
+
+            ValidateContent(content);
             MergeItem(content, settings);
+        }
+
+        private void ValidateContent(object content)
+        {
+            if (content.GetType().IsSubclassOf(typeof(JToken)))
+            {
+                return;
+            }
+            if (IsMultiContent(content))
+            {
+                return;
+            }
+
+            throw new ArgumentException("Could not determine JSON object type for type {0}.".FormatWith(CultureInfo.InvariantCulture, content.GetType()), nameof(content));
         }
 
         internal void ReadTokenFrom(JsonReader reader, JsonLoadSettings? options)
@@ -1141,20 +1167,22 @@ namespace Newtonsoft.Json.Linq
             switch (settings?.MergeArrayHandling ?? MergeArrayHandling.Concat)
             {
                 case MergeArrayHandling.Concat:
-                    foreach (JToken item in content)
+                    foreach (object item in content)
                     {
-                        target.Add(item);
+                        target.Add(CreateFromContent(item));
                     }
                     break;
                 case MergeArrayHandling.Union:
 #if HAVE_HASH_SET
                     HashSet<JToken> items = new HashSet<JToken>(target, EqualityComparer);
 
-                    foreach (JToken item in content)
+                    foreach (object item in content)
                     {
-                        if (items.Add(item))
+                        JToken contentItem = CreateFromContent(item);
+
+                        if (items.Add(contentItem))
                         {
-                            target.Add(item);
+                            target.Add(contentItem);
                         }
                     }
 #else
@@ -1164,12 +1192,14 @@ namespace Newtonsoft.Json.Linq
                         items[t] = true;
                     }
 
-                    foreach (JToken item in content)
+                    foreach (object item in content)
                     {
-                        if (!items.ContainsKey(item))
+                        JToken contentItem = CreateFromContent(item);
+
+                        if (!items.ContainsKey(contentItem))
                         {
-                            items[item] = true;
-                            target.Add(item);
+                            items[contentItem] = true;
+                            target.Add(contentItem);
                         }
                     }
 #endif
@@ -1180,9 +1210,9 @@ namespace Newtonsoft.Json.Linq
                         break;
                     }
                     target.ClearItems();
-                    foreach (JToken item in content)
+                    foreach (object item in content)
                     {
-                        target.Add(item);
+                        target.Add(CreateFromContent(item));
                     }
                     break;
                 case MergeArrayHandling.Merge:
@@ -1211,7 +1241,7 @@ namespace Newtonsoft.Json.Linq
                         }
                         else
                         {
-                            target.Add(targetItem);
+                            target.Add(CreateFromContent(targetItem));
                         }
 
                         i++;
