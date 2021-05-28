@@ -30,25 +30,10 @@ using System;
 	using Test = Xunit.FactAttribute;
 	using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 #else
-	using NUnit.Framework;
+using NUnit.Framework;
 #endif
 
 using Newtonsoft.Json.Tests.TestObjects;
-
-namespace Newtonsoft.Json.Tests.TestObjects
-{
-	internal class ClassWithObjectProperty
-	{
-		public Aa Prop1;
-		public String Prop2;
-	}
-
-	internal class ClassWithValueProperty
-	{
-		public String Prop1;
-		public String Prop2;
-	}
-}
 
 namespace Newtonsoft.Json.Tests.Serialization
 {
