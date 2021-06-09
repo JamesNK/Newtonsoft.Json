@@ -432,23 +432,24 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
-        /// 
+        /// Tries to load a <see cref="JObject"/> from a string that contains JSON.
         /// </summary>
-        /// <param name="json"></param>
-        /// <param name="jObject"></param>
-        /// <returns></returns>
+        /// <param name="json">A <see cref="String"/> that contains JSON.</param>
+        /// <param name="jObject">A <see cref="JObject"/> populated from the string that contains JSON.</param>
+        /// <returns>False if the method could load <see cref="JObject"/> without any exception</returns>
         public static bool TryParse(string json, out JObject? jObject)
         {
             return TryParse(json, null, out jObject);
         }
 
         /// <summary>
-        /// 
+        /// Tries to load a <see cref="JObject"/> from a string that contains JSON.
         /// </summary>
-        /// <param name="json"></param>
-        /// <param name="settings"></param>
-        /// <param name="jObject"></param>
-        /// <returns></returns>
+        /// <param name="json">A <see cref="String"/> that contains JSON.</param>
+        /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
+        /// If this is <c>null</c>, default load settings will be used.</param>
+        /// <param name="jObject">A <see cref="JObject"/> populated from the string that contains JSON.</param>
+        /// <returns>False if the method could load <see cref="JObject"/> without any exception</returns>
         public static bool TryParse(string json, JsonLoadSettings? settings, out JObject? jObject)
         {
             bool wasSuccess = true;
@@ -495,7 +496,7 @@ namespace Newtonsoft.Json.Linq
         /// <example>
         ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
         /// </example>
-        public static JObject Parse(string json, JsonLoadSettings? settings)
+        public new static JObject Parse(string json, JsonLoadSettings? settings)
         {
             using (JsonReader reader = new JsonTextReader(new StringReader(json)))
             {
