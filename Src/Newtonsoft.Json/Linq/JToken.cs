@@ -2179,6 +2179,17 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
+        public static bool TryParse(string json, out JObject jObject)
+        {
+            return TryParse(json, null, out jObject);
+        }
+
+        public static bool TryParse(string json, JsonLoadSettings? settings, out JObject jObject)
+        {
+            jObject = null;
+            return false;
+        }
+
         /// <summary>
         /// Load a <see cref="JToken"/> from a string that contains JSON.
         /// </summary>

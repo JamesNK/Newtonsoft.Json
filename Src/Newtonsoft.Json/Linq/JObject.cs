@@ -432,6 +432,61 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="jObject"></param>
+        /// <returns></returns>
+        public new static bool TryParse(string json, out JObject? jObject)
+        {
+            return TryParse(json, null, out jObject);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="settings"></param>
+        /// <param name="jObject"></param>
+        /// <returns></returns>
+        public new static bool TryParse(string json, JsonLoadSettings? settings, out JObject? jObject)
+        {
+            jObject = null;
+
+            using (JsonReader reader = new JsonTextReader(new StringReader(json)))
+            {
+                if (reader == null)
+                {
+                    return false;
+                }
+
+                if (reader.TokenType == JsonToken.None)
+                {
+                    return false;
+                }
+
+                reader.MoveToContent();
+
+                if (reader.TokenType != JsonToken.StartObject)
+                {
+                    return false;
+                }
+
+                jObject = new JObject();
+                jObject.SetLineInfo(reader as IJsonLineInfo, settings);
+
+                jObject.ReadTokenFrom(reader, settings);
+
+                while (reader.Read())
+                {
+                    // Any content encountered here other than a comment will throw in the reader.
+                }
+
+                return true;
+            }
+        }
+
+        /// <summary>
         /// Load a <see cref="JObject"/> from a string that contains JSON.
         /// </summary>
         /// <param name="json">A <see cref="String"/> that contains JSON.</param>
@@ -460,7 +515,7 @@ namespace Newtonsoft.Json.Linq
         /// <example>
         ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
         /// </example>
-        public new static JObject Parse(string json, JsonLoadSettings? settings)
+        public static JObject Parse(string json, JsonLoadSettings? settings)
         {
             using (JsonReader reader = new JsonTextReader(new StringReader(json)))
             {
