@@ -2179,15 +2179,38 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        public static bool TryParse(string json, out JObject jObject)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="jToken"></param>
+        /// <returns></returns>
+        public static bool TryParse(string json, out JToken? jToken)
         {
-            return TryParse(json, null, out jObject);
+            return TryParse(json, null, out jToken);
         }
 
-        public static bool TryParse(string json, JsonLoadSettings? settings, out JObject jObject)
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="settings"></param>
+        /// <param name="jToken"></param>
+        /// <returns></returns>
+        public static bool TryParse(string json, JsonLoadSettings? settings, out JToken? jToken)
         {
-            jObject = null;
-            return false;
+            bool wasSuccess = true;
+
+            try
+            {
+                jToken = Parse(json, settings);
+            } catch
+            {
+                jToken = null;
+                wasSuccess = false;
+            }
+
+            return wasSuccess;
         }
 
         /// <summary>

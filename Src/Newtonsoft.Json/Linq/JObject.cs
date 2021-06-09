@@ -437,7 +437,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="json"></param>
         /// <param name="jObject"></param>
         /// <returns></returns>
-        public new static bool TryParse(string json, out JObject? jObject)
+        public static bool TryParse(string json, out JObject? jObject)
         {
             return TryParse(json, null, out jObject);
         }
@@ -449,41 +449,21 @@ namespace Newtonsoft.Json.Linq
         /// <param name="settings"></param>
         /// <param name="jObject"></param>
         /// <returns></returns>
-        public new static bool TryParse(string json, JsonLoadSettings? settings, out JObject? jObject)
+        public static bool TryParse(string json, JsonLoadSettings? settings, out JObject? jObject)
         {
-            jObject = null;
+            bool wasSuccess = true;
 
-            using (JsonReader reader = new JsonTextReader(new StringReader(json)))
+            try
             {
-                if (reader == null)
-                {
-                    return false;
-                }
-
-                if (reader.TokenType == JsonToken.None)
-                {
-                    return false;
-                }
-
-                reader.MoveToContent();
-
-                if (reader.TokenType != JsonToken.StartObject)
-                {
-                    return false;
-                }
-
-                jObject = new JObject();
-                jObject.SetLineInfo(reader as IJsonLineInfo, settings);
-
-                jObject.ReadTokenFrom(reader, settings);
-
-                while (reader.Read())
-                {
-                    // Any content encountered here other than a comment will throw in the reader.
-                }
-
-                return true;
+                jObject = Parse(json, settings);
             }
+            catch
+            {
+                jObject = null;
+                wasSuccess = false;
+            }
+
+            return wasSuccess;
         }
 
         /// <summary>
