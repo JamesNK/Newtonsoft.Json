@@ -169,16 +169,16 @@ namespace Newtonsoft.Json.Utilities
             return Math.Max(val1.GetValueOrDefault(), val2.GetValueOrDefault());
         }
 
+        public static double Epsilon { get; set; } = 2.2204460492503131E-16;
+
         public static bool ApproxEquals(double d1, double d2)
         {
-            const double epsilon = 2.2204460492503131E-16;
-
             if (d1 == d2)
             {
                 return true;
             }
 
-            double tolerance = ((Math.Abs(d1) + Math.Abs(d2)) + 10.0) * epsilon;
+            double tolerance = ((Math.Abs(d1) + Math.Abs(d2)) + 10.0) * Epsilon;
             double difference = d1 - d2;
 
             return (-tolerance < difference && tolerance > difference);
