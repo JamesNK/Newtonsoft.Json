@@ -169,8 +169,6 @@ namespace Newtonsoft.Json.Utilities
             return Math.Max(val1.GetValueOrDefault(), val2.GetValueOrDefault());
         }
 
-        public static double Epsilon { get; set; } = 2.2204460492503131E-16;
-
         public static bool ApproxEquals(double d1, double d2)
         {
             if (d1 == d2)
@@ -178,7 +176,7 @@ namespace Newtonsoft.Json.Utilities
                 return true;
             }
 
-            double tolerance = ((Math.Abs(d1) + Math.Abs(d2)) + 10.0) * Epsilon;
+            double tolerance = ((Math.Abs(d1) + Math.Abs(d2)) + 10.0) * JsonCompareOptions.Epsilon;
             double difference = d1 - d2;
 
             return (-tolerance < difference && tolerance > difference);

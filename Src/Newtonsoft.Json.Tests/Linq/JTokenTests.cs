@@ -1233,15 +1233,15 @@ namespace Newtonsoft.Json.Tests.Linq
 
             Assert.IsFalse(v1.DeepEquals(v2));
 
-            var defaultEpsilon = MathUtils.Epsilon;
+            var defaultEpsilon = JsonCompareOptions.Epsilon;
             try
             {
-                MathUtils.Epsilon = epsilon;
+                JsonCompareOptions.Epsilon = epsilon;
                 Assert.IsTrue(v1.DeepEquals(v2));
             }
             finally
             {
-                MathUtils.Epsilon = defaultEpsilon;
+                JsonCompareOptions.Epsilon = defaultEpsilon;
             }
         }
 
