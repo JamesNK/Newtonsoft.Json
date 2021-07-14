@@ -142,9 +142,9 @@ namespace Newtonsoft.Json.Linq
             _name = name;
         }
 
-        internal override bool DeepEquals(JToken node)
+        internal override bool DeepEquals(JToken node, JsonCompareSettings? settings = null)
         {
-            return (node is JConstructor c && _name == c.Name && ContentsEqual(c));
+            return (node is JConstructor c && _name == c.Name && ContentsEqual(c, settings));
         }
 
         internal override JToken CloneToken()

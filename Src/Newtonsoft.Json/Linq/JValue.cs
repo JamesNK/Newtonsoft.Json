@@ -196,7 +196,7 @@ namespace Newtonsoft.Json.Linq
         {
         }
 
-        internal override bool DeepEquals(JToken node)
+        internal override bool DeepEquals(JToken node, JsonCompareSettings? settings = null)
         {
             if (!(node is JValue other))
             {
@@ -207,7 +207,7 @@ namespace Newtonsoft.Json.Linq
                 return true;
             }
 
-            return ValuesEquals(this, other);
+            return ValuesEquals(this, other, settings);
         }
 
         /// <summary>
@@ -244,7 +244,7 @@ namespace Newtonsoft.Json.Linq
         }
 #endif
 
-        internal static int Compare(JTokenType valueType, object? objA, object? objB)
+        internal static int Compare(JTokenType valueType, object? objA, object? objB, JsonCompareSettings? settings = null)
         {
             if (objA == objB)
             {
@@ -279,7 +279,7 @@ namespace Newtonsoft.Json.Linq
                     }
                     else if (objA is float || objB is float || objA is double || objB is double)
                     {
-                        return CompareFloat(objA, objB);
+                        return CompareFloat(objA, objB, settings);
                     }
                     else
                     {
@@ -302,7 +302,7 @@ namespace Newtonsoft.Json.Linq
                     {
                         return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
                     }
-                    return CompareFloat(objA, objB);
+                    return CompareFloat(objA, objB, settings);
                     }
                 case JTokenType.Comment:
                 case JTokenType.String:
@@ -395,13 +395,15 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        private static int CompareFloat(object objA, object objB)
+        private static int CompareFloat(object objA, object objB, JsonCompareSettings? settings = null)
         {
             double d1 = Convert.ToDouble(objA, CultureInfo.InvariantCulture);
             double d2 = Convert.ToDouble(objB, CultureInfo.InvariantCulture);
 
+            double eps = settings?.Epsilon ?? MathUtils.DefaultEpsilon;
+
             // take into account possible floating point errors
-            if (MathUtils.ApproxEquals(d1, d2))
+            if (MathUtils.ApproxEquals(d1, d2, eps))
             {
                 return 0;
             }
@@ -830,9 +832,9 @@ namespace Newtonsoft.Json.Linq
             return ((int)_valueType).GetHashCode() ^ valueHashCode;
         }
 
-        private static bool ValuesEquals(JValue v1, JValue v2)
+        private static bool ValuesEquals(JValue v1, JValue v2, JsonCompareSettings? settings = null)
         {
-            return (v1 == v2 || (v1._valueType == v2._valueType && Compare(v1._valueType, v1._value, v2._value) == 0));
+            return (v1 == v2 || (v1._valueType == v2._valueType && Compare(v1._valueType, v1._value, v2._value, settings) == 0));
         }
 
         /// <summary>
@@ -849,7 +851,25 @@ namespace Newtonsoft.Json.Linq
                 return false;
             }
 
-            return ValuesEquals(this, other);
+            return ValuesEquals(this, other, null);
+        }
+
+        /// <summary>
+        /// Indicates whether the current object is equal to another object of the same type.
+        /// </summary>
+        /// <returns>
+        /// <c>true</c> if the current object is equal to the <paramref name="other"/> parameter; otherwise, <c>false</c>.
+        /// </returns>
+        /// <param name="other">An object to compare with this object.</param>
+        /// <param name="settings">Compare settings</param>
+        public bool Equals(JValue? other, JsonCompareSettings? settings = null)
+        {
+            if (other == null)
+            {
+                return false;
+            }
+
+            return ValuesEquals(this, other, settings);
         }
 
         /// <summary>

@@ -132,7 +132,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         internal abstract JToken CloneToken();
-        internal abstract bool DeepEquals(JToken node);
+        internal abstract bool DeepEquals(JToken node, JsonCompareSettings? settings =  null);
 
         /// <summary>
         /// Gets the node type for this <see cref="JToken"/>.

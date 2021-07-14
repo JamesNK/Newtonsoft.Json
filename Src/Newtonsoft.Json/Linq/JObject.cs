@@ -115,14 +115,14 @@ namespace Newtonsoft.Json.Linq
             Add(content);
         }
 
-        internal override bool DeepEquals(JToken node)
+        internal override bool DeepEquals(JToken node, JsonCompareSettings? settings = null)
         {
             if (!(node is JObject t))
             {
                 return false;
             }
 
-            return _properties.Compare(t._properties);
+            return _properties.Compare(t._properties, settings);
         }
 
         internal override int IndexOfItem(JToken? item)

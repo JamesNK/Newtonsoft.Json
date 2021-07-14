@@ -200,7 +200,7 @@ namespace Newtonsoft.Json.Linq
         /// </value>
         public override bool HasValues => ChildrenTokens.Count > 0;
 
-        internal bool ContentsEqual(JContainer container)
+        internal bool ContentsEqual(JContainer container, JsonCompareSettings? settings = null)
         {
             if (container == this)
             {
@@ -217,7 +217,7 @@ namespace Newtonsoft.Json.Linq
 
             for (int i = 0; i < t1.Count; i++)
             {
-                if (!t1[i].DeepEquals(t2[i]))
+                if (!t1[i].DeepEquals(t2[i], settings))
                 {
                     return false;
                 }

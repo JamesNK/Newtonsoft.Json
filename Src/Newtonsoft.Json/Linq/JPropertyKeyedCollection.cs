@@ -225,7 +225,7 @@ namespace Newtonsoft.Json.Linq
             return ((List<JToken>)Items).IndexOfReference(t);
         }
 
-        public bool Compare(JPropertyKeyedCollection other)
+        public bool Compare(JPropertyKeyedCollection other, JsonCompareSettings? settings = null)
         {
             if (this == other)
             {
@@ -272,7 +272,7 @@ namespace Newtonsoft.Json.Linq
                     return (p2.Value == null);
                 }
 
-                if (!p1.Value.DeepEquals(p2.Value))
+                if (!p1.Value.DeepEquals(p2.Value, settings))
                 {
                     return false;
                 }

@@ -303,11 +303,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void ApproxEquals()
         {
-            Assert.IsTrue(MathUtils.ApproxEquals(0.0, 0.0));
-            Assert.IsTrue(MathUtils.ApproxEquals(1000.0, 1000.0000000000001));
+            Assert.IsTrue(MathUtils.ApproxEquals(0.0, 0.0, MathUtils.DefaultEpsilon));
+            Assert.IsTrue(MathUtils.ApproxEquals(1000.0, 1000.0000000000001, MathUtils.DefaultEpsilon));
 
-            Assert.IsFalse(MathUtils.ApproxEquals(1000.0, 1000.000000000001));
-            Assert.IsFalse(MathUtils.ApproxEquals(0.0, 0.00001));
+            Assert.IsFalse(MathUtils.ApproxEquals(1000.0, 1000.000000000001, MathUtils.DefaultEpsilon));
+            Assert.IsFalse(MathUtils.ApproxEquals(0.0, 0.00001, MathUtils.DefaultEpsilon));
         }
 
 #if !NET20

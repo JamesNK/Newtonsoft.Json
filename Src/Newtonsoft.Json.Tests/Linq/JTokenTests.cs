@@ -1221,7 +1221,7 @@ namespace Newtonsoft.Json.Tests.Linq
 
             Assert.IsTrue(v1.DeepEquals(v2));
         }
-        
+
         [Test]
         public void DoubleDeepEqualsWithCustomEpsilon()
         {
@@ -1233,16 +1233,12 @@ namespace Newtonsoft.Json.Tests.Linq
 
             Assert.IsFalse(v1.DeepEquals(v2));
 
-            var defaultEpsilon = JsonCompareOptions.Epsilon;
-            try
+            var compareSettings = new JsonCompareSettings
             {
-                JsonCompareOptions.Epsilon = epsilon;
-                Assert.IsTrue(v1.DeepEquals(v2));
-            }
-            finally
-            {
-                JsonCompareOptions.Epsilon = defaultEpsilon;
-            }
+                Epsilon = epsilon
+            };
+
+            Assert.IsTrue(v1.DeepEquals(v2, compareSettings));
         }
 
         [Test]

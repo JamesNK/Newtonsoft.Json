@@ -65,14 +65,13 @@ namespace Newtonsoft.Json.Utilities
                 {
                     return Convert.ToDecimal(objA, CultureInfo.CurrentCulture).Equals(Convert.ToDecimal(objB, CultureInfo.CurrentCulture));
                 }
-                else if ((objA is double || objA is float || objA is decimal) && (objB is double || objB is float || objB is decimal))
+
+                if ((objA is double || objA is float || objA is decimal) && (objB is double || objB is float || objB is decimal))
                 {
-                    return MathUtils.ApproxEquals(Convert.ToDouble(objA, CultureInfo.CurrentCulture), Convert.ToDouble(objB, CultureInfo.CurrentCulture));
+                    return MathUtils.ApproxEquals(Convert.ToDouble(objA, CultureInfo.CurrentCulture), Convert.ToDouble(objB, CultureInfo.CurrentCulture), MathUtils.DefaultEpsilon);
                 }
-                else
-                {
-                    return false;
-                }
+
+                return false;
             }
 
             return objA.Equals(objB);

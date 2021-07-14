@@ -1423,7 +1423,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             CustomAssert.IsInstanceOfType(typeof(double), o);
 
-            Assert.IsTrue(MathUtils.ApproxEquals(1E+38, (double)o));
+            Assert.IsTrue(MathUtils.ApproxEquals(1E+38, (double)o, MathUtils.DefaultEpsilon));
         }
 
         [Test]
