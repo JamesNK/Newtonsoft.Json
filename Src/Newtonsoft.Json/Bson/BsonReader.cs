@@ -298,7 +298,7 @@ namespace Newtonsoft.Json.Bson
             {
                 case State.ObjectStart:
                 {
-                    SetToken(JsonToken.PropertyName, JsonTypeReflector.RefPropertyName);
+                    SetToken(JsonToken.PropertyName, _jsonTypeReflectorProperties.RefPropertyName);
                     _bsonReaderState = BsonReaderState.ReferenceRef;
                     return true;
                 }
@@ -323,7 +323,7 @@ namespace Newtonsoft.Json.Bson
                 {
                     if (_bsonReaderState == BsonReaderState.ReferenceRef)
                     {
-                        SetToken(JsonToken.PropertyName, JsonTypeReflector.IdPropertyName);
+                        SetToken(JsonToken.PropertyName, _jsonTypeReflectorProperties.IdPropertyName);
                         _bsonReaderState = BsonReaderState.ReferenceId;
                         return true;
                     }

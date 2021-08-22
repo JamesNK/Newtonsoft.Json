@@ -212,7 +212,7 @@ namespace Newtonsoft.Json.Schema
                 throw JsonException.Create(token, token.Path, "Expected object while parsing schema object, got {0}.".FormatWith(CultureInfo.InvariantCulture, token.Type));
             }
 
-            if (schemaObject.TryGetValue(JsonTypeReflector.RefPropertyName, out JToken referenceToken))
+            if (schemaObject.TryGetValue(JsonTypeReflector.obsolete_RefPropertyName, out JToken referenceToken))
             {
                 JsonSchema deferredSchema = new JsonSchema();
                 deferredSchema.DeferredReference = (string)referenceToken;

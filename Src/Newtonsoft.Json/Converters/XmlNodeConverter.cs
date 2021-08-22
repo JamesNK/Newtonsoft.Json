@@ -1644,15 +1644,15 @@ namespace Newtonsoft.Json.Converters
                 {
                     switch (propertyName)
                     {
-                        case JsonTypeReflector.ArrayValuesPropertyName:
+                        case JsonTypeReflector.obsolete_ArrayValuesPropertyName:
                             propertyName = propertyName.Substring(1);
                             elementPrefix = manager.LookupPrefix(JsonNamespaceUri);
                             CreateElement(reader, document, currentNode, propertyName, manager, elementPrefix, attributeNameValues);
                             return;
-                        case JsonTypeReflector.IdPropertyName:
-                        case JsonTypeReflector.RefPropertyName:
-                        case JsonTypeReflector.TypePropertyName:
-                        case JsonTypeReflector.ValuePropertyName:
+                        case JsonTypeReflector.obsolete_IdPropertyName:
+                        case JsonTypeReflector.obsolete_RefPropertyName:
+                        case JsonTypeReflector.obsolete_TypePropertyName:
+                        case JsonTypeReflector.obsolete_ValuePropertyName:
                             string attributeName = propertyName.Substring(1);
                             string attributePrefix = manager.LookupPrefix(JsonNamespaceUri);
                             AddAttribute(reader, document, currentNode, propertyName, attributeName, manager, attributePrefix);
@@ -1902,11 +1902,11 @@ namespace Newtonsoft.Json.Converters
                                 case '$':
                                     switch (attributeName)
                                     {
-                                        case JsonTypeReflector.ArrayValuesPropertyName:
-                                        case JsonTypeReflector.IdPropertyName:
-                                        case JsonTypeReflector.RefPropertyName:
-                                        case JsonTypeReflector.TypePropertyName:
-                                        case JsonTypeReflector.ValuePropertyName:
+                                        case JsonTypeReflector.obsolete_ArrayValuesPropertyName:
+                                        case JsonTypeReflector.obsolete_IdPropertyName:
+                                        case JsonTypeReflector.obsolete_RefPropertyName:
+                                        case JsonTypeReflector.obsolete_TypePropertyName:
+                                        case JsonTypeReflector.obsolete_ValuePropertyName:
                                             // check that JsonNamespaceUri is in scope
                                             // if it isn't then add it to document and namespace manager
                                             string jsonPrefix = manager.LookupPrefix(JsonNamespaceUri);
@@ -1930,7 +1930,7 @@ namespace Newtonsoft.Json.Converters
                                             }
 
                                             // special case $values, it will have a non-primitive value
-                                            if (attributeName == JsonTypeReflector.ArrayValuesPropertyName)
+                                            if (attributeName == JsonTypeReflector.obsolete_ArrayValuesPropertyName)
                                             {
                                                 finished = true;
                                                 break;

@@ -47,6 +47,7 @@ namespace Newtonsoft.Json
         internal const PreserveReferencesHandling DefaultPreserveReferencesHandling = PreserveReferencesHandling.None;
         internal const ConstructorHandling DefaultConstructorHandling = ConstructorHandling.Default;
         internal const TypeNameHandling DefaultTypeNameHandling = TypeNameHandling.None;
+        internal const TypeNameProperties DefaultTypeNameProperties = TypeNameProperties.Default;
         internal const MetadataPropertyHandling DefaultMetadataPropertyHandling = MetadataPropertyHandling.Default;
         internal static readonly StreamingContext DefaultContext;
 
@@ -86,6 +87,7 @@ namespace Newtonsoft.Json
         internal StreamingContext? _context;
         internal ConstructorHandling? _constructorHandling;
         internal TypeNameHandling? _typeNameHandling;
+        internal TypeNameProperties? _typeNameProperties;
         internal MetadataPropertyHandling? _metadataPropertyHandling;
 
         /// <summary>
@@ -174,6 +176,17 @@ namespace Newtonsoft.Json
         {
             get => _typeNameHandling ?? DefaultTypeNameHandling;
             set => _typeNameHandling = value;
+        }
+
+        /// <summary>
+        /// Gets or sets how type name metadata is serialized to json.
+        /// The default value is <see cref="Json.TypeNameProperties.Default"/>
+        /// For compatibility with MongoDB set to <see cref="Json.TypeNameProperties.Mongo"/>
+        /// </summary>
+        public TypeNameProperties TypeNameProperties
+        {
+            get => _typeNameProperties ?? DefaultTypeNameProperties;
+            set => _typeNameProperties = value;
         }
 
         /// <summary>
