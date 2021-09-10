@@ -8076,6 +8076,17 @@ This is just junk, though.";
             Assert.AreEqual(150, depth);
         }
 
+        [Test]
+        public void ShallowCopy_DoesntSetDateFormatStringSet()
+        {
+            var settings = new JsonSerializerSettings();
+
+            var clone = settings.ShallowCopy();
+
+            Assert.AreEqual(false, settings._dateFormatStringSet);
+            Assert.AreEqual(false, clone._dateFormatStringSet);
+        }
+
         private static int GetDepth(JToken o)
         {
             int depth = 1;

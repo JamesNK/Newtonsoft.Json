@@ -31,6 +31,7 @@ using System.Runtime.Serialization.Formatters;
 using Newtonsoft.Json.Serialization;
 using System.Runtime.Serialization;
 using System.Diagnostics;
+using System.Runtime;
 
 namespace Newtonsoft.Json
 {
@@ -451,6 +452,49 @@ namespace Newtonsoft.Json
         public JsonSerializerSettings()
         {
             Converters = new List<JsonConverter>();
+        }
+
+        /// <summary>
+        /// Create a copy of the current <see cref="JsonSerializer"/>.
+        /// </summary>
+        public JsonSerializerSettings ShallowCopy()
+        {
+            var copiedSettings = new JsonSerializerSettings
+            {
+                _floatParseHandling = _floatParseHandling,
+                _floatFormatHandling = _floatFormatHandling,
+                _dateParseHandling = _dateParseHandling,
+                _dateTimeZoneHandling = _dateTimeZoneHandling,
+                _dateFormatHandling = _dateFormatHandling,
+                _formatting = _formatting,
+                _maxDepth = _maxDepth,
+                _maxDepthSet = _maxDepthSet,
+                _dateFormatString = _dateFormatString,
+                _dateFormatStringSet = _dateFormatStringSet,
+                _context = _context,
+                Error = Error,
+                SerializationBinder = SerializationBinder,
+                TraceWriter = TraceWriter,
+                _culture = _culture,
+                ReferenceResolverProvider = ReferenceResolverProvider,
+                EqualityComparer = EqualityComparer,
+                ContractResolver = ContractResolver,
+                _constructorHandling = _constructorHandling,
+                _typeNameAssemblyFormatHandling = _typeNameAssemblyFormatHandling,
+                _metadataPropertyHandling = _metadataPropertyHandling,
+                _typeNameHandling = _typeNameHandling,
+                _preserveReferencesHandling = _preserveReferencesHandling,
+                Converters = Converters,
+                _defaultValueHandling = _defaultValueHandling,
+                _nullValueHandling = _nullValueHandling,
+                _objectCreationHandling = _objectCreationHandling,
+                _missingMemberHandling = _missingMemberHandling,
+                _referenceLoopHandling = _referenceLoopHandling,
+                _checkAdditionalContent = _checkAdditionalContent,
+                _stringEscapeHandling = _stringEscapeHandling,
+            };
+
+            return copiedSettings;
         }
     }
 }
