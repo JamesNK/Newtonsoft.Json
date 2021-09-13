@@ -8081,7 +8081,7 @@ This is just junk, though.";
         {
             var settings = new JsonSerializerSettings();
 
-            var clone = settings.ShallowCopy();
+            var clone = new JsonSerializerSettings(settings);
 
             Assert.AreEqual(false, settings._dateFormatStringSet);
             Assert.AreEqual(false, clone._dateFormatStringSet);
