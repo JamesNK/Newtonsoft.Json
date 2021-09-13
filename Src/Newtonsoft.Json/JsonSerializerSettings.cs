@@ -455,46 +455,41 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Create a copy of the current <see cref="JsonSerializer"/>.
+        /// Create a copy of the passed in <see cref="JsonSerializer"/>.
         /// </summary>
-        public JsonSerializerSettings ShallowCopy()
+        public JsonSerializerSettings(JsonSerializerSettings original)
         {
-            var copiedSettings = new JsonSerializerSettings
-            {
-                _floatParseHandling = _floatParseHandling,
-                _floatFormatHandling = _floatFormatHandling,
-                _dateParseHandling = _dateParseHandling,
-                _dateTimeZoneHandling = _dateTimeZoneHandling,
-                _dateFormatHandling = _dateFormatHandling,
-                _formatting = _formatting,
-                _maxDepth = _maxDepth,
-                _maxDepthSet = _maxDepthSet,
-                _dateFormatString = _dateFormatString,
-                _dateFormatStringSet = _dateFormatStringSet,
-                _context = _context,
-                Error = Error,
-                SerializationBinder = SerializationBinder,
-                TraceWriter = TraceWriter,
-                _culture = _culture,
-                ReferenceResolverProvider = ReferenceResolverProvider,
-                EqualityComparer = EqualityComparer,
-                ContractResolver = ContractResolver,
-                _constructorHandling = _constructorHandling,
-                _typeNameAssemblyFormatHandling = _typeNameAssemblyFormatHandling,
-                _metadataPropertyHandling = _metadataPropertyHandling,
-                _typeNameHandling = _typeNameHandling,
-                _preserveReferencesHandling = _preserveReferencesHandling,
-                Converters = Converters,
-                _defaultValueHandling = _defaultValueHandling,
-                _nullValueHandling = _nullValueHandling,
-                _objectCreationHandling = _objectCreationHandling,
-                _missingMemberHandling = _missingMemberHandling,
-                _referenceLoopHandling = _referenceLoopHandling,
-                _checkAdditionalContent = _checkAdditionalContent,
-                _stringEscapeHandling = _stringEscapeHandling,
-            };
-
-            return copiedSettings;
+            _floatParseHandling = original._floatParseHandling;
+            _floatFormatHandling = original._floatFormatHandling;
+            _dateParseHandling = original._dateParseHandling;
+            _dateTimeZoneHandling = original._dateTimeZoneHandling;
+            _dateFormatHandling = original._dateFormatHandling;
+            _formatting = original._formatting;
+            _maxDepth = original._maxDepth;
+            _maxDepthSet = original._maxDepthSet;
+            _dateFormatString = original._dateFormatString;
+            _dateFormatStringSet = original._dateFormatStringSet;
+            _context = original._context;
+            Error = original.Error;
+            SerializationBinder = original.SerializationBinder;
+            TraceWriter = original.TraceWriter;
+            _culture = original._culture;
+            ReferenceResolverProvider = original.ReferenceResolverProvider;
+            EqualityComparer = original.EqualityComparer;
+            ContractResolver = original.ContractResolver;
+            _constructorHandling = original._constructorHandling;
+            _typeNameAssemblyFormatHandling = original._typeNameAssemblyFormatHandling;
+            _metadataPropertyHandling = original._metadataPropertyHandling;
+            _typeNameHandling = original._typeNameHandling;
+            _preserveReferencesHandling = original._preserveReferencesHandling;
+            Converters = original.Converters;
+            _defaultValueHandling = original._defaultValueHandling;
+            _nullValueHandling = original._nullValueHandling;
+            _objectCreationHandling = original._objectCreationHandling;
+            _missingMemberHandling = original._missingMemberHandling;
+            _referenceLoopHandling = original._referenceLoopHandling;
+            _checkAdditionalContent = original._checkAdditionalContent;
+            _stringEscapeHandling = original._stringEscapeHandling;
         }
     }
 }
