@@ -34,6 +34,7 @@ using System.Text;
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+using TestCase = Xunit.InlineDataAttribute;
 #else
 using NUnit.Framework;
 #endif
@@ -47,8 +48,10 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class JsonTypeReflectorTests : TestFixtureBase
     {
-        [Test]
-        [InlineData(typeof(Version), false)]
+#if DNXCORE50
+        [Theory]
+#endif
+        [TestCase(typeof(Version), false)]
         public void CanTypeDescriptorConvertString(Type type, bool expected)
         {
             var actual = JsonTypeReflector.CanTypeDescriptorConvertString(type, out var _);
