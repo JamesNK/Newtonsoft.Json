@@ -48,7 +48,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class JsonTypeReflectorTests : TestFixtureBase
     {
         [Test]
-        [TestCase(typeof(Version), false)]
+        [InlineData(typeof(Version), false)]
         public void CanTypeDescriptorConvertString(Type type, bool expected)
         {
             var actual = JsonTypeReflector.CanTypeDescriptorConvertString(type, out var _);
