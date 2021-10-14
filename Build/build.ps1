@@ -1,7 +1,7 @@
 ﻿properties {
   $zipFileName = "Json130r3.zip"
   $majorVersion = "13.0"
-  $majorWithReleaseVersion = "13.0.1"
+  $majorWithReleaseVersion = "13.0.2"
   $nugetPrerelease = $null
   $version = GetVersion $majorWithReleaseVersion
   $packageId = "Newtonsoft.Json"
@@ -14,7 +14,7 @@
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $assemblyVersion = if ($assemblyVersion) {$assemblyVersion} else {$majorVersion + '.0.0'}
   $netCliChannel = "Current"
-  $netCliVersion = "5.0.300"
+  $netCliVersion = "6.0.100-rc.2.21505.57"
   $nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
   $ensureNetCliSdk = $true
 
