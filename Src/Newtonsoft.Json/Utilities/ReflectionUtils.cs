@@ -185,36 +185,37 @@ namespace Newtonsoft.Json.Utilities
             StringBuilder builder = new StringBuilder();
 
             // loop through the type name and filter out qualified assembly details from nested type names
-            bool writingAssemblyName = false;
-            bool skippingAssemblyDetails = false;
+            int commaAssemblyName = 0;
+            bool endDimensionArray = false;
             for (int i = 0; i < fullyQualifiedTypeName.Length; i++)
             {
                 char current = fullyQualifiedTypeName[i];
                 switch (current)
                 {
-                    case '[':
                     case ']':
-                        writingAssemblyName = false;
-                        skippingAssemblyDetails = false;
+                        endDimensionArray = true;
                         builder.Append(current);
                         break;
                     case ',':
-                        if (!writingAssemblyName)
+                        if (!endDimensionArray)
                         {
-                            writingAssemblyName = true;
                             builder.Append(current);
                         }
                         else
                         {
-                            skippingAssemblyDetails = true;
-                        }
-                        break;
-                    default:
-                        if (!skippingAssemblyDetails)
-                        {
+                            commaAssemblyName++;
                             builder.Append(current);
                         }
                         break;
+                    default:
+                        builder.Append(current);
+                        break;
+                }
+                
+                if (commaAssemblyName==2)
+                {
+                // exit the loop after extracting the details of the qualified assembly
+                break;
                 }
             }
 
