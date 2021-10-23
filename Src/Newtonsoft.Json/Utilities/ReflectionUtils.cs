@@ -204,7 +204,10 @@ namespace Newtonsoft.Json.Utilities
                         else
                         {
                             commaAssemblyName++;
-                            builder.Append(current);
+                            if (commaAssemblyName < 2)
+                            {                            
+                                builder.Append(current);
+                            {
                         }
                         break;
                     default:
