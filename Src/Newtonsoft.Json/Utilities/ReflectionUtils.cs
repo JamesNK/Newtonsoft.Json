@@ -207,7 +207,7 @@ namespace Newtonsoft.Json.Utilities
                             if (commaAssemblyName < 2)
                             {                            
                                 builder.Append(current);
-                            {
+                            }
                         }
                         break;
                     default:
