@@ -1144,15 +1144,17 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(@"{
   ""FirstName"": ""John"",
-  ""LastName"": ""Doe""
-}""Address"": {
-  ""State"": ""Gujarat"",
-  ""City"": ""Vadodara""
-}""JobProfile"": {
-  ""CompanyName"": ""Microsoft"",
-  ""Location"": ""India"",
-  ""ZipCode"": ""12345"",
-  ""Mob"": ""8888888888""
+  ""LastName"": ""Doe"",
+  ""Address"": {
+    ""State"": ""Gujarat"",
+    ""City"": ""Vadodara""
+  },
+  ""JobProfile"": {
+    ""CompanyName"": ""Microsoft"",
+    ""Location"": ""India"",
+    ""ZipCode"": ""12345"",
+    ""Mob"": ""8888888888""
+  }
 }", json);
         }
     }
