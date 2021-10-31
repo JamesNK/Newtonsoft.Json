@@ -531,18 +531,19 @@ namespace Newtonsoft.Json.Serialization
                         }
                     }
                 }
-
-                writer.WriteEndObject();
-
-                _serializeStack.RemoveAt(_serializeStack.Count - 1);
-
-                OnSerialized(writer, contract, value);
             }
 
             if (!isExtensionDataProcessed) // When order doesn't matter extention data display at last as it is.
             {
                 setExtentionData();
             }
+
+            writer.WriteEndObject();
+
+            _serializeStack.RemoveAt(_serializeStack.Count - 1);
+
+            OnSerialized(writer, contract, value);
+
         }
         private bool CalculatePropertyValues(JsonWriter writer, object value, JsonContainerContract contract, JsonProperty? member, JsonProperty property, [NotNullWhen(true)]out JsonContract? memberContract, out object? memberValue)
         {
