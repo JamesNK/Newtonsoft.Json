@@ -18,8 +18,9 @@
     <Title>Json.NET</Title>
     <PackageId>Newtonsoft.Json</PackageId>
     <PackageTags>json</PackageTags>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
     <PackageIcon>packageIcon.png</PackageIcon>
-    <PackageIconFullPath>$(MSBuildThisFileDirectory)packageIcon.png</PackageIconFullPath>
+    <PackageIconUrl>https://www.newtonsoft.com/content/images/nugeticon.png</PackageIconUrl>
     <PackageProjectUrl>https://www.newtonsoft.com/json</PackageProjectUrl>
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <PublishRepositoryUrl>true</PublishRepositoryUrl> 
@@ -36,7 +37,8 @@
   <ItemGroup>
     <None Remove="**\*.orig" />
     <None Include="..\..\LICENSE.md" Pack="true" PackagePath="LICENSE.md" />
-    <None Include="$(PackageIconFullPath)" Pack="true" PackagePath="\"/>
+    <None Include="packageIcon.png" Pack="true" PackagePath="\" />
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="$(MicrosoftCodeAnalysisNetAnalyzersPackageVersion)" PrivateAssets="All" />
