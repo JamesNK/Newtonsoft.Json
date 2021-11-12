@@ -15,6 +15,11 @@ steps:
     version: '3.0.x'
     packageType: runtime
 
+- task: UseDotNet@2
+  inputs:
+    version: '5.0.x'
+    packageType: runtime
+
 - powershell: |
     dotnet --info
   displayName: 'Dotnet installs'
