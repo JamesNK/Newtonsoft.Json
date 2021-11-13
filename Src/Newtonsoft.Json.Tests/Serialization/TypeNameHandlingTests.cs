@@ -62,6 +62,125 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class TypeNameHandlingTests : TestFixtureBase
     {
+        [Test]
+        public void SerializeMultidimensionalByteArrayWithTypeName()
+        {
+            string array2dRef = ReflectionUtils.GetTypeName(typeof(byte[,]), TypeNameAssemblyFormatHandling.Simple, null);
+            string array3dRef = ReflectionUtils.GetTypeName(typeof(byte[,,]), TypeNameAssemblyFormatHandling.Simple, null);
+
+            HasMultidimensionalByteArray o = new HasMultidimensionalByteArray
+            {
+                Array2D = new byte[,] { { 1, 2 }, { 2, 4 }, { 3, 6 } },
+                Array3D = new byte[,,] { { { 1, 2, 3}, { 4, 5, 6 } } }
+            };
+
+            string json = JsonConvert.SerializeObject(o, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+                Formatting = Formatting.Indented
+            });
+
+            string expectedJson = @"{
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.HasMultidimensionalByteArray, Newtonsoft.Json.Tests"",
+  ""Array2D"": {
+    ""$type"": """ + array2dRef + @""",
+    ""$values"": [
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        3,
+        6
+      ]
+    ]
+  },
+  ""Array3D"": {
+    ""$type"": """ + array3dRef + @""",
+    ""$values"": [
+      [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ]
+      ]
+    ]
+  }
+}";
+
+            StringAssert.AreEqual(expectedJson, json);
+        }
+
+
+        [Test]
+        public void DeserializeMultidimensionalByteArrayWithTypeName()
+        {
+            string json = @"{
+  ""$type"": ""Newtonsoft.Json.Tests.TestObjects.HasMultidimensionalByteArray, Newtonsoft.Json.Tests"",
+  ""Array2D"": {
+    ""$type"": ""System.Byte[,], mscorlib"",
+    ""$values"": [
+      [
+        1,
+        2
+      ],
+      [
+        2,
+        4
+      ],
+      [
+        3,
+        6
+      ]
+    ]
+  },
+  ""Array3D"": {
+    ""$type"": ""System.Byte[,,], mscorlib"",
+    ""$values"": [
+      [
+        [
+          1,
+          2,
+          3
+        ],
+        [
+          4,
+          5,
+          6
+        ]
+      ]
+    ]
+  }
+}";
+            HasMultidimensionalByteArray value = JsonConvert.DeserializeObject<HasMultidimensionalByteArray>(json, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
+
+            Assert.AreEqual(1, value.Array2D[0, 0]);
+            Assert.AreEqual(2, value.Array2D[0, 1]);
+            Assert.AreEqual(2, value.Array2D[1, 0]);
+            Assert.AreEqual(4, value.Array2D[1, 1]);
+            Assert.AreEqual(3, value.Array2D[2, 0]);
+            Assert.AreEqual(6, value.Array2D[2, 1]);
+
+            Assert.AreEqual(1, value.Array3D[0, 0, 0]);
+            Assert.AreEqual(2, value.Array3D[0, 0, 1]);
+            Assert.AreEqual(3, value.Array3D[0, 0, 2]);
+            Assert.AreEqual(4, value.Array3D[0, 1, 0]);
+            Assert.AreEqual(5, value.Array3D[0, 1, 1]);
+            Assert.AreEqual(6, value.Array3D[0, 1, 2]);
+        }
 
         [Test]
         public void DeserializeByteArrayWithTypeName()

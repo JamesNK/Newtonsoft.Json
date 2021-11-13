@@ -29,4 +29,10 @@ namespace Newtonsoft.Json.Tests.TestObjects
     {
         public byte[] EncryptedPassword { get; set; }
     }
+
+    internal class HasMultidimensionalByteArray
+    {
+        public byte[,] Array2D { get; set; }
+        public byte[,,] Array3D { get; set; }
+    }
 }
