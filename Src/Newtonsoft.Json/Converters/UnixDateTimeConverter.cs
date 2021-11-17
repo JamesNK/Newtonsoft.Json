@@ -39,6 +39,20 @@ namespace Newtonsoft.Json.Converters
         private bool _allowPreEpoch;
 
         /// <summary>
+        /// Gets or sets the default value of the <see cref="AllowPreEpoch"/>
+        /// property for new instances of the <see cref="UnixDateTimeConverter"/>
+        /// class.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> to allow converting dates before Unix epoch to and from
+        /// JSON;
+        /// <c>false</c> to throw an exception when a date being converted to or
+        /// from JSON occurred before Unix epoch.
+        /// The default is <c>false</c>.
+        /// </value>
+        public static bool DefaultAllowPreEpoch { get; set; } = false;
+
+        /// <summary>
         /// Gets or sets a value indicating whether the dates before Unix epoch
         /// should converted to and from JSON.
         /// </summary>
@@ -59,7 +73,7 @@ namespace Newtonsoft.Json.Converters
         /// Initializes a new instance of the <see cref="UnixDateTimeConverter"/> class.
         /// </summary>
         public UnixDateTimeConverter()
-            : this(false)
+            : this(DefaultAllowPreEpoch)
         {
 
         }
