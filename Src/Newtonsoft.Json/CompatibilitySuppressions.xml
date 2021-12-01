@@ -96,9 +96,9 @@
   </Suppression>
   <!--Interface member got added in netstandard2.0-->
   <Suppression>
-  <DiagnosticId>CP0006</DiagnosticId>
-  <Target>M:Newtonsoft.Json.Serialization.ITraceWriter.Trace(System.Diagnostics.TraceLevel,System.String,System.Exception)</Target>
-  <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-  <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
+    <DiagnosticId>CP0006</DiagnosticId>
+    <Target>M:Newtonsoft.Json.Serialization.ITraceWriter.Trace(System.Diagnostics.TraceLevel,System.String,System.Exception)</Target>
+    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
+    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
   </Suppression>
 </Suppressions>
