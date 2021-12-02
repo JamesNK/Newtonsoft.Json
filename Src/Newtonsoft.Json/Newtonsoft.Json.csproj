@@ -39,7 +39,7 @@
     <!--CP0003 will be logged when the assembly identity between baseline package and current don't match.
     Disable that warning since local builds do not strong-name sign the assembly, causing a mistmatch when comparing
     the previously shipped assemblies and current.-->
-    <NoWarn>$(NoWarn);CP0003</NoWarn>
+    <NoWarn Condition="'$(SignAssembly)' != 'true'">$(NoWarn);CP0003</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.orig" />
