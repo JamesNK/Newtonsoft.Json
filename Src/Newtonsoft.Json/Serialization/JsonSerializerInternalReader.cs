@@ -2531,7 +2531,7 @@ namespace Newtonsoft.Json.Serialization
             }
             else
             {
-                value = CreateValueInternal(reader, null, null, null, contract, member, null);
+                value = CreateValueInternal(reader, contract.ExtensionDataValueType, GetContractSafe(contract.ExtensionDataValueType), null, contract, member, null);
             }
             return value;
         }

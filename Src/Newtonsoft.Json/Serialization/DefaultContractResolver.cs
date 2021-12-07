@@ -474,15 +474,14 @@ namespace Newtonsoft.Json.Serialization
                 if (ReflectionUtils.ImplementsGenericDefinition(t, typeof(IDictionary<,>), out Type? dictionaryType))
                 {
                     Type keyType = dictionaryType.GetGenericArguments()[0];
-                    Type valueType = dictionaryType.GetGenericArguments()[1];
 
-                    if (keyType.IsAssignableFrom(typeof(string)) && valueType.IsAssignableFrom(typeof(JToken)))
+                    if (keyType.IsAssignableFrom(typeof(string)))
                     {
                         return true;
                     }
                 }
 
-                throw new JsonException("Invalid extension data attribute on '{0}'. Member '{1}' type must implement IDictionary<string, JToken>.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(m.DeclaringType), m.Name));
+                throw new JsonException("Invalid extension data attribute on '{0}'. Member '{1}' type must implement IDictionary<string,>.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(m.DeclaringType), m.Name));
             });
 
             return extensionDataMember;
