@@ -7973,7 +7973,7 @@ This is just junk, though.";
         {
             ExceptionAssert.Throws<JsonReaderException>(
                 () => JsonConvert.DeserializeObject<EmptyJsonValueTestClass>("{ A: \"\", B: 1, C: , D: 1.23, E: 3.45, F: null }"),
-                "An undefined token is not a valid System.Nullable`1[System.Int64]. Path 'C', line 1, position 18.");
+                "Unexpected character encountered while parsing value: ,. Path 'C', line 1, position 19.");
         }
 
         [Test]
