@@ -107,8 +107,12 @@ namespace Newtonsoft.Json.Utilities
 
         public string ToString(int start, int length)
         {
-            // TODO: validation
-            return new string(_buffer, start, length);
+            //Validate if start and length are not negative and less than buffer length
+            if(start >= 0 && length >= 0 && (start + length) < _buffer!.Length)
+            {
+                return new string(_buffer, start, length);
+            }
+            return ToString();
         }
 
         public char[]? InternalBuffer => _buffer;
