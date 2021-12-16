@@ -7059,7 +7059,7 @@ This is just junk, though.";
 
             Assert.AreEqual(BigInteger.Parse("999999999999999999999999999999999999999999999999"), l[0]);
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<IList<long>>(json), "Error converting value 999999999999999999999999999999999999999999999999 to type 'System.Int64'. Path '[0]', line 1, position 49.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<IList<long>>(json), "JSON integer 999999999999999999999999999999999999999999999999 is too large or small for an Int64. Path '[0]', line 1, position 49.");
         }
 #endif
 
