@@ -2095,6 +2095,40 @@ Parameter name: arrayIndex",
                 "Additional text encountered after finished reading JSON content: [. Path '', line 3, position 0.");
         }
 
+        [Test]
+        public void TryParse_NoComments()
+        {
+            string json = "{'prop':[1,2/*comment*/,3]}";
+
+            bool wasSuccess = JObject.TryParse(
+                json, 
+                new JsonLoadSettings
+                {
+                    CommentHandling = CommentHandling.Ignore
+                }, 
+                out JObject o
+            );
+
+            Assert.IsTrue(wasSuccess);
+            Assert.AreEqual(3, o["prop"].Count());
+            Assert.AreEqual(1, (int)o["prop"][0]);
+            Assert.AreEqual(2, (int)o["prop"][1]);
+            Assert.AreEqual(3, (int)o["prop"][2]);
+        }
+
+        [Test]
+        public void TryParse_ExcessiveContent()
+        {
+            string json = @"{'prop':[1,2,3]}/*comment*/
+//Another comment.
+[]";
+
+            bool wasSuccess = JObject.TryParse(json, out JObject o);
+            
+            Assert.IsFalse(wasSuccess);
+            Assert.IsNull(o);
+        }
+
 #if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0
         [Test]
         public void GetPropertyOwner_ReturnsJObject()

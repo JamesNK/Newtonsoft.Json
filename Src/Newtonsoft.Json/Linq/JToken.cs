@@ -2180,6 +2180,40 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="jToken"></param>
+        /// <returns></returns>
+        public static bool TryParse(string json, out JToken? jToken)
+        {
+            return TryParse(json, null, out jToken);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="json"></param>
+        /// <param name="settings"></param>
+        /// <param name="jToken"></param>
+        /// <returns></returns>
+        public static bool TryParse(string json, JsonLoadSettings? settings, out JToken? jToken)
+        {
+            bool wasSuccess = true;
+
+            try
+            {
+                jToken = Parse(json, settings);
+            } catch
+            {
+                jToken = null;
+                wasSuccess = false;
+            }
+
+            return wasSuccess;
+        }
+
+        /// <summary>
         /// Load a <see cref="JToken"/> from a string that contains JSON.
         /// </summary>
         /// <param name="json">A <see cref="String"/> that contains JSON.</param>

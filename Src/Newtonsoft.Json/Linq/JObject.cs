@@ -432,6 +432,42 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
+        /// Tries to load a <see cref="JObject"/> from a string that contains JSON.
+        /// </summary>
+        /// <param name="json">A <see cref="String"/> that contains JSON.</param>
+        /// <param name="jObject">A <see cref="JObject"/> populated from the string that contains JSON.</param>
+        /// <returns>False if the method could load <see cref="JObject"/> without any exception</returns>
+        public static bool TryParse(string json, out JObject? jObject)
+        {
+            return TryParse(json, null, out jObject);
+        }
+
+        /// <summary>
+        /// Tries to load a <see cref="JObject"/> from a string that contains JSON.
+        /// </summary>
+        /// <param name="json">A <see cref="String"/> that contains JSON.</param>
+        /// <param name="settings">The <see cref="JsonLoadSettings"/> used to load the JSON.
+        /// If this is <c>null</c>, default load settings will be used.</param>
+        /// <param name="jObject">A <see cref="JObject"/> populated from the string that contains JSON.</param>
+        /// <returns>False if the method could load <see cref="JObject"/> without any exception</returns>
+        public static bool TryParse(string json, JsonLoadSettings? settings, out JObject? jObject)
+        {
+            bool wasSuccess = true;
+
+            try
+            {
+                jObject = Parse(json, settings);
+            }
+            catch
+            {
+                jObject = null;
+                wasSuccess = false;
+            }
+
+            return wasSuccess;
+        }
+
+        /// <summary>
         /// Load a <see cref="JObject"/> from a string that contains JSON.
         /// </summary>
         /// <param name="json">A <see cref="String"/> that contains JSON.</param>
