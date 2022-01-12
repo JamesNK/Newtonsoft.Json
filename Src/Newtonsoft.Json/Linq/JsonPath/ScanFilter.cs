@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class ScanFilter : PathFilter
+    public class ScanFilter : PathFilter
     {
-        internal string? Name;
+        public string? Name { get; set; }
 
         public ScanFilter(string? name)
         {

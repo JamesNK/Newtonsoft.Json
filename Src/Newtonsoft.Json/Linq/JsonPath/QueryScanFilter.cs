@@ -3,9 +3,9 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class QueryScanFilter : PathFilter
+    public class QueryScanFilter : PathFilter
     {
-        internal QueryExpression Expression;
+        public QueryExpression Expression { get; set; }
 
         public QueryScanFilter(QueryExpression expression)
         {
