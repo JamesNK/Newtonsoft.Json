@@ -99,7 +99,12 @@ namespace Newtonsoft.Json.Tests.Issues
             Test(1, true);
             Test(2, true);
             Test(3, true);
-            Test(4, false);
+            Test(4, true);
+            Test(5, true);
+            Test(6, true);
+            Test(7, true);
+            Test(8, true);
+            Test(9, false);
 
             void Test(long value, bool expectSame)
             {
