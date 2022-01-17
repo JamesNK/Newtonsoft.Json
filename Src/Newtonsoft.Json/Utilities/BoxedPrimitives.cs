@@ -23,60 +23,99 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-
 namespace Newtonsoft.Json.Utilities
 {
     internal static class BoxedPrimitives
     {
         internal static object Get(bool value) => value ? BooleanTrue : BooleanFalse;
-        internal static readonly object BooleanTrue = true, BooleanFalse = false;
 
-        internal static object Get(int value)
-        {
-            switch (value)
-            {
-                case -1:
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                    return Int32Small[value + 1];
-                default:
-                    return value;
-            }
-        }
-        private static readonly object[] Int32Small = new object[] { -1, 0, 1, 2, 3 };
+        internal static readonly object BooleanTrue = true;
+        internal static readonly object BooleanFalse = false;
 
-        internal static object Get(long value)
+        internal static object Get(int value) => value switch
         {
-            switch (value)
-            {
-                case -1:
-                case 0:
-                case 1:
-                case 2:
-                case 3:
-                    return Int64Small[(int)value + 1];
-                default:
-                    return value;
-            }
-        }
-        private static readonly object[] Int64Small = new object[] { -1L, 0L, 1L, 2L, 3L };
+            -1 => Int32_M1,
+            0 => Int32_0,
+            1 => Int32_1,
+            2 => Int32_2,
+            3 => Int32_3,
+            4 => Int32_4,
+            5 => Int32_5,
+            6 => Int32_6,
+            7 => Int32_7,
+            8 => Int32_8,
+            _ => value,
+        };
+
+        // integers tend to be weighted towards a handful of low numbers; we could argue
+        // for days over the "correct" range to have special handling, but I'm arbitrarily
+        // mirroring the same decision as the IL opcodes, which has M1 thru 8
+        internal static readonly object Int32_M1 = -1;
+        internal static readonly object Int32_0 = 0;
+        internal static readonly object Int32_1 = 1;
+        internal static readonly object Int32_2 = 2;
+        internal static readonly object Int32_3 = 3;
+        internal static readonly object Int32_4 = 4;
+        internal static readonly object Int32_5 = 5;
+        internal static readonly object Int32_6 = 6;
+        internal static readonly object Int32_7 = 7;
+        internal static readonly object Int32_8 = 8;
+
+        internal static object Get(long value) => value switch
+        {
+            -1 => Int64_M1,
+            0 => Int64_0,
+            1 => Int64_1,
+            2 => Int64_2,
+            3 => Int64_3,
+            4 => Int64_4,
+            5 => Int64_5,
+            6 => Int64_6,
+            7 => Int64_7,
+            8 => Int64_8,
+            _ => value,
+        };
+
+        internal static readonly object Int64_M1 = -1L;
+        internal static readonly object Int64_0 = 0L;
+        internal static readonly object Int64_1 = 1L;
+        internal static readonly object Int64_2 = 2L;
+        internal static readonly object Int64_3 = 3L;
+        internal static readonly object Int64_4 = 4L;
+        internal static readonly object Int64_5 = 5L;
+        internal static readonly object Int64_6 = 6L;
+        internal static readonly object Int64_7 = 7L;
+        internal static readonly object Int64_8 = 8L;
 
         internal static object Get(decimal value) => value == decimal.Zero ? DecimalZero : value;
+
         private static readonly object DecimalZero = decimal.Zero;
 
         internal static object Get(double value)
         {
-            if (value == 0.0d) return DoubleZero;
-            if (double.IsInfinity(value)) return double.IsPositiveInfinity(value) ? DoublePositiveInfinity : DoubleNegativeInfinity;
-            if (double.IsNaN(value)) return DoubleNaN;
+            if (value == 0.0d)
+            {
+                return DoubleZero;
+            }
+            if (double.IsInfinity(value))
+            {
+                return double.IsPositiveInfinity(value) ? DoublePositiveInfinity : DoubleNegativeInfinity;
+            }
+            if (double.IsNaN(value))
+            {
+                return DoubleNaN;
+            }
             return value;
         }
-        internal static readonly object DoubleNaN = double.NaN, DoublePositiveInfinity = double.PositiveInfinity, DoubleNegativeInfinity = double.NegativeInfinity, DoubleZero = (double)0;
+
+        internal static readonly object DoubleNaN = double.NaN;
+        internal static readonly object DoublePositiveInfinity = double.PositiveInfinity;
+        internal static readonly object DoubleNegativeInfinity = double.NegativeInfinity;
+        internal static readonly object DoubleZero = (double)0;
 
 #if HAVE_BIG_INTEGER
         internal static object Get(System.Numerics.BigInteger value) => value == System.Numerics.BigInteger.Zero ? BigIntegerZero : value;
+
         private static readonly object BigIntegerZero = System.Numerics.BigInteger.Zero;
 #endif
     }
