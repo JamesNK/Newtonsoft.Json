@@ -8,7 +8,6 @@
     <ItemGroup Condition=" '$(GenerateAsyncInternals)' == 'true' ">
       <Compile Remove="@(GenerateAsyncInternals)" />
     </ItemGroup>
-    <Message Condition=" '$(GenerateAsyncInternals)' == 'true' " Importance="high" Text="CollectAsyncInternals" />
   </Target>
   <Target Name="GenerateAsyncInternals" BeforeTargets="CoreCompile" DependsOnTargets="CollectAsyncInternals" Condition=" '$(GenerateAsyncInternals)' == '' " Outputs="%(GenerateAsyncInternals.Identity)">
     <MSBuild Projects="$(MSBuildProjectFullPath)" Properties="GenerateAsyncInternals=true;TargetFramework=netstandard2.0" />
