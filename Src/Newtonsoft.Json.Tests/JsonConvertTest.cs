@@ -36,6 +36,7 @@ using System.Numerics;
 using System.Runtime.Serialization;
 using System.Text;
 #if !(NET20 || NET35)
+using System.Threading;
 using System.Threading.Tasks;
 #endif
 using System.Xml;
@@ -57,6 +58,10 @@ using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests
 {
+#if !HAVE_ASYNC
+    using JsonAsyncConverter = JsonConverter;
+#endif
+
     [TestFixture]
     public class JsonConvertTest : TestFixtureBase
     {
@@ -165,12 +170,19 @@ namespace Newtonsoft.Json.Tests
             public string Value { get; set; }
         }
 
-        public class NameTableTestClassConverter : JsonConverter
+        public class NameTableTestClassConverter : JsonAsyncConverter
         {
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
                 throw new NotImplementedException();
             }
+
+#if HAVE_ASYNC
+            public override Task WriteJsonAsync (JsonWriter writer, object value, JsonSerializer serializer, CancellationToken cancellationToken)
+            {
+                throw new NotImplementedException();
+            }
+#endif
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
@@ -191,6 +203,29 @@ namespace Newtonsoft.Json.Tests
 
                 return o;
             }
+
+#if HAVE_ASYNC
+            public override async Task<object> ReadJsonAsync
+                (JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer, CancellationToken cancellationToken)
+            {
+                await reader.ReadAsync(cancellationToken).ConfigureAwait(false);
+                await reader.ReadAsync(cancellationToken).ConfigureAwait(false);
+
+                JsonTextReader jsonTextReader = (JsonTextReader)reader;
+                Assert.IsNotNull(jsonTextReader.PropertyNameTable);
+
+                string s = await serializer.DeserializeAsync<string>(reader, cancellationToken).ConfigureAwait(false);
+                Assert.AreEqual("hi", s);
+                Assert.IsNotNull(jsonTextReader.PropertyNameTable);
+
+                NameTableTestClass o = new NameTableTestClass
+                {
+                    Value = s
+                };
+
+                return o;
+            }
+#endif
 
             public override bool CanConvert(Type objectType)
             {
@@ -431,13 +466,21 @@ namespace Newtonsoft.Json.Tests
             }
         }
 
-        public class IntConverter : JsonConverter
+        public class IntConverter : JsonAsyncConverter
         {
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
                 int i = (int)value;
                 writer.WriteValue(i * 2);
             }
+
+#if HAVE_ASYNC
+            public override Task WriteJsonAsync (JsonWriter writer, object value, JsonSerializer serializer, CancellationToken cancellationToken)
+            {
+                int i = (int)value;
+                return writer.WriteValueAsync(i * 2, cancellationToken);
+            }
+#endif
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
@@ -1218,7 +1261,7 @@ namespace Newtonsoft.Json.Tests
             public string Four { get; set; }
         }
 
-        public class ClobberingJsonConverter : JsonConverter
+        public class ClobberingJsonConverter : JsonAsyncConverter
         {
             public string ClobberValueString { get; private set; }
 
@@ -1239,6 +1282,13 @@ namespace Newtonsoft.Json.Tests
             {
                 writer.WriteValue(ClobberValueString + "-" + ClobberValueInt.ToString() + "-" + value.ToString());
             }
+
+#if HAVE_ASYNC
+            public override Task WriteJsonAsync (JsonWriter writer, object value, JsonSerializer serializer, CancellationToken cancellationToken)
+            {
+                return writer.WriteValueAsync(ClobberValueString + "-" + ClobberValueInt.ToString() + "-" + value.ToString(), cancellationToken);
+            }
+#endif
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
@@ -1269,8 +1319,7 @@ namespace Newtonsoft.Json.Tests
             public string One { get; set; }
         }
 
-        
-        public class OverloadsJsonConverterer : JsonConverter
+        public class OverloadsJsonConverterer : JsonAsyncConverter
         {
             private readonly string _type;
             
@@ -1341,7 +1390,14 @@ namespace Newtonsoft.Json.Tests
             {
                 writer.WriteValue(_type);
             }
-            
+
+#if HAVE_ASYNC
+            public override Task WriteJsonAsync (JsonWriter writer, object value, JsonSerializer serializer, CancellationToken cancellationToken)
+            {
+                return writer.WriteValueAsync(_type, cancellationToken);
+            }
+#endif
+
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
                 throw new NotImplementedException();
@@ -1601,7 +1657,7 @@ namespace Newtonsoft.Json.Tests
             public double Gain { get; set; }
         }
 
-        public class RoundingJsonConverter : JsonConverter
+        public class RoundingJsonConverter : JsonAsyncConverter
         {
             int _precision;
             MidpointRounding _rounding;
@@ -1641,6 +1697,13 @@ namespace Newtonsoft.Json.Tests
             {
                 writer.WriteValue(Math.Round((double)value, _precision, _rounding));
             }
+
+#if HAVE_ASYNC
+            public override Task WriteJsonAsync(JsonWriter writer, object value, JsonSerializer serializer, CancellationToken cancellationToken)
+            {
+                return writer.WriteValueAsync(Math.Round((double)value, _precision, _rounding), cancellationToken);
+            }
+#endif
         }
 
         [Test]
@@ -1765,7 +1828,7 @@ namespace Newtonsoft.Json.Tests
         [JsonConverter(typeof(Converter))]
         public sealed class EnumerableWithConverter : IEnumerable<int>
         {
-            public sealed class Converter : JsonConverter
+            public sealed class Converter : JsonAsyncConverter
             {
                 public override bool CanConvert(Type objectType)
                     => objectType == typeof(Foo);
@@ -1783,6 +1846,22 @@ namespace Newtonsoft.Json.Tests
                     writer.WriteStartObject();
                     writer.WriteEndObject();
                 }
+
+#if HAVE_ASYNC
+                public override async Task<object> ReadJsonAsync
+                    (JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer, CancellationToken cancellationToken)
+                {
+                    await reader.SkipAsync(cancellationToken).ConfigureAwait(false);
+                    return new EnumerableWithConverter();
+                }
+
+                public override async Task WriteJsonAsync
+                    (JsonWriter writer, object value, JsonSerializer serializer, CancellationToken cancellationToken)
+                {
+                    await writer.WriteStartObjectAsync(cancellationToken).ConfigureAwait(false);
+                    await writer.WriteEndObjectAsync(cancellationToken).ConfigureAwait(false);
+                }
+#endif
             }
 
             public IEnumerator<int> GetEnumerator()

@@ -44,7 +44,7 @@ namespace Newtonsoft.Json
     /// Serializes and deserializes objects into and from the JSON format.
     /// The <see cref="JsonSerializer"/> enables you to control how objects are encoded into JSON.
     /// </summary>
-    public class JsonSerializer
+    public partial class JsonSerializer
     {
         internal TypeNameHandling _typeNameHandling;
         internal TypeNameAssemblyFormatHandling _typeNameAssemblyFormatHandling;
@@ -823,7 +823,11 @@ namespace Newtonsoft.Json
                 : null;
 
             JsonSerializerInternalReader serializerReader = new JsonSerializerInternalReader(this);
+#if HAVE_ASYNC && TEST_ASYNC_AS_SYNC
+            serializerReader.PopulateAsync(new JsonNoSyncReader(traceJsonReader ?? reader), target, default).GetAwaiter().GetResult();
+#else
             serializerReader.Populate(traceJsonReader ?? reader, target);
+#endif
 
             if (traceJsonReader != null)
             {
@@ -901,7 +905,11 @@ namespace Newtonsoft.Json
                 : null;
 
             JsonSerializerInternalReader serializerReader = new JsonSerializerInternalReader(this);
+#if HAVE_ASYNC && TEST_ASYNC_AS_SYNC
+            object? value = serializerReader.DeserializeAsync(new JsonNoSyncReader(traceJsonReader ?? reader), objectType, CheckAdditionalContent, default).GetAwaiter().GetResult();
+#else
             object? value = serializerReader.Deserialize(traceJsonReader ?? reader, objectType, CheckAdditionalContent);
+#endif
 
             if (traceJsonReader != null)
             {
@@ -1102,7 +1110,11 @@ namespace Newtonsoft.Json
                 : null;
 
             JsonSerializerInternalWriter serializerWriter = new JsonSerializerInternalWriter(this);
+#if HAVE_ASYNC && TEST_ASYNC_AS_SYNC
+            serializerWriter.SerializeAsync(new JsonNoSyncWriter(traceJsonWriter ?? jsonWriter), value, objectType, default).GetAwaiter().GetResult();
+#else
             serializerWriter.Serialize(traceJsonWriter ?? jsonWriter, value, objectType);
+#endif
 
             if (traceJsonWriter != null)
             {

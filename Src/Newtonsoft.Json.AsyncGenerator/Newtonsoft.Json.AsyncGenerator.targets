@@ -1,0 +1,23 @@
+<Project>
+  <Target Name="CollectAsyncInternals" BeforeTargets="CoreCompile">
+    <ItemGroup>
+      <GenerateAsyncInternals Include="@(Compile)" Condition=" '%(Compile.GenerateAsyncInternals)' == 'true' ">
+        <SourceFile>$(CompilerGeneratedFilesOutputPath)\Newtonsoft.Json.AsyncGenerator\Newtonsoft.Json.AsyncGenerator.AsyncGenerator\%(Filename)%(Extension)</SourceFile>
+      </GenerateAsyncInternals>
+    </ItemGroup>
+    <ItemGroup Condition=" '$(GenerateAsyncInternals)' == 'true' ">
+      <Compile Remove="@(GenerateAsyncInternals)" />
+    </ItemGroup>
+    <Message Condition=" '$(GenerateAsyncInternals)' == 'true' " Importance="high" Text="CollectAsyncInternals" />
+  </Target>
+  <Target Name="GenerateAsyncInternals" BeforeTargets="CoreCompile" DependsOnTargets="CollectAsyncInternals" Condition=" '$(GenerateAsyncInternals)' == '' " Outputs="%(GenerateAsyncInternals.Identity)">
+    <MSBuild Projects="$(MSBuildProjectFullPath)" Properties="GenerateAsyncInternals=true;TargetFramework=netstandard2.0" />
+    <GetFileHash Files="%(GenerateAsyncInternals.Identity)">
+      <Output TaskParameter="Hash" PropertyName="_OldHash" />
+    </GetFileHash>
+    <GetFileHash Files="%(GenerateAsyncInternals.SourceFile)">
+      <Output TaskParameter="Hash" PropertyName="_NewHash" />
+    </GetFileHash>
+    <Copy Condition=" '$(_OldHash)' != '$(_NewHash)' " SourceFiles="%(GenerateAsyncInternals.SourceFile)" DestinationFiles="%(Identity)" />
+  </Target>
+</Project>

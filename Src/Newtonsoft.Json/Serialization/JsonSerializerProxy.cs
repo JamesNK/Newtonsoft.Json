@@ -29,6 +29,10 @@ using System.Globalization;
 using System.Runtime.Serialization.Formatters;
 using Newtonsoft.Json.Utilities;
 using System.Runtime.Serialization;
+#if HAVE_ASYNC
+using System.Threading;
+using System.Threading.Tasks;
+#endif
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -285,5 +289,43 @@ namespace Newtonsoft.Json.Serialization
                 _serializer.Serialize(jsonWriter, value);
             }
         }
+
+#if HAVE_ASYNC
+        internal override Task<object?> DeserializeInternalAsync(JsonReader reader, Type? objectType, CancellationToken cancellationToken)
+        {
+            if (_serializerReader != null)
+            {
+                return _serializerReader.DeserializeAsync(reader, objectType, false, cancellationToken);
+            }
+            else
+            {
+                return _serializer.DeserializeAsync(reader, objectType, cancellationToken);
+            }
+        }
+
+        internal override Task PopulateInternalAsync(JsonReader reader, object target, CancellationToken cancellationToken)
+        {
+            if (_serializerReader != null)
+            {
+                return _serializerReader.PopulateAsync(reader, target, cancellationToken);
+            }
+            else
+            {
+                return _serializer.PopulateAsync(reader, target, cancellationToken);
+            }
+        }
+
+        internal override Task SerializeInternalAsync(JsonWriter jsonWriter, object? value, Type? rootType, CancellationToken cancellationToken)
+        {
+            if (_serializerWriter != null)
+            {
+                return _serializerWriter.SerializeAsync(jsonWriter, value, rootType, cancellationToken);
+            }
+            else
+            {
+                return _serializer.SerializeAsync(jsonWriter, value, cancellationToken);
+            }
+        }
+#endif
     }
 }
