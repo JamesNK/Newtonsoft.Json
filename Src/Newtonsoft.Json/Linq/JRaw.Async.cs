@@ -46,7 +46,7 @@ namespace Newtonsoft.Json.Linq
             using (StringWriter sw = new StringWriter(CultureInfo.InvariantCulture))
             using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
             {
-                await jsonWriter.WriteTokenSyncReadingAsync(reader, cancellationToken).ConfigureAwait(false);
+                await jsonWriter.WriteTokenInternalSyncReadingAsync(reader, true, cancellationToken).ConfigureAwait(false);
 
                 return new JRaw(sw.ToString());
             }

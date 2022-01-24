@@ -467,13 +467,10 @@ namespace Newtonsoft.Json.Serialization
                 JsonProperty property = contract.Properties[index];
                 try
                 {
-                    if (!CalculatePropertyValues(writer, value, contract, member, property, out JsonContract? memberContract, out object? memberValue))
+                    if (!TryWritePropertyValues(writer, value, contract, member, property))
                     {
                         continue;
                     }
-
-                    property.WritePropertyName(writer);
-                    SerializeValue(writer, memberValue, memberContract, property, contract, member);
                 }
                 catch (Exception ex)
                 {
@@ -528,8 +525,11 @@ namespace Newtonsoft.Json.Serialization
             OnSerialized(writer, contract, value);
         }
 
-        private bool CalculatePropertyValues(JsonWriter writer, object value, JsonContainerContract contract, JsonProperty? member, JsonProperty property, [NotNullWhen(true)]out JsonContract? memberContract, out object? memberValue)
+        private bool TryWritePropertyValues(JsonWriter writer, object value, JsonContainerContract contract, JsonProperty? member, JsonProperty property)
         {
+            JsonContract? memberContract;
+            object? memberValue;
+
             if (!property.Ignored && property.Readable && ShouldSerialize(writer, property, value) && IsSpecified(writer, property, value))
             {
                 if (property.PropertyContract == null)
@@ -568,14 +568,12 @@ namespace Newtonsoft.Json.Serialization
                         }
                     }
 
-#pragma warning disable CS8762 // Parameter must have a non-null value when exiting in some condition.
+                    property.WritePropertyName(writer);
+                    SerializeValue(writer, memberValue, memberContract, property, contract, member);
                     return true;
-#pragma warning restore CS8762 // Parameter must have a non-null value when exiting in some condition.
                 }
             }
 
-            memberContract = null;
-            memberValue = null;
             return false;
         }
 
@@ -666,7 +664,7 @@ namespace Newtonsoft.Json.Serialization
                     TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(null, writer.Path, "Started serializing {0} with converter {1}.".FormatWith(CultureInfo.InvariantCulture, value.GetType(), converter.GetType())), null);
                 }
 
-                converter.WriteJson(writer, value, GetInternalSerializer());
+                SerializeConvertableInternal(converter, writer, value, GetInternalSerializer());
 
                 if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
                 {
@@ -675,6 +673,11 @@ namespace Newtonsoft.Json.Serialization
 
                 _serializeStack.RemoveAt(_serializeStack.Count - 1);
             }
+        }
+
+        private void SerializeConvertableInternal(JsonConverter converter, JsonWriter writer, object value, JsonSerializer serializer)
+        {
+            converter.WriteJson(writer, value, serializer);
         }
 
         private void SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty? member, JsonContainerContract? collectionContract, JsonProperty? containerProperty)
@@ -850,9 +853,6 @@ namespace Newtonsoft.Json.Serialization
         }
 
 #if HAVE_BINARY_SERIALIZATION
-#if HAVE_SECURITY_SAFE_CRITICAL_ATTRIBUTE
-        [SecuritySafeCritical]
-#endif
         private void SerializeISerializable(JsonWriter writer, ISerializable value, JsonISerializableContract contract, JsonProperty? member, JsonContainerContract? collectionContract, JsonProperty? containerProperty)
         {
             if (!JsonTypeReflector.FullyTrusted)
@@ -870,7 +870,7 @@ namespace Newtonsoft.Json.Serialization
             WriteObjectStart(writer, value, contract, member, collectionContract, containerProperty);
 
             SerializationInfo serializationInfo = new SerializationInfo(contract.UnderlyingType, new FormatterConverter());
-            value.GetObjectData(serializationInfo, Serializer._context);
+            SafeGetObjectData(serializationInfo, value);
 
             foreach (SerializationEntry serializationEntry in serializationInfo)
             {
@@ -893,6 +893,14 @@ namespace Newtonsoft.Json.Serialization
             _serializeStack.RemoveAt(_serializeStack.Count - 1);
             OnSerialized(writer, contract, value);
         }
+
+#if HAVE_SECURITY_SAFE_CRITICAL_ATTRIBUTE
+        [SecuritySafeCritical]
+#endif
+        private void SafeGetObjectData(SerializationInfo serializationInfo, ISerializable value)
+        {
+            value.GetObjectData(serializationInfo, Serializer._context);
+        }
 #endif
 
 #if HAVE_DYNAMIC
@@ -914,13 +922,10 @@ namespace Newtonsoft.Json.Serialization
                 {
                     try
                     {
-                        if (!CalculatePropertyValues(writer, value, contract, member, property, out JsonContract? memberContract, out object? memberValue))
+                        if (!TryWritePropertyValues(writer, value, contract, member, property))
                         {
                             continue;
                         }
-
-                        property.WritePropertyName(writer);
-                        SerializeValue(writer, memberValue, memberContract, property, contract, member);
                     }
                     catch (Exception ex)
                     {
