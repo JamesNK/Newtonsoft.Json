@@ -25,30 +25,24 @@
 
 #if HAVE_ASYNC
 
-using System.Globalization;
-using System.IO;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Newtonsoft.Json.Linq
+namespace Newtonsoft.Json.Serialization
 {
-    public partial class JRaw
+    partial class JsonSerializerInternalWriter
     {
-        /// <summary>
-        /// Asynchronously creates an instance of <see cref="JRaw"/> with the content of the reader's current token.
-        /// </summary>
-        /// <param name="reader">The reader.</param>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
-        /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous creation. The <see cref="Task{TResult}.Result"/>
-        /// property returns an instance of <see cref="JRaw"/> with the content of the reader's current token.</returns>
-        public static async Task<JRaw> CreateAsync(JsonReader reader, CancellationToken cancellationToken = default)
+        private Task SerializeConvertableInternalAsync(JsonConverter converter, JsonWriter writer, object value, JsonSerializer serializer, CancellationToken cancellationToken)
         {
-            using (StringWriter sw = new StringWriter(CultureInfo.InvariantCulture))
-            using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+            if (converter is IJsonAsyncConverter asyncConverter)
             {
-                await jsonWriter.WriteTokenInternalSyncReadingAsync(reader, true, cancellationToken).ConfigureAwait(false);
-
-                return new JRaw(sw.ToString());
+                return asyncConverter.WriteJsonAsync(writer, value, serializer, cancellationToken);
+            }
+            else
+            {
+                converter.WriteJson(writer, value, serializer);
+                return Utilities.AsyncUtils.CompletedTask;
             }
         }
     }

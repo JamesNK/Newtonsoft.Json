@@ -48,6 +48,14 @@ namespace Newtonsoft.Json.Linq
         }
 
         /// <summary>
+        /// Overload with <paramref name="cancellationToken"/> last for generated async code.
+        /// </summary>
+        internal Task WriteToAsync(JsonWriter writer, JsonConverter[] converters, CancellationToken cancellationToken)
+        {
+            return WriteToAsync(writer, cancellationToken, converters);
+        }
+
+        /// <summary>
         /// Writes this token to a <see cref="JsonWriter"/> asynchronously.
         /// </summary>
         /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>

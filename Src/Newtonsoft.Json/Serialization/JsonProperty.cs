@@ -318,5 +318,22 @@ namespace Newtonsoft.Json.Serialization
                 writer.WritePropertyName(propertyName);
             }
         }
+
+#if HAVE_ASYNC
+        internal System.Threading.Tasks.Task WritePropertyNameAsync(JsonWriter writer, System.Threading.CancellationToken cancellationToken)
+        {
+            string? propertyName = PropertyName;
+            MiscellaneousUtils.Assert(propertyName != null);
+
+            if (_skipPropertyNameEscape)
+            {
+                return writer.WritePropertyNameAsync(propertyName, false, cancellationToken);
+            }
+            else
+            {
+                return writer.WritePropertyNameAsync(propertyName, cancellationToken);
+            }
+        }
+#endif
     }
 }

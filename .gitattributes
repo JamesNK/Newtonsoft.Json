@@ -44,6 +44,8 @@
 *.hs text
 *.ps1 text
 *.psm1 text
+*.props text
+*.targets text
 
 *.csproj text merge=union 
 *.vbproj text merge=union 

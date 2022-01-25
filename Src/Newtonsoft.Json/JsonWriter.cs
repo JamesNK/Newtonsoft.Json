@@ -673,6 +673,11 @@ namespace Newtonsoft.Json
             }
         }
 
+        internal void WriteTokenInternal(JsonReader reader, bool writeComments)
+        {
+            WriteToken(reader, true, true, writeComments);
+        }
+
         private bool IsWriteTokenIncomplete(JsonReader reader, bool writeChildren, int initialDepth)
         {
             int finalDepth = CalculateWriteTokenFinalDepth(reader);

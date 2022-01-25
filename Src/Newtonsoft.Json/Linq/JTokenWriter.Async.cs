@@ -45,7 +45,8 @@ namespace Newtonsoft.Json.Linq
                 return AsyncUtils.CompletedTask;
             }
 
-            return WriteTokenSyncReadingAsync(reader, cancellationToken);
+            // XXX: what if the reader is really async? also boolean parameters are not used
+            return WriteTokenInternalSyncReadingAsync(reader, true, cancellationToken);
         }
     }
 }

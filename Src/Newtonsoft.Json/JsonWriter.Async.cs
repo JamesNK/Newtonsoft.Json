@@ -794,7 +794,7 @@ namespace Newtonsoft.Json
         // For internal use, when we know the writer does not offer true async support (e.g. when backed
         // by a StringWriter) and therefore async write methods are always in practice just a less efficient
         // path through the sync version.
-        internal async Task WriteTokenSyncReadingAsync(JsonReader reader, CancellationToken cancellationToken)
+        internal async Task WriteTokenInternalSyncReadingAsync(JsonReader reader, bool writeComments, CancellationToken cancellationToken)
         {
             int initialDepth = CalculateWriteTokenInitialDepth(reader);
 
@@ -807,7 +807,10 @@ namespace Newtonsoft.Json
                 }
                 else
                 {
-                    WriteToken(reader.TokenType, reader.Value);
+                    if (writeComments || reader.TokenType != JsonToken.Comment)
+                    {
+                        WriteToken(reader.TokenType, reader.Value);
+                    }
                 }
             } while (
                 // stop if we have reached the end of the token being read

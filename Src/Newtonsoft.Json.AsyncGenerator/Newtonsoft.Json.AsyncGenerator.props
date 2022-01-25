@@ -1,0 +1,5 @@
+<Project>
+  <ItemGroup Condition=" '$(GenerateAsyncInternals)' == 'true' ">
+    <ProjectReference Update="$(MSBuildThisFileDirectory)Newtonsoft.Json.AsyncGenerator.csproj" OutputItemType="Analyzer" />
+  </ItemGroup>
+</Project>
