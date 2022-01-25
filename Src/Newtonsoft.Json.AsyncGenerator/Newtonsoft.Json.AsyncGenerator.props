@@ -1,8 +1,4 @@
 <Project>
-  <PropertyGroup>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GeneratedFiles</CompilerGeneratedFilesOutputPath>
-  </PropertyGroup>
   <ItemGroup Condition=" '$(GenerateAsyncInternals)' == 'true' ">
     <ProjectReference Update="$(MSBuildThisFileDirectory)Newtonsoft.Json.AsyncGenerator.csproj" OutputItemType="Analyzer" />
   </ItemGroup>

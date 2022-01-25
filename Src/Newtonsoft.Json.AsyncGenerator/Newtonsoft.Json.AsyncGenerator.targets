@@ -10,6 +10,8 @@
     </ItemGroup>
   </Target>
   <Target Name="GenerateAsyncInternals" BeforeTargets="CoreCompile" DependsOnTargets="CollectAsyncInternals" Condition=" '$(GenerateAsyncInternals)' == '' " Outputs="%(GenerateAsyncInternals.Identity)">
+    <Error Condition=" '$(EmitCompilerGeneratedFiles)' != 'true' "
+      Text="'EmitCompilerGeneratedFiles' MSBuild property is not set, source generator output is unavailable" />
     <MSBuild Projects="$(MSBuildProjectFullPath)" Properties="GenerateAsyncInternals=true;TargetFramework=netstandard2.0" />
     <GetFileHash Files="%(GenerateAsyncInternals.Identity)">
       <Output TaskParameter="Hash" PropertyName="_OldHash" />

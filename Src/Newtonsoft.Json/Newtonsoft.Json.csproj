@@ -33,6 +33,8 @@
     <CodeAnalysisRuleset>Newtonsoft.Json.ruleset</CodeAnalysisRuleset>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <AdditionalConstants>TEST_ASYNC_AS_SYNC;$(AdditionalConstants)</AdditionalConstants><!-- XXX: TEMPORARY -->
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>$(BaseIntermediateOutputPath)GeneratedFiles</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.orig" />
