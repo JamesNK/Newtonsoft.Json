@@ -73,7 +73,7 @@ namespace Newtonsoft.Json.Converters
         /// JSON;
         /// <c>false</c> to throw an exception when a date being converted to
         /// or from JSON occurred before Unix epoch.
-        /// The default is <see cref="DefaultAllowPreEpoch"/>.
+        /// The default is <c>false</c>.
         /// </param>
         public UnixDateTimeConverter(bool allowPreEpoch)
         {
