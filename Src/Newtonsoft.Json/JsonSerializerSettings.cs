@@ -32,6 +32,11 @@ using Newtonsoft.Json.Serialization;
 using System.Runtime.Serialization;
 using System.Diagnostics;
 using System.Runtime;
+#if !HAVE_LINQ
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json
 {
@@ -455,7 +460,8 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
-        /// Create a copy of the passed in <see cref="JsonSerializer"/>.
+        /// Initializes a new instance of the <see cref="JsonSerializerSettings"/> class
+        /// using values copied from the passed in <see cref="JsonSerializerSettings"/>.
         /// </summary>
         public JsonSerializerSettings(JsonSerializerSettings original)
         {
@@ -482,7 +488,7 @@ namespace Newtonsoft.Json
             _metadataPropertyHandling = original._metadataPropertyHandling;
             _typeNameHandling = original._typeNameHandling;
             _preserveReferencesHandling = original._preserveReferencesHandling;
-            Converters = original.Converters;
+            Converters = original.Converters.ToList();
             _defaultValueHandling = original._defaultValueHandling;
             _nullValueHandling = original._nullValueHandling;
             _objectCreationHandling = original._objectCreationHandling;
