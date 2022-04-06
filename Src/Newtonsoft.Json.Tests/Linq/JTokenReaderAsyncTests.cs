@@ -422,7 +422,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(o["Name"], reader.CurrentToken);
             Assert.AreEqual(JsonToken.Integer, reader.TokenType);
             Assert.AreEqual(typeof(long), reader.ValueType);
-            Assert.AreEqual(1, reader.Value);
+            Assert.AreEqual(1L, reader.Value);
         }
 
         [Test]
