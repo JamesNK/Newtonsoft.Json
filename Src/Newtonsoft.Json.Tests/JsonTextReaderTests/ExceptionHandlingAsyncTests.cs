@@ -220,7 +220,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => { await reader.ReadAsInt32Async(); }, "Unexpected character encountered while parsing number: q. Path '', line 1, position 2.");
 
-            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => { await reader.ReadAsInt64Async(); }, "Unexpected character encountered while parsing number: q. Path '', line 1, position 2.");
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => { await reader.ReadAsInt64Async(); }, "Unexpected character encountered while parsing value: q. Path '', line 1, position 3.");
         }
 
         [Test]
