@@ -78,6 +78,17 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
         }
 
         [Test]
+        public async Task ReadAsInt64Async_IntegerTooLarge_ThrowsJsonReaderException()
+        {
+            JValue token = new JValue("9223372036854775899");
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(
+                () => token.CreateReader().ReadAsInt64Async(),
+                "Could not convert string to integer: 9223372036854775899. Path ''."
+            );
+        }
+
+        [Test]
         public async Task ReadAsDecimalAsync_IntegerTooLarge_ThrowsJsonReaderException()
         {
             JValue token = new JValue(double.MaxValue);
@@ -96,6 +107,15 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             JValue token = new JValue(BigInteger.Parse("1"));
 
             int? i = await token.CreateReader().ReadAsInt32Async();
+            Assert.AreEqual(1, i);
+        }
+
+        [Test]
+        public async Task ReadAsInt64Async_BigIntegerValue_Success()
+        {
+            JValue token = new JValue(BigInteger.Parse("1"));
+
+            long? i = await token.CreateReader().ReadAsInt64Async();
             Assert.AreEqual(1, i);
         }
 #endif
@@ -129,6 +149,17 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
                     JsonTextReader reader = new JsonTextReader(new StringReader("undefined"));
                     await reader.ReadAsInt32Async();
                 },
+                "Unexpected character encountered while parsing value: u. Path '', line 1, position 1.");
+        }
+
+        [Test]
+        public async Task ReadAsInt64AsyncWithUndefined()
+        {
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () =>
+            {
+                JsonTextReader reader = new JsonTextReader(new StringReader("undefined"));
+                await reader.ReadAsInt64Async();
+            },
                 "Unexpected character encountered while parsing value: u. Path '', line 1, position 1.");
         }
 
@@ -412,7 +443,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
         }
 
         [Test]
-        public async Task ReadOctalNumberAsInt64Async()
+        public async Task ReadOctalReadAsync()
         {
             StringReader s = new StringReader(@"[0372, 0xFA, 0XFA]");
             JsonTextReader jsonReader = new JsonTextReader(s);
@@ -470,6 +501,37 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             Assert.IsFalse(await jsonReader.ReadAsync());
         }
+
+        [Test]
+        public async Task ReadOctalNumberAsInt64Async()
+        {
+            StringReader s = new StringReader(@"[0372, 0xFA, 0XFA]");
+            JsonTextReader jsonReader = new JsonTextReader(s);
+
+            Assert.IsTrue(await jsonReader.ReadAsync());
+            Assert.AreEqual(JsonToken.StartArray, jsonReader.TokenType);
+
+            await jsonReader.ReadAsInt64Async();
+            Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
+            Assert.AreEqual(typeof(int), jsonReader.ValueType);
+            Assert.AreEqual(250, jsonReader.Value);
+
+            await jsonReader.ReadAsInt64Async();
+            Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
+            Assert.AreEqual(typeof(int), jsonReader.ValueType);
+            Assert.AreEqual(250, jsonReader.Value);
+
+            await jsonReader.ReadAsInt64Async();
+            Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
+            Assert.AreEqual(typeof(int), jsonReader.ValueType);
+            Assert.AreEqual(250, jsonReader.Value);
+
+            Assert.IsTrue(await jsonReader.ReadAsync());
+            Assert.AreEqual(JsonToken.EndArray, jsonReader.TokenType);
+
+            Assert.IsFalse(await jsonReader.ReadAsync());
+        }
+
 
         [Test]
         public async Task ReadAsDecimalNoContentAsync()
@@ -716,6 +778,25 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
         }
 
         [Test]
+        public async Task ReadAsInt64DecimalAsync()
+        {
+            string json = @"{""Name"": 1.1}";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () =>
+            {
+                await reader.ReadAsInt64Async();
+            }, "Input string '1.1' is not a valid integer. Path 'Name', line 1, position 12.");
+        }
+
+        [Test]
         public async Task ReadAsDecimalAsync()
         {
             string json = @"{""decimal"":-7.92281625142643E+28}";
@@ -918,7 +999,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
         [Test]
         public async Task ReadValue_EmptyString_PositionAsync()
         {
-            string json = @"['','','','','','','']";
+            string json = @"['','','','','','','','']";
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
 
@@ -937,6 +1018,8 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             Assert.AreEqual("[5]", reader.Path);
             await reader.ReadAsDoubleAsync();
             Assert.AreEqual("[6]", reader.Path);
+            await reader.ReadAsInt64Async();
+            Assert.AreEqual("[7]", reader.Path);
 
             Assert.IsNull(await reader.ReadAsStringAsync());
             Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -951,7 +1034,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
         [Test]
         public async Task ReadValueCommentsAsync()
         {
-            string json = @"/*comment*/[/*comment*/1/*comment*/,2,/*comment*//*comment*/""three""/*comment*/,""four""/*comment*/,null,/*comment*/null,3.99,1.1/*comment*/,''/*comment*/]/*comment*/";
+            string json = @"/*comment*/[/*comment*/1/*comment*/,2,/*comment*//*comment*/""three""/*comment*/,""four""/*comment*/,null,/*comment*/null,3.99,1.1/*comment*/,''/*comment*/,'',null]/*comment*/";
 
             JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
 
@@ -990,6 +1073,12 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             Assert.IsTrue(await reader.ReadAsync());
             Assert.AreEqual(JsonToken.Comment, reader.TokenType);
+
+            Assert.AreEqual(null, await reader.ReadAsInt64Async());
+            Assert.AreEqual(JsonToken.Null, reader.TokenType);
+
+            Assert.AreEqual(null, await reader.ReadAsInt64Async());
+            Assert.AreEqual(JsonToken.Null, reader.TokenType);
 
             Assert.IsTrue(await reader.ReadAsync());
             Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
@@ -1090,6 +1179,44 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             Assert.AreEqual("[2]", reader.Path);
 
             await reader.ReadAsInt32Async();
+            Assert.AreEqual(5, reader.LineNumber);
+            Assert.AreEqual("[3]", reader.Path);
+
+            await reader.ReadAsync();
+            Assert.AreEqual(6, reader.LineNumber);
+            Assert.AreEqual(string.Empty, reader.Path);
+
+            Assert.IsFalse(await reader.ReadAsync());
+        }
+
+        [Test]
+        public async Task ReadNullIntLineNumberInt64AndPositionAsync()
+        {
+            string json = @"[
+  1,
+  2,
+  3,
+  null
+]";
+
+            JsonTextReader reader = new JsonTextReader(new StreamReader(new SlowStream(json, new UTF8Encoding(false), 1)));
+
+            await reader.ReadAsync();
+            Assert.AreEqual(1, reader.LineNumber);
+
+            await reader.ReadAsInt64Async();
+            Assert.AreEqual(2, reader.LineNumber);
+            Assert.AreEqual("[0]", reader.Path);
+
+            await reader.ReadAsInt64Async();
+            Assert.AreEqual(3, reader.LineNumber);
+            Assert.AreEqual("[1]", reader.Path);
+
+            await reader.ReadAsInt64Async();
+            Assert.AreEqual(4, reader.LineNumber);
+            Assert.AreEqual("[2]", reader.Path);
+
+            await reader.ReadAsInt64Async();
             Assert.AreEqual(5, reader.LineNumber);
             Assert.AreEqual("[3]", reader.Path);
 
@@ -1734,6 +1861,7 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(reader.ReadAsDecimalAsync(token).IsCanceled);
             Assert.IsTrue(reader.ReadAsInt32Async(token).IsCanceled);
             Assert.IsTrue(reader.ReadAsStringAsync(token).IsCanceled);
+            Assert.IsTrue(reader.ReadAsInt64Async(token).IsCanceled);
         }
 
         [Test]
@@ -1752,6 +1880,7 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(reader.ReadAsDecimalAsync(token).IsCanceled);
             Assert.IsTrue(reader.ReadAsInt32Async(token).IsCanceled);
             Assert.IsTrue(reader.ReadAsStringAsync(token).IsCanceled);
+            Assert.IsTrue(reader.ReadAsInt64Async(token).IsCanceled);
         }
 
         [Test]
