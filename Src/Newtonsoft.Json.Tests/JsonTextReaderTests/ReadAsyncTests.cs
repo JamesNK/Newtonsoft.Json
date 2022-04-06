@@ -513,17 +513,17 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             await jsonReader.ReadAsInt64Async();
             Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
-            Assert.AreEqual(typeof(int), jsonReader.ValueType);
+            Assert.AreEqual(typeof(long), jsonReader.ValueType);
             Assert.AreEqual(250, jsonReader.Value);
 
             await jsonReader.ReadAsInt64Async();
             Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
-            Assert.AreEqual(typeof(int), jsonReader.ValueType);
+            Assert.AreEqual(typeof(long), jsonReader.ValueType);
             Assert.AreEqual(250, jsonReader.Value);
 
             await jsonReader.ReadAsInt64Async();
             Assert.AreEqual(JsonToken.Integer, jsonReader.TokenType);
-            Assert.AreEqual(typeof(int), jsonReader.ValueType);
+            Assert.AreEqual(typeof(long), jsonReader.ValueType);
             Assert.AreEqual(250, jsonReader.Value);
 
             Assert.IsTrue(await jsonReader.ReadAsync());
