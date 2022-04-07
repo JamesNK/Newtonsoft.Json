@@ -121,6 +121,47 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
         }
 
         [Test]
+        public async Task ParseIntegers64Async()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("1"));
+            Assert.AreEqual(1, await reader.ReadAsInt64Async());
+
+            reader = new JsonTextReader(new StringReader("-1"));
+            Assert.AreEqual(-1, await reader.ReadAsInt64Async());
+
+            reader = new JsonTextReader(new StringReader("0"));
+            Assert.AreEqual(0, await reader.ReadAsInt64Async());
+
+            reader = new JsonTextReader(new StringReader("-0"));
+            Assert.AreEqual(0, await reader.ReadAsInt64Async());
+
+            reader = new JsonTextReader(new StringReader(long.MaxValue.ToString()));
+            Assert.AreEqual(long.MaxValue, await reader.ReadAsInt64Async());
+
+            reader = new JsonTextReader(new StringReader(long.MinValue.ToString()));
+            Assert.AreEqual(long.MinValue, await reader.ReadAsInt64Async());
+
+            reader = new JsonTextReader(new StringReader("9223372036854775899"));
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => await reader.ReadAsInt64Async(), "JSON integer 9223372036854775899 is too large or small for an Int64. Path '', line 1, position 19.");
+
+            reader = new JsonTextReader(new StringReader("9999999999999999999999999999999999999999999999999999999999999999999999999999asdasdasd"));
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => await reader.ReadAsInt64Async(), "Unexpected character encountered while parsing number: s. Path '', line 1, position 77.");
+
+            reader = new JsonTextReader(new StringReader("1E-06"));
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => await reader.ReadAsInt64Async(), "Input string '1E-06' is not a valid integer. Path '', line 1, position 5.");
+
+            reader = new JsonTextReader(new StringReader("1.1"));
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => await reader.ReadAsInt64Async(), "Input string '1.1' is not a valid integer. Path '', line 1, position 3.");
+
+            reader = new JsonTextReader(new StringReader(""));
+            Assert.AreEqual(null, await reader.ReadAsInt64Async());
+
+            reader = new JsonTextReader(new StringReader("-"));
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => await reader.ReadAsInt64Async(), "Input string '-' is not a valid integer. Path '', line 1, position 1.");
+        }
+
+
+        [Test]
         public async Task ParseDecimalsAsync()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader("1.1"));
