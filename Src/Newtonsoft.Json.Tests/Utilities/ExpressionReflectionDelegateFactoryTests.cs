@@ -145,7 +145,8 @@ namespace Newtonsoft.Json.Tests.Utilities
                 }, new[]
                 {
                     "Cannot create an abstract class.",
-                    "Cannot create an abstract class 'System.Type'." // mono
+                    "Cannot create an abstract class 'System.Type'.", // mono
+                    "Cannot dynamically create an instance of type 'System.Type'. Reason: Cannot create an abstract class." // net6
                 });
         }
 
