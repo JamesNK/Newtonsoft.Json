@@ -32,6 +32,7 @@
   $nunitConsolePath = "$buildDir\Temp\NUnit.ConsoleRunner.$nunitConsoleVersion"
 
   $builds = @(
+    @{Framework = "netstandard2.0"; TestsFunction = "NetCliTests"; TestFramework = "net6.0"; Enabled=$true},
     @{Framework = "netstandard2.0"; TestsFunction = "NetCliTests"; TestFramework = "net5.0"; Enabled=$true},
     @{Framework = "netstandard1.3"; TestsFunction = "NetCliTests"; TestFramework = "netcoreapp3.1"; Enabled=$true},
     @{Framework = "netstandard1.0"; TestsFunction = "NetCliTests"; TestFramework = "netcoreapp2.1"; Enabled=$true},
