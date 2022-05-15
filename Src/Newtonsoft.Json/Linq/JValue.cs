@@ -72,7 +72,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         public JValue(long value)
-            : this(value, JTokenType.Integer)
+            : this(BoxedPrimitives.Get(value), JTokenType.Integer)
         {
         }
 
@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         public JValue(decimal value)
-            : this(value, JTokenType.Float)
+            : this(BoxedPrimitives.Get(value), JTokenType.Float)
         {
         }
 
@@ -109,7 +109,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         public JValue(double value)
-            : this(value, JTokenType.Float)
+            : this(BoxedPrimitives.Get(value), JTokenType.Float)
         {
         }
 
@@ -147,7 +147,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         public JValue(bool value)
-            : this(value, JTokenType.Boolean)
+            : this(BoxedPrimitives.Get(value), JTokenType.Boolean)
         {
         }
 

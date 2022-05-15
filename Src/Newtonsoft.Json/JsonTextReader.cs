@@ -841,7 +841,7 @@ namespace Newtonsoft.Json
                                 {
                                     throw CreateUnexpectedCharacterException(_chars[_charPos]);
                                 }
-                                SetToken(JsonToken.Boolean, isTrue);
+                                SetToken(JsonToken.Boolean, BoxedPrimitives.Get(isTrue));
                                 return isTrue;
                             case '/':
                                 ParseComment(false);
@@ -2030,7 +2030,7 @@ namespace Newtonsoft.Json
                         if (singleDigit)
                         {
                             // digit char values start at 48
-                            numberValue = firstChar - 48;
+                            numberValue = BoxedPrimitives.Get(firstChar - 48);
                         }
                         else if (nonBase10)
                         {
@@ -2040,7 +2040,7 @@ namespace Newtonsoft.Json
                             {
                                 int integer = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? Convert.ToInt32(number, 16) : Convert.ToInt32(number, 8);
 
-                                numberValue = integer;
+                                numberValue = BoxedPrimitives.Get(integer);
                             }
                             catch (Exception ex)
                             {
@@ -2052,7 +2052,7 @@ namespace Newtonsoft.Json
                             ParseResult parseResult = ConvertUtils.Int32TryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out int value);
                             if (parseResult == ParseResult.Success)
                             {
-                                numberValue = value;
+                                numberValue = BoxedPrimitives.Get(value);
                             }
                             else if (parseResult == ParseResult.Overflow)
                             {
@@ -2072,7 +2072,7 @@ namespace Newtonsoft.Json
                         if (singleDigit)
                         {
                             // digit char values start at 48
-                            numberValue = (decimal)firstChar - 48;
+                            numberValue = BoxedPrimitives.Get((decimal)firstChar - 48);
                         }
                         else if (nonBase10)
                         {
@@ -2083,7 +2083,7 @@ namespace Newtonsoft.Json
                                 // decimal.Parse doesn't support parsing hexadecimal values
                                 long integer = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? Convert.ToInt64(number, 16) : Convert.ToInt64(number, 8);
 
-                                numberValue = Convert.ToDecimal(integer);
+                                numberValue = BoxedPrimitives.Get(Convert.ToDecimal(integer));
                             }
                             catch (Exception ex)
                             {
@@ -2095,7 +2095,7 @@ namespace Newtonsoft.Json
                             ParseResult parseResult = ConvertUtils.DecimalTryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out decimal value);
                             if (parseResult == ParseResult.Success)
                             {
-                                numberValue = value;
+                                numberValue = BoxedPrimitives.Get(value);
                             }
                             else
                             {
@@ -2111,7 +2111,7 @@ namespace Newtonsoft.Json
                         if (singleDigit)
                         {
                             // digit char values start at 48
-                            numberValue = (double)firstChar - 48;
+                            numberValue = BoxedPrimitives.Get((double)firstChar - 48);
                         }
                         else if (nonBase10)
                         {
@@ -2122,7 +2122,7 @@ namespace Newtonsoft.Json
                                 // double.Parse doesn't support parsing hexadecimal values
                                 long integer = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? Convert.ToInt64(number, 16) : Convert.ToInt64(number, 8);
 
-                                numberValue = Convert.ToDouble(integer);
+                                numberValue = BoxedPrimitives.Get(Convert.ToDouble(integer));
                             }
                             catch (Exception ex)
                             {
@@ -2135,7 +2135,7 @@ namespace Newtonsoft.Json
 
                             if (double.TryParse(number, NumberStyles.Float, CultureInfo.InvariantCulture, out double value))
                             {
-                                numberValue = value;
+                                numberValue = BoxedPrimitives.Get(value);
                             }
                             else
                             {
@@ -2152,7 +2152,7 @@ namespace Newtonsoft.Json
                         if (singleDigit)
                         {
                             // digit char values start at 48
-                            numberValue = (long)firstChar - 48;
+                            numberValue = BoxedPrimitives.Get((long)firstChar - 48);
                             numberType = JsonToken.Integer;
                         }
                         else if (nonBase10)
@@ -2161,7 +2161,7 @@ namespace Newtonsoft.Json
 
                             try
                             {
-                                numberValue = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? Convert.ToInt64(number, 16) : Convert.ToInt64(number, 8);
+                                numberValue = BoxedPrimitives.Get(number.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? Convert.ToInt64(number, 16) : Convert.ToInt64(number, 8));
                             }
                             catch (Exception ex)
                             {
@@ -2175,7 +2175,7 @@ namespace Newtonsoft.Json
                             ParseResult parseResult = ConvertUtils.Int64TryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out long value);
                             if (parseResult == ParseResult.Success)
                             {
-                                numberValue = value;
+                                numberValue = BoxedPrimitives.Get(value);
                                 numberType = JsonToken.Integer;
                             }
                             else if (parseResult == ParseResult.Overflow)
@@ -2201,7 +2201,7 @@ namespace Newtonsoft.Json
                                     parseResult = ConvertUtils.DecimalTryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out decimal d);
                                     if (parseResult == ParseResult.Success)
                                     {
-                                        numberValue = d;
+                                        numberValue = BoxedPrimitives.Get(d);
                                     }
                                     else
                                     {
@@ -2214,7 +2214,7 @@ namespace Newtonsoft.Json
 
                                     if (double.TryParse(number, NumberStyles.Float, CultureInfo.InvariantCulture, out double d))
                                     {
-                                        numberValue = d;
+                                        numberValue = BoxedPrimitives.Get(d);
                                     }
                                     else
                                     {
@@ -2455,7 +2455,7 @@ namespace Newtonsoft.Json
             // or the text ends
             if (MatchValueWithTrailingSeparator(JsonConvert.True))
             {
-                SetToken(JsonToken.Boolean, true);
+                SetToken(JsonToken.Boolean, BoxedPrimitives.BooleanTrue);
             }
             else
             {
@@ -2491,7 +2491,7 @@ namespace Newtonsoft.Json
         {
             if (MatchValueWithTrailingSeparator(JsonConvert.False))
             {
-                SetToken(JsonToken.Boolean, false);
+                SetToken(JsonToken.Boolean, BoxedPrimitives.BooleanFalse);
             }
             else
             {
@@ -2514,7 +2514,7 @@ namespace Newtonsoft.Json
                     case ReadType.ReadAsDouble:
                         if (_floatParseHandling == FloatParseHandling.Double)
                         {
-                            SetToken(JsonToken.Float, double.NegativeInfinity);
+                            SetToken(JsonToken.Float, BoxedPrimitives.DoubleNegativeInfinity);
                             return double.NegativeInfinity;
                         }
                         break;
@@ -2543,7 +2543,7 @@ namespace Newtonsoft.Json
                     case ReadType.ReadAsDouble:
                         if (_floatParseHandling == FloatParseHandling.Double)
                         {
-                            SetToken(JsonToken.Float, double.PositiveInfinity);
+                            SetToken(JsonToken.Float, BoxedPrimitives.DoublePositiveInfinity);
                             return double.PositiveInfinity;
                         }
                         break;
@@ -2573,7 +2573,7 @@ namespace Newtonsoft.Json
                     case ReadType.ReadAsDouble:
                         if (_floatParseHandling == FloatParseHandling.Double)
                         {
-                            SetToken(JsonToken.Float, double.NaN);
+                            SetToken(JsonToken.Float, BoxedPrimitives.DoubleNaN);
                             return double.NaN;
                         }
                         break;
