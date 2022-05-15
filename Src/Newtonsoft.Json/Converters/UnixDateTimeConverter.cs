@@ -41,11 +41,9 @@ namespace Newtonsoft.Json.Converters
         /// should converted to and from JSON.
         /// </summary>
         /// <value>
-        /// <c>true</c> to allow converting dates before Unix epoch to and from
-        /// JSON;
-        /// <c>false</c> to throw an exception when a date being converted to or
-        /// from JSON occurred before Unix epoch.
-        /// The default is <c>false</c>.
+        /// <c>true</c> to allow converting dates before Unix epoch to and from JSON;
+        /// <c>false</c> to throw an exception when a date being converted to or from JSON
+        /// occurred before Unix epoch. The default value is <c>false</c>.
         /// </value>
         public bool AllowPreEpoch { get; set; }
 
