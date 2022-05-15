@@ -112,11 +112,5 @@ namespace Newtonsoft.Json.Utilities
         internal static readonly object DoublePositiveInfinity = double.PositiveInfinity;
         internal static readonly object DoubleNegativeInfinity = double.NegativeInfinity;
         internal static readonly object DoubleZero = (double)0;
-
-#if HAVE_BIG_INTEGER
-        internal static object Get(System.Numerics.BigInteger value) => value == System.Numerics.BigInteger.Zero ? BigIntegerZero : value;
-
-        private static readonly object BigIntegerZero = System.Numerics.BigInteger.Zero;
-#endif
     }
 }

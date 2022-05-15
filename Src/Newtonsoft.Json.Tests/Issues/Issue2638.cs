@@ -45,7 +45,8 @@ namespace Newtonsoft.Json.Tests.Issues
         {
             Test(true);
             Test(false);
-            void Test(bool value)
+            
+            static void Test(bool value)
             {
                 var obj = (JObject)JToken.Parse(@"{""x"": XXX, ""y"": XXX}".Replace("XXX", value ? "true" : "false"));
                 var x = ((JValue)obj["x"]).Value;
@@ -67,7 +68,7 @@ namespace Newtonsoft.Json.Tests.Issues
             Test(1, false);
             Test(42.42, false);
 
-            void Test(double value, bool expectSame)
+            static void Test(double value, bool expectSame)
             {
                 var obj = (JObject)JToken.Parse(@"{""x"": XXX, ""y"": XXX}".Replace("XXX", value.ToString("0.0###", CultureInfo.InvariantCulture)));
                 var x = ((JValue)obj["x"]).Value;
@@ -106,7 +107,7 @@ namespace Newtonsoft.Json.Tests.Issues
             Test(8, true);
             Test(9, false);
 
-            void Test(long value, bool expectSame)
+            static void Test(long value, bool expectSame)
             {
                 var obj = (JObject)JToken.Parse(@"{""x"": XXX, ""y"": XXX}".Replace("XXX", value.ToString(CultureInfo.InvariantCulture)));
                 var x = ((JValue)obj["x"]).Value;

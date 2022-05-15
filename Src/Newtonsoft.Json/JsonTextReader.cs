@@ -2188,7 +2188,7 @@ namespace Newtonsoft.Json
                                     throw ThrowReaderError("JSON integer {0} is too large to parse.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
                                 }
 
-                                numberValue = BoxedPrimitives.Get(BigIntegerParse(number, CultureInfo.InvariantCulture));
+                                numberValue = BigIntegerParse(number, CultureInfo.InvariantCulture);
                                 numberType = JsonToken.Integer;
 #else
                                 throw ThrowReaderError("JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
@@ -2249,7 +2249,7 @@ namespace Newtonsoft.Json
         // the System.Numerics.BigInteger.Parse method is
         // missing, which happens in some versions of Mono
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private static System.Numerics.BigInteger BigIntegerParse(string number, CultureInfo culture)
+        private static object BigIntegerParse(string number, CultureInfo culture)
         {
             return System.Numerics.BigInteger.Parse(number, culture);
         }
