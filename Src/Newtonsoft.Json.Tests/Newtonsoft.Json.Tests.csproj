@@ -13,7 +13,7 @@
     <RootNamespace>Newtonsoft.Json.Tests</RootNamespace>
     <IsPackable>false</IsPackable>
     <!-- Workaround for https://github.com/nunit/nunit3-vs-adapter/issues/296 -->
-    <DebugType Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'netcoreapp2.1' AND '$(TargetFramework)' != 'netcoreapp3.1' AND '$(TargetFramework)' != 'net5.0'">Full</DebugType>    
+    <DebugType Condition="'$(TargetFramework)' != '' AND '$(TargetFramework)' != 'netcoreapp2.1' AND '$(TargetFramework)' != 'netcoreapp3.1' AND '$(TargetFramework)' != 'net6.0'">Full</DebugType>    
     <!-- Disabled because SourceLink isn't referenced to calculate paths -->
     <DeterministicSourcePaths>false</DeterministicSourcePaths>
     <!-- It's ok if a test target has exited support. Disable NETSSDK1138 warning -->
