@@ -37,6 +37,37 @@ namespace Newtonsoft.Json.Converters
         internal static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         /// <summary>
+        /// Gets or sets a value indicating whether the dates before Unix epoch
+        /// should converted to and from JSON.
+        /// </summary>
+        /// <value>
+        /// <c>true</c> to allow converting dates before Unix epoch to and from JSON;
+        /// <c>false</c> to throw an exception when a date being converted to or from JSON
+        /// occurred before Unix epoch. The default value is <c>false</c>.
+        /// </value>
+        public bool AllowPreEpoch { get; set; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnixDateTimeConverter"/> class.
+        /// </summary>
+        public UnixDateTimeConverter() : this(false)
+        {
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="UnixDateTimeConverter"/> class.
+        /// </summary>
+        /// <param name="allowPreEpoch">
+        /// <c>true</c> to allow converting dates before Unix epoch to and from JSON;
+        /// <c>false</c> to throw an exception when a date being converted to or from JSON
+        /// occurred before Unix epoch. The default value is <c>false</c>.
+        /// </param>
+        public UnixDateTimeConverter(bool allowPreEpoch)
+        {
+            AllowPreEpoch = allowPreEpoch;
+        }
+
+        /// <summary>
         /// Writes the JSON representation of the object.
         /// </summary>
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
@@ -61,7 +92,7 @@ namespace Newtonsoft.Json.Converters
                 throw new JsonSerializationException("Expected date object value.");
             }
 
-            if (seconds < 0)
+            if (!AllowPreEpoch && seconds < 0)
             {
                 throw new JsonSerializationException("Cannot convert date value that is before Unix epoch of 00:00:00 UTC on 1 January 1970.");
             }
@@ -108,7 +139,7 @@ namespace Newtonsoft.Json.Converters
                 throw JsonSerializationException.Create(reader, "Unexpected token parsing date. Expected Integer or String, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
 
-            if (seconds >= 0)
+            if (AllowPreEpoch || seconds >= 0)
             {
                 DateTime d = UnixEpoch.AddSeconds(seconds);
 
