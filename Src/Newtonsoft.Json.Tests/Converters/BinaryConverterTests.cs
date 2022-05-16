@@ -28,7 +28,7 @@ using System.Collections.Generic;
 #if !(NET20 || DNXCORE50)
 using System.Data.Linq;
 #endif
-#if !DNXCORE50 || NETSTANDARD2_0
+#if !DNXCORE50 || NETSTANDARD2_0 || NET6_0_OR_GREATER
 using System.Data.SqlTypes;
 #endif
 using System.Text;
@@ -121,7 +121,7 @@ namespace Newtonsoft.Json.Tests.Converters
 }", json);
         }
 
-#if !(PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
+#if !(PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
         public class SqlBinaryClass
         {
             public SqlBinary SqlBinary { get; set; }

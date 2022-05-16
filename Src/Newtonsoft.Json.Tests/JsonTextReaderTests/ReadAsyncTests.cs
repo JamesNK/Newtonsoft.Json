@@ -28,7 +28,7 @@
 using System;
 using System.Globalization;
 using Newtonsoft.Json.Linq;
-#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
 using System.Numerics;
 #endif
 using System.Text;
@@ -89,7 +89,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             );
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public async Task ReadAsInt32Async_BigIntegerValue_Success()
         {
@@ -132,7 +132,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
                 "Unexpected character encountered while parsing value: u. Path '', line 1, position 1.");
         }
 
-#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(PORTABLE || PORTABLE40 || NET35 || NET20) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public async Task ReadAsBooleanAsync()
         {
@@ -1245,7 +1245,7 @@ second line
 third line", jsonTextReader.Value);
         }
 
-#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public async Task ReadBigIntegerAsync()
         {

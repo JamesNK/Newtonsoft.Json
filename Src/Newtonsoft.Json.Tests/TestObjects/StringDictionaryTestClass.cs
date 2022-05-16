@@ -27,7 +27,7 @@ using System.Collections.Specialized;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NET20 || DNXCORE50) || NETSTANDARD2_0
+#if !(NET20 || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
     public class StringDictionaryTestClass
     {
         public StringDictionary StringDictionaryProperty { get; set; }

@@ -312,7 +312,7 @@ namespace Newtonsoft.Json.Tests.Schema
             Assert.IsTrue(v.IsValid(schema));
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public void GenerateSchemaForISerializable()
         {
@@ -340,7 +340,7 @@ namespace Newtonsoft.Json.Tests.Schema
         }
 #endif
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
         public class CustomDirectoryInfoMapper : DefaultContractResolver
         {
             public CustomDirectoryInfoMapper()
@@ -376,7 +376,7 @@ namespace Newtonsoft.Json.Tests.Schema
             generator.UndefinedSchemaIdHandling = UndefinedSchemaIdHandling.UseTypeName;
             generator.ContractResolver = new CamelCasePropertyNamesContractResolver()
             {
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
                 IgnoreSerializableAttribute = true
 #endif
             };
@@ -421,7 +421,7 @@ namespace Newtonsoft.Json.Tests.Schema
 }", json);
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public void GenerateSchemaSerializable()
         {
@@ -734,7 +734,7 @@ namespace Newtonsoft.Json.Tests.Schema
     {
     }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
     [Serializable]
     public sealed class SerializableTestObject
     {

@@ -148,7 +148,7 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net6.0'">
     <AssemblyTitle>Json.NET Tests .NET 6.0</AssemblyTitle>
     <ReferringTargetFrameworkForProjectReferences>net6.0</ReferringTargetFrameworkForProjectReferences>
-    <DefineConstants>NETSTANDARD2_0;DNXCORE50;PORTABLE;HAVE_BENCHMARKS;HAVE_REGEX_TIMEOUTS;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>NET6_0;DNXCORE50;PORTABLE;HAVE_BENCHMARKS;HAVE_REGEX_TIMEOUTS;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">

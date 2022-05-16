@@ -27,7 +27,7 @@ using System.ComponentModel;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(NET35 || NET20 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(NET35 || NET20 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
     [TypeConverter(typeof(MyInterfaceConverter))]
     internal interface IMyInterface
     {

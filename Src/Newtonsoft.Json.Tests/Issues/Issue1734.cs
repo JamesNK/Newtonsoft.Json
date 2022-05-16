@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Linq.JsonPath;
 using System;
