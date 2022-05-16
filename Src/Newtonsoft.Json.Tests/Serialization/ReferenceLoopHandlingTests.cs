@@ -151,7 +151,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
         }
 
-#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Serializable]
         public class MainClass : ISerializable
         {

@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Tests
             }
         }
 
-#if !(NETSTANDARD1_0 || PORTABLE) || NETSTANDARD2_0
+#if !(NETSTANDARD1_0 || PORTABLE) || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public async Task WriteLazy()
         {
@@ -370,7 +370,7 @@ namespace Newtonsoft.Json.Tests
             Assert.IsTrue(ms.CanRead);
         }
 
-#if !(PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public async Task WriteIConvertableAsync()
         {

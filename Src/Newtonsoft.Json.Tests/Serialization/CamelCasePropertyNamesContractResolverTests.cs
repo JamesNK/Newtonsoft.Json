@@ -119,7 +119,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             string json = o.ToString();
         }
 
-#if !(PORTABLE || PORTABLE40) || NETSTANDARD2_0
+#if !(PORTABLE || PORTABLE40) || NETSTANDARD2_0 || NET6_0_OR_GREATER
 #pragma warning disable 618
         [Test]
         public void MemberSearchFlags()

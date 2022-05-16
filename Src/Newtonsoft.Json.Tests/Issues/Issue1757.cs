@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if (NETSTANDARD2_0)
+#if (NETSTANDARD2_0 || NET6_0_OR_GREATER)
 using System;
 using System.Collections;
 using System.Collections.Generic;

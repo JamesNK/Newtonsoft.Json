@@ -123,7 +123,7 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(2006, d.Year);
         }
 
-#if !(DNXCORE50) || NETSTANDARD2_0
+#if !(DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public void SerializeFormattedDateTimeNewZealandCulture()
         {

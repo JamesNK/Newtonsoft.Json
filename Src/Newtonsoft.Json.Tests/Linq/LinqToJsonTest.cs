@@ -62,7 +62,7 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(@"['We\'re offline!']", v.Path);
         }
 
-#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
         public class DemoClass
         {
             public decimal maxValue;

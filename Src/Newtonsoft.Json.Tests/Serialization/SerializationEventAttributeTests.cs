@@ -272,7 +272,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
         }
 
-#if !(PORTABLE || DNXCORE50) || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
         public class SerializationEventContextTestObject
         {
             public string TestMember { get; set; }
@@ -303,7 +303,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
-#if !(PORTABLE || DNXCORE50) || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public void WhenSerializationErrorDetectedBySerializer_ThenCallbackIsCalled()
         {

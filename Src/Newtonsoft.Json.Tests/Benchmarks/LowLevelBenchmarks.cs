@@ -35,7 +35,7 @@ using System.Text;
 using System.Threading.Tasks;
 using BenchmarkDotNet.Attributes;
 using Newtonsoft.Json.Utilities;
-#if !PORTABLE || NETSTANDARD2_0
+#if !PORTABLE || NETSTANDARD2_0 || NET6_0_OR_GREATER
 using MemberTypes = System.Reflection.MemberTypes;
 using BindingFlags = System.Reflection.BindingFlags;
 #else

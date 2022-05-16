@@ -136,7 +136,7 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(1, arrayPool.FreeArrays.Count);
         }
 
-#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public void BufferErroringWithInvalidSize()
         {
@@ -225,7 +225,7 @@ namespace Newtonsoft.Json.Tests
             Assert.IsTrue(ms.CanRead);
         }
 
-#if !(PORTABLE) || NETSTANDARD2_0
+#if !(PORTABLE) || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public void WriteIConvertable()
         {
