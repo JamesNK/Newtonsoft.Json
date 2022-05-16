@@ -289,6 +289,7 @@ namespace Newtonsoft.Json.Utilities
                         }
                         else
                         {
+                            MiscellaneousUtils.Assert(writeBuffer != null);
                             writer.Write(writeBuffer, 0, UnicodeTextLength);
                         }
                     }

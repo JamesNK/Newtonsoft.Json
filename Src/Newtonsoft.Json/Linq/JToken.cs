@@ -1333,7 +1333,7 @@ namespace Newtonsoft.Json.Linq
 
             if (v.Value is string)
             {
-                return Convert.FromBase64String(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
+                return Convert.FromBase64String(Convert.ToString(v.Value, CultureInfo.InvariantCulture)!);
             }
 #if HAVE_BIG_INTEGER
             if (v.Value is BigInteger integer)
@@ -1368,7 +1368,7 @@ namespace Newtonsoft.Json.Linq
                 return new Guid(bytes);
             }
 
-            return (v.Value is Guid guid) ? guid : new Guid(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
+            return (v.Value is Guid guid) ? guid : new Guid(Convert.ToString(v.Value, CultureInfo.InvariantCulture)!);
         }
 
         /// <summary>
@@ -1399,7 +1399,7 @@ namespace Newtonsoft.Json.Linq
                 return new Guid(bytes);
             }
 
-            return (v.Value is Guid guid) ? guid : new Guid(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
+            return (v.Value is Guid guid) ? guid : new Guid(Convert.ToString(v.Value, CultureInfo.InvariantCulture)!);
         }
 
         /// <summary>
@@ -1415,7 +1415,7 @@ namespace Newtonsoft.Json.Linq
                 throw new ArgumentException("Can not convert {0} to TimeSpan.".FormatWith(CultureInfo.InvariantCulture, GetType(value)));
             }
 
-            return (v.Value is TimeSpan span) ? span : ConvertUtils.ParseTimeSpan(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
+            return (v.Value is TimeSpan span) ? span : ConvertUtils.ParseTimeSpan(Convert.ToString(v.Value, CultureInfo.InvariantCulture)!);
         }
 
         /// <summary>
@@ -1441,7 +1441,7 @@ namespace Newtonsoft.Json.Linq
                 return null;
             }
 
-            return (v.Value is TimeSpan span) ? span : ConvertUtils.ParseTimeSpan(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
+            return (v.Value is TimeSpan span) ? span : ConvertUtils.ParseTimeSpan(Convert.ToString(v.Value, CultureInfo.InvariantCulture)!);
         }
 
         /// <summary>
@@ -1467,7 +1467,7 @@ namespace Newtonsoft.Json.Linq
                 return null;
             }
 
-            return (v.Value is Uri uri) ? uri : new Uri(Convert.ToString(v.Value, CultureInfo.InvariantCulture));
+            return (v.Value is Uri uri) ? uri : new Uri(Convert.ToString(v.Value, CultureInfo.InvariantCulture)!);
         }
 
 #if HAVE_BIG_INTEGER
@@ -1957,15 +1957,15 @@ namespace Newtonsoft.Json.Linq
                         }
                         catch (Exception ex)
                         {
-                            Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType);
+                            Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType)!;
                             throw new ArgumentException("Could not convert '{0}' to {1}.".FormatWith(CultureInfo.InvariantCulture, (string?)this, enumType.Name), ex);
                         }
                     }
 
                     if (Type == JTokenType.Integer)
                     {
-                        Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType);
-                        return Enum.ToObject(enumType, ((JValue)this).Value);
+                        Type enumType = objectType.IsEnum() ? objectType : Nullable.GetUnderlyingType(objectType)!;
+                        return Enum.ToObject(enumType, ((JValue)this).Value!);
                     }
                 }
 

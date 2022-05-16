@@ -168,7 +168,7 @@ namespace Newtonsoft.Json.Utilities
 
         public virtual IEnumerator<T> GetEnumerator()
         {
-            return (_genericCollection ?? _list.Cast<T>()).GetEnumerator();
+            return (_genericCollection ?? _list!.Cast<T>()).GetEnumerator();
         }
 
         IEnumerator IEnumerable.GetEnumerator()
@@ -176,25 +176,25 @@ namespace Newtonsoft.Json.Utilities
             return ((IEnumerable)_genericCollection! ?? _list!).GetEnumerator();
         }
 
-        int IList.Add(object value)
+        int IList.Add(object? value)
         {
             VerifyValueType(value);
-            Add((T)value);
+            Add((T)value!);
 
             return (Count - 1);
         }
 
-        bool IList.Contains(object value)
+        bool IList.Contains(object? value)
         {
             if (IsCompatibleObject(value))
             {
-                return Contains((T)value);
+                return Contains((T)value!);
             }
 
             return false;
         }
 
-        int IList.IndexOf(object value)
+        int IList.IndexOf(object? value)
         {
             if (_genericCollection != null)
             {
@@ -203,7 +203,7 @@ namespace Newtonsoft.Json.Utilities
 
             if (IsCompatibleObject(value))
             {
-                return _list!.IndexOf((T)value);
+                return _list!.IndexOf((T)value!);
             }
 
             return -1;
@@ -219,7 +219,7 @@ namespace Newtonsoft.Json.Utilities
             _list!.RemoveAt(index);
         }
 
-        void IList.Insert(int index, object value)
+        void IList.Insert(int index, object? value)
         {
             if (_genericCollection != null)
             {
@@ -227,7 +227,7 @@ namespace Newtonsoft.Json.Utilities
             }
 
             VerifyValueType(value);
-            _list!.Insert(index, (T)value);
+            _list!.Insert(index, (T)value!);
         }
 
         bool IList.IsFixedSize
@@ -246,15 +246,15 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        void IList.Remove(object value)
+        void IList.Remove(object? value)
         {
             if (IsCompatibleObject(value))
             {
-                Remove((T)value);
+                Remove((T)value!);
             }
         }
 
-        object IList.this[int index]
+        object? IList.this[int index]
         {
             get
             {
@@ -273,7 +273,7 @@ namespace Newtonsoft.Json.Utilities
                 }
 
                 VerifyValueType(value);
-                _list![index] = (T)value;
+                _list![index] = (T?)value;
             }
         }
 
@@ -297,7 +297,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        private static void VerifyValueType(object value)
+        private static void VerifyValueType(object? value)
         {
             if (!IsCompatibleObject(value))
             {
@@ -305,7 +305,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        private static bool IsCompatibleObject(object value)
+        private static bool IsCompatibleObject(object? value)
         {
             if (!(value is T) && (value != null || (typeof(T).IsValueType() && !ReflectionUtils.IsNullableType(typeof(T)))))
             {

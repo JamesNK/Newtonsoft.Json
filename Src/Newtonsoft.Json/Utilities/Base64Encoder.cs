@@ -78,12 +78,12 @@ namespace Newtonsoft.Json.Utilities
 
             if (_leftOverBytesCount > 0)
             {
-                if(FulfillFromLeftover(buffer, index, ref count))
+                if (FulfillFromLeftover(buffer, index, ref count))
                 {
                     return;
                 }
 
-                int num2 = Convert.ToBase64CharArray(_leftOverBytes, 0, 3, _charsLine, 0);
+                int num2 = Convert.ToBase64CharArray(_leftOverBytes!, 0, 3, _charsLine, 0);
                 WriteChars(_charsLine, 0, num2);
             }
 
@@ -145,7 +145,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (_leftOverBytesCount > 0)
             {
-                int count = Convert.ToBase64CharArray(_leftOverBytes, 0, _leftOverBytesCount, _charsLine, 0);
+                int count = Convert.ToBase64CharArray(_leftOverBytes!, 0, _leftOverBytesCount, _charsLine, 0);
                 WriteChars(_charsLine, 0, count);
                 _leftOverBytesCount = 0;
             }
@@ -169,7 +169,7 @@ namespace Newtonsoft.Json.Utilities
                     return;
                 }
 
-                int num2 = Convert.ToBase64CharArray(_leftOverBytes, 0, 3, _charsLine, 0);
+                int num2 = Convert.ToBase64CharArray(_leftOverBytes!, 0, 3, _charsLine, 0);
                 await WriteCharsAsync(_charsLine, 0, num2, cancellationToken).ConfigureAwait(false);
             }
 
@@ -203,7 +203,7 @@ namespace Newtonsoft.Json.Utilities
 
             if (_leftOverBytesCount > 0)
             {
-                int count = Convert.ToBase64CharArray(_leftOverBytes, 0, _leftOverBytesCount, _charsLine, 0);
+                int count = Convert.ToBase64CharArray(_leftOverBytes!, 0, _leftOverBytesCount, _charsLine, 0);
                 _leftOverBytesCount = 0;
                 return WriteCharsAsync(_charsLine, 0, count, cancellationToken);
             }

@@ -291,10 +291,10 @@ namespace Newtonsoft.Json.Linq
 #pragma warning restore CS8653 // A default expression introduces a null value for a type parameter.
                     }
 
-                    targetType = Nullable.GetUnderlyingType(targetType);
+                    targetType = Nullable.GetUnderlyingType(targetType)!;
                 }
 
-                return (U)System.Convert.ChangeType(value.Value, targetType, CultureInfo.InvariantCulture);
+                return (U?)System.Convert.ChangeType(value.Value, targetType, CultureInfo.InvariantCulture);
             }
         }
 

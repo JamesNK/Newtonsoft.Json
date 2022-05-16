@@ -691,10 +691,10 @@ namespace Newtonsoft.Json
                     return WriteStartArrayAsync(cancellationToken);
                 case JsonToken.StartConstructor:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    return WriteStartConstructorAsync(value.ToString(), cancellationToken);
+                    return WriteStartConstructorAsync(value.ToString()!, cancellationToken);
                 case JsonToken.PropertyName:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    return WritePropertyNameAsync(value.ToString(), cancellationToken);
+                    return WritePropertyNameAsync(value.ToString()!, cancellationToken);
                 case JsonToken.Comment:
                     return WriteCommentAsync(value?.ToString(), cancellationToken);
                 case JsonToken.Integer:

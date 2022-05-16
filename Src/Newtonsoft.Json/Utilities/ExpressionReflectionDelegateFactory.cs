@@ -111,7 +111,7 @@ namespace Newtonsoft.Json.Utilities
                     bool isByRef = false;
                     if (parameterType.IsByRef)
                     {
-                        parameterType = parameterType.GetElementType();
+                        parameterType = parameterType.GetElementType()!;
                         isByRef = true;
                     }
 
@@ -144,7 +144,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                Expression readParameter = EnsureCastExpression(targetParameterExpression!, method.DeclaringType);
+                Expression readParameter = EnsureCastExpression(targetParameterExpression!, method.DeclaringType!);
 
                 callExpression = Expression.Call(readParameter, (MethodInfo)method, argsExpression);
             }
@@ -194,7 +194,7 @@ namespace Newtonsoft.Json.Utilities
             // avoid error from expressions compiler because of abstract class
             if (type.IsAbstract())
             {
-                return () => (T)Activator.CreateInstance(type);
+                return () => (T)Activator.CreateInstance(type)!;
             }
 
             try
@@ -214,7 +214,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 // an error can be thrown if constructor is not valid on Win8
                 // will have INVOCATION_FLAGS_NON_W8P_FX_API invocation flag
-                return () => (T)Activator.CreateInstance(type);
+                return () => (T)Activator.CreateInstance(type)!;
             }
         }
 
@@ -240,7 +240,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                Expression readParameter = EnsureCastExpression(parameterExpression, propertyInfo.DeclaringType);
+                Expression readParameter = EnsureCastExpression(parameterExpression, propertyInfo.DeclaringType!);
 
                 resultExpression = Expression.MakeMemberAccess(readParameter, propertyInfo);
             }
@@ -266,7 +266,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                Expression sourceExpression = EnsureCastExpression(sourceParameter, fieldInfo.DeclaringType);
+                Expression sourceExpression = EnsureCastExpression(sourceParameter, fieldInfo.DeclaringType!);
 
                 fieldExpression = Expression.Field(sourceExpression, fieldInfo);
             }
@@ -283,7 +283,7 @@ namespace Newtonsoft.Json.Utilities
 
             // use reflection for structs
             // expression doesn't correctly set value
-            if (fieldInfo.DeclaringType.IsValueType() || fieldInfo.IsInitOnly)
+            if (fieldInfo.DeclaringType!.IsValueType() || fieldInfo.IsInitOnly)
             {
                 return LateBoundReflectionDelegateFactory.Instance.CreateSet<T>(fieldInfo);
             }
@@ -298,7 +298,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                Expression sourceExpression = EnsureCastExpression(sourceParameterExpression, fieldInfo.DeclaringType);
+                Expression sourceExpression = EnsureCastExpression(sourceParameterExpression, fieldInfo.DeclaringType!);
 
                 fieldExpression = Expression.Field(sourceExpression, fieldInfo);
             }
@@ -319,7 +319,7 @@ namespace Newtonsoft.Json.Utilities
 
             // use reflection for structs
             // expression doesn't correctly set value
-            if (propertyInfo.DeclaringType.IsValueType())
+            if (propertyInfo.DeclaringType!.IsValueType())
             {
                 return LateBoundReflectionDelegateFactory.Instance.CreateSet<T>(propertyInfo);
             }
@@ -345,7 +345,7 @@ namespace Newtonsoft.Json.Utilities
             }
             else
             {
-                Expression readInstanceParameter = EnsureCastExpression(instanceParameter, propertyInfo.DeclaringType);
+                Expression readInstanceParameter = EnsureCastExpression(instanceParameter, propertyInfo.DeclaringType!);
 
                 setExpression = Expression.Call(readInstanceParameter, setMethod, readValueParameter);
             }
@@ -372,7 +372,7 @@ namespace Newtonsoft.Json.Utilities
 
                 if (allowWidening && targetType.IsPrimitive())
                 {
-                    MethodInfo toTargetTypeMethod = typeof(Convert)
+                    MethodInfo? toTargetTypeMethod = typeof(Convert)
                         .GetMethod("To" + targetType.Name, new[] { typeof(object) });
 
                     if (toTargetTypeMethod != null)

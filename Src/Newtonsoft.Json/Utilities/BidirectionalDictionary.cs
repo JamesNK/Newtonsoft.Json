@@ -25,11 +25,14 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 
 namespace Newtonsoft.Json.Utilities
 {
     internal class BidirectionalDictionary<TFirst, TSecond>
+        where TFirst : notnull
+        where TSecond : notnull
     {
         private readonly IDictionary<TFirst, TSecond> _firstToSecond;
         private readonly IDictionary<TSecond, TFirst> _secondToFirst;
@@ -61,7 +64,7 @@ namespace Newtonsoft.Json.Utilities
 
         public void Set(TFirst first, TSecond second)
         {
-            if (_firstToSecond.TryGetValue(first, out TSecond existingSecond))
+            if (_firstToSecond.TryGetValue(first, out TSecond? existingSecond))
             {
                 if (!existingSecond!.Equals(second))
                 {
@@ -69,7 +72,7 @@ namespace Newtonsoft.Json.Utilities
                 }
             }
 
-            if (_secondToFirst.TryGetValue(second, out TFirst existingFirst))
+            if (_secondToFirst.TryGetValue(second, out TFirst? existingFirst))
             {
                 if (!existingFirst!.Equals(first))
                 {
@@ -81,12 +84,12 @@ namespace Newtonsoft.Json.Utilities
             _secondToFirst.Add(second, first);
         }
 
-        public bool TryGetByFirst(TFirst first, out TSecond second)
+        public bool TryGetByFirst(TFirst first, [NotNullWhen(true)] out TSecond? second)
         {
             return _firstToSecond.TryGetValue(first, out second);
         }
 
-        public bool TryGetBySecond(TSecond second, out TFirst first)
+        public bool TryGetBySecond(TSecond second, [NotNullWhen(true)] out TFirst? first)
         {
             return _secondToFirst.TryGetValue(second, out first);
         }

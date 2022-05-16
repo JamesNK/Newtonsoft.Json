@@ -289,7 +289,7 @@ namespace Newtonsoft.Json.Utilities
                     break;
                 }
 
-                object v = currentArray[0];
+                object? v = currentArray[0];
                 if (v is IList list)
                 {
                     currentArray = list;
@@ -341,11 +341,11 @@ namespace Newtonsoft.Json.Utilities
                 int index = indices[i];
                 if (i == indices.Length - 1)
                 {
-                    return currentList[index];
+                    return currentList[index]!;
                 }
                 else
                 {
-                    currentList = (IList)currentList[index];
+                    currentList = (IList)currentList[index]!;
                 }
             }
             return currentList;

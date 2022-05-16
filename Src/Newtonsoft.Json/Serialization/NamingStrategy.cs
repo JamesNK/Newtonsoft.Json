@@ -123,7 +123,7 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <param name="obj"></param>
         /// <returns></returns>
-        public override bool Equals(object obj) => Equals(obj as NamingStrategy);
+        public override bool Equals(object? obj) => Equals(obj as NamingStrategy);
 
         /// <summary>
         /// Compare to another NamingStrategy

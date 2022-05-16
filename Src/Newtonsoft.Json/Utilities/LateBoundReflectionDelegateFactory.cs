@@ -50,7 +50,7 @@ namespace Newtonsoft.Json.Utilities
                 return a => c.Invoke(a);
             }
 
-            return a => method.Invoke(null, a);
+            return a => method.Invoke(null, a)!;
         }
 
         public override MethodCall<T, object?> CreateMethodCall<T>(MethodBase method)
@@ -71,10 +71,14 @@ namespace Newtonsoft.Json.Utilities
 
             if (type.IsValueType())
             {
-                return () => (T)Activator.CreateInstance(type);
+                return () => (T)Activator.CreateInstance(type)!;
             }
 
-            ConstructorInfo constructorInfo = ReflectionUtils.GetDefaultConstructor(type, true);
+            ConstructorInfo? constructorInfo = ReflectionUtils.GetDefaultConstructor(type, true);
+            if (constructorInfo == null)
+            {
+                throw new InvalidOperationException("Unable to find default constructor for " + type.FullName);
+            }
 
             return () => (T)constructorInfo.Invoke(null);
         }

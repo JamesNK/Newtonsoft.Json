@@ -1680,7 +1680,7 @@ namespace Newtonsoft.Json
             if (Value != null && Value.ToString() == JsonTypeReflector.TypePropertyName)
             {
                 await ReaderReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
-                if (Value != null && Value.ToString().StartsWith("System.Byte[]", StringComparison.Ordinal))
+                if (Value != null && Value.ToString()!.StartsWith("System.Byte[]", StringComparison.Ordinal))
                 {
                     await ReaderReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
                     if (Value.ToString() == JsonTypeReflector.ValuePropertyName)
