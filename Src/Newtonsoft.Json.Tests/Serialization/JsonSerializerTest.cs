@@ -2259,7 +2259,7 @@ keyword such as type of business.""
             string json = JsonConvert.SerializeObject(new ConverableMembers(), Formatting.Indented);
 
             string expected = null;
-#if (NETSTANDARD2_0)
+#if (NETSTANDARD2_0 || NET6_0_OR_GREATER)
             expected = @"{
   ""String"": ""string"",
   ""Int32"": 2147483647,

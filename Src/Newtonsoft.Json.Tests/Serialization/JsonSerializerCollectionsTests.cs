@@ -187,7 +187,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             Dictionary<float, int> dictionary = new Dictionary<float, int> { { float.MaxValue, 1 } };
             string output = JsonConvert.SerializeObject(dictionary);
-#if !(NETSTANDARD2_0 || NETSTANDARD1_3)
+#if !(NETSTANDARD2_0 || NETSTANDARD1_3 || NET6_0_OR_GREATER)
             Assert.AreEqual(@"{""3.40282347E+38"":1}", output);
 #else
             Assert.AreEqual(@"{""3.4028235E+38"":1}", output);
