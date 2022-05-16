@@ -1292,6 +1292,13 @@ namespace Newtonsoft.Json.Serialization
                 return true;
             }
 
+#if HAVE_DATE_ONLY
+            if (type == typeof(DateOnly) || type == typeof(TimeOnly))
+            {
+                return true;
+            }
+#endif
+
             return false;
         }
 

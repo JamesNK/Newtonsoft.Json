@@ -503,6 +503,18 @@ namespace Newtonsoft.Json.Utilities
                     value = Type.GetType(s, true);
                     return ConvertResult.Success;
                 }
+#if HAVE_DATE_ONLY
+                if (targetType == typeof(DateOnly))
+                {
+                    value = DateOnly.ParseExact(s, "yyyy'-'MM'-'dd", CultureInfo.InvariantCulture);
+                    return ConvertResult.Success;
+                }
+                if (targetType == typeof(TimeOnly))
+                {
+                    value = TimeOnly.ParseExact(s, "HH':'mm':'ss.FFFFFFF", CultureInfo.InvariantCulture);
+                    return ConvertResult.Success;
+                }
+#endif
             }
 
 #if HAVE_BIG_INTEGER
