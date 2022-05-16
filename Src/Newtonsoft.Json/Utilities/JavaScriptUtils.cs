@@ -387,7 +387,7 @@ namespace Newtonsoft.Json.Utilities
             bool[] charEscapeFlags, StringEscapeHandling stringEscapeHandling, JsonTextWriter client, char[] writeBuffer, CancellationToken cancellationToken)
         {
             Task task = writer.WriteAsync(delimiter, cancellationToken);
-            if (!task.IsCompletedSucessfully())
+            if (!task.IsCompletedSuccessfully())
             {
                 return WriteEscapedJavaScriptStringWithDelimitersAsync(task, writer, s, delimiter, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
             }
@@ -395,7 +395,7 @@ namespace Newtonsoft.Json.Utilities
             if (!StringUtils.IsNullOrEmpty(s))
             {
                 task = WriteEscapedJavaScriptStringWithoutDelimitersAsync(writer, s, charEscapeFlags, stringEscapeHandling, client, writeBuffer, cancellationToken);
-                if (task.IsCompletedSucessfully())
+                if (task.IsCompletedSuccessfully())
                 {
                     return writer.WriteAsync(delimiter, cancellationToken);
                 }

@@ -44,7 +44,7 @@ namespace Newtonsoft.Json.Linq
         public override Task WriteToAsync(JsonWriter writer, CancellationToken cancellationToken, params JsonConverter[] converters)
         {
             Task task = writer.WritePropertyNameAsync(_name, cancellationToken);
-            if (task.IsCompletedSucessfully())
+            if (task.IsCompletedSuccessfully())
             {
                 return WriteValueAsync(writer, cancellationToken, converters);
             }

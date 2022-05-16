@@ -291,7 +291,7 @@ namespace Newtonsoft.Json
                 if (_currentState == State.Property)
                 {
                     t = WriteNullAsync(cancellationToken);
-                    if (!t.IsCompletedSucessfully())
+                    if (!t.IsCompletedSuccessfully())
                     {
                         return AwaitProperty(t, levelsToComplete, token, cancellationToken);
                     }
@@ -302,7 +302,7 @@ namespace Newtonsoft.Json
                     if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
                     {
                         t = WriteIndentAsync(cancellationToken);
-                        if (!t.IsCompletedSucessfully())
+                        if (!t.IsCompletedSuccessfully())
                         {
                             return AwaitIndent(t, levelsToComplete, token, cancellationToken);
                         }
@@ -310,7 +310,7 @@ namespace Newtonsoft.Json
                 }
 
                 t = WriteEndAsync(token, cancellationToken);
-                if (!t.IsCompletedSucessfully())
+                if (!t.IsCompletedSuccessfully())
                 {
                     return AwaitEnd(t, levelsToComplete, cancellationToken);
                 }
