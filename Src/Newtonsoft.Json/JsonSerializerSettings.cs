@@ -31,6 +31,12 @@ using System.Runtime.Serialization.Formatters;
 using Newtonsoft.Json.Serialization;
 using System.Runtime.Serialization;
 using System.Diagnostics;
+using System.Runtime;
+#if !HAVE_LINQ
+using Newtonsoft.Json.Utilities.LinqBridge;
+#else
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json
 {
@@ -451,6 +457,45 @@ namespace Newtonsoft.Json
         public JsonSerializerSettings()
         {
             Converters = new List<JsonConverter>();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="JsonSerializerSettings"/> class
+        /// using values copied from the passed in <see cref="JsonSerializerSettings"/>.
+        /// </summary>
+        public JsonSerializerSettings(JsonSerializerSettings original)
+        {
+            _floatParseHandling = original._floatParseHandling;
+            _floatFormatHandling = original._floatFormatHandling;
+            _dateParseHandling = original._dateParseHandling;
+            _dateTimeZoneHandling = original._dateTimeZoneHandling;
+            _dateFormatHandling = original._dateFormatHandling;
+            _formatting = original._formatting;
+            _maxDepth = original._maxDepth;
+            _maxDepthSet = original._maxDepthSet;
+            _dateFormatString = original._dateFormatString;
+            _dateFormatStringSet = original._dateFormatStringSet;
+            _context = original._context;
+            Error = original.Error;
+            SerializationBinder = original.SerializationBinder;
+            TraceWriter = original.TraceWriter;
+            _culture = original._culture;
+            ReferenceResolverProvider = original.ReferenceResolverProvider;
+            EqualityComparer = original.EqualityComparer;
+            ContractResolver = original.ContractResolver;
+            _constructorHandling = original._constructorHandling;
+            _typeNameAssemblyFormatHandling = original._typeNameAssemblyFormatHandling;
+            _metadataPropertyHandling = original._metadataPropertyHandling;
+            _typeNameHandling = original._typeNameHandling;
+            _preserveReferencesHandling = original._preserveReferencesHandling;
+            Converters = original.Converters.ToList();
+            _defaultValueHandling = original._defaultValueHandling;
+            _nullValueHandling = original._nullValueHandling;
+            _objectCreationHandling = original._objectCreationHandling;
+            _missingMemberHandling = original._missingMemberHandling;
+            _referenceLoopHandling = original._referenceLoopHandling;
+            _checkAdditionalContent = original._checkAdditionalContent;
+            _stringEscapeHandling = original._stringEscapeHandling;
         }
     }
 }

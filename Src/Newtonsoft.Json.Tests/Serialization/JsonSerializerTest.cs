@@ -48,6 +48,7 @@ using System.Text.RegularExpressions;
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+using TestCase = Xunit.InlineDataAttribute;
 #else
 using NUnit.Framework;
 #endif
@@ -8074,6 +8075,128 @@ This is just junk, though.";
             int depth = GetDepth(o);
 
             Assert.AreEqual(150, depth);
+        }
+
+#if DNXCORE50
+        [Theory]
+#endif
+        [TestCase(true)]
+        [TestCase(false)]
+        public void ShallowCopy_CopyAllProperties(bool specifyDateFormatString)
+        {
+            var propertyNames = typeof(JsonSerializerSettings).GetProperties().Select(property => property.Name).ToList();
+
+            var settings = new JsonSerializerSettings();
+            if (specifyDateFormatString)
+            {
+                settings.DateFormatString = "yyyy";
+            }
+
+            var clone = new JsonSerializerSettings(settings);
+
+            Assert.AreEqual(settings.DateFormatString, clone.DateFormatString);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.DateFormatString)));
+
+            Assert.AreEqual(settings.DateFormatHandling, clone.DateFormatHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.DateFormatHandling)));
+
+            Assert.AreEqual(settings.ReferenceLoopHandling, clone.ReferenceLoopHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.ReferenceLoopHandling)));
+
+            Assert.AreEqual(settings.MissingMemberHandling, clone.MissingMemberHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.MissingMemberHandling)));
+
+            Assert.AreEqual(settings.ObjectCreationHandling, clone.ObjectCreationHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.ObjectCreationHandling)));
+
+            Assert.AreEqual(settings.NullValueHandling, clone.NullValueHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.NullValueHandling)));
+
+            Assert.AreEqual(settings.DefaultValueHandling, clone.DefaultValueHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.DefaultValueHandling)));
+
+            Assert.AreEqual(settings.Converters, clone.Converters);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.Converters)));
+
+            Assert.AreEqual(settings.PreserveReferencesHandling, clone.PreserveReferencesHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.PreserveReferencesHandling)));
+
+            Assert.AreEqual(settings.TypeNameHandling, clone.TypeNameHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.TypeNameHandling)));
+
+            Assert.AreEqual(settings.MetadataPropertyHandling, clone.MetadataPropertyHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.MetadataPropertyHandling)));
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.AreEqual(settings.TypeNameAssemblyFormat, clone.TypeNameAssemblyFormat);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.TypeNameAssemblyFormat)));
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            Assert.AreEqual(settings.TypeNameAssemblyFormatHandling, clone.TypeNameAssemblyFormatHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.TypeNameAssemblyFormatHandling)));
+
+            Assert.AreEqual(settings.ConstructorHandling, clone.ConstructorHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.ConstructorHandling)));
+
+            Assert.AreEqual(settings.ContractResolver, clone.ContractResolver);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.ContractResolver)));
+
+            Assert.AreEqual(settings.EqualityComparer, clone.EqualityComparer);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.EqualityComparer)));
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.AreEqual(settings.ReferenceResolver, clone.ReferenceResolver);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.ReferenceResolver)));
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            Assert.AreEqual(settings.ReferenceResolverProvider, clone.ReferenceResolverProvider);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.ReferenceResolverProvider)));
+
+            Assert.AreEqual(settings.TraceWriter, clone.TraceWriter);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.TraceWriter)));
+
+#pragma warning disable CS0618 // Type or member is obsolete
+            Assert.AreEqual(settings.Binder, clone.Binder);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.Binder)));
+#pragma warning restore CS0618 // Type or member is obsolete
+
+            Assert.AreEqual(settings.SerializationBinder, clone.SerializationBinder);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.SerializationBinder)));
+
+            Assert.AreEqual(settings.Error, clone.Error);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.Error)));
+
+            Assert.AreEqual(settings.Context, clone.Context);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.Context)));
+
+            Assert.AreEqual(settings.MaxDepth, clone.MaxDepth);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.MaxDepth)));
+
+            Assert.AreEqual(settings.Formatting, clone.Formatting);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.Formatting)));
+
+            Assert.AreEqual(settings.DateTimeZoneHandling, clone.DateTimeZoneHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.DateTimeZoneHandling)));
+
+            Assert.AreEqual(settings.DateParseHandling, clone.DateParseHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.DateParseHandling)));
+
+            Assert.AreEqual(settings.FloatFormatHandling, clone.FloatFormatHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.FloatFormatHandling)));
+
+            Assert.AreEqual(settings.FloatParseHandling, clone.FloatParseHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.FloatParseHandling)));
+
+            Assert.AreEqual(settings.StringEscapeHandling, clone.StringEscapeHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.StringEscapeHandling)));
+
+            Assert.AreEqual(settings.Culture, clone.Culture);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.Culture)));
+
+            Assert.AreEqual(settings.CheckAdditionalContent, clone.CheckAdditionalContent);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.CheckAdditionalContent)));
+
+            Assert.AreEqual(0, propertyNames.Count);
         }
 
         private static int GetDepth(JToken o)
