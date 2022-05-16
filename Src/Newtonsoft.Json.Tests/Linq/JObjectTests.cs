@@ -1439,7 +1439,7 @@ Parameter name: arrayIndex",
             ITypedList l = new JObject(p1, p2);
 
             PropertyDescriptorCollection propertyDescriptors = l.GetItemProperties(null);
-            Assert.IsNull(propertyDescriptors);
+            Assert.AreEqual(0, propertyDescriptors.Count);
         }
 
         [Test]

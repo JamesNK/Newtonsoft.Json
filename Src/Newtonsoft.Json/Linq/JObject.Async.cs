@@ -45,7 +45,7 @@ namespace Newtonsoft.Json.Linq
         public override Task WriteToAsync(JsonWriter writer, CancellationToken cancellationToken, params JsonConverter[] converters)
         {
             Task t = writer.WriteStartObjectAsync(cancellationToken);
-            if (!t.IsCompletedSucessfully())
+            if (!t.IsCompletedSuccessfully())
             {
                 return AwaitProperties(t, 0, writer, cancellationToken, converters);
             }
@@ -53,7 +53,7 @@ namespace Newtonsoft.Json.Linq
             for (int i = 0; i < _properties.Count; i++)
             {
                 t = _properties[i].WriteToAsync(writer, cancellationToken, converters);
-                if (!t.IsCompletedSucessfully())
+                if (!t.IsCompletedSuccessfully())
                 {
                     return AwaitProperties(t, i + 1, writer, cancellationToken, converters);
                 }

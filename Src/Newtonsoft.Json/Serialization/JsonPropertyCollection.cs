@@ -145,7 +145,7 @@ namespace Newtonsoft.Json.Serialization
             return property;
         }
 
-        private bool TryGetValue(string key, [NotNullWhen(true)]out JsonProperty? item)
+        private bool TryGetProperty(string key, [NotNullWhen(true)]out JsonProperty? item)
         {
             if (Dictionary == null)
             {
@@ -167,7 +167,7 @@ namespace Newtonsoft.Json.Serialization
             // KeyedCollection has an ordinal comparer
             if (comparisonType == StringComparison.Ordinal)
             {
-                if (TryGetValue(propertyName, out JsonProperty? property))
+                if (TryGetProperty(propertyName, out JsonProperty? property))
                 {
                     return property;
                 }

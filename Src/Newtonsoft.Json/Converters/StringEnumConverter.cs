@@ -222,7 +222,7 @@ namespace Newtonsoft.Json.Converters
             }
 
             bool isNullable = ReflectionUtils.IsNullableType(objectType);
-            Type t = isNullable ? Nullable.GetUnderlyingType(objectType) : objectType;
+            Type t = isNullable ? Nullable.GetUnderlyingType(objectType)! : objectType;
 
             try
             {
@@ -267,7 +267,7 @@ namespace Newtonsoft.Json.Converters
         public override bool CanConvert(Type objectType)
         {
             Type t = (ReflectionUtils.IsNullableType(objectType))
-                ? Nullable.GetUnderlyingType(objectType)
+                ? Nullable.GetUnderlyingType(objectType)!
                 : objectType;
 
             return t.IsEnum();

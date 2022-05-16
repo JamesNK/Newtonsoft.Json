@@ -399,7 +399,7 @@ namespace Newtonsoft.Json.Serialization
 #if HAVE_TYPE_DESCRIPTOR
             if (JsonTypeReflector.CanTypeDescriptorConvertString(type, out TypeConverter converter))
             {
-                s = converter.ConvertToInvariantString(value);
+                s = converter.ConvertToInvariantString(value)!;
                 return true;
             }
 #endif
@@ -414,7 +414,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (value is Type t)
             {
-                s = t.AssemblyQualifiedName;
+                s = t.AssemblyQualifiedName!;
                 return true;
             }
 
@@ -778,7 +778,7 @@ namespace Newtonsoft.Json.Serialization
 
                 if (isTopLevel)
                 {
-                    object value = values.GetValue(newIndices);
+                    object value = values.GetValue(newIndices)!;
 
                     try
                     {
@@ -879,7 +879,7 @@ namespace Newtonsoft.Json.Serialization
                 if (ShouldWriteReference(serializationEntry.Value, null, valueContract, contract, member))
                 {
                     writer.WritePropertyName(serializationEntry.Name);
-                    WriteReference(writer, serializationEntry.Value);
+                    WriteReference(writer, serializationEntry.Value!);
                 }
                 else if (CheckForCircularReference(writer, serializationEntry.Value, null, valueContract, contract, member))
                 {
@@ -1176,7 +1176,7 @@ namespace Newtonsoft.Json.Serialization
                             return enumName;
                         }
 
-                        return Convert.ToString(name, CultureInfo.InvariantCulture);
+                        return Convert.ToString(name, CultureInfo.InvariantCulture)!;
                     }
                 }
             }
@@ -1188,7 +1188,7 @@ namespace Newtonsoft.Json.Serialization
             else
             {
                 escape = true;
-                return name.ToString();
+                return name.ToString()!;
             }
         }
 

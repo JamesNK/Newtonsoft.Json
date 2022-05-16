@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Linq
         /// The value of a property for a given component.
         /// </returns>
         /// <param name="component">The component with the property for which to retrieve the value.</param>
-        public override object? GetValue(object component)
+        public override object? GetValue(object? component)
         {
             return (component as JObject)?[Name];
         }
@@ -85,7 +85,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="component">The component with the property value that is to be set.</param>
         /// <param name="value">The new value.</param>
-        public override void SetValue(object component, object value)
+        public override void SetValue(object? component, object? value)
         {
             if (component is JObject o)
             {

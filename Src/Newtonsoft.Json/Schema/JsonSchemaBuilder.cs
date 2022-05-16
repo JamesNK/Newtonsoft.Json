@@ -89,7 +89,10 @@ namespace Newtonsoft.Json.Schema
 
         private string UnescapeReference(string reference)
         {
-            return Uri.UnescapeDataString(reference).Replace("~1", "/").Replace("~0", "~");
+            string unescapedReference = Uri.UnescapeDataString(reference);
+            unescapedReference = StringUtils.Replace(unescapedReference, "~1", "/");
+            unescapedReference = StringUtils.Replace(unescapedReference, "~0", "~");
+            return unescapedReference;
         }
 
         private JsonSchema ResolveReferences(JsonSchema schema)
@@ -220,7 +223,11 @@ namespace Newtonsoft.Json.Schema
                 return deferredSchema;
             }
 
-            string location = token.Path.Replace(".", "/").Replace("[", "/").Replace("]", string.Empty);
+            string location = token.Path;
+            location = StringUtils.Replace(location, ".", "/");
+            location = StringUtils.Replace(location, "[", "/");
+            location = StringUtils.Replace(location, "]", string.Empty);
+
             if (!StringUtils.IsNullOrEmpty(location))
             {
                 location = "/" + location;

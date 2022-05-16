@@ -2353,6 +2353,7 @@ namespace Newtonsoft.Json
         {
             if (setToken)
             {
+                MiscellaneousUtils.Assert(_chars != null);
                 SetToken(JsonToken.Comment, new string(_chars, initialPosition, endPosition - initialPosition));
             }
         }

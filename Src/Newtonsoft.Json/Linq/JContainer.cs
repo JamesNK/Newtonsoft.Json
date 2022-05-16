@@ -84,7 +84,7 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Occurs when the items list of the collection has changed, or the collection is reset.
         /// </summary>
-        public event NotifyCollectionChangedEventHandler CollectionChanged
+        public event NotifyCollectionChangedEventHandler? CollectionChanged
         {
             add { _collectionChanged += value; }
             remove { _collectionChanged -= value; }
@@ -839,7 +839,7 @@ namespace Newtonsoft.Json.Linq
                         parent = parent.Parent;
                         break;
                     case JsonToken.StartConstructor:
-                        JConstructor constructor = new JConstructor(r.Value!.ToString());
+                        JConstructor constructor = new JConstructor(r.Value!.ToString()!);
                         constructor.SetLineInfo(lineInfo, settings);
                         parent.Add(constructor);
                         parent = constructor;
@@ -902,7 +902,7 @@ namespace Newtonsoft.Json.Linq
             DuplicatePropertyNameHandling duplicatePropertyNameHandling = settings?.DuplicatePropertyNameHandling ?? DuplicatePropertyNameHandling.Replace;
 
             JObject parentObject = (JObject)parent;
-            string propertyName = r.Value!.ToString();
+            string propertyName = r.Value!.ToString()!;
             JProperty? existingPropertyWithName = parentObject.Property(propertyName, StringComparison.Ordinal);
             if (existingPropertyWithName != null)
             {
@@ -947,10 +947,11 @@ namespace Newtonsoft.Json.Linq
             return string.Empty;
         }
 
-        PropertyDescriptorCollection? ITypedList.GetItemProperties(PropertyDescriptor[] listAccessors)
+        PropertyDescriptorCollection ITypedList.GetItemProperties(PropertyDescriptor[] listAccessors)
         {
             ICustomTypeDescriptor? d = First as ICustomTypeDescriptor;
-            return d?.GetProperties();
+
+            return d?.GetProperties() ?? new PropertyDescriptorCollection(CollectionUtils.ArrayEmpty<PropertyDescriptor>());
         }
 #endif
 
@@ -1006,7 +1007,7 @@ namespace Newtonsoft.Json.Linq
         }
         #endregion
 
-        private JToken? EnsureValue(object value)
+        private JToken? EnsureValue(object? value)
         {
             if (value == null)
             {
@@ -1022,7 +1023,7 @@ namespace Newtonsoft.Json.Linq
         }
 
         #region IList Members
-        int IList.Add(object value)
+        int IList.Add(object? value)
         {
             Add(EnsureValue(value));
             return Count - 1;
@@ -1033,17 +1034,17 @@ namespace Newtonsoft.Json.Linq
             ClearItems();
         }
 
-        bool IList.Contains(object value)
+        bool IList.Contains(object? value)
         {
             return ContainsItem(EnsureValue(value));
         }
 
-        int IList.IndexOf(object value)
+        int IList.IndexOf(object? value)
         {
             return IndexOfItem(EnsureValue(value));
         }
 
-        void IList.Insert(int index, object value)
+        void IList.Insert(int index, object? value)
         {
             InsertItem(index, EnsureValue(value), false);
         }
@@ -1052,7 +1053,7 @@ namespace Newtonsoft.Json.Linq
 
         bool IList.IsReadOnly => false;
 
-        void IList.Remove(object value)
+        void IList.Remove(object? value)
         {
             RemoveItem(EnsureValue(value));
         }
@@ -1062,7 +1063,7 @@ namespace Newtonsoft.Json.Linq
             RemoveItemAt(index);
         }
 
-        object IList.this[int index]
+        object? IList.this[int index]
         {
             get => GetItem(index);
             set => SetItem(index, EnsureValue(value));

@@ -537,11 +537,11 @@ namespace Newtonsoft.Json
                     break;
                 case JsonToken.StartConstructor:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    WriteStartConstructor(value.ToString());
+                    WriteStartConstructor(value.ToString()!);
                     break;
                 case JsonToken.PropertyName:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    WritePropertyName(value.ToString());
+                    WritePropertyName(value.ToString()!);
                     break;
                 case JsonToken.Comment:
                     WriteComment(value?.ToString());

@@ -89,7 +89,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (_dictionary != null)
             {
-                _dictionary.Add(key, value);
+                _dictionary.Add(key!, value);
             }
             else if (_genericDictionary != null)
             {
@@ -105,7 +105,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (_dictionary != null)
             {
-                return _dictionary.Contains(key);
+                return _dictionary.Contains(key!);
             }
 #if HAVE_READ_ONLY_COLLECTIONS
             else if (_readOnlyDictionary != null)
@@ -144,9 +144,9 @@ namespace Newtonsoft.Json.Utilities
         {
             if (_dictionary != null)
             {
-                if (_dictionary.Contains(key))
+                if (_dictionary.Contains(key!))
                 {
-                    _dictionary.Remove(key);
+                    _dictionary.Remove(key!);
                     return true;
                 }
                 else
@@ -172,7 +172,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (_dictionary != null)
             {
-                if (!_dictionary.Contains(key))
+                if (!_dictionary.Contains(key!))
                 {
 #pragma warning disable CS8653 // A default expression introduces a null value for a type parameter.
                     value = default;
@@ -181,7 +181,7 @@ namespace Newtonsoft.Json.Utilities
                 }
                 else
                 {
-                    value = (TValue)_dictionary[key];
+                    value = (TValue)_dictionary[key!]!;
                     return true;
                 }
             }
@@ -224,7 +224,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 if (_dictionary != null)
                 {
-                    return (TValue)_dictionary[key];
+                    return (TValue)_dictionary[key!]!;
                 }
 #if HAVE_READ_ONLY_COLLECTIONS
                 else if (_readOnlyDictionary != null)
@@ -241,7 +241,7 @@ namespace Newtonsoft.Json.Utilities
             {
                 if (_dictionary != null)
                 {
-                    _dictionary[key] = value;
+                    _dictionary[key!] = value;
                 }
 #if HAVE_READ_ONLY_COLLECTIONS
                 else if (_readOnlyDictionary != null)
@@ -321,7 +321,7 @@ namespace Newtonsoft.Json.Utilities
                     while (e.MoveNext())
                     {
                         DictionaryEntry entry = e.Entry;
-                        array[arrayIndex++] = new KeyValuePair<TKey, TValue>((TKey)entry.Key, (TValue)entry.Value);
+                        array[arrayIndex++] = new KeyValuePair<TKey, TValue>((TKey)entry.Key, (TValue)entry.Value!);
                     }
                 }
                 finally
@@ -387,13 +387,13 @@ namespace Newtonsoft.Json.Utilities
         {
             if (_dictionary != null)
             {
-                if (_dictionary.Contains(item.Key))
+                if (_dictionary.Contains(item.Key!))
                 {
-                    object value = _dictionary[item.Key];
+                    object? value = _dictionary[item.Key!];
 
                     if (Equals(value, item.Value))
                     {
-                        _dictionary.Remove(item.Key);
+                        _dictionary.Remove(item.Key!);
                         return true;
                     }
                     else
@@ -422,7 +422,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (_dictionary != null)
             {
-                return _dictionary.Cast<DictionaryEntry>().Select(de => new KeyValuePair<TKey, TValue>((TKey)de.Key, (TValue)de.Value)).GetEnumerator();
+                return _dictionary.Cast<DictionaryEntry>().Select(de => new KeyValuePair<TKey, TValue>((TKey)de.Key, (TValue)de.Value!)).GetEnumerator();
             }
 #if HAVE_READ_ONLY_COLLECTIONS
             else if (_readOnlyDictionary != null)
@@ -441,7 +441,7 @@ namespace Newtonsoft.Json.Utilities
             return GetEnumerator();
         }
 
-        void IDictionary.Add(object key, object value)
+        void IDictionary.Add(object key, object? value)
         {
             if (_dictionary != null)
             {
@@ -455,7 +455,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
             else
             {
-                GenericDictionary.Add((TKey)key, (TValue)value);
+                GenericDictionary.Add((TKey)key, (TValue)value!);
             }
         }
 
@@ -517,9 +517,9 @@ namespace Newtonsoft.Json.Utilities
 
             public object Key => Entry.Key;
 
-            public object Value => Entry.Value;
+            public object? Value => Entry.Value;
 
-            public object Current => new DictionaryEntry(_e.Current.Key, _e.Current.Value);
+            public object Current => new DictionaryEntry(_e.Current.Key!, _e.Current.Value);
 
             public bool MoveNext()
             {
