@@ -46,10 +46,10 @@ namespace Newtonsoft.Json.Utilities
 
     internal class ReflectionObject
     {
-        public ObjectConstructor<object>? Creator { get; }
+        public ObjectConstructor? Creator { get; }
         public IDictionary<string, ReflectionMember> Members { get; }
 
-        private ReflectionObject(ObjectConstructor<object>? creator)
+        private ReflectionObject(ObjectConstructor? creator)
         {
             Members = new Dictionary<string, ReflectionMember>();
             Creator = creator;
@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Utilities
         {
             ReflectionDelegateFactory delegateFactory = JsonTypeReflector.ReflectionDelegateFactory;
 
-            ObjectConstructor<object>? creatorConstructor = null;
+            ObjectConstructor? creatorConstructor = null;
             if (creator != null)
             {
                 creatorConstructor = delegateFactory.CreateParameterizedConstructor(creator);

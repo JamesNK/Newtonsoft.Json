@@ -557,7 +557,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 Type enumerableWrapper = typeof(EnumerableDictionaryWrapper<,>).MakeGenericType(keyType, valueType);
                 ConstructorInfo constructors = enumerableWrapper.GetConstructors().First();
-                ObjectConstructor<object> createEnumerableWrapper = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(constructors);
+                ObjectConstructor createEnumerableWrapper = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(constructors);
 
                 ExtensionDataGetter extensionDataGetter = o =>
                 {
@@ -1130,7 +1130,7 @@ namespace Newtonsoft.Json.Serialization
                 ConstructorInfo? constructorInfo = contract.NonNullableUnderlyingType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof(SerializationInfo), typeof(StreamingContext)}, null);
                 if (constructorInfo != null)
                 {
-                    ObjectConstructor<object> creator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(constructorInfo);
+                    ObjectConstructor creator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(constructorInfo);
 
                     contract.ISerializableCreator = creator;
                 }

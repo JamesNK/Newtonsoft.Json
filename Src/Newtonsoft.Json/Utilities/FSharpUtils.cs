@@ -166,29 +166,29 @@ namespace Newtonsoft.Json.Utilities
             return createFunction;
         }
 
-        public ObjectConstructor<object> CreateSeq(Type t)
+        public ObjectConstructor CreateSeq(Type t)
         {
             MethodInfo seqType = _ofSeq.MakeGenericMethod(t);
 
             return JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(seqType);
         }
 
-        public ObjectConstructor<object> CreateMap(Type keyType, Type valueType)
+        public ObjectConstructor CreateMap(Type keyType, Type valueType)
         {
             MethodInfo creatorDefinition = typeof(FSharpUtils).GetMethod("BuildMapCreator")!;
 
             MethodInfo creatorGeneric = creatorDefinition.MakeGenericMethod(keyType, valueType);
 
-            return (ObjectConstructor<object>)creatorGeneric.Invoke(this, null)!;
+            return (ObjectConstructor)creatorGeneric.Invoke(this, null)!;
         }
 
-        public ObjectConstructor<object> BuildMapCreator<TKey, TValue>()
+        public ObjectConstructor BuildMapCreator<TKey, TValue>()
         {
             Type genericMapType = _mapType.MakeGenericType(typeof(TKey), typeof(TValue));
             ConstructorInfo ctor = genericMapType.GetConstructor(new[] { typeof(IEnumerable<Tuple<TKey, TValue>>) })!;
-            ObjectConstructor<object> ctorDelegate = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(ctor);
+            ObjectConstructor ctorDelegate = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(ctor);
 
-            ObjectConstructor<object> creator = args =>
+            ObjectConstructor creator = args =>
             {
                 // convert dictionary KeyValuePairs to Tuples
                 IEnumerable<KeyValuePair<TKey, TValue>> values = (IEnumerable<KeyValuePair<TKey, TValue>>)args[0]!;

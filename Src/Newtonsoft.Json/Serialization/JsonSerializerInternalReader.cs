@@ -561,7 +561,7 @@ namespace Newtonsoft.Json.Serialization
 
                         if (createdFromNonDefaultCreator)
                         {
-                            ObjectConstructor<object> creator = (dictionaryContract.OverrideCreator ?? dictionaryContract.ParameterizedCreator)!;
+                            ObjectConstructor creator = (dictionaryContract.OverrideCreator ?? dictionaryContract.ParameterizedCreator)!;
 
                             return creator(dictionary);
                         }
@@ -904,7 +904,7 @@ namespace Newtonsoft.Json.Serialization
                     }
                     else
                     {
-                        ObjectConstructor<object> creator = (arrayContract.OverrideCreator ?? arrayContract.ParameterizedCreator)!;
+                        ObjectConstructor creator = (arrayContract.OverrideCreator ?? arrayContract.ParameterizedCreator)!;
 
                         return creator(list);
                     }
@@ -1947,7 +1947,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
-        private object CreateObjectUsingCreatorWithParameters(JsonReader reader, JsonObjectContract contract, JsonProperty? containerProperty, ObjectConstructor<object> creator, string? id)
+        private object CreateObjectUsingCreatorWithParameters(JsonReader reader, JsonObjectContract contract, JsonProperty? containerProperty, ObjectConstructor creator, string? id)
         {
             ValidationUtils.ArgumentNotNull(creator, nameof(creator));
 

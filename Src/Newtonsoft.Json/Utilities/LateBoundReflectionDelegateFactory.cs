@@ -39,7 +39,7 @@ namespace Newtonsoft.Json.Utilities
 
         internal static ReflectionDelegateFactory Instance => _instance;
 
-        public override ObjectConstructor<object> CreateParameterizedConstructor(MethodBase method)
+        public override ObjectConstructor CreateParameterizedConstructor(MethodBase method)
         {
             ValidationUtils.ArgumentNotNull(method, nameof(method));
 

@@ -64,7 +64,7 @@ namespace Newtonsoft.Json.Serialization
         private readonly Type? _genericCollectionDefinitionType;
 
         private Type? _genericWrapperType;
-        private ObjectConstructor<object>? _genericWrapperCreator;
+        private ObjectConstructor? _genericWrapperCreator;
 
         private Func<object>? _genericTemporaryDictionaryCreator;
 
@@ -72,10 +72,10 @@ namespace Newtonsoft.Json.Serialization
 
         private readonly ConstructorInfo? _parameterizedConstructor;
 
-        private ObjectConstructor<object>? _overrideCreator;
-        private ObjectConstructor<object>? _parameterizedCreator;
+        private ObjectConstructor? _overrideCreator;
+        private ObjectConstructor? _parameterizedCreator;
 
-        internal ObjectConstructor<object>? ParameterizedCreator
+        internal ObjectConstructor? ParameterizedCreator
         {
             get
             {
@@ -92,7 +92,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the function used to create the object. When set this function will override <see cref="JsonContract.DefaultCreator"/>.
         /// </summary>
         /// <value>The function used to create the object.</value>
-        public ObjectConstructor<object>? OverrideCreator
+        public ObjectConstructor? OverrideCreator
         {
             get => _overrideCreator;
             set => _overrideCreator = value;
@@ -211,7 +211,7 @@ namespace Newtonsoft.Json.Serialization
                     DictionaryKeyType,
                     DictionaryValueType,
                     out Type? immutableCreatedType,
-                    out ObjectConstructor<object>? immutableParameterizedCreator))
+                    out ObjectConstructor? immutableParameterizedCreator))
             {
                 CreatedType = immutableCreatedType;
                 _parameterizedCreator = immutableParameterizedCreator;
