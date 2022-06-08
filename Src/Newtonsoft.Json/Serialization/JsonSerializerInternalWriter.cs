@@ -161,13 +161,7 @@ namespace Newtonsoft.Json.Serialization
 
             MiscellaneousUtils.Assert(valueContract != null);
 
-            JsonConverter? converter =
-                member?.Converter ??
-                containerProperty?.ItemConverter ??
-                containerContract?.ItemConverter ??
-                valueContract.Converter ??
-                Serializer.GetMatchingConverter(valueContract.UnderlyingType) ??
-                valueContract.InternalConverter;
+            JsonConverter? converter = GetConverter(valueContract, member?.Converter, containerContract, containerProperty);
 
             if (converter != null && converter.CanWrite)
             {
@@ -577,6 +571,43 @@ namespace Newtonsoft.Json.Serialization
             memberContract = null;
             memberValue = null;
             return false;
+        }
+
+        private JsonConverter? GetConverter(JsonContract? contract, JsonConverter? memberConverter, JsonContainerContract? containerContract, JsonProperty? containerProperty)
+        {
+            JsonConverter? converter = null;
+            if (memberConverter != null && memberConverter.CanWrite)
+            {
+                // member attribute converter
+                converter = memberConverter;
+            }
+            else if (containerProperty?.ItemConverter != null && containerProperty.ItemConverter.CanWrite)
+            {
+                converter = containerProperty.ItemConverter;
+            }
+            else if (containerContract?.ItemConverter != null && containerContract.ItemConverter.CanWrite)
+            {
+                converter = containerContract.ItemConverter;
+            }
+            else if (contract != null)
+            {
+                if (contract.Converter != null && contract.Converter.CanWrite)
+                {
+                    // class attribute converter
+                    converter = contract.Converter;
+                }
+                else if (Serializer.GetMatchingConverter(contract.UnderlyingType) is JsonConverter matchingConverter && matchingConverter.CanWrite)
+                {
+                    // passed in converters
+                    converter = matchingConverter;
+                }
+                else if (contract.InternalConverter != null && contract.InternalConverter.CanWrite)
+                {
+                    // internally specified converter
+                    converter = contract.InternalConverter;
+                }
+            }
+            return converter;
         }
 
         private void WriteObjectStart(JsonWriter writer, object value, JsonContract contract, JsonProperty? member, JsonContainerContract? collectionContract, JsonProperty? containerProperty)
