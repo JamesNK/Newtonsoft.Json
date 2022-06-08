@@ -67,12 +67,11 @@ namespace Newtonsoft.Json.Tests.Serialization
         public class OverridingJsonConverter : JsonConverter
         {
             public override bool CanConvert(Type objectType) => true;
-
-			public override bool CanRead => false;
-
-			public override bool CanWrite => false;
-
-			public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            public override bool CanRead => false;
+            
+            public override bool CanWrite => false;
+            
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
                 throw new NotImplementedException();
             }
