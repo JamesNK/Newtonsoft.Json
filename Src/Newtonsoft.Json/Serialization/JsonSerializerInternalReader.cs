@@ -390,32 +390,32 @@ namespace Newtonsoft.Json.Serialization
         private JsonConverter? GetConverter(JsonContract? contract, JsonConverter? memberConverter, JsonContainerContract? containerContract, JsonProperty? containerProperty)
         {
             JsonConverter? converter = null;
-            if (memberConverter != null)
+            if (memberConverter != null && memberConverter.CanRead)
             {
                 // member attribute converter
                 converter = memberConverter;
             }
-            else if (containerProperty?.ItemConverter != null)
+            else if (containerProperty?.ItemConverter != null && containerProperty.ItemConverter.CanRead)
             {
                 converter = containerProperty.ItemConverter;
             }
-            else if (containerContract?.ItemConverter != null)
+            else if (containerContract?.ItemConverter != null && containerContract.ItemConverter.CanRead)
             {
                 converter = containerContract.ItemConverter;
             }
             else if (contract != null)
             {
-                if (contract.Converter != null)
+                if (contract.Converter != null && contract.Converter.CanRead)
                 {
                     // class attribute converter
                     converter = contract.Converter;
                 }
-                else if (Serializer.GetMatchingConverter(contract.UnderlyingType) is JsonConverter matchingConverter)
+                else if (Serializer.GetMatchingConverter(contract.UnderlyingType) is JsonConverter matchingConverter && matchingConverter.CanRead)
                 {
                     // passed in converters
                     converter = matchingConverter;
                 }
-                else if (contract.InternalConverter != null)
+                else if (contract.InternalConverter != null && contract.InternalConverter.CanRead)
                 {
                     // internally specified converter
                     converter = contract.InternalConverter;
