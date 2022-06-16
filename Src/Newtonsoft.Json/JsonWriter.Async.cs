@@ -37,7 +37,24 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json
 {
     public abstract partial class JsonWriter
+#if HAVE_ASYNC_DISPOABLE
+        : IAsyncDisposable
+#endif
     {
+#if HAVE_ASYNC_DISPOABLE
+        /// <summary>
+        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources asynchronously.
+        /// </summary>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+        async ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            if (_currentState != State.Closed)
+            {
+                await CloseAsync().ConfigureAwait(false);
+            }
+        }
+#endif
+
         internal Task AutoCompleteAsync(JsonToken tokenBeingWritten, CancellationToken cancellationToken)
         {
             State oldState = _currentState;
