@@ -45,7 +45,18 @@ namespace Newtonsoft.Json.Tests.Issues
     {
 #if NET6_0_OR_GREATER
         [Test]
-        public async Task Test_DisposeAsync()
+        public async Task Test_Reader_DisposeAsync()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader("{}"));
+            IAsyncDisposable asyncDisposable = reader;
+            await asyncDisposable.DisposeAsync();
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(() => reader.ReadAsync(),
+                "Unexpected state: Closed. Path '', line 1, position 0.");
+        }
+
+        [Test]
+        public async Task Test_Writer_DisposeAsync()
         {
             MemoryStream ms = new MemoryStream();
             Stream s = new AsyncOnlyStream(ms);
@@ -61,7 +72,7 @@ namespace Newtonsoft.Json.Tests.Issues
 #endif
 
         [Test]
-        public async Task Test_CloseAsync()
+        public async Task Test_Writer_CloseAsync()
         {
             MemoryStream ms = new MemoryStream();
             Stream s = new AsyncOnlyStream(ms);
