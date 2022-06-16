@@ -132,7 +132,34 @@ namespace Newtonsoft.Json
                 await WriteEndAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            CloseBufferAndWriter();
+            await CloseBufferAndWriterAsync().ConfigureAwait(false);
+        }
+
+        private async Task CloseBufferAndWriterAsync()
+        {
+            if (_writeBuffer != null)
+            {
+                BufferUtils.ReturnBuffer(_arrayPool, _writeBuffer);
+                _writeBuffer = null;
+            }
+
+            if (CloseOutput && _writer != null)
+            {
+#if HAVE_ASYNC_DISPOABLE
+                await _writer.DisposeAsync().ConfigureAwait(false);
+#else
+                // DisposeAsync isn't available. Instead, flush any remaining content with FlushAsync
+                // to prevent Close/Dispose from making a blocking flush.
+                //
+                // No cancellation token on TextWriter.FlushAsync?!
+                await _writer.FlushAsync().ConfigureAwait(false);
+#if HAVE_STREAM_READER_WRITER_CLOSE
+                _writer.Close();
+#else
+                _writer.Dispose();
+#endif
+#endif
+            }
         }
 
         /// <summary>
