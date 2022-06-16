@@ -253,7 +253,7 @@ namespace Newtonsoft.Json.Serialization
 
                         if (parameterizedConstructorInfo != null)
                         {
-                            ObjectConstructor<object> parameterizedConstructor = ReflectionDelegateFactory.CreateParameterizedConstructor(parameterizedConstructorInfo);
+                            ObjectConstructor parameterizedConstructor = ReflectionDelegateFactory.CreateParameterizedConstructor(parameterizedConstructorInfo);
                             return parameterizedConstructor(parameters);
                         }
                         else

@@ -41,7 +41,7 @@ namespace Newtonsoft.Json.Utilities
 
         internal static ReflectionDelegateFactory Instance => _instance;
 
-        public override ObjectConstructor<object> CreateParameterizedConstructor(MethodBase method)
+        public override ObjectConstructor CreateParameterizedConstructor(MethodBase method)
         {
             ValidationUtils.ArgumentNotNull(method, nameof(method));
 
@@ -51,9 +51,9 @@ namespace Newtonsoft.Json.Utilities
 
             Expression callExpression = BuildMethodCall(method, type, null, argsParameterExpression);
 
-            LambdaExpression lambdaExpression = Expression.Lambda(typeof(ObjectConstructor<object>), callExpression, argsParameterExpression);
+            LambdaExpression lambdaExpression = Expression.Lambda(typeof(ObjectConstructor), callExpression, argsParameterExpression);
 
-            ObjectConstructor<object> compiled = (ObjectConstructor<object>)lambdaExpression.Compile();
+            ObjectConstructor compiled = (ObjectConstructor)lambdaExpression.Compile();
             return compiled;
         }
 
