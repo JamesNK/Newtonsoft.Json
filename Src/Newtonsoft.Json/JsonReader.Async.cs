@@ -39,10 +39,6 @@ namespace Newtonsoft.Json
 #endif
     {
 #if HAVE_ASYNC_DISPOABLE
-        /// <summary>
-        /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources asynchronously.
-        /// </summary>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
         ValueTask IAsyncDisposable.DisposeAsync()
         {
             try
