@@ -28,6 +28,7 @@ using Newtonsoft.Json.Utilities;
 using System.Globalization;
 using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json
 {
@@ -145,5 +146,22 @@ namespace Newtonsoft.Json
         {
             return typeof(T).IsAssignableFrom(objectType);
         }
+    }
+
+    /// <summary>
+    /// Converts an object to and from JSON.
+    /// </summary>
+    public abstract class JsonConverter2 : JsonConverter
+    {
+        /// <summary>
+        /// Writes the JSON representation of the object.
+        /// </summary>
+        /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
+        /// <param name="value">The value.</param>
+        /// <param name="serializer">The calling serializer.</param>
+        /// <param name="contract">Contract of the current value</param>
+        /// <param name="collectionContract">Contract of the parent container</param>
+        /// <param name="containerProperty">JsonProperty of the container property field</param>
+        public abstract void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer, JsonContract contract, JsonContainerContract? collectionContract, JsonProperty? containerProperty);
     }
 }
