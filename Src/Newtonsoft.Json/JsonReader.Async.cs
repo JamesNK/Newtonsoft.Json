@@ -34,11 +34,11 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json
 {
     public abstract partial class JsonReader
-#if HAVE_ASYNC_DISPOABLE
+#if HAVE_ASYNC_DISPOSABLE
         : IAsyncDisposable
 #endif
     {
-#if HAVE_ASYNC_DISPOABLE
+#if HAVE_ASYNC_DISPOSABLE
         ValueTask IAsyncDisposable.DisposeAsync()
         {
             try
