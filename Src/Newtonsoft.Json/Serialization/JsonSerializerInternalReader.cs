@@ -1865,7 +1865,7 @@ namespace Newtonsoft.Json.Serialization
                             }
 
                             // first attempt to find a settable property, otherwise fall back to a dynamic set without type
-                            JsonProperty? property = contract.Properties.GetClosestMatchProperty(memberName);
+                            JsonProperty? property = contract.Properties.GetClosestMatchProperty(memberName, Serializer.CaseSensitivityHandling);
 
                             if (property != null && property.Writable && !property.Ignored)
                             {
@@ -2211,8 +2211,8 @@ namespace Newtonsoft.Json.Serialization
 
                         CreatorPropertyContext creatorPropertyContext = new CreatorPropertyContext(memberName)
                         {
-                            ConstructorProperty = contract.CreatorParameters.GetClosestMatchProperty(memberName),
-                            Property = contract.Properties.GetClosestMatchProperty(memberName)
+                            ConstructorProperty = contract.CreatorParameters.GetClosestMatchProperty(memberName, Serializer.CaseSensitivityHandling),
+                            Property = contract.Properties.GetClosestMatchProperty(memberName, Serializer.CaseSensitivityHandling),
                         };
                         propertyValues.Add(creatorPropertyContext);
 
@@ -2367,7 +2367,7 @@ namespace Newtonsoft.Json.Serialization
                         {
                             // attempt exact case match first
                             // then try match ignoring case
-                            JsonProperty? property = contract.Properties.GetClosestMatchProperty(propertyName);
+                            JsonProperty? property = contract.Properties.GetClosestMatchProperty(propertyName, Serializer.CaseSensitivityHandling);
 
                             if (property == null)
                             {

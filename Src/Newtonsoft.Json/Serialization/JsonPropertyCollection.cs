@@ -129,15 +129,19 @@ namespace Newtonsoft.Json.Serialization
 
         /// <summary>
         /// Gets the closest matching <see cref="JsonProperty"/> object.
-        /// First attempts to get an exact case match of <paramref name="propertyName"/> and then
-        /// a case insensitive match.
+        /// First attempts to get an exact case match of <paramref name="propertyName"/>
+        /// and then a case insensitive match, if case insensitive matching is set.
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
+        /// <param name="casing">Case sensitivity setting to use when matching names.</param>
         /// <returns>A matching property if found.</returns>
-        public JsonProperty? GetClosestMatchProperty(string propertyName)
+        public JsonProperty? GetClosestMatchProperty(string propertyName, 
+            CaseSensitivityHandling casing = CaseSensitivityHandling.CaseInsensitive)
         {
             JsonProperty? property = GetProperty(propertyName, StringComparison.Ordinal);
-            if (property == null)
+            
+            // Handle case insensitive matching if allowed.
+            if (property == null && casing == CaseSensitivityHandling.CaseInsensitive)
             {
                 property = GetProperty(propertyName, StringComparison.OrdinalIgnoreCase);
             }
