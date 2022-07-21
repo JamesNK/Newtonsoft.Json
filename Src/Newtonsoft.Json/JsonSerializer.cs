@@ -487,6 +487,11 @@ namespace Newtonsoft.Json
             set => _stringEscapeHandling = value;
         }
         
+        /// <summary>
+        /// Gets or sets the case sensitivity settings used
+        /// when deserializing JSON property names.
+        /// The default value is <see cref="Json.PropertyCaseSensitivityHandling.CaseInsensitive" />.
+        /// </summary>
         public virtual PropertyCaseSensitivityHandling PropertyCaseSensitivityHandling
         {
             get => _caseSensitivityHandling ?? JsonSerializerSettings.DefaultCaseSensitivityHandling;

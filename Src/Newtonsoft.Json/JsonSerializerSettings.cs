@@ -426,7 +426,7 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets or sets the case sensitivity settings used
         /// when deserializing JSON property names.
-        /// The default value is <see cref="PropertyCaseSensitivityHandling.CaseInsensitive" />.
+        /// The default value is <see cref="Json.PropertyCaseSensitivityHandling.CaseInsensitive" />.
         /// </summary>
         public PropertyCaseSensitivityHandling PropertyCaseSensitivityHandling
         {
