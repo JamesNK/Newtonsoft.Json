@@ -62,12 +62,12 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             // Test explicit case insensitive handling
             deserializeObject = JsonConvert.DeserializeObject<CaseSensitivityTestObject>(@"{""Foo"": ""bar""}",
-                new JsonSerializerSettings {CaseSensitivityHandling = CaseSensitivityHandling.CaseInsensitive});
+                new JsonSerializerSettings {PropertyCaseSensitivityHandling = PropertyCaseSensitivityHandling.CaseInsensitive});
             Assert.AreEqual("bar", deserializeObject.Foo);
             
             // Test explicit case sensitive handling
             deserializeObject = JsonConvert.DeserializeObject<CaseSensitivityTestObject>(@"{""foo"": ""bar""}",
-                new JsonSerializerSettings {CaseSensitivityHandling = CaseSensitivityHandling.CaseSensitive});            
+                new JsonSerializerSettings {PropertyCaseSensitivityHandling = PropertyCaseSensitivityHandling.CaseSensitive});            
             Assert.AreEqual(null, deserializeObject.Foo);
         }
     }

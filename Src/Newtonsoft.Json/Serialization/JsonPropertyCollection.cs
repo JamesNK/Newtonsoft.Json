@@ -136,12 +136,12 @@ namespace Newtonsoft.Json.Serialization
         /// <param name="casing">Case sensitivity setting to use when matching names.</param>
         /// <returns>A matching property if found.</returns>
         public JsonProperty? GetClosestMatchProperty(string propertyName, 
-            CaseSensitivityHandling casing = CaseSensitivityHandling.CaseInsensitive)
+            PropertyCaseSensitivityHandling casing = PropertyCaseSensitivityHandling.CaseInsensitive)
         {
             JsonProperty? property = GetProperty(propertyName, StringComparison.Ordinal);
             
             // Handle case insensitive matching if allowed.
-            if (property == null && casing == CaseSensitivityHandling.CaseInsensitive)
+            if (property == null && casing == PropertyCaseSensitivityHandling.CaseInsensitive)
             {
                 property = GetProperty(propertyName, StringComparison.OrdinalIgnoreCase);
             }

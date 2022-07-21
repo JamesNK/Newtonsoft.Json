@@ -55,7 +55,7 @@ namespace Newtonsoft.Json
         internal const TypeNameHandling DefaultTypeNameHandling = TypeNameHandling.None;
         internal const MetadataPropertyHandling DefaultMetadataPropertyHandling = MetadataPropertyHandling.Default;
         internal static readonly StreamingContext DefaultContext;
-        internal const CaseSensitivityHandling DefaultCaseSensitivityHandling = CaseSensitivityHandling.CaseInsensitive;
+        internal const PropertyCaseSensitivityHandling DefaultCaseSensitivityHandling = PropertyCaseSensitivityHandling.CaseInsensitive;
 
         internal const Formatting DefaultFormatting = Formatting.None;
         internal const DateFormatHandling DefaultDateFormatHandling = DateFormatHandling.IsoDateFormat;
@@ -94,7 +94,7 @@ namespace Newtonsoft.Json
         internal ConstructorHandling? _constructorHandling;
         internal TypeNameHandling? _typeNameHandling;
         internal MetadataPropertyHandling? _metadataPropertyHandling;
-        internal CaseSensitivityHandling? _caseSensitivityHandling;
+        internal PropertyCaseSensitivityHandling? _caseSensitivityHandling;
 
         /// <summary>
         /// Gets or sets how reference loops (e.g. a class referencing itself) are handled.
@@ -426,9 +426,9 @@ namespace Newtonsoft.Json
         /// <summary>
         /// Gets or sets the case sensitivity settings used
         /// when deserializing JSON property names.
-        /// The default value is <see cref="Json.CaseSensitivityHandling.CaseInsensitive" />.
+        /// The default value is <see cref="PropertyCaseSensitivityHandling.CaseInsensitive" />.
         /// </summary>
-        public CaseSensitivityHandling CaseSensitivityHandling
+        public PropertyCaseSensitivityHandling PropertyCaseSensitivityHandling
         {
             get => _caseSensitivityHandling ?? DefaultCaseSensitivityHandling;
             set => _caseSensitivityHandling = value;

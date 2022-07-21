@@ -71,7 +71,7 @@ namespace Newtonsoft.Json
         private FloatFormatHandling? _floatFormatHandling;
         private FloatParseHandling? _floatParseHandling;
         private StringEscapeHandling? _stringEscapeHandling;
-        private CaseSensitivityHandling? _caseSensitivityHandling;
+        private PropertyCaseSensitivityHandling? _caseSensitivityHandling;
         private CultureInfo _culture;
         private int? _maxDepth;
         private bool _maxDepthSet;
@@ -487,7 +487,7 @@ namespace Newtonsoft.Json
             set => _stringEscapeHandling = value;
         }
         
-        public virtual CaseSensitivityHandling CaseSensitivityHandling
+        public virtual PropertyCaseSensitivityHandling PropertyCaseSensitivityHandling
         {
             get => _caseSensitivityHandling ?? JsonSerializerSettings.DefaultCaseSensitivityHandling;
             set => _caseSensitivityHandling = value;
