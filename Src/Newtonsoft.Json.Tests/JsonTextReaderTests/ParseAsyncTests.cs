@@ -241,7 +241,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             Assert.AreEqual(Double.MinValue, reader.Value);
 
             reader = new JsonTextReader(new StringReader("1E+309"));
-#if !(NETSTANDARD2_0 || NETSTANDARD1_3)
+#if !(NETSTANDARD2_0 || NETSTANDARD1_3 || NET6_0_OR_GREATER)
             await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => await reader.ReadAsync(), "Input string '1E+309' is not a valid number. Path '', line 1, position 6.");
 #else
             Assert.IsTrue(await reader.ReadAsync());
@@ -250,7 +250,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 #endif
 
             reader = new JsonTextReader(new StringReader("-1E+5000"));
-#if !(NETSTANDARD2_0 || NETSTANDARD1_3)
+#if !(NETSTANDARD2_0 || NETSTANDARD1_3 || NET6_0_OR_GREATER)
             await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => await reader.ReadAsync(), "Input string '-1E+5000' is not a valid number. Path '', line 1, position 8.");
 #else
             Assert.IsTrue(await reader.ReadAsync());

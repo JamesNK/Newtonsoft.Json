@@ -37,7 +37,7 @@ namespace Newtonsoft.Json.Utilities
         private readonly DynamicProxy<T> _proxy;
 
         internal DynamicProxyMetaObject(Expression expression, T value, DynamicProxy<T> proxy)
-            : base(expression, BindingRestrictions.Empty, value)
+            : base(expression, BindingRestrictions.Empty, value!)
         {
             _proxy = proxy;
         }
@@ -109,7 +109,7 @@ namespace Newtonsoft.Json.Utilities
                     new GetBinderAdapter(binder),
                     NoArgs,
                     fallback(null),
-                    e => binder.FallbackInvoke(e, args, null)
+                    e => binder.FallbackInvoke(e!, args, null)
                     ),
                 null
                 );
@@ -197,7 +197,7 @@ namespace Newtonsoft.Json.Utilities
             Type t = binder.GetType();
             while (!t.IsVisible())
             {
-                t = t.BaseType();
+                t = t.BaseType()!;
             }
             return Expression.Constant(binder, t);
         }
@@ -256,7 +256,7 @@ namespace Newtonsoft.Json.Utilities
                     Expression.Condition(
                         Expression.Call(
                             Expression.Constant(_proxy),
-                            typeof(DynamicProxy<T>).GetMethod(methodName),
+                            typeof(DynamicProxy<T>).GetMethod(methodName)!,
                             callArgs
                             ),
                         resultMetaObject.Expression,
@@ -304,7 +304,7 @@ namespace Newtonsoft.Json.Utilities
                     Expression.Condition(
                         Expression.Call(
                             Expression.Constant(_proxy),
-                            typeof(DynamicProxy<T>).GetMethod(methodName),
+                            typeof(DynamicProxy<T>).GetMethod(methodName)!,
                             callArgs
                             ),
                         result,
@@ -342,7 +342,7 @@ namespace Newtonsoft.Json.Utilities
                 Expression.Condition(
                     Expression.Call(
                         Expression.Constant(_proxy),
-                        typeof(DynamicProxy<T>).GetMethod(methodName),
+                        typeof(DynamicProxy<T>).GetMethod(methodName)!,
                         callArgs
                         ),
                     Expression.Empty(),
@@ -366,7 +366,7 @@ namespace Newtonsoft.Json.Utilities
 
         public override IEnumerable<string> GetDynamicMemberNames()
         {
-            return _proxy.GetDynamicMemberNames((T)Value);
+            return _proxy.GetDynamicMemberNames((T)Value!);
         }
 
         // It is okay to throw NotSupported from this binder. This object
@@ -380,7 +380,7 @@ namespace Newtonsoft.Json.Utilities
             {
             }
 
-            public override DynamicMetaObject FallbackGetMember(DynamicMetaObject target, DynamicMetaObject errorSuggestion)
+            public override DynamicMetaObject FallbackGetMember(DynamicMetaObject target, DynamicMetaObject? errorSuggestion)
             {
                 throw new NotSupportedException();
             }

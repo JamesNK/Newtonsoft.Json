@@ -72,7 +72,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         public JValue(long value)
-            : this(value, JTokenType.Integer)
+            : this(BoxedPrimitives.Get(value), JTokenType.Integer)
         {
         }
 
@@ -81,7 +81,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         public JValue(decimal value)
-            : this(value, JTokenType.Float)
+            : this(BoxedPrimitives.Get(value), JTokenType.Float)
         {
         }
 
@@ -109,7 +109,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         public JValue(double value)
-            : this(value, JTokenType.Float)
+            : this(BoxedPrimitives.Get(value), JTokenType.Float)
         {
         }
 
@@ -147,7 +147,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="value">The value.</param>
         public JValue(bool value)
-            : this(value, JTokenType.Boolean)
+            : this(BoxedPrimitives.Get(value), JTokenType.Boolean)
         {
         }
 
@@ -307,8 +307,8 @@ namespace Newtonsoft.Json.Linq
                 case JTokenType.Comment:
                 case JTokenType.String:
                 case JTokenType.Raw:
-                    string s1 = Convert.ToString(objA, CultureInfo.InvariantCulture);
-                    string s2 = Convert.ToString(objB, CultureInfo.InvariantCulture);
+                    string? s1 = Convert.ToString(objA, CultureInfo.InvariantCulture);
+                    string? s2 = Convert.ToString(objB, CultureInfo.InvariantCulture);
 
                     return string.CompareOrdinal(s1, s2);
                 case JTokenType.Boolean:
@@ -859,7 +859,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// <c>true</c> if the specified <see cref="Object"/> is equal to the current <see cref="Object"/>; otherwise, <c>false</c>.
         /// </returns>
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (obj is JValue v)
             {
@@ -902,7 +902,7 @@ namespace Newtonsoft.Json.Linq
                 return string.Empty;
             }
 
-            return _value.ToString();
+            return _value.ToString()!;
         }
 
         /// <summary>
@@ -924,7 +924,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="String"/> that represents this instance.
         /// </returns>
-        public string ToString(IFormatProvider formatProvider)
+        public string ToString(IFormatProvider? formatProvider)
         {
             return ToString(null, formatProvider);
         }
@@ -937,7 +937,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="String"/> that represents this instance.
         /// </returns>
-        public string ToString(string? format, IFormatProvider formatProvider)
+        public string ToString(string? format, IFormatProvider? formatProvider)
         {
             if (_value == null)
             {
@@ -950,7 +950,7 @@ namespace Newtonsoft.Json.Linq
             }
             else
             {
-                return _value.ToString();
+                return _value.ToString()!;
             }
         }
 
@@ -1035,7 +1035,7 @@ namespace Newtonsoft.Json.Linq
         }
 #endif
 
-        int IComparable.CompareTo(object obj)
+        int IComparable.CompareTo(object? obj)
         {
             if (obj == null)
             {
@@ -1078,7 +1078,7 @@ namespace Newtonsoft.Json.Linq
         /// <exception cref="ArgumentException">
         /// 	<paramref name="obj"/> is not of the same type as this instance.
         /// </exception>
-        public int CompareTo(JValue obj)
+        public int CompareTo(JValue? obj)
         {
             if (obj == null)
             {
@@ -1108,79 +1108,79 @@ namespace Newtonsoft.Json.Linq
             return TypeCode.Object;
         }
 
-        bool IConvertible.ToBoolean(IFormatProvider provider)
+        bool IConvertible.ToBoolean(IFormatProvider? provider)
         {
             return (bool)this;
         }
 
-        char IConvertible.ToChar(IFormatProvider provider)
+        char IConvertible.ToChar(IFormatProvider? provider)
         {
             return (char)this;
         }
 
-        sbyte IConvertible.ToSByte(IFormatProvider provider)
+        sbyte IConvertible.ToSByte(IFormatProvider? provider)
         {
             return (sbyte)this;
         }
 
-        byte IConvertible.ToByte(IFormatProvider provider)
+        byte IConvertible.ToByte(IFormatProvider? provider)
         {
             return (byte)this;
         }
 
-        short IConvertible.ToInt16(IFormatProvider provider)
+        short IConvertible.ToInt16(IFormatProvider? provider)
         {
             return (short)this;
         }
 
-        ushort IConvertible.ToUInt16(IFormatProvider provider)
+        ushort IConvertible.ToUInt16(IFormatProvider? provider)
         {
             return (ushort)this;
         }
 
-        int IConvertible.ToInt32(IFormatProvider provider)
+        int IConvertible.ToInt32(IFormatProvider? provider)
         {
             return (int)this;
         }
 
-        uint IConvertible.ToUInt32(IFormatProvider provider)
+        uint IConvertible.ToUInt32(IFormatProvider? provider)
         {
             return (uint)this;
         }
 
-        long IConvertible.ToInt64(IFormatProvider provider)
+        long IConvertible.ToInt64(IFormatProvider? provider)
         {
             return (long)this;
         }
 
-        ulong IConvertible.ToUInt64(IFormatProvider provider)
+        ulong IConvertible.ToUInt64(IFormatProvider? provider)
         {
             return (ulong)this;
         }
 
-        float IConvertible.ToSingle(IFormatProvider provider)
+        float IConvertible.ToSingle(IFormatProvider? provider)
         {
             return (float)this;
         }
 
-        double IConvertible.ToDouble(IFormatProvider provider)
+        double IConvertible.ToDouble(IFormatProvider? provider)
         {
             return (double)this;
         }
 
-        decimal IConvertible.ToDecimal(IFormatProvider provider)
+        decimal IConvertible.ToDecimal(IFormatProvider? provider)
         {
             return (decimal)this;
         }
 
-        DateTime IConvertible.ToDateTime(IFormatProvider provider)
+        DateTime IConvertible.ToDateTime(IFormatProvider? provider)
         {
             return (DateTime)this;
         }
 
-        object? IConvertible.ToType(Type conversionType, IFormatProvider provider)
+        object IConvertible.ToType(Type conversionType, IFormatProvider? provider)
         {
-            return ToObject(conversionType);
+            return ToObject(conversionType)!;
         }
 #endif
     }

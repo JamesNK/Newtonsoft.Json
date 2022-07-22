@@ -742,7 +742,7 @@ namespace Newtonsoft.Json.Linq
             return ((ICustomTypeDescriptor)this).GetProperties(null);
         }
 
-        PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[] attributes)
+        PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[]? attributes)
         {
             PropertyDescriptor[] propertiesArray = new PropertyDescriptor[Count];
             int i = 0;
@@ -790,7 +790,7 @@ namespace Newtonsoft.Json.Linq
             return null;
         }
 
-        EventDescriptorCollection ICustomTypeDescriptor.GetEvents(Attribute[] attributes)
+        EventDescriptorCollection ICustomTypeDescriptor.GetEvents(Attribute[]? attributes)
         {
             return EventDescriptorCollection.Empty;
         }
@@ -800,7 +800,7 @@ namespace Newtonsoft.Json.Linq
             return EventDescriptorCollection.Empty;
         }
 
-        object? ICustomTypeDescriptor.GetPropertyOwner(PropertyDescriptor pd)
+        object? ICustomTypeDescriptor.GetPropertyOwner(PropertyDescriptor? pd)
         {
             if (pd is JPropertyDescriptor)
             {

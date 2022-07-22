@@ -568,7 +568,7 @@ namespace Newtonsoft.Json
                     }
                     else
                     {
-                        s = v is Uri uri ? uri.OriginalString : v.ToString();
+                        s = v is Uri uri ? uri.OriginalString : v.ToString()!;
                     }
 
                     SetToken(JsonToken.String, s, false);
@@ -1012,7 +1012,7 @@ namespace Newtonsoft.Json
             if (Value != null && Value.ToString() == JsonTypeReflector.TypePropertyName)
             {
                 ReaderReadAndAssert();
-                if (Value != null && Value.ToString().StartsWith("System.Byte[]", StringComparison.Ordinal))
+                if (Value != null && Value.ToString()!.StartsWith("System.Byte[]", StringComparison.Ordinal))
                 {
                     ReaderReadAndAssert();
                     if (Value.ToString() == JsonTypeReflector.ValuePropertyName)

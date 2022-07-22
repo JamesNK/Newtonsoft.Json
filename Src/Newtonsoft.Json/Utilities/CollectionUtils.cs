@@ -289,7 +289,7 @@ namespace Newtonsoft.Json.Utilities
                     break;
                 }
 
-                object v = currentArray[0];
+                object? v = currentArray[0];
                 if (v is IList list)
                 {
                     currentArray = list;
@@ -341,11 +341,11 @@ namespace Newtonsoft.Json.Utilities
                 int index = indices[i];
                 if (i == indices.Length - 1)
                 {
-                    return currentList[index];
+                    return currentList[index]!;
                 }
                 else
                 {
-                    currentList = (IList)currentList[index];
+                    currentList = (IList)currentList[index]!;
                 }
             }
             return currentList;
@@ -368,15 +368,21 @@ namespace Newtonsoft.Json.Utilities
 
         public static T[] ArrayEmpty<T>()
         {
+#if !HAS_ARRAY_EMPTY
             // Enumerable.Empty<T> no longer returns an empty array in .NET Core 3.0
             return EmptyArrayContainer<T>.Empty;
+#else
+            return Array.Empty<T>();
+#endif
         }
 
+#if !HAS_ARRAY_EMPTY
         private static class EmptyArrayContainer<T>
         {
 #pragma warning disable CA1825 // Avoid zero-length array allocations.
             public static readonly T[] Empty = new T[0];
 #pragma warning restore CA1825 // Avoid zero-length array allocations.
         }
+#endif
     }
 }

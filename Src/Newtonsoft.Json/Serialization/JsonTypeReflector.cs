@@ -33,6 +33,7 @@ using System.Security;
 using System.Security.Permissions;
 #endif
 using Newtonsoft.Json.Utilities;
+using System.Runtime.CompilerServices;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -99,7 +100,7 @@ namespace Newtonsoft.Json.Serialization
         public static DataContractAttribute? GetDataContractAttribute(Type type)
         {
             // DataContractAttribute does not have inheritance
-            Type currentType = type;
+            Type? currentType = type;
 
             while (currentType != null)
             {
@@ -132,11 +133,11 @@ namespace Newtonsoft.Json.Serialization
             {
                 if (propertyInfo.IsVirtual())
                 {
-                    Type currentType = propertyInfo.DeclaringType;
+                    Type? currentType = propertyInfo.DeclaringType;
 
                     while (result == null && currentType != null)
                     {
-                        PropertyInfo baseProperty = (PropertyInfo)ReflectionUtils.GetMemberInfoFromType(currentType, propertyInfo);
+                        PropertyInfo? baseProperty = (PropertyInfo?)ReflectionUtils.GetMemberInfoFromType(currentType, propertyInfo);
                         if (baseProperty != null && baseProperty.IsVirtual())
                         {
                             result = CachedAttributeGetter<DataMemberAttribute>.GetAttribute(baseProperty);
@@ -248,7 +249,7 @@ namespace Newtonsoft.Json.Serialization
 
                             return param.GetType();
                         }).ToArray();
-                        ConstructorInfo parameterizedConstructorInfo = type.GetConstructor(paramTypes);
+                        ConstructorInfo? parameterizedConstructorInfo = type.GetConstructor(paramTypes);
 
                         if (parameterizedConstructorInfo != null)
                         {
@@ -347,10 +348,10 @@ namespace Newtonsoft.Json.Serialization
             T? attribute;
 
 #if !(NET20 || DOTNET)
-            Type? metadataType = GetAssociatedMetadataType(memberInfo.DeclaringType);
+            Type? metadataType = GetAssociatedMetadataType(memberInfo.DeclaringType!);
             if (metadataType != null)
             {
-                MemberInfo metadataTypeMemberInfo = ReflectionUtils.GetMemberInfoFromType(metadataType, memberInfo);
+                MemberInfo? metadataTypeMemberInfo = ReflectionUtils.GetMemberInfoFromType(metadataType, memberInfo);
 
                 if (metadataTypeMemberInfo != null)
                 {
@@ -373,7 +374,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 foreach (Type typeInterface in memberInfo.DeclaringType.GetInterfaces())
                 {
-                    MemberInfo interfaceTypeMemberInfo = ReflectionUtils.GetMemberInfoFromType(typeInterface, memberInfo);
+                    MemberInfo? interfaceTypeMemberInfo = ReflectionUtils.GetMemberInfoFromType(typeInterface, memberInfo);
 
                     if (interfaceTypeMemberInfo != null)
                     {
@@ -459,7 +460,9 @@ namespace Newtonsoft.Json.Serialization
             {
                 if (_dynamicCodeGeneration == null)
                 {
-#if HAVE_CAS
+#if HAVE_DYNAMIC_CODE_COMPILED
+                    _dynamicCodeGeneration = RuntimeFeature.IsDynamicCodeCompiled;
+#elif HAVE_CAS
                     try
                     {
                         new ReflectionPermission(ReflectionPermissionFlag.MemberAccess).Demand();

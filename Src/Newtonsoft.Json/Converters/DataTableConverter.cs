@@ -99,7 +99,7 @@ namespace Newtonsoft.Json.Converters
                 // handle typed datasets
                 dt = (objectType == typeof(DataTable))
                     ? new DataTable()
-                    : (DataTable)Activator.CreateInstance(objectType);
+                    : (DataTable)Activator.CreateInstance(objectType)!;
             }
 
             // DataTable is inside a DataSet
@@ -144,7 +144,7 @@ namespace Newtonsoft.Json.Converters
 
                 reader.ReadAndAssert();
 
-                DataColumn column = dt.Columns[columnName];
+                DataColumn? column = dt.Columns[columnName];
                 if (column == null)
                 {
                     Type columnType = GetColumnDataType(reader);
@@ -185,7 +185,7 @@ namespace Newtonsoft.Json.Converters
                         reader.ReadAndAssert();
                     }
 
-                    Array destinationArray = Array.CreateInstance(column.DataType.GetElementType(), o.Count);
+                    Array destinationArray = Array.CreateInstance(column.DataType.GetElementType()!, o.Count);
                     ((IList)o).CopyTo(destinationArray, 0);
 
                     dr[columnName] = destinationArray;

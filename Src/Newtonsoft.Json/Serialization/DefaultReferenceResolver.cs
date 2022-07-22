@@ -52,15 +52,15 @@ namespace Newtonsoft.Json.Serialization
 
         public object ResolveReference(object context, string reference)
         {
-            GetMappings(context).TryGetByFirst(reference, out object value);
-            return value;
+            GetMappings(context).TryGetByFirst(reference, out object? value);
+            return value!;
         }
 
         public string GetReference(object context, object value)
         {
             BidirectionalDictionary<string, object> mappings = GetMappings(context);
 
-            if (!mappings.TryGetBySecond(value, out string reference))
+            if (!mappings.TryGetBySecond(value, out string? reference))
             {
                 _referenceCount++;
                 reference = _referenceCount.ToString(CultureInfo.InvariantCulture);

@@ -109,7 +109,7 @@ namespace Newtonsoft.Json.Linq
                         parent = parent.Parent;
                         break;
                     case JsonToken.StartConstructor:
-                        JConstructor constructor = new JConstructor(reader.Value!.ToString());
+                        JConstructor constructor = new JConstructor(reader.Value!.ToString()!);
                         constructor.SetLineInfo(lineInfo, settings);
                         parent.Add(constructor);
                         parent = constructor;

@@ -325,6 +325,7 @@ namespace Newtonsoft.Json
 
             int newLineLen = SetIndentChars();
 
+            MiscellaneousUtils.Assert(_indentChars != null);
             _writer.Write(_indentChars, 0, newLineLen + Math.Min(currentIndentCount, IndentCharBufferSize));
 
             while ((currentIndentCount -= IndentCharBufferSize) > 0)
@@ -637,6 +638,7 @@ namespace Newtonsoft.Json
             {
                 int length = WriteValueToBuffer(value);
 
+                MiscellaneousUtils.Assert(_writeBuffer != null);
                 _writer.Write(_writeBuffer, 0, length);
             }
             else
@@ -692,6 +694,7 @@ namespace Newtonsoft.Json
             {
                 int length = WriteValueToBuffer(value);
 
+                MiscellaneousUtils.Assert(_writeBuffer != null);
                 _writer.Write(_writeBuffer, 0, length);
             }
             else
@@ -829,6 +832,8 @@ namespace Newtonsoft.Json
             else
             {
                 int length = WriteNumberToBuffer(value, negative);
+
+                MiscellaneousUtils.Assert(_writeBuffer != null);
                 _writer.Write(_writeBuffer, 0, length);
             }
         }
@@ -887,6 +892,8 @@ namespace Newtonsoft.Json
             else
             {
                 int length = WriteNumberToBuffer(value, negative);
+
+                MiscellaneousUtils.Assert(_writeBuffer != null);
                 _writer.Write(_writeBuffer, 0, length);
             }
         }

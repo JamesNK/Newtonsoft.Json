@@ -131,7 +131,7 @@ namespace Newtonsoft.Json.Linq
 
             if (_dictionary != null)
             {
-                return _dictionary.TryGetValue(key, out JToken value) && Remove(value);
+                return _dictionary.TryGetValue(key, out JToken? value) && Remove(value);
             }
 
             return false;
@@ -259,7 +259,7 @@ namespace Newtonsoft.Json.Linq
 
             foreach (KeyValuePair<string, JToken> keyAndProperty in d1)
             {
-                if (!d2.TryGetValue(keyAndProperty.Key, out JToken secondValue))
+                if (!d2.TryGetValue(keyAndProperty.Key, out JToken? secondValue))
                 {
                     return false;
                 }

@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Serialization
 
         public Type BindToType(string? assemblyName, string typeName)
         {
-            return SerializationBinder.BindToType(assemblyName, typeName);
+            return SerializationBinder.BindToType(assemblyName!, typeName)!;
         }
 
         public void BindToName(Type serializedType, out string? assemblyName, out string? typeName)

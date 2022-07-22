@@ -60,7 +60,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (assemblyName != null)
             {
-                Assembly assembly;
+                Assembly? assembly;
 
 #if !(DOTNET || PORTABLE40 || PORTABLE)
                 // look, I don't like using obsolete methods as much as you do but this is the only way
@@ -101,7 +101,7 @@ namespace Newtonsoft.Json.Serialization
                 {
                     // if generic type, try manually parsing the type arguments for the case of dynamically loaded assemblies
                     // example generic typeName format: System.Collections.Generic.Dictionary`2[[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089],[System.String, mscorlib, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089]]
-                    if (typeName.IndexOf('`') >= 0)
+                    if (StringUtils.IndexOf(typeName, '`') >= 0)
                     {
                         try
                         {
@@ -123,18 +123,18 @@ namespace Newtonsoft.Json.Serialization
             }
             else
             {
-                return Type.GetType(typeName);
+                return Type.GetType(typeName)!;
             }
         }
 
         private Type? GetGenericTypeFromTypeName(string typeName, Assembly assembly)
         {
             Type? type = null;
-            int openBracketIndex = typeName.IndexOf('[');
+            int openBracketIndex = StringUtils.IndexOf(typeName, '[');
             if (openBracketIndex >= 0)
             {
                 string genericTypeDefName = typeName.Substring(0, openBracketIndex);
-                Type genericTypeDef = assembly.GetType(genericTypeDefName);
+                Type? genericTypeDef = assembly.GetType(genericTypeDefName);
                 if (genericTypeDef != null)
                 {
                     List<Type> genericTypeArguments = new List<Type>();

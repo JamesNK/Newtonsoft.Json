@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(PORTABLE40 || PORTABLE || DNXCORE50) || NETSTANDARD2_0
+#if !(PORTABLE40 || PORTABLE || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
 using System;
 using System.Collections.Generic;
 using System.Text;

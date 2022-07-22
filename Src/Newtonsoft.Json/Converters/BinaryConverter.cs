@@ -126,7 +126,7 @@ namespace Newtonsoft.Json.Converters
             {
                 // current token is already at base64 string
                 // unable to call ReadAsBytes so do it the old fashion way
-                string encodedData = reader.Value!.ToString();
+                string encodedData = reader.Value!.ToString()!;
                 data = Convert.FromBase64String(encodedData);
             }
             else
@@ -135,7 +135,7 @@ namespace Newtonsoft.Json.Converters
             }
 
             Type t = (ReflectionUtils.IsNullableType(objectType))
-                ? Nullable.GetUnderlyingType(objectType)
+                ? Nullable.GetUnderlyingType(objectType)!
                 : objectType;
 
 #if HAVE_LINQ

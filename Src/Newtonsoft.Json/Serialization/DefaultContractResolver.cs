@@ -418,7 +418,7 @@ namespace Newtonsoft.Json.Serialization
                 }
             }
 
-            MemberInfo extensionDataMember = GetExtensionDataMemberForType(contract.NonNullableUnderlyingType);
+            MemberInfo? extensionDataMember = GetExtensionDataMemberForType(contract.NonNullableUnderlyingType);
             if (extensionDataMember != null)
             {
                 SetExtensionDataDelegates(contract, extensionDataMember);
@@ -439,7 +439,7 @@ namespace Newtonsoft.Json.Serialization
             throw new JsonSerializationException("Unable to serialize instance of '{0}'.".FormatWith(CultureInfo.InvariantCulture, o.GetType()));
         }
 
-        private MemberInfo GetExtensionDataMemberForType(Type type)
+        private MemberInfo? GetExtensionDataMemberForType(Type type)
         {
             IEnumerable<MemberInfo> members = GetClassHierarchyForType(type).SelectMany(baseType =>
             {
@@ -450,7 +450,7 @@ namespace Newtonsoft.Json.Serialization
                 return m;
             });
 
-            MemberInfo extensionDataMember = members.LastOrDefault(m =>
+            MemberInfo? extensionDataMember = members.LastOrDefault(m =>
             {
                 MemberTypes memberType = m.MemberType();
                 if (memberType != MemberTypes.Property && memberType != MemberTypes.Field)
@@ -466,7 +466,7 @@ namespace Newtonsoft.Json.Serialization
 
                 if (!ReflectionUtils.CanReadMemberValue(m, true))
                 {
-                    throw new JsonException("Invalid extension data attribute on '{0}'. Member '{1}' must have a getter.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(m.DeclaringType), m.Name));
+                    throw new JsonException("Invalid extension data attribute on '{0}'. Member '{1}' must have a getter.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(m.DeclaringType!), m.Name));
                 }
 
                 Type t = ReflectionUtils.GetMemberUnderlyingType(m);
@@ -482,7 +482,7 @@ namespace Newtonsoft.Json.Serialization
                     }
                 }
 
-                throw new JsonException("Invalid extension data attribute on '{0}'. Member '{1}' type must implement IDictionary<string, JToken>.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(m.DeclaringType), m.Name));
+                throw new JsonException("Invalid extension data attribute on '{0}'. Member '{1}' type must implement IDictionary<string, JToken>.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(m.DeclaringType!), m.Name));
             });
 
             return extensionDataMember;
@@ -640,7 +640,7 @@ namespace Newtonsoft.Json.Serialization
                     {
                         foreach (ParameterInfo parameterInfo in parameters)
                         {
-                            JsonProperty? memberProperty = MatchProperty(memberProperties, parameterInfo.Name, parameterInfo.ParameterType);
+                            JsonProperty? memberProperty = MatchProperty(memberProperties, parameterInfo.Name!, parameterInfo.ParameterType);
                             if (memberProperty == null || memberProperty.Writable)
                             {
                                 return null;
@@ -688,7 +688,7 @@ namespace Newtonsoft.Json.Serialization
         {
             ParameterInfo[] constructorParameters = constructor.GetParameters();
 
-            JsonPropertyCollection parameterCollection = new JsonPropertyCollection(constructor.DeclaringType);
+            JsonPropertyCollection parameterCollection = new JsonPropertyCollection(constructor.DeclaringType!);
 
             foreach (ParameterInfo parameterInfo in constructorParameters)
             {
@@ -746,7 +746,7 @@ namespace Newtonsoft.Json.Serialization
             property.PropertyType = parameterInfo.ParameterType;
             property.AttributeProvider = new ReflectionAttributeProvider(parameterInfo);
 
-            SetPropertySettingsFromAttributes(property, parameterInfo, parameterInfo.Name, parameterInfo.Member.DeclaringType, MemberSerialization.OptOut, out _);
+            SetPropertySettingsFromAttributes(property, parameterInfo, parameterInfo.Name!, parameterInfo.Member.DeclaringType!, MemberSerialization.OptOut, out _);
 
             property.Readable = false;
             property.Writable = true;
@@ -989,7 +989,7 @@ namespace Newtonsoft.Json.Serialization
         {
             List<Type> ret = new List<Type>();
 
-            Type current = type;
+            Type? current = type;
             while (current != null && current != typeof(object))
             {
                 ret.Add(current);
@@ -1127,7 +1127,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (contract.IsInstantiable)
             {
-                ConstructorInfo constructorInfo = contract.NonNullableUnderlyingType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof(SerializationInfo), typeof(StreamingContext)}, null);
+                ConstructorInfo? constructorInfo = contract.NonNullableUnderlyingType.GetConstructor(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance, null, new[] {typeof(SerializationInfo), typeof(StreamingContext)}, null);
                 if (constructorInfo != null)
                 {
                     ObjectConstructor<object> creator = JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(constructorInfo);
@@ -1292,6 +1292,13 @@ namespace Newtonsoft.Json.Serialization
                 return true;
             }
 
+#if HAVE_DATE_ONLY
+            if (type == typeof(DateOnly) || type == typeof(TimeOnly))
+            {
+                return true;
+            }
+#endif
+
             return false;
         }
 
@@ -1304,36 +1311,36 @@ namespace Newtonsoft.Json.Serialization
 
             if (currentCallback != null)
             {
-                throw new JsonException("Invalid attribute. Both '{0}' and '{1}' in type '{2}' have '{3}'.".FormatWith(CultureInfo.InvariantCulture, method, currentCallback, GetClrTypeFullName(method.DeclaringType), attributeType));
+                throw new JsonException("Invalid attribute. Both '{0}' and '{1}' in type '{2}' have '{3}'.".FormatWith(CultureInfo.InvariantCulture, method, currentCallback, GetClrTypeFullName(method.DeclaringType!), attributeType));
             }
 
             if (prevAttributeType != null)
             {
-                throw new JsonException("Invalid Callback. Method '{3}' in type '{2}' has both '{0}' and '{1}'.".FormatWith(CultureInfo.InvariantCulture, prevAttributeType, attributeType, GetClrTypeFullName(method.DeclaringType), method));
+                throw new JsonException("Invalid Callback. Method '{3}' in type '{2}' has both '{0}' and '{1}'.".FormatWith(CultureInfo.InvariantCulture, prevAttributeType, attributeType, GetClrTypeFullName(method.DeclaringType!), method));
             }
 
             if (method.IsVirtual)
             {
-                throw new JsonException("Virtual Method '{0}' of type '{1}' cannot be marked with '{2}' attribute.".FormatWith(CultureInfo.InvariantCulture, method, GetClrTypeFullName(method.DeclaringType), attributeType));
+                throw new JsonException("Virtual Method '{0}' of type '{1}' cannot be marked with '{2}' attribute.".FormatWith(CultureInfo.InvariantCulture, method, GetClrTypeFullName(method.DeclaringType!), attributeType));
             }
 
             if (method.ReturnType != typeof(void))
             {
-                throw new JsonException("Serialization Callback '{1}' in type '{0}' must return void.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(method.DeclaringType), method));
+                throw new JsonException("Serialization Callback '{1}' in type '{0}' must return void.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(method.DeclaringType!), method));
             }
 
             if (attributeType == typeof(OnErrorAttribute))
             {
                 if (parameters == null || parameters.Length != 2 || parameters[0].ParameterType != typeof(StreamingContext) || parameters[1].ParameterType != typeof(ErrorContext))
                 {
-                    throw new JsonException("Serialization Error Callback '{1}' in type '{0}' must have two parameters of type '{2}' and '{3}'.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(method.DeclaringType), method, typeof(StreamingContext), typeof(ErrorContext)));
+                    throw new JsonException("Serialization Error Callback '{1}' in type '{0}' must have two parameters of type '{2}' and '{3}'.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(method.DeclaringType!), method, typeof(StreamingContext), typeof(ErrorContext)));
                 }
             }
             else
             {
                 if (parameters == null || parameters.Length != 1 || parameters[0].ParameterType != typeof(StreamingContext))
                 {
-                    throw new JsonException("Serialization Callback '{1}' in type '{0}' must have a single parameter of type '{2}'.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(method.DeclaringType), method, typeof(StreamingContext)));
+                    throw new JsonException("Serialization Callback '{1}' in type '{0}' must have a single parameter of type '{2}'.".FormatWith(CultureInfo.InvariantCulture, GetClrTypeFullName(method.DeclaringType!), method, typeof(StreamingContext)));
                 }
             }
 
@@ -1346,7 +1353,7 @@ namespace Newtonsoft.Json.Serialization
         {
             if (type.IsGenericTypeDefinition() || !type.ContainsGenericParameters())
             {
-                return type.FullName;
+                return type.FullName!;
             }
 
             return "{0}.{1}".FormatWith(CultureInfo.InvariantCulture, type.Namespace, type.Name);
@@ -1405,7 +1412,7 @@ namespace Newtonsoft.Json.Serialization
             // warning - this method use to cause errors with Intellitrace. Retest in VS Ultimate after changes
             IValueProvider valueProvider;
 
-#if !(PORTABLE40 || PORTABLE || DOTNET || NETSTANDARD2_0)
+#if !(PORTABLE40 || PORTABLE || DOTNET || NETSTANDARD2_0 || NET6_0_OR_GREATER)
             if (DynamicCodeGeneration)
             {
                 valueProvider = new DynamicValueProvider(member);
@@ -1437,7 +1444,7 @@ namespace Newtonsoft.Json.Serialization
             property.ValueProvider = CreateMemberValueProvider(member);
             property.AttributeProvider = new ReflectionAttributeProvider(member);
 
-            SetPropertySettingsFromAttributes(property, member, member.Name, member.DeclaringType, memberSerialization, out bool allowNonPublicAccess);
+            SetPropertySettingsFromAttributes(property, member, member.Name, member.DeclaringType!, memberSerialization, out bool allowNonPublicAccess);
 
             if (memberSerialization != MemberSerialization.Fields)
             {
@@ -1635,7 +1642,7 @@ namespace Newtonsoft.Json.Serialization
 
         private Predicate<object>? CreateShouldSerializeTest(MemberInfo member)
         {
-            MethodInfo shouldSerializeMethod = member.DeclaringType.GetMethod(JsonTypeReflector.ShouldSerializePrefix + member.Name, ReflectionUtils.EmptyTypes);
+            MethodInfo? shouldSerializeMethod = member.DeclaringType!.GetMethod(JsonTypeReflector.ShouldSerializePrefix + member.Name, ReflectionUtils.EmptyTypes);
 
             if (shouldSerializeMethod == null || shouldSerializeMethod.ReturnType != typeof(bool))
             {
@@ -1650,7 +1657,7 @@ namespace Newtonsoft.Json.Serialization
 
         private void SetIsSpecifiedActions(JsonProperty property, MemberInfo member, bool allowNonPublicAccess)
         {
-            MemberInfo? specifiedMember = member.DeclaringType.GetProperty(member.Name + JsonTypeReflector.SpecifiedPostfix, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+            MemberInfo? specifiedMember = member.DeclaringType!.GetProperty(member.Name + JsonTypeReflector.SpecifiedPostfix, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
             if (specifiedMember == null)
             {
                 specifiedMember = member.DeclaringType.GetField(member.Name + JsonTypeReflector.SpecifiedPostfix, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);

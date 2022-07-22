@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>Exe</OutputType>
-    <TargetFrameworks>net46;net5.0</TargetFrameworks>
+    <TargetFrameworks>net46;net6.0</TargetFrameworks>
     <LangVersion>latest</LangVersion>
     <RootNamespace>Newtonsoft.Json.TestConsole</RootNamespace>
     <AssemblyName>Newtonsoft.Json.TestConsole</AssemblyName>

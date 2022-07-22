@@ -34,7 +34,25 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json
 {
     public abstract partial class JsonReader
+#if HAVE_ASYNC_DISPOABLE
+        : IAsyncDisposable
+#endif
     {
+#if HAVE_ASYNC_DISPOABLE
+        ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            try
+            {
+                Dispose(true);
+                return default;
+            }
+            catch (Exception exc)
+            {
+                return ValueTask.FromException(exc);
+            }
+        }
+#endif
+
         /// <summary>
         /// Asynchronously reads the next JSON token from the source.
         /// </summary>

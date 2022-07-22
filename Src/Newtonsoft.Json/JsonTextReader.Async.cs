@@ -79,7 +79,7 @@ namespace Newtonsoft.Json
                         return ParseObjectAsync(cancellationToken);
                     case State.PostValue:
                         Task<bool> task = ParsePostValueAsync(false, cancellationToken);
-                        if (task.IsCompletedSucessfully())
+                        if (task.IsCompletedSuccessfully())
                         {
                             if (task.Result)
                             {
@@ -542,7 +542,7 @@ namespace Newtonsoft.Json
             _charPos++;
 
             Task<bool> task = EnsureCharsAsync(1, append, cancellationToken);
-            if (task.IsCompletedSucessfully())
+            if (task.IsCompletedSuccessfully())
             {
                 SetNewLine(task.Result);
                 return AsyncUtils.CompletedTask;
@@ -1680,7 +1680,7 @@ namespace Newtonsoft.Json
             if (Value != null && Value.ToString() == JsonTypeReflector.TypePropertyName)
             {
                 await ReaderReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
-                if (Value != null && Value.ToString().StartsWith("System.Byte[]", StringComparison.Ordinal))
+                if (Value != null && Value.ToString()!.StartsWith("System.Byte[]", StringComparison.Ordinal))
                 {
                     await ReaderReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
                     if (Value.ToString() == JsonTypeReflector.ValuePropertyName)

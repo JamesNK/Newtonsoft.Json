@@ -25,7 +25,7 @@
 
 using System;
 using System.IO;
-#if !(PORTABLE || DNXCORE50) || NETSTANDARD2_0
+#if !(PORTABLE || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
 using System.Runtime.Serialization.Formatters.Binary;
 #endif
 using Newtonsoft.Json.Schema;
@@ -105,7 +105,7 @@ namespace Newtonsoft.Json.Tests
         }
 #pragma warning restore 618
 
-#if !(PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
+#if !(PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public void BinarySerializeException()
         {

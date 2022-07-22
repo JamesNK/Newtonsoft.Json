@@ -37,7 +37,20 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json
 {
     public abstract partial class JsonWriter
+#if HAVE_ASYNC_DISPOABLE
+        : IAsyncDisposable
+#endif
     {
+#if HAVE_ASYNC_DISPOABLE
+        async ValueTask IAsyncDisposable.DisposeAsync()
+        {
+            if (_currentState != State.Closed)
+            {
+                await CloseAsync().ConfigureAwait(false);
+            }
+        }
+#endif
+
         internal Task AutoCompleteAsync(JsonToken tokenBeingWritten, CancellationToken cancellationToken)
         {
             State oldState = _currentState;
@@ -291,7 +304,7 @@ namespace Newtonsoft.Json
                 if (_currentState == State.Property)
                 {
                     t = WriteNullAsync(cancellationToken);
-                    if (!t.IsCompletedSucessfully())
+                    if (!t.IsCompletedSuccessfully())
                     {
                         return AwaitProperty(t, levelsToComplete, token, cancellationToken);
                     }
@@ -302,7 +315,7 @@ namespace Newtonsoft.Json
                     if (_currentState != State.ObjectStart && _currentState != State.ArrayStart)
                     {
                         t = WriteIndentAsync(cancellationToken);
-                        if (!t.IsCompletedSucessfully())
+                        if (!t.IsCompletedSuccessfully())
                         {
                             return AwaitIndent(t, levelsToComplete, token, cancellationToken);
                         }
@@ -310,7 +323,7 @@ namespace Newtonsoft.Json
                 }
 
                 t = WriteEndAsync(token, cancellationToken);
-                if (!t.IsCompletedSucessfully())
+                if (!t.IsCompletedSuccessfully())
                 {
                     return AwaitEnd(t, levelsToComplete, cancellationToken);
                 }
@@ -691,10 +704,10 @@ namespace Newtonsoft.Json
                     return WriteStartArrayAsync(cancellationToken);
                 case JsonToken.StartConstructor:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    return WriteStartConstructorAsync(value.ToString(), cancellationToken);
+                    return WriteStartConstructorAsync(value.ToString()!, cancellationToken);
                 case JsonToken.PropertyName:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    return WritePropertyNameAsync(value.ToString(), cancellationToken);
+                    return WritePropertyNameAsync(value.ToString()!, cancellationToken);
                 case JsonToken.Comment:
                     return WriteCommentAsync(value?.ToString(), cancellationToken);
                 case JsonToken.Integer:

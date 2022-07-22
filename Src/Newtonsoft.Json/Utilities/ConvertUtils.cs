@@ -215,7 +215,7 @@ namespace Newtonsoft.Json.Utilities
             // performance?
             if (ReflectionUtils.IsNullableType(t))
             {
-                Type nonNullable = Nullable.GetUnderlyingType(t);
+                Type nonNullable = Nullable.GetUnderlyingType(t)!;
                 if (nonNullable.IsEnum())
                 {
                     Type nullableUnderlyingType = typeof(Nullable<>).MakeGenericType(Enum.GetUnderlyingType(nonNullable));
@@ -263,7 +263,7 @@ namespace Newtonsoft.Json.Utilities
         {
             Type initialType = t.Value1;
             Type targetType = t.Value2;
-            MethodInfo castMethodInfo = targetType.GetMethod("op_Implicit", new[] { initialType })
+            MethodInfo? castMethodInfo = targetType.GetMethod("op_Implicit", new[] { initialType })
                 ?? targetType.GetMethod("op_Explicit", new[] { initialType });
 
             if (castMethodInfo == null)
@@ -414,7 +414,7 @@ namespace Newtonsoft.Json.Utilities
 
             if (ReflectionUtils.IsNullableType(targetType))
             {
-                targetType = Nullable.GetUnderlyingType(targetType);
+                targetType = Nullable.GetUnderlyingType(targetType)!;
             }
 
             Type initialType = initialValue.GetType();
@@ -432,7 +432,7 @@ namespace Newtonsoft.Json.Utilities
                 {
                     if (initialValue is string)
                     {
-                        value = Enum.Parse(targetType, initialValue.ToString(), true);
+                        value = Enum.Parse(targetType, initialValue.ToString()!, true);
                         return ConvertResult.Success;
                     }
                     else if (IsInteger(initialValue))
@@ -503,6 +503,18 @@ namespace Newtonsoft.Json.Utilities
                     value = Type.GetType(s, true);
                     return ConvertResult.Success;
                 }
+#if HAVE_DATE_ONLY
+                if (targetType == typeof(DateOnly))
+                {
+                    value = DateOnly.ParseExact(s, "yyyy'-'MM'-'dd", CultureInfo.InvariantCulture);
+                    return ConvertResult.Success;
+                }
+                if (targetType == typeof(TimeOnly))
+                {
+                    value = TimeOnly.ParseExact(s, "HH':'mm':'ss.FFFFFFF", CultureInfo.InvariantCulture);
+                    return ConvertResult.Success;
+                }
+#endif
             }
 
 #if HAVE_BIG_INTEGER

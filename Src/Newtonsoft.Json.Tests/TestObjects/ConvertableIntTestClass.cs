@@ -27,7 +27,7 @@ using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
-#if !(PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(PORTABLE) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
     public class ConvertableIntTestClass
     {
         public ConvertibleInt Integer { get; set; }

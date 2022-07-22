@@ -66,7 +66,7 @@ namespace Newtonsoft.Json.Serialization
             // for backwards compadibility the CamelCasePropertyNamesContractResolver shares contracts between instances
             StructMultiKey<Type, Type> key = new StructMultiKey<Type, Type>(GetType(), type);
             Dictionary<StructMultiKey<Type, Type>, JsonContract>? cache = _contractCache;
-            if (cache == null || !cache.TryGetValue(key, out JsonContract contract))
+            if (cache == null || !cache.TryGetValue(key, out JsonContract? contract))
             {
                 contract = CreateContract(type);
 

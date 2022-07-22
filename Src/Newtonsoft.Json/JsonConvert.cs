@@ -302,7 +302,7 @@ namespace Newtonsoft.Json
 
         private static string EnsureDecimalPlace(double value, string text)
         {
-            if (double.IsNaN(value) || double.IsInfinity(value) || text.IndexOf('.') != -1 || text.IndexOf('E') != -1 || text.IndexOf('e') != -1)
+            if (double.IsNaN(value) || double.IsInfinity(value) || StringUtils.IndexOf(text, '.') != -1 || StringUtils.IndexOf(text, 'E') != -1 || StringUtils.IndexOf(text, 'e') != -1)
             {
                 return text;
             }
@@ -312,7 +312,7 @@ namespace Newtonsoft.Json
 
         private static string EnsureDecimalPlace(string text)
         {
-            if (text.IndexOf('.') != -1)
+            if (StringUtils.IndexOf(text, '.') != -1)
             {
                 return text;
             }

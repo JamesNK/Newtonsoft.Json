@@ -41,28 +41,55 @@ using NUnit.Framework;
 namespace Newtonsoft.Json.Tests.Issues
 {
     [TestFixture]
-    public class Issue1569 : TestFixtureBase
+    public class Issue2694 : TestFixtureBase
     {
+#if NET6_0_OR_GREATER
         [Test]
-        public async Task Test()
+        public async Task Test_Reader_DisposeAsync()
         {
-            string json = "[1,2,3,456789999999999999999999999999999999999999999999999999999999999999456789999999999999999999999999999999999999999999999999999999999999456789999999999999999999999999999999999999999999999999999999999999]";
+            JsonTextReader reader = new JsonTextReader(new StringReader("{}"));
+            IAsyncDisposable asyncDisposable = reader;
+            await asyncDisposable.DisposeAsync();
 
-            Stream s = new AsyncOnlyStream(new MemoryStream(Encoding.UTF8.GetBytes(json)));
-            StreamReader sr = new StreamReader(s, Encoding.UTF8, true, 2);
-            JsonTextReader reader = new JsonTextReader(sr);
-#if DEBUG
-            reader.CharBuffer = new char[2];
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(() => reader.ReadAsync(),
+                "Unexpected state: Closed. Path '', line 1, position 0.");
+        }
+
+        [Test]
+        public async Task Test_Writer_DisposeAsync()
+        {
+            MemoryStream ms = new MemoryStream();
+            Stream s = new AsyncOnlyStream(ms);
+            StreamWriter sr = new StreamWriter(s, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false), 2, leaveOpen: true);
+            await using (JsonTextWriter writer = new JsonTextWriter(sr))
+            {
+                await writer.WriteStartObjectAsync();
+            }
+
+            string json = Encoding.UTF8.GetString(ms.ToArray());
+            Assert.AreEqual("{}", json);
+        }
 #endif
 
-            while (await reader.ReadAsync())
-            {   
-            }
+        [Test]
+        public async Task Test_Writer_CloseAsync()
+        {
+            MemoryStream ms = new MemoryStream();
+            Stream s = new AsyncOnlyStream(ms);
+            StreamWriter sr = new StreamWriter(s, new UTF8Encoding(encoderShouldEmitUTF8Identifier: false), 2, leaveOpen: true);
+            JsonTextWriter writer = new JsonTextWriter(sr);
+            await writer.WriteStartObjectAsync();
+
+            await writer.CloseAsync();
+
+            string json = Encoding.UTF8.GetString(ms.ToArray());
+            Assert.AreEqual("{}", json);
         }
 
         public class AsyncOnlyStream : Stream
         {
             private readonly Stream _innerStream;
+            private int _unflushedContentLength;
 
             public AsyncOnlyStream(Stream innerStream)
             {
@@ -71,11 +98,16 @@ namespace Newtonsoft.Json.Tests.Issues
 
             public override void Flush()
             {
-                throw new NotSupportedException();
+                // It's ok to call Flush if the content was already processed with FlushAsync.
+                if (_unflushedContentLength > 0)
+                {
+                    throw new Exception($"Flush when there is {_unflushedContentLength} bytes buffered.");
+                }
             }
 
             public override Task FlushAsync(CancellationToken cancellationToken)
             {
+                _unflushedContentLength = 0;
                 return _innerStream.FlushAsync(cancellationToken);
             }
 
@@ -106,6 +138,7 @@ namespace Newtonsoft.Json.Tests.Issues
 
             public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
             {
+                _unflushedContentLength += count;
                 return _innerStream.WriteAsync(buffer, offset, count, cancellationToken);
             }
 

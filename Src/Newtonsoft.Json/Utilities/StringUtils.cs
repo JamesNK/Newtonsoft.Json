@@ -128,7 +128,7 @@ namespace Newtonsoft.Json.Utilities
             buffer[5] = MathUtils.IntToHex(c & '\x000f');
         }
 
-        public static TSource ForgivingCaseSensitiveFind<TSource>(this IEnumerable<TSource> source, Func<TSource, string> valueSelector, string testValue)
+        public static TSource? ForgivingCaseSensitiveFind<TSource>(this IEnumerable<TSource> source, Func<TSource, string> valueSelector, string testValue)
         {
             if (source == null)
             {
@@ -300,6 +300,24 @@ namespace Newtonsoft.Json.Utilities
             return char.IsLowSurrogate(c);
 #else
             return (c >= 56320 && c <= 57343);
+#endif
+        }
+
+        public static int IndexOf(string s, char c)
+        {
+#if HAVE_INDEXOF_STRING_COMPARISON
+            return s.IndexOf(c, StringComparison.Ordinal);
+#else
+            return s.IndexOf(c);
+#endif
+        }
+
+        public static string Replace(string s, string oldValue, string newValue)
+        {
+#if HAVE_REPLACE_STRING_COMPARISON
+            return s.Replace(oldValue, newValue, StringComparison.Ordinal);
+#else
+            return s.Replace(oldValue, newValue);
 #endif
         }
 

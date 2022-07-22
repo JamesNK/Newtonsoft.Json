@@ -171,7 +171,7 @@ namespace Newtonsoft.Json.Utilities
 #endif
         }
 
-        public static Type BaseType(this Type type)
+        public static Type? BaseType(this Type type)
         {
 #if HAVE_FULL_REFLECTION
             return type.BaseType;
@@ -580,7 +580,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool AssignableToTypeName(this Type type, string fullTypeName, bool searchInterfaces, [NotNullWhen(true)]out Type? match)
         {
-            Type current = type;
+            Type? current = type;
 
             while (current != null)
             {
@@ -616,7 +616,7 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool ImplementInterface(this Type type, Type interfaceType)
         {
-            for (Type currentType = type; currentType != null; currentType = currentType.BaseType())
+            for (Type? currentType = type; currentType != null; currentType = currentType.BaseType())
             {
                 IEnumerable<Type> interfaces = currentType.GetInterfaces();
                 foreach (Type i in interfaces)

@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET40 || NET35 || NET20 || DNXCORE50) || NETSTANDARD1_3 || NETSTANDARD2_0
+#if !(NET40 || NET35 || NET20 || DNXCORE50) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
 using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;

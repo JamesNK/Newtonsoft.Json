@@ -116,17 +116,17 @@ namespace Newtonsoft.Json.Utilities
             if (underlyingType.IsGenericType())
             {
                 Type underlyingTypeDefinition = underlyingType.GetGenericTypeDefinition();
-                string name = underlyingTypeDefinition.FullName;
+                string name = underlyingTypeDefinition.FullName!;
 
-                ImmutableCollectionTypeInfo definition = ArrayContractImmutableCollectionDefinitions.FirstOrDefault(d => d.ContractTypeName == name);
+                ImmutableCollectionTypeInfo? definition = ArrayContractImmutableCollectionDefinitions.FirstOrDefault(d => d.ContractTypeName == name);
                 if (definition != null)
                 {
-                    Type createdTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.CreatedTypeName);
-                    Type builderTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.BuilderTypeName);
+                    Type? createdTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.CreatedTypeName);
+                    Type? builderTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.BuilderTypeName);
 
                     if (createdTypeDefinition != null && builderTypeDefinition != null)
                     {
-                        MethodInfo mb = builderTypeDefinition.GetMethods().FirstOrDefault(m => m.Name == "CreateRange" && m.GetParameters().Length == 1);
+                        MethodInfo? mb = builderTypeDefinition.GetMethods().FirstOrDefault(m => m.Name == "CreateRange" && m.GetParameters().Length == 1);
                         if (mb != null)
                         {
                             createdType = createdTypeDefinition.MakeGenericType(collectionItemType);
@@ -148,17 +148,17 @@ namespace Newtonsoft.Json.Utilities
             if (underlyingType.IsGenericType())
             {
                 Type underlyingTypeDefinition = underlyingType.GetGenericTypeDefinition();
-                string name = underlyingTypeDefinition.FullName;
+                string name = underlyingTypeDefinition.FullName!;
 
-                ImmutableCollectionTypeInfo definition = DictionaryContractImmutableCollectionDefinitions.FirstOrDefault(d => d.ContractTypeName == name);
+                ImmutableCollectionTypeInfo? definition = DictionaryContractImmutableCollectionDefinitions.FirstOrDefault(d => d.ContractTypeName == name);
                 if (definition != null)
                 {
-                    Type createdTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.CreatedTypeName);
-                    Type builderTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.BuilderTypeName);
+                    Type? createdTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.CreatedTypeName);
+                    Type? builderTypeDefinition = underlyingTypeDefinition.Assembly().GetType(definition.BuilderTypeName);
 
                     if (createdTypeDefinition != null && builderTypeDefinition != null)
                     {
-                        MethodInfo mb = builderTypeDefinition.GetMethods().FirstOrDefault(m =>
+                        MethodInfo? mb = builderTypeDefinition.GetMethods().FirstOrDefault(m =>
                         {
                             ParameterInfo[] parameters = m.GetParameters();
 
