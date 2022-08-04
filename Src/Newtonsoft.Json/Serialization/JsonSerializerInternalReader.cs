@@ -2244,6 +2244,13 @@ namespace Newtonsoft.Json.Serialization
                                 
                                 continue;
                             }
+                            else
+                            {
+                                if (!reader.Read())
+                                {
+                                    throw JsonSerializationException.Create(reader, "Unexpected end when setting {0}'s value.".FormatWith(CultureInfo.InvariantCulture, memberName));
+                                }
+                            }
                         }
                         else
                         {
