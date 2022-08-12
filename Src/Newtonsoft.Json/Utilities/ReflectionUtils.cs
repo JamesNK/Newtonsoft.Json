@@ -24,16 +24,22 @@
 #endregion
 
 using System;
+
 using System.Collections.Generic;
 #if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
 using System.Reflection;
 using System.Collections;
+#if HAVE_CONCURRENT_COLLECTIONS
+using System.Collections.Concurrent;
+#endif
 using System.Globalization;
 using System.Text;
 using System.Runtime.CompilerServices;
 using System.Diagnostics.CodeAnalysis;
+using System.Threading;
+
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -275,16 +281,17 @@ namespace Newtonsoft.Json.Utilities
 
         public static bool IsNullableType(Type t)
         {
-            ValidationUtils.ArgumentNotNull(t, nameof(t));
+            return ReflectionUtilsCache.GetTypeInfo(t).IsNullable;
+        }        
 
-            return (t.IsGenericType() && t.GetGenericTypeDefinition() == typeof(Nullable<>));
+        public static Type GetUnderlyingTypeIfNullable(Type t)
+        {
+            return ReflectionUtilsCache.GetTypeInfo(t).UnderlyingType;
         }
 
         public static Type EnsureNotNullableType(Type t)
         {
-            return (IsNullableType(t))
-                ? Nullable.GetUnderlyingType(t)!
-                : t;
+            return ReflectionUtilsCache.GetTypeInfo(t).UnderlyingType;
         }
 
         public static Type EnsureNotByRefType(Type t)
@@ -301,7 +308,7 @@ namespace Newtonsoft.Json.Utilities
                 return false;
             }
 
-            Type t = type.GetGenericTypeDefinition();
+            Type t = ReflectionUtilsCache.GetTypeInfo(type).GenericTypeDefinition!;
             return (t == genericInterfaceDefinition);
         }
 
@@ -375,7 +382,7 @@ namespace Newtonsoft.Json.Utilities
             Type? currentType = type;
             do
             {
-                if (currentType.IsGenericType() && genericClassDefinition == currentType.GetGenericTypeDefinition())
+                if (currentType.IsGenericType() && genericClassDefinition == ReflectionUtilsCache.GetTypeInfo(type).GenericTypeDefinition)
                 {
                     implementingType = currentType;
                     return true;
@@ -1109,4 +1116,61 @@ namespace Newtonsoft.Json.Utilities
             return Activator.CreateInstance(type);
         }
     }
+
+    internal static class ReflectionUtilsCache
+    {
+        public readonly struct NullableTypeReflectionInfo
+        {
+            public readonly bool IsNullable;
+
+            public readonly Type UnderlyingType;
+
+            public readonly Type? GenericTypeDefinition;
+
+            public NullableTypeReflectionInfo(
+                bool isNullable,
+                Type underlyingType,
+                Type? genericTypeDefinition)
+            {
+                IsNullable = isNullable;
+                UnderlyingType = underlyingType;
+                GenericTypeDefinition = genericTypeDefinition;
+            }
+        }
+
+#if HAVE_CONCURRENT_COLLECTIONS
+        private readonly static ConcurrentDictionary<Type, NullableTypeReflectionInfo> NullableInfoCache = new ConcurrentDictionary<Type, NullableTypeReflectionInfo>();
+#else
+        private readonly static Dictionary<Type, NullableTypeReflectionInfo> NullableInfoCache = new Dictionary<Type, NullableTypeReflectionInfo>();
+#endif
+
+        public static NullableTypeReflectionInfo GetTypeInfo(Type t)
+        {
+            ValidationUtils.ArgumentNotNull(t, nameof(t));
+
+            if (!t.IsGenericType() || !t.IsValueType())
+                return new NullableTypeReflectionInfo(false, t, null);
+
+#if !HAVE_CONCURRENT_DICTIONARY
+            lock(NullableInfoCache){
+#endif
+            if (!NullableInfoCache.TryGetValue(t, out var info))
+            {
+                var genericTypeDefinition = t.GetGenericTypeDefinition();
+                var isNullable = (genericTypeDefinition == typeof(Nullable<>));
+                var underlyingType = Nullable.GetUnderlyingType(t) ?? t;
+                info = new NullableTypeReflectionInfo(isNullable, underlyingType, genericTypeDefinition);
+
+                NullableInfoCache[t] = info;
+            }
+
+            return info;
+
+#if !HAVE_CONCURRENT_DICTIONARY
+            }
+#endif
+
+        }
+    }
+
 }
