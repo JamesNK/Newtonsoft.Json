@@ -37,11 +37,11 @@ using Newtonsoft.Json.Utilities;
 namespace Newtonsoft.Json
 {
     public abstract partial class JsonWriter
-#if HAVE_ASYNC_DISPOABLE
+#if HAVE_ASYNC_DISPOSABLE
         : IAsyncDisposable
 #endif
     {
-#if HAVE_ASYNC_DISPOABLE
+#if HAVE_ASYNC_DISPOSABLE
         async ValueTask IAsyncDisposable.DisposeAsync()
         {
             if (_currentState != State.Closed)
