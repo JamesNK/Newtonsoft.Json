@@ -1804,6 +1804,7 @@ namespace Newtonsoft.Json.Serialization
             JsonConverter? itemConverter = GetConverter(itemContract, null, contract, member);
 
             JsonReader tokenReader = token.CreateReader();
+            tokenReader.MaxDepth = Serializer.MaxDepth;
             tokenReader.ReadAndAssert(); // Move to first token
 
             object? result;
