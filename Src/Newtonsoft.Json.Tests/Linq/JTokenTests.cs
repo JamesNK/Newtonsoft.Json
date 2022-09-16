@@ -1223,6 +1223,25 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void DoubleDeepEqualsWithCustomEpsilon()
+        {
+            var epsilon = 0.001;
+            var d1 = 0.1;
+            var d2 = 0.1 + epsilon;
+            JValue v1 = new JValue(d1);
+            JValue v2 = new JValue(d2);
+
+            Assert.IsFalse(v1.DeepEquals(v2));
+
+            var compareSettings = new JsonCompareSettings
+            {
+                Epsilon = epsilon
+            };
+
+            Assert.IsTrue(v1.DeepEquals(v2, compareSettings));
+        }
+
+        [Test]
         public void ParseAdditionalContent()
         {
             ExceptionAssert.Throws<JsonReaderException>(() =>

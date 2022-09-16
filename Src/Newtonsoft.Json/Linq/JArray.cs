@@ -88,9 +88,9 @@ namespace Newtonsoft.Json.Linq
             Add(content);
         }
 
-        internal override bool DeepEquals(JToken node)
+        internal override bool DeepEquals(JToken node, JsonCompareSettings? settings = null)
         {
-            return (node is JArray t && ContentsEqual(t));
+            return (node is JArray t && ContentsEqual(t, settings));
         }
 
         internal override JToken CloneToken()

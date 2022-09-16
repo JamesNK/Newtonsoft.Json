@@ -277,9 +277,9 @@ namespace Newtonsoft.Json.Linq
             throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
         }
 
-        internal override bool DeepEquals(JToken node)
+        internal override bool DeepEquals(JToken node, JsonCompareSettings? settings = null)
         {
-            return (node is JProperty t && _name == t.Name && ContentsEqual(t));
+            return (node is JProperty t && _name == t.Name && ContentsEqual(t, settings));
         }
 
         internal override JToken CloneToken()
