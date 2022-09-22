@@ -145,6 +145,32 @@ namespace Newtonsoft.Json.Tests.Converters
             result = JsonConvert.SerializeObject(d, converter);
             Assert.AreEqual(@"""Friday, 15 December 2000 10:11:03 p.m.""", result);
         }
+#if HAVE_ASYNC
+        [Test]
+        public async System.Threading.Tasks.Task SerializeFormattedDateTimeNewZealandCultureAsync()
+        {
+            CultureInfo culture = new CultureInfo("en-NZ");
+            culture.DateTimeFormat.AMDesignator = "a.m.";
+            culture.DateTimeFormat.PMDesignator = "p.m.";
+
+            var helper = new AsyncTestHelper();
+            helper.Serializer.Converters.Add(new IsoDateTimeConverter() { DateTimeFormat = "F", Culture = culture });
+
+            DateTime d = new DateTime(2000, 12, 15, 22, 11, 3, 0, DateTimeKind.Utc);
+            string result;
+
+            result = await helper.SerializeAsync(d);
+            Assert.AreEqual(@"""Friday, 15 December 2000 10:11:03 p.m.""", result);
+
+            helper.ResetStream();
+            Assert.AreEqual(d, await helper.DeserializeAsync<DateTime>(result));
+
+            helper.ResetStream();
+            d = new DateTime(2000, 12, 15, 22, 11, 3, 0, DateTimeKind.Local);
+            result = await helper.SerializeAsync(d);
+            Assert.AreEqual(@"""Friday, 15 December 2000 10:11:03 p.m.""", result);
+        }
+#endif
 
         [Test]
         public void SerializeDateTimeCulture()

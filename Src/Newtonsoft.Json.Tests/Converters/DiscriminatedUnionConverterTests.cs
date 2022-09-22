@@ -95,6 +95,18 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(@"{""Case"":""AUD""}", json);
         }
 
+#if HAVE_ASYNC
+        [Test]
+        public async Task SerializeBasicUnionAsync()
+        {
+            var helper = new AsyncTestHelper();
+            helper.Serializer.Formatting = Formatting.None;
+            string json = await helper.SerializeAsync(Currency.AUD);
+
+            Assert.AreEqual(@"{""Case"":""AUD""}", json);
+        }
+
+#endif
         [Test]
         public void SerializePerformance()
         {
@@ -166,6 +178,24 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(null, c);
         }
 
+#if HAVE_ASYNC
+        [Test]
+        public async Task DeserializeBasicUnionAsync()
+        {
+            var helper = new AsyncTestHelper();
+            Currency c = await helper.DeserializeAsync<Currency>(@"{""Case"":""AUD""}");
+            Assert.AreEqual(Currency.AUD, c);
+
+            helper = new AsyncTestHelper();
+            c = await helper.DeserializeAsync<Currency>(@"{""Case"":""EUR""}");
+            Assert.AreEqual(Currency.EUR, c);
+
+            helper = new AsyncTestHelper();
+            c = await helper.DeserializeAsync<Currency>(@"null");
+            Assert.AreEqual(null, c);
+        }
+
+#endif
         [Test]
         public void DeserializeUnionWithFields()
         {

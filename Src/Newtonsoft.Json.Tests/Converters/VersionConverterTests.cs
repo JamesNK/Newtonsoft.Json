@@ -26,6 +26,7 @@
 using System;
 using System.IO;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Tests.TestObjects;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -143,5 +144,23 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual(reportJSON, reportJSON2);
         }
+
+#if HAVE_ASYNC
+        [Test]
+        public async System.Threading.Tasks.Task RoundtripImplicitConverterAsync()
+        {
+            var helper = new AsyncTestHelper();
+            var version = new Version(1, 0, 0, 0);
+            string reportJSON = await helper.SerializeAsync(version);
+
+            //Test
+            helper.ResetStream();
+            Version report2 = await helper.DeserializeAsync<Version>(reportJSON);
+            helper.ResetStream();
+            string reportJSON2 = await helper.SerializeAsync(report2);
+
+            Assert.AreEqual(reportJSON, reportJSON2);
+        }
+#endif
     }
 }

@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
-
+#if HAVE_ASYNC
 #if HAVE_DYNAMIC
 
 using System;
@@ -31,13 +31,12 @@ using System.Dynamic;
 using System.Globalization;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Converters
 {
-    /// <summary>
-    /// Converts an <see cref="ExpandoObject"/> to and from JSON.
-    /// </summary>
     public partial class ExpandoObjectConverter : JsonConverter
     {
         /// <summary>
@@ -46,9 +45,11 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        public override Task WriteJsonAsync(JsonWriter writer, object? value, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             // can write is set to false
+            return AsyncUtils.CompletedTask;
         }
 
         /// <summary>
@@ -58,15 +59,16 @@ namespace Newtonsoft.Json.Converters
         /// <param name="objectType">Type of the object.</param>
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>The object value.</returns>
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override Task<object?> ReadJsonAsync(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer, CancellationToken cancellationToken)
         {
-            return ReadValue(reader);
+            return ReadValueAsync(reader, cancellationToken);
         }
 
-        private object? ReadValue(JsonReader reader)
+        private async Task<object?> ReadValueAsync(JsonReader reader, CancellationToken cancellationToken)
         {
-            if (!reader.MoveToContent())
+            if (!await reader.MoveToContentAsync(cancellationToken).ConfigureAwait(false))
             {
                 throw JsonSerializationException.Create(reader, "Unexpected end when reading ExpandoObject.");
             }
@@ -74,9 +76,9 @@ namespace Newtonsoft.Json.Converters
             switch (reader.TokenType)
             {
                 case JsonToken.StartObject:
-                    return ReadObject(reader);
+                    return await ReadObjectAsync(reader, cancellationToken).ConfigureAwait(false);
                 case JsonToken.StartArray:
-                    return ReadList(reader);
+                    return await ReadListAsync(reader, cancellationToken).ConfigureAwait(false);
                 default:
                     if (JsonTokenUtils.IsPrimitiveToken(reader.TokenType))
                     {
@@ -87,18 +89,18 @@ namespace Newtonsoft.Json.Converters
             }
         }
 
-        private object ReadList(JsonReader reader)
+        private async Task<object> ReadListAsync(JsonReader reader, CancellationToken cancellationToken)
         {
             IList<object?> list = new List<object?>();
 
-            while (reader.Read())
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
                 switch (reader.TokenType)
                 {
                     case JsonToken.Comment:
                         break;
                     default:
-                        object? v = ReadValue(reader);
+                        object? v = await ReadValueAsync(reader, cancellationToken).ConfigureAwait(false);
 
                         list.Add(v);
                         break;
@@ -110,23 +112,23 @@ namespace Newtonsoft.Json.Converters
             throw JsonSerializationException.Create(reader, "Unexpected end when reading ExpandoObject.");
         }
 
-        private object ReadObject(JsonReader reader)
+        private async Task<object> ReadObjectAsync(JsonReader reader, CancellationToken cancellationToken)
         {
             IDictionary<string, object?> expandoObject = new ExpandoObject();
 
-            while (reader.Read())
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
                 switch (reader.TokenType)
                 {
                     case JsonToken.PropertyName:
                         string propertyName = reader.Value!.ToString()!;
 
-                        if (!reader.Read())
+                        if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                         {
                             throw JsonSerializationException.Create(reader, "Unexpected end when reading ExpandoObject.");
                         }
 
-                        object? v = ReadValue(reader);
+                        object? v = await ReadValueAsync(reader, cancellationToken).ConfigureAwait(false);
 
                         expandoObject[propertyName] = v;
                         break;
@@ -139,27 +141,8 @@ namespace Newtonsoft.Json.Converters
 
             throw JsonSerializationException.Create(reader, "Unexpected end when reading ExpandoObject.");
         }
-
-        /// <summary>
-        /// Determines whether this instance can convert the specified object type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-            return (objectType == typeof(ExpandoObject));
-        }
-
-        /// <summary>
-        /// Gets a value indicating whether this <see cref="JsonConverter"/> can write JSON.
-        /// </summary>
-        /// <value>
-        /// 	<c>true</c> if this <see cref="JsonConverter"/> can write JSON; otherwise, <c>false</c>.
-        /// </value>
-        public override bool CanWrite => false;
     }
 }
 
+#endif
 #endif

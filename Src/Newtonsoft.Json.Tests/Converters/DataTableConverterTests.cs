@@ -50,6 +50,35 @@ namespace Newtonsoft.Json.Tests.Converters
 {
     public class DataTableConverterTests : TestFixtureBase
     {
+        private const string deserializeData = @"[
+  {
+    ""id"": 0,
+    ""item"": ""item 0"",
+    ""DataTableCol"": [
+      {
+        ""NestedStringCol"": ""0!""
+      }
+    ],
+    ""ArrayCol"": [
+      0
+    ],
+    ""DateCol"": ""2000-12-29T00:00:00Z""
+  },
+  {
+    ""id"": 1,
+    ""item"": ""item 1"",
+    ""DataTableCol"": [
+      {
+        ""NestedStringCol"": ""1!""
+      }
+    ],
+    ""ArrayCol"": [
+      1
+    ],
+    ""DateCol"": ""2000-12-29T00:00:00Z""
+  }
+]";
+
         [Test]
         public void DeserializeEmptyNestedArray()
         {
@@ -178,36 +207,22 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void Deserialize()
         {
-            string json = @"[
-  {
-    ""id"": 0,
-    ""item"": ""item 0"",
-    ""DataTableCol"": [
-      {
-        ""NestedStringCol"": ""0!""
-      }
-    ],
-    ""ArrayCol"": [
-      0
-    ],
-    ""DateCol"": ""2000-12-29T00:00:00Z""
-  },
-  {
-    ""id"": 1,
-    ""item"": ""item 1"",
-    ""DataTableCol"": [
-      {
-        ""NestedStringCol"": ""1!""
-      }
-    ],
-    ""ArrayCol"": [
-      1
-    ],
-    ""DateCol"": ""2000-12-29T00:00:00Z""
-  }
-]";
+            DataTable deserializedDataTable = JsonConvert.DeserializeObject<DataTable>(deserializeData);
+            DeserializeAssert(deserializedDataTable);
+        }
 
-            DataTable deserializedDataTable = JsonConvert.DeserializeObject<DataTable>(json);
+#if HAVE_ASYNC
+        [Test]
+        public async System.Threading.Tasks.Task DeserializeAsync()
+        {
+            var helper = new AsyncTestHelper();
+            DataTable deserializedDataTable = await helper.DeserializeAsync<DataTable>(deserializeData);
+            DeserializeAssert(deserializedDataTable);
+        }
+
+#endif
+        private static void DeserializeAssert(DataTable deserializedDataTable)
+        {
             Assert.IsNotNull(deserializedDataTable);
 
             Assert.AreEqual(string.Empty, deserializedDataTable.TableName);
@@ -284,6 +299,48 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void Serialize()
         {
+            DataTable myTable = SerializeSetup();
+
+            string json = JsonConvert.SerializeObject(myTable, Formatting.Indented);
+            SerializeAssert(json);
+        }
+
+#if HAVE_ASYNC
+        [Test]
+        public async System.Threading.Tasks.Task SerializeAsync()
+        {
+            DataTable myTable = SerializeSetup();
+            var helper = new AsyncTestHelper();
+            string json = await helper.SerializeAsync(myTable);
+            SerializeAssert(json);
+        }
+
+#endif
+        private static void SerializeAssert(string json)
+        {
+            StringAssert.AreEqual(@"[
+  {
+    ""StringCol"": ""Item Name"",
+    ""Int32Col"": 2147483647,
+    ""BooleanCol"": true,
+    ""TimeSpanCol"": ""10.22:10:15.1000000"",
+    ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
+    ""DecimalCol"": 64.0021,
+    ""DataTableCol"": [
+      {
+        ""NestedStringCol"": ""Nested!""
+      }
+    ],
+    ""ArrayCol"": [
+      1
+    ],
+    ""BytesCol"": ""SGVsbG8gd29ybGQ=""
+  }
+]", json);
+        }
+
+        private static DataTable SerializeSetup()
+        {
             // create a new DataTable.
             DataTable myTable = new DataTable("blah");
 
@@ -347,27 +404,7 @@ namespace Newtonsoft.Json.Tests.Converters
 
             myNewRow["DataTableCol"] = nestedTable;
             myTable.Rows.Add(myNewRow);
-
-            string json = JsonConvert.SerializeObject(myTable, Formatting.Indented);
-            StringAssert.AreEqual(@"[
-  {
-    ""StringCol"": ""Item Name"",
-    ""Int32Col"": 2147483647,
-    ""BooleanCol"": true,
-    ""TimeSpanCol"": ""10.22:10:15.1000000"",
-    ""DateTimeCol"": ""2000-12-29T00:00:00Z"",
-    ""DecimalCol"": 64.0021,
-    ""DataTableCol"": [
-      {
-        ""NestedStringCol"": ""Nested!""
-      }
-    ],
-    ""ArrayCol"": [
-      1
-    ],
-    ""BytesCol"": ""SGVsbG8gd29ybGQ=""
-  }
-]", json);
+            return myTable;
         }
 
         public class TestDataTableConverter : JsonConverter
