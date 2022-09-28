@@ -147,7 +147,7 @@ namespace Newtonsoft.Json.Linq
             return (node is JConstructor c && _name == c.Name && ContentsEqual(c));
         }
 
-        internal override JToken CloneToken()
+        internal override JToken CloneToken(JsonCloneSettings? settings = null)
         {
             return new JConstructor(this);
         }

@@ -106,7 +106,7 @@ namespace Newtonsoft.Json.Linq
         {
         }
 
-        internal JContainer(JContainer other)
+        internal JContainer(JContainer other, JsonCloneSettings? settings = null)
             : this()
         {
             ValidationUtils.ArgumentNotNull(other, nameof(other));
@@ -118,7 +118,10 @@ namespace Newtonsoft.Json.Linq
                 i++;
             }
 
-            CopyAnnotations(this, other);
+            if (settings?.CopyAnnotations ?? true) 
+            {
+                CopyAnnotations(this, other);
+            }
         }
 
         internal void CheckReentrancy()

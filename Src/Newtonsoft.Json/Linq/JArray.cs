@@ -93,7 +93,7 @@ namespace Newtonsoft.Json.Linq
             return (node is JArray t && ContentsEqual(t));
         }
 
-        internal override JToken CloneToken()
+        internal override JToken CloneToken(JsonCloneSettings? settings = null)
         {
             return new JArray(this);
         }

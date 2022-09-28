@@ -92,8 +92,8 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JObject"/> class from another <see cref="JObject"/> object.
         /// </summary>
         /// <param name="other">A <see cref="JObject"/> object to copy from.</param>
-        public JObject(JObject other)
-            : base(other)
+        public JObject(JObject other, JsonCloneSettings? settings = null)
+            : base(other, settings)
         {
         }
 
@@ -244,9 +244,9 @@ namespace Newtonsoft.Json.Linq
 #endif
         }
 
-        internal override JToken CloneToken()
+        internal override JToken CloneToken(JsonCloneSettings? settings = null)
         {
-            return new JObject(this);
+            return new JObject(this, settings);
         }
 
         /// <summary>

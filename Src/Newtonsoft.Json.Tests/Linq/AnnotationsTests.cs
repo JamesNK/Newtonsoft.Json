@@ -308,6 +308,21 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(annotation, t.DeepClone().Annotation<T>());
         }
 
+        [Test]
+        public void MultipleAnnotationsAreNotCopiedWithSetting()
+        {
+            Version version = new Version(1, 2, 3, 4);
+
+            JObject o = new JObject();
+            o.AddAnnotation("string!");
+            o.AddAnnotation(version);
+
+            JsonCloneSettings settings = new JsonCloneSettings() { CopyAnnotations = false };
+            JObject o2 = (JObject)o.DeepClone(settings);
+            Assert.IsNull(o2.Annotation<string>());
+            Assert.AreEqual(0, o2.Annotations<Version>().Count());
+        }
+
 #if !NET20
         [Test]
         public void Example()

@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        internal override JToken CloneToken()
+        internal override JToken CloneToken(JsonCloneSettings? settings = null)
         {
             return new JRaw(this);
         }

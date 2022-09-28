@@ -131,7 +131,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        internal abstract JToken CloneToken();
+        internal abstract JToken CloneToken(JsonCloneSettings? settings = null);
         internal abstract bool DeepEquals(JToken node);
 
         /// <summary>
@@ -2444,6 +2444,16 @@ namespace Newtonsoft.Json.Linq
         public JToken DeepClone()
         {
             return CloneToken();
+        }
+
+        /// <summary>
+        /// Creates a new instance of the <see cref="JToken"/>. All child tokens are recursively cloned.
+        /// </summary>
+        /// <param name="settings">A flag to indicate whether to clone annotations when performing deep clone on a JToken.</param>
+        /// <returns>A new instance of the <see cref="JToken"/>.</returns>
+        public JToken DeepClone(JsonCloneSettings settings)
+        {
+            return CloneToken(settings);
         }
 
         /// <summary>
