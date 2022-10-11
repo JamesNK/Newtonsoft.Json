@@ -783,7 +783,7 @@ namespace Newtonsoft.Json.Serialization
                 member?.TypeNameHandling
                 ?? containerContract?.ItemTypeNameHandling
                 ?? containerMember?.ItemTypeNameHandling
-                ?? Serializer._typeNameHandling;
+                ?? Serializer.TypeNameHandling;
 
             if (resolvedTypeNameHandling != TypeNameHandling.None)
             {

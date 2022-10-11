@@ -8288,8 +8288,36 @@ This is just junk, though.";
             Assert.AreEqual(data.P2, actual.P2);
         }
 
+#if HAVE_TRACE_WRITER
+        [Test]
+        public async Task AsyncSerializeDeserializeWithTrace()
+        {
+            var helper = new AsyncTestHelper();
+            var data = MyFactory.InstantiateSubclass();
 
-        
+            var writer = helper.GetWriter();
+            try
+            {
+                await helper.Serializer.SerializeAsync(writer, data);
+            }
+            finally
+            {
+                await writer.FlushAsync();
+            }
+
+            var reader = helper.GetReader();
+            // Add a trace to ensure it is not doing synchronous IO
+            var trace = new DiagnosticsTraceWriter();
+            trace.LevelFilter = TraceLevel.Verbose;
+            helper.Serializer.TraceWriter = trace;
+            var actual = (Subclass)(await helper.Serializer.DeserializeAsync(reader, typeof(Subclass)));
+            Assert.AreEqual(data.ID, actual.ID);
+            Assert.AreEqual(data.Name, actual.Name);
+            Assert.AreEqual(data.P1, actual.P1);
+            Assert.AreEqual(data.P2, actual.P2);
+        }
+
+#endif
 #endif
 
         private static int GetDepth(JToken o)

@@ -378,6 +378,8 @@ namespace Newtonsoft.Json.Serialization
                 else
                 {
                     id = args.Id;
+                    resolvedObjectType = args.ObjectType;
+                    contract = args.Contract;
                 }
             }
             else
@@ -391,6 +393,8 @@ namespace Newtonsoft.Json.Serialization
                 else
                 {
                     id = args.Id;
+                    resolvedObjectType = args.ObjectType;
+                    contract = args.Contract;
                 }
             }
 

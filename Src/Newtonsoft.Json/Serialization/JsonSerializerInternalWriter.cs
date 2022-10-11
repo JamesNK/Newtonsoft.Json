@@ -1015,7 +1015,7 @@ namespace Newtonsoft.Json.Serialization
                 member?.TypeNameHandling
                 ?? containerProperty?.ItemTypeNameHandling
                 ?? containerContract?.ItemTypeNameHandling
-                ?? Serializer._typeNameHandling;
+                ?? Serializer.TypeNameHandling;
 
             if (HasFlag(resolvedTypeNameHandling, typeNameHandlingFlag))
             {
