@@ -92,7 +92,7 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JObject"/> class from another <see cref="JObject"/> object.
         /// </summary>
         /// <param name="other">A <see cref="JObject"/> object to copy from.</param>
-        /// <param name="settings">A <see cref="JsonCloneSettings"/> object indicating whether to clone annotations when cloning a JToken.</param>
+        /// <param name="settings">A <see cref="JsonCloneSettings"/> object to configure cloning settings.</param>
         public JObject(JObject other, JsonCloneSettings? settings = null)
             : base(other, settings)
         {
