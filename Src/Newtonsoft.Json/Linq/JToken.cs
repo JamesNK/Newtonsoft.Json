@@ -2449,7 +2449,7 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Creates a new instance of the <see cref="JToken"/>. All child tokens are recursively cloned.
         /// </summary>
-        /// <param name="settings">A flag to indicate whether to clone annotations when performing deep clone on a JToken.</param>
+        /// <param name="settings">A <see cref="JsonCloneSettings"/> object to configure cloning settings.</param>
         /// <returns>A new instance of the <see cref="JToken"/>.</returns>
         public JToken DeepClone(JsonCloneSettings settings)
         {

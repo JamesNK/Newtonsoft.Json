@@ -65,7 +65,7 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JArray"/> class from another <see cref="JArray"/> object.
         /// </summary>
         /// <param name="other">A <see cref="JArray"/> object to copy from.</param>
-        /// <param name="settings">
+        /// <param name="settings">A <see cref="JsonCloneSettings"/> object to configure cloning settings.</param>
         public JArray(JArray other, JsonCloneSettings? settings = null)
             : base(other, settings)
         {

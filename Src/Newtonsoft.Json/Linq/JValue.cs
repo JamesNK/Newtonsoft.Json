@@ -61,7 +61,7 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JValue"/> class from another <see cref="JValue"/> object.
         /// </summary>
         /// <param name="other">A <see cref="JValue"/> object to copy from.</param>
-        /// <param name="settings">A <see cref="JsonCloneSettings"/> object that specifies the settings used when cloning JSON.</param>
+        /// <param name="settings">A <see cref="JsonCloneSettings"/> object to configure cloning settings.</param>
         public JValue(JValue other, JsonCloneSettings? settings = null)
             : this(other.Value, other.Type)
         {
