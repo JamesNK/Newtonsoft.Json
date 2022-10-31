@@ -150,7 +150,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override JToken CloneToken(JsonCloneSettings? settings = null)
         {
-            return new JConstructor(this);
+            return new JConstructor(this, settings);
         }
 
         /// <summary>
