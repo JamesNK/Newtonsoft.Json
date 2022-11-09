@@ -83,7 +83,7 @@ namespace Newtonsoft.Json.Linq
             : this((object)content)
         {
         }
-        
+
         /// <summary>
         /// Initializes a new instance of the <see cref="JArray"/> class with the specified content.
         /// </summary>
