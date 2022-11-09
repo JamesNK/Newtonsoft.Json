@@ -52,7 +52,7 @@ namespace Newtonsoft.Json.Tests.Linq
         public void RawClone()
         {
             JRaw r1 = new JRaw("raw1");
-            JToken r2 = r1.CloneToken();
+            JToken r2 = r1.DeepClone();
 
             CustomAssert.IsInstanceOfType(typeof(JRaw), r2);
         }

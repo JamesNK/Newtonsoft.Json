@@ -7,6 +7,11 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public class JsonCloneSettings
     {
+        internal static readonly JsonCloneSettings SkipCopyAnnotations = new JsonCloneSettings
+        {
+            CopyAnnotations = false
+        };
+
         /// <summary>
         /// Gets or sets a flag that indicates whether to copy annotations when cloning a JToken.
         /// </summary>

@@ -92,8 +92,12 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JObject"/> class from another <see cref="JObject"/> object.
         /// </summary>
         /// <param name="other">A <see cref="JObject"/> object to copy from.</param>
-        /// <param name="settings">A <see cref="JsonCloneSettings"/> object to configure cloning settings.</param>
-        public JObject(JObject other, JsonCloneSettings? settings = null)
+        public JObject(JObject other)
+            : base(other, settings: null)
+        {
+        }
+
+        internal JObject(JObject other, JsonCloneSettings? settings)
             : base(other, settings)
         {
         }
@@ -136,7 +140,7 @@ namespace Newtonsoft.Json.Linq
             return _properties.IndexOfReference(item);
         }
 
-        internal override bool InsertItem(int index, JToken? item, bool skipParentCheck)
+        internal override bool InsertItem(int index, JToken? item, bool skipParentCheck, bool copyAnnotations)
         {
             // don't add comments to JObject, no name to reference comment by
             if (item != null && item.Type == JTokenType.Comment)
@@ -144,7 +148,7 @@ namespace Newtonsoft.Json.Linq
                 return false;
             }
 
-            return base.InsertItem(index, item, skipParentCheck);
+            return base.InsertItem(index, item, skipParentCheck, copyAnnotations);
         }
 
         internal override void ValidateToken(JToken o, JToken? existing)
@@ -245,7 +249,7 @@ namespace Newtonsoft.Json.Linq
 #endif
         }
 
-        internal override JToken CloneToken(JsonCloneSettings? settings = null)
+        internal override JToken CloneToken(JsonCloneSettings? settings)
         {
             return new JObject(this, settings);
         }

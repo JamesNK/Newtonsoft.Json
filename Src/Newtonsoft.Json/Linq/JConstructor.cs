@@ -96,8 +96,13 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JConstructor"/> class from another <see cref="JConstructor"/> object.
         /// </summary>
         /// <param name="other">A <see cref="JConstructor"/> object to copy from.</param>
-        /// <param name="settings">A <see cref="JsonCloneSettings"/> object to configure cloning settings.</param>
-        public JConstructor(JConstructor other, JsonCloneSettings? settings = null)
+        public JConstructor(JConstructor other)
+            : base(other, settings: null)
+        {
+            _name = other.Name;
+        }
+
+        internal JConstructor(JConstructor other, JsonCloneSettings? settings)
             : base(other, settings)
         {
             _name = other.Name;

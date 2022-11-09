@@ -37,8 +37,12 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JRaw"/> class from another <see cref="JRaw"/> object.
         /// </summary>
         /// <param name="other">A <see cref="JRaw"/> object to copy from.</param>
-        /// <param name="settings">A <see cref="JsonCloneSettings"/> object to configure cloning settings.</param>
-        public JRaw(JRaw other, JsonCloneSettings? settings = null)
+        public JRaw(JRaw other)
+            : base(other, settings: null)
+        {
+        }
+
+        internal JRaw(JRaw other, JsonCloneSettings? settings)
             : base(other, settings)
         {
         }
@@ -68,7 +72,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        internal override JToken CloneToken(JsonCloneSettings? settings = null)
+        internal override JToken CloneToken(JsonCloneSettings? settings)
         {
             return new JRaw(this, settings);
         }

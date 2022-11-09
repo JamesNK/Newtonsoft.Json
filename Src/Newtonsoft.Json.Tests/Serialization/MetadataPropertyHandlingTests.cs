@@ -324,7 +324,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 ]";
 
             JToken t1 = JToken.Parse(json);
-            JToken t2 = t1.CloneToken();
+            JToken t2 = t1.DeepClone();
 
             List<EmployeeReference> employees = t1.ToObject<List<EmployeeReference>>(JsonSerializer.Create(new JsonSerializerSettings
             {

@@ -502,7 +502,7 @@ namespace Newtonsoft.Json.Linq
                     }
                 }
 
-                JToken value = tokenReader.CurrentToken!.CloneToken();
+                JToken value = tokenReader.CurrentToken!.CloneToken(settings: null);
 
                 if (_parent != null)
                 {

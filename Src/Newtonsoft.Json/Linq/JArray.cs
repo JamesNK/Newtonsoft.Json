@@ -65,8 +65,12 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JArray"/> class from another <see cref="JArray"/> object.
         /// </summary>
         /// <param name="other">A <see cref="JArray"/> object to copy from.</param>
-        /// <param name="settings">A <see cref="JsonCloneSettings"/> object to configure cloning settings.</param>
-        public JArray(JArray other, JsonCloneSettings? settings = null)
+        public JArray(JArray other)
+            : base(other, settings: null)
+        {
+        }
+
+        internal JArray(JArray other, JsonCloneSettings? settings)
             : base(other, settings)
         {
         }
@@ -310,7 +314,7 @@ namespace Newtonsoft.Json.Linq
         /// </exception>
         public void Insert(int index, JToken item)
         {
-            InsertItem(index, item, false);
+            InsertItem(index, item, false, copyAnnotations: true);
         }
 
         /// <summary>

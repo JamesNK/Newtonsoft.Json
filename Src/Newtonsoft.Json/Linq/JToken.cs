@@ -131,7 +131,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        internal abstract JToken CloneToken(JsonCloneSettings? settings = null);
+        internal abstract JToken CloneToken(JsonCloneSettings? settings);
         internal abstract bool DeepEquals(JToken node);
 
         /// <summary>
@@ -241,7 +241,7 @@ namespace Newtonsoft.Json.Linq
             }
 
             int index = _parent.IndexOfItem(this);
-            _parent.TryAddInternal(index + 1, content, false);
+            _parent.TryAddInternal(index + 1, content, false, copyAnnotations: true);
         }
 
         /// <summary>
@@ -256,7 +256,7 @@ namespace Newtonsoft.Json.Linq
             }
 
             int index = _parent.IndexOfItem(this);
-            _parent.TryAddInternal(index, content, false);
+            _parent.TryAddInternal(index, content, false, copyAnnotations: true);
         }
 
         /// <summary>
@@ -2443,7 +2443,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A new instance of the <see cref="JToken"/>.</returns>
         public JToken DeepClone()
         {
-            return CloneToken();
+            return CloneToken(settings: null);
         }
 
         /// <summary>
