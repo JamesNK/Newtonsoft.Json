@@ -328,7 +328,32 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
-        public void NestedAnnotationsAreNotCopiedWithSettings()
+        public void NestedAnnotationsAreCopiedWithDefault()
+        {
+            Version version = new Version(1, 2, 3, 4);
+            JsonCloneSettings settings = new JsonCloneSettings();
+
+            JObject o = new JObject();
+            o.AddAnnotation("string!");
+            o.AddAnnotation(version);
+
+            JValue v = new JValue(true);
+            v.AddAnnotation("string!");
+            v.AddAnnotation(version);
+
+            o["Item1"] = v;
+
+            JObject o2 = (JObject)o.DeepClone(settings);
+            Assert.AreEqual("string!", o2.Annotation<string>());
+            Assert.AreEqual(version, o2.Annotation<Version>());
+
+            JValue v2 = (JValue)o2["Item1"];
+            Assert.AreEqual("string!", v2.Annotation<string>());
+            Assert.AreEqual(version, v2.Annotation<Version>());
+        }
+
+        [Test]
+        public void NestedAnnotationsAreNotCopiedWithSettingsCopyAnnotationsFalse()
         {
             Version version = new Version(1, 2, 3, 4);
             JsonCloneSettings settings = new JsonCloneSettings() { CopyAnnotations = false };
