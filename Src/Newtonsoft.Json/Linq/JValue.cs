@@ -57,6 +57,15 @@ namespace Newtonsoft.Json.Linq
             _valueType = type;
         }
 
+        internal JValue(JValue other, JsonCloneSettings? settings)
+            : this(other.Value, other.Type)
+        {
+            if (settings?.CopyAnnotations ?? true)
+            {
+                CopyAnnotations(this, other);
+            }
+        }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="JValue"/> class from another <see cref="JValue"/> object.
         /// </summary>
@@ -64,7 +73,6 @@ namespace Newtonsoft.Json.Linq
         public JValue(JValue other)
             : this(other.Value, other.Type)
         {
-            CopyAnnotations(this, other);
         }
 
         /// <summary>
@@ -557,9 +565,9 @@ namespace Newtonsoft.Json.Linq
         }
 #endif
 
-        internal override JToken CloneToken()
+        internal override JToken CloneToken(JsonCloneSettings? settings)
         {
-            return new JValue(this);
+            return new JValue(this, settings);
         }
 
         /// <summary>

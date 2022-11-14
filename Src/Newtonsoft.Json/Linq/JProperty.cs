@@ -173,7 +173,7 @@ namespace Newtonsoft.Json.Linq
 
                 if (_content._token == null)
                 {
-                    InsertItem(0, newValue, false);
+                    InsertItem(0, newValue, false, copyAnnotations: true);
                 }
                 else
                 {
@@ -187,7 +187,13 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="other">A <see cref="JProperty"/> object to copy from.</param>
         public JProperty(JProperty other)
-            : base(other)
+            : base(other, settings: null)
+        {
+            _name = other.Name;
+        }
+
+        internal JProperty(JProperty other, JsonCloneSettings? settings)
+            : base(other, settings)
         {
             _name = other.Name;
         }
@@ -241,7 +247,7 @@ namespace Newtonsoft.Json.Linq
             return _content.IndexOf(item);
         }
 
-        internal override bool InsertItem(int index, JToken? item, bool skipParentCheck)
+        internal override bool InsertItem(int index, JToken? item, bool skipParentCheck, bool copyAnnotations)
         {
             // don't add comments to JProperty
             if (item != null && item.Type == JTokenType.Comment)
@@ -254,7 +260,7 @@ namespace Newtonsoft.Json.Linq
                 throw new JsonException("{0} cannot have multiple values.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
             }
 
-            return base.InsertItem(0, item, false);
+            return base.InsertItem(0, item, false, copyAnnotations);
         }
 
         internal override bool ContainsItem(JToken? item)
@@ -282,9 +288,9 @@ namespace Newtonsoft.Json.Linq
             return (node is JProperty t && _name == t.Name && ContentsEqual(t));
         }
 
-        internal override JToken CloneToken()
+        internal override JToken CloneToken(JsonCloneSettings? settings)
         {
-            return new JProperty(this);
+            return new JProperty(this, settings);
         }
 
         /// <summary>

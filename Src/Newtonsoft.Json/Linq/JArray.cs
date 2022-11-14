@@ -66,7 +66,12 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="other">A <see cref="JArray"/> object to copy from.</param>
         public JArray(JArray other)
-            : base(other)
+            : base(other, settings: null)
+        {
+        }
+
+        internal JArray(JArray other, JsonCloneSettings? settings)
+            : base(other, settings)
         {
         }
 
@@ -93,9 +98,9 @@ namespace Newtonsoft.Json.Linq
             return (node is JArray t && ContentsEqual(t));
         }
 
-        internal override JToken CloneToken()
+        internal override JToken CloneToken(JsonCloneSettings? settings = null)
         {
-            return new JArray(this);
+            return new JArray(this, settings);
         }
 
         /// <summary>
@@ -309,7 +314,7 @@ namespace Newtonsoft.Json.Linq
         /// </exception>
         public void Insert(int index, JToken item)
         {
-            InsertItem(index, item, false);
+            InsertItem(index, item, false, copyAnnotations: true);
         }
 
         /// <summary>

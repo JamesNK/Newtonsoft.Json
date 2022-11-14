@@ -97,7 +97,13 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="other">A <see cref="JConstructor"/> object to copy from.</param>
         public JConstructor(JConstructor other)
-            : base(other)
+            : base(other, settings: null)
+        {
+            _name = other.Name;
+        }
+
+        internal JConstructor(JConstructor other, JsonCloneSettings? settings)
+            : base(other, settings)
         {
             _name = other.Name;
         }
@@ -147,9 +153,9 @@ namespace Newtonsoft.Json.Linq
             return (node is JConstructor c && _name == c.Name && ContentsEqual(c));
         }
 
-        internal override JToken CloneToken()
+        internal override JToken CloneToken(JsonCloneSettings? settings = null)
         {
-            return new JConstructor(this);
+            return new JConstructor(this, settings);
         }
 
         /// <summary>
