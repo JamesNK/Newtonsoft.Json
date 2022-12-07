@@ -75,6 +75,14 @@ namespace Newtonsoft.Json.Tests.Issues
         }
 
         [Test]
+        public void Test_Deserialize_MultipleTrailingZeroes()
+        {
+            decimal d = JsonConvert.DeserializeObject<decimal>("0.00");
+
+            Assert.AreEqual("0.00", d.ToString());
+        }
+
+        [Test]
         public void Test_Deserialize_NoTrailingZero()
         {
             decimal d = JsonConvert.DeserializeObject<decimal>("0");
