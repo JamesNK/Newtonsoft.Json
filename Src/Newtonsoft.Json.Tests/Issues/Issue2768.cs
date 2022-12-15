@@ -75,6 +75,22 @@ namespace Newtonsoft.Json.Tests.Issues
         }
 
         [Test]
+        public void Test_Deserialize_Negative()
+        {
+            decimal d = JsonConvert.DeserializeObject<decimal>("-0.0");
+
+            Assert.AreEqual("0.0", d.ToString());
+        }
+
+        [Test]
+        public void Test_Deserialize_NegativeNoTrailingZero()
+        {
+            decimal d = JsonConvert.DeserializeObject<decimal>("-0");
+
+            Assert.AreEqual("0", d.ToString());
+        }
+
+        [Test]
         public void Test_Deserialize_MultipleTrailingZeroes()
         {
             decimal d = JsonConvert.DeserializeObject<decimal>("0.00");
@@ -100,18 +116,18 @@ namespace Newtonsoft.Json.Tests.Issues
                 FloatParseHandling = FloatParseHandling.Decimal
             };
 
-            decimal? parsedDecimal = null;
+            decimal? parsedValue = null;
             
             while (reader.Read())
             {
                 if (reader.TokenType == JsonToken.Float)
                 {
-                    parsedDecimal = (decimal)reader.Value;
+                    parsedValue = (decimal)reader.Value;
                     break;
                 }
             }
 
-            Assert.AreEqual("0.0", parsedDecimal.ToString());
+            Assert.AreEqual("0.0", parsedValue.ToString());
         }
 
         [Test]
@@ -144,7 +160,42 @@ namespace Newtonsoft.Json.Tests.Issues
 #else
             Assert.IsFalse(object.ReferenceEquals(boxedDecimals[0], boxedDecimals[1]));
 #endif
+        }
 
+        [Test]
+        public void Test_Deserialize_Double_Negative()
+        {
+            double d = JsonConvert.DeserializeObject<double>("-0.0");
+
+#if NETCOREAPP3_1_OR_GREATER
+            Assert.AreEqual("-0", d.ToString());
+#else
+            Assert.AreEqual("0", d.ToString());
+#endif
+        }
+
+        [Test]
+        public void Test_Deserialize_Double_NegativeNoTrailingZero()
+        {
+            double d = JsonConvert.DeserializeObject<double>("-0");
+
+#if NETCOREAPP3_1_OR_GREATER
+            Assert.AreEqual("-0", d.ToString());
+#else
+            Assert.AreEqual("0", d.ToString());
+#endif
+        }
+
+        [Test]
+        public void JValueDouble_ToString()
+        {
+            var d = new JValue(-0.0d);
+
+#if NETCOREAPP3_1_OR_GREATER
+            Assert.AreEqual("-0", d.ToString());
+#else
+            Assert.AreEqual("0", d.ToString());
+#endif
         }
     }
 }
