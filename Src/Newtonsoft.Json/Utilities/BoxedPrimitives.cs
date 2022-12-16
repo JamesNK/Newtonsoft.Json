@@ -131,7 +131,8 @@ namespace Newtonsoft.Json.Utilities
         {
             if (value == 0.0d)
             {
-                return DoubleZero;
+                // Double supports -0.0. Detection logic from https://stackoverflow.com/a/4739883/11829.
+                return double.IsNegativeInfinity(1.0 / value) ? DoubleNegativeZero : DoubleZero;
             }
             if (double.IsInfinity(value))
             {
@@ -147,6 +148,7 @@ namespace Newtonsoft.Json.Utilities
         internal static readonly object DoubleNaN = double.NaN;
         internal static readonly object DoublePositiveInfinity = double.PositiveInfinity;
         internal static readonly object DoubleNegativeInfinity = double.NegativeInfinity;
-        internal static readonly object DoubleZero = (double)0;
+        internal static readonly object DoubleZero = 0.0d;
+        internal static readonly object DoubleNegativeZero = -0.0d;
     }
 }
