@@ -281,6 +281,12 @@ namespace Newtonsoft.Json.Linq
         /// <param name="value">The <see cref="String"/> value to write.</param>
         public override void WriteValue(string? value)
         {
+            if (value == null)
+            {
+                WriteNull();
+                return;
+            }
+            
             base.WriteValue(value);
             AddJValue(new JValue(value), JsonToken.String);
         }
