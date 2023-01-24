@@ -1,0 +1,4 @@
+name,type,description
+Component 1,SERVICE,My first component
+Component 2,LIBRARY,My second component
+Component 3,APPLICATION,My third component
