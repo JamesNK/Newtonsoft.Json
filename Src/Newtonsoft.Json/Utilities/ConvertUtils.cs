@@ -511,7 +511,7 @@ namespace Newtonsoft.Json.Utilities
                 }
                 if (targetType == typeof(TimeOnly))
                 {
-                    value = TimeOnly.ParseExact(s, "HH':'mm':'ss.FFFFFFF", CultureInfo.InvariantCulture);
+                    value = TimeOnly.Parse(s, CultureInfo.InvariantCulture);
                     return ConvertResult.Success;
                 }
 #endif
