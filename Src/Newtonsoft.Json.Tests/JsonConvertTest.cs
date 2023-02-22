@@ -1592,8 +1592,8 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void DoubleRoundTrip()
         {
-            var x = 0.1 + 0.2;
-            var y = JsonConvert.DeserializeObject<double>(JsonConvert.SerializeObject(x));
+            double x = 0.1 + 0.2;
+            double y = JsonConvert.DeserializeObject<double>(JsonConvert.SerializeObject(x));
             Assert.AreEqual(x, y);
         }
 
