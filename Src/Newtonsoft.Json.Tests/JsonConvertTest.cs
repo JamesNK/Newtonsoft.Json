@@ -1589,6 +1589,14 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual("{\"Positions\":[57.72,60.44,63.44,66.81,70.45],\"Loads\":[23284.0,23225.0,23062.0,22846.0,22594.0],\"Gain\":12345.679}", json);
         }
 
+        [Test]
+        public void DoubleRoundTrip()
+        {
+            var x = 0.1 + 0.2;
+            var y = JsonConvert.DeserializeObject<double>(JsonConvert.SerializeObject(x));
+            Assert.AreEqual(x, y);
+        }
+
         public class Measurements
         {
             [JsonProperty(ItemConverterType = typeof(RoundingJsonConverter))]
