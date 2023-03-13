@@ -224,6 +224,13 @@ namespace Newtonsoft.Json
                                 SetToken(JsonToken.Date, dt, false);
                                 return;
                             }
+#if HAVE_DATE_ONLY
+                            if (DateTimeUtils.TryParseDateOnly(_stringReference, DateTimeZoneHandling, DateFormatString, Culture, out DateOnly date))
+                            {
+                                SetToken(JsonToken.Date, date, false);
+                                return;
+                            }
+#endif
                         }
 #if HAVE_DATE_TIME_OFFSET
                         else

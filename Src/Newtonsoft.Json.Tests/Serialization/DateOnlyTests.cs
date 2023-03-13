@@ -198,6 +198,15 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual(new DateOnly(2000, 12, 29), l[0]);
             Assert.AreEqual(null, l[1]);
         }
+
+        [Test]
+        public void DeserializeArray_Objects()
+        {
+            var l = JsonConvert.DeserializeObject<object[]>(@"[
+  ""9999-12-31""
+]");
+            Assert.AreEqual(DateOnly.MaxValue, l[0]);
+        }
     }
 }
 #endif

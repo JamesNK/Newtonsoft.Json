@@ -341,6 +341,12 @@ namespace Newtonsoft.Json.Utilities
             return d;
         }
 
+#if HAVE_DATE_ONLY
+        private static DateOnly CreateDateOnly(DateTimeParser dateTimeParser)
+        {
+            return new DateOnly(dateTimeParser.Year, dateTimeParser.Month, dateTimeParser.Day);
+        }
+#endif
         internal static bool TryParseDateTime(StringReference s, DateTimeZoneHandling dateTimeZoneHandling, string? dateFormatString, CultureInfo culture, out DateTime dt)
         {
             if (s.Length > 0)
@@ -376,6 +382,31 @@ namespace Newtonsoft.Json.Utilities
             dt = default;
             return false;
         }
+
+#if HAVE_DATE_ONLY
+        internal static bool TryParseDateOnly(StringReference s, DateTimeZoneHandling dateTimeZoneHandling, string? dateFormatString, CultureInfo culture, out DateOnly date)
+        {
+            if (s.Length > 0)
+            {
+                int i = s.StartIndex;
+                if (s.Length == 10 && char.IsDigit(s[i]))
+                {
+                    DateTimeParser dateTimeParser = new DateTimeParser();
+                    if (!dateTimeParser.ParseDateOnly(s.Chars, s.StartIndex, s.Length))
+                    {
+                        date = default;
+                        return false;
+                    }
+
+                    date = CreateDateOnly(dateTimeParser);
+                    return true;
+                }
+            }
+
+            date = default;
+            return false;
+        }
+#endif
 
         internal static bool TryParseDateTime(string s, DateTimeZoneHandling dateTimeZoneHandling, string? dateFormatString, CultureInfo culture, out DateTime dt)
         {

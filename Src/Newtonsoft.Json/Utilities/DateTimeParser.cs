@@ -100,6 +100,20 @@ namespace Newtonsoft.Json.Utilities
 
             return false;
         }
+#if HAVE_DATE_ONLY
+        public bool ParseDateOnly(char[] text, int startIndex, int length)
+        {
+            _text = text;
+            _end = startIndex + length;
+
+            if (ParseDate(startIndex))
+            {
+                return true;
+            }
+
+            return false;
+        }
+#endif
 
         private bool ParseDate(int start)
         {
