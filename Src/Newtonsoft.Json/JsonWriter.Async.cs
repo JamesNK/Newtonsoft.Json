@@ -270,22 +270,14 @@ namespace Newtonsoft.Json
         internal Task WriteEndInternalAsync(CancellationToken cancellationToken)
         {
             JsonContainerType type = Peek();
-            switch (type)
+            return type switch
             {
-                case JsonContainerType.Object:
-                    return WriteEndObjectAsync(cancellationToken);
-                case JsonContainerType.Array:
-                    return WriteEndArrayAsync(cancellationToken);
-                case JsonContainerType.Constructor:
-                    return WriteEndConstructorAsync(cancellationToken);
-                default:
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        return cancellationToken.FromCanceled();
-                    }
-
-                    throw JsonWriterException.Create(this, "Unexpected type when writing end: " + type, null);
-            }
+                JsonContainerType.Object => WriteEndObjectAsync(cancellationToken),
+                JsonContainerType.Array => WriteEndArrayAsync(cancellationToken),
+                JsonContainerType.Constructor => WriteEndConstructorAsync(cancellationToken),
+                _ => cancellationToken.IsCancellationRequested ? cancellationToken.FromCanceled()
+                    : throw JsonWriterException.Create(this, "Unexpected type when writing end: " + type, null)
+            };
         }
 
         internal Task InternalWriteEndAsync(JsonContainerType type, CancellationToken cancellationToken)
