@@ -733,7 +733,7 @@ namespace Newtonsoft.Json
             {
                 JsonContainerType.Object => JsonToken.EndObject,
                 JsonContainerType.Array => JsonToken.EndArray,
-                JsonContainerType.Constructor=> JsonToken.EndConstructor,
+                JsonContainerType.Constructor => JsonToken.EndConstructor,
                 _ => throw JsonWriterException.Create(this, "No close token for type: " + type, null)
             };
         }
@@ -800,23 +800,13 @@ namespace Newtonsoft.Json
         {
             JsonContainerType currentLevelType = Peek();
 
-            switch (currentLevelType)
+            _currentState = currentLevelType switch
             {
-                case JsonContainerType.Object:
-                    _currentState = State.Object;
-                    break;
-                case JsonContainerType.Array:
-                    _currentState = State.Array;
-                    break;
-                case JsonContainerType.Constructor:
-                    _currentState = State.Array;
-                    break;
-                case JsonContainerType.None:
-                    _currentState = State.Start;
-                    break;
-                default:
-                    throw JsonWriterException.Create(this, "Unknown JsonType: " + currentLevelType, null);
-            }
+                JsonContainerType.Object => State.Object,
+                JsonContainerType.Array or JsonContainerType.Constructor => State.Array,
+                JsonContainerType.None => State.Start,
+                _ => throw JsonWriterException.Create(this, "Unknown JsonType: " + currentLevelType, null)
+            };
         }
 
         /// <summary>
