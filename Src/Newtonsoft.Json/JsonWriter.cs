@@ -729,17 +729,13 @@ namespace Newtonsoft.Json
 
         private JsonToken GetCloseTokenForType(JsonContainerType type)
         {
-            switch (type)
+            return type switch
             {
-                case JsonContainerType.Object:
-                    return JsonToken.EndObject;
-                case JsonContainerType.Array:
-                    return JsonToken.EndArray;
-                case JsonContainerType.Constructor:
-                    return JsonToken.EndConstructor;
-                default:
-                    throw JsonWriterException.Create(this, "No close token for type: " + type, null);
-            }
+                JsonContainerType.Object => JsonToken.EndObject,
+                JsonContainerType.Array => JsonToken.EndArray,
+                JsonContainerType.Constructor=> JsonToken.EndConstructor,
+                _ => throw JsonWriterException.Create(this, "No close token for type: " + type, null)
+            };
         }
 
         private void AutoCompleteClose(JsonContainerType type)
