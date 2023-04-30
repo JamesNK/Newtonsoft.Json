@@ -369,7 +369,7 @@ namespace Newtonsoft.Json
         {
             JsonPosition oldPosition = _currentPosition;
 
-            if (_stack != null && _stack.Count > 0)
+            if (_stack?.Count > 0)
             {
                 _currentPosition = _stack[_stack.Count - 1];
                 _stack.RemoveAt(_stack.Count - 1);
