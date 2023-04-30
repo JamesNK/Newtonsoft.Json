@@ -229,14 +229,14 @@ namespace Newtonsoft.Json
                             {
                                 if (!schema.PositionalItemsValidation)
                                 {
-                                    if (schema.Items != null && schema.Items.Count > 0)
+                                    if (schema.Items?.Count > 0)
                                     {
                                         schemas.Add(schema.Items[0]);
                                     }
                                 }
                                 else
                                 {
-                                    if (schema.Items != null && schema.Items.Count > 0)
+                                    if (schema.Items?.Count > 0)
                                     {
                                         if (schema.Items.Count > (_currentScope.ArrayItemCount - 1))
                                         {
