@@ -162,28 +162,17 @@ namespace Newtonsoft.Json
         {
             get
             {
-                switch (_currentState)
+                return _currentState switch
                 {
-                    case State.Error:
-                        return WriteState.Error;
-                    case State.Closed:
-                        return WriteState.Closed;
-                    case State.Object:
-                    case State.ObjectStart:
-                        return WriteState.Object;
-                    case State.Array:
-                    case State.ArrayStart:
-                        return WriteState.Array;
-                    case State.Constructor:
-                    case State.ConstructorStart:
-                        return WriteState.Constructor;
-                    case State.Property:
-                        return WriteState.Property;
-                    case State.Start:
-                        return WriteState.Start;
-                    default:
-                        throw JsonWriterException.Create(this, "Invalid state: " + _currentState, null);
-                }
+                    State.Error => WriteState.Error,
+                    State.Closed => WriteState.Closed,
+                    State.Object or State.ObjectStart => WriteState.Object,
+                    State.Array or State.ArrayStart => WriteState.Array,
+                    State.Constructor or State.ConstructorStart => WriteState.Constructor,
+                    State.Property => WriteState.Property,
+                    State.Start => WriteState.Start,
+                    _ => throw JsonWriterException.Create(this, "Invalid state: " + _currentState, null)
+                };
             }
         }
 
