@@ -532,7 +532,7 @@ namespace Newtonsoft.Json
         [DebuggerStepThrough]
         public static string SerializeObject(object? value, params JsonConverter[] converters)
         {
-            JsonSerializerSettings? settings = (converters != null && converters.Length > 0)
+            JsonSerializerSettings? settings = (converters?.Length > 0)
                 ? new JsonSerializerSettings { Converters = converters }
                 : null;
 
