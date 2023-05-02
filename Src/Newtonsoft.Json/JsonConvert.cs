@@ -841,7 +841,7 @@ namespace Newtonsoft.Json
             {
                 jsonSerializer.Populate(jsonReader, target);
 
-                if (settings != null && settings.CheckAdditionalContent)
+                if (settings?.CheckAdditionalContent)
                 {
                     while (jsonReader.Read())
                     {
