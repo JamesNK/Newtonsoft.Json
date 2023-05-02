@@ -371,8 +371,8 @@ namespace Newtonsoft.Json
 
             if (_stack?.Count > 0)
             {
-                _currentPosition = _stack.Last();
-                _stack.Remove(_stack.Last());
+                _currentPosition = _stack[_stack.Count - 1];
+                _stack.RemoveAt(_stack.Count - 1);
             }
             else
             {
