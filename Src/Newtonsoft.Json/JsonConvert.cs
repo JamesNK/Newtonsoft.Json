@@ -950,10 +950,12 @@ namespace Newtonsoft.Json
         /// <returns>The deserialized <see cref="XmlNode"/>.</returns>
         public static XmlDocument? DeserializeXmlNode(string value, string? deserializeRootElementName, bool writeArrayAttribute, bool encodeSpecialCharacters)
         {
-            XmlNodeConverter converter = new XmlNodeConverter();
-            converter.DeserializeRootElementName = deserializeRootElementName;
-            converter.WriteArrayAttribute = writeArrayAttribute;
-            converter.EncodeSpecialCharacters = encodeSpecialCharacters;
+            XmlNodeConverter converter = new XmlNodeConverter()
+            {
+                DeserializeRootElementName = deserializeRootElementName,
+                WriteArrayAttribute = writeArrayAttribute,
+                EncodeSpecialCharacters = encodeSpecialCharacters
+            };
 
             return (XmlDocument?)DeserializeObject(value, typeof(XmlDocument), converter);
         }
@@ -1059,6 +1061,6 @@ namespace Newtonsoft.Json
             return (XDocument?)DeserializeObject(value, typeof(XDocument), converter);
         }
 #endif
-#endregion
+        #endregion
     }
 }
