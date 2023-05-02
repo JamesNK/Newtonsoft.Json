@@ -59,16 +59,13 @@ namespace Newtonsoft.Json
 
         internal int CalculateLength()
         {
-            switch (Type)
+            return Type switch
             {
-                case JsonContainerType.Object:
-                    return PropertyName!.Length + 5;
-                case JsonContainerType.Array:
-                case JsonContainerType.Constructor:
-                    return MathUtils.IntLength((ulong)Position) + 2;
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(Type));
-            }
+                JsonContainerType.Object => PropertyName!.Length + 5,
+                JsonContainerType.Array or JsonContainerType.Constructor
+                                        => MathUtils.IntLength((ulong)Position) + 2,
+                _ => throw new ArgumentOutOfRangeException(nameof(Type))
+            };
         }
 
         internal void WriteTo(StringBuilder sb, ref StringWriter? writer, ref char[]? buffer)
