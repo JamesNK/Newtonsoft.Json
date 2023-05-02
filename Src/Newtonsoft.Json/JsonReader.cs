@@ -312,7 +312,7 @@ namespace Newtonsoft.Json
 
         internal JsonPosition GetPosition(int depth)
         {
-            if (_stack != null && depth < _stack.Count)
+            if (depth < _stack?.Count)
             {
                 return _stack[depth];
             }
