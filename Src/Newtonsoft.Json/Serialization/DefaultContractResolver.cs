@@ -727,6 +727,8 @@ namespace Newtonsoft.Json.Serialization
 
             JsonProperty? property = 
                 properties.GetClosestMatchProperty(name) ??
+                // In case of name-napping attributes such as DataMember, match the underlying name as a constructor param.
+                // This is needed for types with readonly properties, such as F# records.
                 properties.GetByUnderlyingName(name);
             // must match type as well as name
             if (property == null || property.PropertyType != type)

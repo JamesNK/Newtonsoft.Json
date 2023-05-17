@@ -51,9 +51,13 @@ namespace Newtonsoft.Json.Tests.Issues
         public void TestJsonSanity()
         {
             var fsharpStructRecord = new FSharpStructRecordWithDataMember("42");
-            var asJson = JsonConvert.SerializeObject(fsharpStructRecord);         
-
+            var asJson = JsonConvert.SerializeObject(fsharpStructRecord);
+#if !NET20
             Assert.AreEqual(@"{""foo_field"":""42""}", asJson);
+#else 
+            Assert.AreEqual(@"{""Foo"":""42""}", asJson);
+#endif
+
         }
     }
 }
