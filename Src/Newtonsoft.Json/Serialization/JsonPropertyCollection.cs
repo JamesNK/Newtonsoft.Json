@@ -198,7 +198,9 @@ namespace Newtonsoft.Json.Serialization
             {
                 JsonProperty property = _list[i];
                 if (string.Equals(propertyName, property.UnderlyingName, StringComparison.OrdinalIgnoreCase))
+                {
                     return property;
+                }
             }
 
             return null;
