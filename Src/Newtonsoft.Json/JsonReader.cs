@@ -480,6 +480,7 @@ namespace Newtonsoft.Json
                 case JsonToken.Null:
                 case JsonToken.EndArray:
                     return null;
+                case JsonToken.Raw:
                 case JsonToken.String:
                     return (string?)Value;
             }
