@@ -8213,5 +8213,18 @@ This is just junk, though.";
 
             return depth;
         }
+
+        [Test]
+        public void RoundTripDecimalContainerWithConverter()
+        {
+            DecimalContainer container = new DecimalContainer
+            {
+                Value = 200.100M
+            };
+
+            JToken wrapped = JToken.FromObject(container);
+            DecimalContainer newContainer = wrapped.ToObject<DecimalContainer>();
+            Assert.Equals(container.Value, newContainer.Value);
+        }
     }
 }
