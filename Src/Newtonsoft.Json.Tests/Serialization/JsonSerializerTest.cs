@@ -8224,7 +8224,7 @@ This is just junk, though.";
 
             JToken wrapped = JToken.FromObject(container);
             DecimalContainer newContainer = wrapped.ToObject<DecimalContainer>();
-            Assert.Equals(container.Value, newContainer.Value);
+            Assert.AreEqual(container.Value, newContainer.Value);
         }
     }
 }
