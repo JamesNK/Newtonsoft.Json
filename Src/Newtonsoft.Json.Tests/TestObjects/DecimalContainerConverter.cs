@@ -1,4 +1,5 @@
-﻿using System;
+﻿#nullable enable
+using System;
 
 namespace Newtonsoft.Json.Tests.TestObjects
 {
@@ -29,3 +30,4 @@ namespace Newtonsoft.Json.Tests.TestObjects
         }
     }
 }
+#nullable restore
