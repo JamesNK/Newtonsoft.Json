@@ -58,7 +58,7 @@ namespace Newtonsoft.Json.Tests.TestObjects.Events
         private string _details;
         private string _stackTrace;
         private string _tag;
-        private DateTime _time;
+        private readonly DateTime _time;
 
         public Event(string summary)
         {

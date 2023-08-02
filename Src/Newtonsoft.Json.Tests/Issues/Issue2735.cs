@@ -112,7 +112,7 @@ namespace Newtonsoft.Json.Tests.Issues
         [Serializable]
         public class FooBar : ISerializable
         {
-            private Dictionary<string, Foo> _myData = new Dictionary<string, Foo>();
+            private readonly Dictionary<string, Foo> _myData = new Dictionary<string, Foo>();
 
             public IList<Foo> FooList => _myData.Values.ToList();
 

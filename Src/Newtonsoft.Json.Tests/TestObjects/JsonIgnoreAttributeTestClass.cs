@@ -27,8 +27,8 @@ namespace Newtonsoft.Json.Tests.TestObjects
 {
     public class JsonIgnoreAttributeTestClass
     {
-        private int _property = 21;
-        private int _ignoredProperty = 12;
+        private readonly int _property = 21;
+        private readonly int _ignoredProperty = 12;
 
         public int Field;
 

@@ -1067,7 +1067,7 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class ThrowingReader : TextReader
     {
         private int _position = 0;
-        private static string element = "{\"FirstName\":\"Din\",\"LastName\":\"Rav\",\"Item\":{\"ItemName\":\"temp\"}}";
+        private static readonly string element = "{\"FirstName\":\"Din\",\"LastName\":\"Rav\",\"Item\":{\"ItemName\":\"temp\"}}";
         private bool _firstRead = true;
         private bool _readComma = false;
 

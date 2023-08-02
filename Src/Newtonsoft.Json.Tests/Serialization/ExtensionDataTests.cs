@@ -256,7 +256,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             // everything else gets stored here
             [JsonExtensionData]
-            private IDictionary<string, JToken> _additionalData;
+            private readonly IDictionary<string, JToken> _additionalData;
         }
 #pragma warning restore 169
 

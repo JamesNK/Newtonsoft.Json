@@ -99,8 +99,8 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        private MethodInfo _ofSeq;
-        private Type _mapType;
+        private readonly MethodInfo _ofSeq;
+        private readonly Type _mapType;
 
         public Assembly FSharpCoreAssembly { get; private set; }
         public MethodCall<object?, object> IsUnion { get; private set; }

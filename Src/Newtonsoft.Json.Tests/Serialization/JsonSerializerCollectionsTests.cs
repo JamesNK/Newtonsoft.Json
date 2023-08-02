@@ -2190,7 +2190,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
         public class MyClass : IList<string>
         {
-            private List<string> _storage;
+            private readonly List<string> _storage;
 
             [JsonConstructor]
             private MyClass()

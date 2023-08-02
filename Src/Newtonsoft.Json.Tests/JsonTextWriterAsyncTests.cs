@@ -1977,7 +1977,7 @@ null//comment
         {
             // allergic to certain characters, this null-stream writer throws on any attempt to write them.
 
-            private char[] _singleCharBuffer = new char[1];
+            private readonly char[] _singleCharBuffer = new char[1];
 
             public ThrowingWriter(params char[] throwChars)
             {

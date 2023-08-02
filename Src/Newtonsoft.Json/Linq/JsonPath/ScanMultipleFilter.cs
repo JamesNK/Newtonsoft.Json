@@ -4,7 +4,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 {
     internal class ScanMultipleFilter : PathFilter
     {
-        private List<string> _names;
+        private readonly List<string> _names;
 
         public ScanMultipleFilter(List<string> names)
         {

@@ -30,7 +30,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
 {
     public class ThisGenericTest<T> where T : IKeyValueId
     {
-        private Dictionary<string, T> _dict1 = new Dictionary<string, T>();
+        private readonly Dictionary<string, T> _dict1 = new Dictionary<string, T>();
 
         public string MyProperty { get; set; }
 

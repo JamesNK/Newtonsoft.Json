@@ -31,9 +31,9 @@ namespace Newtonsoft.Json.Tests.TestObjects.JsonTextReaderTests
 {
     public class SlowStream : Stream
     {
-        private byte[] bytes;
+        private readonly byte[] bytes;
         private int totalBytesRead;
-        private int bytesPerRead;
+        private readonly int bytesPerRead;
 
         public SlowStream(byte[] content, int bytesPerRead)
         {

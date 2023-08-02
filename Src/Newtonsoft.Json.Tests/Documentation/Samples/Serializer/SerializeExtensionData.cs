@@ -51,7 +51,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 
             // everything else gets stored here
             [JsonExtensionData]
-            private IDictionary<string, JToken> _additionalData;
+            private readonly IDictionary<string, JToken> _additionalData;
         }
         #endregion
 
