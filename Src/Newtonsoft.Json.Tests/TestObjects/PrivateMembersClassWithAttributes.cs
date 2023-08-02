@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
         }
 
         [JsonProperty]
-        private string _privateString;
+        private readonly string _privateString;
 
         [JsonProperty]
         private readonly string _readonlyString;

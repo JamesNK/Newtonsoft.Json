@@ -607,7 +607,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
         ///</summary>
         public partial class CustomersRow : global::System.Data.DataRow
         {
-            private CustomersDataTable tableCustomers;
+            private readonly CustomersDataTable tableCustomers;
 
             [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
             [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
@@ -656,7 +656,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
         [global::System.CodeDom.Compiler.GeneratedCodeAttribute("System.Data.Design.TypedDataSetGenerator", "4.0.0.0")]
         public class CustomersRowChangeEvent : global::System.EventArgs
         {
-            private CustomersRow eventRow;
+            private readonly CustomersRow eventRow;
 
             private global::System.Data.DataRowAction eventAction;
 

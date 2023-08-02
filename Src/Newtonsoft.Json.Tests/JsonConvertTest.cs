@@ -1603,8 +1603,8 @@ namespace Newtonsoft.Json.Tests
 
         public class RoundingJsonConverter : JsonConverter
         {
-            int _precision;
-            MidpointRounding _rounding;
+            readonly int _precision;
+            readonly MidpointRounding _rounding;
 
             public RoundingJsonConverter()
                 : this(2)

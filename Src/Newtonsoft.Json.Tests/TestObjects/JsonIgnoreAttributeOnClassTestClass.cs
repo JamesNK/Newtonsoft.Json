@@ -28,8 +28,8 @@ namespace Newtonsoft.Json.Tests.TestObjects
     [JsonObject(MemberSerialization.OptIn)]
     public class JsonIgnoreAttributeOnClassTestClass
     {
-        private int _property = 21;
-        private int _ignoredProperty = 12;
+        private readonly int _property = 21;
+        private readonly int _ignoredProperty = 12;
 
         [JsonProperty("TheField")]
         public int Field;

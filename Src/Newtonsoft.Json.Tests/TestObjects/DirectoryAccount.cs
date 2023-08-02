@@ -39,7 +39,7 @@ namespace Newtonsoft.Json.Tests.TestObjects
         public string Domain { get; set; }
 
         [JsonExtensionData]
-        private IDictionary<string, JToken> _additionalData;
+        private readonly IDictionary<string, JToken> _additionalData;
 
         [OnDeserialized]
         private void OnDeserialized(StreamingContext context)

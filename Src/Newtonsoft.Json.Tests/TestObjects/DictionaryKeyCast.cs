@@ -29,8 +29,8 @@ namespace Newtonsoft.Json.Tests.TestObjects
 {
     internal class DictionaryKeyCast
     {
-        private String _name;
-        private int _number;
+        private readonly String _name;
+        private readonly int _number;
 
         public DictionaryKeyCast(String name, int number)
         {
