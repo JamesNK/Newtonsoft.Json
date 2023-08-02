@@ -38,7 +38,7 @@ namespace Newtonsoft.Json
 
         private int _count;
         private Entry[] _entries;
-        private readonly int _mask = 31;
+        private int _mask = 31;
 
         static DefaultJsonNameTable()
         {
