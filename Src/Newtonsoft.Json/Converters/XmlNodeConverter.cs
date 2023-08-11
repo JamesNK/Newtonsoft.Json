@@ -1335,7 +1335,36 @@ namespace Newtonsoft.Json.Converters
                             && node.ChildNodes[0].NodeType == XmlNodeType.Text)
                         {
                             // write elements with a single text child as a name value pair
-                            writer.WriteValue(node.ChildNodes[0].Value);
+                            string xmlNodeValue = node.ChildNodes[0].Value;
+                            string dataType = this.GetXmlDataType(node);
+                            if (dataType != null) {
+                                switch (dataType) {
+                                    case "Long":
+                                        writer.WriteValue(Convert.ToInt64(xmlNodeValue, CultureInfo.InvariantCulture));
+                                        break;
+                                    case "Integer":
+                                        writer.WriteValue(Convert.ToInt32(xmlNodeValue, CultureInfo.InvariantCulture));
+                                        break;
+                                    case "Float":
+                                        writer.WriteValue(Convert.ToDouble(xmlNodeValue, CultureInfo.InvariantCulture));
+                                        break;
+                                    case "Decimal":
+                                        writer.WriteValue(Convert.ToDecimal(xmlNodeValue, CultureInfo.InvariantCulture));
+                                        break;
+                                    case "Boolean":
+                                        writer.WriteValue(Convert.ToBoolean(xmlNodeValue, CultureInfo.InvariantCulture));
+                                        break;
+                                    case "Date":
+                                        DateTime d = Convert.ToDateTime(xmlNodeValue, CultureInfo.InvariantCulture);
+                                        writer.WriteValue(d);
+                                        break;
+                                    default:
+                                        writer.WriteValue(xmlNodeValue);
+                                        break;
+                                }
+                            } else {
+                                writer.WriteValue(xmlNodeValue);
+                            }
                         }
                         else if (node.ChildNodes.Count == 0 && node.Attributes.Count == 0)
                         {
@@ -2187,7 +2216,13 @@ namespace Newtonsoft.Json.Converters
             return false;
         }
 #endregion
-
+        //Function that retrieve specific type attribute in xml element
+        private string GetXmlDataType(IXmlNode node) {
+            IXmlNode jsonDataTypeAttribute = (node.Attributes != null)
+                                            ? node.Attributes.SingleOrDefault(a => a.LocalName == "Type" && a.NamespaceUri == JsonNamespaceUri)
+                                            : null;
+            return (jsonDataTypeAttribute != null) ? jsonDataTypeAttribute.Value : null;
+        }
         /// <summary>
         /// Determines whether this instance can convert the specified value type.
         /// </summary>
