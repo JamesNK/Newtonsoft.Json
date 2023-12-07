@@ -1937,6 +1937,11 @@ namespace Newtonsoft.Json
                         throw JsonReaderException.Create(this, "Unexpected character while parsing constructor: {0}.".FormatWith(CultureInfo.InvariantCulture, currentChar));
                     }
                 }
+                
+                if (initialPosition == endPosition)
+                {
+                    throw JsonReaderException.Create(this, "Empty constructor name.");
+                }
 
                 _stringReference = new StringReference(_chars, initialPosition, endPosition - initialPosition);
                 string constructorName = _stringReference.ToString();
