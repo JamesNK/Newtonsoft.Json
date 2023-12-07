@@ -119,6 +119,17 @@ namespace Newtonsoft.Json.Tests
         }
 
         [Test]
+        public void NoConstructorName() {
+            ExceptionAssert.Throws<JsonException>(
+                () => JsonConvert.DeserializeObject("[new \0("),
+                "Empty constructor name. Path '', line 1, position 6.");
+
+            ExceptionAssert.Throws<JsonException>(
+                () => JsonConvert.DeserializeObject("{'x':new \0("),
+                "Empty constructor name. Path 'x', line 1, position 10.");
+        }
+
+        [Test]
         public void PopulateObjectWithOnlyComment()
         {
             var ex = ExceptionAssert.Throws<JsonSerializationException>(() =>
