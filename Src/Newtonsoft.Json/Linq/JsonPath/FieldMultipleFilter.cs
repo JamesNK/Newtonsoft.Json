@@ -9,9 +9,9 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class FieldMultipleFilter : PathFilter
+    public class FieldMultipleFilter : PathFilter
     {
-        internal List<string> Names;
+        public List<string> Names { get; set; }
 
         public FieldMultipleFilter(List<string> names)
         {

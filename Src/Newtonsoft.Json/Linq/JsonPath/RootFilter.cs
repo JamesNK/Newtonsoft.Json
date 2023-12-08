@@ -2,7 +2,7 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class RootFilter : PathFilter
+    public class RootFilter : PathFilter
     {
         public static readonly RootFilter Instance = new RootFilter();
 

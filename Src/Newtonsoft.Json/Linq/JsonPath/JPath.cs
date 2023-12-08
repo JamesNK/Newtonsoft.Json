@@ -31,7 +31,7 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class JPath
+    public class JPath
     {
         private static readonly char[] FloatCharacters = new[] {'.', 'E', 'e'};
 

@@ -2,13 +2,13 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class ScanMultipleFilter : PathFilter
+    public class ScanMultipleFilter : PathFilter
     {
-        private List<string> _names;
+        public List<string> names { get; set; }
 
         public ScanMultipleFilter(List<string> names)
         {
-            _names = names;
+            this.names = names;
         }
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, JsonSelectSettings? settings)
@@ -29,7 +29,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
 
                     if (value is JProperty property)
                     {
-                        foreach (string name in _names)
+                        foreach (string name in names)
                         {
                             if (property.Name == name)
                             {

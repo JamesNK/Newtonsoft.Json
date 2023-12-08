@@ -4,9 +4,9 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class FieldFilter : PathFilter
+    public class FieldFilter : PathFilter
     {
-        internal string? Name;
+        public string? Name { get; set; }
 
         public FieldFilter(string? name)
         {

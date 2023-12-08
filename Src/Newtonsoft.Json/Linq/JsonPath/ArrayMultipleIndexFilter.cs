@@ -2,9 +2,9 @@ using System.Collections.Generic;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class ArrayMultipleIndexFilter : PathFilter
+    public class ArrayMultipleIndexFilter : PathFilter
     {
-        internal List<int> Indexes;
+        public List<int> Indexes { get; set; }
 
         public ArrayMultipleIndexFilter(List<int> indexes)
         {
