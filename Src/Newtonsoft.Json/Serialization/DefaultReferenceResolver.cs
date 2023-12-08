@@ -24,8 +24,9 @@
 #endregion
 
 using System;
-using Newtonsoft.Json.Utilities;
 using System.Globalization;
+using System.Threading;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {
@@ -62,8 +63,7 @@ namespace Newtonsoft.Json.Serialization
 
             if (!mappings.TryGetBySecond(value, out string? reference))
             {
-                _referenceCount++;
-                reference = _referenceCount.ToString(CultureInfo.InvariantCulture);
+                reference = Interlocked.Increment(ref _referenceCount).ToString(CultureInfo.InvariantCulture);
                 mappings.Set(reference, value);
             }
 
