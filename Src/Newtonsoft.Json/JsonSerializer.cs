@@ -1193,7 +1193,7 @@ namespace Newtonsoft.Json
 
         internal JsonConverter? GetMatchingConverter(Type type)
         {
-            return GetMatchingConverter(_converters, type);
+            return GetMatchingConverter(Converters, type);
         }
 
         internal static JsonConverter? GetMatchingConverter(IList<JsonConverter>? converters, Type objectType)
@@ -1208,7 +1208,7 @@ namespace Newtonsoft.Json
                 {
                     JsonConverter converter = converters[i];
 
-                    if (converter.CanConvert(objectType))
+                    if (converter?.CanConvert(objectType) ?? false)
                     {
                         return converter;
                     }
