@@ -22,45 +22,31 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
-
+#if HAVE_ASYNC
 using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using System.Reflection;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Newtonsoft.Json.Converters
 {
-    /// <summary>
-    /// Converts a <see cref="KeyValuePair{TKey,TValue}"/> to and from JSON.
-    /// </summary>
     public partial class KeyValuePairConverter : JsonConverter
     {
-        private const string KeyName = "Key";
-        private const string ValueName = "Value";
-
-        private static readonly ThreadSafeStore<Type, ReflectionObject> ReflectionObjectPerType = new ThreadSafeStore<Type, ReflectionObject>(InitializeReflectionObject);
-
-        private static ReflectionObject InitializeReflectionObject(Type t)
-        {
-            IList<Type> genericArguments = t.GetGenericArguments();
-            Type keyType = genericArguments[0];
-            Type valueType = genericArguments[1];
-
-            return ReflectionObject.Create(t, t.GetConstructor(new[] { keyType, valueType }), KeyName, ValueName);
-        }
-
         /// <summary>
         /// Writes the JSON representation of the object.
         /// </summary>
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        public override async Task WriteJsonAsync(JsonWriter writer, object? value, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             if (value == null)
             {
-                writer.WriteNull();
+                await writer.WriteNullAsync(cancellationToken).ConfigureAwait(false);
                 return;
             }
 
@@ -68,12 +54,12 @@ namespace Newtonsoft.Json.Converters
 
             DefaultContractResolver? resolver = serializer.ContractResolver as DefaultContractResolver;
 
-            writer.WriteStartObject();
-            writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(KeyName) : KeyName);
-            serializer.Serialize(writer, reflectionObject.GetValue(value, KeyName), reflectionObject.GetType(KeyName));
-            writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(ValueName) : ValueName);
-            serializer.Serialize(writer, reflectionObject.GetValue(value, ValueName), reflectionObject.GetType(ValueName));
-            writer.WriteEndObject();
+            await writer.WriteStartObjectAsync(cancellationToken).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync((resolver != null) ? resolver.GetResolvedPropertyName(KeyName) : KeyName, cancellationToken).ConfigureAwait(false);
+            await serializer.SerializeAsync(writer, reflectionObject.GetValue(value, KeyName), reflectionObject.GetType(KeyName), cancellationToken).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync((resolver != null) ? resolver.GetResolvedPropertyName(ValueName) : ValueName, cancellationToken).ConfigureAwait(false);
+            await serializer.SerializeAsync(writer, reflectionObject.GetValue(value, ValueName), reflectionObject.GetType(ValueName), cancellationToken).ConfigureAwait(false);
+            await writer.WriteEndObjectAsync(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -83,8 +69,9 @@ namespace Newtonsoft.Json.Converters
         /// <param name="objectType">Type of the object.</param>
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>The object value.</returns>
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override async Task<object?> ReadJsonAsync(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -99,7 +86,7 @@ namespace Newtonsoft.Json.Converters
             object? key = null;
             object? value = null;
 
-            reader.ReadAndAssert();
+            await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
 
             Type t = ReflectionUtils.IsNullableType(objectType)
                 ? Nullable.GetUnderlyingType(objectType)!
@@ -114,46 +101,27 @@ namespace Newtonsoft.Json.Converters
                 string propertyName = reader.Value!.ToString()!;
                 if (string.Equals(propertyName, KeyName, StringComparison.OrdinalIgnoreCase))
                 {
-                    reader.ReadForTypeAndAssert(keyContract, false);
+                    await reader.ReadForTypeAndAssertAsync(keyContract, false, cancellationToken).ConfigureAwait(false);
 
-                    key = serializer.Deserialize(reader, keyContract.UnderlyingType);
+                    key = await serializer.DeserializeAsync(reader, keyContract.UnderlyingType, cancellationToken).ConfigureAwait(false);
                 }
                 else if (string.Equals(propertyName, ValueName, StringComparison.OrdinalIgnoreCase))
                 {
-                    reader.ReadForTypeAndAssert(valueContract, false);
+                    await reader.ReadForTypeAndAssertAsync(valueContract, false, cancellationToken).ConfigureAwait(false);
 
-                    value = serializer.Deserialize(reader, valueContract.UnderlyingType);
+                    value = await serializer.DeserializeAsync(reader, valueContract.UnderlyingType, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
-                    reader.Skip();
+                    await reader.SkipAsync(cancellationToken).ConfigureAwait(false);
                 }
 
-                reader.ReadAndAssert();
+                await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
             }
 
             return reflectionObject.Creator!(key, value);
         }
 
-        /// <summary>
-        /// Determines whether this instance can convert the specified object type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-            Type t = (ReflectionUtils.IsNullableType(objectType))
-                ? Nullable.GetUnderlyingType(objectType)!
-                : objectType;
-
-            if (t.IsValueType() && t.IsGenericType())
-            {
-                return (t.GetGenericTypeDefinition() == typeof(KeyValuePair<,>));
-            }
-
-            return false;
-        }
     }
 }
+#endif

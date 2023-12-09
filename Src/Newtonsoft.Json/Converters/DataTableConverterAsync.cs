@@ -22,7 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
-
+#if HAVE_ASYNC
 #if HAVE_ADO_NET
 using System.Collections;
 using System.Collections.Generic;
@@ -31,12 +31,11 @@ using Newtonsoft.Json.Utilities;
 using System;
 using System.Data;
 using Newtonsoft.Json.Serialization;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Newtonsoft.Json.Converters
 {
-    /// <summary>
-    /// Converts a <see cref="DataTable"/> to and from JSON.
-    /// </summary>
     public partial class DataTableConverter : JsonConverter
     {
         /// <summary>
@@ -45,22 +44,23 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        public override async Task WriteJsonAsync(JsonWriter writer, object? value, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             if (value == null)
             {
-                writer.WriteNull();
+                await writer.WriteNullAsync(cancellationToken).ConfigureAwait(false);
                 return;
             }
 
             DataTable table = (DataTable)value;
             DefaultContractResolver? resolver = serializer.ContractResolver as DefaultContractResolver;
 
-            writer.WriteStartArray();
+            await writer.WriteStartArrayAsync(cancellationToken).ConfigureAwait(false);
 
             foreach (DataRow row in table.Rows)
             {
-                writer.WriteStartObject();
+                await writer.WriteStartObjectAsync(cancellationToken).ConfigureAwait(false);
                 foreach (DataColumn column in row.Table.Columns)
                 {
                     object columnValue = row[column];
@@ -70,13 +70,13 @@ namespace Newtonsoft.Json.Converters
                         continue;
                     }
 
-                    writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(column.ColumnName) : column.ColumnName);
-                    serializer.Serialize(writer, columnValue);
+                    await writer.WritePropertyNameAsync((resolver != null) ? resolver.GetResolvedPropertyName(column.ColumnName) : column.ColumnName, cancellationToken).ConfigureAwait(false);
+                    await serializer.SerializeAsync(writer, columnValue, columnValue?.GetType() ?? typeof(object), cancellationToken).ConfigureAwait(false);
                 }
-                writer.WriteEndObject();
+                await writer.WriteEndObjectAsync(cancellationToken).ConfigureAwait(false);
             }
 
-            writer.WriteEndArray();
+            await writer.WriteEndArrayAsync(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -86,8 +86,9 @@ namespace Newtonsoft.Json.Converters
         /// <param name="objectType">Type of the object.</param>
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>The object value.</returns>
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override async Task<object?> ReadJsonAsync(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -108,7 +109,7 @@ namespace Newtonsoft.Json.Converters
             {
                 dt.TableName = (string)reader.Value!;
 
-                reader.ReadAndAssert();
+                await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
 
                 if (reader.TokenType == JsonToken.Null)
                 {
@@ -121,33 +122,33 @@ namespace Newtonsoft.Json.Converters
                 throw JsonSerializationException.Create(reader, "Unexpected JSON token when reading DataTable. Expected StartArray, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
 
-            reader.ReadAndAssert();
+            await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
 
             while (reader.TokenType != JsonToken.EndArray)
             {
-                CreateRow(reader, dt, serializer);
+                await CreateRowAsync(reader, dt, serializer, cancellationToken).ConfigureAwait(false);
 
-                reader.ReadAndAssert();
+                await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
             }
 
             return dt;
         }
 
-        private static void CreateRow(JsonReader reader, DataTable dt, JsonSerializer serializer)
+        private static async Task CreateRowAsync(JsonReader reader, DataTable dt, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             DataRow dr = dt.NewRow();
-            reader.ReadAndAssert();
+            await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
                 string columnName = (string)reader.Value!;
 
-                reader.ReadAndAssert();
+                await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
 
                 DataColumn? column = dt.Columns[columnName];
                 if (column == null)
                 {
-                    Type columnType = GetColumnDataType(reader);
+                    Type columnType = await GetColumnDataTypeAsync(reader, cancellationToken).ConfigureAwait(false);
                     column = new DataColumn(columnName, columnType);
                     dt.Columns.Add(column);
                 }
@@ -156,7 +157,7 @@ namespace Newtonsoft.Json.Converters
                 {
                     if (reader.TokenType == JsonToken.StartArray)
                     {
-                        reader.ReadAndAssert();
+                        await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
                     }
 
                     DataTable nestedDt = new DataTable();
@@ -165,7 +166,7 @@ namespace Newtonsoft.Json.Converters
                     {
                         CreateRow(reader, nestedDt, serializer);
 
-                        reader.ReadAndAssert();
+                        await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
                     }
 
                     dr[columnName] = nestedDt;
@@ -174,7 +175,7 @@ namespace Newtonsoft.Json.Converters
                 {
                     if (reader.TokenType == JsonToken.StartArray)
                     {
-                        reader.ReadAndAssert();
+                        await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
                     }
 
                     List<object?> o = new List<object?>();
@@ -182,7 +183,7 @@ namespace Newtonsoft.Json.Converters
                     while (reader.TokenType != JsonToken.EndArray)
                     {
                         o.Add(reader.Value);
-                        reader.ReadAndAssert();
+                        await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
                     }
 
                     Array destinationArray = Array.CreateInstance(column.DataType.GetElementType()!, o.Count);
@@ -199,14 +200,14 @@ namespace Newtonsoft.Json.Converters
                     dr[columnName] = columnValue;
                 }
 
-                reader.ReadAndAssert();
+                await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
             }
 
             dr.EndEdit();
             dt.Rows.Add(dr);
         }
 
-        private static Type GetColumnDataType(JsonReader reader)
+        private static async Task<Type> GetColumnDataTypeAsync(JsonReader reader, CancellationToken cancellationToken)
         {
             JsonToken tokenType = reader.TokenType;
 
@@ -224,31 +225,21 @@ namespace Newtonsoft.Json.Converters
                 case JsonToken.EndArray:
                     return typeof(string);
                 case JsonToken.StartArray:
-                    reader.ReadAndAssert();
+                    await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
                     if (reader.TokenType == JsonToken.StartObject)
                     {
                         return typeof(DataTable); // nested datatable
                     }
 
-                    Type arrayType = GetColumnDataType(reader);
+                    Type arrayType = await GetColumnDataTypeAsync(reader, cancellationToken).ConfigureAwait(false);
                     return arrayType.MakeArrayType();
                 default:
                     throw JsonSerializationException.Create(reader, "Unexpected JSON token when reading DataTable: {0}".FormatWith(CultureInfo.InvariantCulture, tokenType));
             }
         }
 
-        /// <summary>
-        /// Determines whether this instance can convert the specified value type.
-        /// </summary>
-        /// <param name="valueType">Type of the value.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified value type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type valueType)
-        {
-            return typeof(DataTable).IsAssignableFrom(valueType);
-        }
     }
 }
 
+#endif
 #endif

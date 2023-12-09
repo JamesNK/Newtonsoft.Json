@@ -22,17 +22,17 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
+#if HAVE_ASYNC
 
 #if HAVE_ADO_NET
 using System;
 using System.Data;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Serialization;
 
 namespace Newtonsoft.Json.Converters
 {
-    /// <summary>
-    /// Converts a <see cref="DataSet"/> to and from JSON.
-    /// </summary>
     public partial class DataSetConverter : JsonConverter
     {
         /// <summary>
@@ -41,11 +41,12 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        public override async Task WriteJsonAsync(JsonWriter writer, object? value, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             if (value == null)
             {
-                writer.WriteNull();
+                await writer.WriteNullAsync(cancellationToken).ConfigureAwait(false);
                 return;
             }
 
@@ -54,16 +55,16 @@ namespace Newtonsoft.Json.Converters
 
             DataTableConverter converter = new DataTableConverter();
 
-            writer.WriteStartObject();
+            await writer.WriteStartObjectAsync(cancellationToken).ConfigureAwait(false);
 
             foreach (DataTable table in dataSet.Tables)
             {
-                writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(table.TableName) : table.TableName);
+                await writer.WritePropertyNameAsync((resolver != null) ? resolver.GetResolvedPropertyName(table.TableName) : table.TableName, cancellationToken).ConfigureAwait(false);
 
-                converter.WriteJson(writer, table, serializer);
+                await converter.WriteJsonAsync(writer, table, serializer, cancellationToken).ConfigureAwait(false);
             }
 
-            writer.WriteEndObject();
+            await writer.WriteEndObjectAsync(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -73,8 +74,9 @@ namespace Newtonsoft.Json.Converters
         /// <param name="objectType">Type of the object.</param>
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>The object value.</returns>
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override async Task<object?> ReadJsonAsync(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -88,38 +90,28 @@ namespace Newtonsoft.Json.Converters
 
             DataTableConverter converter = new DataTableConverter();
 
-            reader.ReadAndAssert();
+            await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
                 DataTable? dt = ds.Tables[(string)reader.Value!];
                 bool exists = (dt != null);
 
-                dt = (DataTable)converter.ReadJson(reader, typeof(DataTable), dt, serializer)!;
+                dt = (DataTable)(await converter.ReadJsonAsync(reader, typeof(DataTable), dt, serializer, cancellationToken).ConfigureAwait(false))!;
 
                 if (!exists)
                 {
                     ds.Tables.Add(dt);
                 }
 
-                reader.ReadAndAssert();
+                await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
             }
 
             return ds;
         }
 
-        /// <summary>
-        /// Determines whether this instance can convert the specified value type.
-        /// </summary>
-        /// <param name="valueType">Type of the value.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified value type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type valueType)
-        {
-            return typeof(DataSet).IsAssignableFrom(valueType);
-        }
     }
 }
 
+#endif
 #endif

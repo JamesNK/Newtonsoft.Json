@@ -22,6 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
+#if HAVE_ASYNC
 
 using System;
 using System.Text.RegularExpressions;
@@ -30,16 +31,14 @@ using System.Globalization;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
+using System.Threading;
+using System.Threading.Tasks;
+
 
 namespace Newtonsoft.Json.Converters
 {
-    /// <summary>
-    /// Converts a <see cref="Regex"/> to and from JSON and BSON.
-    /// </summary>
     public partial class RegexConverter : JsonConverter
     {
-        private const string PatternName = "Pattern";
-        private const string OptionsName = "Options";
 
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -47,11 +46,12 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        public override async Task WriteJsonAsync(JsonWriter writer, object? value, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             if (value == null)
             {
-                writer.WriteNull();
+                await writer.WriteNullAsync(cancellationToken).ConfigureAwait(false);
                 return;
             }
 
@@ -60,22 +60,18 @@ namespace Newtonsoft.Json.Converters
 #pragma warning disable 618
             if (writer is BsonWriter bsonWriter)
             {
-                WriteBson(bsonWriter, regex);
+                await WriteBsonAsync(bsonWriter, regex, cancellationToken).ConfigureAwait(false);
             }
 #pragma warning restore 618
             else
             {
-                WriteJson(writer, regex, serializer);
+                await WriteJsonAsync(writer, regex, serializer, cancellationToken).ConfigureAwait(false);
             }
         }
 
-        private bool HasFlag(RegexOptions options, RegexOptions flag)
-        {
-            return ((options & flag) == flag);
-        }
 
 #pragma warning disable 618
-        private void WriteBson(BsonWriter writer, Regex regex)
+        private async Task WriteBsonAsync(BsonWriter writer, Regex regex, CancellationToken cancellationToken)
         {
             // Regular expression - The first cstring is the regex pattern, the second
             // is the regex options string. Options are identified by characters, which 
@@ -108,20 +104,20 @@ namespace Newtonsoft.Json.Converters
                 options += "x";
             }
 
-            writer.WriteRegex(regex.ToString(), options);
+            await writer.WriteRegexAsync(regex.ToString(), options, cancellationToken).ConfigureAwait(false);
         }
 #pragma warning restore 618
 
-        private void WriteJson(JsonWriter writer, Regex regex, JsonSerializer serializer)
+        private async Task WriteJsonAsync(JsonWriter writer, Regex regex, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             DefaultContractResolver? resolver = serializer.ContractResolver as DefaultContractResolver;
 
-            writer.WriteStartObject();
-            writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(PatternName) : PatternName);
-            writer.WriteValue(regex.ToString());
-            writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(OptionsName) : OptionsName);
-            serializer.Serialize(writer, regex.Options);
-            writer.WriteEndObject();
+            await writer.WriteStartObjectAsync(cancellationToken).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync((resolver != null) ? resolver.GetResolvedPropertyName(PatternName) : PatternName, cancellationToken).ConfigureAwait(false);
+            await writer.WriteValueAsync(regex.ToString(), cancellationToken).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync((resolver != null) ? resolver.GetResolvedPropertyName(OptionsName) : OptionsName, cancellationToken).ConfigureAwait(false);
+            await serializer.SerializeAsync(writer, regex.Options, typeof(RegexOptions), cancellationToken).ConfigureAwait(false);
+            await writer.WriteEndObjectAsync(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
@@ -131,13 +127,14 @@ namespace Newtonsoft.Json.Converters
         /// <param name="objectType">Type of the object.</param>
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>The object value.</returns>
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override async Task<object?> ReadJsonAsync(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             switch (reader.TokenType)
             {
                 case JsonToken.StartObject:
-                    return ReadRegexObject(reader, serializer);
+                    return await ReadRegexObjectAsync(reader, serializer, cancellationToken).ConfigureAwait(false);
                 case JsonToken.String:
                     return ReadRegexString(reader);
                 case JsonToken.Null:
@@ -147,41 +144,20 @@ namespace Newtonsoft.Json.Converters
             throw JsonSerializationException.Create(reader, "Unexpected token when reading Regex.");
         }
 
-        private object ReadRegexString(JsonReader reader)
-        {
-            string regexText = (string)reader.Value!;
 
-            if (regexText.Length > 0 && regexText[0] == '/')
-            {
-                int patternOptionDelimiterIndex = regexText.LastIndexOf('/');
-
-                if (patternOptionDelimiterIndex > 0)
-                {
-                    string patternText = regexText.Substring(1, patternOptionDelimiterIndex - 1);
-                    string optionsText = regexText.Substring(patternOptionDelimiterIndex + 1);
-
-                    RegexOptions options = MiscellaneousUtils.GetRegexOptions(optionsText);
-
-                    return new Regex(patternText, options);
-                }
-            }
-
-            throw JsonSerializationException.Create(reader, "Regex pattern must be enclosed by slashes.");
-        }
-
-        private Regex ReadRegexObject(JsonReader reader, JsonSerializer serializer)
+        private async Task<Regex> ReadRegexObjectAsync(JsonReader reader, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             string? pattern = null;
             RegexOptions? options = null;
 
-            while (reader.Read())
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
                 switch (reader.TokenType)
                 {
                     case JsonToken.PropertyName:
                         string propertyName = reader.Value!.ToString()!;
 
-                        if (!reader.Read())
+                        if (!await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
                         {
                             throw JsonSerializationException.Create(reader, "Unexpected end when reading Regex.");
                         }
@@ -192,11 +168,11 @@ namespace Newtonsoft.Json.Converters
                         }
                         else if (string.Equals(propertyName, OptionsName, StringComparison.OrdinalIgnoreCase))
                         {
-                            options = serializer.Deserialize<RegexOptions>(reader);
+                            options = await serializer.DeserializeAsync<RegexOptions>(reader, cancellationToken).ConfigureAwait(false);
                         }
                         else
                         {
-                            reader.Skip();
+                            await reader.SkipAsync(cancellationToken).ConfigureAwait(false);
                         }
                         break;
                     case JsonToken.Comment:
@@ -213,23 +189,7 @@ namespace Newtonsoft.Json.Converters
 
             throw JsonSerializationException.Create(reader, "Unexpected end when reading Regex.");
         }
-
-        /// <summary>
-        /// Determines whether this instance can convert the specified object type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType.Name == nameof(Regex) && IsRegex(objectType);
-        }
-
-        [MethodImpl(MethodImplOptions.NoInlining)]
-        private bool IsRegex(Type objectType)
-        {
-            return (objectType == typeof(Regex));
-        }
     }
 }
+
+#endif

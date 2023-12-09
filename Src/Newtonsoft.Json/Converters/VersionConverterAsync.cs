@@ -23,15 +23,16 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if HAVE_ASYNC
+
 using System;
 using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Converters
 {
-    /// <summary>
-    /// Converts a <see cref="Version"/> to and from a string (e.g. <c>"1.2.3.4"</c>).
-    /// </summary>
     public partial class VersionConverter : JsonConverter
     {
         /// <summary>
@@ -40,15 +41,16 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        public override async Task WriteJsonAsync(JsonWriter writer, object? value, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             if (value == null)
             {
-                writer.WriteNull();
+                await writer.WriteNullAsync(cancellationToken).ConfigureAwait(false);
             }
             else if (value is Version)
             {
-                writer.WriteValue(value.ToString());
+                await writer.WriteValueAsync(value.ToString(), cancellationToken).ConfigureAwait(false);
             }
             else
             {
@@ -63,44 +65,13 @@ namespace Newtonsoft.Json.Converters
         /// <param name="objectType">Type of the object.</param>
         /// <param name="existingValue">The existing property value of the JSON that is being converted.</param>
         /// <param name="serializer">The calling serializer.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>The object value.</returns>
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override Task<object?> ReadJsonAsync(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer, CancellationToken cancellationToken)
         {
-            if (reader.TokenType == JsonToken.Null)
-            {
-                return null;
-            }
-            else
-            {
-                if (reader.TokenType == JsonToken.String)
-                {
-                    try
-                    {
-                        Version v = new Version((string)reader.Value!);
-                        return v;
-                    }
-                    catch (Exception ex)
-                    {
-                        throw JsonSerializationException.Create(reader, "Error parsing version string: {0}".FormatWith(CultureInfo.InvariantCulture, reader.Value), ex);
-                    }
-                }
-                else
-                {
-                    throw JsonSerializationException.Create(reader, "Unexpected token or value when parsing version. Token: {0}, Value: {1}".FormatWith(CultureInfo.InvariantCulture, reader.TokenType, reader.Value));
-                }
-            }
-        }
-
-        /// <summary>
-        /// Determines whether this instance can convert the specified object type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType == typeof(Version);
+            return Task.FromResult(this.ReadJson(reader, objectType, existingValue, serializer));
         }
     }
 }
+
+#endif

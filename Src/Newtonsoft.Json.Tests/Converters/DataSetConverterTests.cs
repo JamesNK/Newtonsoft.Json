@@ -42,6 +42,19 @@ namespace Newtonsoft.Json.Tests.Converters
 {
     public class DataSetConverterTests : TestFixtureBase
     {
+        private const string SerializeAndDeserializeExpected = @"{
+  ""Table1"": [
+    {
+      ""id"": 0,
+      ""item"": ""item 0""
+    },
+    {
+      ""id"": 1,
+      ""item"": ""item 1""
+    }
+  ]
+}";
+
         [Test]
         public void DeserializeInvalidDataTable()
         {
@@ -54,6 +67,51 @@ namespace Newtonsoft.Json.Tests.Converters
 
         [Test]
         public void SerializeAndDeserialize()
+        {
+            DataSet dataSet = SerializeAndDeserializeSetUp();
+
+            string json = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
+
+            StringAssert.AreEqual(SerializeAndDeserializeExpected, json);
+
+            DataSet deserializedDataSet = JsonConvert.DeserializeObject<DataSet>(json);
+            SerializeAndDeserializeAssert(deserializedDataSet);
+        }
+
+#if HAVE_ASYNC
+        [Test]
+        public async System.Threading.Tasks.Task SerializeAndDeserializeAsync()
+        {
+            DataSet dataSet = SerializeAndDeserializeSetUp();
+            var helper = new AsyncTestHelper();
+            string json = await helper.SerializeAsync(dataSet);
+            StringAssert.AreEqual(SerializeAndDeserializeExpected, json);
+
+            helper = new AsyncTestHelper();
+            DataSet deserializedDataSet = await helper.DeserializeAsync<DataSet>(json);
+            SerializeAndDeserializeAssert(deserializedDataSet);
+        }
+#endif
+        private static void SerializeAndDeserializeAssert(DataSet deserializedDataSet)
+        {
+            Assert.IsNotNull(deserializedDataSet);
+
+            Assert.AreEqual(1, deserializedDataSet.Tables.Count);
+
+            DataTable dt = deserializedDataSet.Tables[0];
+
+            Assert.AreEqual("Table1", dt.TableName);
+            Assert.AreEqual(2, dt.Columns.Count);
+            Assert.AreEqual("id", dt.Columns[0].ColumnName);
+            Assert.AreEqual(typeof(long), dt.Columns[0].DataType);
+            Assert.AreEqual("item", dt.Columns[1].ColumnName);
+            Assert.AreEqual(typeof(string), dt.Columns[1].DataType);
+
+            Assert.AreEqual(2, dt.Rows.Count);
+        }
+
+
+        private static DataSet SerializeAndDeserializeSetUp()
         {
             DataSet dataSet = new DataSet("dataSet");
             dataSet.Namespace = "NetFrameWork";
@@ -74,37 +132,7 @@ namespace Newtonsoft.Json.Tests.Converters
             }
 
             dataSet.AcceptChanges();
-
-            string json = JsonConvert.SerializeObject(dataSet, Formatting.Indented);
-
-            StringAssert.AreEqual(@"{
-  ""Table1"": [
-    {
-      ""id"": 0,
-      ""item"": ""item 0""
-    },
-    {
-      ""id"": 1,
-      ""item"": ""item 1""
-    }
-  ]
-}", json);
-
-            DataSet deserializedDataSet = JsonConvert.DeserializeObject<DataSet>(json);
-            Assert.IsNotNull(deserializedDataSet);
-
-            Assert.AreEqual(1, deserializedDataSet.Tables.Count);
-
-            DataTable dt = deserializedDataSet.Tables[0];
-
-            Assert.AreEqual("Table1", dt.TableName);
-            Assert.AreEqual(2, dt.Columns.Count);
-            Assert.AreEqual("id", dt.Columns[0].ColumnName);
-            Assert.AreEqual(typeof(long), dt.Columns[0].DataType);
-            Assert.AreEqual("item", dt.Columns[1].ColumnName);
-            Assert.AreEqual(typeof(string), dt.Columns[1].DataType);
-
-            Assert.AreEqual(2, dt.Rows.Count);
+            return dataSet;
         }
 
         public class DataSetTestClass

@@ -31,7 +31,7 @@ using System.Text;
 
 namespace Newtonsoft.Json.Serialization
 {
-    internal class TraceJsonReader : JsonReader, IJsonLineInfo
+    internal partial class TraceJsonReader : JsonReader, IJsonLineInfo
     {
         private readonly JsonReader _innerReader;
         private readonly JsonTextWriter _textWriter;

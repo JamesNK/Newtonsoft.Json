@@ -447,6 +447,37 @@ Parameter name: namingStrategyType", "Value cannot be null. (Parameter 'namingSt
 }", json);
         }
 
+#if HAVE_ASYNC
+        [Test]
+        public async System.Threading.Tasks.Task SerializeAndDeserializeAsync()
+        {
+            EnumClass enumClass = new EnumClass()
+            {
+                StoreColor = StoreColor.Red,
+                NullableStoreColor1 = StoreColor.White,
+                NullableStoreColor2 = null
+            };
+            string json = @"{
+  ""StoreColor"": ""Red"",
+  ""NullableStoreColor1"": ""White"",
+  ""NullableStoreColor2"": null
+}";
+
+            var helper = new AsyncTestHelper();
+            helper.Serializer.Converters.Add(new StringEnumConverter());
+
+            string actualStr = await helper.SerializeAsync(enumClass);
+            StringAssert.AreEqual(json, actualStr);
+
+            helper.ResetStream();
+            var actualClass = await helper.DeserializeAsync<EnumClass>(json);
+            Assert.AreEqual(enumClass.StoreColor, actualClass.StoreColor);
+            Assert.AreEqual(enumClass.NullableStoreColor1, actualClass.NullableStoreColor1);
+            Assert.AreEqual(enumClass.NullableStoreColor2, actualClass.NullableStoreColor2);
+        }
+
+#endif
+
         [Test]
         public void SerializeEnumClassWithCamelCase()
         {

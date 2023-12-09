@@ -22,6 +22,7 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
+#if HAVE_ASYNC
 
 #if HAVE_LINQ || HAVE_ADO_NET
 using System;
@@ -29,22 +30,16 @@ using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Threading.Tasks;
+using System.Threading;
 #if HAVE_ADO_NET
 using System.Data.SqlTypes;
 #endif
 
 namespace Newtonsoft.Json.Converters
 {
-    /// <summary>
-    /// Converts a binary value to and from a base 64 string value.
-    /// </summary>
     public partial class BinaryConverter : JsonConverter
     {
-#if HAVE_LINQ
-        private const string BinaryTypeName = "System.Data.Linq.Binary";
-        private const string BinaryToArrayName = "ToArray";
-        private static ReflectionObject? _reflectionObject;
-#endif
 
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -52,49 +47,20 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        public override async Task WriteJsonAsync(JsonWriter writer, object? value, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             if (value == null)
             {
-                writer.WriteNull();
+                await writer.WriteNullAsync(cancellationToken).ConfigureAwait(false);
                 return;
             }
 
             byte[] data = GetByteArray(value);
 
-            writer.WriteValue(data);
+            await writer.WriteValueAsync(data, cancellationToken).ConfigureAwait(false);
         }
 
-        private byte[] GetByteArray(object value)
-        {
-#if HAVE_LINQ
-            if (value.GetType().FullName == BinaryTypeName)
-            {
-                EnsureReflectionObject(value.GetType());
-                MiscellaneousUtils.Assert(_reflectionObject != null);
-
-                return (byte[])_reflectionObject.GetValue(value, BinaryToArrayName)!;
-            }
-#endif
-#if HAVE_ADO_NET
-            if (value is SqlBinary binary)
-            {
-                return binary.Value;
-            }
-#endif
-
-            throw new JsonSerializationException("Unexpected value type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
-        }
-
-#if HAVE_LINQ
-        private static void EnsureReflectionObject(Type t)
-        {
-            if (_reflectionObject == null)
-            {
-                _reflectionObject = ReflectionObject.Create(t, t.GetConstructor(new[] { typeof(byte[]) }), BinaryToArrayName);
-            }
-        }
-#endif
 
         /// <summary>
         /// Reads the JSON representation of the object.
@@ -103,8 +69,9 @@ namespace Newtonsoft.Json.Converters
         /// <param name="objectType">Type of the object.</param>
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>The object value.</returns>
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override async Task<object?> ReadJsonAsync(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -120,7 +87,7 @@ namespace Newtonsoft.Json.Converters
 
             if (reader.TokenType == JsonToken.StartArray)
             {
-                data = ReadByteArray(reader);
+                data = await ReadByteArrayAsync(reader, cancellationToken).ConfigureAwait(false);
             }
             else if (reader.TokenType == JsonToken.String)
             {
@@ -158,11 +125,11 @@ namespace Newtonsoft.Json.Converters
             throw JsonSerializationException.Create(reader, "Unexpected object type when writing binary: {0}".FormatWith(CultureInfo.InvariantCulture, objectType));
         }
 
-        private byte[] ReadByteArray(JsonReader reader)
+        private async Task<byte[]> ReadByteArrayAsync(JsonReader reader, CancellationToken cancellationToken)
         {
             List<byte> byteList = new List<byte>();
 
-            while (reader.Read())
+            while (await reader.ReadAsync(cancellationToken).ConfigureAwait(false))
             {
                 switch (reader.TokenType)
                 {
@@ -182,31 +149,9 @@ namespace Newtonsoft.Json.Converters
             throw JsonSerializationException.Create(reader, "Unexpected end when reading bytes.");
         }
 
-        /// <summary>
-        /// Determines whether this instance can convert the specified object type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-#if HAVE_LINQ
-            if (objectType.FullName == BinaryTypeName)
-            {
-                return true;
-            }
-#endif
-#if HAVE_ADO_NET
-            if (objectType == typeof(SqlBinary) || objectType == typeof(SqlBinary?))
-            {
-                return true;
-            }
-#endif
-
-            return false;
-        }
     }
 }
+
+#endif
 
 #endif

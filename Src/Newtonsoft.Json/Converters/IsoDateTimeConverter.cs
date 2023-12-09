@@ -32,7 +32,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="DateTime"/> to and from the ISO 8601 date format (e.g. <c>"2008-04-12T12:53Z"</c>).
     /// </summary>
-    public class IsoDateTimeConverter : DateTimeConverterBase
+    public partial class IsoDateTimeConverter : DateTimeConverterBase
     {
         private const string DefaultDateTimeFormat = "yyyy'-'MM'-'dd'T'HH':'mm':'ss.FFFFFFFK";
 
@@ -78,35 +78,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            string text;
-
-            if (value is DateTime dateTime)
-            {
-                if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
-                    || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
-                {
-                    dateTime = dateTime.ToUniversalTime();
-                }
-
-                text = dateTime.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
-            }
-#if HAVE_DATE_TIME_OFFSET
-            else if (value is DateTimeOffset dateTimeOffset)
-            {
-                if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
-                    || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
-                {
-                    dateTimeOffset = dateTimeOffset.ToUniversalTime();
-                }
-
-                text = dateTimeOffset.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
-            }
-#endif
-            else
-            {
-                throw new JsonSerializationException("Unexpected value when converting date. Expected DateTime or DateTimeOffset, got {0}.".FormatWith(CultureInfo.InvariantCulture, ReflectionUtils.GetObjectType(value)!));
-            }
-
+            string text = DateToString(value);
             writer.WriteValue(text);
         }
 
@@ -192,5 +164,39 @@ namespace Newtonsoft.Json.Converters
                 return DateTime.Parse(dateText, Culture, _dateTimeStyles);
             }
         }
+
+        private string DateToString(object? value)
+        {
+            string text;
+            if (value is DateTime dateTime)
+            {
+                if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
+                    || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
+                {
+                    dateTime = dateTime.ToUniversalTime();
+                }
+
+                text = dateTime.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
+            }
+#if HAVE_DATE_TIME_OFFSET
+            else if (value is DateTimeOffset dateTimeOffset)
+            {
+                if ((_dateTimeStyles & DateTimeStyles.AdjustToUniversal) == DateTimeStyles.AdjustToUniversal
+                    || (_dateTimeStyles & DateTimeStyles.AssumeUniversal) == DateTimeStyles.AssumeUniversal)
+                {
+                    dateTimeOffset = dateTimeOffset.ToUniversalTime();
+                }
+
+                text = dateTimeOffset.ToString(_dateTimeFormat ?? DefaultDateTimeFormat, Culture);
+            }
+#endif
+            else
+            {
+                throw new JsonSerializationException("Unexpected value when converting date. Expected DateTime or DateTimeOffset, got {0}.".FormatWith(CultureInfo.InvariantCulture, ReflectionUtils.GetObjectType(value)!));
+            }
+
+            return text;
+        }
+
     }
 }

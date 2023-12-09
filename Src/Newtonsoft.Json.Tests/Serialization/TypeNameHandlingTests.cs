@@ -588,6 +588,32 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 #endif
 
+#if HAVE_ASYNC
+
+        [Test]
+        public async System.Threading.Tasks.Task DeserializeTypeNameAsync()
+        {
+            var data = new TypeNameHandlingTestObject
+            {
+                Prop1 = new List<string> { "one", "two" }
+            };
+
+            var uut = new JsonSerializer { TypeNameHandling = TypeNameHandling.All };
+            var writer = new StringWriter();
+            await uut.SerializeAsync(writer, data);
+            writer.Flush();
+
+            var json = writer.ToString();
+
+            var reader = new StringReader(json);
+            var actual = await uut.DeserializeAsync(reader, typeof(object));
+            Assert.AreEqual(nameof(TypeNameHandlingTestObject), actual.GetType().Name);
+            Assert.AreEqual(typeof(List<string>).Name, ((TypeNameHandlingTestObject)actual).Prop1.GetType().Name);
+
+        }
+
+#endif
+
         [Test]
         public void SerializeGenericObjectListWithTypeName()
         {

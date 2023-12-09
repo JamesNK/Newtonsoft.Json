@@ -32,7 +32,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="DateTime"/> to and from Unix epoch time
     /// </summary>
-    public class UnixDateTimeConverter : DateTimeConverterBase
+    public partial class UnixDateTimeConverter : DateTimeConverterBase
     {
         internal static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
@@ -75,28 +75,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            long seconds;
-
-            if (value is DateTime dateTime)
-            {
-                seconds = (long)(dateTime.ToUniversalTime() - UnixEpoch).TotalSeconds;
-            }
-#if HAVE_DATE_TIME_OFFSET
-            else if (value is DateTimeOffset dateTimeOffset)
-            {
-                seconds = (long)(dateTimeOffset.ToUniversalTime() - UnixEpoch).TotalSeconds;
-            }
-#endif
-            else
-            {
-                throw new JsonSerializationException("Expected date object value.");
-            }
-
-            if (!AllowPreEpoch && seconds < 0)
-            {
-                throw new JsonSerializationException("Cannot convert date value that is before Unix epoch of 00:00:00 UTC on 1 January 1970.");
-            }
-
+            long seconds = DateToSeconds(value);
             writer.WriteValue(seconds);
         }
 
@@ -159,5 +138,33 @@ namespace Newtonsoft.Json.Converters
                 throw JsonSerializationException.Create(reader, "Cannot convert value that is before Unix epoch of 00:00:00 UTC on 1 January 1970 to {0}.".FormatWith(CultureInfo.InvariantCulture, objectType));
             }
         }
+
+        private long DateToSeconds(object? value)
+        {
+            long seconds;
+
+            if (value is DateTime dateTime)
+            {
+                seconds = (long)(dateTime.ToUniversalTime() - UnixEpoch).TotalSeconds;
+            }
+#if HAVE_DATE_TIME_OFFSET
+            else if (value is DateTimeOffset dateTimeOffset)
+            {
+                seconds = (long)(dateTimeOffset.ToUniversalTime() - UnixEpoch).TotalSeconds;
+            }
+#endif
+            else
+            {
+                throw new JsonSerializationException("Expected date object value.");
+            }
+
+            if (!AllowPreEpoch && seconds < 0)
+            {
+                throw new JsonSerializationException("Cannot convert date value that is before Unix epoch of 00:00:00 UTC on 1 January 1970.");
+            }
+
+            return seconds;
+        }
+
     }
 }

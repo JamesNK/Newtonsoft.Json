@@ -30,6 +30,7 @@ using System.Dynamic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json.Converters;
+using Newtonsoft.Json.Tests.TestObjects;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -44,6 +45,24 @@ namespace Newtonsoft.Json.Tests.Converters
     [TestFixture]
     public class ExpandoObjectConverterTests : TestFixtureBase
     {
+        private const string deserialzeData = @"{
+  ""Before"": ""Before!"",
+  ""Expando"": {
+    ""String"": ""String!"",
+    ""Integer"": 234,
+    ""Float"": 1.23,
+    ""List"": [
+      ""First"",
+      ""Second"",
+      ""Third""
+    ],
+    ""Object"": {
+      ""First"": 1
+    }
+  },
+  ""After"": ""After!""
+}";
+
         public class ExpandoContainer
         {
             public string Before { get; set; }
@@ -110,26 +129,25 @@ namespace Newtonsoft.Json.Tests.Converters
         [Test]
         public void DeserializeExpandoObject()
         {
-            string json = @"{
-  ""Before"": ""Before!"",
-  ""Expando"": {
-    ""String"": ""String!"",
-    ""Integer"": 234,
-    ""Float"": 1.23,
-    ""List"": [
-      ""First"",
-      ""Second"",
-      ""Third""
-    ],
-    ""Object"": {
-      ""First"": 1
-    }
-  },
-  ""After"": ""After!""
-}";
+            ExpandoContainer o = JsonConvert.DeserializeObject<ExpandoContainer>(deserialzeData);
 
-            ExpandoContainer o = JsonConvert.DeserializeObject<ExpandoContainer>(json);
+            DeserializeAssert(o);
+        }
 
+#if HAVE_ASYNC
+        [Test]
+        public async System.Threading.Tasks.Task DeserializeExpandoObjectAsync()
+        {
+            var helper = new AsyncTestHelper();
+            ExpandoContainer o = await helper.DeserializeAsync<ExpandoContainer>(deserialzeData);
+
+            DeserializeAssert(o);
+        }
+#endif
+
+
+        private static void DeserializeAssert(ExpandoContainer o)
+        {
             Assert.AreEqual(o.Before, "Before!");
             Assert.AreEqual(o.After, "After!");
             Assert.IsNotNull(o.Expando);

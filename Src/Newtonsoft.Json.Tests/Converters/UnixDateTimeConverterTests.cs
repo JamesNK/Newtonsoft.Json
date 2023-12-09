@@ -51,6 +51,22 @@ namespace Newtonsoft.Json.Tests.Converters
 
             Assert.AreEqual("0", result);
         }
+#if HAVE_ASYNC
+        [Test]
+        public async System.Threading.Tasks.Task SerializeAndDeserializeAsync()
+        {
+            DateTime unixEpoch = UnixDateTimeConverter.UnixEpoch;
+            var helper = new AsyncTestHelper();
+            helper.Serializer.Converters.Add(new UnixDateTimeConverter());
+            helper.Serializer.Formatting = Formatting.None;
+            string actualStr = await helper.SerializeAsync(unixEpoch);
+            Assert.AreEqual("0", actualStr);
+
+            helper.ResetStream();
+            DateTime actualDate = await helper.DeserializeAsync<DateTime>("0");
+            Assert.AreEqual(unixEpoch, actualDate);
+        }
+#endif
 
         [Test]
         public void SerializeDateTimeNow()

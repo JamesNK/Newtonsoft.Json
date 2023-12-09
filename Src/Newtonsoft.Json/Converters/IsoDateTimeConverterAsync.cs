@@ -22,21 +22,16 @@
 // FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
-
+#if HAVE_ASYNC
 using System;
-using Newtonsoft.Json.Bson;
 using System.Globalization;
+using System.Threading;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Utilities;
-
-#nullable disable
 
 namespace Newtonsoft.Json.Converters
 {
-    /// <summary>
-    /// Converts a <see cref="BsonObjectId"/> to and from JSON and BSON.
-    /// </summary>
-    [Obsolete("BSON reading and writing has been moved to its own package. See https://www.nuget.org/packages/Newtonsoft.Json.Bson for more details.")]
-    public partial class BsonObjectIdConverter : JsonConverter
+    public partial class IsoDateTimeConverter : DateTimeConverterBase
     {
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -44,19 +39,13 @@ namespace Newtonsoft.Json.Converters
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        public override async Task WriteJsonAsync(JsonWriter writer, object? value, JsonSerializer serializer, CancellationToken cancellationToken)
         {
-            BsonObjectId objectId = (BsonObjectId)value;
-
-            if (writer is BsonWriter bsonWriter)
-            {
-                bsonWriter.WriteObjectId(objectId.Value);
-            }
-            else
-            {
-                writer.WriteValue(objectId.Value);
-            }
+            string text = DateToString(value);
+            await writer.WriteValueAsync(text, cancellationToken).ConfigureAwait(false);
         }
+
 
         /// <summary>
         /// Reads the JSON representation of the object.
@@ -65,29 +54,12 @@ namespace Newtonsoft.Json.Converters
         /// <param name="objectType">Type of the object.</param>
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>The object value.</returns>
-        public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+        public override Task<object?> ReadJsonAsync(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer, CancellationToken cancellationToken)
         {
-            if (reader.TokenType != JsonToken.Bytes)
-            {
-                throw new JsonSerializationException("Expected Bytes but got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
-            }
-
-            byte[] value = (byte[])reader.Value;
-
-            return new BsonObjectId(value);
-        }
-
-        /// <summary>
-        /// Determines whether this instance can convert the specified object type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-            return (objectType == typeof(BsonObjectId));
+            return Task.FromResult(ReadJson(reader, objectType, existingValue, serializer));
         }
     }
 }
+#endif
