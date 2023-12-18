@@ -679,7 +679,14 @@ namespace Newtonsoft.Json.Serialization
                     TraceWriter.Trace(TraceLevel.Info, JsonPosition.FormatMessage(null, writer.Path, "Started serializing {0} with converter {1}.".FormatWith(CultureInfo.InvariantCulture, value.GetType(), converter.GetType())), null);
                 }
 
-                converter.WriteJson(writer, value, GetInternalSerializer());
+                if (converter is JsonConverter2 converter2)
+                {
+                    converter2.WriteJson(writer, value, GetInternalSerializer(), contract, collectionContract, containerProperty);    
+                }
+                else
+                {
+                    converter.WriteJson(writer, value, GetInternalSerializer());
+                }
 
                 if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Info)
                 {
