@@ -105,7 +105,9 @@ namespace Newtonsoft.Json.Serialization
                 {
                     ItemConverter = JsonTypeReflector.CreateJsonConverterInstance(
                         jsonContainerAttribute.ItemConverterType,
-                        jsonContainerAttribute.ItemConverterParameters);
+                        jsonContainerAttribute.ItemConverterParameters,
+                        underlyingType,
+                        null);
                 }
 
                 ItemIsReference = jsonContainerAttribute._itemIsReference;

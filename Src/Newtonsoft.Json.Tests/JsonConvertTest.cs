@@ -1840,5 +1840,94 @@ namespace Newtonsoft.Json.Tests
             [JsonIgnore]
             public DateTime Expiration { get; set; }
         }
+
+        [Test]
+        public void TestGenericJsonConverterTypeSerialize()
+        {
+            string json = JsonConvert.SerializeObject(new ValueWithConverter<bool>(true), Formatting.Indented);
+            Assert.AreEqual("true", json);
+        }
+
+        [Test]
+        public void TestGenericJsonConverterTypeDeserialize()
+        {
+            ValueWithConverter<bool> value = JsonConvert.DeserializeObject<ValueWithConverter<bool>>("true");
+            Assert.IsTrue(value);
+        }
+
+        [Test]
+        public void TestGenericJsonConverterPropertySerialize()
+        {
+            ClassWithKeyValuePair<string, int, bool> value = new ClassWithKeyValuePair<string, int, bool>
+            {
+                Other = true,
+                Pair = new KeyValuePair<string, int>("PropertyName", 42)
+            };
+            string json = JsonConvert.SerializeObject(value, Formatting.Indented);
+            Assert.AreEqual(@"{
+  ""Other"": true,
+  ""Pair"": {
+    ""PropertyName"": 42
+  }
+}", json);
+        }
+
+        [Test]
+        public void TestGenericJsonConverterPropertyDeserialize()
+        {
+            ClassWithKeyValuePair<string, int, bool> value = JsonConvert.DeserializeObject<ClassWithKeyValuePair<string, int, bool>>(@"{
+  ""Other"": true,
+  ""Pair"": {
+    ""PropertyName"": 42
+  }
+}");
+            Assert.IsTrue(value.Other);
+            Assert.AreEqual("PropertyName", value.Pair.Key);
+            Assert.AreEqual(42, value.Pair.Value);
+        }
+
+        [Test]
+        public void TestGenericJsonConverterPropertyCollectionSerialize()
+        {
+            ClassWithKeyValuePairCollection<string, int> value = new ClassWithKeyValuePairCollection<string, int>
+            {
+                Collection = new[]
+                {
+                    new KeyValuePair<string, int>("First", 42),
+                    new KeyValuePair<string, int>("second", -100)
+                }
+            };
+            string json = JsonConvert.SerializeObject(value, Formatting.Indented);
+            Assert.AreEqual(@"{
+  ""Collection"": [
+    {
+      ""First"": 42
+    },
+    {
+      ""second"": -100
+    }
+  ]
+}", json);
+        }
+
+        [Test]
+        public void TestGenericJsonConverterPropertyCollectionDeserialize()
+        {
+            ClassWithKeyValuePairCollection<string, int> value = JsonConvert.DeserializeObject<ClassWithKeyValuePairCollection<string, int>>(@"{
+  ""Collection"": [
+    {
+      ""First"": 42
+    },
+    {
+      ""second"": -100
+    }
+  ]
+}");
+            Assert.AreEqual(2, value.Collection.Length);
+            Assert.AreEqual("First", value.Collection[0].Key);
+            Assert.AreEqual(42, value.Collection[0].Value);
+            Assert.AreEqual("second", value.Collection[1].Key);
+            Assert.AreEqual(-100, value.Collection[1].Value);
+        }
     }
 }

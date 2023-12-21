@@ -527,7 +527,8 @@ namespace Newtonsoft.Json.Utilities
 
         public static Type[] GetGenericArguments(this Type type)
         {
-            return type.GetTypeInfo().GenericTypeArguments;
+            var typeInfo = type.GetTypeInfo();
+            return typeInfo.IsGenericTypeDefinition ? typeInfo.GenericTypeParameters : typeInfo.GenericTypeArguments;
         }
 
         public static IEnumerable<Type> GetInterfaces(this Type type)

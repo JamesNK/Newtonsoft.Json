@@ -846,5 +846,117 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.IsInstanceOf(typeof(RegexConverter), contract.InternalConverter);
         }
+
+        [Test]
+        public void JsonConverterAttribute_TypeGenericConverter()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(ValueWithConverter<bool>));
+
+            Assert.IsInstanceOf(typeof(ValueWithConverterConverter<bool>), contract.Converter);
+        }
+
+        [Test]
+        public void JsonConverterAttributesdfdf()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+            JsonObjectContract contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithKeyValuePair<string, int, bool>));
+        }
+
+        [Test]
+        public void JsonConverterAttribute_MismatchTypeArgumentCount()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => resolver.ResolveContract(typeof(ClassWithGenericConverterWithMismatchTypeCount<string, int>)),
+                "Could not create generic converter Newtonsoft.Json.Tests.TestObjects.KeyValuePairConverter`2[TKey,TValue]. Converter was placed on type System.Collections.Generic.IList`1[System.Int32] that does not have a matching number of type arguments.");
+        }
+
+        [Test]
+        public void JsonConverterAttribute_NonGenericType()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            ExceptionAssert.Throws<JsonSerializationException>(
+                () => resolver.ResolveContract(typeof(ClassWithGenericConverterWithNonGenericType)),
+                "Could not create generic converter Newtonsoft.Json.Tests.TestObjects.KeyValuePairConverter`2[TKey,TValue]. Converter was placed on type System.String that does not have type arguments.");
+        }
+
+        [Test]
+        public void JsonArrayAttributeItemsConverter_GenericType()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            var contract = (JsonArrayContract)resolver.ResolveContract(typeof(ListWithItemGenericConverter<int>));
+
+            Assert.IsInstanceOf(typeof(ValueWithConverterConverter<int>), contract.ItemConverter);
+        }
+
+        [Test]
+        public void JsonPropertyAttributeItemsConverter_GenericType()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithKeyValuePairCollection<int, string>));
+
+            var property = contract.Properties["Collection"];
+
+            Assert.IsInstanceOf(typeof(KeyValuePairConverter<int, string>), property.ItemConverter);
+        }
+
+        [Test]
+        public void JsonDictionaryAttributeItemsConverter_GenericType()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            var contract = (JsonDictionaryContract)resolver.ResolveContract(typeof(DictionaryWithItemGenericConverter<DateTime, int>));
+
+            Assert.IsInstanceOf(typeof(GenericConverter<int>), contract.ItemConverter);
+        }
+
+        [Test]
+        public void JsonConverterAttribute_GenericTypeProperty()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithGenericEnumProperty<ConsoleColor>));
+
+            var property = contract.Properties["EnumValue"];
+
+            Assert.IsInstanceOf(typeof(GenericEnumConverter<ConsoleColor>), property.Converter);
+        }
+
+        [Test]
+        public void JsonConverterAttribute_GenericTypeCollectionProperty()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            var contract = (JsonObjectContract)resolver.ResolveContract(typeof(ClassWithGenericEnumCollectionProperty<ConsoleColor>));
+
+            var property = contract.Properties["EnumValues"];
+
+            Assert.IsInstanceOf(typeof(GenericEnumConverter<ConsoleColor>), property.ItemConverter);
+        }
+
+        [Test]
+        public void JsonArrayAttributeEnumItemsConverter_GenericType()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            var contract = (JsonArrayContract)resolver.ResolveContract(typeof(ListWithEnumItemGenericConverter<ConsoleColor>));
+
+            Assert.IsInstanceOf(typeof(GenericEnumConverter<ConsoleColor>), contract.ItemConverter);
+        }
+
+        [Test]
+        public void JsonDictionaryAttributeEnumItemsConverter_GenericType()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+
+            var contract = (JsonDictionaryContract)resolver.ResolveContract(typeof(DictionaryWithEnumItemGenericConverter<string, ConsoleColor>));
+
+            Assert.IsInstanceOf(typeof(GenericEnumConverter<ConsoleColor>), contract.ItemConverter);
+        }
     }
 }
