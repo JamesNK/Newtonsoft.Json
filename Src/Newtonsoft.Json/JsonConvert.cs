@@ -857,6 +857,12 @@ namespace Newtonsoft.Json
         public static void PopulateObject(string value, object target, JsonSerializerSettings? settings)
         {
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
+            
+            // check if value is a valid JSON string
+            if (!string.IsNullOrEmpty(value) && !value.StartsWith("//"))
+            {
+                JObject jObject = JObject.Parse(value);
+            }
 
             using (JsonReader jsonReader = new JsonTextReader(new StringReader(value)))
             {
