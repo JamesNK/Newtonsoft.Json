@@ -873,7 +873,7 @@ namespace Newtonsoft.Json
                         var jArray = JArray.Parse(value);
                     }
                 }
-                catch (Exception e)
+                catch (Exception)
                 {
                     throw JsonSerializationException.Create(jsonReader, "Invalid JSON string.");
                 }
