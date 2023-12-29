@@ -858,15 +858,25 @@ namespace Newtonsoft.Json
         {
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
             
-            // check if value is a valid JSON string
-            if (!string.IsNullOrEmpty(value) && !value.StartsWith("//"))
-            {
-                JObject jObject = JObject.Parse(value);
-            }
-
             using (JsonReader jsonReader = new JsonTextReader(new StringReader(value)))
             {
                 jsonSerializer.Populate(jsonReader, target);
+                
+                // check if value is a valid JSON string
+                try
+                {
+                    if (!string.IsNullOrEmpty(value) && value.StartsWith("{"))
+                    {
+                        var jObject = JObject.Parse(value);
+                    } else if (!string.IsNullOrEmpty(value) && value.StartsWith("["))
+                    {
+                        var jArray = JArray.Parse(value);
+                    }
+                }
+                catch (Exception e)
+                {
+                    throw JsonSerializationException.Create(jsonReader, "Invalid JSON string.");
+                }
 
                 if (settings != null && settings.CheckAdditionalContent)
                 {

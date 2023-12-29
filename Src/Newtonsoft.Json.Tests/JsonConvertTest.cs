@@ -121,13 +121,13 @@ namespace Newtonsoft.Json.Tests
         [Test]
         public void PopulateObjectInvalidJson()
         {
-            ExceptionAssert.Throws<JsonReaderException>(() =>
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
             {
                 string json = "{\"test\":1}gg";
 
                 PopulateTestObject o = new PopulateTestObject();
                 JsonConvert.PopulateObject(json, o);
-            }, "Additional text encountered after finished reading JSON content: g. Path '', line 1, position 10.");
+            }, "Invalid JSON string. Path '', line 1, position 10.");
         }
 
         [Test]
