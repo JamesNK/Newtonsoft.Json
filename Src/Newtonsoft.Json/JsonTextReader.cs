@@ -710,7 +710,10 @@ namespace Newtonsoft.Json
                                 // eat
                                 _charPos++;
                                 break;
-                            default:
+							case '{':
+								throw CreateUnexpectedCharacterException(currentChar);
+								// Don't eat '{'
+							default:
                                 _charPos++;
 
                                 if (!char.IsWhiteSpace(currentChar))
