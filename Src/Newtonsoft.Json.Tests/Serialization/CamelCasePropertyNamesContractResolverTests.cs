@@ -240,5 +240,36 @@ namespace Newtonsoft.Json.Tests.Serialization
   ""second"": ""Value2!""
 }", json);
         }
+
+        [Test]
+        public void EnsureNamingStrategyIsConsideredInCache()
+        {
+            Dictionary<string, string> values = new Dictionary<string, string> { { "Key", "Value" } };
+
+            string jsonWithProcessDictionaryKeys = JsonConvert.SerializeObject(values,
+                new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    {
+                        NamingStrategy = new CamelCaseNamingStrategy { ProcessDictionaryKeys = true }
+                    }
+                });
+
+            StringAssert.AreEqual(@"{""key"":""Value""}", jsonWithProcessDictionaryKeys);
+
+
+            string jsonWithoutProcessDictionaryKeys = JsonConvert.SerializeObject(values,
+                new JsonSerializerSettings
+                {
+                    ContractResolver = new CamelCasePropertyNamesContractResolver()
+                    {
+                        NamingStrategy = new CamelCaseNamingStrategy { ProcessDictionaryKeys = false }
+                    }
+                });
+
+            StringAssert.AreEqual(@"{""Key"":""Value""}", jsonWithoutProcessDictionaryKeys);
+        }
+
+
     }
 }
