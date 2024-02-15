@@ -1,0 +1,21 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net6.0</TargetFrameworks>
+    <LangVersion>9.0</LangVersion>
+    <VersionPrefix>1.0</VersionPrefix>
+    <Authors>James Newton-King</Authors>
+    <Company>Newtonsoft</Company>
+    <Product>Json.NET</Product>
+    <NeutralLanguage>en-US</NeutralLanguage>
+    <Copyright>Copyright © James Newton-King 2008</Copyright>
+    <AssemblyName>Newtonsoft.Json.FuzzTests</AssemblyName>
+    <RootNamespace>Newtonsoft.Json.FuzzTests</RootNamespace>
+    <IsPackable>false</IsPackable>
+    <Nullable>enable</Nullable>
+    <!-- Disabled because SourceLink isn't referenced to calculate paths -->
+    <DeterministicSourcePaths>false</DeterministicSourcePaths>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj" />
+  </ItemGroup>
+</Project>
