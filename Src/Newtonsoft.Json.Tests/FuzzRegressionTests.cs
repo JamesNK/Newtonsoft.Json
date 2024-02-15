@@ -46,7 +46,7 @@ namespace Newtonsoft.Json.Tests
         {
             var serialized1 = Serialize(Deserialize(buffer));
             var serialized2 = Serialize(Deserialize(serialized1));
-            Assert.Equals(serialized1, serialized2);
+            Assert.AreEqual(serialized1, serialized2);
         }
 
         private static string Serialize(object o)
