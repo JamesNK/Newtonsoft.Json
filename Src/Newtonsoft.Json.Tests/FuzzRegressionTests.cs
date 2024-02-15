@@ -33,6 +33,8 @@ using Assert = Newtonsoft.Json.Tests.XUnitAssert;
 using NUnit.Framework;
 #endif
 
+#pragma warning disable xUnit1013
+
 namespace Newtonsoft.Json.Tests
 {
     [TestFixture]
