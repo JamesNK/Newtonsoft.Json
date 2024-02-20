@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Tests
     [TestFixture]
     public class FuzzRegressionTests : TestFixtureBase
     {
-        static readonly JsonSerializer jsonSerializer = new();
+        private static readonly JsonSerializer jsonSerializer = new();
 
         public static void Roundtrip(string buffer)
         {
