@@ -1717,6 +1717,20 @@ null//comment
         }
 
         [Test]
+        public void NewlinesInSingleLineComments()
+        {
+            // it’s not possible for this to be created by parsing JSON,
+            // but if someone gets creative with the API…
+            var sw = new StringWriter();
+            using (var w = new JsonTextWriter(sw))
+            {
+                w.WriteComment("*/\nsomething else");
+            }
+            
+            StringAssert.AreEqual("//*/\n//something else\n", sw.ToString());
+        }
+
+        [Test]
         public void DisposeSupressesFinalization()
         {
             UnmanagedResourceFakingJsonWriter.CreateAndDispose();

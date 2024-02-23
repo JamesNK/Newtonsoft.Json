@@ -788,9 +788,14 @@ namespace Newtonsoft.Json
             // if text contains "*/" then it must have been a line comment
             if (text != null && text.IndexOf("*/", StringComparison.Ordinal) > -1)
             {
-                _writer.Write("//");
-                _writer.Write(text);
-                _writer.Write("\n");
+                // each line must be emitted separately
+                var parts = text.Split("\n", StringSplitOptions.None);
+                foreach (var part in parts)
+                {
+                    _writer.Write("//");
+                    _writer.Write(part);
+                    _writer.Write("\n");
+                }
             }
             else
             {
