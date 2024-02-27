@@ -789,7 +789,7 @@ namespace Newtonsoft.Json
             if (text != null && text.IndexOf("*/", StringComparison.Ordinal) > -1)
             {
                 // each line must be emitted separately
-                var parts = text.Split("\n", StringSplitOptions.None);
+                var parts = text.Split('\n');
                 foreach (var part in parts)
                 {
                     _writer.Write("//");
