@@ -1699,7 +1699,8 @@ null//comment
 
             w.WriteToken(r, true);
 
-            StringAssert.AreEqual(@"/*comment*//*hi*/*/{/*comment*/
+            StringAssert.AreEqual(@"//comment*//*hi*/
+{/*comment*/
   ""Name"": /*comment*/ true/*comment after true*//*comment after comma*/,
   ""ExpiryDate"": /*comment*/ new Constructor(
     /*comment*/,
@@ -1713,6 +1714,20 @@ null//comment
     /*comment*/
   ]/*comment*/
 }/*comment *//*comment 1 */", sw.ToString());
+        }
+
+        [Test]
+        public void NewlinesInSingleLineComments()
+        {
+            // it’s not possible for this to be created by parsing JSON,
+            // but if someone gets creative with the API…
+            var sw = new StringWriter();
+            using (var w = new JsonTextWriter(sw))
+            {
+                w.WriteComment("*/\nsomething else");
+            }
+            
+            StringAssert.AreEqual("//*/\n//something else\n", sw.ToString());
         }
 
         [Test]

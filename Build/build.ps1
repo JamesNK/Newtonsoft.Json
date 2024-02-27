@@ -133,6 +133,10 @@ task Package -depends Build {
   robocopy $sourceDir $workingDir\Package\Source\Src /MIR /NFL /NDL /NJS /NC /NS /NP /XD bin obj TestResults AppPackages .vs artifacts /XF *.suo *.user *.lock.json | Out-Default
   robocopy $buildDir $workingDir\Package\Source\Build /MIR /NFL /NDL /NJS /NC /NS /NP /XD Temp /XF runbuild.txt | Out-Default
   robocopy $docDir $workingDir\Package\Source\Doc /MIR /NFL /NDL /NJS /NC /NS /NP | Out-Default
+  
+  # include fuzz tests in ADO pipeline artifacts
+  mkdir $workingDir\FuzzTests
+  Copy-Item -Path $sourceDir\Newtonsoft.Json.FuzzTests\bin\Release\net6.0\* -Destination $workingDir\FuzzTests
 
   Compress-Archive -Path $workingDir\Package\* -DestinationPath $workingDir\$zipFileName
 }
