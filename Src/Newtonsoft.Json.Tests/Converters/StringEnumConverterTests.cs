@@ -913,7 +913,7 @@ Parameter name: namingStrategyType", "Value cannot be null. (Parameter 'namingSt
             ExceptionAssert.Throws<JsonSerializationException>(() =>
             {
                 JsonConvert.SerializeObject((StoreColor)999, new StringEnumConverter { AllowIntegerValues = false });
-            }, "Integer value 999 is not allowed. Path ''.");
+            }, "Integer representations of enums are not allowed, and no string representation can be constructed for value 999. Path ''.");
         }
 
         public enum EnumWithDifferentCases
