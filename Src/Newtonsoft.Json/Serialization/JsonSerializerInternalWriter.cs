@@ -1106,6 +1106,11 @@ namespace Newtonsoft.Json.Serialization
                                 continue;
                             }
 
+                            if (value == null && Serializer._nullValueHandling == NullValueHandling.Ignore)
+                            {
+                                continue;
+                            }
+
                             writer.WritePropertyName(propertyName, escape);
 
                             SerializeValue(writer, value, valueContract, null, contract, member);

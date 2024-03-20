@@ -26,6 +26,7 @@
 using System;
 using System.IO;
 using Newtonsoft.Json.Tests.TestObjects;
+using System.Collections.Generic;
 #if DNXCORE50
 using Xunit;
 using Test = Xunit.FactAttribute;
@@ -52,6 +53,17 @@ namespace Newtonsoft.Json.Tests.Serialization
         private const string MovieNullValueHandlingIgnoreExpectedResult = @"{
   ""Name"": ""Bad Boys III"",
   ""Description"": ""It's no Bad Boys""
+}";
+
+        private const string DictionaryNullValueHandlingIncludeExpectedResult = @"{
+  ""first"": ""not null value"",
+  ""second"": null,
+  ""third"": ""another not null value""
+}";
+
+        private const string DictionaryNullValueHandlingIgnoreExpectedResult = @"{
+  ""first"": ""not null value"",
+  ""third"": ""another not null value""
 }";
 
 #if !NET20
@@ -173,6 +185,29 @@ namespace Newtonsoft.Json.Tests.Serialization
             // }
 
             StringAssert.AreEqual(MovieNullValueHandlingIncludeExpectedResult, included);
+        }
+
+        [Test]
+        public static void JsonObjectNullValueHandlingDictionary()
+        {
+            Dictionary<string, object> dictionary = new Dictionary<string, object>
+            {
+                { "first", "not null value" },
+                { "second", null },
+                { "third", "another not null value" }
+            };
+
+            string included = JsonConvert.SerializeObject(dictionary,
+                Formatting.Indented,
+                new JsonSerializerSettings { });
+
+            StringAssert.AreEqual(DictionaryNullValueHandlingIncludeExpectedResult, included);
+
+            string ignored = JsonConvert.SerializeObject(dictionary,
+                Formatting.Indented,
+                new JsonSerializerSettings { NullValueHandling = NullValueHandling.Ignore });
+
+            StringAssert.AreEqual(DictionaryNullValueHandlingIncludeExpectedResult, included);
         }
     }
 }
