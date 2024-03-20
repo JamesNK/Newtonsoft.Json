@@ -1531,12 +1531,14 @@ namespace Newtonsoft.Json.Serialization
             if (namingStrategy != null)
             {
                 property.PropertyName = namingStrategy.GetPropertyName(mappedName, hasSpecifiedName);
+                property.DictionaryKeyResolver = namingStrategy.GetDictionaryKey;
             }
             else
             {
                 property.PropertyName = ResolvePropertyName(mappedName);
+                property.DictionaryKeyResolver = ResolveDictionaryKey;
             }
-            
+
             property.UnderlyingName = name;
 
             bool hasMemberAttribute = false;
