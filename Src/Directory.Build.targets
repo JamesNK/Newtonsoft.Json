@@ -1,0 +1,8 @@
+<Project>
+  <PropertyGroup Condition=" '$(PublicSign)' == '' ">
+    <AssemblyOriginatorKeyFile>$(MSBuildThisFileDirectory)publickey.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign>true</PublicSign>
+    <DefineConstants>$(DefineConstants);SIGNED</DefineConstants>
+  </PropertyGroup>
+</Project>
