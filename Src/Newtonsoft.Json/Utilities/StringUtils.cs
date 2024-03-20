@@ -171,7 +171,7 @@ namespace Newtonsoft.Json.Utilities
                 bool hasNext = (i + 1 < chars.Length);
                 if (i > 0 && hasNext && !char.IsUpper(chars[i + 1]))
                 {
-                    // if the next character is a space, which is not considered uppercase 
+                    // if the next character is a space, which is not considered uppercase
                     // (otherwise we wouldn't be here...)
                     // we want to ensure that the following:
                     // 'FOO bar' is rewritten as 'foo bar', and not as 'foO bar'
@@ -203,19 +203,20 @@ namespace Newtonsoft.Json.Utilities
             return c;
         }
 
-        public static string ToSnakeCase(string s) => ToSeparatedCase(s, '_');
+        public static string ToSnakeCase(string s, bool numbersAsWords = false) => ToSeparatedCase(s, '_', numbersAsWords);
 
-        public static string ToKebabCase(string s) => ToSeparatedCase(s, '-');
+        public static string ToKebabCase(string s, bool numbersAsWords = false) => ToSeparatedCase(s, '-', numbersAsWords);
 
         private enum SeparatedCaseState
         {
             Start,
             Lower,
             Upper,
-            NewWord
+            NewWord,
+            Number
         }
 
-        private static string ToSeparatedCase(string s, char separator)
+        private static string ToSeparatedCase(string s, char separator, bool numbersAsWords = false)
         {
             if (StringUtils.IsNullOrEmpty(s))
             {
@@ -250,6 +251,7 @@ namespace Newtonsoft.Json.Utilities
                             }
                             break;
                         case SeparatedCaseState.Lower:
+                        case SeparatedCaseState.Number:
                         case SeparatedCaseState.NewWord:
                             sb.Append(separator);
                             break;
@@ -265,6 +267,38 @@ namespace Newtonsoft.Json.Utilities
 
                     state = SeparatedCaseState.Upper;
                 }
+                else if (numbersAsWords && char.IsNumber(s[i]))
+                {
+                    switch (state)
+                    {
+                        case SeparatedCaseState.Number:
+                            bool hasNext = (i + 1 < s.Length);
+                            if (i > 0 && hasNext)
+                            {
+                                char nextChar = s[i + 1];
+                                if (!char.IsNumber(s[i]) && nextChar != separator)
+                                {
+                                    sb.Append(separator);
+                                }
+                            }
+                            break;
+                        case SeparatedCaseState.Lower:
+                        case SeparatedCaseState.Upper:
+                        case SeparatedCaseState.NewWord:
+                            sb.Append(separator);
+                            break;
+                    }
+
+                    char c;
+#if HAVE_CHAR_TO_LOWER_WITH_CULTURE
+                    c = char.ToLower(s[i], CultureInfo.InvariantCulture);
+#else
+                    c = char.ToLowerInvariant(s[i]);
+#endif
+                    sb.Append(c);
+
+                    state = SeparatedCaseState.Number;
+                }
                 else if (s[i] == separator)
                 {
                     sb.Append(separator);
@@ -272,7 +306,8 @@ namespace Newtonsoft.Json.Utilities
                 }
                 else
                 {
-                    if (state == SeparatedCaseState.NewWord)
+                    if (state == SeparatedCaseState.NewWord ||
+                        numbersAsWords && state == SeparatedCaseState.Number && !char.IsNumber(s[i]))
                     {
                         sb.Append(separator);
                     }
