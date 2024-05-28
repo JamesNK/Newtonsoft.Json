@@ -13,8 +13,8 @@
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $assemblyVersion = if ($assemblyVersion) {$assemblyVersion} else {$majorVersion + '.0.0'}
-  $netCliChannel = "Current"
-  $netCliVersion = "6.0.400"
+  $netCliChannel = "STS"
+  $netCliVersion = "8.0.300"
   $nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
   $ensureNetCliSdk = $true
 
@@ -26,7 +26,7 @@
   $workingDir = "$baseDir\$workingName"
 
   $nugetPath = "$buildDir\Temp\nuget.exe"
-  $vswhereVersion = "2.3.2"
+  $vswhereVersion = "3.1.7"
   $vswherePath = "$buildDir\Temp\vswhere.$vswhereVersion"
   $nunitConsoleVersion = "3.8.0"
   $nunitConsolePath = "$buildDir\Temp\NUnit.ConsoleRunner.$nunitConsoleVersion"
@@ -179,8 +179,9 @@ function EnsureDotnetCli()
     -OutFile "$buildDir\Temp\dotnet-install.ps1"
 
   exec { & $buildDir\Temp\dotnet-install.ps1 -Channel $netCliChannel -Version $netCliVersion | Out-Default }
+  exec { & $buildDir\Temp\dotnet-install.ps1 -Channel $netCliChannel -Version '6.0.400' | Out-Default }
   exec { & $buildDir\Temp\dotnet-install.ps1 -Channel $netCliChannel -Version '3.1.402' | Out-Default }
-  exec { & $buildDir\Temp\dotnet-install.ps1 -Channel $netCliChannel -Version '2.1.811' | Out-Default }
+  exec { & $buildDir\Temp\dotnet-install.ps1 -Channel $netCliChannel -Version '2.1.818' | Out-Default }
 }
 
 function EnsureNuGetExists()
@@ -203,7 +204,7 @@ function EnsureNuGetPackage($packageName, $packagePath, $packageVersion)
 
 function GetMsBuildPath()
 {
-  $path = & $vswherePath\tools\vswhere.exe -latest -products * -requires Microsoft.Component.MSBuild -property installationPath
+  $path = & $vswherePath\tools\vswhere.exe -latest -prerelease -products * -requires Microsoft.Component.MSBuild -property installationPath
   if (!($path))
   {
     throw "Could not find Visual Studio install path"
@@ -241,7 +242,7 @@ function NetCliTests($build)
     Write-Host "Project path: $projectPath"
     Write-Host
 
-    exec { dotnet test $projectPath -f $testDir -c Release -l trx -r $workingDir --no-restore --no-build | Out-Default }
+    exec { dotnet test $projectPath -f $testDir -c Release -l trx --results-directory $workingDir --no-restore --no-build | Out-Default }
   }
   finally
   {
