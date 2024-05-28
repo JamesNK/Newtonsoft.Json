@@ -3,7 +3,7 @@
     <AutofacPackageVersion>4.6.2</AutofacPackageVersion>
     <BenchmarkDotNetPackageVersion>0.10.10</BenchmarkDotNetPackageVersion>
     <FSharpCorePackageVersion>4.2.3</FSharpCorePackageVersion>
-    <MicrosoftCodeAnalysisNetAnalyzersPackageVersion>6.0.0</MicrosoftCodeAnalysisNetAnalyzersPackageVersion>
+    <MicrosoftCodeAnalysisNetAnalyzersPackageVersion>8.0.0</MicrosoftCodeAnalysisNetAnalyzersPackageVersion>
     <MicrosoftCSharpPackageVersion>4.3.0</MicrosoftCSharpPackageVersion>
     <MicrosoftSourceLinkGitHubPackageVersion>1.0.0</MicrosoftSourceLinkGitHubPackageVersion>
     <MicrosoftNETTestSdkPackageVersion>16.3.0</MicrosoftNETTestSdkPackageVersion>

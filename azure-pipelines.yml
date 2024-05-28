@@ -8,7 +8,12 @@ pool:
 steps:
 - task: UseDotNet@2
   inputs:
+    version: '8.0.x'
+
+- task: UseDotNet@2
+  inputs:
     version: '6.0.x'
+    packageType: runtime
 
 - task: UseDotNet@2
   inputs:

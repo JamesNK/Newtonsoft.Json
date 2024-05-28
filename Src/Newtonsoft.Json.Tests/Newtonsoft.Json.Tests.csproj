@@ -173,6 +173,8 @@
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp2.1'">
+    <!-- Explicitly specify Microsoft.NETCore.App to fix vulnerability warnings -->
+    <PackageReference Include="Microsoft.NETCore.App" Version="2.1.30" />
     <PackageReference Include="FSharp.Core" Version="$(FSharpCorePackageVersion)" />
     <PackageReference Include="System.ObjectModel" Version="$(SystemObjectModelPackageVersion)" />
     <PackageReference Include="System.Runtime.Serialization.Primitives" Version="$(SystemRuntimeSerializationPrimitivesPackageVersion)" />
