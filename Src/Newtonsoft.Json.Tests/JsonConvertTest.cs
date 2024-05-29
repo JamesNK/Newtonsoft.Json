@@ -117,6 +117,18 @@ namespace Newtonsoft.Json.Tests
                 JsonConvert.PopulateObject(json, o);
             }, "No JSON content found. Path '', line 0, position 0.");
         }
+        
+        [Test]
+        public void PopulateObjectInvalidJson()
+        {
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+            {
+                string json = "{\"test\":1}gg";
+
+                PopulateTestObject o = new PopulateTestObject();
+                JsonConvert.PopulateObject(json, o);
+            }, "Invalid JSON string. Path '', line 1, position 10.");
+        }
 
         [Test]
         public void NoConstructorName() {
