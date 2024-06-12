@@ -47,7 +47,7 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Serialization
 {
-    internal class JsonSerializerInternalWriter : JsonSerializerInternalBase
+    internal partial class JsonSerializerInternalWriter : JsonSerializerInternalBase
     {
         private Type? _rootType;
         private int _rootLevel;
@@ -1015,7 +1015,7 @@ namespace Newtonsoft.Json.Serialization
                 member?.TypeNameHandling
                 ?? containerProperty?.ItemTypeNameHandling
                 ?? containerContract?.ItemTypeNameHandling
-                ?? Serializer._typeNameHandling;
+                ?? Serializer.TypeNameHandling;
 
             if (HasFlag(resolvedTypeNameHandling, typeNameHandlingFlag))
             {

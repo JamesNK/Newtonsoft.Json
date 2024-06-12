@@ -23,6 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+#if HAVE_ASYNC
 #if HAVE_FSHARP_TYPES
 using Newtonsoft.Json.Linq;
 using System;
@@ -37,98 +38,26 @@ using System.Reflection;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Newtonsoft.Json.Converters
 {
-    /// <summary>
-    /// Converts a F# discriminated union type to and from JSON.
-    /// </summary>
     public partial class DiscriminatedUnionConverter : JsonConverter
     {
-        #region UnionDefinition
-        internal class Union
-        {
-            public readonly FSharpFunction TagReader;
-            public readonly List<UnionCase> Cases;
-
-            public Union(FSharpFunction tagReader, List<UnionCase> cases)
-            {
-                TagReader = tagReader;
-                Cases = cases;
-            }
-        }
-
-        internal class UnionCase
-        {
-            public readonly int Tag;
-            public readonly string Name;
-            public readonly PropertyInfo[] Fields;
-            public readonly FSharpFunction FieldReader;
-            public readonly FSharpFunction Constructor;
-
-            public UnionCase(int tag, string name, PropertyInfo[] fields, FSharpFunction fieldReader, FSharpFunction constructor)
-            {
-                Tag = tag;
-                Name = name;
-                Fields = fields;
-                FieldReader = fieldReader;
-                Constructor = constructor;
-            }
-        }
-        #endregion
-
-        private const string CasePropertyName = "Case";
-        private const string FieldsPropertyName = "Fields";
-
-        private static readonly ThreadSafeStore<Type, Union> UnionCache = new ThreadSafeStore<Type, Union>(CreateUnion);
-        private static readonly ThreadSafeStore<Type, Type> UnionTypeLookupCache = new ThreadSafeStore<Type, Type>(CreateUnionTypeLookup);
-
-        private static Type CreateUnionTypeLookup(Type t)
-        {
-            // this lookup is because cases with fields are derived from union type
-            // need to get declaring type to avoid duplicate Unions in cache
-
-            // hacky but I can't find an API to get the declaring type without GetUnionCases
-            object[] cases = (object[])FSharpUtils.Instance.GetUnionCases(null, t, null)!;
-
-            object caseInfo = cases.First();
-
-            Type unionType = (Type)FSharpUtils.Instance.GetUnionCaseInfoDeclaringType(caseInfo)!;
-            return unionType;
-        }
-
-        private static Union CreateUnion(Type t)
-        {
-            Union u = new Union((FSharpFunction)FSharpUtils.Instance.PreComputeUnionTagReader(null, t, null), new List<UnionCase>());
-
-            object[] cases = (object[])FSharpUtils.Instance.GetUnionCases(null, t, null)!;
-
-            foreach (object unionCaseInfo in cases)
-            {
-                UnionCase unionCase = new UnionCase(
-                    (int)FSharpUtils.Instance.GetUnionCaseInfoTag(unionCaseInfo),
-                    (string)FSharpUtils.Instance.GetUnionCaseInfoName(unionCaseInfo),
-                    (PropertyInfo[])FSharpUtils.Instance.GetUnionCaseInfoFields(unionCaseInfo)!,
-                    (FSharpFunction)FSharpUtils.Instance.PreComputeUnionReader(null, unionCaseInfo, null),
-                    (FSharpFunction)FSharpUtils.Instance.PreComputeUnionConstructor(null, unionCaseInfo, null));
-
-                u.Cases.Add(unionCase);
-            }
-
-            return u;
-        }
 
         /// <summary>
-        /// Writes the JSON representation of the object.
+        /// Asynchronously writes the JSON representation of the object.
         /// </summary>
         /// <param name="writer">The <see cref="JsonWriter"/> to write to.</param>
         /// <param name="value">The value.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <param name="serializer">The calling serializer.</param>
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
+        public override async Task WriteJsonAsync(JsonWriter writer, object? value, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             if (value == null)
             {
-                writer.WriteNull();
+                await writer.WriteNullAsync(cancellationToken).ConfigureAwait(false);
                 return;
             }
 
@@ -140,33 +69,34 @@ namespace Newtonsoft.Json.Converters
             int tag = (int)union.TagReader.Invoke(value);
             UnionCase caseInfo = union.Cases.Single(c => c.Tag == tag);
 
-            writer.WriteStartObject();
-            writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(CasePropertyName) : CasePropertyName);
-            writer.WriteValue(caseInfo.Name);
+            await writer.WriteStartObjectAsync(cancellationToken).ConfigureAwait(false);
+            await writer.WritePropertyNameAsync((resolver != null) ? resolver.GetResolvedPropertyName(CasePropertyName) : CasePropertyName, cancellationToken).ConfigureAwait(false);
+            await writer.WriteValueAsync(caseInfo.Name, cancellationToken).ConfigureAwait(false);
             if (caseInfo.Fields != null && caseInfo.Fields.Length > 0)
             {
                 object[] fields = (object[])caseInfo.FieldReader.Invoke(value)!;
 
-                writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(FieldsPropertyName) : FieldsPropertyName);
-                writer.WriteStartArray();
+                await writer.WritePropertyNameAsync((resolver != null) ? resolver.GetResolvedPropertyName(FieldsPropertyName) : FieldsPropertyName, cancellationToken).ConfigureAwait(false);
+                await writer.WriteStartArrayAsync(cancellationToken).ConfigureAwait(false);
                 foreach (object field in fields)
                 {
-                    serializer.Serialize(writer, field);
+                    await serializer.SerializeAsync(writer, field, typeof(object[]), cancellationToken).ConfigureAwait(false);
                 }
-                writer.WriteEndArray();
+                await writer.WriteEndArrayAsync(cancellationToken).ConfigureAwait(false);
             }
-            writer.WriteEndObject();
+            await writer.WriteEndObjectAsync(cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
-        /// Reads the JSON representation of the object.
+        /// Asynchronously Reads the JSON representation of the object.
         /// </summary>
         /// <param name="reader">The <see cref="JsonReader"/> to read from.</param>
         /// <param name="objectType">Type of the object.</param>
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>The object value.</returns>
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        public override async Task<object?> ReadJsonAsync(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer, CancellationToken cancellationToken)
         {
             if (reader.TokenType == JsonToken.Null)
             {
@@ -178,14 +108,14 @@ namespace Newtonsoft.Json.Converters
             JArray? fields = null;
 
             // start object
-            reader.ReadAndAssert();
+            await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
                 string propertyName = reader.Value!.ToString()!;
                 if (string.Equals(propertyName, CasePropertyName, StringComparison.OrdinalIgnoreCase))
                 {
-                    reader.ReadAndAssert();
+                    await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
 
                     Union union = UnionCache.Get(objectType);
 
@@ -200,20 +130,20 @@ namespace Newtonsoft.Json.Converters
                 }
                 else if (string.Equals(propertyName, FieldsPropertyName, StringComparison.OrdinalIgnoreCase))
                 {
-                    reader.ReadAndAssert();
+                    await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
                     if (reader.TokenType != JsonToken.StartArray)
                     {
                         throw JsonSerializationException.Create(reader, "Union fields must been an array.");
                     }
 
-                    fields = (JArray)JToken.ReadFrom(reader);
+                    fields = (JArray)await JToken.ReadFromAsync(reader, cancellationToken).ConfigureAwait(false);
                 }
                 else
                 {
                     throw JsonSerializationException.Create(reader, "Unexpected property '{0}' found when reading union.".FormatWith(CultureInfo.InvariantCulture, propertyName));
                 }
 
-                reader.ReadAndAssert();
+                await reader.ReadAndAssertAsync(cancellationToken).ConfigureAwait(false);
             }
 
             if (caseInfo == null)
@@ -249,50 +179,8 @@ namespace Newtonsoft.Json.Converters
             return caseInfo.Constructor.Invoke(args);
         }
 
-        /// <summary>
-        /// Determines whether this instance can convert the specified object type.
-        /// </summary>
-        /// <param name="objectType">Type of the object.</param>
-        /// <returns>
-        /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
-        /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-            if (typeof(IEnumerable).IsAssignableFrom(objectType))
-            {
-                return false;
-            }
-
-            // all fsharp objects have CompilationMappingAttribute
-            // get the fsharp assembly from the attribute and initialize latebound methods
-            object[] attributes;
-#if HAVE_FULL_REFLECTION
-            attributes = objectType.GetCustomAttributes(true);
-#else
-            attributes = objectType.GetTypeInfo().GetCustomAttributes(true).ToArray();
-#endif
-
-            bool isFSharpType = false;
-            foreach (object attribute in attributes)
-            {
-                Type attributeType = attribute.GetType();
-                if (attributeType.FullName == "Microsoft.FSharp.Core.CompilationMappingAttribute")
-                {
-                    FSharpUtils.EnsureInitialized(attributeType.Assembly());
-
-                    isFSharpType = true;
-                    break;
-                }
-            }
-
-            if (!isFSharpType)
-            {
-                return false;
-            }
-
-            return (bool)FSharpUtils.Instance.IsUnion(null, objectType, null);
-        }
     }
 }
 
+#endif
 #endif

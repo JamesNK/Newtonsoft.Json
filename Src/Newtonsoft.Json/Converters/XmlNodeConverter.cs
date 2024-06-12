@@ -939,7 +939,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts XML to and from JSON.
     /// </summary>
-    public class XmlNodeConverter : JsonConverter
+    public partial class XmlNodeConverter : JsonConverter
     {
         internal static readonly List<IXmlNode> EmptyChildNodes = new List<IXmlNode>();
 

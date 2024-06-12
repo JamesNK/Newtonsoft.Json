@@ -793,6 +793,27 @@ namespace Newtonsoft.Json.Tests.Converters
             var equals = XElement.DeepEquals(xmlBack, xml);
             Assert.IsTrue(equals);
         }
+#if HAVE_ASYNC
+        [Test]
+        public async System.Threading.Tasks.Task SerializeAndDeserializeAsync()
+        {
+            var helper = new AsyncTestHelper();
+            var xmlString = @"<root>
+                              <b xmlns='http://www.example.com/ns'/>
+                              <c>AAA</c>
+                              <test>adad</test>
+                              </root>";
+
+            var xml = XElement.Parse(xmlString);
+
+            var json1 = await helper.SerializeAsync(xml);
+            helper.ResetStream();
+            var xmlBack = await helper.DeserializeAsync<XElement>(json1);
+
+            var equals = XElement.DeepEquals(xmlBack, xml);
+            Assert.IsTrue(equals);
+        }
+#endif
 
 #if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]

@@ -44,7 +44,7 @@ namespace Newtonsoft.Json
     /// Serializes and deserializes objects into and from the JSON format.
     /// The <see cref="JsonSerializer"/> enables you to control how objects are encoded into JSON.
     /// </summary>
-    public class JsonSerializer
+    public partial class JsonSerializer
     {
         internal TypeNameHandling _typeNameHandling;
         internal TypeNameAssemblyFormatHandling _typeNameAssemblyFormatHandling;
@@ -1086,61 +1086,16 @@ namespace Newtonsoft.Json
 
         internal virtual void SerializeInternal(JsonWriter jsonWriter, object? value, Type? objectType)
         {
-            ValidationUtils.ArgumentNotNull(jsonWriter, nameof(jsonWriter));
+            Formatting? previousFormatting;
+            DateFormatHandling? previousDateFormatHandling;
+            DateTimeZoneHandling? previousDateTimeZoneHandling;
+            FloatFormatHandling? previousFloatFormatHandling;
+            StringEscapeHandling? previousStringEscapeHandling;
+            CultureInfo? previousCulture;
+            string? previousDateFormatString;
+            TraceJsonWriter? traceJsonWriter;
 
-            // set serialization options onto writer
-            Formatting? previousFormatting = null;
-            if (_formatting != null && jsonWriter.Formatting != _formatting)
-            {
-                previousFormatting = jsonWriter.Formatting;
-                jsonWriter.Formatting = _formatting.GetValueOrDefault();
-            }
-
-            DateFormatHandling? previousDateFormatHandling = null;
-            if (_dateFormatHandling != null && jsonWriter.DateFormatHandling != _dateFormatHandling)
-            {
-                previousDateFormatHandling = jsonWriter.DateFormatHandling;
-                jsonWriter.DateFormatHandling = _dateFormatHandling.GetValueOrDefault();
-            }
-
-            DateTimeZoneHandling? previousDateTimeZoneHandling = null;
-            if (_dateTimeZoneHandling != null && jsonWriter.DateTimeZoneHandling != _dateTimeZoneHandling)
-            {
-                previousDateTimeZoneHandling = jsonWriter.DateTimeZoneHandling;
-                jsonWriter.DateTimeZoneHandling = _dateTimeZoneHandling.GetValueOrDefault();
-            }
-
-            FloatFormatHandling? previousFloatFormatHandling = null;
-            if (_floatFormatHandling != null && jsonWriter.FloatFormatHandling != _floatFormatHandling)
-            {
-                previousFloatFormatHandling = jsonWriter.FloatFormatHandling;
-                jsonWriter.FloatFormatHandling = _floatFormatHandling.GetValueOrDefault();
-            }
-
-            StringEscapeHandling? previousStringEscapeHandling = null;
-            if (_stringEscapeHandling != null && jsonWriter.StringEscapeHandling != _stringEscapeHandling)
-            {
-                previousStringEscapeHandling = jsonWriter.StringEscapeHandling;
-                jsonWriter.StringEscapeHandling = _stringEscapeHandling.GetValueOrDefault();
-            }
-
-            CultureInfo? previousCulture = null;
-            if (_culture != null && !_culture.Equals(jsonWriter.Culture))
-            {
-                previousCulture = jsonWriter.Culture;
-                jsonWriter.Culture = _culture;
-            }
-
-            string? previousDateFormatString = null;
-            if (_dateFormatStringSet && jsonWriter.DateFormatString != _dateFormatString)
-            {
-                previousDateFormatString = jsonWriter.DateFormatString;
-                jsonWriter.DateFormatString = _dateFormatString;
-            }
-
-            TraceJsonWriter? traceJsonWriter = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
-                ? new TraceJsonWriter(jsonWriter)
-                : null;
+            PreSerializeInternal(jsonWriter, out previousFormatting, out previousDateFormatHandling, out previousDateTimeZoneHandling, out previousFloatFormatHandling, out previousStringEscapeHandling, out previousCulture, out previousDateFormatString, out traceJsonWriter);
 
             JsonSerializerInternalWriter serializerWriter = new JsonSerializerInternalWriter(this);
             serializerWriter.Serialize(traceJsonWriter ?? jsonWriter, value, objectType);
@@ -1150,35 +1105,7 @@ namespace Newtonsoft.Json
                 TraceWriter!.Trace(TraceLevel.Verbose, traceJsonWriter.GetSerializedJsonMessage(), null);
             }
 
-            // reset writer back to previous options
-            if (previousFormatting != null)
-            {
-                jsonWriter.Formatting = previousFormatting.GetValueOrDefault();
-            }
-            if (previousDateFormatHandling != null)
-            {
-                jsonWriter.DateFormatHandling = previousDateFormatHandling.GetValueOrDefault();
-            }
-            if (previousDateTimeZoneHandling != null)
-            {
-                jsonWriter.DateTimeZoneHandling = previousDateTimeZoneHandling.GetValueOrDefault();
-            }
-            if (previousFloatFormatHandling != null)
-            {
-                jsonWriter.FloatFormatHandling = previousFloatFormatHandling.GetValueOrDefault();
-            }
-            if (previousStringEscapeHandling != null)
-            {
-                jsonWriter.StringEscapeHandling = previousStringEscapeHandling.GetValueOrDefault();
-            }
-            if (_dateFormatStringSet)
-            {
-                jsonWriter.DateFormatString = previousDateFormatString;
-            }
-            if (previousCulture != null)
-            {
-                jsonWriter.Culture = previousCulture;
-            }
+            PostSerializeInternal(jsonWriter, previousFormatting, previousDateFormatHandling, previousDateTimeZoneHandling, previousFloatFormatHandling, previousStringEscapeHandling, previousCulture, previousDateFormatString);
         }
 
         internal IReferenceResolver GetReferenceResolver()
@@ -1221,6 +1148,98 @@ namespace Newtonsoft.Json
         internal void OnError(ErrorEventArgs e)
         {
             Error?.Invoke(this, e);
+        }
+
+        private void PostSerializeInternal(JsonWriter jsonWriter, Formatting? previousFormatting, DateFormatHandling? previousDateFormatHandling, DateTimeZoneHandling? previousDateTimeZoneHandling, FloatFormatHandling? previousFloatFormatHandling, StringEscapeHandling? previousStringEscapeHandling, CultureInfo? previousCulture, string? previousDateFormatString)
+        {
+            // reset writer back to previous options
+            if (previousFormatting != null)
+            {
+                jsonWriter.Formatting = previousFormatting.GetValueOrDefault();
+            }
+            if (previousDateFormatHandling != null)
+            {
+                jsonWriter.DateFormatHandling = previousDateFormatHandling.GetValueOrDefault();
+            }
+            if (previousDateTimeZoneHandling != null)
+            {
+                jsonWriter.DateTimeZoneHandling = previousDateTimeZoneHandling.GetValueOrDefault();
+            }
+            if (previousFloatFormatHandling != null)
+            {
+                jsonWriter.FloatFormatHandling = previousFloatFormatHandling.GetValueOrDefault();
+            }
+            if (previousStringEscapeHandling != null)
+            {
+                jsonWriter.StringEscapeHandling = previousStringEscapeHandling.GetValueOrDefault();
+            }
+            if (_dateFormatStringSet)
+            {
+                jsonWriter.DateFormatString = previousDateFormatString;
+            }
+            if (previousCulture != null)
+            {
+                jsonWriter.Culture = previousCulture;
+            }
+        }
+
+        private void PreSerializeInternal(JsonWriter jsonWriter, out Formatting? previousFormatting, out DateFormatHandling? previousDateFormatHandling, out DateTimeZoneHandling? previousDateTimeZoneHandling, out FloatFormatHandling? previousFloatFormatHandling, out StringEscapeHandling? previousStringEscapeHandling, out CultureInfo? previousCulture, out string? previousDateFormatString, out TraceJsonWriter? traceJsonWriter)
+        {
+            ValidationUtils.ArgumentNotNull(jsonWriter, nameof(jsonWriter));
+
+            // set serialization options onto writer
+            previousFormatting = null;
+            if (_formatting != null && jsonWriter.Formatting != _formatting)
+            {
+                previousFormatting = jsonWriter.Formatting;
+                jsonWriter.Formatting = _formatting.GetValueOrDefault();
+            }
+
+            previousDateFormatHandling = null;
+            if (_dateFormatHandling != null && jsonWriter.DateFormatHandling != _dateFormatHandling)
+            {
+                previousDateFormatHandling = jsonWriter.DateFormatHandling;
+                jsonWriter.DateFormatHandling = _dateFormatHandling.GetValueOrDefault();
+            }
+
+            previousDateTimeZoneHandling = null;
+            if (_dateTimeZoneHandling != null && jsonWriter.DateTimeZoneHandling != _dateTimeZoneHandling)
+            {
+                previousDateTimeZoneHandling = jsonWriter.DateTimeZoneHandling;
+                jsonWriter.DateTimeZoneHandling = _dateTimeZoneHandling.GetValueOrDefault();
+            }
+
+            previousFloatFormatHandling = null;
+            if (_floatFormatHandling != null && jsonWriter.FloatFormatHandling != _floatFormatHandling)
+            {
+                previousFloatFormatHandling = jsonWriter.FloatFormatHandling;
+                jsonWriter.FloatFormatHandling = _floatFormatHandling.GetValueOrDefault();
+            }
+
+            previousStringEscapeHandling = null;
+            if (_stringEscapeHandling != null && jsonWriter.StringEscapeHandling != _stringEscapeHandling)
+            {
+                previousStringEscapeHandling = jsonWriter.StringEscapeHandling;
+                jsonWriter.StringEscapeHandling = _stringEscapeHandling.GetValueOrDefault();
+            }
+
+            previousCulture = null;
+            if (_culture != null && !_culture.Equals(jsonWriter.Culture))
+            {
+                previousCulture = jsonWriter.Culture;
+                jsonWriter.Culture = _culture;
+            }
+
+            previousDateFormatString = null;
+            if (_dateFormatStringSet && jsonWriter.DateFormatString != _dateFormatString)
+            {
+                previousDateFormatString = jsonWriter.DateFormatString;
+                jsonWriter.DateFormatString = _dateFormatString;
+            }
+
+            traceJsonWriter = (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                ? new TraceJsonWriter(jsonWriter)
+                : null;
         }
     }
 }

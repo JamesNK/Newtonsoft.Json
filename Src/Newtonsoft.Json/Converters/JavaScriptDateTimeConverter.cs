@@ -32,7 +32,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="DateTime"/> to and from a JavaScript <c>Date</c> constructor (e.g. <c>new Date(52231943)</c>).
     /// </summary>
-    public class JavaScriptDateTimeConverter : DateTimeConverterBase
+    public partial class JavaScriptDateTimeConverter : DateTimeConverterBase
     {
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -42,25 +42,7 @@ namespace Newtonsoft.Json.Converters
         /// <param name="serializer">The calling serializer.</param>
         public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer)
         {
-            long ticks;
-
-            if (value is DateTime dateTime)
-            {
-                DateTime utcDateTime = dateTime.ToUniversalTime();
-                ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(utcDateTime);
-            }
-#if HAVE_DATE_TIME_OFFSET
-            else if (value is DateTimeOffset dateTimeOffset)
-            {
-                DateTimeOffset utcDateTimeOffset = dateTimeOffset.ToUniversalTime();
-                ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(utcDateTimeOffset.UtcDateTime);
-            }
-#endif
-            else
-            {
-                throw new JsonSerializationException("Expected date object value.");
-            }
-
+            long ticks = GetTicks(value);
             writer.WriteStartConstructor("Date");
             writer.WriteValue(ticks);
             writer.WriteEndConstructor();
@@ -107,5 +89,29 @@ namespace Newtonsoft.Json.Converters
 #endif
             return d;
         }
+
+        private static long GetTicks(object? value)
+        {
+            long ticks;
+            if (value is DateTime dateTime)
+            {
+                DateTime utcDateTime = dateTime.ToUniversalTime();
+                ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(utcDateTime);
+            }
+#if HAVE_DATE_TIME_OFFSET
+            else if (value is DateTimeOffset dateTimeOffset)
+            {
+                DateTimeOffset utcDateTimeOffset = dateTimeOffset.ToUniversalTime();
+                ticks = DateTimeUtils.ConvertDateTimeToJavaScriptTicks(utcDateTimeOffset.UtcDateTime);
+            }
+#endif
+            else
+            {
+                throw new JsonSerializationException("Expected date object value.");
+            }
+
+            return ticks;
+        }
+
     }
 }

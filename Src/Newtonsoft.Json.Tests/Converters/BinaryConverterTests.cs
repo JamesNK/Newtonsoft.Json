@@ -37,6 +37,9 @@ using Newtonsoft.Json.Converters;
 using Xunit;
 using Test = Xunit.FactAttribute;
 using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+using System.Threading.Tasks;
+using Newtonsoft.Json.Tests.TestObjects;
+using System.Linq;
 #else
 using NUnit.Framework;
 
@@ -146,6 +149,24 @@ namespace Newtonsoft.Json.Tests.Converters
 }", json);
         }
 
+#if HAVE_ASYNC
+        [Test]
+        public async Task SerializeSqlBinaryClassAsync()
+        {
+            SqlBinaryClass sqlBinaryClass = new SqlBinaryClass();
+            sqlBinaryClass.SqlBinary = new SqlBinary(TestData);
+            sqlBinaryClass.NullableSqlBinary1 = new SqlBinary(TestData);
+            sqlBinaryClass.NullableSqlBinary2 = null;
+            var helper = new AsyncTestHelper();
+            string json = await helper.SerializeAsync(sqlBinaryClass);
+
+            StringAssert.AreEqual(@"{
+  ""SqlBinary"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
+  ""NullableSqlBinary1"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
+  ""NullableSqlBinary2"": null
+}", json);
+        }
+#endif
         [Test]
         public void DeserializeSqlBinaryClass()
         {
@@ -161,7 +182,27 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(new SqlBinary(TestData), sqlBinaryClass.NullableSqlBinary1);
             Assert.AreEqual(null, sqlBinaryClass.NullableSqlBinary2);
         }
+
+#if HAVE_ASYNC
+        [Test]
+        public async Task DeserializeSqlBinaryClassAsync()
+        {
+            var testData2 = TestData.Skip(5).Reverse().ToArray();
+            string json = @"{
+  ""SqlBinary"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
+  ""NullableSqlBinary1"": ""VGhpcyBpcyBzb21lIHRlc3QgZGF0YSEhIQ=="",
+  ""NullableSqlBinary2"": [" + string.Join(",", testData2.Select(b => b.ToString()))+ @"]
+}";
+            var helper = new AsyncTestHelper();
+            SqlBinaryClass sqlBinaryClass = await helper.DeserializeAsync<SqlBinaryClass>(json);
+
+            Assert.AreEqual(new SqlBinary(TestData), sqlBinaryClass.SqlBinary);
+            Assert.AreEqual(new SqlBinary(TestData), sqlBinaryClass.NullableSqlBinary1);
+            Assert.AreEqual(new SqlBinary(testData2), sqlBinaryClass.NullableSqlBinary2);
+        }
 #endif
+#endif
+
 
         [Test]
         public void DeserializeByteArrayClass()

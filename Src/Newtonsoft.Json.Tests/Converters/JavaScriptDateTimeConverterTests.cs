@@ -123,7 +123,22 @@ namespace Newtonsoft.Json.Tests.Converters
             DateTime result = JsonConvert.DeserializeObject<DateTime>("new Date(976918263055)", converter);
             Assert.AreEqual(new DateTime(2000, 12, 15, 22, 11, 3, 55, DateTimeKind.Utc), result);
         }
+#if HAVE_ASYNC
+        [Test]
+        public async System.Threading.Tasks.Task SerializeAndDeserializeDateTimeAsync()
+        {
+            string data = "new Date(976918263055)";
+            DateTime date = new DateTime(2000, 12, 15, 22, 11, 3, 55, DateTimeKind.Utc);
+            var helper = new AsyncTestHelper();
+            helper.Serializer.Converters.Add(new JavaScriptDateTimeConverter());
+            helper.Serializer.Formatting = Formatting.None;
 
+            Assert.AreEqual(data, await helper.SerializeAsync(date));
+            helper.ResetStream();
+            Assert.AreEqual(date, await helper.DeserializeAsync<DateTime>(data));
+        }
+
+#endif
         [Test]
         public void DeserializeDateTime_MultipleArguments()
         {

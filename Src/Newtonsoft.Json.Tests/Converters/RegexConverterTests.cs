@@ -287,6 +287,27 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, newRegex.Options);
         }
 
+
+#if HAVE_ASYNC
+        [Test]
+        public async void SerializeAndDeserializeAsync()
+        {
+            string json = @"{
+  ""Pattern"": ""abc"",
+  ""Options"": 513
+}";
+            Regex regex = new Regex("abc", RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+            var helper = new AsyncTestHelper();
+            var actualStr = await helper.SerializeAsync(regex);
+            Assert.AreEqual(json, actualStr);
+
+
+            Regex actualRegex = await helper.DeserializeAsync<Regex>(json);
+            Assert.AreEqual("abc", actualRegex.ToString());
+            Assert.AreEqual(RegexOptions.IgnoreCase | RegexOptions.CultureInvariant, actualRegex.Options);
+        }
+
+#endif
         [Test]
         public void ConvertEmptyRegexJson()
         {

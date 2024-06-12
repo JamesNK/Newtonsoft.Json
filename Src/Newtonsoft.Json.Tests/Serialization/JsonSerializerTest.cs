@@ -94,6 +94,10 @@ using System.Drawing;
 
 #endif
 
+#if HAVE_ASYNC
+using System.Threading.Tasks;
+#endif
+
 namespace Newtonsoft.Json.Tests.Serialization
 {
     [TestFixture]
@@ -4235,6 +4239,66 @@ Path '', line 1, position 1.");
             Assert.AreEqual(null, o2._nullableInt);
         }
 
+
+#if HAVE_ASYNC
+        [Test]
+        public async Task SerializeISerializableTestObject_IsoDateAsync()
+        {
+            Person person = new Person();
+            person.BirthDate = new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc);
+            person.LastModified = person.BirthDate;
+            person.Department = "Department!";
+            person.Name = "Name!";
+
+            DateTimeOffset dateTimeOffset = new DateTimeOffset(2000, 12, 20, 22, 59, 59, TimeSpan.FromHours(2));
+            string dateTimeOffsetText;
+#if !NET20
+            dateTimeOffsetText = @"2000-12-20T22:59:59+02:00";
+#else
+            dateTimeOffsetText = @"12/20/2000 22:59:59 +02:00";
+#endif
+
+            ISerializableTestObject o = new ISerializableTestObject("String!", int.MinValue, dateTimeOffset, person);
+
+            var helper = new AsyncTestHelper();
+
+            string json = await helper.SerializeAsync(o);
+
+            StringAssert.AreEqual(@"{
+  ""stringValue"": ""String!"",
+  ""intValue"": -2147483648,
+  ""dateTimeOffsetValue"": """ + dateTimeOffsetText + @""",
+  ""personValue"": {
+    ""Name"": ""Name!"",
+    ""BirthDate"": ""2000-01-01T01:01:01Z"",
+    ""LastModified"": ""2000-01-01T01:01:01Z""
+  },
+  ""nullPersonValue"": null,
+  ""nullableInt"": null,
+  ""booleanValue"": false,
+  ""byteValue"": 0,
+  ""charValue"": ""\u0000"",
+  ""dateTimeValue"": ""0001-01-01T00:00:00Z"",
+  ""decimalValue"": 0.0,
+  ""shortValue"": 0,
+  ""longValue"": 0,
+  ""sbyteValue"": 0,
+  ""floatValue"": 0.0,
+  ""ushortValue"": 0,
+  ""uintValue"": 0,
+  ""ulongValue"": 0
+}", json);
+
+            helper.ResetStream();
+            ISerializableTestObject o2 = await helper.DeserializeAsync<ISerializableTestObject>(json);
+            Assert.AreEqual("String!", o2._stringValue);
+            Assert.AreEqual(int.MinValue, o2._intValue);
+            Assert.AreEqual(dateTimeOffset, o2._dateTimeOffsetValue);
+            Assert.AreEqual("Name!", o2._personValue.Name);
+            Assert.AreEqual(null, o2._nullPersonValue);
+            Assert.AreEqual(null, o2._nullableInt);
+        }
+#endif
         [Test]
         public void SerializeISerializableTestObject_MsAjax()
         {
@@ -8198,6 +8262,63 @@ This is just junk, though.";
 
             Assert.AreEqual(0, propertyNames.Count);
         }
+
+#if HAVE_ASYNC
+        [Test]
+        public async Task AsyncSerializeDeserialize()
+        {
+            var helper = new AsyncTestHelper();
+            var data = MyFactory.InstantiateSubclass();
+
+            var writer = helper.GetWriter();
+            try
+            {
+                await helper.Serializer.SerializeAsync(writer, data);
+            }
+            finally
+            {
+                await writer.FlushAsync();
+            }
+
+            var reader = helper.GetReader();
+            var actual = (Subclass)(await helper.Serializer.DeserializeAsync(reader, typeof(Subclass)));
+            Assert.AreEqual(data.ID, actual.ID);
+            Assert.AreEqual(data.Name, actual.Name);
+            Assert.AreEqual(data.P1, actual.P1);
+            Assert.AreEqual(data.P2, actual.P2);
+        }
+
+#if HAVE_TRACE_WRITER
+        [Test]
+        public async Task AsyncSerializeDeserializeWithTrace()
+        {
+            var helper = new AsyncTestHelper();
+            var data = MyFactory.InstantiateSubclass();
+
+            var writer = helper.GetWriter();
+            try
+            {
+                await helper.Serializer.SerializeAsync(writer, data);
+            }
+            finally
+            {
+                await writer.FlushAsync();
+            }
+
+            var reader = helper.GetReader();
+            // Add a trace to ensure it is not doing synchronous IO
+            var trace = new DiagnosticsTraceWriter();
+            trace.LevelFilter = TraceLevel.Verbose;
+            helper.Serializer.TraceWriter = trace;
+            var actual = (Subclass)(await helper.Serializer.DeserializeAsync(reader, typeof(Subclass)));
+            Assert.AreEqual(data.ID, actual.ID);
+            Assert.AreEqual(data.Name, actual.Name);
+            Assert.AreEqual(data.P1, actual.P1);
+            Assert.AreEqual(data.P2, actual.P2);
+        }
+
+#endif
+#endif
 
         private static int GetDepth(JToken o)
         {
