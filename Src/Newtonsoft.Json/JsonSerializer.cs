@@ -1207,7 +1207,7 @@ namespace Newtonsoft.Json
                 for (int i = 0; i < converters.Count; i++)
                 {
                     JsonConverter converter = converters[i];
-
+                    if(converter == null) continue;
                     if (converter.CanConvert(objectType))
                     {
                         return converter;
