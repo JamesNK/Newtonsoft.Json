@@ -27,6 +27,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Reflection;
 using System.Runtime.Serialization;
@@ -44,7 +45,7 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts an <see cref="Enum"/> to and from its name string value.
     /// </summary>
-    public class StringEnumConverter : JsonConverter
+    public class StringEnumConverter : StringEnumConverterBase
     {
         /// <summary>
         /// Gets or sets a value indicating whether the written enum text should be camel case.
@@ -54,7 +55,7 @@ namespace Newtonsoft.Json.Converters
         [Obsolete("StringEnumConverter.CamelCaseText is obsolete. Set StringEnumConverter.NamingStrategy with CamelCaseNamingStrategy instead.")]
         public bool CamelCaseText
         {
-            get => NamingStrategy is CamelCaseNamingStrategy ? true : false;
+            get => NamingStrategy is CamelCaseNamingStrategy;
             set
             {
                 if (value)
@@ -85,13 +86,6 @@ namespace Newtonsoft.Json.Converters
         public NamingStrategy? NamingStrategy { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether integer values are allowed when serializing and deserializing.
-        /// The default value is <c>true</c>.
-        /// </summary>
-        /// <value><c>true</c> if integers are allowed when serializing and deserializing; otherwise, <c>false</c>.</value>
-        public bool AllowIntegerValues { get; set; } = true;
-
-        /// <summary>
         /// Initializes a new instance of the <see cref="StringEnumConverter"/> class.
         /// </summary>
         public StringEnumConverter()
@@ -116,10 +110,9 @@ namespace Newtonsoft.Json.Converters
         /// </summary>
         /// <param name="namingStrategy">The naming strategy used to resolve how enum text is written.</param>
         /// <param name="allowIntegerValues"><c>true</c> if integers are allowed when serializing and deserializing; otherwise, <c>false</c>.</param>
-        public StringEnumConverter(NamingStrategy namingStrategy, bool allowIntegerValues = true)
+        public StringEnumConverter(NamingStrategy namingStrategy, bool allowIntegerValues = true) : base (allowIntegerValues)
         {
             NamingStrategy = namingStrategy;
-            AllowIntegerValues = allowIntegerValues;
         }
 
         /// <summary>
@@ -161,13 +154,63 @@ namespace Newtonsoft.Json.Converters
         /// order, and type of these parameters.
         /// </param>
         /// <param name="allowIntegerValues"><c>true</c> if integers are allowed when serializing and deserializing; otherwise, <c>false</c>.</param>
-        public StringEnumConverter(Type namingStrategyType, object[] namingStrategyParameters, bool allowIntegerValues)
+        public StringEnumConverter(Type namingStrategyType, object[] namingStrategyParameters, bool allowIntegerValues) : base(allowIntegerValues)
         {
             ValidationUtils.ArgumentNotNull(namingStrategyType, nameof(namingStrategyType));
 
             NamingStrategy = JsonTypeReflector.CreateNamingStrategyInstance(namingStrategyType, namingStrategyParameters);
+        }
+
+        /// <inheritdoc/>
+        protected override bool TryConvertEnumToString(object enumObject, [NotNullWhen(true)] out string? enumStringRepresentation)
+        {
+            Enum e = (Enum)enumObject;
+            return EnumUtils.TryToString(e.GetType(), enumObject, NamingStrategy, out enumStringRepresentation);
+        }
+
+        /// <inheritdoc/>
+        protected override object ConvertStringToEnum(string? inputEnumText, Type destinationPropertyType)
+        {
+            return EnumUtils.ParseEnum(destinationPropertyType, NamingStrategy, inputEnumText!, !AllowIntegerValues);
+        }
+    }
+
+    /// <summary>
+    /// Converts an <see cref="Enum"/> to and from its name string value.
+    /// </summary>
+    public abstract class StringEnumConverterBase : JsonConverter
+    {
+        /// <summary>
+        /// Gets or sets a value indicating whether integer values are allowed when serializing and deserializing.
+        /// The default value is <c>true</c>.
+        /// </summary>
+        /// <value><c>true</c> if integers are allowed when serializing and deserializing; otherwise, <c>false</c>.</value>
+        public bool AllowIntegerValues { get; set; } = true;
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="StringEnumConverterBase"/> class.
+        /// </summary>
+        /// <param name="allowIntegerValues"><c>true</c> if integers are allowed when serializing and deserializing; otherwise, <c>false</c>.</param>
+        protected StringEnumConverterBase(bool allowIntegerValues = true)
+        {
             AllowIntegerValues = allowIntegerValues;
         }
+
+        /// <summary>
+        /// Attempts to perform the core conversion between a (non-null) enum value, and a string representation of that enum.
+        /// </summary>
+        /// <param name="enumObject">Enum value to Serialize. Not Null.</param>
+        /// <param name="enumStringRepresentation">The string representation produced</param>
+        /// <returns><c>true</c> if it was possible to convert the enum value to string. Otherwise <c>false</c></returns>
+        protected abstract bool TryConvertEnumToString(object enumObject, [NotNullWhen(true)] out string? enumStringRepresentation);
+
+        /// <summary>
+        /// Performs the core conversion between an input string and the enum that string is taken to represent.
+        /// </summary>
+        /// <param name="inputEnumText">String value to Deserialize. Could be Null, in which case a *Non*-Null value must be returned, or an Exception thrown.</param>
+        /// <param name="destinationPropertyType">The type to which the string should be converted</param>
+        /// <returns>The deserialize object which should be assigned to the property of type <c>destinationPropertyType</c></returns>
+        protected abstract object ConvertStringToEnum(string? inputEnumText, Type destinationPropertyType);
 
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -183,17 +226,16 @@ namespace Newtonsoft.Json.Converters
                 return;
             }
 
-            Enum e = (Enum)value;
-
-            if (!EnumUtils.TryToString(e.GetType(), value, NamingStrategy, out string? enumName))
+            if (!TryConvertEnumToString(value, out var enumName))
             {
                 if (!AllowIntegerValues)
                 {
-                    throw JsonSerializationException.Create(null, writer.ContainerPath, "Integer value {0} is not allowed.".FormatWith(CultureInfo.InvariantCulture, e.ToString("D")), null);
+                    Enum e = (Enum)value;
+                    throw JsonSerializationException.Create(null, writer.ContainerPath, "Integer representations of enums are not allowed, and no string representation can be constructed for value {0}.".FormatWith(CultureInfo.InvariantCulture, e.ToString("D")), null);
                 }
 
-                // enum value has no name so write number
-                writer.WriteValue(value);
+                // Enum value has no name so write number
+                writer.WriteValue((int)value);
             }
             else
             {
@@ -235,7 +277,7 @@ namespace Newtonsoft.Json.Converters
                         return null;
                     }
 
-                    return EnumUtils.ParseEnum(t, NamingStrategy, enumText!, !AllowIntegerValues);
+                    return ConvertStringToEnum(enumText, t);
                 }
 
                 if (reader.TokenType == JsonToken.Integer)
