@@ -1778,9 +1778,27 @@ namespace Newtonsoft.Json
             return _safeAsync ? DoReadAsInt32Async(cancellationToken) : base.ReadAsInt32Async(cancellationToken);
         }
 
+        /// <summary>
+        /// Asynchronously reads the next JSON token from the source as a <see cref="Nullable{T}"/> of <see cref="int"/>.
+        /// </summary>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns>A <see cref="Task{TResult}"/> that represents the asynchronous read. The <see cref="Task{TResult}.Result"/>
+        /// property returns the <see cref="Nullable{T}"/> of <see cref="int"/>. This result will be <c>null</c> at the end of an array.</returns>
+        /// <remarks>Derived classes must override this method to get asynchronous behaviour. Otherwise it will
+        /// execute synchronously, returning an already-completed task.</remarks>
+        public override Task<long?> ReadAsInt64Async(CancellationToken cancellationToken = default)
+        {
+            return _safeAsync ? DoReadAsInt64Async(cancellationToken) : base.ReadAsInt64Async(cancellationToken);
+        }
+
         internal async Task<int?> DoReadAsInt32Async(CancellationToken cancellationToken)
         {
             return (int?)await ReadNumberValueAsync(ReadType.ReadAsInt32, cancellationToken).ConfigureAwait(false);
+        }
+
+        internal async Task<long?> DoReadAsInt64Async(CancellationToken cancellationToken)
+        {
+            return (long?)await ReadNumberValueAsync(ReadType.ReadAsInt64, cancellationToken).ConfigureAwait(false);
         }
 
         /// <summary>
