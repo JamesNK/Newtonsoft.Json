@@ -2233,7 +2233,7 @@ namespace Newtonsoft.Json
                     }
                     break;
                 default:
-                    throw JsonReaderException.Create(this, "Cannot read number value as type.");
+                    throw ThrowReaderError("Cannot read number value ({0}) as {1} type.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString(), readType));
             }
 
             ClearRecentString();
