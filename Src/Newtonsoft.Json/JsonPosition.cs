@@ -42,7 +42,7 @@ namespace Newtonsoft.Json
 
     internal struct JsonPosition
     {
-        private static readonly char[] SpecialCharacters = { '.', ' ', '\'', '/', '"', '[', ']', '(', ')', '\t', '\n', '\r', '\f', '\b', '\\', '\u0085', '\u2028', '\u2029' };
+        private static readonly char[] SpecialCharacters = { '.', ' ', '\'', '/', '"', '[', ']', '(', ')', '\t', '\n', '\r', '\f', '\b', '\\', '\u0085', '\u2028', '\u2029', '*', '@' };
 
         internal JsonContainerType Type;
         internal int Position;
@@ -77,7 +77,7 @@ namespace Newtonsoft.Json
             {
                 case JsonContainerType.Object:
                     string propertyName = PropertyName!;
-                    if (propertyName.IndexOfAny(SpecialCharacters) != -1)
+                    if (propertyName.IndexOfAny(SpecialCharacters) != -1 || propertyName == "$")
                     {
                         sb.Append(@"['");
 
