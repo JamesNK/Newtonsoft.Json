@@ -65,15 +65,9 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="IEnumerator{T}"/> that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<T> GetEnumerator()
-        {
-            return (_enumerable ?? Empty).GetEnumerator();
-        }
+        public IEnumerator<T> GetEnumerator() => (_enumerable ?? Empty).GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
 
         /// <summary>
         /// Gets the <see cref="IJEnumerable{T}"/> of <see cref="JToken"/> with the specified key.
@@ -99,10 +93,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// 	<c>true</c> if the specified <see cref="JEnumerable{T}"/> is equal to this instance; otherwise, <c>false</c>.
         /// </returns>
-        public bool Equals(JEnumerable<T> other)
-        {
-            return Equals(_enumerable, other._enumerable);
-        }
+        public bool Equals(JEnumerable<T> other) => Equals(_enumerable, other._enumerable);
 
         /// <summary>
         /// Determines whether the specified <see cref="Object"/> is equal to this instance.

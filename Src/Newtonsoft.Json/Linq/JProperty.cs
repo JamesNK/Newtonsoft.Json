@@ -187,16 +187,10 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="other">A <see cref="JProperty"/> object to copy from.</param>
         public JProperty(JProperty other)
-            : base(other, settings: null)
-        {
-            _name = other.Name;
-        }
+            : base(other, settings: null) => _name = other.Name;
 
         internal JProperty(JProperty other, JsonCloneSettings? settings)
-            : base(other, settings)
-        {
-            _name = other.Name;
-        }
+            : base(other, settings) => _name = other.Name;
 
         internal override JToken GetItem(int index)
         {
@@ -227,15 +221,11 @@ namespace Newtonsoft.Json.Linq
             ((JObject?)Parent)?.InternalPropertyChanged(this);
         }
 
-        internal override bool RemoveItem(JToken? item)
-        {
-            throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
-        }
+        internal override bool RemoveItem(JToken? item) 
+            => throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
 
-        internal override void RemoveItemAt(int index)
-        {
-            throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
-        }
+        internal override void RemoveItemAt(int index) 
+            => throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
 
         internal override int IndexOfItem(JToken? item)
         {
@@ -263,10 +253,7 @@ namespace Newtonsoft.Json.Linq
             return base.InsertItem(0, item, false, copyAnnotations);
         }
 
-        internal override bool ContainsItem(JToken? item)
-        {
-            return (Value == item);
-        }
+        internal override bool ContainsItem(JToken? item) => (Value == item);
 
         internal override void MergeItem(object content, JsonMergeSettings? settings)
         {
@@ -278,20 +265,14 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        internal override void ClearItems()
-        {
-            throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
-        }
+        internal override void ClearItems() 
+            => throw new JsonException("Cannot add or remove items from {0}.".FormatWith(CultureInfo.InvariantCulture, typeof(JProperty)));
 
-        internal override bool DeepEquals(JToken node)
-        {
-            return (node is JProperty t && _name == t.Name && ContentsEqual(t));
-        }
+        internal override bool DeepEquals(JToken node) 
+            => (node is JProperty t && _name == t.Name && ContentsEqual(t));
 
-        internal override JToken CloneToken(JsonCloneSettings? settings)
-        {
-            return new JProperty(this, settings);
-        }
+        internal override JToken CloneToken(JsonCloneSettings? settings) 
+            => new JProperty(this, settings);
 
         /// <summary>
         /// Gets the node type for this <see cref="JToken"/>.
@@ -373,10 +354,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JProperty"/>.</param>
         /// <returns>A <see cref="JProperty"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-        public new static JProperty Load(JsonReader reader)
-        {
-            return Load(reader, null);
-        }
+        public new static JProperty Load(JsonReader reader) => Load(reader, null);
 
         /// <summary>
         /// Loads a <see cref="JProperty"/> from a <see cref="JsonReader"/>.

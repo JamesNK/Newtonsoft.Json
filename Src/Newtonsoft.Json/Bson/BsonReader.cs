@@ -81,10 +81,7 @@ namespace Newtonsoft.Json.Bson
             public int Length;
             public int Position;
 
-            public ContainerContext(BsonType type)
-            {
-                Type = type;
-            }
+            public ContainerContext(BsonType type) => Type = type;
         }
 
         /// <summary>

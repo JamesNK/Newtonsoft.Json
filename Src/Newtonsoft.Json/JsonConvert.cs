@@ -101,10 +101,8 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="DateTime"/>.</returns>
-        public static string ToString(DateTime value)
-        {
-            return ToString(value, DateFormatHandling.IsoDateFormat, DateTimeZoneHandling.RoundtripKind);
-        }
+        public static string ToString(DateTime value) 
+            => ToString(value, DateFormatHandling.IsoDateFormat, DateTimeZoneHandling.RoundtripKind);
 
         /// <summary>
         /// Converts the <see cref="DateTime"/> to its JSON string representation using the <see cref="DateFormatHandling"/> specified.
@@ -132,10 +130,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="DateTimeOffset"/>.</returns>
-        public static string ToString(DateTimeOffset value)
-        {
-            return ToString(value, DateFormatHandling.IsoDateFormat);
-        }
+        public static string ToString(DateTimeOffset value) => ToString(value, DateFormatHandling.IsoDateFormat);
 
         /// <summary>
         /// Converts the <see cref="DateTimeOffset"/> to its JSON string representation using the <see cref="DateFormatHandling"/> specified.
@@ -160,50 +155,35 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Boolean"/>.</returns>
-        public static string ToString(bool value)
-        {
-            return (value) ? True : False;
-        }
+        public static string ToString(bool value) => (value) ? True : False;
 
         /// <summary>
         /// Converts the <see cref="Char"/> to its JSON string representation.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Char"/>.</returns>
-        public static string ToString(char value)
-        {
-            return ToString(char.ToString(value));
-        }
+        public static string ToString(char value) => ToString(char.ToString(value));
 
         /// <summary>
         /// Converts the <see cref="Enum"/> to its JSON string representation.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Enum"/>.</returns>
-        public static string ToString(Enum value)
-        {
-            return value.ToString("D");
-        }
+        public static string ToString(Enum value) => value.ToString("D");
 
         /// <summary>
         /// Converts the <see cref="Int32"/> to its JSON string representation.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Int32"/>.</returns>
-        public static string ToString(int value)
-        {
-            return value.ToString(null, CultureInfo.InvariantCulture);
-        }
+        public static string ToString(int value) => value.ToString(null, CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Converts the <see cref="Int16"/> to its JSON string representation.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Int16"/>.</returns>
-        public static string ToString(short value)
-        {
-            return value.ToString(null, CultureInfo.InvariantCulture);
-        }
+        public static string ToString(short value) => value.ToString(null, CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Converts the <see cref="UInt16"/> to its JSON string representation.
@@ -211,10 +191,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="UInt16"/>.</returns>
         [CLSCompliant(false)]
-        public static string ToString(ushort value)
-        {
-            return value.ToString(null, CultureInfo.InvariantCulture);
-        }
+        public static string ToString(ushort value) => value.ToString(null, CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Converts the <see cref="UInt32"/> to its JSON string representation.
@@ -222,26 +199,17 @@ namespace Newtonsoft.Json
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="UInt32"/>.</returns>
         [CLSCompliant(false)]
-        public static string ToString(uint value)
-        {
-            return value.ToString(null, CultureInfo.InvariantCulture);
-        }
+        public static string ToString(uint value) => value.ToString(null, CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Converts the <see cref="Int64"/>  to its JSON string representation.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Int64"/>.</returns>
-        public static string ToString(long value)
-        {
-            return value.ToString(null, CultureInfo.InvariantCulture);
-        }
+        public static string ToString(long value) => value.ToString(null, CultureInfo.InvariantCulture);
 
 #if HAVE_BIG_INTEGER
-        private static string ToStringInternal(BigInteger value)
-        {
-            return value.ToString(null, CultureInfo.InvariantCulture);
-        }
+        private static string ToStringInternal(BigInteger value) => value.ToString(null, CultureInfo.InvariantCulture);
 #endif
 
         /// <summary>
@@ -250,25 +218,17 @@ namespace Newtonsoft.Json
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="UInt64"/>.</returns>
         [CLSCompliant(false)]
-        public static string ToString(ulong value)
-        {
-            return value.ToString(null, CultureInfo.InvariantCulture);
-        }
+        public static string ToString(ulong value) => value.ToString(null, CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Converts the <see cref="Single"/> to its JSON string representation.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Single"/>.</returns>
-        public static string ToString(float value)
-        {
-            return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
-        }
+        public static string ToString(float value) => EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
 
-        internal static string ToString(float value, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
-        {
-            return EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar, nullable);
-        }
+        internal static string ToString(float value, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable) 
+            => EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar, nullable);
 
         private static string EnsureFloatFormat(double value, string text, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
         {
@@ -290,15 +250,10 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Double"/>.</returns>
-        public static string ToString(double value)
-        {
-            return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
-        }
+        public static string ToString(double value) => EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
 
-        internal static string ToString(double value, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
-        {
-            return EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar, nullable);
-        }
+        internal static string ToString(double value, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable) 
+            => EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar, nullable);
 
         private static string EnsureDecimalPlace(double value, string text)
         {
@@ -325,10 +280,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Byte"/>.</returns>
-        public static string ToString(byte value)
-        {
-            return value.ToString(null, CultureInfo.InvariantCulture);
-        }
+        public static string ToString(byte value) => value.ToString(null, CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Converts the <see cref="SByte"/> to its JSON string representation.
@@ -336,30 +288,21 @@ namespace Newtonsoft.Json
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="SByte"/>.</returns>
         [CLSCompliant(false)]
-        public static string ToString(sbyte value)
-        {
-            return value.ToString(null, CultureInfo.InvariantCulture);
-        }
+        public static string ToString(sbyte value) => value.ToString(null, CultureInfo.InvariantCulture);
 
         /// <summary>
         /// Converts the <see cref="Decimal"/> to its JSON string representation.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Decimal"/>.</returns>
-        public static string ToString(decimal value)
-        {
-            return EnsureDecimalPlace(value.ToString(null, CultureInfo.InvariantCulture));
-        }
+        public static string ToString(decimal value) => EnsureDecimalPlace(value.ToString(null, CultureInfo.InvariantCulture));
 
         /// <summary>
         /// Converts the <see cref="Guid"/> to its JSON string representation.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="Guid"/>.</returns>
-        public static string ToString(Guid value)
-        {
-            return ToString(value, '"');
-        }
+        public static string ToString(Guid value) => ToString(value, '"');
 
         internal static string ToString(Guid value, char quoteChar)
         {
@@ -381,15 +324,9 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="TimeSpan"/>.</returns>
-        public static string ToString(TimeSpan value)
-        {
-            return ToString(value, '"');
-        }
+        public static string ToString(TimeSpan value) => ToString(value, '"');
 
-        internal static string ToString(TimeSpan value, char quoteChar)
-        {
-            return ToString(value.ToString(), quoteChar);
-        }
+        internal static string ToString(TimeSpan value, char quoteChar) => ToString(value.ToString(), quoteChar);
 
         /// <summary>
         /// Converts the <see cref="Uri"/> to its JSON string representation.
@@ -406,20 +343,14 @@ namespace Newtonsoft.Json
             return ToString(value, '"');
         }
 
-        internal static string ToString(Uri value, char quoteChar)
-        {
-            return ToString(value.OriginalString, quoteChar);
-        }
+        internal static string ToString(Uri value, char quoteChar) => ToString(value.OriginalString, quoteChar);
 
         /// <summary>
         /// Converts the <see cref="String"/> to its JSON string representation.
         /// </summary>
         /// <param name="value">The value to convert.</param>
         /// <returns>A JSON string representation of the <see cref="String"/>.</returns>
-        public static string ToString(string? value)
-        {
-            return ToString(value, '"');
-        }
+        public static string ToString(string? value) => ToString(value, '"');
 
         /// <summary>
         /// Converts the <see cref="String"/> to its JSON string representation.
@@ -427,10 +358,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The value to convert.</param>
         /// <param name="delimiter">The string delimiter character.</param>
         /// <returns>A JSON string representation of the <see cref="String"/>.</returns>
-        public static string ToString(string? value, char delimiter)
-        {
-            return ToString(value, delimiter, StringEscapeHandling.Default);
-        }
+        public static string ToString(string? value, char delimiter) => ToString(value, delimiter, StringEscapeHandling.Default);
 
         /// <summary>
         /// Converts the <see cref="String"/> to its JSON string representation.

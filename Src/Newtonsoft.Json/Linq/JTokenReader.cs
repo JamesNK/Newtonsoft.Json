@@ -60,10 +60,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="token">The token to read from.</param>
         /// <param name="initialPath">The initial path of the token. It is prepended to the returned <see cref="Path"/>.</param>
         public JTokenReader(JToken token, string initialPath)
-            : this(token)
-        {
-            _initialPath = initialPath;
-        }
+            : this(token) => _initialPath = initialPath;
 
         /// <summary>
         /// Reads the next JSON token from the underlying <see cref="JToken"/>.
@@ -253,10 +250,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        private string? SafeToString(object? value)
-        {
-            return value?.ToString();
-        }
+        private string? SafeToString(object? value) => value?.ToString();
 
         bool IJsonLineInfo.HasLineInfo()
         {

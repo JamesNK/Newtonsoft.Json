@@ -53,10 +53,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
         /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous write operation.</returns>
-        public Task WriteToAsync(JsonWriter writer, params JsonConverter[] converters)
-        {
-            return WriteToAsync(writer, default, converters);
-        }
+        public Task WriteToAsync(JsonWriter writer, params JsonConverter[] converters) => WriteToAsync(writer, default, converters);
 
         /// <summary>
         /// Asynchronously creates a <see cref="JToken"/> from a <see cref="JsonReader"/>.
@@ -70,10 +67,8 @@ namespace Newtonsoft.Json.Linq
         /// that were read from the reader. The runtime type of the token is determined
         /// by the token type of the first token encountered in the reader.
         /// </returns>
-        public static Task<JToken> ReadFromAsync(JsonReader reader, CancellationToken cancellationToken = default)
-        {
-            return ReadFromAsync(reader, null, cancellationToken);
-        }
+        public static Task<JToken> ReadFromAsync(JsonReader reader, CancellationToken cancellationToken = default) 
+            => ReadFromAsync(reader, null, cancellationToken);
 
         /// <summary>
         /// Asynchronously creates a <see cref="JToken"/> from a <see cref="JsonReader"/>.
@@ -150,10 +145,8 @@ namespace Newtonsoft.Json.Linq
         /// that were read from the reader. The runtime type of the token is determined
         /// by the token type of the first token encountered in the reader.
         /// </returns>
-        public static Task<JToken> LoadAsync(JsonReader reader, CancellationToken cancellationToken = default)
-        {
-            return LoadAsync(reader, null, cancellationToken);
-        }
+        public static Task<JToken> LoadAsync(JsonReader reader, CancellationToken cancellationToken = default) 
+            => LoadAsync(reader, null, cancellationToken);
 
         /// <summary>
         /// Asynchronously creates a <see cref="JToken"/> from a <see cref="JsonReader"/>.
@@ -168,10 +161,8 @@ namespace Newtonsoft.Json.Linq
         /// that were read from the reader. The runtime type of the token is determined
         /// by the token type of the first token encountered in the reader.
         /// </returns>
-        public static Task<JToken> LoadAsync(JsonReader reader, JsonLoadSettings? settings, CancellationToken cancellationToken = default)
-        {
-            return ReadFromAsync(reader, settings, cancellationToken);
-        }
+        public static Task<JToken> LoadAsync(JsonReader reader, JsonLoadSettings? settings, CancellationToken cancellationToken = default) 
+            => ReadFromAsync(reader, settings, cancellationToken);
     }
 }
 

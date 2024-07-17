@@ -61,10 +61,8 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="Task{TResult}"/> that represents the asynchronous load. The <see cref="Task{TResult}.Result"/>
         /// property returns a <see cref="JConstructor"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-        public new static Task<JConstructor> LoadAsync(JsonReader reader, CancellationToken cancellationToken = default)
-        {
-            return LoadAsync(reader, null, cancellationToken);
-        }
+        public new static Task<JConstructor> LoadAsync(JsonReader reader, CancellationToken cancellationToken = default) 
+            => LoadAsync(reader, null, cancellationToken);
 
         /// <summary>
         /// Asynchronously loads a <see cref="JConstructor"/> from a <see cref="JsonReader"/>.

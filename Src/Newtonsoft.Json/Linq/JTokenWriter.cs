@@ -99,10 +99,7 @@ namespace Newtonsoft.Json.Linq
         /// <remarks>
         /// Setting <see cref="JsonWriter.CloseOutput"/> to <c>true</c> has no additional effect, since the underlying <see cref="JContainer"/> is a type that cannot be closed.
         /// </remarks>
-        public override void Close()
-        {
-            base.Close();
-        }
+        public override void Close() => base.Close();
 
         /// <summary>
         /// Writes the beginning of a JSON object.
@@ -165,10 +162,7 @@ namespace Newtonsoft.Json.Linq
         /// Writes the end.
         /// </summary>
         /// <param name="token">The token.</param>
-        protected override void WriteEnd(JsonToken token)
-        {
-            RemoveParent();
-        }
+        protected override void WriteEnd(JsonToken token) => RemoveParent();
 
         /// <summary>
         /// Writes the property name of a name/value pair on a JSON object.
@@ -187,10 +181,7 @@ namespace Newtonsoft.Json.Linq
             base.WritePropertyName(name);
         }
 
-        private void AddRawValue(object? value, JTokenType type, JsonToken token)
-        {
-            AddJValue(new JValue(value, type), token);
-        }
+        private void AddRawValue(object? value, JTokenType type, JsonToken token) => AddJValue(new JValue(value, type), token);
 
         internal void AddJValue(JValue? value, JsonToken token)
         {

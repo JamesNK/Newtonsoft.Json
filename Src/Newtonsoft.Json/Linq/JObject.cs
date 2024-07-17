@@ -115,10 +115,7 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JObject"/> class with the specified content.
         /// </summary>
         /// <param name="content">The contents of the object.</param>
-        public JObject(object content)
-        {
-            Add(content);
-        }
+        public JObject(object content) => Add(content);
 
         internal override bool DeepEquals(JToken node)
         {
@@ -242,17 +239,13 @@ namespace Newtonsoft.Json.Linq
 #endif
         }
 
-        internal void InternalPropertyChanging(JProperty childProperty)
-        {
+        internal void InternalPropertyChanging(JProperty childProperty) =>
 #if HAVE_INOTIFY_PROPERTY_CHANGING
             OnPropertyChanging(childProperty.Name);
 #endif
-        }
 
-        internal override JToken CloneToken(JsonCloneSettings? settings)
-        {
-            return new JObject(this, settings);
-        }
+
+        internal override JToken CloneToken(JsonCloneSettings? settings) => new JObject(this, settings);
 
         /// <summary>
         /// Gets the node type for this <see cref="JToken"/>.
@@ -264,20 +257,14 @@ namespace Newtonsoft.Json.Linq
         /// Gets an <see cref="IEnumerable{T}"/> of <see cref="JProperty"/> of this object's properties.
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JProperty"/> of this object's properties.</returns>
-        public IEnumerable<JProperty> Properties()
-        {
-            return _properties.Cast<JProperty>();
-        }
+        public IEnumerable<JProperty> Properties() => _properties.Cast<JProperty>();
 
         /// <summary>
         /// Gets a <see cref="JProperty"/> with the specified name.
         /// </summary>
         /// <param name="name">The property name.</param>
         /// <returns>A <see cref="JProperty"/> with the specified name or <c>null</c>.</returns>
-        public JProperty? Property(string name)
-        {
-            return Property(name, StringComparison.Ordinal);
-        }
+        public JProperty? Property(string name) => Property(name, StringComparison.Ordinal);
 
         /// <summary>
         /// Gets the <see cref="JProperty"/> with the specified name.
@@ -319,10 +306,7 @@ namespace Newtonsoft.Json.Linq
         /// Gets a <see cref="JEnumerable{T}"/> of <see cref="JToken"/> of this object's property values.
         /// </summary>
         /// <returns>A <see cref="JEnumerable{T}"/> of <see cref="JToken"/> of this object's property values.</returns>
-        public JEnumerable<JToken> PropertyValues()
-        {
-            return new JEnumerable<JToken>(Properties().Select(p => p.Value));
-        }
+        public JEnumerable<JToken> PropertyValues() => new JEnumerable<JToken>(Properties().Select(p => p.Value));
 
         /// <summary>
         /// Gets the <see cref="JToken"/> with the specified key.
@@ -394,10 +378,7 @@ namespace Newtonsoft.Json.Linq
         /// <exception cref="JsonReaderException">
         ///     <paramref name="reader"/> is not valid JSON.
         /// </exception>
-        public new static JObject Load(JsonReader reader)
-        {
-            return Load(reader, null);
-        }
+        public new static JObject Load(JsonReader reader) => Load(reader, null);
 
         /// <summary>
         /// Loads a <see cref="JObject"/> from a <see cref="JsonReader"/>.
@@ -447,10 +428,7 @@ namespace Newtonsoft.Json.Linq
         /// <example>
         ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParse" title="Parsing a JSON Object from Text" />
         /// </example>
-        public new static JObject Parse(string json)
-        {
-            return Parse(json, null);
-        }
+        public new static JObject Parse(string json) => Parse(json, null);
 
         /// <summary>
         /// Load a <see cref="JObject"/> from a string that contains JSON.
@@ -485,10 +463,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="o">The object that will be used to create <see cref="JObject"/>.</param>
         /// <returns>A <see cref="JObject"/> with the values of the specified object.</returns>
-        public new static JObject FromObject(object o)
-        {
-            return FromObject(o, JsonSerializer.CreateDefault());
-        }
+        public new static JObject FromObject(object o) => FromObject(o, JsonSerializer.CreateDefault());
 
         /// <summary>
         /// Creates a <see cref="JObject"/> from an object.
@@ -530,10 +505,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
         /// <returns>The <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.</returns>
-        public JToken? GetValue(string? propertyName)
-        {
-            return GetValue(propertyName, StringComparison.Ordinal);
-        }
+        public JToken? GetValue(string? propertyName) => GetValue(propertyName, StringComparison.Ordinal);
 
         /// <summary>
         /// Gets the <see cref="Newtonsoft.Json.Linq.JToken"/> with the specified property name.
@@ -699,10 +671,7 @@ namespace Newtonsoft.Json.Linq
         }
         #endregion
 
-        internal override int GetDeepHashCode()
-        {
-            return ContentsHashCode();
-        }
+        internal override int GetDeepHashCode() => ContentsHashCode();
 
         /// <summary>
         /// Returns an enumerator that can be used to iterate through the collection.
@@ -733,9 +702,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="propertyName">Name of the property.</param>
         protected virtual void OnPropertyChanging(string propertyName)
-        {
-            PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
-        }
+            => PropertyChanging?.Invoke(this, new PropertyChangingEventArgs(propertyName));
 #endif
 
 #if HAVE_COMPONENT_MODEL
@@ -827,9 +794,7 @@ namespace Newtonsoft.Json.Linq
         /// The <see cref="DynamicMetaObject"/> to bind this object.
         /// </returns>
         protected override DynamicMetaObject GetMetaObject(Expression parameter)
-        {
-            return new DynamicProxyMetaObject<JObject>(parameter, this, new JObjectDynamicProxy());
-        }
+            => new DynamicProxyMetaObject<JObject>(parameter, this, new JObjectDynamicProxy());
 
         private class JObjectDynamicProxy : DynamicProxy<JObject>
         {
@@ -852,10 +817,8 @@ namespace Newtonsoft.Json.Linq
                 return true;
             }
 
-            public override IEnumerable<string> GetDynamicMemberNames(JObject instance)
-            {
-                return instance.Properties().Select(p => p.Name);
-            }
+            public override IEnumerable<string> GetDynamicMemberNames(JObject instance) 
+                => instance.Properties().Select(p => p.Name);
         }
 #endif
     }

@@ -115,10 +115,7 @@ namespace Newtonsoft.Json.Converters
         /// <returns>
         /// 	<c>true</c> if this instance can convert the specified value type; otherwise, <c>false</c>.
         /// </returns>
-        public override bool CanConvert(Type valueType)
-        {
-            return typeof(DataSet).IsAssignableFrom(valueType);
-        }
+        public override bool CanConvert(Type valueType) => typeof(DataSet).IsAssignableFrom(valueType);
     }
 }
 

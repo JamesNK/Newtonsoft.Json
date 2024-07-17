@@ -7,10 +7,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
     {
         internal QueryExpression Expression;
 
-        public QueryScanFilter(QueryExpression expression)
-        {
-            Expression = expression;
-        }
+        public QueryScanFilter(QueryExpression expression) => Expression = expression;
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, JsonSelectSettings? settings)
         {

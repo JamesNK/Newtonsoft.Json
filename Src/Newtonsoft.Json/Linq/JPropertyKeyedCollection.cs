@@ -111,10 +111,7 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        private string GetKeyForItem(JToken item)
-        {
-            return ((JProperty)item).Name;
-        }
+        private string GetKeyForItem(JToken item) => ((JProperty)item).Name;
 
         protected override void InsertItem(int index, JToken item)
         {
@@ -144,10 +141,7 @@ namespace Newtonsoft.Json.Linq
             base.RemoveItem(index);
         }
 
-        private void RemoveKey(string key)
-        {
-            _dictionary?.Remove(key);
-        }
+        private void RemoveKey(string key) => _dictionary?.Remove(key);
 
         protected override void SetItem(int index, JToken item)
         {

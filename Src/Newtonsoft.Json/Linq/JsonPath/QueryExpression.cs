@@ -34,16 +34,10 @@ namespace Newtonsoft.Json.Linq.JsonPath
     {
         internal QueryOperator Operator;
 
-        public QueryExpression(QueryOperator @operator)
-        {
-            Operator = @operator;
-        }
+        public QueryExpression(QueryOperator @operator) => Operator = @operator;
 
         // For unit tests
-        public bool IsMatch(JToken root, JToken t)
-        {
-            return IsMatch(root, t, null);
-        }
+        public bool IsMatch(JToken root, JToken t) => IsMatch(root, t, null);
 
         public abstract bool IsMatch(JToken root, JToken t, JsonSelectSettings? settings);
     }
@@ -52,10 +46,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
     {
         public List<QueryExpression> Expressions { get; set; }
 
-        public CompositeExpression(QueryOperator @operator) : base(@operator)
-        {
-            Expressions = new List<QueryExpression>();
-        }
+        public CompositeExpression(QueryOperator @operator) : base(@operator) => Expressions = new List<QueryExpression>();
 
         public override bool IsMatch(JToken root, JToken t, JsonSelectSettings? settings)
         {

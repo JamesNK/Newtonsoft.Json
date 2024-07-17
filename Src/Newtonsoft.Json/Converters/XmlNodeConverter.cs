@@ -2215,18 +2215,12 @@ namespace Newtonsoft.Json.Converters
 
 #if HAVE_XLINQ
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private bool IsXObject(Type valueType)
-        {
-            return typeof(XObject).IsAssignableFrom(valueType);
-        }
+        private bool IsXObject(Type valueType) => typeof(XObject).IsAssignableFrom(valueType);
 #endif
 
 #if HAVE_XML_DOCUMENT
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private bool IsXmlNode(Type valueType)
-        {
-            return typeof(XmlNode).IsAssignableFrom(valueType);
-        }
+        private bool IsXmlNode(Type valueType) => typeof(XmlNode).IsAssignableFrom(valueType);
 #endif
     }
 }
