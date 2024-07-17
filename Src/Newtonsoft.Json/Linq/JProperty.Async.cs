@@ -74,10 +74,8 @@ namespace Newtonsoft.Json.Linq
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
         /// <returns>A <see cref="Task{TResult}"/> representing the asynchronous creation. The <see cref="Task{TResult}.Result"/>
         /// property returns a <see cref="JProperty"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-        public new static Task<JProperty> LoadAsync(JsonReader reader, CancellationToken cancellationToken = default)
-        {
-            return LoadAsync(reader, null, cancellationToken);
-        }
+        public new static Task<JProperty> LoadAsync(JsonReader reader, CancellationToken cancellationToken = default) 
+            => LoadAsync(reader, null, cancellationToken);
 
         /// <summary>
         /// Asynchronously loads a <see cref="JProperty"/> from a <see cref="JsonReader"/>.

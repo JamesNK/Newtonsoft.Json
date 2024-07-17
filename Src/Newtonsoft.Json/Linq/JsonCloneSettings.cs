@@ -32,7 +32,7 @@ namespace Newtonsoft.Json.Linq
     /// </summary>
     public class JsonCloneSettings
     {
-        internal static readonly JsonCloneSettings SkipCopyAnnotations = new JsonCloneSettings
+        internal static readonly JsonCloneSettings SkipCopyAnnotations = new()
         {
             CopyAnnotations = false
         };
@@ -40,10 +40,7 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonCloneSettings"/> class.
         /// </summary>
-        public JsonCloneSettings()
-        {
-            CopyAnnotations = true;
-        }
+        public JsonCloneSettings() => CopyAnnotations = true;
 
         /// <summary>
         /// Gets or sets a flag that indicates whether to copy annotations when cloning a <see cref="JToken"/>.

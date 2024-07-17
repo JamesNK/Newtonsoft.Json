@@ -97,16 +97,10 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="other">A <see cref="JConstructor"/> object to copy from.</param>
         public JConstructor(JConstructor other)
-            : base(other, settings: null)
-        {
-            _name = other.Name;
-        }
+            : base(other, settings: null) => _name = other.Name;
 
         internal JConstructor(JConstructor other, JsonCloneSettings? settings)
-            : base(other, settings)
-        {
-            _name = other.Name;
-        }
+            : base(other, settings) => _name = other.Name;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JConstructor"/> class with the specified name and content.
@@ -124,10 +118,7 @@ namespace Newtonsoft.Json.Linq
         /// <param name="name">The constructor name.</param>
         /// <param name="content">The contents of the constructor.</param>
         public JConstructor(string name, object content)
-            : this(name)
-        {
-            Add(content);
-        }
+            : this(name) => Add(content);
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JConstructor"/> class with the specified name.
@@ -148,15 +139,9 @@ namespace Newtonsoft.Json.Linq
             _name = name;
         }
 
-        internal override bool DeepEquals(JToken node)
-        {
-            return (node is JConstructor c && _name == c.Name && ContentsEqual(c));
-        }
+        internal override bool DeepEquals(JToken node) => (node is JConstructor c && _name == c.Name && ContentsEqual(c));
 
-        internal override JToken CloneToken(JsonCloneSettings? settings = null)
-        {
-            return new JConstructor(this, settings);
-        }
+        internal override JToken CloneToken(JsonCloneSettings? settings = null) => new JConstructor(this, settings);
 
         /// <summary>
         /// Writes this token to a <see cref="JsonWriter"/>.
@@ -222,10 +207,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JConstructor"/>.</param>
         /// <returns>A <see cref="JConstructor"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-        public new static JConstructor Load(JsonReader reader)
-        {
-            return Load(reader, null);
-        }
+        public new static JConstructor Load(JsonReader reader) => Load(reader, null);
 
         /// <summary>
         /// Loads a <see cref="JConstructor"/> from a <see cref="JsonReader"/>.

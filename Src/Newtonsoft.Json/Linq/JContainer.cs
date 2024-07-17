@@ -136,20 +136,14 @@ namespace Newtonsoft.Json.Linq
 #endif
         }
 
-        internal virtual IList<JToken> CreateChildrenCollection()
-        {
-            return new List<JToken>();
-        }
+        internal virtual IList<JToken> CreateChildrenCollection() => new List<JToken>();
 
 #if HAVE_COMPONENT_MODEL
         /// <summary>
         /// Raises the <see cref="AddingNew"/> event.
         /// </summary>
         /// <param name="e">The <see cref="AddingNewEventArgs"/> instance containing the event data.</param>
-        protected virtual void OnAddingNew(AddingNewEventArgs e)
-        {
-            _addingNew?.Invoke(this, e);
-        }
+        protected virtual void OnAddingNew(AddingNewEventArgs e) => _addingNew?.Invoke(this, e);
 
         /// <summary>
         /// Raises the <see cref="ListChanged"/> event.
@@ -268,10 +262,7 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> containing the child tokens of this <see cref="JToken"/>, in document order.
         /// </returns>
-        public override JEnumerable<JToken> Children()
-        {
-            return new JEnumerable<JToken>(ChildrenTokens);
-        }
+        public override JEnumerable<JToken> Children() => new JEnumerable<JToken>(ChildrenTokens);
 
         /// <summary>
         /// Returns a collection of the child values of this token, in document order.
@@ -280,28 +271,19 @@ namespace Newtonsoft.Json.Linq
         /// <returns>
         /// A <see cref="IEnumerable{T}"/> containing the child values of this <see cref="JToken"/>, in document order.
         /// </returns>
-        public override IEnumerable<T?> Values<T>() where T : default
-        {
-            return ChildrenTokens.Convert<JToken, T>();
-        }
+        public override IEnumerable<T?> Values<T>() where T : default => ChildrenTokens.Convert<JToken, T>();
 
         /// <summary>
         /// Returns a collection of the descendant tokens for this token in document order.
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> containing the descendant tokens of the <see cref="JToken"/>.</returns>
-        public IEnumerable<JToken> Descendants()
-        {
-            return GetDescendants(false);
-        }
+        public IEnumerable<JToken> Descendants() => GetDescendants(false);
 
         /// <summary>
         /// Returns a collection of the tokens that contain this token, and all descendant tokens of this token, in document order.
         /// </summary>
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> containing this token, and all the descendant tokens of the <see cref="JToken"/>.</returns>
-        public IEnumerable<JToken> DescendantsAndSelf()
-        {
-            return GetDescendants(true);
-        }
+        public IEnumerable<JToken> DescendantsAndSelf() => GetDescendants(true);
 
         internal IEnumerable<JToken> GetDescendants(bool self)
         {
@@ -323,10 +305,8 @@ namespace Newtonsoft.Json.Linq
             }
         }
 
-        internal bool IsMultiContent([NotNullWhen(true)]object? content)
-        {
-            return (content is IEnumerable && !(content is string) && !(content is JToken) && !(content is byte[]));
-        }
+        internal bool IsMultiContent([NotNullWhen(true)] object? content) 
+            => (content is IEnumerable && !(content is string) && !(content is JToken) && !(content is byte[]));
 
         internal JToken EnsureParentToken(JToken? item, bool skipParentCheck, bool copyAnnotations)
         {
@@ -473,10 +453,7 @@ namespace Newtonsoft.Json.Linq
             return false;
         }
 
-        internal virtual JToken GetItem(int index)
-        {
-            return ChildrenTokens[index];
-        }
+        internal virtual JToken GetItem(int index) => ChildrenTokens[index];
 
         internal virtual void SetItem(int index, JToken? item)
         {
@@ -581,10 +558,7 @@ namespace Newtonsoft.Json.Linq
             SetItem(index, replacement);
         }
 
-        internal virtual bool ContainsItem(JToken? item)
-        {
-            return (IndexOfItem(item) != -1);
-        }
+        internal virtual bool ContainsItem(JToken? item) => (IndexOfItem(item) != -1);
 
         internal virtual void CopyItemsTo(Array array, int arrayIndex)
         {
@@ -643,15 +617,9 @@ namespace Newtonsoft.Json.Linq
         /// Adds the specified content as children of this <see cref="JToken"/>.
         /// </summary>
         /// <param name="content">The content to be added.</param>
-        public virtual void Add(object? content)
-        {
-            TryAddInternal(ChildrenTokens.Count, content, false, copyAnnotations: true);
-        }
+        public virtual void Add(object? content) => TryAddInternal(ChildrenTokens.Count, content, false, copyAnnotations: true);
 
-        internal bool TryAdd(object? content)
-        {
-            return TryAddInternal(ChildrenTokens.Count, content, false, copyAnnotations: true);
-        }
+        internal bool TryAdd(object? content) => TryAddInternal(ChildrenTokens.Count, content, false, copyAnnotations: true);
 
         internal void AddAndSkipParentCheck(JToken token)
         {
@@ -662,10 +630,7 @@ namespace Newtonsoft.Json.Linq
         /// Adds the specified content as the first children of this <see cref="JToken"/>.
         /// </summary>
         /// <param name="content">The content to be added.</param>
-        public void AddFirst(object? content)
-        {
-            TryAddInternal(0, content, false, copyAnnotations: true);
-        }
+        public void AddFirst(object? content) => TryAddInternal(0, content, false, copyAnnotations: true);
 
         internal bool TryAddInternal(int index, object? content, bool skipParentCheck, bool copyAnnotations)
         {
@@ -704,10 +669,7 @@ namespace Newtonsoft.Json.Linq
         /// Creates a <see cref="JsonWriter"/> that can be used to add tokens to the <see cref="JToken"/>.
         /// </summary>
         /// <returns>A <see cref="JsonWriter"/> that is ready to have content written to it.</returns>
-        public JsonWriter CreateWriter()
-        {
-            return new JTokenWriter(this);
-        }
+        public JsonWriter CreateWriter() => new JTokenWriter(this);
 
         /// <summary>
         /// Replaces the child nodes of this token with the specified content.
@@ -722,10 +684,7 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Removes the child nodes from this token.
         /// </summary>
-        public void RemoveAll()
-        {
-            ClearItems();
-        }
+        public void RemoveAll() => ClearItems();
 
         internal abstract void MergeItem(object content, JsonMergeSettings? settings);
 

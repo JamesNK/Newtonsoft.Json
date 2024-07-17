@@ -33,9 +33,6 @@ namespace Newtonsoft.Json.Serialization
     {
         private static readonly ThreadSafeStore<object, T?> TypeAttributeCache = new ThreadSafeStore<object, T?>(JsonTypeReflector.GetAttribute<T>);
 
-        public static T? GetAttribute(object type)
-        {
-            return TypeAttributeCache.Get(type);
-        }
+        public static T? GetAttribute(object type) => TypeAttributeCache.Get(type);
     }
 }

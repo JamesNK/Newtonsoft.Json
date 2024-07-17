@@ -69,10 +69,7 @@ namespace Newtonsoft.Json.Converters
             }
         }
 
-        private bool HasFlag(RegexOptions options, RegexOptions flag)
-        {
-            return ((options & flag) == flag);
-        }
+        private bool HasFlag(RegexOptions options, RegexOptions flag) => ((options & flag) == flag);
 
 #pragma warning disable 618
         private void WriteBson(BsonWriter writer, Regex regex)
@@ -221,15 +218,9 @@ namespace Newtonsoft.Json.Converters
         /// <returns>
         /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
         /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-            return objectType.Name == nameof(Regex) && IsRegex(objectType);
-        }
+        public override bool CanConvert(Type objectType) => objectType.Name == nameof(Regex) && IsRegex(objectType);
 
         [MethodImpl(MethodImplOptions.NoInlining)]
-        private bool IsRegex(Type objectType)
-        {
-            return (objectType == typeof(Regex));
-        }
+        private bool IsRegex(Type objectType) => (objectType == typeof(Regex));
     }
 }

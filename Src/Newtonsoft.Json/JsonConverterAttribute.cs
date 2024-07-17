@@ -69,9 +69,6 @@ namespace Newtonsoft.Json
         /// <param name="converterType">Type of the <see cref="JsonConverter"/>.</param>
         /// <param name="converterParameters">Parameter list to use when constructing the <see cref="JsonConverter"/>. Can be <c>null</c>.</param>
         public JsonConverterAttribute(Type converterType, params object[] converterParameters)
-            : this(converterType)
-        {
-            ConverterParameters = converterParameters;
-        }
+            : this(converterType) => ConverterParameters = converterParameters;
     }
 }

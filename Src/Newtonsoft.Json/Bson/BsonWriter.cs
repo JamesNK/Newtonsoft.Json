@@ -85,10 +85,7 @@ namespace Newtonsoft.Json.Bson
         /// <summary>
         /// Flushes whatever is in the buffer to the underlying <see cref="Stream"/> and also flushes the underlying stream.
         /// </summary>
-        public override void Flush()
-        {
-            _writer.Flush();
-        }
+        public override void Flush() => _writer.Flush();
 
         /// <summary>
         /// Writes the end.
@@ -193,15 +190,9 @@ namespace Newtonsoft.Json.Bson
             _parent = container;
         }
 
-        private void RemoveParent()
-        {
-            _parent = _parent.Parent;
-        }
+        private void RemoveParent() => _parent = _parent.Parent;
 
-        private void AddValue(object value, BsonType type)
-        {
-            AddToken(new BsonValue(value, type));
-        }
+        private void AddValue(object value, BsonType type) => AddToken(new BsonValue(value, type));
 
         internal void AddToken(BsonToken token)
         {

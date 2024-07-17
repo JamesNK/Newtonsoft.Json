@@ -39,10 +39,7 @@ namespace Newtonsoft.Json.Linq
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonMergeSettings"/> class.
         /// </summary>
-        public JsonMergeSettings()
-        {
-            _propertyNameComparison = StringComparison.Ordinal;
-        }
+        public JsonMergeSettings() => _propertyNameComparison = StringComparison.Ordinal;
 
         /// <summary>
         /// Gets or sets the method used when merging JSON arrays.

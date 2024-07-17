@@ -43,10 +43,7 @@ namespace Newtonsoft.Json.Linq
         {
         }
 
-        private static JObject CastInstance(object instance)
-        {
-            return (JObject)instance;
-        }
+        private static JObject CastInstance(object instance) => (JObject)instance;
 
         /// <summary>
         /// When overridden in a derived class, returns whether resetting an object changes its value.
@@ -55,10 +52,7 @@ namespace Newtonsoft.Json.Linq
         /// <c>true</c> if resetting the component changes its value; otherwise, <c>false</c>.
         /// </returns>
         /// <param name="component">The component to test for reset capability.</param>
-        public override bool CanResetValue(object component)
-        {
-            return false;
-        }
+        public override bool CanResetValue(object component) => false;
 
         /// <summary>
         /// When overridden in a derived class, gets the current value of the property on a component.
@@ -67,10 +61,7 @@ namespace Newtonsoft.Json.Linq
         /// The value of a property for a given component.
         /// </returns>
         /// <param name="component">The component with the property for which to retrieve the value.</param>
-        public override object? GetValue(object? component)
-        {
-            return (component as JObject)?[Name];
-        }
+        public override object? GetValue(object? component) => (component as JObject)?[Name];
 
         /// <summary>
         /// When overridden in a derived class, resets the value for this property of the component to the default value.
@@ -102,10 +93,7 @@ namespace Newtonsoft.Json.Linq
         /// <c>true</c> if the property should be persisted; otherwise, <c>false</c>.
         /// </returns>
         /// <param name="component">The component with the property to be examined for persistence.</param>
-        public override bool ShouldSerializeValue(object component)
-        {
-            return false;
-        }
+        public override bool ShouldSerializeValue(object component) => false;
 
         /// <summary>
         /// When overridden in a derived class, gets the type of the component this property is bound to.

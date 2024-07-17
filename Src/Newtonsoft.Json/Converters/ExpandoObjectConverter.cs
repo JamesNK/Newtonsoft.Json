@@ -59,10 +59,8 @@ namespace Newtonsoft.Json.Converters
         /// <param name="existingValue">The existing value of object being read.</param>
         /// <param name="serializer">The calling serializer.</param>
         /// <returns>The object value.</returns>
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-        {
-            return ReadValue(reader);
-        }
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer) 
+            => ReadValue(reader);
 
         private object? ReadValue(JsonReader reader)
         {
@@ -147,10 +145,7 @@ namespace Newtonsoft.Json.Converters
         /// <returns>
         /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
         /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-            return (objectType == typeof(ExpandoObject));
-        }
+        public override bool CanConvert(Type objectType) => (objectType == typeof(ExpandoObject));
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="JsonConverter"/> can write JSON.

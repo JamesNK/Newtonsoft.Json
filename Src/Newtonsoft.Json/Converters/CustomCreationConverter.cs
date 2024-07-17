@@ -85,10 +85,7 @@ namespace Newtonsoft.Json.Converters
         /// <returns>
         /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
         /// </returns>
-        public override bool CanConvert(Type objectType)
-        {
-            return typeof(T).IsAssignableFrom(objectType);
-        }
+        public override bool CanConvert(Type objectType) => typeof(T).IsAssignableFrom(objectType);
 
         /// <summary>
         /// Gets a value indicating whether this <see cref="JsonConverter"/> can write JSON.

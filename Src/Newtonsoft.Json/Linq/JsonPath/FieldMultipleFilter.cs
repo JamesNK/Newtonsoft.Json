@@ -13,10 +13,7 @@ namespace Newtonsoft.Json.Linq.JsonPath
     {
         internal List<string> Names;
 
-        public FieldMultipleFilter(List<string> names)
-        {
-            Names = names;
-        }
+        public FieldMultipleFilter(List<string> names) => Names = names;
 
         public override IEnumerable<JToken> ExecuteFilter(JToken root, IEnumerable<JToken> current, JsonSelectSettings? settings)
         {

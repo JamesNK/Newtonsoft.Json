@@ -49,19 +49,15 @@ namespace Newtonsoft.Json.Bson
             _writer = writer;
         }
 
-        public void Flush()
-        {
-            _writer.Flush();
-        }
+        public void Flush() => _writer.Flush();
 
-        public void Close()
-        {
+        public void Close() =>
 #if HAVE_STREAM_READER_WRITER_CLOSE
             _writer.Close();
 #else
             _writer.Dispose();
 #endif
-        }
+
 
         public void WriteToken(BsonToken t)
         {

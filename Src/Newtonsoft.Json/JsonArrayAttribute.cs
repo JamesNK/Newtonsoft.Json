@@ -56,10 +56,7 @@ namespace Newtonsoft.Json
         /// Initializes a new instance of the <see cref="JsonObjectAttribute"/> class with a flag indicating whether the array can contain null items.
         /// </summary>
         /// <param name="allowNullItems">A flag indicating whether the array can contain null items.</param>
-        public JsonArrayAttribute(bool allowNullItems)
-        {
-            _allowNullItems = allowNullItems;
-        }
+        public JsonArrayAttribute(bool allowNullItems) => _allowNullItems = allowNullItems;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonArrayAttribute"/> class with the specified container Id.

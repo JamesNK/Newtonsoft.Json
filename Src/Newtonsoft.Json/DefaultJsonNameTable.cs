@@ -40,18 +40,12 @@ namespace Newtonsoft.Json
         private Entry[] _entries;
         private int _mask = 31;
 
-        static DefaultJsonNameTable()
-        {
-            HashCodeRandomizer = Environment.TickCount;
-        }
+        static DefaultJsonNameTable() => HashCodeRandomizer = Environment.TickCount;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="DefaultJsonNameTable"/> class.
         /// </summary>
-        public DefaultJsonNameTable()
-        {
-            _entries = new Entry[_mask + 1];
-        }
+        public DefaultJsonNameTable() => _entries = new Entry[_mask + 1];
 
         /// <summary>
         /// Gets a string containing the same characters as the specified range of characters in the given array.

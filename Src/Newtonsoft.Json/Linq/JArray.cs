@@ -88,30 +88,18 @@ namespace Newtonsoft.Json.Linq
         /// Initializes a new instance of the <see cref="JArray"/> class with the specified content.
         /// </summary>
         /// <param name="content">The contents of the array.</param>
-        public JArray(object content)
-        {
-            Add(content);
-        }
+        public JArray(object content) => Add(content);
 
-        internal override bool DeepEquals(JToken node)
-        {
-            return (node is JArray t && ContentsEqual(t));
-        }
+        internal override bool DeepEquals(JToken node) => (node is JArray t && ContentsEqual(t));
 
-        internal override JToken CloneToken(JsonCloneSettings? settings = null)
-        {
-            return new JArray(this, settings);
-        }
+        internal override JToken CloneToken(JsonCloneSettings? settings = null) => new JArray(this, settings);
 
         /// <summary>
         /// Loads an <see cref="JArray"/> from a <see cref="JsonReader"/>. 
         /// </summary>
         /// <param name="reader">A <see cref="JsonReader"/> that will be read for the content of the <see cref="JArray"/>.</param>
         /// <returns>A <see cref="JArray"/> that contains the JSON that was read from the specified <see cref="JsonReader"/>.</returns>
-        public new static JArray Load(JsonReader reader)
-        {
-            return Load(reader, null);
-        }
+        public new static JArray Load(JsonReader reader) => Load(reader, null);
 
         /// <summary>
         /// Loads an <see cref="JArray"/> from a <see cref="JsonReader"/>. 
@@ -153,10 +141,7 @@ namespace Newtonsoft.Json.Linq
         /// <example>
         ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParseArray" title="Parsing a JSON Array from Text" />
         /// </example>
-        public new static JArray Parse(string json)
-        {
-            return Parse(json, null);
-        }
+        public new static JArray Parse(string json) => Parse(json, null);
 
         /// <summary>
         /// Load a <see cref="JArray"/> from a string that contains JSON.
@@ -188,10 +173,7 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="o">The object that will be used to create <see cref="JArray"/>.</param>
         /// <returns>A <see cref="JArray"/> with the values of the specified object.</returns>
-        public new static JArray FromObject(object o)
-        {
-            return FromObject(o, JsonSerializer.CreateDefault());
-        }
+        public new static JArray FromObject(object o) => FromObject(o, JsonSerializer.CreateDefault());
 
         /// <summary>
         /// Creates a <see cref="JArray"/> from an object.
@@ -400,9 +382,6 @@ namespace Newtonsoft.Json.Linq
         }
         #endregion
 
-        internal override int GetDeepHashCode()
-        {
-            return ContentsHashCode();
-        }
+        internal override int GetDeepHashCode() => ContentsHashCode();
     }
 }

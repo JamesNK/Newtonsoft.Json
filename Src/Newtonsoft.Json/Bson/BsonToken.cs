@@ -49,15 +49,9 @@ namespace Newtonsoft.Json.Bson
 
         public override BsonType Type => BsonType.Object;
 
-        public IEnumerator<BsonProperty> GetEnumerator()
-        {
-            return _children.GetEnumerator();
-        }
+        public IEnumerator<BsonProperty> GetEnumerator() => _children.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
     internal class BsonArray : BsonToken, IEnumerable<BsonToken>
@@ -73,14 +67,9 @@ namespace Newtonsoft.Json.Bson
         public override BsonType Type => BsonType.Array;
 
         public IEnumerator<BsonToken> GetEnumerator()
-        {
-            return _children.GetEnumerator();
-        }
+        => _children.GetEnumerator();
 
-        IEnumerator IEnumerable.GetEnumerator()
-        {
-            return GetEnumerator();
-        }
+        IEnumerator IEnumerable.GetEnumerator() => GetEnumerator();
     }
 
     internal class BsonEmpty : BsonToken
@@ -88,10 +77,7 @@ namespace Newtonsoft.Json.Bson
         public static readonly BsonToken Null = new BsonEmpty(BsonType.Null);
         public static readonly BsonToken Undefined = new BsonEmpty(BsonType.Undefined);
 
-        private BsonEmpty(BsonType type)
-        {
-            Type = type;
-        }
+        private BsonEmpty(BsonType type) => Type = type;
 
         public override BsonType Type { get; }
     }
@@ -129,10 +115,7 @@ namespace Newtonsoft.Json.Bson
         public bool IncludeLength { get; }
 
         public BsonString(object value, bool includeLength)
-            : base(value, BsonType.String)
-        {
-            IncludeLength = includeLength;
-        }
+            : base(value, BsonType.String) => IncludeLength = includeLength;
     }
 
     internal class BsonBinary : BsonValue
@@ -140,10 +123,7 @@ namespace Newtonsoft.Json.Bson
         public BsonBinaryType BinaryType { get; set; }
 
         public BsonBinary(byte[] value, BsonBinaryType binaryType)
-            : base(value, BsonType.Binary)
-        {
-            BinaryType = binaryType;
-        }
+            : base(value, BsonType.Binary) => BinaryType = binaryType;
     }
 
     internal class BsonRegex : BsonToken

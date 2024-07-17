@@ -42,14 +42,12 @@ namespace Newtonsoft.Json.Serialization
         /// <summary>
         /// Initializes a new instance of the <see cref="CamelCasePropertyNamesContractResolver"/> class.
         /// </summary>
-        public CamelCasePropertyNamesContractResolver()
-        {
+        public CamelCasePropertyNamesContractResolver() =>
             NamingStrategy = new CamelCaseNamingStrategy
             {
                 ProcessDictionaryKeys = true,
                 OverrideSpecifiedNames = true
             };
-        }
 
         /// <summary>
         /// Resolves the contract for a given type.
@@ -86,9 +84,6 @@ namespace Newtonsoft.Json.Serialization
             return contract;
         }
 
-        internal override DefaultJsonNameTable GetNameTable()
-        {
-            return NameTable;
-        }
+        internal override DefaultJsonNameTable GetNameTable() => NameTable;
     }
 }
