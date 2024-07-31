@@ -23,6 +23,8 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using System.Linq;
+using Newtonsoft.Json.Linq;
 #if !(PORTABLE || PORTABLE40)
 using NUnit.Framework;
 #endif
