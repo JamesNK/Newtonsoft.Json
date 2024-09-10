@@ -38,6 +38,7 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// A collection of <see cref="JsonProperty"/> objects.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     public class JsonPropertyCollection : KeyedCollection<string, JsonProperty>
     {
         private readonly Type _type;

@@ -25,6 +25,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 
@@ -37,6 +38,8 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// Maps a JSON property to a .NET member or constructor parameter.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class JsonProperty
     {
         internal Required? _required;

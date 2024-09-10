@@ -41,6 +41,8 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Contains the LINQ to JSON extension methods.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public static class Extensions
     {
         /// <summary>

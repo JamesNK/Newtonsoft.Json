@@ -28,12 +28,15 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
 using System.Reflection;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Converters
 {
     /// <summary>
     /// Converts a <see cref="KeyValuePair{TKey,TValue}"/> to and from JSON.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class KeyValuePairConverter : JsonConverter
     {
         private const string KeyName = "Key";

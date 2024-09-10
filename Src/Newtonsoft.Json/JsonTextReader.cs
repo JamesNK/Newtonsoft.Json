@@ -28,6 +28,8 @@ using System.Runtime.CompilerServices;
 using System.IO;
 using System.Globalization;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 #if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
@@ -54,6 +56,8 @@ namespace Newtonsoft.Json
     /// <summary>
     /// Represents a reader that provides fast, non-cached, forward-only access to JSON text data.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public partial class JsonTextReader : JsonReader, IJsonLineInfo
     {
         private const char UnicodeReplacementChar = '\uFFFD';

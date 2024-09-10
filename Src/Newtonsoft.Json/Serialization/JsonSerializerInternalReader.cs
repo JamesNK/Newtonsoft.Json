@@ -50,6 +50,8 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Serialization
 {
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class JsonSerializerInternalReader : JsonSerializerInternalBase
     {
         internal enum PropertyPresence

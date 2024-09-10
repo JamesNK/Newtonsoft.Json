@@ -29,12 +29,15 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Utilities;
 using System.Diagnostics;
 using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Linq
 {
     /// <summary>
     /// Represents a JSON property.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public partial class JProperty : JContainer
     {
         #region JPropertyList

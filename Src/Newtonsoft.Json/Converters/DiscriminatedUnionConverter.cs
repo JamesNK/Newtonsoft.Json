@@ -28,6 +28,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -43,6 +44,8 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a F# discriminated union type to and from JSON.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class DiscriminatedUnionConverter : JsonConverter
     {
         #region UnionDefinition

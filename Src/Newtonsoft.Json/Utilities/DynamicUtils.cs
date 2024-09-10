@@ -39,11 +39,14 @@ using System.Text;
 using System.Globalization;
 using Newtonsoft.Json.Serialization;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Utilities
 {
     internal static class DynamicUtils
     {
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         internal static class BinderWrapper
         {
 #if !HAVE_REFLECTION_BINDER
@@ -151,6 +154,8 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class NoThrowGetBinderMember : GetMemberBinder
     {
         private readonly GetMemberBinder _innerBinder;

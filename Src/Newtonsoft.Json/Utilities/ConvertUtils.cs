@@ -114,6 +114,8 @@ namespace Newtonsoft.Json.Utilities
         Invalid = 3
     }
 
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal static class ConvertUtils
     {
         private static readonly Dictionary<Type, PrimitiveTypeCode> TypeCodeMap =

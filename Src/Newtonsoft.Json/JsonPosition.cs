@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -71,6 +72,8 @@ namespace Newtonsoft.Json
             }
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         internal void WriteTo(StringBuilder sb, ref StringWriter? writer, ref char[]? buffer)
         {
             switch (Type)
@@ -114,6 +117,8 @@ namespace Newtonsoft.Json
             return (type == JsonContainerType.Array || type == JsonContainerType.Constructor);
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         internal static string BuildPath(List<JsonPosition> positions, JsonPosition? currentPosition)
         {
             int capacity = 0;

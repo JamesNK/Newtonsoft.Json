@@ -24,14 +24,18 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 #if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Serialization
 {
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class TraceJsonWriter : JsonWriter
     {
         private readonly JsonWriter _innerWriter;

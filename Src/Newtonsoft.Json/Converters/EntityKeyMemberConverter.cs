@@ -29,12 +29,15 @@ using Newtonsoft.Json.Serialization;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Converters
 {
     /// <summary>
     /// Converts an Entity Framework <see cref="T:System.Data.EntityKeyMember"/> to and from JSON.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class EntityKeyMemberConverter : JsonConverter
     {
         private const string EntityKeyMemberFullTypeName = "System.Data.EntityKeyMember";

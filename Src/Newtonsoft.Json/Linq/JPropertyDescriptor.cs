@@ -26,12 +26,16 @@
 #if HAVE_COMPONENT_MODEL
 using System;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq
 {
     /// <summary>
     /// Represents a view of a <see cref="JProperty"/>.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class JPropertyDescriptor : PropertyDescriptor
     {
         /// <summary>

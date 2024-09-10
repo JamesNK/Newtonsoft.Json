@@ -25,6 +25,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 #if HAVE_BIG_INTEGER
 using System.Numerics;
@@ -36,6 +37,8 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents a writer that provides a fast, non-cached, forward-only way of generating JSON data.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public partial class JTokenWriter : JsonWriter
     {
         private JContainer? _token;

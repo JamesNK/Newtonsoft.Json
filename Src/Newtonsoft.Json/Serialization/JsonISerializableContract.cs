@@ -24,7 +24,9 @@
 #endregion
 
 #if HAVE_BINARY_SERIALIZATION
+using Newtonsoft.Json.Utilities;
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Serialization
@@ -32,6 +34,8 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class JsonISerializableContract : JsonContainerContract
     {
         /// <summary>

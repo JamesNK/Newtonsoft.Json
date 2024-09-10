@@ -24,6 +24,8 @@
 #endregion
 
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -41,6 +43,10 @@ namespace Newtonsoft.Json.Linq
         /// Gets the <see cref="IJEnumerable{T}"/> of <see cref="JToken"/> with the specified key.
         /// </summary>
         /// <value></value>
-        IJEnumerable<JToken> this[object key] { get; }
+        IJEnumerable<JToken> this[object key] {
+            [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+            [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
+            get;
+        }
     }
 }

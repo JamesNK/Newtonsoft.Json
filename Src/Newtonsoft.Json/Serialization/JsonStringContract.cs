@@ -23,13 +23,17 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
+using Newtonsoft.Json.Utilities;
 using System;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Serialization
 {
     /// <summary>
     /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class JsonStringContract : JsonPrimitiveContract
     {
         /// <summary>

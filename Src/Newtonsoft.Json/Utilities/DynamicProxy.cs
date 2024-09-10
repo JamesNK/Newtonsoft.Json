@@ -25,10 +25,13 @@
 
 #if HAVE_DYNAMIC
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 
 namespace Newtonsoft.Json.Utilities
 {
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class DynamicProxy<T>
     {
         public virtual IEnumerable<string> GetDynamicMemberNames(T instance)

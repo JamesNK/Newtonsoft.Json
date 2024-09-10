@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
+
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -44,6 +46,8 @@ namespace Newtonsoft.Json.Utilities
         public Action<object, object?>? Setter { get; set; }
     }
 
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class ReflectionObject
     {
         public ObjectConstructor<object>? Creator { get; }

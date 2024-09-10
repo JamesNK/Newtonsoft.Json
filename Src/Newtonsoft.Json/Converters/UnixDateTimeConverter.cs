@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 
@@ -32,6 +33,8 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="DateTime"/> to and from Unix epoch time
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class UnixDateTimeConverter : DateTimeConverterBase
     {
         internal static readonly DateTime UnixEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);

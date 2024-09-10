@@ -81,6 +81,8 @@ namespace Newtonsoft.Json.Utilities
     }
 #endif
 
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal static class ReflectionUtils
     {
         public static readonly Type[] EmptyTypes;

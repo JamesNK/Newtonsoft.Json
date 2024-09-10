@@ -28,6 +28,8 @@ using System.Collections.Generic;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
+
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -40,6 +42,8 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// Contract details for a <see cref="System.Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class JsonContainerContract : JsonContract
     {
         private JsonContract? _itemContract;

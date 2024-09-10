@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -33,6 +34,8 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Bson
 {
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class BsonBinaryWriter
     {
         private static readonly Encoding Encoding = new UTF8Encoding(false);

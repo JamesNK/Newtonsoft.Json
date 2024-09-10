@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 
@@ -32,6 +33,8 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="DateTime"/> to and from a JavaScript <c>Date</c> constructor (e.g. <c>new Date(52231943)</c>).
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class JavaScriptDateTimeConverter : DateTimeConverterBase
     {
         /// <summary>

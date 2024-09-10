@@ -32,6 +32,8 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq
 {
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class JPropertyKeyedCollection : Collection<JToken>
     {
         private static readonly IEqualityComparer<string> Comparer = StringComparer.Ordinal;

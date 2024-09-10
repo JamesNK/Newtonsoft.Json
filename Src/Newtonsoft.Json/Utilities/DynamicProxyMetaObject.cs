@@ -26,12 +26,15 @@
 #if HAVE_DYNAMIC
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 
 namespace Newtonsoft.Json.Utilities
 {
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal sealed class DynamicProxyMetaObject<T> : DynamicMetaObject
     {
         private readonly DynamicProxy<T> _proxy;
