@@ -376,6 +376,7 @@ namespace Newtonsoft.Json.Utilities
         // is only used by DynamicObject.GetMember--it is not expected to
         // (and cannot) implement binding semantics. It is just so the DO
         // can use the Name and IgnoreCase properties.
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private sealed class GetBinderAdapter : GetMemberBinder
         {
             internal GetBinderAdapter(InvokeMemberBinder binder) :

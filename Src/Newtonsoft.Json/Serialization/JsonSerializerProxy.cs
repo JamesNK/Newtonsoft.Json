@@ -34,6 +34,7 @@ using System.Runtime.Serialization;
 namespace Newtonsoft.Json.Serialization
 {
     [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class JsonSerializerProxy : JsonSerializer
     {
         private readonly JsonSerializerInternalReader? _serializerReader;
