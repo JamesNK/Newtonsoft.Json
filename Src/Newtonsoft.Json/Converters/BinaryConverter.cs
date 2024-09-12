@@ -29,7 +29,6 @@ using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 #if HAVE_ADO_NET
 using System.Data.SqlTypes;
 #endif
@@ -39,8 +38,6 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a binary value to and from a base 64 string value.
     /// </summary>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class BinaryConverter : JsonConverter
     {
 #if HAVE_LINQ

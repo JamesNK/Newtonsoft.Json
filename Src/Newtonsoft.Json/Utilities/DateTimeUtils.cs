@@ -27,12 +27,9 @@ using System;
 using System.IO;
 using System.Xml;
 using System.Globalization;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Utilities
 {
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal static class DateTimeUtils
     {
         internal static readonly long InitialJavaScriptDateTicks = 621355968000000000;

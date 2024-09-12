@@ -30,8 +30,6 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Serialization;
-using System.Diagnostics.CodeAnalysis;
-
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -52,8 +50,6 @@ namespace Newtonsoft.Json.Schema
     /// </note>
     /// </summary>
     [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class JsonSchemaGenerator
     {
         /// <summary>

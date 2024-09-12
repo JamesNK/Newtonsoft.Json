@@ -25,7 +25,6 @@
 
 #if HAVE_DYNAMIC
 using System;
-using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Utilities;
@@ -35,8 +34,6 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// Contract details for a <see cref="Type"/> used by the <see cref="JsonSerializer"/>.
     /// </summary>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class JsonDynamicContract : JsonContainerContract
     {
         /// <summary>

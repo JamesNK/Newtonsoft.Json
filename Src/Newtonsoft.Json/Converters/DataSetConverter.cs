@@ -26,17 +26,13 @@
 #if HAVE_ADO_NET
 using System;
 using System.Data;
-using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Converters
 {
     /// <summary>
     /// Converts a <see cref="DataSet"/> to and from JSON.
     /// </summary>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class DataSetConverter : JsonConverter
     {
         /// <summary>

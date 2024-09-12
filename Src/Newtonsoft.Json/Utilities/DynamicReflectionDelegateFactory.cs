@@ -33,12 +33,9 @@ using System.Reflection;
 using System.Reflection.Emit;
 using Newtonsoft.Json.Serialization;
 using System.Globalization;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Utilities
 {
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class DynamicReflectionDelegateFactory : ReflectionDelegateFactory
     {
         internal static DynamicReflectionDelegateFactory Instance { get; } = new DynamicReflectionDelegateFactory();

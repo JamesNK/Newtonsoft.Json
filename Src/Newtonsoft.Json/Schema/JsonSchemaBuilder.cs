@@ -34,15 +34,12 @@ using System.Linq;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Linq;
-using System.Diagnostics.CodeAnalysis;
 
 #nullable disable
 
 namespace Newtonsoft.Json.Schema
 {
     [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class JsonSchemaBuilder
     {
         private readonly IList<JsonSchema> _stack;

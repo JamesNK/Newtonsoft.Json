@@ -32,7 +32,6 @@ using System.Reflection;
 using System.Text;
 using Newtonsoft.Json.Serialization;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -55,8 +54,6 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class FSharpUtils
     {
         private FSharpUtils(Assembly fsharpCoreAssembly)

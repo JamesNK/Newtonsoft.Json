@@ -32,7 +32,6 @@ using System.Linq;
 #endif
 using Newtonsoft.Json.Utilities;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -82,9 +81,6 @@ namespace Newtonsoft.Json.Linq
         /// <value></value>
         public IJEnumerable<JToken> this[object key]
         {
-
-            [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-            [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
             get
             {
                 if (_enumerable == null)

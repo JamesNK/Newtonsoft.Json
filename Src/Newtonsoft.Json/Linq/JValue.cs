@@ -43,8 +43,6 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents a value in JSON (string, integer, date, etc).
     /// </summary>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public partial class JValue : JToken, IEquatable<JValue>, IFormattable, IComparable, IComparable<JValue>
 #if HAVE_ICONVERTIBLE
         , IConvertible
@@ -977,8 +975,6 @@ namespace Newtonsoft.Json.Linq
             return new DynamicProxyMetaObject<JValue>(parameter, this, new JValueDynamicProxy());
         }
 
-        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private class JValueDynamicProxy : DynamicProxy<JValue>
         {
             public override bool TryConvert(JValue instance, ConvertBinder binder, [NotNullWhen(true)]out object? result)

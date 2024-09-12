@@ -25,7 +25,6 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.Serialization.Formatters;
 using Newtonsoft.Json.Utilities;
@@ -33,8 +32,6 @@ using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Serialization
 {
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class JsonSerializerProxy : JsonSerializer
     {
         private readonly JsonSerializerInternalReader? _serializerReader;

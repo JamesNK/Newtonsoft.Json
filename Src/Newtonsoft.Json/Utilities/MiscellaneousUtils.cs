@@ -50,8 +50,6 @@ namespace Newtonsoft.Json.Utilities
             Debug.Assert(condition, message);
         }
 
-        [RequiresUnreferencedCode(TrimWarning)]
-        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public static bool ValueEquals(object? objA, object? objB)
         {
             if (objA == objB)

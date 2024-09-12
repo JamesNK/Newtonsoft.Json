@@ -31,7 +31,6 @@ using System.Collections.Concurrent;
 using Newtonsoft.Json.Schema;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 #if HAVE_DYNAMIC
 using System.Dynamic;
 #endif
@@ -59,8 +58,6 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// Used by <see cref="JsonSerializer"/> to resolve a <see cref="JsonContract"/> for a given <see cref="System.Type"/>.
     /// </summary>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class DefaultContractResolver : IContractResolver
     {
         private static readonly IContractResolver _instance = new DefaultContractResolver();

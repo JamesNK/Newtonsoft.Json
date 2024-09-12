@@ -80,8 +80,6 @@ namespace Newtonsoft.Json
     /// Converts an object to and from JSON.
     /// </summary>
     /// <typeparam name="T">The object type to convert.</typeparam>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public abstract class JsonConverter<T> : JsonConverter
     {
         /// <summary>

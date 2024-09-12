@@ -28,8 +28,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
 using System.Globalization;
-using System.Diagnostics.CodeAnalysis;
-
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -44,8 +42,6 @@ namespace Newtonsoft.Json.Utilities
         object UnderlyingCollection { get; }
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class CollectionWrapper<T> : ICollection<T>, IWrappedCollection
     {
         private readonly IList? _list;

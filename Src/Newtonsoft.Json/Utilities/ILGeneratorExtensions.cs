@@ -27,11 +27,9 @@
 using System;
 using System.Reflection.Emit;
 using System.Reflection;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Utilities
 {
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal static class ILGeneratorExtensions
     {
         public static void PushInstance(this ILGenerator generator, Type type)

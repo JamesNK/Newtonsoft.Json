@@ -4,8 +4,6 @@ using System.Globalization;
 using System.IO;
 using System.Text.RegularExpressions;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
-
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -32,7 +30,6 @@ namespace Newtonsoft.Json.Linq.JsonPath
         StrictNotEquals = 12
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal abstract class QueryExpression
     {
         internal QueryOperator Operator;
@@ -51,7 +48,6 @@ namespace Newtonsoft.Json.Linq.JsonPath
         public abstract bool IsMatch(JToken root, JToken t, JsonSelectSettings? settings);
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class CompositeExpression : QueryExpression
     {
         public List<QueryExpression> Expressions { get; set; }
@@ -89,8 +85,6 @@ namespace Newtonsoft.Json.Linq.JsonPath
         }
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class BooleanQueryExpression : QueryExpression
     {
         public readonly object Left;

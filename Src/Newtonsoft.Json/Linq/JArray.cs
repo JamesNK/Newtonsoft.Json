@@ -29,7 +29,6 @@ using System.Collections.Generic;
 using Newtonsoft.Json.Utilities;
 using System.IO;
 using System.Globalization;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Linq
 {
@@ -39,8 +38,6 @@ namespace Newtonsoft.Json.Linq
     /// <example>
     ///   <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\LinqToJsonTests.cs" region="LinqToJsonCreateParseArray" title="Parsing a JSON Array from Text" />
     /// </example>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public partial class JArray : JContainer, IList<JToken>
     {
         private readonly List<JToken> _values = new List<JToken>();

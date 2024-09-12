@@ -33,15 +33,12 @@ using System.Text;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Serialization
 {
     /// <summary>
     /// Get and set values for a <see cref="MemberInfo"/> using dynamic methods.
     /// </summary>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class DynamicValueProvider : IValueProvider
     {
         private readonly MemberInfo _memberInfo;

@@ -34,12 +34,9 @@ using System.Numerics;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Utilities;
 using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json
 {
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public partial class JsonTextWriter
     {
         // It's not safe to perform the async methods here in a derived class as if the synchronous equivalent

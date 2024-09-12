@@ -26,7 +26,6 @@
 using System;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
-using System.Diagnostics.CodeAnalysis;
 
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -34,8 +33,6 @@ using Newtonsoft.Json.Utilities.LinqBridge;
 
 namespace Newtonsoft.Json.Utilities
 {
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class LateBoundReflectionDelegateFactory : ReflectionDelegateFactory
     {
         private static readonly LateBoundReflectionDelegateFactory _instance = new LateBoundReflectionDelegateFactory();

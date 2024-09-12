@@ -36,7 +36,6 @@ using System.Linq;
 
 namespace Newtonsoft.Json.Utilities
 {
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal static class TypeExtensions
     {
 #if DOTNET || PORTABLE

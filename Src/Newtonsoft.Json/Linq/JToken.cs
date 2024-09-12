@@ -52,8 +52,6 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents an abstract JSON token.
     /// </summary>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public abstract partial class JToken : IJEnumerable<JToken>, IJsonLineInfo
 #if HAVE_ICLONEABLE
         , ICloneable

@@ -47,9 +47,7 @@ namespace Newtonsoft.Json.Linq
     /// <summary>
     /// Represents a token that can contain other tokens.
     /// </summary>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
-    public abstract partial class JContainer : JToken, IList<JToken>
+    public abstract partial class JContainer : JToken, IList<JToken>
 #if HAVE_COMPONENT_MODEL
         , ITypedList, IBindingList
 #endif

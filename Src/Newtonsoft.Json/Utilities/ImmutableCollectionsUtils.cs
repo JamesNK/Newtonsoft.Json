@@ -43,8 +43,6 @@ namespace Newtonsoft.Json.Utilities
     /// Note that this is used by all builds, even those that don't support immutable collections, in case the DLL is GACed
     /// https://github.com/JamesNK/Newtonsoft.Json/issues/652
     /// </summary>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal static class ImmutableCollectionsUtils
     {
         internal class ImmutableCollectionTypeInfo

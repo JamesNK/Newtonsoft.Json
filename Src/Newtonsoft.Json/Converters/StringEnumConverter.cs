@@ -32,8 +32,6 @@ using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Utilities;
 using Newtonsoft.Json.Serialization;
-using System.Diagnostics.CodeAnalysis;
-
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -46,8 +44,6 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts an <see cref="Enum"/> to and from its name string value.
     /// </summary>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class StringEnumConverter : JsonConverter
     {
         /// <summary>

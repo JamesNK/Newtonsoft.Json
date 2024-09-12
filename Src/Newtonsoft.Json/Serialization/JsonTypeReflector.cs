@@ -34,8 +34,6 @@ using System.Security.Permissions;
 #endif
 using Newtonsoft.Json.Utilities;
 using System.Runtime.CompilerServices;
-using System.Diagnostics.CodeAnalysis;
-
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -45,8 +43,6 @@ using System.Runtime.Serialization;
 
 namespace Newtonsoft.Json.Serialization
 {
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal static class JsonTypeReflector
     {
         private static bool? _dynamicCodeGeneration;

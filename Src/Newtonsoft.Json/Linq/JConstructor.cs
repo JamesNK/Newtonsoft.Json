@@ -28,15 +28,12 @@ using System.Collections;
 using System.Collections.Generic;
 using Newtonsoft.Json.Utilities;
 using System.Globalization;
-using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Linq
 {
     /// <summary>
     /// Represents a JSON constructor.
     /// </summary>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public partial class JConstructor : JContainer
     {
         private string? _name;
