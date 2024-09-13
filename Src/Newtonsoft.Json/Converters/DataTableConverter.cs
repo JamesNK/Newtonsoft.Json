@@ -26,6 +26,7 @@
 #if HAVE_ADO_NET
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 using System;
@@ -37,6 +38,8 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts a <see cref="DataTable"/> to and from JSON.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class DataTableConverter : JsonConverter
     {
         /// <summary>

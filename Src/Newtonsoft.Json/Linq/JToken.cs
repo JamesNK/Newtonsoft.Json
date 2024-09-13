@@ -416,6 +416,8 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
         /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)] // TODO: see if this can be removed.
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public abstract void WriteTo(JsonWriter writer, params JsonConverter[] converters);
 
         /// <summary>
@@ -430,7 +432,15 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public override string ToString()
         {
+#if HAVE_APPCONTEXT
+            if (!MiscellaneousUtils.SerializationIsSupported)
+            {
+                throw new NotSupportedException(MiscellaneousUtils.SerializationNotSupportedMessage);
+            }
+#endif
+#pragma warning disable IL2026
             return ToString(Formatting.Indented);
+#pragma warning restore IL2026
         }
 
         /// <summary>
@@ -439,6 +449,8 @@ namespace Newtonsoft.Json.Linq
         /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <param name="converters">A collection of <see cref="JsonConverter"/>s which will be used when writing the token.</param>
         /// <returns>The JSON for this token using the given formatting and converters.</returns>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public string ToString(Formatting formatting, params JsonConverter[] converters)
         {
             using (StringWriter sw = new StringWriter(CultureInfo.InvariantCulture))
@@ -1889,6 +1901,8 @@ namespace Newtonsoft.Json.Linq
             return new JTokenReader(this);
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         internal static JToken FromObjectInternal(object o, JsonSerializer jsonSerializer)
         {
             ValidationUtils.ArgumentNotNull(o, nameof(o));
@@ -1909,6 +1923,8 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="o">The object that will be used to create <see cref="JToken"/>.</param>
         /// <returns>A <see cref="JToken"/> with the value of the specified object.</returns>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public static JToken FromObject(object o)
         {
             return FromObjectInternal(o, JsonSerializer.CreateDefault());
@@ -1920,6 +1936,8 @@ namespace Newtonsoft.Json.Linq
         /// <param name="o">The object that will be used to create <see cref="JToken"/>.</param>
         /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used when reading the object.</param>
         /// <returns>A <see cref="JToken"/> with the value of the specified object.</returns>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public static JToken FromObject(object o, JsonSerializer jsonSerializer)
         {
             return FromObjectInternal(o, jsonSerializer);
@@ -1930,6 +1948,8 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
         /// <returns>The new object created from the JSON value.</returns>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public T? ToObject<T>()
         {
             return (T?)ToObject(typeof(T));
@@ -1940,6 +1960,8 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="objectType">The object type that the token will be deserialized to.</param>
         /// <returns>The new object created from the JSON value.</returns>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public object? ToObject(Type objectType)
         {
             if (JsonConvert.DefaultSettings == null)
@@ -2063,6 +2085,8 @@ namespace Newtonsoft.Json.Linq
         /// <typeparam name="T">The object type that the token will be deserialized to.</typeparam>
         /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used when creating the object.</param>
         /// <returns>The new object created from the JSON value.</returns>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public T? ToObject<T>(JsonSerializer jsonSerializer)
         {
             return (T?)ToObject(typeof(T), jsonSerializer);
@@ -2074,6 +2098,8 @@ namespace Newtonsoft.Json.Linq
         /// <param name="objectType">The object type that the token will be deserialized to.</param>
         /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used when creating the object.</param>
         /// <returns>The new object created from the JSON value.</returns>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public object? ToObject(Type? objectType, JsonSerializer jsonSerializer)
         {
             ValidationUtils.ArgumentNotNull(jsonSerializer, nameof(jsonSerializer));
@@ -2414,7 +2440,15 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         protected virtual DynamicMetaObject GetMetaObject(Expression parameter)
         {
+#if HAVE_APPCONTEXT
+            if (!MiscellaneousUtils.DynamicIsSupported)
+            {
+                throw new NotSupportedException(MiscellaneousUtils.DynamicNotSupportedMessage);
+            }
+#endif
+#pragma warning disable IL2026, IL3050
             return new DynamicProxyMetaObject<JToken>(parameter, this, new DynamicProxy<JToken>());
+#pragma warning restore IL2026, IL3050
         }
 
         /// <summary>

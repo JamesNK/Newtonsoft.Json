@@ -26,6 +26,7 @@
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Text;
 using System.Collections;
@@ -94,6 +95,7 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         public static bool IsDictionaryType(Type type)
         {
             ValidationUtils.ArgumentNotNull(type, nameof(type));
@@ -116,14 +118,23 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
-        public static ConstructorInfo? ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType)
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
+        public static ConstructorInfo? ResolveEnumerableCollectionConstructor(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+            Type collectionType,
+            Type collectionItemType)
         {
             Type genericConstructorArgument = typeof(IList<>).MakeGenericType(collectionItemType);
 
             return ResolveEnumerableCollectionConstructor(collectionType, collectionItemType, genericConstructorArgument);
         }
 
-        public static ConstructorInfo? ResolveEnumerableCollectionConstructor(Type collectionType, Type collectionItemType, Type constructorArgumentType)
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
+        public static ConstructorInfo? ResolveEnumerableCollectionConstructor(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
+            Type collectionType,
+            Type collectionItemType,
+            Type constructorArgumentType)
         {
             Type genericEnumerable = typeof(IEnumerable<>).MakeGenericType(collectionItemType);
             ConstructorInfo? match = null;
@@ -351,6 +362,7 @@ namespace Newtonsoft.Json.Utilities
             return currentList;
         }
 
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public static Array ToMultidimensionalArray(IList values, Type type, int rank)
         {
             IList<int> dimensions = GetDimensions(values, rank);

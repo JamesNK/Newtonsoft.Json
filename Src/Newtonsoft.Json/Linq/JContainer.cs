@@ -959,9 +959,17 @@ namespace Newtonsoft.Json.Linq
 
         PropertyDescriptorCollection ITypedList.GetItemProperties(PropertyDescriptor[] listAccessors)
         {
+#if HAVE_APPCONTEXT
+            if (!MiscellaneousUtils.ComponentModelIsSupported)
+            {
+                throw new NotSupportedException(MiscellaneousUtils.ComponentModelNotSupportedMessage);
+            }
+#endif
             ICustomTypeDescriptor? d = First as ICustomTypeDescriptor;
 
+#pragma warning disable IL2026
             return d?.GetProperties() ?? new PropertyDescriptorCollection(CollectionUtils.ArrayEmpty<PropertyDescriptor>());
+#pragma warning restore IL2026
         }
 #endif
 

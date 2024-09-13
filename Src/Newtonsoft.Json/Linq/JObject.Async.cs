@@ -26,6 +26,7 @@
 #if HAVE_ASYNC
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,6 +43,8 @@ namespace Newtonsoft.Json.Linq
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous write operation.</returns>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public override Task WriteToAsync(JsonWriter writer, CancellationToken cancellationToken, params JsonConverter[] converters)
         {
             Task t = writer.WriteStartObjectAsync(cancellationToken);
@@ -62,6 +65,7 @@ namespace Newtonsoft.Json.Linq
             return writer.WriteEndObjectAsync(cancellationToken);
 
             // Local functions, params renamed (capitalized) so as not to capture and allocate when calling async
+            [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
             async Task AwaitProperties(Task task, int i, JsonWriter Writer, CancellationToken CancellationToken, JsonConverter[] Converters)
             {
                 await task.ConfigureAwait(false);

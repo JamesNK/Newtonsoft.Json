@@ -485,6 +485,8 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="o">The object that will be used to create <see cref="JObject"/>.</param>
         /// <returns>A <see cref="JObject"/> with the values of the specified object.</returns>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public new static JObject FromObject(object o)
         {
             return FromObject(o, JsonSerializer.CreateDefault());
@@ -496,6 +498,8 @@ namespace Newtonsoft.Json.Linq
         /// <param name="o">The object that will be used to create <see cref="JObject"/>.</param>
         /// <param name="jsonSerializer">The <see cref="JsonSerializer"/> that will be used to read the object.</param>
         /// <returns>A <see cref="JObject"/> with the values of the specified object.</returns>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public new static JObject FromObject(object o, JsonSerializer jsonSerializer)
         {
             JToken token = FromObjectInternal(o, jsonSerializer);
@@ -513,6 +517,8 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
         /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
         {
             writer.WriteStartObject();
@@ -742,11 +748,13 @@ namespace Newtonsoft.Json.Linq
         // include custom type descriptor on JObject rather than use a provider because the properties are specific to a type
 
         #region ICustomTypeDescriptor
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties()
         {
             return ((ICustomTypeDescriptor)this).GetProperties(null);
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         PropertyDescriptorCollection ICustomTypeDescriptor.GetProperties(Attribute[]? attributes)
         {
             PropertyDescriptor[] propertiesArray = new PropertyDescriptor[Count];
@@ -775,26 +783,31 @@ namespace Newtonsoft.Json.Linq
             return null;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         TypeConverter ICustomTypeDescriptor.GetConverter()
         {
             return new TypeConverter();
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         EventDescriptor? ICustomTypeDescriptor.GetDefaultEvent()
         {
             return null;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         PropertyDescriptor? ICustomTypeDescriptor.GetDefaultProperty()
         {
             return null;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         object? ICustomTypeDescriptor.GetEditor(Type editorBaseType)
         {
             return null;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         EventDescriptorCollection ICustomTypeDescriptor.GetEvents(Attribute[]? attributes)
         {
             return EventDescriptorCollection.Empty;
@@ -828,7 +841,15 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         protected override DynamicMetaObject GetMetaObject(Expression parameter)
         {
+#if HAVE_APPCONTEXT
+            if (!MiscellaneousUtils.DynamicIsSupported)
+            {
+                throw new NotSupportedException(MiscellaneousUtils.DynamicNotSupportedMessage);
+            }
+#endif
+#pragma warning disable IL2026
             return new DynamicProxyMetaObject<JObject>(parameter, this, new JObjectDynamicProxy());
+#pragma warning restore IL2026
         }
 
         private class JObjectDynamicProxy : DynamicProxy<JObject>

@@ -32,6 +32,7 @@ using System.Reflection;
 using System.Text;
 using Newtonsoft.Json.Serialization;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace Newtonsoft.Json.Utilities
 {
@@ -56,6 +57,8 @@ namespace Newtonsoft.Json.Utilities
 
     internal class FSharpUtils
     {
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private FSharpUtils(Assembly fsharpCoreAssembly)
         {
             FSharpCoreAssembly = fsharpCoreAssembly;
@@ -100,6 +103,8 @@ namespace Newtonsoft.Json.Utilities
         }
 
         private MethodInfo _ofSeq;
+
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
         private Type _mapType;
 
         public Assembly FSharpCoreAssembly { get; private set; }
@@ -117,6 +122,8 @@ namespace Newtonsoft.Json.Utilities
         public const string FSharpListTypeName = "FSharpList`1";
         public const string FSharpMapTypeName = "FSharpMap`2";
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public static void EnsureInitialized(Assembly fsharpCoreAssembly)
         {
             if (_instance == null)
@@ -131,7 +138,11 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        private static MethodInfo GetMethodWithNonPublicFallback(Type type, string methodName, BindingFlags bindingFlags)
+        private static MethodInfo GetMethodWithNonPublicFallback(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)]
+            Type type,
+            string methodName,
+            BindingFlags bindingFlags)
         {
             MethodInfo methodInfo = type.GetMethod(methodName, bindingFlags)!;
 
@@ -147,6 +158,8 @@ namespace Newtonsoft.Json.Utilities
             return methodInfo!;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private static MethodCall<object?, object> CreateFSharpFuncCall(Type type, string methodName)
         {
             MethodInfo innerMethodInfo = GetMethodWithNonPublicFallback(type, methodName, BindingFlags.Public | BindingFlags.Static);
@@ -166,6 +179,8 @@ namespace Newtonsoft.Json.Utilities
             return createFunction;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public ObjectConstructor<object> CreateSeq(Type t)
         {
             MethodInfo seqType = _ofSeq.MakeGenericMethod(t);
@@ -173,6 +188,8 @@ namespace Newtonsoft.Json.Utilities
             return JsonTypeReflector.ReflectionDelegateFactory.CreateParameterizedConstructor(seqType);
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public ObjectConstructor<object> CreateMap(Type keyType, Type valueType)
         {
             MethodInfo creatorDefinition = typeof(FSharpUtils).GetMethod("BuildMapCreator")!;
@@ -182,6 +199,8 @@ namespace Newtonsoft.Json.Utilities
             return (ObjectConstructor<object>)creatorGeneric.Invoke(this, null)!;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public ObjectConstructor<object> BuildMapCreator<TKey, TValue>()
         {
             Type genericMapType = _mapType.MakeGenericType(typeof(TKey), typeof(TValue));

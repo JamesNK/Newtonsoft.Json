@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
@@ -94,6 +95,8 @@ namespace Newtonsoft.Json.Serialization
         /// Initializes a new instance of the <see cref="JsonContainerContract"/> class.
         /// </summary>
         /// <param name="underlyingType">The underlying type for the contract.</param>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         internal JsonContainerContract(Type underlyingType)
             : base(underlyingType)
         {

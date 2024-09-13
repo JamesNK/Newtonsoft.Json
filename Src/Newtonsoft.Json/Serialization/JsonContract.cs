@@ -26,6 +26,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Linq;
@@ -83,6 +84,8 @@ namespace Newtonsoft.Json.Serialization
         internal bool IsNullable;
         internal bool IsConvertable;
         internal bool IsEnum;
+
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
         internal Type NonNullableUnderlyingType;
         internal ReadType InternalReadType;
         internal JsonContractType ContractType;
@@ -95,6 +98,8 @@ namespace Newtonsoft.Json.Serialization
         private List<SerializationCallback>? _onSerializedCallbacks;
         private List<SerializationCallback>? _onSerializingCallbacks;
         private List<SerializationErrorCallback>? _onErrorCallbacks;
+
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
         private Type _createdType;
 
         /// <summary>
@@ -107,6 +112,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the type created during deserialization.
         /// </summary>
         /// <value>The type created during deserialization.</value>
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
         public Type CreatedType
         {
             get => _createdType;
@@ -236,7 +242,10 @@ namespace Newtonsoft.Json.Serialization
         /// <value><c>true</c> if the default object creator is non-public; otherwise, <c>false</c>.</value>
         public bool DefaultCreatorNonPublic { get; set; }
 
-        internal JsonContract(Type underlyingType)
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        internal JsonContract(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
+            Type underlyingType)
         {
             ValidationUtils.ArgumentNotNull(underlyingType, nameof(underlyingType));
 

@@ -25,6 +25,7 @@
 
 #if HAVE_DYNAMIC
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 
 namespace Newtonsoft.Json.Utilities
@@ -42,6 +43,7 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         public virtual bool TryConvert(T instance, ConvertBinder binder, out object? result)
         {
             result = null;

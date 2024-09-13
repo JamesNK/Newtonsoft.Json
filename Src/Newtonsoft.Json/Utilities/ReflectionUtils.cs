@@ -233,7 +233,9 @@ namespace Newtonsoft.Json.Utilities
             return builder.ToString();
         }
 
-        public static bool HasDefaultConstructor(Type t, bool nonPublic)
+        public static bool HasDefaultConstructor(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] Type t,
+            bool nonPublic)
         {
             ValidationUtils.ArgumentNotNull(t, nameof(t));
 
@@ -245,12 +247,15 @@ namespace Newtonsoft.Json.Utilities
             return (GetDefaultConstructor(t, nonPublic) != null);
         }
 
-        public static ConstructorInfo? GetDefaultConstructor(Type t)
+        public static ConstructorInfo? GetDefaultConstructor(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] Type t)
         {
             return GetDefaultConstructor(t, false);
         }
 
-        public static ConstructorInfo? GetDefaultConstructor(Type t, bool nonPublic)
+        public static ConstructorInfo? GetDefaultConstructor(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)] Type t,
+            bool nonPublic)
         {
             BindingFlags bindingFlags = BindingFlags.Instance | BindingFlags.Public;
             if (nonPublic)
@@ -305,12 +310,18 @@ namespace Newtonsoft.Json.Utilities
             return (t == genericInterfaceDefinition);
         }
 
-        public static bool ImplementsGenericDefinition(Type type, Type genericInterfaceDefinition)
+        public static bool ImplementsGenericDefinition(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
+            Type type,
+            Type genericInterfaceDefinition)
         {
             return ImplementsGenericDefinition(type, genericInterfaceDefinition, out _);
         }
 
-        public static bool ImplementsGenericDefinition(Type type, Type genericInterfaceDefinition, [NotNullWhen(true)]out Type? implementingType)
+        public static bool ImplementsGenericDefinition(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)] Type type,
+            Type genericInterfaceDefinition,
+            [NotNullWhen(true)]out Type? implementingType)
         {
             ValidationUtils.ArgumentNotNull(type, nameof(type));
             ValidationUtils.ArgumentNotNull(genericInterfaceDefinition, nameof(genericInterfaceDefinition));
@@ -394,7 +405,9 @@ namespace Newtonsoft.Json.Utilities
         /// </summary>
         /// <param name="type">The type.</param>
         /// <returns>The type of the typed collection's items.</returns>
-        public static Type? GetCollectionItemType(Type type)
+        public static Type? GetCollectionItemType(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
+            Type type)
         {
             ValidationUtils.ArgumentNotNull(type, nameof(type));
 
@@ -419,7 +432,11 @@ namespace Newtonsoft.Json.Utilities
             throw new Exception("Type {0} is not a collection.".FormatWith(CultureInfo.InvariantCulture, type));
         }
 
-        public static void GetDictionaryKeyValueTypes(Type dictionaryType, out Type? keyType, out Type? valueType)
+        public static void GetDictionaryKeyValueTypes(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
+            Type dictionaryType,
+            out Type? keyType,
+            out Type? valueType)
         {
             ValidationUtils.ArgumentNotNull(dictionaryType, nameof(dictionaryType));
 
@@ -648,6 +665,7 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         public static List<MemberInfo> GetFieldsAndProperties(Type type, BindingFlags bindingAttr)
         {
             List<MemberInfo> targetMembers = new List<MemberInfo>();
@@ -701,6 +719,7 @@ namespace Newtonsoft.Json.Utilities
             return distinctMembers;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         private static bool IsOverridenGenericMember(MemberInfo memberInfo, BindingFlags bindingAttr)
         {
             if (memberInfo.MemberType() != MemberTypes.Property)
@@ -885,7 +904,22 @@ namespace Newtonsoft.Json.Utilities
             return null;
         }
 
-        public static MemberInfo? GetMemberInfoFromType(Type targetType, MemberInfo memberInfo)
+        public static MemberInfo? GetMemberInfoFromType(
+            [DynamicallyAccessedMembers(
+                DynamicallyAccessedMemberTypes.NonPublicConstructors |
+                DynamicallyAccessedMemberTypes.NonPublicEvents |
+                DynamicallyAccessedMemberTypes.NonPublicFields |
+                DynamicallyAccessedMemberTypes.NonPublicMethods |
+                DynamicallyAccessedMemberTypes.NonPublicNestedTypes |
+                DynamicallyAccessedMemberTypes.NonPublicProperties |
+                DynamicallyAccessedMemberTypes.PublicConstructors |
+                DynamicallyAccessedMemberTypes.PublicEvents |
+                DynamicallyAccessedMemberTypes.PublicFields |
+                DynamicallyAccessedMemberTypes.PublicMethods |
+                DynamicallyAccessedMemberTypes.PublicNestedTypes |
+                DynamicallyAccessedMemberTypes.PublicProperties)]
+            Type targetType,
+            MemberInfo memberInfo)
         {
             const BindingFlags bindingAttr = BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic;
 
@@ -902,7 +936,11 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        public static IEnumerable<FieldInfo> GetFields(Type targetType, BindingFlags bindingAttr)
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        public static IEnumerable<FieldInfo> GetFields(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicFields | DynamicallyAccessedMemberTypes.NonPublicFields)]
+            Type targetType,
+            BindingFlags bindingAttr)
         {
             ValidationUtils.ArgumentNotNull(targetType, nameof(targetType));
 
@@ -917,6 +955,7 @@ namespace Newtonsoft.Json.Utilities
         }
 
 #if !PORTABLE
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         private static void GetChildPrivateFields(IList<MemberInfo> initialFields, Type type, BindingFlags bindingAttr)
         {
             Type? targetType = type;
@@ -940,6 +979,7 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         public static IEnumerable<PropertyInfo> GetProperties(Type targetType, BindingFlags bindingAttr)
         {
             ValidationUtils.ArgumentNotNull(targetType, nameof(targetType));
@@ -978,6 +1018,7 @@ namespace Newtonsoft.Json.Utilities
                 : bindingAttr;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         private static void GetChildPrivateProperties(IList<PropertyInfo> initialProperties, Type type, BindingFlags bindingAttr)
         {
             // fix weirdness with private PropertyInfos only being returned for the current Type
@@ -1045,7 +1086,11 @@ namespace Newtonsoft.Json.Utilities
             }
         }
 
-        public static bool IsMethodOverridden(Type currentType, Type methodDeclaringType, string method)
+        public static bool IsMethodOverridden(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicMethods | DynamicallyAccessedMemberTypes.NonPublicMethods)]
+            Type currentType,
+            Type methodDeclaringType,
+            string method)
         {
             bool isMethodOverriden = currentType.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance)
                 .Any(info =>
@@ -1058,7 +1103,9 @@ namespace Newtonsoft.Json.Utilities
             return isMethodOverriden;
         }
 
-        public static object? GetDefaultValue(Type type)
+        public static object? GetDefaultValue(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
+            Type type)
         {
             if (!type.IsValueType())
             {

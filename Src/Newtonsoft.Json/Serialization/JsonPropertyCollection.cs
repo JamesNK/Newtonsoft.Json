@@ -71,6 +71,7 @@ namespace Newtonsoft.Json.Serialization
         /// Adds a <see cref="JsonProperty"/> object.
         /// </summary>
         /// <param name="property">The property to add to the collection.</param>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         public void AddProperty(JsonProperty property)
         {
             MiscellaneousUtils.Assert(property.PropertyName != null);

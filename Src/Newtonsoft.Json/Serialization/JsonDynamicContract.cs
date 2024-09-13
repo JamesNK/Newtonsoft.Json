@@ -25,6 +25,7 @@
 
 #if HAVE_DYNAMIC
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Runtime.CompilerServices;
 using Newtonsoft.Json.Utilities;
@@ -54,6 +55,8 @@ namespace Newtonsoft.Json.Serialization
         private readonly ThreadSafeStore<string, CallSite<Func<CallSite, object, object?, object>>> _callSiteSetters =
             new ThreadSafeStore<string, CallSite<Func<CallSite, object, object?, object>>>(CreateCallSiteSetter);
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private static CallSite<Func<CallSite, object, object>> CreateCallSiteGetter(string name)
         {
             GetMemberBinder getMemberBinder = (GetMemberBinder)DynamicUtils.BinderWrapper.GetMember(name, typeof(DynamicUtils));
@@ -61,6 +64,8 @@ namespace Newtonsoft.Json.Serialization
             return CallSite<Func<CallSite, object, object>>.Create(new NoThrowGetBinderMember(getMemberBinder));
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private static CallSite<Func<CallSite, object, object?, object>> CreateCallSiteSetter(string name)
         {
             SetMemberBinder binder = (SetMemberBinder)DynamicUtils.BinderWrapper.SetMember(name, typeof(DynamicUtils));
@@ -72,6 +77,8 @@ namespace Newtonsoft.Json.Serialization
         /// Initializes a new instance of the <see cref="JsonDynamicContract"/> class.
         /// </summary>
         /// <param name="underlyingType">The underlying type for the contract.</param>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public JsonDynamicContract(Type underlyingType)
             : base(underlyingType)
         {

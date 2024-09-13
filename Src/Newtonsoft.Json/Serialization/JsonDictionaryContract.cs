@@ -29,6 +29,7 @@ using System.Collections.ObjectModel;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
@@ -63,6 +64,7 @@ namespace Newtonsoft.Json.Serialization
 
         private readonly Type? _genericCollectionDefinitionType;
 
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)]
         private Type? _genericWrapperType;
         private ObjectConstructor<object>? _genericWrapperCreator;
 
@@ -77,6 +79,7 @@ namespace Newtonsoft.Json.Serialization
 
         internal ObjectConstructor<object>? ParameterizedCreator
         {
+            [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
             get
             {
                 if (_parameterizedCreator == null && _parameterizedConstructor != null)
@@ -110,6 +113,8 @@ namespace Newtonsoft.Json.Serialization
         /// Initializes a new instance of the <see cref="JsonDictionaryContract"/> class.
         /// </summary>
         /// <param name="underlyingType">The underlying type for the contract.</param>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public JsonDictionaryContract(Type underlyingType)
             : base(underlyingType)
         {
@@ -219,6 +224,7 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         internal IWrappedDictionary CreateWrapper(object dictionary)
         {
             if (_genericWrapperCreator == null)
@@ -232,6 +238,7 @@ namespace Newtonsoft.Json.Serialization
             return (IWrappedDictionary)_genericWrapperCreator(dictionary);
         }
 
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         internal IDictionary CreateTemporaryDictionary()
         {
             if (_genericTemporaryDictionaryCreator == null)

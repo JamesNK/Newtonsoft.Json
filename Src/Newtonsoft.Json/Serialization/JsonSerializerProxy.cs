@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.Serialization.Formatters;
 using Newtonsoft.Json.Utilities;
@@ -72,7 +73,10 @@ namespace Newtonsoft.Json.Serialization
 
         public override IContractResolver ContractResolver
         {
+            [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
             get => _serializer.ContractResolver;
+            [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+            [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
             set => _serializer.ContractResolver = value;
         }
 
@@ -234,6 +238,8 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public JsonSerializerProxy(JsonSerializerInternalReader serializerReader)
         {
             ValidationUtils.ArgumentNotNull(serializerReader, nameof(serializerReader));
@@ -242,6 +248,8 @@ namespace Newtonsoft.Json.Serialization
             _serializer = serializerReader.Serializer;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public JsonSerializerProxy(JsonSerializerInternalWriter serializerWriter)
         {
             ValidationUtils.ArgumentNotNull(serializerWriter, nameof(serializerWriter));
@@ -250,6 +258,8 @@ namespace Newtonsoft.Json.Serialization
             _serializer = serializerWriter.Serializer;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         internal override object? DeserializeInternal(JsonReader reader, Type? objectType)
         {
             if (_serializerReader != null)
@@ -262,6 +272,8 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         internal override void PopulateInternal(JsonReader reader, object target)
         {
             if (_serializerReader != null)
@@ -274,6 +286,8 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         internal override void SerializeInternal(JsonWriter jsonWriter, object? value, Type? rootType)
         {
             if (_serializerWriter != null)

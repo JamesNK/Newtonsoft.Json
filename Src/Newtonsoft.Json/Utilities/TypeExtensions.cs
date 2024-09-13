@@ -578,7 +578,12 @@ namespace Newtonsoft.Json.Utilities
 #endif
         }
 
-        public static bool AssignableToTypeName(this Type type, string fullTypeName, bool searchInterfaces, [NotNullWhen(true)]out Type? match)
+        public static bool AssignableToTypeName(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
+            this Type type,
+            string fullTypeName,
+            bool searchInterfaces,
+            [NotNullWhen(true)]out Type? match)
         {
             Type? current = type;
 
@@ -609,11 +614,16 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
-        public static bool AssignableToTypeName(this Type type, string fullTypeName, bool searchInterfaces)
+        public static bool AssignableToTypeName(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
+            this Type type,
+            string fullTypeName,
+            bool searchInterfaces)
         {
             return type.AssignableToTypeName(fullTypeName, searchInterfaces, out _);
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         public static bool ImplementInterface(this Type type, Type interfaceType)
         {
             for (Type? currentType = type; currentType != null; currentType = currentType.BaseType())

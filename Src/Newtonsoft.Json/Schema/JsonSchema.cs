@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
@@ -318,6 +319,8 @@ namespace Newtonsoft.Json.Schema
         /// Writes this schema to a <see cref="JsonWriter"/>.
         /// </summary>
         /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public void WriteTo(JsonWriter writer)
         {
             WriteTo(writer, new JsonSchemaResolver());
@@ -328,6 +331,8 @@ namespace Newtonsoft.Json.Schema
         /// </summary>
         /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
         /// <param name="resolver">The resolver used.</param>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public void WriteTo(JsonWriter writer, JsonSchemaResolver resolver)
         {
             ValidationUtils.ArgumentNotNull(writer, nameof(writer));
@@ -345,11 +350,19 @@ namespace Newtonsoft.Json.Schema
         /// </returns>
         public override string ToString()
         {
+#if HAVE_APPCONTEXT
+            if (!MiscellaneousUtils.SerializationIsSupported)
+            {
+                throw new NotSupportedException(MiscellaneousUtils.SerializationNotSupportedMessage);
+            }
+#endif
             StringWriter writer = new StringWriter(CultureInfo.InvariantCulture);
             JsonTextWriter jsonWriter = new JsonTextWriter(writer);
             jsonWriter.Formatting = Formatting.Indented;
 
+#pragma warning disable IL2026
             WriteTo(jsonWriter);
+#pragma warning restore IL2026
 
             return writer.ToString();
         }
