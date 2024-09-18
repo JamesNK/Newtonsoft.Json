@@ -578,12 +578,31 @@ namespace Newtonsoft.Json.Utilities
 #endif
         }
 
-        public static bool AssignableToTypeName(
+        public static bool AssignableToTypeNameIncludingInterfaces(
             [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
             this Type type,
             string fullTypeName,
-            bool searchInterfaces,
             [NotNullWhen(true)]out Type? match)
+        {
+            if (AssignableToTypeName(type, fullTypeName, out match))
+            {
+                return true;
+            }
+
+            foreach (Type i in type.GetInterfaces())
+            {
+                if (string.Equals(i.Name, fullTypeName, StringComparison.Ordinal))
+                {
+                    match = type;
+                    return true;
+                }
+            }
+
+            match = null;
+            return false;
+        }
+
+        public static bool AssignableToTypeName(this Type type, string fullTypeName, [NotNullWhen(true)]out Type? match)
         {
             Type? current = type;
 
@@ -598,29 +617,13 @@ namespace Newtonsoft.Json.Utilities
                 current = current.BaseType();
             }
 
-            if (searchInterfaces)
-            {
-                foreach (Type i in type.GetInterfaces())
-                {
-                    if (string.Equals(i.Name, fullTypeName, StringComparison.Ordinal))
-                    {
-                        match = type;
-                        return true;
-                    }
-                }
-            }
-
             match = null;
             return false;
         }
 
-        public static bool AssignableToTypeName(
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.Interfaces)]
-            this Type type,
-            string fullTypeName,
-            bool searchInterfaces)
+        public static bool AssignableToTypeName(this Type type, string fullTypeName)
         {
-            return type.AssignableToTypeName(fullTypeName, searchInterfaces, out _);
+            return AssignableToTypeName(type, fullTypeName, out _);
         }
 
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]

@@ -44,7 +44,6 @@ namespace Newtonsoft.Json.Converters
 {
     #region XmlNodeWrappers
 #if HAVE_XML_DOCUMENT
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XmlDocumentWrapper : XmlNodeWrapper, IXmlDocument
     {
         private readonly XmlDocument _document;
@@ -137,7 +136,6 @@ namespace Newtonsoft.Json.Converters
         }
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XmlElementWrapper : XmlNodeWrapper, IXmlElement
     {
         private readonly XmlElement _element;
@@ -163,7 +161,6 @@ namespace Newtonsoft.Json.Converters
         public bool IsEmpty => _element.IsEmpty;
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XmlDeclarationWrapper : XmlNodeWrapper, IXmlDeclaration
     {
         private readonly XmlDeclaration _declaration;
@@ -190,7 +187,6 @@ namespace Newtonsoft.Json.Converters
     }
 
 #if HAVE_XML_DOCUMENT_TYPE
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XmlDocumentTypeWrapper : XmlNodeWrapper, IXmlDocumentType
     {
         private readonly XmlDocumentType _documentType;
@@ -213,7 +209,6 @@ namespace Newtonsoft.Json.Converters
     }
 #endif
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XmlNodeWrapper : IXmlNode
     {
         private readonly XmlNode _node;
@@ -410,7 +405,6 @@ namespace Newtonsoft.Json.Converters
 
 #region XNodeWrappers
 #if HAVE_XLINQ
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XDeclarationWrapper : XObjectWrapper, IXmlDeclaration
     {
         internal XDeclaration Declaration { get; }
@@ -438,7 +432,6 @@ namespace Newtonsoft.Json.Converters
         }
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XDocumentTypeWrapper : XObjectWrapper, IXmlDocumentType
     {
         private readonly XDocumentType _documentType;
@@ -460,7 +453,6 @@ namespace Newtonsoft.Json.Converters
         public override string? LocalName => "DOCTYPE";
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XDocumentWrapper : XContainerWrapper, IXmlDocument
     {
         private XDocument Document => (XDocument)WrappedNode!;
@@ -586,7 +578,6 @@ namespace Newtonsoft.Json.Converters
         }
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XTextWrapper : XObjectWrapper
     {
         private XText Text => (XText)WrappedNode!;
@@ -616,7 +607,6 @@ namespace Newtonsoft.Json.Converters
         }
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XCommentWrapper : XObjectWrapper
     {
         private XComment Text => (XComment)WrappedNode!;
@@ -646,7 +636,6 @@ namespace Newtonsoft.Json.Converters
         }
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XProcessingInstructionWrapper : XObjectWrapper
     {
         private XProcessingInstruction ProcessingInstruction => (XProcessingInstruction)WrappedNode!;
@@ -665,7 +654,6 @@ namespace Newtonsoft.Json.Converters
         }
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XContainerWrapper : XObjectWrapper
     {
         private List<IXmlNode>? _childNodes;
@@ -772,7 +760,6 @@ namespace Newtonsoft.Json.Converters
         }
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XObjectWrapper : IXmlNode
     {
         private readonly XObject? _xmlObject;
@@ -808,7 +795,6 @@ namespace Newtonsoft.Json.Converters
         public virtual string? NamespaceUri => null;
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XAttributeWrapper : XObjectWrapper
     {
         private XAttribute Attribute => (XAttribute)WrappedNode!;
@@ -842,7 +828,6 @@ namespace Newtonsoft.Json.Converters
         }
     }
 
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     internal class XElementWrapper : XContainerWrapper, IXmlElement
     {
         private List<IXmlNode>? _attributes;
@@ -954,7 +939,6 @@ namespace Newtonsoft.Json.Converters
     /// <summary>
     /// Converts XML to and from JSON.
     /// </summary>
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     public class XmlNodeConverter : JsonConverter
     {
         internal static readonly List<IXmlNode> EmptyChildNodes = new List<IXmlNode>();
@@ -2214,13 +2198,13 @@ namespace Newtonsoft.Json.Converters
         public override bool CanConvert(Type valueType)
         {
 #if HAVE_XLINQ
-            if (valueType.AssignableToTypeName("System.Xml.Linq.XObject", false))
+            if (valueType.AssignableToTypeName("System.Xml.Linq.XObject"))
             {
                 return IsXObject(valueType);
             }
 #endif
 #if HAVE_XML_DOCUMENT
-            if (valueType.AssignableToTypeName("System.Xml.XmlNode", false))
+            if (valueType.AssignableToTypeName("System.Xml.XmlNode"))
             {
                 return IsXmlNode(valueType);
             }

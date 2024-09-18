@@ -293,7 +293,7 @@ namespace Newtonsoft.Json.Serialization
 
 #if HAVE_DATA_CONTRACTS
                 // don't include EntityKey on entities objects... this is a bit hacky
-                if (objectType.AssignableToTypeName("System.Data.Objects.DataClasses.EntityObject", false, out _))
+                if (objectType.AssignableToTypeName("System.Data.Objects.DataClasses.EntityObject", out _))
                 {
                     serializableMembers = serializableMembers.Where(ShouldSerializeEntityMember).ToList();
                 }
