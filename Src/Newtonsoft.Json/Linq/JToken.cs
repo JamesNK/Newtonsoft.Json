@@ -86,14 +86,14 @@ namespace Newtonsoft.Json.Linq
         [FeatureGuard(typeof(RequiresDynamicCodeAttribute))]
         internal static bool SerializationIsSupported => AppContext.TryGetSwitch("Newtonsoft.Json.Linq.JToken.SerializationIsSupported", out bool isSupported) ? isSupported : true;
 
-        internal const string SerializationNotSupportedMessage = "Newtonsoft.Json serialization is not compatible with trimming and has been disabled. Newtonsoft.Json.SerializationIsSupported is set to false.";
+        internal const string SerializationNotSupportedMessage = "Newtonsoft.Json serialization is not compatible with trimming and has been disabled. Newtonsoft.Json.Linq.JToken.SerializationIsSupported is set to false.";
 
 #if HAVE_COMPONENT_MODEL
         [FeatureSwitchDefinition("Newtonsoft.Json.Linq.JToken.ComponentModelIsSupported")]
         [FeatureGuard(typeof(RequiresUnreferencedCodeAttribute))]
         internal static bool ComponentModelIsSupported => AppContext.TryGetSwitch("Newtonsoft.Json.Linq.JToken.ComponentModelIsSupported", out bool isSupported) ? isSupported : true;
 
-        internal const string ComponentModelNotSupportedMessage = "Newtonsoft.Json support for System.ComponentModel is not compatible with trimming and has been disabled. Newtonsoft.Json.ComponentModelIsSupported is set to false.";
+        internal const string ComponentModelNotSupportedMessage = "Newtonsoft.Json support for System.ComponentModel is not compatible with trimming and has been disabled. Newtonsoft.Json.Linq.JToken.ComponentModelIsSupported is set to false.";
 #endif // HAVE_COMPONENT_MODEL
 
 #if HAVE_DYNAMIC
@@ -102,7 +102,7 @@ namespace Newtonsoft.Json.Linq
         [FeatureGuard(typeof(RequiresDynamicCodeAttribute))]
         internal static bool DynamicIsSupported => AppContext.TryGetSwitch("Newtonsoft.Json.Linq.JToken.DynamicIsSupported", out bool isSupported) ? isSupported : true;
 
-        internal const string DynamicNotSupportedMessage = "Newtonsoft.Json support for dynamic is not compatible with trimming and has been disabled. Newtonsoft.Json.DynamicIsSupported is set to false.";
+        internal const string DynamicNotSupportedMessage = "Newtonsoft.Json support for dynamic is not compatible with trimming and has been disabled. Newtonsoft.Json.Linq.JToken.DynamicIsSupported is set to false.";
 #endif // HAVE_DYNAMIC
 
 #endif // HAVE_APCONTEXT
