@@ -40,8 +40,11 @@
     Disable that warning since local builds do not strong-name sign the assembly, causing a mistmatch when comparing
     the previously shipped assemblies and current.-->
     <NoWarn Condition="'$(SignAssembly)' != 'true'">$(NoWarn);CP0003</NoWarn>
-    <IsTrimmable Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net6.0'))">true</IsTrimmable>
-    <IsAotCompatible Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</IsAotCompatible>
+    <!-- Enable the analyzers directly instead of setting IsTrimmable or IsAotCompatible, to avoid adding IsTrimmable assembly metadata.
+         This should help avoid breaking consumers who use partial TrimMode. -->
+    <EnableSingleFileAnalyzer Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net6.0'))">true</EnableSingleFileAnalyzer>
+    <EnableTrimAnalyzer Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net6.0'))">true</EnableTrimAnalyzer>
+    <EnableAotAnalyzer Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net7.0'))">true</EnableAotAnalyzer>
   </PropertyGroup>
   <ItemGroup>
     <None Remove="**\*.orig" />
