@@ -360,9 +360,9 @@ namespace Newtonsoft.Json.Schema
             JsonTextWriter jsonWriter = new JsonTextWriter(writer);
             jsonWriter.Formatting = Formatting.Indented;
 
-#pragma warning disable IL2026
+#pragma warning disable IL2026, IL3050
             WriteTo(jsonWriter);
-#pragma warning restore IL2026
+#pragma warning restore IL2026, IL3050
 
             return writer.ToString();
         }

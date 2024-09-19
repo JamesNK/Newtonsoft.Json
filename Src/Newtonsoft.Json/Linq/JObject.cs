@@ -847,9 +847,9 @@ namespace Newtonsoft.Json.Linq
                 throw new NotSupportedException(MiscellaneousUtils.DynamicNotSupportedMessage);
             }
 #endif
-#pragma warning disable IL2026
+#pragma warning disable IL2026, IL3050
             return new DynamicProxyMetaObject<JObject>(parameter, this, new JObjectDynamicProxy());
-#pragma warning restore IL2026
+#pragma warning restore IL2026, IL3050
         }
 
         private class JObjectDynamicProxy : DynamicProxy<JObject>

@@ -980,9 +980,9 @@ namespace Newtonsoft.Json.Linq
                 throw new NotSupportedException(MiscellaneousUtils.DynamicNotSupportedMessage);
             }
 #endif
-#pragma warning disable IL2026
+#pragma warning disable IL2026, IL3050
             return new DynamicProxyMetaObject<JValue>(parameter, this, new JValueDynamicProxy());
-#pragma warning restore IL2026
+#pragma warning restore IL2026, IL3050
         }
 
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
@@ -1206,9 +1206,9 @@ namespace Newtonsoft.Json.Linq
                 throw new NotSupportedException(MiscellaneousUtils.SerializationNotSupportedMessage);
             }
 #endif
-#pragma warning disable IL2026
+#pragma warning disable IL2026, IL3050
             return ToObject(conversionType)!;
-#pragma warning restore IL2026
+#pragma warning restore IL2026, IL3050
         }
 #endif
     }

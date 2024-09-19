@@ -438,9 +438,9 @@ namespace Newtonsoft.Json.Linq
                 throw new NotSupportedException(MiscellaneousUtils.SerializationNotSupportedMessage);
             }
 #endif
-#pragma warning disable IL2026
+#pragma warning disable IL2026, IL3050
             return ToString(Formatting.Indented);
-#pragma warning restore IL2026
+#pragma warning restore IL2026, IL3050
         }
 
         /// <summary>
