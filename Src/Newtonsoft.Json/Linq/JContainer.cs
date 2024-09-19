@@ -960,9 +960,9 @@ namespace Newtonsoft.Json.Linq
         PropertyDescriptorCollection ITypedList.GetItemProperties(PropertyDescriptor[] listAccessors)
         {
 #if HAVE_APPCONTEXT
-            if (!MiscellaneousUtils.ComponentModelIsSupported)
+            if (!ComponentModelIsSupported)
             {
-                throw new NotSupportedException(MiscellaneousUtils.ComponentModelNotSupportedMessage);
+                throw new NotSupportedException(ComponentModelNotSupportedMessage);
             }
 #endif
             ICustomTypeDescriptor? d = First as ICustomTypeDescriptor;

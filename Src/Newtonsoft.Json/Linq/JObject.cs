@@ -842,9 +842,9 @@ namespace Newtonsoft.Json.Linq
         protected override DynamicMetaObject GetMetaObject(Expression parameter)
         {
 #if HAVE_APPCONTEXT
-            if (!MiscellaneousUtils.DynamicIsSupported)
+            if (!DynamicIsSupported)
             {
-                throw new NotSupportedException(MiscellaneousUtils.DynamicNotSupportedMessage);
+                throw new NotSupportedException(DynamicNotSupportedMessage);
             }
 #endif
 #pragma warning disable IL2026, IL3050

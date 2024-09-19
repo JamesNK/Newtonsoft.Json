@@ -351,9 +351,9 @@ namespace Newtonsoft.Json.Schema
         public override string ToString()
         {
 #if HAVE_APPCONTEXT
-            if (!MiscellaneousUtils.SerializationIsSupported)
+            if (!JToken.SerializationIsSupported)
             {
-                throw new NotSupportedException(MiscellaneousUtils.SerializationNotSupportedMessage);
+                throw new NotSupportedException(JToken.SerializationNotSupportedMessage);
             }
 #endif
             StringWriter writer = new StringWriter(CultureInfo.InvariantCulture);

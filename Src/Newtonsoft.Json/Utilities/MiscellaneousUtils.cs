@@ -44,33 +44,6 @@ namespace Newtonsoft.Json.Utilities
 
         internal const string AotWarning = "Newtonsoft.Json relies on dynamically creating types that may not be available with Ahead of Time compilation.";
 
-#if HAVE_APPCONTEXT
-        [FeatureSwitchDefinition("Newtonsoft.Json.SerializationIsSupported")]
-        [FeatureGuard(typeof(RequiresUnreferencedCodeAttribute))]
-        [FeatureGuard(typeof(RequiresDynamicCodeAttribute))]
-        internal static bool SerializationIsSupported => AppContext.TryGetSwitch("Newtonsoft.Json.SerializationIsSupported", out bool isSupported) ? isSupported : true;
-
-        internal const string SerializationNotSupportedMessage = "Newtonsoft.Json serialization is not compatible with trimming and has been disabled. Newtonsoft.Json.SerializationIsSupported is set to false.";
-
-#if HAVE_COMPONENT_MODEL
-        [FeatureSwitchDefinition("Newtonsoft.Json.ComponentModelIsSupported")]
-        [FeatureGuard(typeof(RequiresUnreferencedCodeAttribute))]
-        internal static bool ComponentModelIsSupported => AppContext.TryGetSwitch("Newtonsoft.Json.ComponentModelIsSupported", out bool isSupported) ? isSupported : true;
-
-        internal const string ComponentModelNotSupportedMessage = "Newtonsoft.Json support for System.ComponentModel is not compatible with trimming and has been disabled. Newtonsoft.Json.ComponentModelIsSupported is set to false.";
-#endif // HAVE_COMPONENT_MODEL
-
-#if HAVE_DYNAMIC
-        [FeatureSwitchDefinition("Newtonsoft.Json.DynamicIsSupported")]
-        [FeatureGuard(typeof(RequiresUnreferencedCodeAttribute))]
-        [FeatureGuard(typeof(RequiresDynamicCodeAttribute))]
-        internal static bool DynamicIsSupported => AppContext.TryGetSwitch("Newtonsoft.Json.DynamicIsSupported", out bool isSupported) ? isSupported : true;
-
-        internal const string DynamicNotSupportedMessage = "Newtonsoft.Json support for dynamic is not compatible with trimming and has been disabled. Newtonsoft.Json.DynamicIsSupported is set to false.";
-#endif // HAVE_DYNAMIC
-
-#endif // HAVE_APCONTEXT
-
         [Conditional("DEBUG")]
         public static void Assert([DoesNotReturnIf(false)] bool condition, string? message = null)
         {

@@ -80,6 +80,33 @@ namespace Newtonsoft.Json.Linq
         private static readonly JTokenType[] DateTimeTypes = new[] { JTokenType.Date, JTokenType.String, JTokenType.Comment, JTokenType.Raw };
         private static readonly JTokenType[] BytesTypes = new[] { JTokenType.Bytes, JTokenType.String, JTokenType.Comment, JTokenType.Raw, JTokenType.Integer };
 
+#if HAVE_APPCONTEXT
+        [FeatureSwitchDefinition("Newtonsoft.Json.Linq.JToken.SerializationIsSupported")]
+        [FeatureGuard(typeof(RequiresUnreferencedCodeAttribute))]
+        [FeatureGuard(typeof(RequiresDynamicCodeAttribute))]
+        internal static bool SerializationIsSupported => AppContext.TryGetSwitch("Newtonsoft.Json.Linq.JToken.SerializationIsSupported", out bool isSupported) ? isSupported : true;
+
+        internal const string SerializationNotSupportedMessage = "Newtonsoft.Json serialization is not compatible with trimming and has been disabled. Newtonsoft.Json.SerializationIsSupported is set to false.";
+
+#if HAVE_COMPONENT_MODEL
+        [FeatureSwitchDefinition("Newtonsoft.Json.Linq.JToken.ComponentModelIsSupported")]
+        [FeatureGuard(typeof(RequiresUnreferencedCodeAttribute))]
+        internal static bool ComponentModelIsSupported => AppContext.TryGetSwitch("Newtonsoft.Json.Linq.JToken.ComponentModelIsSupported", out bool isSupported) ? isSupported : true;
+
+        internal const string ComponentModelNotSupportedMessage = "Newtonsoft.Json support for System.ComponentModel is not compatible with trimming and has been disabled. Newtonsoft.Json.ComponentModelIsSupported is set to false.";
+#endif // HAVE_COMPONENT_MODEL
+
+#if HAVE_DYNAMIC
+        [FeatureSwitchDefinition("Newtonsoft.Json.Linq.JToken.DynamicIsSupported")]
+        [FeatureGuard(typeof(RequiresUnreferencedCodeAttribute))]
+        [FeatureGuard(typeof(RequiresDynamicCodeAttribute))]
+        internal static bool DynamicIsSupported => AppContext.TryGetSwitch("Newtonsoft.Json.Linq.JToken.DynamicIsSupported", out bool isSupported) ? isSupported : true;
+
+        internal const string DynamicNotSupportedMessage = "Newtonsoft.Json support for dynamic is not compatible with trimming and has been disabled. Newtonsoft.Json.DynamicIsSupported is set to false.";
+#endif // HAVE_DYNAMIC
+
+#endif // HAVE_APCONTEXT
+
         /// <summary>
         /// Gets a comparer that can compare two tokens for value equality.
         /// </summary>
@@ -433,9 +460,9 @@ namespace Newtonsoft.Json.Linq
         public override string ToString()
         {
 #if HAVE_APPCONTEXT
-            if (!MiscellaneousUtils.SerializationIsSupported)
+            if (!SerializationIsSupported)
             {
-                throw new NotSupportedException(MiscellaneousUtils.SerializationNotSupportedMessage);
+                throw new NotSupportedException(SerializationNotSupportedMessage);
             }
 #endif
 #pragma warning disable IL2026, IL3050
@@ -2441,9 +2468,9 @@ namespace Newtonsoft.Json.Linq
         protected virtual DynamicMetaObject GetMetaObject(Expression parameter)
         {
 #if HAVE_APPCONTEXT
-            if (!MiscellaneousUtils.DynamicIsSupported)
+            if (!DynamicIsSupported)
             {
-                throw new NotSupportedException(MiscellaneousUtils.DynamicNotSupportedMessage);
+                throw new NotSupportedException(DynamicNotSupportedMessage);
             }
 #endif
 #pragma warning disable IL2026, IL3050

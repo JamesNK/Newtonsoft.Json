@@ -975,9 +975,9 @@ namespace Newtonsoft.Json.Linq
         protected override DynamicMetaObject GetMetaObject(Expression parameter)
         {
 #if HAVE_APPCONTEXT
-            if (!MiscellaneousUtils.DynamicIsSupported)
+            if (!DynamicIsSupported)
             {
-                throw new NotSupportedException(MiscellaneousUtils.DynamicNotSupportedMessage);
+                throw new NotSupportedException(DynamicNotSupportedMessage);
             }
 #endif
 #pragma warning disable IL2026, IL3050
@@ -1201,9 +1201,9 @@ namespace Newtonsoft.Json.Linq
         object IConvertible.ToType(Type conversionType, IFormatProvider? provider)
         {
 #if HAVE_APPCONTEXT
-            if (!MiscellaneousUtils.SerializationIsSupported)
+            if (!SerializationIsSupported)
             {
-                throw new NotSupportedException(MiscellaneousUtils.SerializationNotSupportedMessage);
+                throw new NotSupportedException(SerializationNotSupportedMessage);
             }
 #endif
 #pragma warning disable IL2026, IL3050
