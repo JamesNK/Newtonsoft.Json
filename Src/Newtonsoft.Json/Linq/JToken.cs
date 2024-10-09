@@ -105,7 +105,7 @@ namespace Newtonsoft.Json.Linq
         internal const string DynamicNotSupportedMessage = "Newtonsoft.Json support for dynamic is not compatible with trimming and has been disabled. Newtonsoft.Json.Linq.JToken.DynamicIsSupported is set to false.";
 #endif // HAVE_DYNAMIC
 
-#endif // HAVE_APCONTEXT
+#endif // HAVE_APPCONTEXT
 
         /// <summary>
         /// Gets a comparer that can compare two tokens for value equality.
