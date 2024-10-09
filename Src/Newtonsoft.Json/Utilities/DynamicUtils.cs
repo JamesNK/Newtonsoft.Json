@@ -161,6 +161,7 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class NoThrowGetBinderMember : GetMemberBinder
     {
         private readonly GetMemberBinder _innerBinder;
@@ -183,6 +184,7 @@ namespace Newtonsoft.Json.Utilities
         }
     }
 
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class NoThrowSetBinderMember : SetMemberBinder
     {
         private readonly SetMemberBinder _innerBinder;
