@@ -25,7 +25,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
 #if HAVE_BIG_INTEGER
 using System.Numerics;
 #endif
@@ -55,8 +54,6 @@ namespace Newtonsoft.Json
     /// </note>
     /// </summary>
     [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
-    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
-    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class JsonValidatingReader : JsonReader, IJsonLineInfo
     {
         private class SchemaScope

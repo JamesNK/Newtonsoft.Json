@@ -442,6 +442,17 @@ namespace Newtonsoft.Json.Linq
         /// Writes this token to a <see cref="JsonWriter"/>.
         /// </summary>
         /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "WriteTo without converters is safe.")]
+        [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "WriteTo without converters is safe.")]
+        public void WriteTo(JsonWriter writer)
+        {
+            WriteTo(writer, CollectionUtils.ArrayEmpty<JsonConverter>());
+        }
+
+        /// <summary>
+        /// Writes this token to a <see cref="JsonWriter"/>.
+        /// </summary>
+        /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
         /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
@@ -459,15 +470,25 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public override string ToString()
         {
-#if HAVE_APPCONTEXT
-            if (!SerializationIsSupported)
-            {
-                throw new NotSupportedException(SerializationNotSupportedMessage);
-            }
-#endif
-#pragma warning disable IL2026, IL3050
             return ToString(Formatting.Indented);
-#pragma warning restore IL2026, IL3050
+        }
+
+        /// <summary>
+        /// Returns the JSON for this token using the given formatting and converters.
+        /// </summary>
+        /// <param name="formatting">Indicates how the output should be formatted.</param>
+        /// <returns>The JSON for this token using the given formatting and converters.</returns>
+        public string ToString(Formatting formatting)
+        {
+            using (StringWriter sw = new StringWriter(CultureInfo.InvariantCulture))
+            {
+                JsonTextWriter jw = new JsonTextWriter(sw);
+                jw.Formatting = formatting;
+
+                WriteTo(jw);
+
+                return sw.ToString();
+            }
         }
 
         /// <summary>
