@@ -78,6 +78,17 @@ namespace Newtonsoft.Json.Tests.Converters
                 StringAssert.AreEqual(expectedJson, json);
             }
 
+            internal static void SerializeVersionWithFieldCount(string originVersion, int fieldCount, string expectedVersion)
+            {
+                Version version = new Version(originVersion);
+
+                string json = JsonConvert.SerializeObject(version, Formatting.Indented, new VersionConverter{VersionFieldCount = fieldCount});
+
+                string expectedJson = $@"""{expectedVersion}""";
+
+                StringAssert.AreEqual(expectedJson, json);
+            }
+
             internal static void DeserializeVersionClass(string version1, string version2)
             {
                 string json = string.Format(@"{{""StringProperty1"": ""StringProperty1"", ""Version1"": ""{0}"", ""Version2"": ""{1}"", ""StringProperty2"": ""StringProperty2""}}", version1, version2);
@@ -116,6 +127,19 @@ namespace Newtonsoft.Json.Tests.Converters
             VersionHelperClass.SerializeVersionClass("1.2", "2.3");
             VersionHelperClass.SerializeVersionClass("1.2.3", "2.3.4");
             VersionHelperClass.SerializeVersionClass("1.2.3.4", "2.3.4.5");
+        }
+
+        [Test]
+        public void SerializeVersionClassWithFieldCount()
+        {
+            VersionHelperClass.SerializeVersionWithFieldCount("1.2.3.4", 0, "1.2.3.4");
+            VersionHelperClass.SerializeVersionWithFieldCount("1.2.3.4", 1, "1");
+            VersionHelperClass.SerializeVersionWithFieldCount("1.2.3.4", 2, "1.2");
+            VersionHelperClass.SerializeVersionWithFieldCount("1.2.3.4", 3, "1.2.3");
+            VersionHelperClass.SerializeVersionWithFieldCount("1.2.3.4", 4, "1.2.3.4");
+            VersionHelperClass.SerializeVersionWithFieldCount("1.2.3.4", 5, "1.2.3.4");
+
+            VersionHelperClass.SerializeVersionWithFieldCount("1.2", 3, "1.2");
         }
 
         [Test]
