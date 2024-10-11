@@ -2198,13 +2198,13 @@ namespace Newtonsoft.Json.Converters
         public override bool CanConvert(Type valueType)
         {
 #if HAVE_XLINQ
-            if (valueType.AssignableToTypeName("System.Xml.Linq.XObject", false))
+            if (valueType.AssignableToTypeName("System.Xml.Linq.XObject"))
             {
                 return IsXObject(valueType);
             }
 #endif
 #if HAVE_XML_DOCUMENT
-            if (valueType.AssignableToTypeName("System.Xml.XmlNode", false))
+            if (valueType.AssignableToTypeName("System.Xml.XmlNode"))
             {
                 return IsXmlNode(valueType);
             }

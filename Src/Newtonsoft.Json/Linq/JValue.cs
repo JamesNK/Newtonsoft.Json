@@ -727,6 +727,8 @@ namespace Newtonsoft.Json.Linq
         /// </summary>
         /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
         /// <param name="converters">A collection of <see cref="JsonConverter"/>s which will be used when writing the token.</param>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public override void WriteTo(JsonWriter writer, params JsonConverter[] converters)
         {
             if (converters != null && converters.Length > 0 && _value != null)
@@ -972,9 +974,19 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         protected override DynamicMetaObject GetMetaObject(Expression parameter)
         {
+#if HAVE_APPCONTEXT
+            if (!DynamicIsSupported)
+            {
+                throw new NotSupportedException(DynamicNotSupportedMessage);
+            }
+#endif
+#pragma warning disable IL2026, IL3050
             return new DynamicProxyMetaObject<JValue>(parameter, this, new JValueDynamicProxy());
+#pragma warning restore IL2026, IL3050
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private class JValueDynamicProxy : DynamicProxy<JValue>
         {
             public override bool TryConvert(JValue instance, ConvertBinder binder, [NotNullWhen(true)]out object? result)
@@ -1188,7 +1200,15 @@ namespace Newtonsoft.Json.Linq
 
         object IConvertible.ToType(Type conversionType, IFormatProvider? provider)
         {
+#if HAVE_APPCONTEXT
+            if (!SerializationIsSupported)
+            {
+                throw new NotSupportedException(SerializationNotSupportedMessage);
+            }
+#endif
+#pragma warning disable IL2026, IL3050
             return ToObject(conversionType)!;
+#pragma warning restore IL2026, IL3050
         }
 #endif
     }

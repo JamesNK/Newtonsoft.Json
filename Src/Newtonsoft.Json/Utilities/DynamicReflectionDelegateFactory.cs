@@ -26,6 +26,7 @@
 #if HAVE_REFLECTION_EMIT
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #endif
@@ -40,6 +41,7 @@ namespace Newtonsoft.Json.Utilities
     {
         internal static DynamicReflectionDelegateFactory Instance { get; } = new DynamicReflectionDelegateFactory();
 
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private static DynamicMethod CreateDynamicMethod(string name, Type? returnType, Type[] parameterTypes, Type owner)
         {
             DynamicMethod dynamicMethod = !owner.IsInterface()
@@ -49,6 +51,7 @@ namespace Newtonsoft.Json.Utilities
             return dynamicMethod;
         }
 
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public override ObjectConstructor<object> CreateParameterizedConstructor(MethodBase method)
         {
             DynamicMethod dynamicMethod = CreateDynamicMethod(method.ToString()!, typeof(object), new[] { typeof(object[]) }, method.DeclaringType!);
@@ -59,6 +62,7 @@ namespace Newtonsoft.Json.Utilities
             return (ObjectConstructor<object>)dynamicMethod.CreateDelegate(typeof(ObjectConstructor<object>));
         }
 
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public override MethodCall<T, object?> CreateMethodCall<T>(MethodBase method)
         {
             DynamicMethod dynamicMethod = CreateDynamicMethod(method.ToString()!, typeof(object), new[] { typeof(object), typeof(object[]) }, method.DeclaringType!);
@@ -242,7 +246,10 @@ namespace Newtonsoft.Json.Utilities
             generator.Return();
         }
 
-        public override Func<T> CreateDefaultConstructor<T>(Type type)
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
+        public override Func<T> CreateDefaultConstructor<T>(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
+            Type type)
         {
             DynamicMethod dynamicMethod = CreateDynamicMethod("Create" + type.FullName, typeof(T), ReflectionUtils.EmptyTypes, type);
             dynamicMethod.InitLocals = true;
@@ -253,7 +260,11 @@ namespace Newtonsoft.Json.Utilities
             return (Func<T>)dynamicMethod.CreateDelegate(typeof(Func<T>));
         }
 
-        private void GenerateCreateDefaultConstructorIL(Type type, ILGenerator generator, Type delegateType)
+        private void GenerateCreateDefaultConstructorIL(
+            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors | DynamicallyAccessedMemberTypes.NonPublicConstructors)]
+            Type type,
+            ILGenerator generator,
+            Type delegateType)
         {
             if (type.IsValueType())
             {
@@ -282,6 +293,7 @@ namespace Newtonsoft.Json.Utilities
             generator.Return();
         }
 
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public override Func<T, object?> CreateGet<T>(PropertyInfo propertyInfo)
         {
             DynamicMethod dynamicMethod = CreateDynamicMethod("Get" + propertyInfo.Name, typeof(object), new[] { typeof(T) }, propertyInfo.DeclaringType!);
@@ -310,6 +322,7 @@ namespace Newtonsoft.Json.Utilities
             generator.Return();
         }
 
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public override Func<T, object?> CreateGet<T>(FieldInfo fieldInfo)
         {
             if (fieldInfo.IsLiteral)
@@ -343,6 +356,7 @@ namespace Newtonsoft.Json.Utilities
             generator.Return();
         }
 
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public override Action<T, object?> CreateSet<T>(FieldInfo fieldInfo)
         {
             DynamicMethod dynamicMethod = CreateDynamicMethod("Set" + fieldInfo.Name, null, new[] { typeof(T), typeof(object) }, fieldInfo.DeclaringType!);
@@ -375,6 +389,7 @@ namespace Newtonsoft.Json.Utilities
             generator.Return();
         }
 
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public override Action<T, object?> CreateSet<T>(PropertyInfo propertyInfo)
         {
             DynamicMethod dynamicMethod = CreateDynamicMethod("Set" + propertyInfo.Name, null, new[] { typeof(T), typeof(object) }, propertyInfo.DeclaringType!);

@@ -25,6 +25,7 @@
 
 #if HAVE_BINARY_SERIALIZATION
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Runtime.Serialization;
 using Newtonsoft.Json.Utilities;
@@ -32,6 +33,8 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Serialization
 {
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class JsonFormatterConverter : IFormatterConverter
     {
         private readonly JsonSerializerInternalReader _reader;

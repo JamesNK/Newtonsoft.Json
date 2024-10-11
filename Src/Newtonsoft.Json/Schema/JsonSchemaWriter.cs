@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Utilities;
@@ -52,6 +53,8 @@ namespace Newtonsoft.Json.Schema
             _resolver = resolver;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private void ReferenceOrWriteSchema(JsonSchema schema)
         {
             if (schema.Id != null && _resolver.GetSchema(schema.Id) != null)
@@ -67,6 +70,8 @@ namespace Newtonsoft.Json.Schema
             }
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public void WriteSchema(JsonSchema schema)
         {
             ValidationUtils.ArgumentNotNull(schema, nameof(schema));
@@ -167,6 +172,8 @@ namespace Newtonsoft.Json.Schema
             _writer.WriteEndObject();
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private void WriteSchemaDictionaryIfNotNull(JsonWriter writer, string propertyName, IDictionary<string, JsonSchema> properties)
         {
             if (properties != null)
@@ -182,6 +189,8 @@ namespace Newtonsoft.Json.Schema
             }
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private void WriteItems(JsonSchema schema)
         {
             if (schema.Items == null && !schema.PositionalItemsValidation)

@@ -25,6 +25,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Newtonsoft.Json.Utilities;
 
@@ -33,6 +34,8 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// Resolves member mappings for a type, camel casing property names.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class CamelCasePropertyNamesContractResolver : DefaultContractResolver
     {
         private static readonly object TypeContractCacheLock = new object();

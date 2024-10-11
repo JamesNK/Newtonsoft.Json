@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -26,12 +26,15 @@
 #if HAVE_DYNAMIC
 using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Dynamic;
 using System.Linq;
 using System.Linq.Expressions;
 
 namespace Newtonsoft.Json.Utilities
 {
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal sealed class DynamicProxyMetaObject<T> : DynamicMetaObject
     {
         private readonly DynamicProxy<T> _proxy;
@@ -373,6 +376,7 @@ namespace Newtonsoft.Json.Utilities
         // is only used by DynamicObject.GetMember--it is not expected to
         // (and cannot) implement binding semantics. It is just so the DO
         // can use the Name and IgnoreCase properties.
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private sealed class GetBinderAdapter : GetMemberBinder
         {
             internal GetBinderAdapter(InvokeMemberBinder binder) :

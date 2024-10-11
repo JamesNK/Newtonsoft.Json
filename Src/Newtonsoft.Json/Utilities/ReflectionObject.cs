@@ -28,6 +28,8 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Globalization;
+using System.Diagnostics.CodeAnalysis;
+
 #if !HAVE_LINQ
 using Newtonsoft.Json.Utilities.LinqBridge;
 #else
@@ -72,12 +74,35 @@ namespace Newtonsoft.Json.Utilities
             return Members[member].MemberType!;
         }
 
-        public static ReflectionObject Create(Type t, params string[] memberNames)
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
+        public static ReflectionObject Create(
+            [DynamicallyAccessedMembers(
+                DynamicallyAccessedMemberTypes.NonPublicConstructors |
+                DynamicallyAccessedMemberTypes.PublicConstructors |
+                DynamicallyAccessedMemberTypes.PublicEvents |
+                DynamicallyAccessedMemberTypes.PublicFields |
+                DynamicallyAccessedMemberTypes.PublicMethods |
+                DynamicallyAccessedMemberTypes.PublicNestedTypes |
+                DynamicallyAccessedMemberTypes.PublicProperties)]
+            Type t,
+            params string[] memberNames)
         {
             return Create(t, null, memberNames);
         }
 
-        public static ReflectionObject Create(Type t, MethodBase? creator, params string[] memberNames)
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
+        public static ReflectionObject Create(
+            [DynamicallyAccessedMembers(
+                DynamicallyAccessedMemberTypes.NonPublicConstructors |
+                DynamicallyAccessedMemberTypes.PublicConstructors |
+                DynamicallyAccessedMemberTypes.PublicEvents |
+                DynamicallyAccessedMemberTypes.PublicFields |
+                DynamicallyAccessedMemberTypes.PublicMethods |
+                DynamicallyAccessedMemberTypes.PublicNestedTypes |
+                DynamicallyAccessedMemberTypes.PublicProperties)]
+            Type t,
+            MethodBase? creator,
+            params string[] memberNames)
         {
             ReflectionDelegateFactory delegateFactory = JsonTypeReflector.ReflectionDelegateFactory;
 

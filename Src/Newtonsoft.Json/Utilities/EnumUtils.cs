@@ -48,6 +48,7 @@ namespace Newtonsoft.Json.Utilities
 
         private static readonly ThreadSafeStore<StructMultiKey<Type, NamingStrategy?>, EnumInfo> ValuesAndNamesPerEnum = new ThreadSafeStore<StructMultiKey<Type, NamingStrategy?>, EnumInfo>(InitializeValuesAndNames);
 
+        [UnconditionalSuppressMessage("TrimAnalysis", "IL2080", Justification = "Enum fields are not trimmed")]
         private static EnumInfo InitializeValuesAndNames(StructMultiKey<Type, NamingStrategy?> key)
         {
             Type enumType = key.Value1;

@@ -26,6 +26,7 @@
 #if HAVE_ASYNC
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Threading;
 using System.Threading.Tasks;
@@ -42,6 +43,8 @@ namespace Newtonsoft.Json.Linq
         /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
         /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous write operation.</returns>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public virtual Task WriteToAsync(JsonWriter writer, CancellationToken cancellationToken, params JsonConverter[] converters)
         {
             throw new NotImplementedException();
@@ -53,9 +56,36 @@ namespace Newtonsoft.Json.Linq
         /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
         /// <param name="converters">A collection of <see cref="JsonConverter"/> which will be used when writing the token.</param>
         /// <returns>A <see cref="Task"/> that represents the asynchronous write operation.</returns>
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public Task WriteToAsync(JsonWriter writer, params JsonConverter[] converters)
         {
             return WriteToAsync(writer, default, converters);
+        }
+
+        /// <summary>
+        /// Writes this token to a <see cref="JsonWriter"/> asynchronously.
+        /// </summary>
+        /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous write operation.</returns>
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "WriteToAsync without converters is safe.")]
+        [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "WriteToAsync without converters is safe.")]
+        public Task WriteToAsync(JsonWriter writer, CancellationToken cancellationToken)
+        {
+            return WriteToAsync(writer, default, CollectionUtils.ArrayEmpty<JsonConverter>());
+        }
+
+        /// <summary>
+        /// Writes this token to a <see cref="JsonWriter"/> asynchronously.
+        /// </summary>
+        /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous write operation.</returns>
+        [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "WriteToAsync without converters is safe.")]
+        [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "WriteToAsync without converters is safe.")]
+        public Task WriteToAsync(JsonWriter writer)
+        {
+            return WriteToAsync(writer, default, CollectionUtils.ArrayEmpty<JsonConverter>());
         }
 
         /// <summary>

@@ -25,6 +25,7 @@
 
 using System;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
 using Newtonsoft.Json.Utilities;
 
@@ -46,6 +47,8 @@ namespace Newtonsoft.Json.Serialization
         private bool _hasGeneratedDefaultValue;
         private string? _propertyName;
         internal bool _skipPropertyNameEscape;
+
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
         private Type? _propertyType;
 
         // use to cache contract during deserialization
@@ -99,6 +102,7 @@ namespace Newtonsoft.Json.Serialization
         /// Gets or sets the type of the property.
         /// </summary>
         /// <value>The type of the property.</value>
+        [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicParameterlessConstructor)]
         public Type? PropertyType
         {
             get => _propertyType;

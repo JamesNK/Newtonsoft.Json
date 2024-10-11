@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Runtime.Serialization;
 using System.Reflection;
 using System.Globalization;
@@ -35,6 +36,8 @@ namespace Newtonsoft.Json.Serialization
     /// <summary>
     /// The default serialization binder used when resolving and loading classes from type names.
     /// </summary>
+    [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+    [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     public class DefaultSerializationBinder :
 #pragma warning disable 618
         SerializationBinder,

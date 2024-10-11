@@ -40,6 +40,10 @@ namespace Newtonsoft.Json.Utilities
 
     internal static class MiscellaneousUtils
     {
+        internal const string TrimWarning = "Newtonsoft.Json relies on reflection over types that may be removed when trimming.";
+
+        internal const string AotWarning = "Newtonsoft.Json relies on dynamically creating types that may not be available with Ahead of Time compilation.";
+
         [Conditional("DEBUG")]
         public static void Assert([DoesNotReturnIf(false)] bool condition, string? message = null)
         {
