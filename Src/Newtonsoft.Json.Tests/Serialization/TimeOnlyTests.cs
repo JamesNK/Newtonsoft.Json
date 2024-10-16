@@ -145,6 +145,22 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void Deserialize_Milliseconds()
+        {
+            TimeOnly t = JsonConvert.DeserializeObject<TimeOnly>(@"""23:59:59.999""");
+
+            Assert.AreEqual(new TimeOnly(23, 59, 59, 999), t);
+        }
+
+        [Test]
+        public void Deserialize_WithoutSeconds()
+        {
+            TimeOnly t = JsonConvert.DeserializeObject<TimeOnly>(@"""23:59""");
+
+            Assert.AreEqual(new TimeOnly(23, 59, 00), t);
+        }
+
+        [Test]
         public void DeserializeDefault()
         {
             TimeOnly t = JsonConvert.DeserializeObject<TimeOnly>(@"""00:00:00""");
