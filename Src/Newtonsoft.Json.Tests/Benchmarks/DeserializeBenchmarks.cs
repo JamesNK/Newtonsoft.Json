@@ -27,13 +27,10 @@
 
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using BenchmarkDotNet.Attributes;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Benchmarks
@@ -42,11 +39,11 @@ namespace Newtonsoft.Json.Tests.Benchmarks
     {
         private static readonly string LargeJsonText;
         private static readonly string FloatArrayJson;
-        private static readonly string LargeJsonFilePath = TestFixtureBase.ResolvePath("large.json");
+        private static readonly JsonSerializer Serializer = new();
 
         static DeserializeBenchmarks()
         {
-            LargeJsonText = System.IO.File.ReadAllText(LargeJsonFilePath);
+            LargeJsonText = System.IO.File.ReadAllText(TestFixtureBase.ResolvePath("large.json"));
 
             FloatArrayJson = new JArray(Enumerable.Range(0, 5000).Select(i => i * 1.1m)).ToString(Formatting.None);
         }
@@ -60,11 +57,10 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         [Benchmark]
         public IList<RootObject> DeserializeLargeJsonFile()
         {
-            using (var jsonFile = System.IO.File.OpenText(LargeJsonFilePath))
+            using StringReader jsonFile = new(LargeJsonText);
             using (JsonTextReader jsonTextReader = new JsonTextReader(jsonFile))
             {
-                JsonSerializer serializer = new JsonSerializer();
-                return serializer.Deserialize<IList<RootObject>>(jsonTextReader);
+                return Serializer.Deserialize<IList<RootObject>>(jsonTextReader);
             }
         }
 
