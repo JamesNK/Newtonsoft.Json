@@ -39,6 +39,7 @@ namespace Newtonsoft.Json.Tests.Benchmarks
     {
         private static readonly string LargeJsonText;
         private static readonly string FloatArrayJson;
+        private static readonly string DateArrayJson;
         private static readonly JsonSerializer Serializer = new();
 
         static DeserializeBenchmarks()
@@ -46,6 +47,8 @@ namespace Newtonsoft.Json.Tests.Benchmarks
             LargeJsonText = System.IO.File.ReadAllText(TestFixtureBase.ResolvePath("large.json"));
 
             FloatArrayJson = new JArray(Enumerable.Range(0, 5000).Select(i => i * 1.1m)).ToString(Formatting.None);
+            DateTime time = new(1969, 7, 20, 2, 56, 15, DateTimeKind.Utc);
+            DateArrayJson = new JArray(Enumerable.Range(0, 5000).Select(i => time.AddDays(i))).ToString(Formatting.None);
         }
 
         [Benchmark]
@@ -74,6 +77,11 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         public IList<decimal> DeserializeDecimalList()
         {
             return JsonConvert.DeserializeObject<IList<decimal>>(FloatArrayJson);
+        }
+        [Benchmark]
+        public IList<DateTime> DeserializeDateTimeList()
+        {
+            return JsonConvert.DeserializeObject<IList<DateTime>>(DateArrayJson);
         }
     }
 }
