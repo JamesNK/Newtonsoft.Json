@@ -132,7 +132,7 @@ namespace Newtonsoft.Json.Utilities
                   && ParseChar(start + LzHH_mm, ':')
                   && Parse2Digit(start + LzHH_mm_, out Second)
                   && Second < 60
-                  && (Hour != 24 || (Minute == 0 && Second == 0)))) // hour can be 24 if minute/second is zero)
+                  && ((Minute == 0 && Second == 0) || Hour != 24))) // hour can be 24 if minute/second is zero)
             {
                 return false;
             }
