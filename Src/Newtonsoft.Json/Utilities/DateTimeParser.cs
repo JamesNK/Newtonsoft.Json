@@ -256,10 +256,11 @@ namespace Newtonsoft.Json.Utilities
 
         private bool Parse2Digit(int start, out byte num)
         {
-            if (start + 1 < _end)
+            int end = start + 1;
+            if (end < _end)
             {
                 int digit1 = _text[start] - '0';
-                int digit2 = _text[start + 1] - '0';
+                int digit2 = _text[end] - '0';
                 if (0 <= digit1 && digit1 < 10
                     && 0 <= digit2 && digit2 < 10)
                 {
