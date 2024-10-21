@@ -27,11 +27,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using BenchmarkDotNet.Attributes;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Tests.TestObjects;
+using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Tests.Benchmarks
 {
@@ -40,15 +42,28 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         private static readonly string LargeJsonText;
         private static readonly string FloatArrayJson;
         private static readonly string DateArrayJson;
+        private static readonly StringReference[] DateTimeStringReferences;
+        private static readonly DateTimeOffset[] ParsedDateTimesArray;
         private static readonly JsonSerializer Serializer = new();
 
         static DeserializeBenchmarks()
         {
             LargeJsonText = System.IO.File.ReadAllText(TestFixtureBase.ResolvePath("large.json"));
 
-            FloatArrayJson = new JArray(Enumerable.Range(0, 5000).Select(i => i * 1.1m)).ToString(Formatting.None);
+            const int count = 5000;
+            FloatArrayJson = new JArray(Enumerable.Range(0, count).Select(i => i * 1.1m)).ToString(Formatting.None);
+            var dates = new DateTime[count];
+            DateTimeStringReferences = new StringReference[count];
+            ParsedDateTimesArray = new DateTimeOffset[count];
             DateTime time = new(1969, 7, 20, 2, 56, 15, DateTimeKind.Utc);
-            DateArrayJson = new JArray(Enumerable.Range(0, 5000).Select(i => time.AddDays(i))).ToString(Formatting.None);
+            for (int i = 0; i < count; i++)
+            {
+                DateTime dateTime = time.AddDays(i);
+                dates[i] = dateTime;
+                string dateTimeString = dateTime.ToString("O", CultureInfo.InvariantCulture);
+                DateTimeStringReferences[i] = new StringReference(dateTimeString.ToCharArray(), 0, dateTimeString.Length);
+            }
+            DateArrayJson = new JArray(dates).ToString(Formatting.None);
         }
 
         [Benchmark]
@@ -78,10 +93,23 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         {
             return JsonConvert.DeserializeObject<IList<decimal>>(FloatArrayJson);
         }
+
         [Benchmark]
         public IList<DateTime> DeserializeDateTimeList()
         {
             return JsonConvert.DeserializeObject<IList<DateTime>>(DateArrayJson);
+        }
+
+        [Benchmark]
+        public bool TryParseDateTimeOffsetIso()
+        {
+            bool success = true;
+            for (var index = 0; index < DateTimeStringReferences.Length; index++)
+            {
+                success &= DateTimeUtils.TryParseDateTimeOffsetIso(DateTimeStringReferences[index], out DateTimeOffset result);
+                ParsedDateTimesArray[index] = result;
+            }
+            return success;
         }
     }
 }
