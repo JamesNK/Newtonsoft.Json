@@ -246,6 +246,42 @@ namespace Newtonsoft.Json.Tests.Serialization
 }", json);
         }
 
+        public class NumbersAsWords
+        {
+            public string WithNumbers123 { get; set; }
+            public int With_123numbers { get; set; }
+        }
+
+        [Test]
+        public void SnakeCaseNumbersAsWords_Enabled()
+        {
+            NumbersAsWords instance = new NumbersAsWords
+            {
+                WithNumbers123 = "abc",
+                With_123numbers = 42
+            };
+
+            DefaultContractResolver contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new SnakeCaseNamingStrategy
+                {
+                    NumbersAsWords = true
+                }
+            };
+
+            string json = JsonConvert.SerializeObject(instance, Formatting.Indented,
+                new JsonSerializerSettings
+                {
+                    ContractResolver = contractResolver
+
+                });
+
+            StringAssert.AreEqual(@"{
+  ""with_numbers_123"": ""abc"",
+  ""with_123_numbers"": 42
+}", json);
+        }
+
         public class PropertyAttributeNamingStrategyTestClass
         {
             [JsonProperty]
