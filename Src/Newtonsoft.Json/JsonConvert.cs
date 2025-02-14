@@ -648,7 +648,7 @@ namespace Newtonsoft.Json
         /// Serializes the specified object to a JSON string using a type, formatting and <see cref="JsonSerializerSettings"/>.
         /// </summary>
         /// <param name="value">The object to serialize.</param>
-        /// <param name="formatting">Indicates how the output should be formatted.  Note: this is will override any JsonSerializerSettings passed.</param>
+        /// <param name="formatting">Indicates how the output should be formatted.  Note: this will override any JsonSerializerSettings passed.</param>
         /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
         /// If this is <c>null</c>, default serialization settings will be used.</param>
         /// <param name="type">
