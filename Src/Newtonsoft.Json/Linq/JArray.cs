@@ -171,16 +171,19 @@ namespace Newtonsoft.Json.Linq
         /// </example>
         public new static JArray Parse(string json, JsonLoadSettings? settings)
         {
-            using (JsonReader reader = new JsonTextReader(new StringReader(json)))
+            using (StringReader stringReader = new StringReader(json))
             {
-                JArray a = Load(reader, settings);
-
-                while (reader.Read())
+                using (JsonReader reader = new JsonTextReader(stringReader))
                 {
-                    // Any content encountered here other than a comment will throw in the reader.
-                }
+                    JArray a = Load(reader, settings);
 
-                return a;
+                    while (reader.Read())
+                    {
+                        // Any content encountered here other than a comment will throw in the reader.
+                    }
+
+                    return a;
+                }
             }
         }
 

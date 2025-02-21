@@ -2272,16 +2272,19 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JToken"/> populated from the string that contains JSON.</returns>
         public static JToken Parse(string json, JsonLoadSettings? settings)
         {
-            using (JsonReader reader = new JsonTextReader(new StringReader(json)))
+            using (StringReader stringReader = new StringReader(json))
             {
-                JToken t = Load(reader, settings);
-
-                while (reader.Read())
+                using (JsonReader reader = new JsonTextReader(stringReader))
                 {
-                    // Any content encountered here other than a comment will throw in the reader.
-                }
+                    JToken t = Load(reader, settings);
 
-                return t;
+                    while (reader.Read())
+                    {
+                        // Any content encountered here other than a comment will throw in the reader.
+                    }
+
+                    return t;
+                }
             }
         }
 

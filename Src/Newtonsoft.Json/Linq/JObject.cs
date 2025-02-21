@@ -467,16 +467,19 @@ namespace Newtonsoft.Json.Linq
         /// </example>
         public new static JObject Parse(string json, JsonLoadSettings? settings)
         {
-            using (JsonReader reader = new JsonTextReader(new StringReader(json)))
+            using (StringReader stringReader = new StringReader(json))
             {
-                JObject o = Load(reader, settings);
-
-                while (reader.Read())
+                using (JsonReader reader = new JsonTextReader(stringReader))
                 {
-                    // Any content encountered here other than a comment will throw in the reader.
-                }
+                    JObject o = Load(reader, settings);
 
-                return o;
+                    while (reader.Read())
+                    {
+                        // Any content encountered here other than a comment will throw in the reader.
+                    }
+
+                    return o;
+                }
             }
         }
 

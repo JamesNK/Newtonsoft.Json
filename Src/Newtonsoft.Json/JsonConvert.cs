@@ -675,15 +675,17 @@ namespace Newtonsoft.Json
         private static string SerializeObjectInternal(object? value, Type? type, JsonSerializer jsonSerializer)
         {
             StringBuilder sb = new StringBuilder(256);
-            StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture);
-            using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+            using (StringWriter sw = new StringWriter(sb, CultureInfo.InvariantCulture))
             {
-                jsonWriter.Formatting = jsonSerializer.Formatting;
+                using (JsonTextWriter jsonWriter = new JsonTextWriter(sw))
+                {
+                    jsonWriter.Formatting = jsonSerializer.Formatting;
 
-                jsonSerializer.Serialize(jsonWriter, value, type);
+                    jsonSerializer.Serialize(jsonWriter, value, type);
+                }
+
+                return sw.ToString();
             }
-
-            return sw.ToString();
         }
         #endregion
 
@@ -864,9 +866,12 @@ namespace Newtonsoft.Json
                 jsonSerializer.CheckAdditionalContent = true;
             }
 
-            using (JsonTextReader reader = new JsonTextReader(new StringReader(value)))
+            using (StringReader stringReader = new StringReader(value))
             {
-                return jsonSerializer.Deserialize(reader, type);
+                using (JsonTextReader reader = new JsonTextReader(stringReader))
+                {
+                    return jsonSerializer.Deserialize(reader, type);
+                }
             }
         }
         #endregion
@@ -900,17 +905,20 @@ namespace Newtonsoft.Json
         {
             JsonSerializer jsonSerializer = JsonSerializer.CreateDefault(settings);
 
-            using (JsonReader jsonReader = new JsonTextReader(new StringReader(value)))
+            using (StringReader stringReader = new StringReader(value))
             {
-                jsonSerializer.Populate(jsonReader, target);
-
-                if (settings != null && settings.CheckAdditionalContent)
+                using (JsonReader jsonReader = new JsonTextReader(stringReader))
                 {
-                    while (jsonReader.Read())
+                    jsonSerializer.Populate(jsonReader, target);
+
+                    if (settings != null && settings.CheckAdditionalContent)
                     {
-                        if (jsonReader.TokenType != JsonToken.Comment)
+                        while (jsonReader.Read())
                         {
-                            throw JsonSerializationException.Create(jsonReader, "Additional text found in JSON string after finishing deserializing object.");
+                            if (jsonReader.TokenType != JsonToken.Comment)
+                            {
+                                throw JsonSerializationException.Create(jsonReader, "Additional text found in JSON string after finishing deserializing object.");
+                            }
                         }
                     }
                 }
