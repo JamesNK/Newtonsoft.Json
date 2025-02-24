@@ -40,7 +40,7 @@ namespace Newtonsoft.Json.Serialization
     {
         private static readonly object TypeContractCacheLock = new object();
         private static readonly DefaultJsonNameTable NameTable = new DefaultJsonNameTable();
-        private static Dictionary<StructMultiKey<Type, Type>, JsonContract>? _contractCache;
+        private static Dictionary<StructMultiKey<Type, Type, NamingStrategy?>, JsonContract>? _contractCache;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="CamelCasePropertyNamesContractResolver"/> class.
@@ -67,8 +67,8 @@ namespace Newtonsoft.Json.Serialization
             }
 
             // for backwards compadibility the CamelCasePropertyNamesContractResolver shares contracts between instances
-            StructMultiKey<Type, Type> key = new StructMultiKey<Type, Type>(GetType(), type);
-            Dictionary<StructMultiKey<Type, Type>, JsonContract>? cache = _contractCache;
+            StructMultiKey<Type, Type, NamingStrategy?> key = new StructMultiKey<Type, Type, NamingStrategy?>(GetType(), type, NamingStrategy);
+            Dictionary<StructMultiKey<Type, Type, NamingStrategy?>, JsonContract>? cache = _contractCache;
             if (cache == null || !cache.TryGetValue(key, out JsonContract? contract))
             {
                 contract = CreateContract(type);
@@ -77,9 +77,9 @@ namespace Newtonsoft.Json.Serialization
                 lock (TypeContractCacheLock)
                 {
                     cache = _contractCache;
-                    Dictionary<StructMultiKey<Type, Type>, JsonContract> updatedCache = (cache != null)
-                        ? new Dictionary<StructMultiKey<Type, Type>, JsonContract>(cache)
-                        : new Dictionary<StructMultiKey<Type, Type>, JsonContract>();
+                    Dictionary<StructMultiKey<Type, Type, NamingStrategy?>, JsonContract> updatedCache = (cache != null)
+                        ? new Dictionary<StructMultiKey<Type, Type, NamingStrategy?>, JsonContract>(cache)
+                        : new Dictionary<StructMultiKey<Type, Type, NamingStrategy?>, JsonContract>();
                     updatedCache[key] = contract;
 
                     _contractCache = updatedCache;
