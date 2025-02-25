@@ -299,7 +299,7 @@ namespace Newtonsoft.Json
             }
 
             // char buffer is full
-            if (totalCharsRequired > _chars.Length)
+            if (totalCharsRequired >= _chars.Length)
             {
                 if (append)
                 {
