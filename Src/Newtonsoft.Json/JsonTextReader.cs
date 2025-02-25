@@ -282,17 +282,36 @@ namespace Newtonsoft.Json
         {
             MiscellaneousUtils.Assert(_chars != null);
 
+            // Using long instead of int to guard against overflow resulting in zero or a positive number
+            // Example overflow resulting in negative number:
+            // int.MaxValue + int.MaxValue == -2
+            // Example overflow resulting in positive number:
+            // int.MaxValue + int.MaxValue + 3 == 1
+            long totalCharsRequired = 1L + _charsUsed + charsRequired; // 1 char extra, not sure why
+
+            // Allocating new char[int.Max] would result in System.OutOfMemoryException: Array dimensions exceeded supported range.
+            // Maximum char array length that can be allocated is int.MaxValue - 56.
+            var maxAllowedCharArrayLength = int.MaxValue - 56L;
+
+            if (totalCharsRequired > maxAllowedCharArrayLength)
+            {
+                throw new OverflowException($"Can't increase buffer of length {_charsUsed} by {charsRequired} as it would exceed supported range for array dimensions ({maxAllowedCharArrayLength}).");
+            }
+
             // char buffer is full
-            if (_charsUsed + charsRequired >= _chars.Length - 1)
+            if (totalCharsRequired >= _chars.Length)
             {
                 if (append)
                 {
-                    int doubledArrayLength = _chars.Length * 2;
-
                     // copy to new array either double the size of the current or big enough to fit required content
-                    int newArrayLength = Math.Max(
-                        doubledArrayLength < 0 ? int.MaxValue : doubledArrayLength, // handle overflow
-                        _charsUsed + charsRequired + 1);
+                    var doubledArrayLength = _chars.Length * 2L; // doubledArrayLength can only be used if it is not exceeding maxAllowedCharArrayLength
+                    if (doubledArrayLength > totalCharsRequired && doubledArrayLength <= maxAllowedCharArrayLength)
+                    {
+                        totalCharsRequired = doubledArrayLength;
+                    }
+
+                    // this is safe at this point
+                    int newArrayLength = (int)totalCharsRequired;
 
                     // increase the size of the buffer
                     char[] dst = BufferUtils.RentBuffer(_arrayPool, newArrayLength);
