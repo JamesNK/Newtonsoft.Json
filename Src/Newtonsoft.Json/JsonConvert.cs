@@ -630,7 +630,7 @@ namespace Newtonsoft.Json
         /// Serializes the specified object to a JSON string using formatting and <see cref="JsonSerializerSettings"/>.
         /// </summary>
         /// <param name="value">The object to serialize.</param>
-        /// <param name="formatting">Indicates how the output should be formatted.</param>
+        /// <param name="formatting">Indicates how the output should be formatted. This value overrides the formatting specified on <see cref="JsonSerializerSettings" />.</param>
         /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
         /// If this is <c>null</c>, default serialization settings will be used.</param>
         /// <returns>
@@ -648,7 +648,7 @@ namespace Newtonsoft.Json
         /// Serializes the specified object to a JSON string using a type, formatting and <see cref="JsonSerializerSettings"/>.
         /// </summary>
         /// <param name="value">The object to serialize.</param>
-        /// <param name="formatting">Indicates how the output should be formatted.</param>
+        /// <param name="formatting">Indicates how the output should be formatted. This value overrides the formatting specified on <see cref="JsonSerializerSettings" />.</param>
         /// <param name="settings">The <see cref="JsonSerializerSettings"/> used to serialize the object.
         /// If this is <c>null</c>, default serialization settings will be used.</param>
         /// <param name="type">
