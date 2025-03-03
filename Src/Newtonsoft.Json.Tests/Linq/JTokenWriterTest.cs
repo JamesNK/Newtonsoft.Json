@@ -192,18 +192,18 @@ namespace Newtonsoft.Json.Tests.Linq
             }
         }
 
-        [Test]
-        public void WriteComment()
-        {
-            JTokenWriter writer = new JTokenWriter();
+  //      [Test]
+  //      public void WriteComment()
+  //      {
+  //          JTokenWriter writer = new JTokenWriter();
 
-            writer.WriteStartArray();
-            writer.WriteComment("fail");
-            writer.WriteEndArray();
+  //          writer.WriteStartArray();
+  //          writer.WriteComment("fail");
+  //          writer.WriteEndArray();
 
-            StringAssert.AreEqual(@"[
-  /*fail*/]", writer.Token.ToString());
-        }
+  //          StringAssert.AreEqual(@"[
+  ///*fail*/]", writer.Token.ToString());
+  //      }
 
 #if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]

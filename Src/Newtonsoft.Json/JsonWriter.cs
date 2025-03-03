@@ -1783,7 +1783,7 @@ namespace Newtonsoft.Json
 
         internal void InternalWriteComment()
         {
-            AutoComplete(JsonToken.Comment);
+            //AutoComplete(JsonToken.Comment);
         }
     }
 }

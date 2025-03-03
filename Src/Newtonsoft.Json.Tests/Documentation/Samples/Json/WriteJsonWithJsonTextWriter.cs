@@ -84,8 +84,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Json
   ""CPU"": ""Intel"",
   ""PSU"": ""500W"",
   ""Drives"": [
-    ""DVD read/writer""
-    /*(broken)*/,
+    ""DVD read/writer"",
     ""500 gigabyte hard drive"",
     ""200 gigabyte hard drive""
   ]

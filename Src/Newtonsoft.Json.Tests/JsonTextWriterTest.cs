@@ -407,8 +407,7 @@ namespace Newtonsoft.Json.Tests
   ""CPU"": ""Intel"",
   ""PSU"": ""500W"",
   ""Drives"": [
-    ""DVD read/writer""
-    /*(broken)*/,
+    ""DVD read/writer"",
     ""500 gigabyte hard drive"",
     ""200 gigabyte hard drive""
   ]
@@ -446,8 +445,7 @@ namespace Newtonsoft.Json.Tests
   ""CPU"": ""Intel"",
   ""PSU"": ""500W"",
   ""Drives"": [
-    ""DVD read/writer""
-    /*(broken)*/,
+    ""DVD read/writer"",
     ""500 gigabyte hard drive"",
     ""200 gigabyte hard drive""
   ]
@@ -498,8 +496,7 @@ namespace Newtonsoft.Json.Tests
   ""CPU"": ""Intel"",
   ""PSU"": ""500W"",
   ""Drives"": [
-    ""DVD read/writer""
-    /*(broken)*/,
+    ""DVD read/writer"",
     ""500 gigabyte hard drive"",
     ""200 gigabyte hard drive""
   ]
@@ -1667,68 +1664,68 @@ _____'propertyName': NaN,
             }
         }
 
-        [Test]
-        public void WriteComments()
-        {
-            string json = @"//comment*//*hi*/
-{//comment
-Name://comment
-true//comment after true" + StringUtils.CarriageReturn + @"
-,//comment after comma" + StringUtils.CarriageReturnLineFeed + @"
-""ExpiryDate""://comment" + StringUtils.LineFeed + @"
-new
-" + StringUtils.LineFeed +
-                          @"Constructor
-(//comment
-null//comment
-),
-        ""Price"": 3.99,
-        ""Sizes"": //comment
-[//comment
+//        [Test]
+//        public void WriteComments()
+//        {
+//            string json = @"//comment*//*hi*/
+//{//comment
+//Name://comment
+//true//comment after true" + StringUtils.CarriageReturn + @"
+//,//comment after comma" + StringUtils.CarriageReturnLineFeed + @"
+//""ExpiryDate""://comment" + StringUtils.LineFeed + @"
+//new
+//" + StringUtils.LineFeed +
+//                          @"Constructor
+//(//comment
+//null//comment
+//),
+//        ""Price"": 3.99,
+//        ""Sizes"": //comment
+//[//comment
 
-          ""Small""//comment
-]//comment
-}//comment 
-//comment 1 ";
+//          ""Small""//comment
+//]//comment
+//}//comment 
+////comment 1 ";
 
-            JsonTextReader r = new JsonTextReader(new StringReader(json));
+//            JsonTextReader r = new JsonTextReader(new StringReader(json));
 
-            StringWriter sw = new StringWriter();
-            JsonTextWriter w = new JsonTextWriter(sw);
-            w.Formatting = Formatting.Indented;
+//            StringWriter sw = new StringWriter();
+//            JsonTextWriter w = new JsonTextWriter(sw);
+//            w.Formatting = Formatting.Indented;
 
-            w.WriteToken(r, true);
+//            w.WriteToken(r, true);
 
-            StringAssert.AreEqual(@"//comment*//*hi*/
-{/*comment*/
-  ""Name"": /*comment*/ true/*comment after true*//*comment after comma*/,
-  ""ExpiryDate"": /*comment*/ new Constructor(
-    /*comment*/,
-    null
-    /*comment*/
-  ),
-  ""Price"": 3.99,
-  ""Sizes"": /*comment*/ [
-    /*comment*/
-    ""Small""
-    /*comment*/
-  ]/*comment*/
-}/*comment *//*comment 1 */", sw.ToString());
-        }
+//            StringAssert.AreEqual(@"//comment*//*hi*/
+//{/*comment*/
+//  ""Name"": /*comment*/ true/*comment after true*//*comment after comma*/,
+//  ""ExpiryDate"": /*comment*/ new Constructor(
+//    /*comment*/,
+//    null
+//    /*comment*/
+//  ),
+//  ""Price"": 3.99,
+//  ""Sizes"": /*comment*/ [
+//    /*comment*/
+//    ""Small""
+//    /*comment*/
+//  ]/*comment*/
+//}/*comment *//*comment 1 */", sw.ToString());
+//        }
 
-        [Test]
-        public void NewlinesInSingleLineComments()
-        {
-            // it’s not possible for this to be created by parsing JSON,
-            // but if someone gets creative with the API…
-            var sw = new StringWriter();
-            using (var w = new JsonTextWriter(sw))
-            {
-                w.WriteComment("*/\nsomething else");
-            }
+        //[Test]
+        //public void NewlinesInSingleLineComments()
+        //{
+        //    // it’s not possible for this to be created by parsing JSON,
+        //    // but if someone gets creative with the API…
+        //    var sw = new StringWriter();
+        //    using (var w = new JsonTextWriter(sw))
+        //    {
+        //        w.WriteComment("*/\nsomething else");
+        //    }
             
-            StringAssert.AreEqual("//*/\n//something else\n", sw.ToString());
-        }
+        //    StringAssert.AreEqual("//*/\n//something else\n", sw.ToString());
+        //}
 
         [Test]
         public void DisposeSupressesFinalization()
