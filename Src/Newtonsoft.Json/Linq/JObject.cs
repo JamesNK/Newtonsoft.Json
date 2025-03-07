@@ -469,6 +469,12 @@ namespace Newtonsoft.Json.Linq
         {
             using (JsonReader reader = new JsonTextReader(new StringReader(json)))
             {
+                var maxDepth = settings?.MaxDepth;
+                if (maxDepth != null)
+                {
+                    reader.MaxDepth = maxDepth;
+                }
+                
                 JObject o = Load(reader, settings);
 
                 while (reader.Read())

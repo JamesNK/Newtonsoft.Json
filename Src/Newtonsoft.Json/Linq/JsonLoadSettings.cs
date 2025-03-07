@@ -37,6 +37,11 @@ namespace Newtonsoft.Json.Linq
         private DuplicatePropertyNameHandling _duplicatePropertyNameHandling;
 
         /// <summary>
+        /// Setting MaxDepth to override <see cref="JsonReader"/> if necessary.
+        /// </summary>
+        public int? MaxDepth { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="JsonLoadSettings"/> class.
         /// </summary>
         public JsonLoadSettings()
