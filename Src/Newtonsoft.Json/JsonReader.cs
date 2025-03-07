@@ -396,6 +396,57 @@ namespace Newtonsoft.Json
         public abstract bool Read();
 
         /// <summary>
+        /// Reads the next JSON token from the source as a <see cref="Nullable{T}"/> of <see cref="Int64"/>.
+        /// </summary>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Int64"/>. This method will return <c>null</c> at the end of an array.</returns>
+        public virtual long? ReadAsInt64()
+        {
+            JsonToken t = GetContentToken();
+
+            switch (t)
+            {
+                case JsonToken.None:
+                case JsonToken.Null:
+                case JsonToken.EndArray:
+                    return null;
+                case JsonToken.Integer:
+                case JsonToken.Float:
+                    object v = Value!;
+                    if (v is long i)
+                    {
+                        return i;
+                    }
+
+#if HAVE_BIG_INTEGER
+                    if (v is BigInteger value)
+                    {
+                        i = (long)value;
+                    }
+                    else
+#endif
+                    {
+                        try
+                        {
+                            i = Convert.ToInt32(v, CultureInfo.InvariantCulture);
+                        }
+                        catch (Exception ex)
+                        {
+                            // handle error for large integer overflow exceptions
+                            throw JsonReaderException.Create(this, "Could not convert to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, v), ex);
+                        }
+                    }
+
+                    SetToken(JsonToken.Integer, i, false);
+                    return i;
+                case JsonToken.String:
+                    string? s = (string?)Value;
+                    return ReadInt64String(s);
+            }
+
+            throw JsonReaderException.Create(this, "Error reading integer. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
+        }
+
+        /// <summary>
         /// Reads the next JSON token from the source as a <see cref="Nullable{T}"/> of <see cref="Int32"/>.
         /// </summary>
         /// <returns>A <see cref="Nullable{T}"/> of <see cref="Int32"/>. This method will return <c>null</c> at the end of an array.</returns>
@@ -444,6 +495,26 @@ namespace Newtonsoft.Json
             }
 
             throw JsonReaderException.Create(this, "Error reading integer. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, t));
+        }
+
+        internal long? ReadInt64String(string? s)
+        {
+            if (StringUtils.IsNullOrEmpty(s))
+            {
+                SetToken(JsonToken.Null, null, false);
+                return null;
+            }
+
+            if (long.TryParse(s, NumberStyles.Integer, Culture, out long i))
+            {
+                SetToken(JsonToken.Integer, i, false);
+                return i;
+            }
+            else
+            {
+                SetToken(JsonToken.String, s, false);
+                throw JsonReaderException.Create(this, "Could not convert string to integer: {0}.".FormatWith(CultureInfo.InvariantCulture, s));
+            }
         }
 
         internal int? ReadInt32String(string? s)
@@ -1199,12 +1270,8 @@ namespace Newtonsoft.Json
                     ReadAsInt32();
                     break;
                 case ReadType.ReadAsInt64:
-                    bool result = ReadAndMoveToContent();
-                    if (TokenType == JsonToken.Undefined)
-                    {
-                        throw JsonReaderException.Create(this, "An undefined token is not a valid {0}.".FormatWith(CultureInfo.InvariantCulture, contract?.UnderlyingType ?? typeof(long)));
-                    }
-                    return result;
+                    ReadAsInt64();
+                    break;
                 case ReadType.ReadAsDecimal:
                     ReadAsDecimal();
                     break;
