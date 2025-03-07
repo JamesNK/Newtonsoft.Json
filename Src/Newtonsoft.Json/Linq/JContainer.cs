@@ -952,12 +952,12 @@ namespace Newtonsoft.Json.Linq
         }
 
 #if HAVE_COMPONENT_MODEL
-        string ITypedList.GetListName(PropertyDescriptor[] listAccessors)
+        string ITypedList.GetListName(PropertyDescriptor[]? listAccessors)
         {
             return string.Empty;
         }
 
-        PropertyDescriptorCollection ITypedList.GetItemProperties(PropertyDescriptor[] listAccessors)
+        PropertyDescriptorCollection ITypedList.GetItemProperties(PropertyDescriptor[]? listAccessors)
         {
 #if HAVE_APPCONTEXT
             if (!ComponentModelIsSupported)

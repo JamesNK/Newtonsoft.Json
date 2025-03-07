@@ -189,6 +189,7 @@ namespace Newtonsoft.Json.Serialization
 #endif
         internal object GetUninitializedObject()
         {
+#pragma warning disable SYSLIB0050
             // we should never get here if the environment is not fully trusted, check just in case
             if (!JsonTypeReflector.FullyTrusted)
             {
@@ -196,6 +197,7 @@ namespace Newtonsoft.Json.Serialization
             }
 
             return FormatterServices.GetUninitializedObject(NonNullableUnderlyingType);
+#pragma warning restore SYSLIB0050
         }
 #endif
     }

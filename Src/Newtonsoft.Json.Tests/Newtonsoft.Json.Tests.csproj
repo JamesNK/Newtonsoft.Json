@@ -192,5 +192,6 @@
     <AssemblyTitle>Json.NET Tests .NET Standard 1.0</AssemblyTitle>
     <ReferringTargetFrameworkForProjectReferences>.NETStandard,Version=v1.0</ReferringTargetFrameworkForProjectReferences>
     <DefineConstants>NETSTANDARD1_0;DNXCORE50;PORTABLE;HAVE_REGEX_TIMEOUTS;$(AdditionalConstants)</DefineConstants>
+    <NoWarn>$(NoWarn);NETSDK1023</NoWarn>
   </PropertyGroup>
 </Project>
