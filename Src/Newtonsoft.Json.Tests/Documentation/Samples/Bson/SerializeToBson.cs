@@ -63,7 +63,7 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Bson
             };
 
             MemoryStream ms = new MemoryStream();
-            using (BsonWriter writer = new BsonWriter(ms))
+            using (BsonDataWriter writer = new BsonDataWriter(ms))
             {
                 JsonSerializer serializer = new JsonSerializer();
                 serializer.Serialize(writer, e);
