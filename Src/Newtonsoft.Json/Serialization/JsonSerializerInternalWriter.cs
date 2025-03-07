@@ -888,6 +888,7 @@ namespace Newtonsoft.Json.Serialization
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private void SerializeISerializable(JsonWriter writer, ISerializable value, JsonISerializableContract contract, JsonProperty? member, JsonContainerContract? collectionContract, JsonProperty? containerProperty)
         {
+#pragma warning disable SYSLIB0050
             if (!JsonTypeReflector.FullyTrusted)
             {
                 string message = @"Type '{0}' implements ISerializable but cannot be serialized using the ISerializable interface because the current application is not fully trusted and ISerializable can expose secure data." + Environment.NewLine +
@@ -925,6 +926,7 @@ namespace Newtonsoft.Json.Serialization
 
             _serializeStack.RemoveAt(_serializeStack.Count - 1);
             OnSerialized(writer, contract, value);
+#pragma warning restore SYSLIB0050
         }
 #endif
 
