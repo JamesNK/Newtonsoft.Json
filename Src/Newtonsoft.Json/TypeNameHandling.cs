@@ -65,6 +65,11 @@ namespace Newtonsoft.Json
         /// you must specify a root type object with <see cref="JsonConvert.SerializeObject(object, Type, JsonSerializerSettings)"/>
         /// or <see cref="JsonSerializer.Serialize(JsonWriter, object, Type)"/>.
         /// </summary>
-        Auto = 4
+        Auto = 4,
+
+        /// <summary>
+        /// Include the .NET type when serializing the root object.
+        /// </summary>
+        RootObject = 8
     }
 }
