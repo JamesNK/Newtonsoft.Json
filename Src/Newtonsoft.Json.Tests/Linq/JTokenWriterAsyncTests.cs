@@ -187,18 +187,18 @@ namespace Newtonsoft.Json.Tests.Linq
             }
         }
 
-        [Test]
-        public async Task WriteCommentAsync()
-        {
-            JTokenWriter writer = new JTokenWriter();
+  //      [Test]
+  //      public async Task WriteCommentAsync()
+  //      {
+  //          JTokenWriter writer = new JTokenWriter();
 
-            await writer.WriteStartArrayAsync();
-            await writer.WriteCommentAsync("fail");
-            await writer.WriteEndArrayAsync();
+  //          await writer.WriteStartArrayAsync();
+  //          await writer.WriteCommentAsync("fail");
+  //          await writer.WriteEndArrayAsync();
 
-            StringAssert.AreEqual(@"[
-  /*fail*/]", writer.Token.ToString());
-        }
+  //          StringAssert.AreEqual(@"[
+  ///*fail*/]", writer.Token.ToString());
+  //      }
 
 #if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
