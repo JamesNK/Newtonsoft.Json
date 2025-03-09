@@ -104,9 +104,7 @@ namespace Newtonsoft.Json.Converters
 
             reader.ReadAndAssert();
 
-            Type t = ReflectionUtils.IsNullableType(objectType)
-                ? Nullable.GetUnderlyingType(objectType)!
-                : objectType;
+            Type t = ReflectionUtils.GetUnderlyingTypeIfNullable(objectType);
 
             ReflectionObject reflectionObject = ReflectionObjectPerType.Get(t);
             JsonContract keyContract = serializer.ContractResolver.ResolveContract(reflectionObject.GetType(KeyName));
@@ -147,9 +145,7 @@ namespace Newtonsoft.Json.Converters
         /// </returns>
         public override bool CanConvert(Type objectType)
         {
-            Type t = (ReflectionUtils.IsNullableType(objectType))
-                ? Nullable.GetUnderlyingType(objectType)!
-                : objectType;
+            Type t = ReflectionUtils.GetUnderlyingTypeIfNullable(objectType);
 
             if (t.IsValueType() && t.IsGenericType())
             {
