@@ -674,6 +674,19 @@ namespace Newtonsoft.Json.Tests.Converters
 ]", json);
         }
 
+        [Test]
+        public void SerializeXElementWithExplicitEmptyNamespace()
+        {
+            XNamespace ns = "http://schemas.microsoft.com/2003/10/Serialization/Arrays";
+            var xml = new XElement(ns + "root", new XElement("other", "value"));
+            // <root xmlns=""http://schemas.microsoft.com/2003/10/Serialization/Arrays""><other xmlns="">value</other></root>          
+
+            var xmlAsJson = JsonConvert.SerializeObject(xml);
+            var deserializedXml = JsonConvert.DeserializeObject<XElement>(xmlAsJson);
+
+            Assert.AreEqual(xml.ToString(), deserializedXml.ToString());
+        }
+
         public class DecimalContainer
         {
             public decimal Number { get; set; }
