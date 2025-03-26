@@ -645,13 +645,16 @@ namespace Newtonsoft.Json.Serialization
         {
             string typeName = ReflectionUtils.GetTypeName(type, Serializer._typeNameAssemblyFormatHandling, Serializer._serializationBinder);
 
-            if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+            if (!string.IsNullOrEmpty(typeName))
             {
-                TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "Writing type name '{0}' for {1}.".FormatWith(CultureInfo.InvariantCulture, typeName, type)), null);
-            }
+                if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
+                {
+                    TraceWriter.Trace(TraceLevel.Verbose, JsonPosition.FormatMessage(null, writer.Path, "Writing type name '{0}' for {1}.".FormatWith(CultureInfo.InvariantCulture, typeName, type)), null);
+                }
 
-            writer.WritePropertyName(JsonTypeReflector.TypePropertyName, false);
-            writer.WriteValue(typeName);
+                writer.WritePropertyName(JsonTypeReflector.TypePropertyName, false);
+                writer.WriteValue(typeName);
+            }
         }
 
         private bool HasFlag(DefaultValueHandling value, DefaultValueHandling flag)
