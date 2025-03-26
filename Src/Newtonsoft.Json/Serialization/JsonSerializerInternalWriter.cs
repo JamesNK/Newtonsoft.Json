@@ -484,7 +484,7 @@ namespace Newtonsoft.Json.Serialization
             WriteObjectStart(writer, value, contract, member, collectionContract, containerProperty);
 
             int initialDepth = writer.Top;
-
+            bool isExtensionDataProcessed = false;
             for (int index = 0; index < contract.Properties.Count; index++)
             {
                 JsonProperty property = contract.Properties[index];
@@ -492,6 +492,15 @@ namespace Newtonsoft.Json.Serialization
                 {
                     if (!CalculatePropertyValues(writer, value, contract, member, property, out JsonContract? memberContract, out object? memberValue))
                     {
+                        if (!isExtensionDataProcessed)
+                        {
+                            if (property?.AttributeProvider?.GetAttributes(typeof(JsonExtensionDataAttribute), true) != null && property?.Order != null)
+                            {
+                                //When order matters extention data will display as per order.
+                                setExtentionData();
+                                isExtensionDataProcessed = true;
+                            }
+                        }
                         continue;
                     }
 
@@ -511,37 +520,45 @@ namespace Newtonsoft.Json.Serialization
                 }
             }
 
-            IEnumerable<KeyValuePair<object, object>>? extensionData = contract.ExtensionDataGetter?.Invoke(value);
-            if (extensionData != null)
+            void setExtentionData()
             {
-                foreach (KeyValuePair<object, object> e in extensionData)
+                IEnumerable<KeyValuePair<object, object>>? extensionData = contract.ExtensionDataGetter?.Invoke(value);
+                if (extensionData != null)
                 {
-                    JsonContract keyContract = GetContract(e.Key);
-                    JsonContract? valueContract = GetContractSafe(e.Value);
-
-                    string propertyName = GetPropertyName(writer, e.Key, keyContract, out _);
-
-                    propertyName = (contract.ExtensionDataNameResolver != null)
-                        ? contract.ExtensionDataNameResolver(propertyName)
-                        : propertyName;
-
-                    if (ShouldWriteReference(e.Value, null, valueContract, contract, member))
+                    foreach (KeyValuePair<object, object> e in extensionData)
                     {
-                        writer.WritePropertyName(propertyName);
-                        WriteReference(writer, e.Value!);
-                    }
-                    else
-                    {
-                        if (!CheckForCircularReference(writer, e.Value, null, valueContract, contract, member))
+                        JsonContract keyContract = GetContract(e.Key);
+                        JsonContract? valueContract = GetContractSafe(e.Value);
+
+                        string propertyName = GetPropertyName(writer, e.Key, keyContract, out _);
+
+                        propertyName = (contract.ExtensionDataNameResolver != null)
+                            ? contract.ExtensionDataNameResolver(propertyName)
+                            : propertyName;
+
+                        if (ShouldWriteReference(e.Value, null, valueContract, contract, member))
                         {
-                            continue;
+                            writer.WritePropertyName(propertyName);
+                            WriteReference(writer, e.Value!);
                         }
+                        else
+                        {
+                            if (!CheckForCircularReference(writer, e.Value, null, valueContract, contract, member))
+                            {
+                                continue;
+                            }
 
-                        writer.WritePropertyName(propertyName);
+                            writer.WritePropertyName(propertyName);
 
-                        SerializeValue(writer, e.Value, valueContract, null, contract, member);
+                            SerializeValue(writer, e.Value, valueContract, null, contract, member);
+                        }
                     }
                 }
+            }
+
+            if (!isExtensionDataProcessed) // When order doesn't matter extention data display at last as it is.
+            {
+                setExtentionData();
             }
 
             writer.WriteEndObject();
@@ -549,8 +566,8 @@ namespace Newtonsoft.Json.Serialization
             _serializeStack.RemoveAt(_serializeStack.Count - 1);
 
             OnSerialized(writer, contract, value);
-        }
 
+        }
         private bool CalculatePropertyValues(JsonWriter writer, object value, JsonContainerContract contract, JsonProperty? member, JsonProperty property, [NotNullWhen(true)]out JsonContract? memberContract, out object? memberValue)
         {
             if (!property.Ignored && property.Readable && ShouldSerialize(writer, property, value) && IsSpecified(writer, property, value))
