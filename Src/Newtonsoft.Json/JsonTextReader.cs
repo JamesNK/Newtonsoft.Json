@@ -194,6 +194,7 @@ namespace Newtonsoft.Json
                     _quoteChar = quote;
                     break;
                 case ReadType.ReadAsInt32:
+                case ReadType.ReadAsInt64:
                 case ReadType.ReadAsDecimal:
                 case ReadType.ReadAsBoolean:
                     // caller will convert result
@@ -470,6 +471,15 @@ namespace Newtonsoft.Json
         public override int? ReadAsInt32()
         {
             return (int?)ReadNumberValue(ReadType.ReadAsInt32);
+        }
+
+        /// <summary>
+        /// Reads the next JSON token from the underlying <see cref="TextReader"/> as a <see cref="Nullable{T}"/> of <see cref="Int64"/>.
+        /// </summary>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Int64"/>. This method will return <c>null</c> at the end of an array.</returns>
+        public override long? ReadAsInt64()
+        {
+            return (long?)ReadNumberValue(ReadType.ReadAsInt64);
         }
 
         /// <summary>
@@ -1022,6 +1032,8 @@ namespace Newtonsoft.Json
             {
                 case ReadType.ReadAsInt32:
                     return ReadInt32String(_stringReference.ToString());
+                case ReadType.ReadAsInt64:
+                    return ReadInt64String(_stringReference.ToString());
                 case ReadType.ReadAsDecimal:
                     return ReadDecimalString(_stringReference.ToString());
                 case ReadType.ReadAsDouble:
@@ -2151,8 +2163,46 @@ namespace Newtonsoft.Json
                         numberType = JsonToken.Float;
                     }
                     break;
-                case ReadType.Read:
                 case ReadType.ReadAsInt64:
+                    if (singleDigit)
+                    {
+                        // digit char values start at 48
+                        numberValue = (long)firstChar - 48;
+                    }
+                    else if (nonBase10)
+                    {
+                        string number = _stringReference.ToString();
+
+                        try
+                        {
+                            long integer = number.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? Convert.ToInt64(number, 16) : Convert.ToInt64(number, 8);
+
+                            numberValue = integer;
+                        }
+                        catch (Exception ex)
+                        {
+                            throw ThrowReaderError("Input string '{0}' is not a valid integer.".FormatWith(CultureInfo.InvariantCulture, number), ex);
+                        }
+                    }
+                    else
+                    {
+                        ParseResult parseResult = ConvertUtils.Int64TryParse(_stringReference.Chars, _stringReference.StartIndex, _stringReference.Length, out long value);
+                        if (parseResult == ParseResult.Success)
+                        {
+                            numberValue = value;
+                        }
+                        else if (parseResult == ParseResult.Overflow)
+                        {
+                            throw ThrowReaderError("JSON integer {0} is too large or small for an Int64.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                        }
+                        else
+                        {
+                            throw ThrowReaderError("Input string '{0}' is not a valid integer.".FormatWith(CultureInfo.InvariantCulture, _stringReference.ToString()));
+                        }
+                    }
+                    numberType = JsonToken.Integer;
+                    break;
+                case ReadType.Read:
                     {
                         if (singleDigit)
                         {
