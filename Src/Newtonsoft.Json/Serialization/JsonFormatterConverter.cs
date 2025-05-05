@@ -33,6 +33,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Newtonsoft.Json.Serialization
 {
+#pragma warning disable SYSLIB0050
     [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
     [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
     internal class JsonFormatterConverter : IFormatterConverter
@@ -155,6 +156,7 @@ namespace Newtonsoft.Json.Serialization
             return GetTokenValue<ulong>(value);
         }
     }
+#pragma warning restore SYSLIB0050
 }
 
 #endif

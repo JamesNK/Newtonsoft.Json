@@ -1763,6 +1763,7 @@ namespace Newtonsoft.Json.Serialization
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private object CreateISerializable(JsonReader reader, JsonISerializableContract contract, JsonProperty? member, string? id)
         {
+#pragma warning disable SYSLIB0050
             Type objectType = contract.UnderlyingType;
 
             if (!JsonTypeReflector.FullyTrusted)
@@ -1831,6 +1832,7 @@ namespace Newtonsoft.Json.Serialization
             OnDeserialized(reader, contract, createdObject);
 
             return createdObject;
+#pragma warning restore SYSLIB0050
         }
 
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
