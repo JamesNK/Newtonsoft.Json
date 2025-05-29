@@ -31,16 +31,25 @@ using Newtonsoft.Json.Utilities;
 
 namespace Newtonsoft.Json.Linq.JsonPath
 {
-    internal class JPath
+    /// <summary>
+    /// Represents a compiled JSONPath expression.
+    /// </summary>
+    public class JPath
     {
         private static readonly char[] FloatCharacters = new[] {'.', 'E', 'e'};
 
         private readonly string _expression;
-        public List<PathFilter> Filters { get; }
+        internal List<PathFilter> Filters { get; }
 
         private int _currentIndex;
 
-        public JPath(string expression)
+        /// <summary>
+        /// Gets the string representation of the JSON expression.
+        /// </summary>
+        /// <value>The <see cref="String"/> representation of the JSON expression.</value>
+        public string Expression => _expression;
+
+        private JPath(string expression)
         {
             ValidationUtils.ArgumentNotNull(expression, nameof(expression));
             _expression = expression;
@@ -872,6 +881,18 @@ namespace Newtonsoft.Json.Linq.JsonPath
             {
                 throw new JsonException(message);
             }
+        }
+
+        /// <summary>
+        /// Returns a compiled JSONPath expression
+        /// </summary>
+        /// <param name="expression">
+        /// A <see cref="String"/> that contains a JSONPath expression.
+        /// </param>
+        /// <returns>A <see cref="JPath"/> containing the compiled JSONPath expression.</returns>
+        public static JPath Compile(string expression)
+        {
+            return new JPath(expression);
         }
 
         internal IEnumerable<JToken> Evaluate(JToken root, JToken t, JsonSelectSettings? settings)
