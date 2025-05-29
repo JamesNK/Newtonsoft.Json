@@ -229,14 +229,14 @@ namespace Newtonsoft.Json
                             {
                                 if (!schema.PositionalItemsValidation)
                                 {
-                                    if (schema.Items != null && schema.Items.Count > 0)
+                                    if (schema.Items?.Count > 0)
                                     {
                                         schemas.Add(schema.Items[0]);
                                     }
                                 }
                                 else
                                 {
-                                    if (schema.Items != null && schema.Items.Count > 0)
+                                    if (schema.Items?.Count > 0)
                                     {
                                         if (schema.Items.Count > (_currentScope.ArrayItemCount - 1))
                                         {
@@ -354,25 +354,17 @@ namespace Newtonsoft.Json
 
         private JsonSchemaType? GetCurrentNodeSchemaType()
         {
-            switch (_reader.TokenType)
+            return _reader.TokenType switch
             {
-                case JsonToken.StartObject:
-                    return JsonSchemaType.Object;
-                case JsonToken.StartArray:
-                    return JsonSchemaType.Array;
-                case JsonToken.Integer:
-                    return JsonSchemaType.Integer;
-                case JsonToken.Float:
-                    return JsonSchemaType.Float;
-                case JsonToken.String:
-                    return JsonSchemaType.String;
-                case JsonToken.Boolean:
-                    return JsonSchemaType.Boolean;
-                case JsonToken.Null:
-                    return JsonSchemaType.Null;
-                default:
-                    return null;
-            }
+                JsonToken.StartObject => JsonSchemaType.Object,
+                JsonToken.StartArray => JsonSchemaType.Array,
+                JsonToken.Integer => JsonSchemaType.Integer,
+                JsonToken.Float => JsonSchemaType.Float,
+                JsonToken.String => JsonSchemaType.String,
+                JsonToken.Boolean => JsonSchemaType.Boolean,
+                JsonToken.Null => JsonSchemaType.Null,
+                _ => null
+            };
         }
 
         /// <summary>
