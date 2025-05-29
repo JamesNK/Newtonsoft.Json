@@ -14,7 +14,7 @@
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $assemblyVersion = if ($assemblyVersion) {$assemblyVersion} else {$majorVersion + '.0.0'}
   $netCliChannel = "STS"
-  $netCliVersion = "8.0.300"
+  $netCliVersion = "9.0.300"
   $nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
   $ensureNetCliSdk = $true
 
