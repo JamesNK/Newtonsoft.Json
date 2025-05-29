@@ -966,7 +966,13 @@ namespace Newtonsoft.Json.Tests
             {
                 jsonWriter.WriteToken(JsonToken.StartArray);
 
-                ExceptionAssert.Throws<FormatException>(() => { jsonWriter.WriteToken(JsonToken.Integer, "three"); }, "Input string was not in a correct format.");
+#if NET7_0_OR_GREATER
+                // .NET 7.0 prints actual input in the message:
+                string expectedMessage = "The input string 'three' was not in a correct format.";
+#else
+                string expectedMessage = "Input string was not in a correct format.";
+#endif
+                ExceptionAssert.Throws<FormatException>(() => { jsonWriter.WriteToken(JsonToken.Integer, "three"); }, expectedMessage);
 
                 ExceptionAssert.Throws<ArgumentNullException>(() => { jsonWriter.WriteToken(JsonToken.Integer); }, @"Value cannot be null.
 Parameter name: value", "Value cannot be null. (Parameter 'value')");
