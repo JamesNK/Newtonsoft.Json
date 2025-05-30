@@ -1832,6 +1832,12 @@ namespace Newtonsoft.Json.Converters
 
         private void AddJsonArrayAttribute(IXmlElement element, IXmlDocument document)
         {
+            var jsonArrayAttributeExists = element.Attributes.Find(x => x.LocalName == "Array" && x.NamespaceUri == JsonNamespaceUri) is not null;
+            if (jsonArrayAttributeExists)
+            {
+                return;
+            }
+
             element.SetAttributeNode(document.CreateAttribute("json:Array", JsonNamespaceUri, "true"));
 
 #if HAVE_XLINQ
