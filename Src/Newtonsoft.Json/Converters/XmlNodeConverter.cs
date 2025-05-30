@@ -1566,8 +1566,10 @@ namespace Newtonsoft.Json.Converters
             return document.WrappedNode;
         }
 
-        private void DeserializeValue(JsonReader reader, IXmlDocument document, XmlNamespaceManager manager, string propertyName, IXmlNode currentNode)
+        private void DeserializeValue(JsonReader reader, IXmlDocument document, XmlNamespaceManager manager, string propertyName, IXmlNode currentNode, out bool arrayAttributeWritten)
         {
+            arrayAttributeWritten = false;
+
             if (!EncodeSpecialCharacters)
             {
                 switch (propertyName)
@@ -1606,6 +1608,7 @@ namespace Newtonsoft.Json.Converters
             {
                 // handle nested arrays
                 ReadArrayElements(reader, document, propertyName, currentNode, manager);
+                arrayAttributeWritten = WriteArrayAttribute;
                 return;
             }
 
@@ -1805,10 +1808,11 @@ namespace Newtonsoft.Json.Converters
 
             currentNode.AppendChild(nestedArrayElement);
 
+            bool arrayAttributeWritten = false;
             int count = 0;
             while (reader.Read() && reader.TokenType != JsonToken.EndArray)
             {
-                DeserializeValue(reader, document, manager, propertyName, nestedArrayElement);
+                DeserializeValue(reader, document, manager, propertyName, nestedArrayElement, out arrayAttributeWritten);
                 count++;
             }
 
@@ -1817,7 +1821,7 @@ namespace Newtonsoft.Json.Converters
                 AddJsonArrayAttribute(nestedArrayElement, document);
             }
 
-            if (count == 1 && WriteArrayAttribute)
+            if (count == 1 && WriteArrayAttribute && !arrayAttributeWritten)
             {
                 foreach (IXmlNode childNode in nestedArrayElement.ChildNodes)
                 {
@@ -2094,14 +2098,15 @@ namespace Newtonsoft.Json.Converters
 
                         if (reader.TokenType == JsonToken.StartArray)
                         {
+                            bool arrayAttributeWritten = false;
                             int count = 0;
                             while (reader.Read() && reader.TokenType != JsonToken.EndArray)
                             {
-                                DeserializeValue(reader, document, manager, propertyName, currentNode);
+                                DeserializeValue(reader, document, manager, propertyName, currentNode, out arrayAttributeWritten);
                                 count++;
                             }
 
-                            if (count == 1 && WriteArrayAttribute)
+                            if (count == 1 && WriteArrayAttribute && !arrayAttributeWritten)
                             {
                                 MiscellaneousUtils.GetQualifiedNameParts(propertyName, out string? elementPrefix, out string localName);
                                 string? ns = StringUtils.IsNullOrEmpty(elementPrefix) ? manager.DefaultNamespace : manager.LookupNamespace(elementPrefix);
@@ -2118,7 +2123,7 @@ namespace Newtonsoft.Json.Converters
                         }
                         else
                         {
-                            DeserializeValue(reader, document, manager, propertyName, currentNode);
+                            DeserializeValue(reader, document, manager, propertyName, currentNode, out bool _);
                         }
                         continue;
                     case JsonToken.StartConstructor:
@@ -2126,7 +2131,7 @@ namespace Newtonsoft.Json.Converters
 
                         while (reader.Read() && reader.TokenType != JsonToken.EndConstructor)
                         {
-                            DeserializeValue(reader, document, manager, constructorName, currentNode);
+                            DeserializeValue(reader, document, manager, constructorName, currentNode, out bool _);
                         }
                         break;
                     case JsonToken.Comment:
