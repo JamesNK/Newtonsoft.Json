@@ -486,6 +486,13 @@ namespace Newtonsoft.Json.Serialization
             MiscellaneousUtils.Assert(resolvedObjectType != null);
             MiscellaneousUtils.Assert(contract != null);
 
+            // Check for converter after metadata properties have been read and type resolved
+            JsonConverter? converter = GetConverter(contract, member?.Converter, containerContract, containerMember);
+            if (converter != null && converter.CanRead)
+            {
+                return DeserializeConvertable(converter, reader, resolvedObjectType, existingValue);
+            }
+
             switch (contract.ContractType)
             {
                 case JsonContractType.Object:
