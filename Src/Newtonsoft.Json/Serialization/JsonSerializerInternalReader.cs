@@ -2381,7 +2381,7 @@ namespace Newtonsoft.Json.Serialization
                 {
                     // Use the converter to deserialize instead of constructor
                     createdFromNonDefaultCreator = true;
-                    return DeserializeConvertable(converter, reader, objectContract.UnderlyingType, null);
+                    return DeserializeConvertable(converter, reader, objectContract.UnderlyingType, null)!;
                 }
 
                 if (!objectContract.IsInstantiable)

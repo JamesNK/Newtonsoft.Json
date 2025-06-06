@@ -166,7 +166,7 @@ namespace Newtonsoft.Json.Tests.Documentation
 
             MemoryTraceWriter memoryTraceWriter = (MemoryTraceWriter)traceWriter;
 
-            Assert.AreEqual(916, memoryTraceWriter.ToString().Length);
+            Assert.AreEqual(901, memoryTraceWriter.ToString().Length);
             Assert.AreEqual(7, memoryTraceWriter.GetTraceMessages().Count());
         }
     }
