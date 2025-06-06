@@ -38,6 +38,7 @@ using System.Numerics;
 #endif
 using System.Reflection;
 using System.Runtime.Serialization;
+using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Utilities;
 using System.Runtime.CompilerServices;
@@ -486,12 +487,6 @@ namespace Newtonsoft.Json.Serialization
             MiscellaneousUtils.Assert(resolvedObjectType != null);
             MiscellaneousUtils.Assert(contract != null);
 
-            // Check for converter after metadata properties have been read and type resolved
-            JsonConverter? converter = GetConverter(contract, member?.Converter, containerContract, containerMember);
-            if (converter != null && converter.CanRead)
-            {
-                return DeserializeConvertable(converter, reader, resolvedObjectType, existingValue);
-            }
 
             switch (contract.ContractType)
             {
@@ -2380,6 +2375,15 @@ namespace Newtonsoft.Json.Serialization
 
             if (newObject == null)
             {
+                // Check if there's a converter that can handle this type as a fallback
+                JsonConverter? converter = GetConverter(objectContract, containerMember?.Converter, null, containerProperty);
+                if (converter != null && converter.CanRead)
+                {
+                    // Use the converter to deserialize instead of constructor
+                    createdFromNonDefaultCreator = true;
+                    return DeserializeConvertable(converter, reader, objectContract.UnderlyingType, null);
+                }
+
                 if (!objectContract.IsInstantiable)
                 {
                     throw JsonSerializationException.Create(reader, "Could not create an instance of type {0}. Type is an interface or abstract class and cannot be instantiated.".FormatWith(CultureInfo.InvariantCulture, objectContract.UnderlyingType));
