@@ -301,7 +301,7 @@ Newtonsoft.Json Error: 0 : Error!
             MemoryTraceWriter memoryTraceWriter = (MemoryTraceWriter)traceWriter;
             string output = memoryTraceWriter.ToString();
 
-            Assert.AreEqual(901, output.Length);
+            Assert.AreEqual(916, output.Length);
             Assert.AreEqual(7, memoryTraceWriter.GetTraceMessages().Count());
 
             string json = @"Serialized JSON: 
@@ -370,7 +370,7 @@ Newtonsoft.Json Error: 0 : Error!
             MemoryTraceWriter memoryTraceWriter = (MemoryTraceWriter)traceWriter;
             string output = memoryTraceWriter.ToString();
 
-            Assert.AreEqual(1043, output.Length);
+            Assert.AreEqual(1058, output.Length);
             Assert.AreEqual(7, memoryTraceWriter.GetTraceMessages().Count());
 
             json = StringAssert.Normalize(json);
