@@ -402,6 +402,30 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public async Task ReadAsInt64IntAsync()
+        {
+            string json = @"{""Name"":1}";
+
+            JObject o = JObject.Parse(json);
+
+            JTokenReader reader = (JTokenReader)o.CreateReader();
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+            Assert.AreEqual(o, reader.CurrentToken);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+            Assert.AreEqual(o.Property("Name"), reader.CurrentToken);
+
+            await reader.ReadAsInt64Async();
+            Assert.AreEqual(o["Name"], reader.CurrentToken);
+            Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+            Assert.AreEqual(typeof(long), reader.ValueType);
+            Assert.AreEqual(1L, reader.Value);
+        }
+
+        [Test]
         public async Task ReadAsInt32BadStringAsync()
         {
             string json = @"{""Name"":""hi""}";
@@ -417,6 +441,24 @@ namespace Newtonsoft.Json.Tests.Linq
             Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
 
             await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => { await reader.ReadAsInt32Async(); }, "Could not convert string to integer: hi. Path 'Name', line 1, position 12.");
+        }
+
+        [Test]
+        public async Task ReadAsInt64BadStringAsync()
+        {
+            string json = @"{""Name"":""hi""}";
+
+            JObject o = JObject.Parse(json);
+
+            JsonReader reader = o.CreateReader();
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.StartObject, reader.TokenType);
+
+            Assert.IsTrue(await reader.ReadAsync());
+            Assert.AreEqual(JsonToken.PropertyName, reader.TokenType);
+
+            await ExceptionAssert.ThrowsAsync<JsonReaderException>(async () => { await reader.ReadAsInt64Async(); }, "Could not convert string to integer: hi. Path 'Name', line 1, position 12.");
         }
 
         [Test]
