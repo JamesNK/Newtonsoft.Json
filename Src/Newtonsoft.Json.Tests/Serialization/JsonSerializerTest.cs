@@ -3728,6 +3728,39 @@ Path '', line 1, position 1.");
         }
 
         [Test]
+        public void SerializeWithNullJsonConverter()
+        {
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(null);
+            settings.Converters.Add(new StringEnumConverter());
+
+            Foo foo = new Foo();
+            string json = JsonConvert.SerializeObject(foo, settings);
+            Assert.IsTrue(json != null);
+
+            foo = new Foo();
+            json = JsonConvert.SerializeObject(foo, Formatting.None, null, new StringEnumConverter());
+            Assert.IsTrue(json != null);
+        }
+
+        [Test]
+        public void DeserializeWithNullJsonConverter()
+        {
+            Foo foo = new Foo();
+            string json = JsonConvert.SerializeObject(foo);
+
+            var settings = new JsonSerializerSettings();
+            settings.Converters.Add(null);
+            settings.Converters.Add(new StringEnumConverter());
+
+            Foo newFoo = JsonConvert.DeserializeObject<Foo>(json, settings);
+            Assert.IsTrue(newFoo != null);
+
+            newFoo = JsonConvert.DeserializeObject<Foo>(json, null, new StringEnumConverter());
+            Assert.IsTrue(newFoo != null);
+        }
+
+        [Test]
         public void SerializeGuidKeyedDictionary()
         {
             Dictionary<Guid, int> dictionary = new Dictionary<Guid, int>();
