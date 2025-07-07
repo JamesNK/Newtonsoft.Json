@@ -45,6 +45,7 @@ namespace Newtonsoft.Json.Linq
     public partial class JArray : JContainer, IList<JToken>
     {
         private readonly List<JToken> _values = new List<JToken>();
+        static internal readonly string LengthProperty = "length";
 
         /// <summary>
         /// Gets the container's children tokens.
