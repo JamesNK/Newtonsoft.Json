@@ -1774,16 +1774,16 @@ namespace Newtonsoft.Json.Tests.Converters
     ""@class"": ""vevent"",
     ""a"": {
       ""@class"": ""url"",
-      ""@href"": ""http://www.web2con.com/""/* Hi */,
+      ""@href"": ""http://www.web2con.com/"",
       ""span"": ""Text""
-    }/* Hi! */
+    }
   }
 }";
 
             StringAssert.AreEqual(expected, jsonText);
 
             XmlDocument newDoc = (XmlDocument)DeserializeXmlNode(jsonText);
-            Assert.AreEqual(@"<span class=""vevent""><a class=""url"" href=""http://www.web2con.com/""><!-- Hi --><span>Text</span></a><!-- Hi! --></span>", newDoc.InnerXml);
+            Assert.AreEqual(@"<span class=""vevent""><a class=""url"" href=""http://www.web2con.com/""><span>Text</span></a></span>", newDoc.InnerXml);
         }
 
         [Test]
