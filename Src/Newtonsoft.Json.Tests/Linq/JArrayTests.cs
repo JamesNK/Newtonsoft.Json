@@ -647,5 +647,43 @@ Parameter name: index",
             Assert.AreEqual(true, ((IJsonLineInfo)a[1]).HasLineInfo());
             Assert.AreEqual(true, ((IJsonLineInfo)a[2]).HasLineInfo());
         }
+
+#if NET6_0_OR_GREATER
+        [Test]
+        public void Index_Get_Index()
+        {
+            string json = "[1,2,3]";
+
+            JArray a = JArray.Parse(json);
+
+            Assert.AreEqual(3, (int)a[^1]);
+            Assert.AreEqual(2, (int)a[^2]);
+            Assert.AreEqual(1, (int)a[^3]);
+
+            Assert.AreEqual(1, (int)a[new Index(0)]);
+            Assert.AreEqual(2, (int)a[new Index(1)]);
+            Assert.AreEqual(3, (int)a[new Index(2)]);
+        }
+
+        [Test]
+        public void Index_Set_Index()
+        {
+            string json = "[1,2,3]";
+
+            JArray a = JArray.Parse(json);
+
+            a[^1] = 1;
+            a[^2] = 2;
+            a[^3] = 3;
+
+            Assert.AreEqual("[3,2,1]", a.ToString(Formatting.None));
+
+            a[new Index(0)] = 4;
+            a[new Index(1)] = 5;
+            a[new Index(2)] = 6;
+
+            Assert.AreEqual("[4,5,6]", a.ToString(Formatting.None));
+        }
+#endif
     }
 }

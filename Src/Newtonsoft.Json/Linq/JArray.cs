@@ -30,6 +30,9 @@ using System.Diagnostics.CodeAnalysis;
 using Newtonsoft.Json.Utilities;
 using System.IO;
 using System.Globalization;
+#if NET6_0_OR_GREATER
+using System.Linq;
+#endif
 
 namespace Newtonsoft.Json.Linq
 {
@@ -245,23 +248,36 @@ namespace Newtonsoft.Json.Linq
             {
                 ValidationUtils.ArgumentNotNull(key, nameof(key));
 
-                if (!(key is int))
+                switch (key)
                 {
-                    throw new ArgumentException("Accessed JArray values with invalid key value: {0}. Int32 array index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                    case int intKey:
+                        return GetItem(intKey);
+#if NET6_0_OR_GREATER
+                    case Index indexKey:
+                        return GetItem(indexKey.GetOffset(Count));
+#endif
+                    default:
+                        throw new ArgumentException("Accessed JArray values with invalid key value: {0}. Int32 array index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
                 }
 
-                return GetItem((int)key);
             }
             set
             {
                 ValidationUtils.ArgumentNotNull(key, nameof(key));
 
-                if (!(key is int))
+                switch (key)
                 {
-                    throw new ArgumentException("Set JArray values with invalid key value: {0}. Int32 array index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                    case int intKey:
+                        SetItem(intKey, value);
+                        return;
+#if NET6_0_OR_GREATER
+                    case Index indexKey:
+                        SetItem(indexKey.GetOffset(Count), value);
+                        return;
+#endif
+                    default:
+                        throw new ArgumentException("Set JArray values with invalid key value: {0}. Int32 array index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
                 }
-
-                SetItem((int)key, value);
             }
         }
 
