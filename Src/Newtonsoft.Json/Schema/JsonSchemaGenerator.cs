@@ -473,10 +473,7 @@ namespace Newtonsoft.Json.Schema
             if (valueRequired != Required.Always && ReflectionUtils.IsNullable(type))
             {
                 schemaType = JsonSchemaType.Null;
-                if (ReflectionUtils.IsNullableType(type))
-                {
-                    type = Nullable.GetUnderlyingType(type);
-                }
+                type = ReflectionUtils.GetUnderlyingTypeIfNullable(type);
             }
 
             PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(type);
