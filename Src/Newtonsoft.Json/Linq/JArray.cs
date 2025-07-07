@@ -237,57 +237,54 @@ namespace Newtonsoft.Json.Linq
             writer.WriteEndArray();
         }
 
-		/// <summary>
-		/// Gets the <see cref="JToken"/> with the specified key.
-		/// </summary>
-		/// <value>The <see cref="JToken"/> with the specified key.</value>
-		public override JToken? this[object key]
-		{
-			get
-			{
-				ValidationUtils.ArgumentNotNull(key, nameof(key));
+        /// <summary>
+        /// Gets the <see cref="JToken"/> with the specified key.
+        /// </summary>
+        /// <value>The <see cref="JToken"/> with the specified key.</value>
+        public override JToken? this[object key]
+        {
+            get
+            {
+                ValidationUtils.ArgumentNotNull(key, nameof(key));
 
-				switch (key)
-				{
-					case int intKey:
-						return GetItem(intKey);
+                switch (key)
+                {
+                    case int intKey:
+                        return GetItem(intKey);
 #if NET6_0_OR_GREATER
-					case Index indexKey:
-						return GetItem(indexKey.GetOffset(Count));
-					case Range rangeKey:
-						(int offset, int length) = rangeKey.GetOffsetAndLength(Count);
-						return new JArray(Enumerable.Range(offset, length).Select(GetItem));
+                    case Index indexKey:
+                        return GetItem(indexKey.GetOffset(Count));
 #endif
-					default:
-						throw new ArgumentException("Accessed JArray values with invalid key value: {0}. Int32 array index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
-				}
+                    default:
+                        throw new ArgumentException("Accessed JArray values with invalid key value: {0}. Int32 array index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                }
 
-			}
-			set
-			{
-				ValidationUtils.ArgumentNotNull(key, nameof(key));
+            }
+            set
+            {
+                ValidationUtils.ArgumentNotNull(key, nameof(key));
 
-				switch (key)
-				{
-					case int intKey:
-						SetItem(intKey, value);
-						return;
+                switch (key)
+                {
+                    case int intKey:
+                        SetItem(intKey, value);
+                        return;
 #if NET6_0_OR_GREATER
-					case Index indexKey:
-						SetItem(indexKey.GetOffset(Count), value);
-						return;
+                    case Index indexKey:
+                        SetItem(indexKey.GetOffset(Count), value);
+                        return;
 #endif
-					default:
-						throw new ArgumentException("Set JArray values with invalid key value: {0}. Int32 array index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
-				}
-			}
-		}
+                    default:
+                        throw new ArgumentException("Set JArray values with invalid key value: {0}. Int32 array index expected.".FormatWith(CultureInfo.InvariantCulture, MiscellaneousUtils.ToString(key)));
+                }
+            }
+        }
 
-		/// <summary>
-		/// Gets or sets the <see cref="Newtonsoft.Json.Linq.JToken"/> at the specified index.
-		/// </summary>
-		/// <value></value>
-		public JToken this[int index]
+        /// <summary>
+        /// Gets or sets the <see cref="Newtonsoft.Json.Linq.JToken"/> at the specified index.
+        /// </summary>
+        /// <value></value>
+        public JToken this[int index]
         {
             get => GetItem(index);
             set => SetItem(index, value);
