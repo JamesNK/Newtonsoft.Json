@@ -1,0 +1,16 @@
+<Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+    <Platform Name="x86" />
+  </Configurations>
+  <Folder Name="/Solution Items/">
+    <File Path="Directory.Build.props" />
+    <File Path="global.json" />
+    <File Path="NuGet.Config" />
+  </Folder>
+  <Project Path="Newtonsoft.Json.FuzzTests/Newtonsoft.Json.FuzzTests.csproj" />
+  <Project Path="Newtonsoft.Json.TestConsole/Newtonsoft.Json.TestConsole.csproj" />
+  <Project Path="Newtonsoft.Json.Tests/Newtonsoft.Json.Tests.csproj" />
+  <Project Path="Newtonsoft.Json/Newtonsoft.Json.csproj" />
+</Solution>
