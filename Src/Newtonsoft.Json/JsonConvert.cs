@@ -692,7 +692,7 @@ namespace Newtonsoft.Json
         /// Deserializes the JSON to a .NET object.
         /// </summary>
         /// <param name="value">The JSON to deserialize.</param>
-        /// <returns>The deserialized object from the JSON string.</returns>
+        /// <returns>The deserialized object from the JSON string. A <see langword="null"/> value is returned if the provided JSON is valid but represents a null value.</returns>
         [DebuggerStepThrough]
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
@@ -709,7 +709,7 @@ namespace Newtonsoft.Json
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
         /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
-        /// <returns>The deserialized object from the JSON string.</returns>
+        /// <returns>The deserialized object from the JSON string. A <see langword="null"/> value is returned if the provided JSON is valid but represents a null value.</returns>
         [DebuggerStepThrough]
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
@@ -723,7 +723,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <param name="value">The JSON to deserialize.</param>
         /// <param name="type">The <see cref="Type"/> of object being deserialized.</param>
-        /// <returns>The deserialized object from the JSON string.</returns>
+        /// <returns>The deserialized object from the JSON string. A <see langword="null"/> value is returned if the provided JSON is valid but represents a null value.</returns>
         [DebuggerStepThrough]
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
@@ -737,7 +737,7 @@ namespace Newtonsoft.Json
         /// </summary>
         /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
         /// <param name="value">The JSON to deserialize.</param>
-        /// <returns>The deserialized object from the JSON string.</returns>
+        /// <returns>The deserialized object from the JSON string. A <see langword="null"/> value is returned if the provided JSON is valid but represents a null value.</returns>
         [DebuggerStepThrough]
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
@@ -756,7 +756,7 @@ namespace Newtonsoft.Json
         /// </typeparam>
         /// <param name="value">The JSON to deserialize.</param>
         /// <param name="anonymousTypeObject">The anonymous type object.</param>
-        /// <returns>The deserialized anonymous type from the JSON string.</returns>
+        /// <returns>The deserialized anonymous type from the JSON string. A <see langword="null"/> value is returned if the provided JSON is valid but represents a null value.</returns>
         [DebuggerStepThrough]
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
@@ -779,7 +779,7 @@ namespace Newtonsoft.Json
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
         /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
-        /// <returns>The deserialized anonymous type from the JSON string.</returns>
+        /// <returns>The deserialized anonymous type from the JSON string. A <see langword="null"/> value is returned if the provided JSON is valid but represents a null value.</returns>
         [DebuggerStepThrough]
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
@@ -794,7 +794,7 @@ namespace Newtonsoft.Json
         /// <typeparam name="T">The type of the object to deserialize to.</typeparam>
         /// <param name="value">The JSON to deserialize.</param>
         /// <param name="converters">Converters to use while deserializing.</param>
-        /// <returns>The deserialized object from the JSON string.</returns>
+        /// <returns>The deserialized object from the JSON string. A <see langword="null"/> value is returned if the provided JSON is valid but represents a null value.</returns>
         [DebuggerStepThrough]
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
@@ -812,7 +812,7 @@ namespace Newtonsoft.Json
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
         /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
-        /// <returns>The deserialized object from the JSON string.</returns>
+        /// <returns>The deserialized object from the JSON string. A <see langword="null"/> value is returned if the provided JSON is valid but represents a null value.</returns>
         [DebuggerStepThrough]
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
@@ -827,7 +827,7 @@ namespace Newtonsoft.Json
         /// <param name="value">The JSON to deserialize.</param>
         /// <param name="type">The type of the object to deserialize.</param>
         /// <param name="converters">Converters to use while deserializing.</param>
-        /// <returns>The deserialized object from the JSON string.</returns>
+        /// <returns>The deserialized object from the JSON string. A <see langword="null"/> value is returned if the provided JSON is valid but represents a null value.</returns>
         [DebuggerStepThrough]
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
@@ -849,7 +849,7 @@ namespace Newtonsoft.Json
         /// The <see cref="JsonSerializerSettings"/> used to deserialize the object.
         /// If this is <c>null</c>, default serialization settings will be used.
         /// </param>
-        /// <returns>The deserialized object from the JSON string.</returns>
+        /// <returns>The deserialized object from the JSON string. A <see langword="null"/> value is returned if the provided JSON is valid but represents a null value.</returns>
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public static object? DeserializeObject(string value, Type? type, JsonSerializerSettings? settings)
