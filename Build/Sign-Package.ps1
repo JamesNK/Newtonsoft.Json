@@ -1,26 +1,29 @@
 
 $currentDirectory = split-path $MyInvocation.MyCommand.Definition
 
-# See if we have the ClientSecret available
-if([string]::IsNullOrEmpty($Env:SignClientSecret)){
-	Write-Host "Client Secret not found, not signing packages"
-	return;
+# See if we have the SignKeyVaultCertificate available
+if ([string]::IsNullOrEmpty($Env:SignKeyVaultCertificate)){
+    Write-Host "Key vault detail not found, not signing packages"
+    return;
 }
 
-dotnet tool install --tool-path . SignClient
-
-# Setup Variables we need to pass into the sign client tool
-
-$appSettings = "$currentDirectory\appsettings.json"
+dotnet tool install --tool-path . --prerelease sign
 
 $files = gci $Env:ArtifactDirectory\*.nupkg,*.zip -recurse | Select -ExpandProperty FullName
+$signKeyVaultCertificate = $Env:SignKeyVaultCertificate
+$signKeyVaultUrl = $Env:SignKeyVaultUrl
 
 foreach ($file in $files){
-	Write-Host "Submitting $file for signing"
+    Write-Host "Submitting $file for signing"
 
-	.\SignClient 'sign' -c $appSettings -i $file -r $Env:SignClientUser -s $Env:SignClientSecret -n 'Json.NET' -d 'Json.NET' -u 'https://www.newtonsoft.com/json' 
+    .\sign code azure-key-vault $file `
+        --publisher-name "Newtonsoft" `
+        --description "Json.NET" `
+        --description-url "https://www.newtonsoft.com/json" `
+        --azure-key-vault-certificate "$(signKeyVaultCertificate)" `
+        --azure-key-vault-url "$(signKeyVaultUrl)"
 
-	Write-Host "Finished signing $file"
+    Write-Host "Finished signing $file"
 }
 
 Write-Host "Sign-package complete"

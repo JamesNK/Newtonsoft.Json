@@ -67,12 +67,13 @@ steps:
     SourceBranch: $(Build.SourceBranch)
   displayName: 'Run build'
 
-- task: PowerShell@2
+- task: AzureCLI@2
   inputs:
-    filePath: .\Build\Sign-Package.ps1
+    scriptPath: .\Build\Sign-Package.ps1
   env:
-    SignClientUser: $(newtonsoft.signClientUser)
-    SignClientSecret: $(newtonsoft.signClientSecret)
+    AzureSubscription: $(newtonsoft.signConnection)
+    SignKeyVaultCertificate: $(newtonsoft.signKeyVaultCertificate)
+    SignKeyVaultUrl: $(newtonsoft.signKeyVaultUrl)
     ArtifactDirectory: .\Working
   displayName: 'Authenticode sign packages'
   condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['newtonsoft.signClientUser'], '')), not(eq(variables['newtonsoft.signClientSecret'], '')))
