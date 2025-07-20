@@ -77,7 +77,7 @@ steps:
     SignKeyVaultUrl: $(newtonsoft.signKeyVaultUrl)
     ArtifactDirectory: .\Working
   displayName: 'Authenticode sign packages'
-  condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['newtonsoft.signKeyVaultCertificate'], '')), not(eq(variables['newtonsoft.signKeyVaultUrl'], '')))
+  condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')), not(eq(variables['newtonsoft.signConnection'], '')), not(eq(variables['newtonsoft.signKeyVaultCertificate'], '')), not(eq(variables['newtonsoft.signKeyVaultUrl'], '')))
 
 - task: PublishTestResults@2
   inputs:
