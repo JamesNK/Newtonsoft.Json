@@ -69,6 +69,7 @@ steps:
 
 - task: AzureCLI@2
   inputs:
+    scriptType: 'ps'
     scriptPath: .\Build\Sign-Package.ps1
   env:
     AzureSubscription: $(newtonsoft.signConnection)
