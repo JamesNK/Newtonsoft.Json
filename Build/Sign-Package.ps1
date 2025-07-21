@@ -20,8 +20,8 @@ foreach ($file in $files){
         --publisher-name "Newtonsoft" `
         --description "Json.NET" `
         --description-url "https://www.newtonsoft.com/json" `
-        --azure-key-vault-certificate "$(signKeyVaultCertificate)" `
-        --azure-key-vault-url "$(signKeyVaultUrl)"
+        --azure-key-vault-certificate $signKeyVaultCertificate `
+        --azure-key-vault-url $signKeyVaultUrl
 
     Write-Host "Finished signing $file"
 }
