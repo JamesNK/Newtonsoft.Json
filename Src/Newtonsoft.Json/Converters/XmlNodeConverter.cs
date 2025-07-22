@@ -1151,6 +1151,7 @@ namespace Newtonsoft.Json.Converters
                 {
                     // avoid grouping when there is only one node
                     string nodeName = GetPropertyName(node.ChildNodes[0], manager);
+                    if (nodeName == CommentName) return;
                     WriteGroupedNodes(writer, manager, writePropertyName, node.ChildNodes, nodeName);
                     break;
                 }
@@ -1169,7 +1170,7 @@ namespace Newtonsoft.Json.Converters
                     {
                         IXmlNode childNode = node.ChildNodes[i];
                         string currentNodeName = GetPropertyName(childNode, manager);
-
+                        
                         if (nodesGroupedByName == null)
                         {
                             if (nodeName == null)
@@ -1190,22 +1191,26 @@ namespace Newtonsoft.Json.Converters
                                     {
                                         nodes.Add(node.ChildNodes[j]);
                                     }
-                                    nodesGroupedByName.Add(nodeName, nodes);
+                                        if (nodeName != CommentName) 
+                                        nodesGroupedByName.Add(nodeName, nodes);
                                 }
                                 else
                                 {
-                                    nodesGroupedByName.Add(nodeName, node.ChildNodes[0]);
+                                        if (nodeName != CommentName)
+                                        nodesGroupedByName.Add(nodeName, node.ChildNodes[0]);
                                 }
-                                nodesGroupedByName.Add(currentNodeName, childNode);
+                                    if (currentNodeName != CommentName) 
+                                    nodesGroupedByName.Add(currentNodeName, childNode);
                             }
                         }
                         else
                         {
                             if (!nodesGroupedByName.TryGetValue(currentNodeName, out object? value))
                             {
-                                nodesGroupedByName.Add(currentNodeName, childNode);
+                                    if (currentNodeName != CommentName)
+                                        nodesGroupedByName.Add(currentNodeName, childNode);
                             }
-                            else
+                            else if (currentNodeName != CommentName)
                             {
                                 if (!(value is List<IXmlNode> nodes))
                                 {
