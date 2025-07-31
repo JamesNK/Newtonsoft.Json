@@ -141,7 +141,7 @@ namespace Newtonsoft.Json
         /// <returns>
         /// 	<c>true</c> if this instance can convert the specified object type; otherwise, <c>false</c>.
         /// </returns>
-        public sealed override bool CanConvert(Type objectType)
+        public override bool CanConvert(Type objectType)
         {
             return typeof(T).IsAssignableFrom(objectType);
         }
