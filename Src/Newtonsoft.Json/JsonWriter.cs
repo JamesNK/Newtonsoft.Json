@@ -162,28 +162,17 @@ namespace Newtonsoft.Json
         {
             get
             {
-                switch (_currentState)
+                return _currentState switch
                 {
-                    case State.Error:
-                        return WriteState.Error;
-                    case State.Closed:
-                        return WriteState.Closed;
-                    case State.Object:
-                    case State.ObjectStart:
-                        return WriteState.Object;
-                    case State.Array:
-                    case State.ArrayStart:
-                        return WriteState.Array;
-                    case State.Constructor:
-                    case State.ConstructorStart:
-                        return WriteState.Constructor;
-                    case State.Property:
-                        return WriteState.Property;
-                    case State.Start:
-                        return WriteState.Start;
-                    default:
-                        throw JsonWriterException.Create(this, "Invalid state: " + _currentState, null);
-                }
+                    State.Error => WriteState.Error,
+                    State.Closed => WriteState.Closed,
+                    State.Object or State.ObjectStart => WriteState.Object,
+                    State.Array or State.ArrayStart => WriteState.Array,
+                    State.Constructor or State.ConstructorStart => WriteState.Constructor,
+                    State.Property => WriteState.Property,
+                    State.Start => WriteState.Start,
+                    _ => throw JsonWriterException.Create(this, "Invalid state: " + _currentState, null)
+                };
             }
         }
 
@@ -380,7 +369,7 @@ namespace Newtonsoft.Json
         {
             JsonPosition oldPosition = _currentPosition;
 
-            if (_stack != null && _stack.Count > 0)
+            if (_stack?.Count > 0)
             {
                 _currentPosition = _stack[_stack.Count - 1];
                 _stack.RemoveAt(_stack.Count - 1);
@@ -740,17 +729,13 @@ namespace Newtonsoft.Json
 
         private JsonToken GetCloseTokenForType(JsonContainerType type)
         {
-            switch (type)
+            return type switch
             {
-                case JsonContainerType.Object:
-                    return JsonToken.EndObject;
-                case JsonContainerType.Array:
-                    return JsonToken.EndArray;
-                case JsonContainerType.Constructor:
-                    return JsonToken.EndConstructor;
-                default:
-                    throw JsonWriterException.Create(this, "No close token for type: " + type, null);
-            }
+                JsonContainerType.Object => JsonToken.EndObject,
+                JsonContainerType.Array => JsonToken.EndArray,
+                JsonContainerType.Constructor => JsonToken.EndConstructor,
+                _ => throw JsonWriterException.Create(this, "No close token for type: " + type, null)
+            };
         }
 
         private void AutoCompleteClose(JsonContainerType type)
@@ -815,23 +800,13 @@ namespace Newtonsoft.Json
         {
             JsonContainerType currentLevelType = Peek();
 
-            switch (currentLevelType)
+            _currentState = currentLevelType switch
             {
-                case JsonContainerType.Object:
-                    _currentState = State.Object;
-                    break;
-                case JsonContainerType.Array:
-                    _currentState = State.Array;
-                    break;
-                case JsonContainerType.Constructor:
-                    _currentState = State.Array;
-                    break;
-                case JsonContainerType.None:
-                    _currentState = State.Start;
-                    break;
-                default:
-                    throw JsonWriterException.Create(this, "Unknown JsonType: " + currentLevelType, null);
-            }
+                JsonContainerType.Object => State.Object,
+                JsonContainerType.Array or JsonContainerType.Constructor => State.Array,
+                JsonContainerType.None => State.Start,
+                _ => throw JsonWriterException.Create(this, "Unknown JsonType: " + currentLevelType, null)
+            };
         }
 
         /// <summary>

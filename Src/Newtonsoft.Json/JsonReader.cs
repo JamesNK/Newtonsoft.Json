@@ -312,7 +312,7 @@ namespace Newtonsoft.Json
 
         internal JsonPosition GetPosition(int depth)
         {
-            if (_stack != null && depth < _stack.Count)
+            if (depth < _stack?.Count)
             {
                 return _stack[depth];
             }
@@ -364,7 +364,7 @@ namespace Newtonsoft.Json
         private JsonContainerType Pop()
         {
             JsonPosition oldPosition;
-            if (_stack != null && _stack.Count > 0)
+            if (_stack?.Count > 0)
             {
                 oldPosition = _currentPosition;
                 _currentPosition = _stack[_stack.Count - 1];
