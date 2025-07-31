@@ -73,6 +73,7 @@ namespace Newtonsoft.Json
         private FloatFormatHandling? _floatFormatHandling;
         private FloatParseHandling? _floatParseHandling;
         private StringEscapeHandling? _stringEscapeHandling;
+        private PropertyCaseSensitivityHandling? _caseSensitivityHandling;
         private CultureInfo _culture;
         private int? _maxDepth;
         private bool _maxDepthSet;
@@ -487,6 +488,17 @@ namespace Newtonsoft.Json
             get => _stringEscapeHandling ?? JsonSerializerSettings.DefaultStringEscapeHandling;
             set => _stringEscapeHandling = value;
         }
+        
+        /// <summary>
+        /// Gets or sets the case sensitivity settings used
+        /// when deserializing JSON property names.
+        /// The default value is <see cref="Json.PropertyCaseSensitivityHandling.CaseInsensitive" />.
+        /// </summary>
+        public virtual PropertyCaseSensitivityHandling PropertyCaseSensitivityHandling
+        {
+            get => _caseSensitivityHandling ?? JsonSerializerSettings.DefaultCaseSensitivityHandling;
+            set => _caseSensitivityHandling = value;
+        }
 
         /// <summary>
         /// Gets or sets how <see cref="DateTime"/> and <see cref="DateTimeOffset"/> values are formatted when writing JSON text,
@@ -565,6 +577,7 @@ namespace Newtonsoft.Json
             _constructorHandling = JsonSerializerSettings.DefaultConstructorHandling;
             _typeNameHandling = JsonSerializerSettings.DefaultTypeNameHandling;
             _metadataPropertyHandling = JsonSerializerSettings.DefaultMetadataPropertyHandling;
+            _caseSensitivityHandling = JsonSerializerSettings.DefaultCaseSensitivityHandling;
             _context = JsonSerializerSettings.DefaultContext;
             _serializationBinder = DefaultSerializationBinder.Instance;
 
@@ -772,6 +785,10 @@ namespace Newtonsoft.Json
             if (settings._stringEscapeHandling != null)
             {
                 serializer._stringEscapeHandling = settings._stringEscapeHandling;
+            }
+            if (settings._caseSensitivityHandling != null)
+            {
+                serializer._caseSensitivityHandling = settings._caseSensitivityHandling;
             }
             if (settings._culture != null)
             {
