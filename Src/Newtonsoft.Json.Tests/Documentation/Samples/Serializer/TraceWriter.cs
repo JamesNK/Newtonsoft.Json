@@ -73,9 +73,9 @@ namespace Newtonsoft.Json.Tests.Documentation.Samples.Serializer
 
             Console.WriteLine(traceWriter.ToString());
             // 2013-01-21T01:36:24.422 Info Started deserializing Newtonsoft.Json.Tests.Documentation.Examples.TraceWriter+Account. Path 'FullName', line 2, position 20.
-            // 2013-01-21T01:36:24.442 Verbose Could not find member 'DeletedDate' on Newtonsoft.Json.Tests.Documentation.Examples.TraceWriter+Account. Path 'DeletedDate', line 4, position 23.
+            // 2013-01-21T01:36:24.442 Verbose The JSON property 'DeletedDate' does not exist on Newtonsoft.Json.Tests.Documentation.Examples.TraceWriter+Account. Path 'DeletedDate', line 4, position 23.
             // 2013-01-21T01:36:24.447 Info Finished deserializing Newtonsoft.Json.Tests.Documentation.Examples.TraceWriter+Account. Path '', line 5, position 8.
-            // 2013-01-21T01:36:24.450 Verbose Deserialized JSON: 
+            // 2013-01-21T01:36:24.450 Verbose Deserialized JSON:
             // {
             //   "FullName": "Dan Deleted",
             //   "Deleted": true,
