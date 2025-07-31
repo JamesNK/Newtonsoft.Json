@@ -105,15 +105,15 @@ namespace Newtonsoft.Json.Tests
         }
 #pragma warning restore 618
 
-#if !(PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
+#if !(PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0
         [Test]
         public void BinarySerializeException()
         {
             JsonReaderException exception = new JsonReaderException("message!");
             using (var memoryStream = new MemoryStream())
             {
-                var binaryFormatter = new BinaryFormatter();
 #pragma warning disable SYSLIB0011 // Type or member is obsolete
+                var binaryFormatter = new BinaryFormatter();
                 binaryFormatter.Serialize(memoryStream, exception);
 #pragma warning restore SYSLIB0011 // Type or member is obsolete
             }
