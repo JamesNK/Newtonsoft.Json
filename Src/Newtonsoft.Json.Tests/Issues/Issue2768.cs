@@ -71,7 +71,7 @@ namespace Newtonsoft.Json.Tests.Issues
         {
             decimal d = JsonConvert.DeserializeObject<decimal>("0.0");
 
-            Assert.AreEqual("0.0", d.ToString());
+            Assert.AreEqual("0.0", d.ToString(CultureInfo.InvariantCulture));
         }
 
         [Test]
@@ -79,7 +79,7 @@ namespace Newtonsoft.Json.Tests.Issues
         {
             decimal d = JsonConvert.DeserializeObject<decimal>("-0.0");
 
-            Assert.AreEqual("0.0", d.ToString());
+            Assert.AreEqual("0.0", d.ToString(CultureInfo.InvariantCulture));
         }
 
         [Test]
@@ -95,7 +95,7 @@ namespace Newtonsoft.Json.Tests.Issues
         {
             decimal d = JsonConvert.DeserializeObject<decimal>("0.00");
 
-            Assert.AreEqual("0.00", d.ToString());
+            Assert.AreEqual("0.00", d.ToString(CultureInfo.InvariantCulture));
         }
 
         [Test]
@@ -127,7 +127,7 @@ namespace Newtonsoft.Json.Tests.Issues
                 }
             }
 
-            Assert.AreEqual("0.0", parsedValue.ToString());
+            Assert.AreEqual("0.0", parsedValue?.ToString(CultureInfo.InvariantCulture));
         }
 
         [Test]
