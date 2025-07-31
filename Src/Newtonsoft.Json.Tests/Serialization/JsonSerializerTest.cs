@@ -7060,7 +7060,7 @@ This is just junk, though.";
 
             Assert.AreEqual(BigInteger.Parse("999999999999999999999999999999999999999999999999"), l[0]);
 
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<IList<long>>(json), "Error converting value 999999999999999999999999999999999999999999999999 to type 'System.Int64'. Path '[0]', line 1, position 49.");
+            ExceptionAssert.Throws<JsonReaderException>(() => JsonConvert.DeserializeObject<IList<long>>(json), "JSON integer 999999999999999999999999999999999999999999999999 is too large or small for an Int64. Path '[0]', line 1, position 49.");
         }
 #endif
 
@@ -7974,7 +7974,7 @@ This is just junk, though.";
         {
             ExceptionAssert.Throws<JsonReaderException>(
                 () => JsonConvert.DeserializeObject<EmptyJsonValueTestClass>("{ A: \"\", B: 1, C: , D: 1.23, E: 3.45, F: null }"),
-                "An undefined token is not a valid System.Nullable`1[System.Int64]. Path 'C', line 1, position 18.");
+                "Unexpected character encountered while parsing value: ,. Path 'C', line 1, position 19.");
         }
 
         [Test]
@@ -8197,6 +8197,41 @@ This is just junk, though.";
             Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.CheckAdditionalContent)));
 
             Assert.AreEqual(0, propertyNames.Count);
+        }
+
+
+        [Test]
+        public void floatingNumber_to_Long_ThrowNotValidInteger()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JsonConvert.DeserializeObject<IntegerClass>(@"{""LongValue"":1234.1234}"),
+                "Input string '1234.1234' is not a valid integer. Path 'LongValue', line 1, position 22.");
+        }
+
+        [Test]
+        public void floatingNumber_to_Int_ThrowNotValidInteger()
+        {
+            ExceptionAssert.Throws<JsonReaderException>(
+                () => JsonConvert.DeserializeObject<IntegerClass>(@"{""IntValue"":1234.1234}"),
+                "Input string '1234.1234' is not a valid integer. Path 'IntValue', line 1, position 21.");
+        }
+
+        [Test]
+        public void LongMinValue_Pass()
+        {
+            var data = JsonConvert.DeserializeObject<IntegerClass>(@"{""LongValue"":-9223372036854775808,""NullLongValue"":-9223372036854775808}");
+
+            Assert.AreEqual(long.MinValue, data.LongValue);
+            Assert.AreEqual(long.MinValue, data.NullLongValue);
+        }
+
+        [Test]
+        public void LongMaxValue_Pass()
+        {
+            var data = JsonConvert.DeserializeObject<IntegerClass>(@"{""LongValue"":9223372036854775807,""NullLongValue"":9223372036854775807}");
+
+            Assert.AreEqual(long.MaxValue, data.LongValue);
+            Assert.AreEqual(long.MaxValue, data.NullLongValue);
         }
 
         private static int GetDepth(JToken o)

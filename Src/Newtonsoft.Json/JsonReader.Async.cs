@@ -210,6 +210,19 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Asynchronously reads the next JSON token from the source as a <see cref="Nullable{T}"/> of <see cref="long"/>.
+        /// </summary>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns>A <see cref="Task{TResult}"/> that represents the asynchronous read. The <see cref="Task{TResult}.Result"/>
+        /// property returns the <see cref="Nullable{T}"/> of <see cref="long"/>. This result will be <c>null</c> at the end of an array.</returns>
+        /// <remarks>The default behaviour is to execute synchronously, returning an already-completed task. Derived
+        /// classes can override this behaviour for true asynchronicity.</remarks>
+        public virtual Task<long?> ReadAsInt64Async(CancellationToken cancellationToken = default)
+        {
+            return cancellationToken.CancelIfRequestedAsync<long?>() ?? Task.FromResult(ReadAsInt64());
+        }
+
+        /// <summary>
         /// Asynchronously reads the next JSON token from the source as a <see cref="string"/>.
         /// </summary>
         /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
