@@ -1799,7 +1799,8 @@ namespace Newtonsoft.Json.Converters
 
         private void ReadArrayElements(JsonReader reader, IXmlDocument document, string propertyName, IXmlNode currentNode, XmlNamespaceManager manager)
         {
-            string? elementPrefix = MiscellaneousUtils.GetPrefix(propertyName);
+            string encodeName = EncodeSpecialCharacters ? XmlConvert.EncodeLocalName(propertyName) : XmlConvert.EncodeName(propertyName);
+            string? elementPrefix = MiscellaneousUtils.GetPrefix(encodeName);
 
             IXmlElement nestedArrayElement = CreateElement(propertyName, document, elementPrefix, manager);
 
@@ -1821,7 +1822,7 @@ namespace Newtonsoft.Json.Converters
             {
                 foreach (IXmlNode childNode in nestedArrayElement.ChildNodes)
                 {
-                    if (childNode is IXmlElement element && element.LocalName == propertyName)
+                    if (childNode is IXmlElement element && element.LocalName == encodeName)
                     {
                         AddJsonArrayAttribute(element, document);
                         break;
@@ -1832,6 +1833,12 @@ namespace Newtonsoft.Json.Converters
 
         private void AddJsonArrayAttribute(IXmlElement element, IXmlDocument document)
         {
+            var jsonArrayAttributeExists = element.Attributes.Find(x => x.LocalName == "Array" && x.NamespaceUri == JsonNamespaceUri) is not null;
+            if (jsonArrayAttributeExists)
+            {
+                return;
+            }
+
             element.SetAttributeNode(document.CreateAttribute("json:Array", JsonNamespaceUri, "true"));
 
 #if HAVE_XLINQ
@@ -2103,7 +2110,8 @@ namespace Newtonsoft.Json.Converters
 
                             if (count == 1 && WriteArrayAttribute)
                             {
-                                MiscellaneousUtils.GetQualifiedNameParts(propertyName, out string? elementPrefix, out string localName);
+                                string encodeName = EncodeSpecialCharacters ? XmlConvert.EncodeLocalName(propertyName) : XmlConvert.EncodeName(propertyName);
+                                MiscellaneousUtils.GetQualifiedNameParts(encodeName, out string? elementPrefix, out string localName);
                                 string? ns = StringUtils.IsNullOrEmpty(elementPrefix) ? manager.DefaultNamespace : manager.LookupNamespace(elementPrefix);
 
                                 foreach (IXmlNode childNode in currentNode.ChildNodes)

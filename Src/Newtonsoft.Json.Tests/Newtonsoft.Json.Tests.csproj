@@ -1,6 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net40;net35;net20;net5.0;net6.0;netcoreapp3.1;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net40;net35;net20;net5.0;net6.0;net8.0;netcoreapp3.1;netcoreapp2.1</TargetFrameworks>
     <TargetFrameworks Condition="'$(TestFrameworks)'!=''">$(TestFrameworks)</TargetFrameworks>
     <LangVersion>9.0</LangVersion>
     <VersionPrefix>1.0</VersionPrefix>
@@ -149,6 +149,27 @@
     <AssemblyTitle>Json.NET Tests .NET 6.0</AssemblyTitle>
     <ReferringTargetFrameworkForProjectReferences>net6.0</ReferringTargetFrameworkForProjectReferences>
     <DefineConstants>NET6_0;DNXCORE50;PORTABLE;HAVE_BENCHMARKS;HAVE_REGEX_TIMEOUTS;$(AdditionalConstants)</DefineConstants>
+  </PropertyGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)'=='net8.0'">
+    <PackageReference Include="BenchmarkDotNet" Version="$(BenchmarkDotNetPackageVersion)" />
+    <PackageReference Include="FSharp.Core" Version="$(FSharpCorePackageVersion)" />
+    <PackageReference Include="System.ObjectModel" Version="$(SystemObjectModelPackageVersion)" />
+    <PackageReference Include="System.Runtime.Serialization.Primitives" Version="$(SystemRuntimeSerializationPrimitivesPackageVersion)" />
+    <PackageReference Include="System.Runtime.Serialization.Xml" Version="$(SystemRuntimeSerializationXmlPackageVersion)" />
+    <PackageReference Include="System.Runtime.Serialization.Formatters" Version="$(SystemRuntimeSerializationFormattersPackageVersion)" />
+    <PackageReference Include="System.Xml.XmlSerializer" Version="$(SystemXmlXmlDocumentPackageVersion)" />
+    <PackageReference Include="System.ValueTuple" Version="$(SystemValueTuplePackageVersion)" />
+    <PackageReference Include="Autofac" Version="$(AutofacPackageVersion)" />
+    <PackageReference Include="Moq" Version="$(MoqPackageVersion)" />
+    <PackageReference Include="xunit" Version="$(XunitPackageVersion)" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="$(XunitRunnerVisualStudioPackageVersion)" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="$(MicrosoftNETTestSdkPackageVersion)" />
+  </ItemGroup>
+  <PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
+    <AssemblyTitle>Json.NET Tests .NET 8.0</AssemblyTitle>
+    <ReferringTargetFrameworkForProjectReferences>net8.0</ReferringTargetFrameworkForProjectReferences>
+    <DefineConstants>NET8_0;DNXCORE50;PORTABLE;HAVE_BENCHMARKS;HAVE_REGEX_TIMEOUTS;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">
