@@ -2632,7 +2632,7 @@ namespace Newtonsoft.Json.Serialization
                             }
                             if (resolvedRequired == Required.DisallowNull)
                             {
-                                throw JsonSerializationException.Create(reader, "Required property '{0}' expects a non-null value.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
+                                throw JsonSerializationException.Create(reader, "Property '{0}' expects a non-null value.".FormatWith(CultureInfo.InvariantCulture, property.PropertyName));
                             }
                             break;
                     }
