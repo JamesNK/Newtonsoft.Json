@@ -1765,7 +1765,7 @@ third line", jsonTextReader.Value);
             JsonLoadSettings settings = new JsonLoadSettings {DuplicatePropertyNameHandling = DuplicatePropertyNameHandling.Error};
 
             JsonTextReader reader = new JsonTextReader(new StringReader(json));
-            ExceptionAssert.Throws<JsonException>(() =>
+            ExceptionAssert.Throws<JsonReaderDuplicatePropertyNameException>(() =>
             {
                 JToken.ReadFrom(reader, settings);
             });
