@@ -29,7 +29,8 @@ using System.Runtime.Serialization;
 namespace Newtonsoft.Json
 {
     /// <summary>
-    /// The exception thrown when an error occurs while reading JSON text.
+    /// The exception thrown when duplicated property names are found while reading JSON text with duplicate
+    /// property name handling policy is set to DuplicatePropertyNameHandling.Error.
     /// </summary>
 #if HAVE_BINARY_EXCEPTION_SERIALIZATION
     [Serializable]
