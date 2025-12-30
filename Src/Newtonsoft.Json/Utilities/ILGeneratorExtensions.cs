@@ -66,14 +66,33 @@ namespace Newtonsoft.Json.Utilities
 
         public static void UnboxIfNeeded(this ILGenerator generator, Type type)
         {
-            if (type.IsValueType())
-            {
-                generator.Emit(OpCodes.Unbox_Any, type);
-            }
-            else
+            if (!type.IsValueType())
             {
                 generator.Emit(OpCodes.Castclass, type);
+                return;
             }
+
+            var nonNull = generator.DefineLabel();
+            var done = generator.DefineLabel();
+
+            var local = generator.DeclareLocal(type);
+
+            // Stack: [obj]
+            generator.Emit(OpCodes.Dup); // [obj, obj]
+            generator.Emit(OpCodes.Brtrue_S, nonNull);
+
+            // null -> default(T)
+            generator.Emit(OpCodes.Pop); // []
+            generator.Emit(OpCodes.Ldloca_S, local);
+            generator.Emit(OpCodes.Initobj, type);
+            generator.Emit(OpCodes.Ldloc, local);
+            generator.Emit(OpCodes.Br_S, done);
+
+            // non-null -> unbox
+            generator.MarkLabel(nonNull);
+            generator.Emit(OpCodes.Unbox_Any, type);
+
+            generator.MarkLabel(done);
         }
 
         public static void CallMethod(this ILGenerator generator, MethodInfo methodInfo)
