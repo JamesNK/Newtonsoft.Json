@@ -314,43 +314,36 @@ namespace Newtonsoft.Json.Utilities
             return dimensions;
         }
 
-        private static void CopyFromJaggedToMultidimensionalArray(IList values, Array multidimensionalArray, int[] indices)
+        private static void CopyFromJaggedToMultidimensionalArray(IList values, Array multidimensionalArray, int[] buffer, int currentDimension)
         {
-            int dimension = indices.Length;
-            if (dimension == multidimensionalArray.Rank)
+            if (currentDimension == multidimensionalArray.Rank)
             {
-                multidimensionalArray.SetValue(JaggedArrayGetValue(values, indices), indices);
+                multidimensionalArray.SetValue(JaggedArrayGetValue(values, buffer, currentDimension), buffer);
                 return;
             }
 
-            int dimensionLength = multidimensionalArray.GetLength(dimension);
-            IList list = (IList)JaggedArrayGetValue(values, indices);
+            int dimensionLength = multidimensionalArray.GetLength(currentDimension);
+            IList list = (IList)JaggedArrayGetValue(values, buffer, currentDimension);
             int currentValuesLength = list.Count;
             if (currentValuesLength != dimensionLength)
             {
                 throw new Exception("Cannot deserialize non-cubical array as multidimensional array.");
             }
 
-            int[] newIndices = new int[dimension + 1];
-            for (int i = 0; i < dimension; i++)
+            for (int i = 0; i < multidimensionalArray.GetLength(currentDimension); i++)
             {
-                newIndices[i] = indices[i];
-            }
-
-            for (int i = 0; i < multidimensionalArray.GetLength(dimension); i++)
-            {
-                newIndices[dimension] = i;
-                CopyFromJaggedToMultidimensionalArray(values, multidimensionalArray, newIndices);
+                buffer[currentDimension] = i;
+                CopyFromJaggedToMultidimensionalArray(values, multidimensionalArray, buffer, currentDimension + 1);
             }
         }
 
-        private static object JaggedArrayGetValue(IList values, int[] indices)
+        private static object JaggedArrayGetValue(IList values, int[] indices, int length)
         {
             IList currentList = values;
-            for (int i = 0; i < indices.Length; i++)
+            for (int i = 0; i < length; i++)
             {
                 int index = indices[i];
-                if (i == indices.Length - 1)
+                if (i == length - 1)
                 {
                     return currentList[index]!;
                 }
@@ -373,7 +366,8 @@ namespace Newtonsoft.Json.Utilities
             }
 
             Array multidimensionalArray = Array.CreateInstance(type, dimensions.ToArray());
-            CopyFromJaggedToMultidimensionalArray(values, multidimensionalArray, ArrayEmpty<int>());
+            int[] buffer = new int[rank];
+            CopyFromJaggedToMultidimensionalArray(values, multidimensionalArray, buffer, 0);
 
             return multidimensionalArray;
         }
