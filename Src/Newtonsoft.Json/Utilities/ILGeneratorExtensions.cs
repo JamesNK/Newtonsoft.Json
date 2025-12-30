@@ -83,7 +83,7 @@ namespace Newtonsoft.Json.Utilities
 
             // null -> default(T)
             generator.Emit(OpCodes.Pop); // []
-            generator.Emit(OpCodes.Ldloca_S, local);
+            generator.Emit(OpCodes.Ldloca, local);
             generator.Emit(OpCodes.Initobj, type);
             generator.Emit(OpCodes.Ldloc, local);
             generator.Emit(OpCodes.Br_S, done);
