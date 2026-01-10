@@ -97,6 +97,39 @@ namespace Newtonsoft.Json.Tests.Utilities
             Assert.AreEqual("shouting_case", StringUtils.ToSnakeCase("SHOUTING_CASE"));
             Assert.AreEqual("9999-12-31_t23:59:59.9999999_z", StringUtils.ToSnakeCase("9999-12-31T23:59:59.9999999Z"));
             Assert.AreEqual("hi!!_this_is_text._time_to_test.", StringUtils.ToSnakeCase("Hi!! This is text. Time to test."));
+            Assert.AreEqual("123starts_with_numbers", StringUtils.ToSnakeCase("123startsWithNumbers"));
+            Assert.AreEqual("ends_with_numbers123", StringUtils.ToSnakeCase("EndsWithNumbers123"));
+        }
+
+        [Test]
+        public void ToSnakeCaseWithNumbersStartWords()
+        {
+            Assert.AreEqual("url_value", StringUtils.ToSnakeCase("URLValue", true));
+            Assert.AreEqual("url", StringUtils.ToSnakeCase("URL", true));
+            Assert.AreEqual("id", StringUtils.ToSnakeCase("ID", true));
+            Assert.AreEqual("i", StringUtils.ToSnakeCase("I", true));
+            Assert.AreEqual("", StringUtils.ToSnakeCase("", true));
+            Assert.AreEqual(null, StringUtils.ToSnakeCase(null, true));
+            Assert.AreEqual("person", StringUtils.ToSnakeCase("Person", true));
+            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase("iPhone", true));
+            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase("IPhone", true));
+            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase("I Phone", true));
+            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase("I  Phone", true));
+            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase(" IPhone", true));
+            Assert.AreEqual("i_phone", StringUtils.ToSnakeCase(" IPhone ", true));
+            Assert.AreEqual("is_cia", StringUtils.ToSnakeCase("IsCIA", true));
+            Assert.AreEqual("vm_q", StringUtils.ToSnakeCase("VmQ", true));
+            Assert.AreEqual("xml_2_json", StringUtils.ToSnakeCase("Xml2Json", true));
+            Assert.AreEqual("sn_ak_ec_as_e", StringUtils.ToSnakeCase("SnAkEcAsE", true));
+            Assert.AreEqual("sn_a__k_ec_as_e", StringUtils.ToSnakeCase("SnA__kEcAsE", true));
+            Assert.AreEqual("sn_a__k_ec_as_e", StringUtils.ToSnakeCase("SnA__ kEcAsE", true));
+            Assert.AreEqual("already_snake_case_", StringUtils.ToSnakeCase("already_snake_case_ ", true));
+            Assert.AreEqual("is_json_property", StringUtils.ToSnakeCase("IsJSONProperty", true));
+            Assert.AreEqual("shouting_case", StringUtils.ToSnakeCase("SHOUTING_CASE", true));
+            Assert.AreEqual("9999_-_12_-_31_t_23_:_59_:_59_._9999999_z", StringUtils.ToSnakeCase("9999-12-31T23:59:59.9999999Z", true));
+            Assert.AreEqual("hi!!_this_is_text._time_to_test.", StringUtils.ToSnakeCase("Hi!! This is text. Time to test.", true));
+            Assert.AreEqual("123_starts_456_with_numbers", StringUtils.ToSnakeCase("123Starts456withNumbers", true));
+            Assert.AreEqual("ends_with_numbers_123", StringUtils.ToSnakeCase("EndsWithNumbers123", true));
         }
 
         [Test]
@@ -126,6 +159,39 @@ namespace Newtonsoft.Json.Tests.Utilities
             Assert.AreEqual("shouting-case", StringUtils.ToKebabCase("SHOUTING-CASE"));
             Assert.AreEqual("9999-12-31-t23:59:59.9999999-z", StringUtils.ToKebabCase("9999-12-31T23:59:59.9999999Z"));
             Assert.AreEqual("hi!!-this-is-text.-time-to-test.", StringUtils.ToKebabCase("Hi!! This is text. Time to test."));
+            Assert.AreEqual("123starts-with-numbers", StringUtils.ToKebabCase("123startsWithNumbers"));
+            Assert.AreEqual("ends-with-numbers123", StringUtils.ToKebabCase("EndsWithNumbers123"));
+        }
+
+        [Test]
+        public void ToKebabCaseTestWithNumbersStartWords()
+        {
+            Assert.AreEqual("url-value", StringUtils.ToKebabCase("URLValue", true));
+            Assert.AreEqual("url", StringUtils.ToKebabCase("URL", true));
+            Assert.AreEqual("id", StringUtils.ToKebabCase("ID", true));
+            Assert.AreEqual("i", StringUtils.ToKebabCase("I", true));
+            Assert.AreEqual("", StringUtils.ToKebabCase("", true));
+            Assert.AreEqual(null, StringUtils.ToKebabCase(null, true));
+            Assert.AreEqual("person", StringUtils.ToKebabCase("Person", true));
+            Assert.AreEqual("i-phone", StringUtils.ToKebabCase("iPhone", true));
+            Assert.AreEqual("i-phone", StringUtils.ToKebabCase("IPhone", true));
+            Assert.AreEqual("i-phone", StringUtils.ToKebabCase("I Phone", true));
+            Assert.AreEqual("i-phone", StringUtils.ToKebabCase("I  Phone", true));
+            Assert.AreEqual("i-phone", StringUtils.ToKebabCase(" IPhone", true));
+            Assert.AreEqual("i-phone", StringUtils.ToKebabCase(" IPhone ", true));
+            Assert.AreEqual("is-cia", StringUtils.ToKebabCase("IsCIA", true));
+            Assert.AreEqual("vm-q", StringUtils.ToKebabCase("VmQ", true));
+            Assert.AreEqual("xml-2-json", StringUtils.ToKebabCase("Xml2Json", true));
+            Assert.AreEqual("ke-ba-bc-as-e", StringUtils.ToKebabCase("KeBaBcAsE", true));
+            Assert.AreEqual("ke-b--a-bc-as-e", StringUtils.ToKebabCase("KeB--aBcAsE", true));
+            Assert.AreEqual("ke-b--a-bc-as-e", StringUtils.ToKebabCase("KeB-- aBcAsE", true));
+            Assert.AreEqual("already-kebab-case-", StringUtils.ToKebabCase("already-kebab-case- ", true));
+            Assert.AreEqual("is-json-property", StringUtils.ToKebabCase("IsJSONProperty", true));
+            Assert.AreEqual("shouting-case", StringUtils.ToKebabCase("SHOUTING-CASE", true));
+            Assert.AreEqual("9999-12-31-t-23-:-59-:-59-.-9999999-z", StringUtils.ToKebabCase("9999-12-31T23:59:59.9999999Z", true));
+            Assert.AreEqual("hi!!-this-is-text.-time-to-test.", StringUtils.ToKebabCase("Hi!! This is text. Time to test.", true));
+            Assert.AreEqual("123-starts-with-numbers", StringUtils.ToKebabCase("123StartsWithNumbers", true));
+            Assert.AreEqual("ends-with-numbers-123", StringUtils.ToKebabCase("EndsWithNumbers123", true));
         }
     }
 }
