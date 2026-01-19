@@ -99,7 +99,7 @@ namespace Newtonsoft.Json.Utilities
 #if NET6_0_OR_GREATER
             // Number of bits scale is shifted by.
             const int ScaleShift = 16;
-        
+
             if (value == decimal.Zero)
             {
                 Span<int> bits = stackalloc int[4];
@@ -126,13 +126,18 @@ namespace Newtonsoft.Json.Utilities
         private static readonly object DecimalZero = decimal.Zero;
         private static readonly object DecimalZeroWithTrailingZero = 0.0m;
 #endif
+        private static readonly long NegativeZeroBits = BitConverter.DoubleToInt64Bits(-0.0d);
+        private static bool IsNegativeZero(double value)
+        {
+            return BitConverter.DoubleToInt64Bits(value) == NegativeZeroBits;
+        }
 
         internal static object Get(double value)
         {
             if (value == 0.0d)
             {
-                // Double supports -0.0. Detection logic from https://stackoverflow.com/a/4739883/11829.
-                return double.IsNegativeInfinity(1.0 / value) ? DoubleNegativeZero : DoubleZero;
+                // Double supports -0.0. Detection logic from https://stackoverflow.com/q/4739795/8525132.
+                return IsNegativeZero(value) ? DoubleNegativeZero : DoubleZero;
             }
             if (double.IsInfinity(value))
             {
