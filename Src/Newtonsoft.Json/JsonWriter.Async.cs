@@ -270,22 +270,14 @@ namespace Newtonsoft.Json
         internal Task WriteEndInternalAsync(CancellationToken cancellationToken)
         {
             JsonContainerType type = Peek();
-            switch (type)
+            return type switch
             {
-                case JsonContainerType.Object:
-                    return WriteEndObjectAsync(cancellationToken);
-                case JsonContainerType.Array:
-                    return WriteEndArrayAsync(cancellationToken);
-                case JsonContainerType.Constructor:
-                    return WriteEndConstructorAsync(cancellationToken);
-                default:
-                    if (cancellationToken.IsCancellationRequested)
-                    {
-                        return cancellationToken.FromCanceled();
-                    }
-
-                    throw JsonWriterException.Create(this, "Unexpected type when writing end: " + type, null);
-            }
+                JsonContainerType.Object => WriteEndObjectAsync(cancellationToken),
+                JsonContainerType.Array => WriteEndArrayAsync(cancellationToken),
+                JsonContainerType.Constructor => WriteEndConstructorAsync(cancellationToken),
+                _ => cancellationToken.IsCancellationRequested ? cancellationToken.FromCanceled()
+                    : throw JsonWriterException.Create(this, "Unexpected type when writing end: " + type, null)
+            };
         }
 
         internal Task InternalWriteEndAsync(JsonContainerType type, CancellationToken cancellationToken)
@@ -1652,43 +1644,23 @@ namespace Newtonsoft.Json
                 return cancellationToken.FromCanceled();
             }
 
-            switch (token)
+            return token switch
             {
-                case JsonToken.StartObject:
-                    return InternalWriteStartAsync(token, JsonContainerType.Object, cancellationToken);
-                case JsonToken.StartArray:
-                    return InternalWriteStartAsync(token, JsonContainerType.Array, cancellationToken);
-                case JsonToken.StartConstructor:
-                    return InternalWriteStartAsync(token, JsonContainerType.Constructor, cancellationToken);
-                case JsonToken.PropertyName:
-                    if (!(value is string s))
-                    {
-                        throw new ArgumentException("A name is required when setting property name state.", nameof(value));
-                    }
-
-                    return InternalWritePropertyNameAsync(s, cancellationToken);
-                case JsonToken.Comment:
-                    return InternalWriteCommentAsync(cancellationToken);
-                case JsonToken.Raw:
-                    return AsyncUtils.CompletedTask;
-                case JsonToken.Integer:
-                case JsonToken.Float:
-                case JsonToken.String:
-                case JsonToken.Boolean:
-                case JsonToken.Date:
-                case JsonToken.Bytes:
-                case JsonToken.Null:
-                case JsonToken.Undefined:
-                    return InternalWriteValueAsync(token, cancellationToken);
-                case JsonToken.EndObject:
-                    return InternalWriteEndAsync(JsonContainerType.Object, cancellationToken);
-                case JsonToken.EndArray:
-                    return InternalWriteEndAsync(JsonContainerType.Array, cancellationToken);
-                case JsonToken.EndConstructor:
-                    return InternalWriteEndAsync(JsonContainerType.Constructor, cancellationToken);
-                default:
-                    throw new ArgumentOutOfRangeException(nameof(token));
-            }
+                JsonToken.StartObject => InternalWriteStartAsync(token, JsonContainerType.Object, cancellationToken),
+                JsonToken.StartArray => InternalWriteStartAsync(token, JsonContainerType.Array, cancellationToken),
+                JsonToken.StartConstructor => InternalWriteStartAsync(token, JsonContainerType.Constructor, cancellationToken),
+                JsonToken.PropertyName => value is string s ? InternalWritePropertyNameAsync(s, cancellationToken)
+                    : throw new ArgumentException("A name is required when setting property name state.", nameof(value)),
+                JsonToken.Comment => InternalWriteCommentAsync(cancellationToken),
+                JsonToken.Raw => AsyncUtils.CompletedTask,
+                JsonToken.Integer or JsonToken.Float or JsonToken.String 
+                    or JsonToken.Boolean or JsonToken.Date or JsonToken.Bytes
+                    or JsonToken.Null or JsonToken.Undefined => InternalWriteValueAsync(token, cancellationToken),
+                JsonToken.EndObject => InternalWriteEndAsync(JsonContainerType.Object, cancellationToken),
+                JsonToken.EndArray => InternalWriteEndAsync(JsonContainerType.Array, cancellationToken),
+                JsonToken.EndConstructor => InternalWriteEndAsync(JsonContainerType.Constructor, cancellationToken),
+                _ => throw new ArgumentOutOfRangeException(nameof(token))
+            };
         }
 
         internal static Task WriteValueAsync(JsonWriter writer, PrimitiveTypeCode typeCode, object value, CancellationToken cancellationToken)
