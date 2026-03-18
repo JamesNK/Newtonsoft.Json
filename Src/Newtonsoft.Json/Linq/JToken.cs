@@ -438,13 +438,15 @@ namespace Newtonsoft.Json.Linq
             _parent.ReplaceItem(this, value);
         }
 
+        // TODO: Make public in Newtonsoft.Json 14.0+
+        // See https://github.com/JamesNK/Newtonsoft.Json/issues/3084
         /// <summary>
         /// Writes this token to a <see cref="JsonWriter"/>.
         /// </summary>
         /// <param name="writer">A <see cref="JsonWriter"/> into which this method will write.</param>
         [UnconditionalSuppressMessage("Trimming", "IL2026", Justification = "WriteTo without converters is safe.")]
         [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "WriteTo without converters is safe.")]
-        public void WriteTo(JsonWriter writer)
+        private void WriteTo(JsonWriter writer)
         {
             WriteTo(writer, CollectionUtils.ArrayEmpty<JsonConverter>());
         }
