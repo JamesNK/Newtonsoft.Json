@@ -922,7 +922,7 @@ namespace Newtonsoft.Json.Linq
                 }
                 else if (duplicatePropertyNameHandling == DuplicatePropertyNameHandling.Error)
                 {
-                    throw JsonReaderException.Create(r, "Property with the name '{0}' already exists in the current JSON object.".FormatWith(CultureInfo.InvariantCulture, propertyName));
+                    throw JsonReaderDuplicatePropertyNameException.Create(r, "Property with the name '{0}' already exists in the current JSON object.".FormatWith(CultureInfo.InvariantCulture, propertyName));
                 }
             }
 
