@@ -377,7 +377,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void CoercedEmptyStringWithRequired_DisallowNull()
         {
-            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Binding_DisallowNull>("{requiredProperty:''}"); }, "Required property 'RequiredProperty' expects a non-null value. Path '', line 1, position 21.");
+            ExceptionAssert.Throws<JsonSerializationException>(() => { JsonConvert.DeserializeObject<Binding_DisallowNull>("{requiredProperty:''}"); }, "Property 'RequiredProperty' expects a non-null value. Path '', line 1, position 21.");
         }
 
         [Test]
