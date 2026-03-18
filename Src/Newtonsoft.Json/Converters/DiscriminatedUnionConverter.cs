@@ -121,6 +121,38 @@ namespace Newtonsoft.Json.Converters
             return u;
         }
 
+        private bool HasFlag(TypeNameHandling value, TypeNameHandling flag)
+        {
+            return ((value & flag) == flag);
+        }
+
+        private void WriteTypeProperty(JsonSerializer serializer, JsonWriter writer, Type type)
+        {
+            string typeName = ReflectionUtils.GetTypeName(type, serializer._typeNameAssemblyFormatHandling, serializer._serializationBinder);
+
+            writer.WritePropertyName(JsonTypeReflector.TypePropertyName, false);
+            writer.WriteValue(typeName);
+        }
+
+        private bool ShouldWriteType(JsonSerializer serializer, TypeNameHandling typeNameHandlingFlag)
+        {
+            // When PreserveReferencesHandling is All, don't write type information
+            // as the reference tracking system handles type preservation
+            if (serializer.PreserveReferencesHandling == PreserveReferencesHandling.All)
+            {
+                return false;
+            }
+
+            TypeNameHandling resolvedTypeNameHandling = serializer.TypeNameHandling;
+
+            if (HasFlag(resolvedTypeNameHandling, typeNameHandlingFlag))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         /// <summary>
         /// Writes the JSON representation of the object.
         /// </summary>
@@ -144,6 +176,12 @@ namespace Newtonsoft.Json.Converters
             UnionCase caseInfo = union.Cases.Single(c => c.Tag == tag);
 
             writer.WriteStartObject();
+
+            if (ShouldWriteType(serializer, TypeNameHandling.All))
+            {
+                WriteTypeProperty(serializer, writer, unionType);
+            }
+
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(CasePropertyName) : CasePropertyName);
             writer.WriteValue(caseInfo.Name);
             if (caseInfo.Fields != null && caseInfo.Fields.Length > 0)
@@ -176,12 +214,15 @@ namespace Newtonsoft.Json.Converters
                 return null;
             }
 
+            // If we're at the start of an object, move to the first property
+            if (reader.TokenType == JsonToken.StartObject)
+            {
+                reader.ReadAndAssert();
+            }
+
             UnionCase? caseInfo = null;
             string? caseName = null;
             JArray? fields = null;
-
-            // start object
-            reader.ReadAndAssert();
 
             while (reader.TokenType == JsonToken.PropertyName)
             {
@@ -210,6 +251,11 @@ namespace Newtonsoft.Json.Converters
                     }
 
                     fields = (JArray)JToken.ReadFrom(reader);
+                }
+                else if (string.Equals(propertyName, JsonTypeReflector.TypePropertyName, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Skip the $type property - it's handled by logic in JsonSerializerInternalReader
+                    reader.Skip();
                 }
                 else
                 {
