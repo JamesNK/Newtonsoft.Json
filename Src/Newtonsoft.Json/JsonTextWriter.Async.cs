@@ -648,6 +648,40 @@ namespace Newtonsoft.Json
             return WriteValueInternalAsync(JsonToken.String, JsonConvert.ToString(value), cancellationToken);
         }
 
+#if HAVE_INT128
+        /// <summary>
+        /// Asynchronously writes a <see cref="Int128"/> value.
+        /// </summary>
+        /// <param name="value">The <see cref="Int128"/> value to write.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+        public override Task WriteValueAsync(Int128 value, CancellationToken cancellationToken = default)
+        {
+            return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
+        }
+
+        internal Task DoWriteValueAsync(Int128 value, CancellationToken cancellationToken)
+        {
+            return WriteValueInternalAsync(JsonToken.Integer, value.ToString(CultureInfo.InvariantCulture), cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a <see cref="UInt128"/> value.
+        /// </summary>
+        /// <param name="value">The <see cref="UInt128"/> value to write.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+        public override Task WriteValueAsync(UInt128 value, CancellationToken cancellationToken = default)
+        {
+            return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
+        }
+
+        internal Task DoWriteValueAsync(UInt128 value, CancellationToken cancellationToken)
+        {
+            return WriteValueInternalAsync(JsonToken.Integer, value.ToString(CultureInfo.InvariantCulture), cancellationToken);
+        }
+#endif
+
         /// <summary>
         /// Asynchronously writes a <see cref="Nullable{T}"/> of <see cref="char"/> value.
         /// </summary>
@@ -665,6 +699,40 @@ namespace Newtonsoft.Json
         {
             return value == null ? DoWriteNullAsync(cancellationToken) : DoWriteValueAsync(value.GetValueOrDefault(), cancellationToken);
         }
+
+#if HAVE_INT128
+        /// <summary>
+        /// Asynchronously writes a <see cref="Nullable{T}"/> of <see cref="Int128"/> value.
+        /// </summary>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Int128"/> value to write.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+        public override Task WriteValueAsync(Int128? value, CancellationToken cancellationToken = default)
+        {
+            return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
+        }
+
+        internal Task DoWriteValueAsync(Int128? value, CancellationToken cancellationToken)
+        {
+            return value == null ? DoWriteNullAsync(cancellationToken) : DoWriteValueAsync(value.GetValueOrDefault(), cancellationToken);
+        }
+
+        /// <summary>
+        /// Asynchronously writes a <see cref="Nullable{T}"/> of <see cref="UInt128"/> value.
+        /// </summary>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="UInt128"/> value to write.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+        public override Task WriteValueAsync(UInt128? value, CancellationToken cancellationToken = default)
+        {
+            return _safeAsync ? DoWriteValueAsync(value, cancellationToken) : base.WriteValueAsync(value, cancellationToken);
+        }
+
+        internal Task DoWriteValueAsync(UInt128? value, CancellationToken cancellationToken)
+        {
+            return value == null ? DoWriteNullAsync(cancellationToken) : DoWriteValueAsync(value.GetValueOrDefault(), cancellationToken);
+        }
+#endif
 
         /// <summary>
         /// Asynchronously writes a <see cref="DateTime"/> value.

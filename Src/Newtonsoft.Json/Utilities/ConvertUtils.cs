@@ -91,7 +91,13 @@ namespace Newtonsoft.Json.Utilities
         Uri = 38,
         String = 39,
         Bytes = 40,
-        DBNull = 41
+        DBNull = 41,
+#if HAVE_INT128
+        Int128 = 42,
+        Int128Nullable = 43,
+        UInt128 = 44,
+        UInt128Nullable = 45
+#endif
     }
 
     internal class TypeInformation
@@ -158,6 +164,12 @@ namespace Newtonsoft.Json.Utilities
 #if HAVE_BIG_INTEGER
                 { typeof(BigInteger), PrimitiveTypeCode.BigInteger },
                 { typeof(BigInteger?), PrimitiveTypeCode.BigIntegerNullable },
+#endif
+#if HAVE_INT128
+                { typeof(Int128), PrimitiveTypeCode.Int128 },
+                { typeof(Int128?), PrimitiveTypeCode.Int128Nullable },
+                { typeof(UInt128), PrimitiveTypeCode.UInt128 },
+                { typeof(UInt128?), PrimitiveTypeCode.UInt128Nullable },
 #endif
                 { typeof(Uri), PrimitiveTypeCode.Uri },
                 { typeof(string), PrimitiveTypeCode.String },
@@ -325,6 +337,16 @@ namespace Newtonsoft.Json.Utilities
             {
                 return new BigInteger(@ulong);
             }
+#if HAVE_INT128
+            if (value is Int128 i128)
+            {
+                return (BigInteger)i128;
+            }
+            if (value is UInt128 ui128)
+            {
+                return (BigInteger)ui128;
+            }
+#endif
 
             if (value is byte[] bytes)
             {
@@ -356,6 +378,16 @@ namespace Newtonsoft.Json.Utilities
             {
                 return i != 0;
             }
+#if HAVE_INT128
+            if (targetType == typeof(Int128))
+            {
+                return (Int128)i;
+            }
+            if (targetType == typeof(UInt128))
+            {
+                return (UInt128)i;
+            }
+#endif
 
             try
             {
@@ -686,6 +718,11 @@ namespace Newtonsoft.Json.Utilities
                 case PrimitiveTypeCode.Int64:
                 case PrimitiveTypeCode.UInt64:
                     return true;
+#if HAVE_INT128
+                case PrimitiveTypeCode.Int128:
+                case PrimitiveTypeCode.UInt128:
+                    return true;
+#endif
                 default:
                     return false;
             }

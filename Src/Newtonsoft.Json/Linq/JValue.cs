@@ -281,6 +281,12 @@ namespace Newtonsoft.Json.Linq
                             return -CompareBigInteger(integerB, objA);
                         }
 #endif
+#if HAVE_INT128
+                    if (objA is Int128 || objA is UInt128 || objB is Int128 || objB is UInt128)
+                    {
+                        return ConvertUtils.ToBigInteger(objA).CompareTo(ConvertUtils.ToBigInteger(objB));
+                    }
+#endif
                     if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
                     {
                         return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
@@ -304,6 +310,12 @@ namespace Newtonsoft.Json.Linq
                     if (objB is BigInteger integerB)
                     {
                         return -CompareBigInteger(integerB, objA);
+                    }
+#endif
+#if HAVE_INT128
+                    if (objA is Int128 || objA is UInt128 || objB is Int128 || objB is UInt128)
+                    {
+                        return ConvertUtils.ToBigInteger(objA).CompareTo(ConvertUtils.ToBigInteger(objB));
                     }
 #endif
                     if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
@@ -625,7 +637,11 @@ namespace Newtonsoft.Json.Linq
                 return GetStringValueType(current);
             }
             else if (value is long || value is int || value is short || value is sbyte
-                     || value is ulong || value is uint || value is ushort || value is byte)
+                     || value is ulong || value is uint || value is ushort || value is byte
+#if HAVE_INT128
+                     || value is Int128 || value is UInt128
+#endif
+                    )
             {
                 return JTokenType.Integer;
             }
@@ -772,6 +788,16 @@ namespace Newtonsoft.Json.Linq
                     else if (_value is BigInteger integer)
                     {
                         writer.WriteValue(integer);
+                    }
+#endif
+#if HAVE_INT128
+                    else if (_value is Int128 i128)
+                    {
+                        writer.WriteValue(i128);
+                    }
+                    else if (_value is UInt128 ui128)
+                    {
+                        writer.WriteValue(ui128);
                     }
 #endif
                     else

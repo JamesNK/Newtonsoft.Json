@@ -716,6 +716,10 @@ namespace Newtonsoft.Json
 #if HAVE_BIG_INTEGER
                         value is BigInteger integer ? WriteValueAsync(integer, cancellationToken) :
 #endif
+#if HAVE_INT128
+                        value is Int128 i128 ? WriteValueAsync(i128, cancellationToken) :
+                        value is UInt128 ui128 ? WriteValueAsync(ui128, cancellationToken) :
+#endif
                         WriteValueAsync(Convert.ToInt64(value, CultureInfo.InvariantCulture), cancellationToken);
                 case JsonToken.Float:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
@@ -1410,6 +1414,78 @@ namespace Newtonsoft.Json
             WriteValue(value);
             return AsyncUtils.CompletedTask;
         }
+
+#if HAVE_INT128
+        /// <summary>
+        /// Asynchronously writes a <see cref="Int128"/> value.
+        /// </summary>
+        /// <param name="value">The <see cref="Int128"/> value to write.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+        public virtual Task WriteValueAsync(Int128 value, CancellationToken cancellationToken = default)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return cancellationToken.FromCanceled();
+            }
+
+            WriteValue(value);
+            return AsyncUtils.CompletedTask;
+        }
+
+        /// <summary>
+        /// Asynchronously writes a <see cref="Nullable{T}"/> of <see cref="Int128"/> value.
+        /// </summary>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Int128"/> value to write.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+        public virtual Task WriteValueAsync(Int128? value, CancellationToken cancellationToken = default)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return cancellationToken.FromCanceled();
+            }
+
+            WriteValue(value);
+            return AsyncUtils.CompletedTask;
+        }
+
+        /// <summary>
+        /// Asynchronously writes a <see cref="UInt128"/> value.
+        /// </summary>
+        /// <param name="value">The <see cref="UInt128"/> value to write.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+        [CLSCompliant(false)]
+        public virtual Task WriteValueAsync(UInt128 value, CancellationToken cancellationToken = default)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return cancellationToken.FromCanceled();
+            }
+
+            WriteValue(value);
+            return AsyncUtils.CompletedTask;
+        }
+
+        /// <summary>
+        /// Asynchronously writes a <see cref="Nullable{T}"/> of <see cref="UInt128"/> value.
+        /// </summary>
+        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="UInt128"/> value to write.</param>
+        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
+        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
+        [CLSCompliant(false)]
+        public virtual Task WriteValueAsync(UInt128? value, CancellationToken cancellationToken = default)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return cancellationToken.FromCanceled();
+            }
+
+            WriteValue(value);
+            return AsyncUtils.CompletedTask;
+        }
+#endif
 
         /// <summary>
         /// Asynchronously writes a <see cref="TimeSpan"/> value.
