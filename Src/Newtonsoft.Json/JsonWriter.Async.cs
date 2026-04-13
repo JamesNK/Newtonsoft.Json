@@ -1415,77 +1415,7 @@ namespace Newtonsoft.Json
             return AsyncUtils.CompletedTask;
         }
 
-#if HAVE_INT128
-        /// <summary>
-        /// Asynchronously writes a <see cref="Int128"/> value.
-        /// </summary>
-        /// <param name="value">The <see cref="Int128"/> value to write.</param>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task WriteValueAsync(Int128 value, CancellationToken cancellationToken = default)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return cancellationToken.FromCanceled();
-            }
 
-            WriteValue(value);
-            return AsyncUtils.CompletedTask;
-        }
-
-        /// <summary>
-        /// Asynchronously writes a <see cref="Nullable{T}"/> of <see cref="Int128"/> value.
-        /// </summary>
-        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Int128"/> value to write.</param>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-        public virtual Task WriteValueAsync(Int128? value, CancellationToken cancellationToken = default)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return cancellationToken.FromCanceled();
-            }
-
-            WriteValue(value);
-            return AsyncUtils.CompletedTask;
-        }
-
-        /// <summary>
-        /// Asynchronously writes a <see cref="UInt128"/> value.
-        /// </summary>
-        /// <param name="value">The <see cref="UInt128"/> value to write.</param>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-        [CLSCompliant(false)]
-        public virtual Task WriteValueAsync(UInt128 value, CancellationToken cancellationToken = default)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return cancellationToken.FromCanceled();
-            }
-
-            WriteValue(value);
-            return AsyncUtils.CompletedTask;
-        }
-
-        /// <summary>
-        /// Asynchronously writes a <see cref="Nullable{T}"/> of <see cref="UInt128"/> value.
-        /// </summary>
-        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="UInt128"/> value to write.</param>
-        /// <param name="cancellationToken">The token to monitor for cancellation requests. The default value is <see cref="CancellationToken.None"/>.</param>
-        /// <returns>A <see cref="Task"/> that represents the asynchronous operation.</returns>
-        [CLSCompliant(false)]
-        public virtual Task WriteValueAsync(UInt128? value, CancellationToken cancellationToken = default)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return cancellationToken.FromCanceled();
-            }
-
-            WriteValue(value);
-            return AsyncUtils.CompletedTask;
-        }
-#endif
 
         /// <summary>
         /// Asynchronously writes a <see cref="TimeSpan"/> value.
@@ -1850,6 +1780,20 @@ namespace Newtonsoft.Json
 
                         // this will call to WriteValueAsync(object)
                         return writer.WriteValueAsync(value == null ? (BigInteger?)null : (BigInteger)value, cancellationToken);
+#endif
+#if HAVE_INT128
+                    case PrimitiveTypeCode.Int128:
+                        // this will call to WriteValueAsync(object)
+                        return writer.WriteValueAsync((object)(Int128)value, cancellationToken);
+                    case PrimitiveTypeCode.Int128Nullable:
+                        // this will call to WriteValueAsync(object)
+                        return writer.WriteValueAsync((object)(value == null ? (Int128?)null : (Int128)value), cancellationToken);
+                    case PrimitiveTypeCode.UInt128:
+                        // this will call to WriteValueAsync(object)
+                        return writer.WriteValueAsync((object)(UInt128)value, cancellationToken);
+                    case PrimitiveTypeCode.UInt128Nullable:
+                        // this will call to WriteValueAsync(object)
+                        return writer.WriteValueAsync((object)(value == null ? (UInt128?)null : (UInt128)value), cancellationToken);
 #endif
                     case PrimitiveTypeCode.Uri:
                         return writer.WriteValueAsync((Uri)value, cancellationToken);

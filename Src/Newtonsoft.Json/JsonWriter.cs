@@ -1113,26 +1113,7 @@ namespace Newtonsoft.Json
             InternalWriteValue(JsonToken.String);
         }
 
-#if HAVE_INT128
-        /// <summary>
-        /// Writes a <see cref="Int128"/> value.
-        /// </summary>
-        /// <param name="value">The <see cref="Int128"/> value to write.</param>
-        public virtual void WriteValue(Int128 value)
-        {
-            InternalWriteValue(JsonToken.Integer);
-        }
 
-        /// <summary>
-        /// Writes a <see cref="UInt128"/> value.
-        /// </summary>
-        /// <param name="value">The <see cref="UInt128"/> value to write.</param>
-        [CLSCompliant(false)]
-        public virtual void WriteValue(UInt128 value)
-        {
-            InternalWriteValue(JsonToken.Integer);
-        }
-#endif
 
         /// <summary>
         /// Writes a <see cref="Nullable{T}"/> of <see cref="Int32"/> value.
@@ -1412,40 +1393,7 @@ namespace Newtonsoft.Json
             }
         }
 
-#if HAVE_INT128
-        /// <summary>
-        /// Writes a <see cref="Nullable{T}"/> of <see cref="Int128"/> value.
-        /// </summary>
-        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="Int128"/> value to write.</param>
-        public virtual void WriteValue(Int128? value)
-        {
-            if (value == null)
-            {
-                WriteNull();
-            }
-            else
-            {
-                WriteValue(value.GetValueOrDefault());
-            }
-        }
 
-        /// <summary>
-        /// Writes a <see cref="Nullable{T}"/> of <see cref="UInt128"/> value.
-        /// </summary>
-        /// <param name="value">The <see cref="Nullable{T}"/> of <see cref="UInt128"/> value to write.</param>
-        [CLSCompliant(false)]
-        public virtual void WriteValue(UInt128? value)
-        {
-            if (value == null)
-            {
-                WriteNull();
-            }
-            else
-            {
-                WriteValue(value.GetValueOrDefault());
-            }
-        }
-#endif
 
         /// <summary>
         /// Writes a <see cref="Byte"/>[] value.
@@ -1496,6 +1444,12 @@ namespace Newtonsoft.Json
                 // this is here because adding a WriteValue(BigInteger) to JsonWriter will
                 // mean the user has to add a reference to System.Numerics.dll
                 if (value is BigInteger)
+                {
+                    throw CreateUnsupportedTypeException(this, value);
+                }
+#endif
+#if HAVE_INT128
+                if (value is Int128 || value is UInt128)
                 {
                     throw CreateUnsupportedTypeException(this, value);
                 }
@@ -1698,19 +1652,23 @@ namespace Newtonsoft.Json
 #endif
 #if HAVE_INT128
                     case PrimitiveTypeCode.Int128:
-                        writer.WriteValue((Int128)value);
+                        // this will call to WriteValue(object)
+                        writer.WriteValue((object)(Int128)value);
                         return;
 
                     case PrimitiveTypeCode.Int128Nullable:
-                        writer.WriteValue((value == null) ? (Int128?)null : (Int128)value);
+                        // this will call to WriteValue(object)
+                        writer.WriteValue((object)((value == null) ? (Int128?)null : (Int128)value));
                         return;
 
                     case PrimitiveTypeCode.UInt128:
-                        writer.WriteValue((UInt128)value);
+                        // this will call to WriteValue(object)
+                        writer.WriteValue((object)(UInt128)value);
                         return;
 
                     case PrimitiveTypeCode.UInt128Nullable:
-                        writer.WriteValue((value == null) ? (UInt128?)null : (UInt128)value);
+                        // this will call to WriteValue(object)
+                        writer.WriteValue((object)((value == null) ? (UInt128?)null : (UInt128)value));
                         return;
 #endif
                     case PrimitiveTypeCode.Uri:

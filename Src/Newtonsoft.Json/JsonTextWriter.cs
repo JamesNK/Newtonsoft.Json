@@ -511,28 +511,7 @@ namespace Newtonsoft.Json
             WriteIntegerValue(value, false);
         }
 
-#if HAVE_INT128
-        /// <summary>
-        /// Writes a <see cref="Int128"/> value.
-        /// </summary>
-        /// <param name="value">The <see cref="Int128"/> value to write.</param>
-        public override void WriteValue(Int128 value)
-        {
-            InternalWriteValue(JsonToken.Integer);
-            WriteValueInternal(value.ToString(CultureInfo.InvariantCulture), JsonToken.Integer);
-        }
 
-        /// <summary>
-        /// Writes a <see cref="UInt128"/> value.
-        /// </summary>
-        /// <param name="value">The <see cref="UInt128"/> value to write.</param>
-        [CLSCompliant(false)]
-        public override void WriteValue(UInt128 value)
-        {
-            InternalWriteValue(JsonToken.Integer);
-            WriteValueInternal(value.ToString(CultureInfo.InvariantCulture), JsonToken.Integer);
-        }
-#endif
 
         /// <summary>
         /// Writes a <see cref="Single"/> value.
