@@ -649,12 +649,12 @@ namespace Newtonsoft.Json
         }
 
 #if HAVE_INT128
-        internal Task WriteValueAsync(Int128 value, CancellationToken cancellationToken)
+        internal Task DoWriteInt128ValueAsync(Int128 value, CancellationToken cancellationToken)
         {
             return WriteValueInternalAsync(JsonToken.Integer, value.ToString(CultureInfo.InvariantCulture), cancellationToken);
         }
 
-        internal Task WriteValueAsync(UInt128 value, CancellationToken cancellationToken)
+        internal Task DoWriteUInt128ValueAsync(UInt128 value, CancellationToken cancellationToken)
         {
             return WriteValueInternalAsync(JsonToken.Integer, value.ToString(CultureInfo.InvariantCulture), cancellationToken);
         }
@@ -1015,11 +1015,11 @@ namespace Newtonsoft.Json
 #if HAVE_INT128
                 if (value is Int128 i128)
                 {
-                    return WriteValueAsync(i128, cancellationToken);
+                    return DoWriteInt128ValueAsync(i128, cancellationToken);
                 }
                 if (value is UInt128 ui128)
                 {
-                    return WriteValueAsync(ui128, cancellationToken);
+                    return DoWriteUInt128ValueAsync(ui128, cancellationToken);
                 }
 #endif
 
