@@ -1,3 +1,4 @@
+#if HAVE_INT128
 using System;
 using System.IO;
 using System.Threading;
@@ -14,7 +15,6 @@ using NUnit.Framework;
 
 namespace Newtonsoft.Json.Tests
 {
-#if HAVE_INT128
     [TestFixture]
     public class Int128Tests : TestFixtureBase
     {
@@ -74,5 +74,5 @@ namespace Newtonsoft.Json.Tests
             Assert.IsTrue(jv1.CompareTo(jv3) < 0);
         }
     }
-#endif
 }
+#endif
