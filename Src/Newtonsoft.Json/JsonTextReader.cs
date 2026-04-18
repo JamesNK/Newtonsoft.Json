@@ -76,6 +76,10 @@ namespace Newtonsoft.Json
         private StringBuffer _stringBuffer;
         private StringReference _stringReference;
         private IArrayPool<char>? _arrayPool;
+        private bool _preserveNumberText;
+        private string? _numberText;
+        // cached at construction time so hot paths avoid repeated GetType() virtual calls
+        private readonly bool _hasNumberOverride;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonTextReader"/> class with the specified <see cref="TextReader"/>.
@@ -90,6 +94,7 @@ namespace Newtonsoft.Json
 
             _reader = reader;
             _lineNumber = 1;
+            _hasNumberOverride = GetType() != typeof(JsonTextReader);
 
 #if HAVE_ASYNC
             _safeAsync = GetType() == typeof(JsonTextReader);
@@ -126,6 +131,53 @@ namespace Newtonsoft.Json
 
                 _arrayPool = value;
             }
+        }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether the raw source text of each number token is
+        /// preserved and accessible via <see cref="NumberText"/> after <see cref="JsonReader.Read"/> returns.
+        /// When <c>false</c> (the default), <see cref="NumberText"/> is always <c>null</c>.
+        /// Enabling this causes one string allocation per number token parsed.
+        /// </summary>
+        public bool PreserveNumberText
+        {
+            get => _preserveNumberText;
+            set => _preserveNumberText = value;
+        }
+
+        /// <summary>
+        /// Gets the raw source text of the current number token, or <c>null</c> if the current token
+        /// is not <see cref="JsonToken.Integer"/> or <see cref="JsonToken.Float"/>, or if
+        /// <see cref="PreserveNumberText"/> is <c>false</c>.
+        /// </summary>
+        public string? NumberText
+        {
+            get
+            {
+                if (TokenType != JsonToken.Integer && TokenType != JsonToken.Float)
+                {
+                    return null;
+                }
+
+                return _numberText;
+            }
+        }
+
+        /// <summary>
+        /// Called after a number token has been parsed and its default value determined, but before
+        /// the token is committed via <see cref="JsonReader.SetToken(JsonToken, object)"/>.
+        /// Override to replace <paramref name="tokenType"/> and/or <paramref name="value"/> with a
+        /// more precise representation (e.g. choose between <see cref="double"/> and
+        /// <see cref="decimal"/> based on the raw text).
+        /// </summary>
+        /// <param name="rawText">The exact source text of the number as it appeared in the JSON.</param>
+        /// <param name="tokenType">
+        /// The resolved token type (<see cref="JsonToken.Integer"/> or <see cref="JsonToken.Float"/>).
+        /// May be changed by the override.
+        /// </param>
+        /// <param name="value">The resolved boxed value. May be changed by the override.</param>
+        protected virtual void OnNumberParsed(string rawText, ref JsonToken tokenType, ref object value)
+        {
         }
 
         private void EnsureBufferNotEmpty()
@@ -2236,7 +2288,20 @@ namespace Newtonsoft.Json
                     throw JsonReaderException.Create(this, "Cannot read number value as type.");
             }
 
+            // Capture raw text before the string reference is cleared.
+            // Only pay the allocation cost when PreserveNumberText is set or a subclass may
+            // override OnNumberParsed (detected once at construction time via _hasNumberOverride).
+            string? rawText = (_preserveNumberText || _hasNumberOverride)
+                ? _stringReference.ToString()
+                : null;
+
+            _numberText = rawText;
             ClearRecentString();
+
+            if (rawText != null)
+            {
+                OnNumberParsed(rawText, ref numberType, ref numberValue);
+            }
 
             // index has already been updated
             SetToken(numberType, numberValue, false);
