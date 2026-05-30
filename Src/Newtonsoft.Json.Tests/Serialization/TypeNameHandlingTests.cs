@@ -724,6 +724,42 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Test]
+        public void DeserializeWithNullTypeProperty_ThrowsJsonSerializationException()
+        {
+            string json = "{\"$type\":null,\"Name\":\"test\"}";
+
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(json));
+        }
+
+        [Test]
+        public void DeserializeWithArrayTypeProperty_ThrowsJsonSerializationException()
+        {
+            string json = "{\"$type\":[\"foo\"],\"Name\":\"test\"}";
+
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(json));
+        }
+
+        [Test]
+        public void DeserializeWithObjectTypeProperty_ThrowsJsonSerializationException()
+        {
+            string json = "{\"$type\":{},\"Name\":\"test\"}";
+
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(json));
+        }
+
+        [Test]
+        public void DeserializeWithIntegerTypeProperty_ThrowsJsonSerializationException()
+        {
+            string json = "{\"$type\":42,\"Name\":\"test\"}";
+
+            ExceptionAssert.Throws<JsonSerializationException>(() =>
+                JsonConvert.DeserializeObject<Dictionary<string, object>>(json));
+        }
+
+        [Test]
         public void DeserializeTypeNameWithNoTypeNameHandling()
         {
             string employeeRef = typeof(EmployeeReference).AssemblyQualifiedName;
