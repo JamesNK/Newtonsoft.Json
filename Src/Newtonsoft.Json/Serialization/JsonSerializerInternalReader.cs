@@ -327,7 +327,15 @@ namespace Newtonsoft.Json.Serialization
                         string s = (string)reader.Value!;
 
                         // string that needs to be returned as a byte array should be base 64 decoded
-                        if (objectType == typeof(byte[]))
+                        if (
+                            objectType == typeof(byte[]) ||
+                            contract != null &&
+                            contract.NonNullableUnderlyingType
+                                .GetMethods()
+                                .Where(a => a.GetParameters().Length == 1 && (a.Name == "op_Explicit" || a.Name == "op_Implicit"))
+                                .Select(a => a.GetParameters().Single())
+                                .Any(a => a.ParameterType == typeof(byte[]))
+                        )
                         {
                             return Convert.FromBase64String(s);
                         }
