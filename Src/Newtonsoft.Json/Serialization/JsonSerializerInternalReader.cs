@@ -337,7 +337,7 @@ namespace Newtonsoft.Json.Serialization
                                 .Any(a => a.ParameterType == typeof(byte[]))
                         )
                         {
-                            return Convert.FromBase64String(s);
+                            return EnsureType(reader, Convert.FromBase64String(s), CultureInfo.InvariantCulture, contract, objectType);
                         }
 
                         // convert empty string to null automatically for nullable types
