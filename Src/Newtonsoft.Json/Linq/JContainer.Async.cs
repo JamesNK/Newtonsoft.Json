@@ -26,6 +26,7 @@
 #if HAVE_ASYNC
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Threading;
@@ -57,6 +58,8 @@ namespace Newtonsoft.Json.Linq
         private async Task ReadContentFromAsync(JsonReader reader, JsonLoadSettings? settings, CancellationToken cancellationToken = default)
         {
             IJsonLineInfo? lineInfo = reader as IJsonLineInfo;
+            // Loading is iterative, so keep separate duplicate indexes for JObjects at different depths.
+            Dictionary<JObject, Dictionary<string, int>>? duplicatePropertyIndexes = null;
 
             JContainer? parent = this;
 
@@ -101,6 +104,11 @@ namespace Newtonsoft.Json.Linq
                         parent = o;
                         break;
                     case JsonToken.EndObject:
+                        // The index is only needed while its JObject is being loaded.
+                        if (parent is JObject parentObject)
+                        {
+                            duplicatePropertyIndexes?.Remove(parentObject);
+                        }
                         if (parent == this)
                         {
                             return;
@@ -151,7 +159,7 @@ namespace Newtonsoft.Json.Linq
                         parent.Add(v);
                         break;
                     case JsonToken.PropertyName:
-                        JProperty? property = ReadProperty(reader, settings, lineInfo, parent);
+                        JProperty? property = ReadProperty(reader, settings, lineInfo, parent, ref duplicatePropertyIndexes);
                         if (property != null)
                         {
                             parent = property;

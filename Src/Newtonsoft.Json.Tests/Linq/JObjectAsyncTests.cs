@@ -25,6 +25,7 @@
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
 
+using System;
 using System.Collections.Generic;
 using Newtonsoft.Json.Tests.TestObjects;
 #if DNXCORE50
@@ -36,6 +37,7 @@ using NUnit.Framework;
 #endif
 using Newtonsoft.Json.Linq;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace Newtonsoft.Json.Tests.Linq
@@ -194,6 +196,57 @@ namespace Newtonsoft.Json.Tests.Linq
             string value = (string)o["Name"];
 
             Assert.AreEqual("Name1", value);
+        }
+
+        [Test]
+        public async Task ParseMultipleProperties_ReplaceInterleavedAndNestedAsync()
+        {
+            string json = @"{
+        ""a"": 1,
+                ""b"": 2,
+                ""c"": 3,
+                ""b"": 4,
+        ""nested"": {
+          ""x"": 1,
+                    ""y"": 2,
+                    ""z"": 3,
+          ""y"": 4
+        },
+                ""c"": 5
+      }";
+
+            JsonTextReader reader = new JsonTextReader(new StringReader(json));
+            JObject o = (JObject)await JToken.ReadFromAsync(reader);
+
+            CollectionAssert.AreEqual(new[] { "a", "b", "c", "nested" }, o.Properties().Select(p => p.Name));
+            Assert.AreEqual(4, (int)o["b"]);
+            Assert.AreEqual(5, (int)o["c"]);
+            Assert.AreEqual(4, (int)o["nested"]["y"]);
+        }
+
+        [Test]
+        public async Task ParseMultipleProperties_DoesNotSearchForPropertyIndexAsync()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"{
+        ""a"": 1,
+        ""b"": 2,
+        ""c"": 3,
+        ""b"": 4
+      }"));
+            Assert.IsTrue(await reader.ReadAsync());
+
+            NoPropertyIndexSearchJObject o = new NoPropertyIndexSearchJObject();
+            await o.ReadTokenFromAsync(reader, null);
+
+            Assert.AreEqual(4, (int)o["b"]);
+        }
+
+        private sealed class NoPropertyIndexSearchJObject : JObject
+        {
+            internal override int IndexOfItem(JToken item)
+            {
+                throw new InvalidOperationException("Property replacement must not search for its index.");
+            }
         }
     }
 }

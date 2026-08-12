@@ -26,6 +26,7 @@
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
 
 using System;
+using System.Collections.Generic;
 #if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
 using System.Numerics;
 #endif
@@ -371,6 +372,32 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public async Task WriteDuplicatePropertyNameDoesNotSearchForPropertyIndexAsync()
+        {
+            NoPropertyIndexSearchJObject o = new NoPropertyIndexSearchJObject();
+            JTokenWriter writer = new JTokenWriter(o);
+
+            await writer.WritePropertyNameAsync("a");
+            await writer.WriteValueAsync(1);
+            await writer.WritePropertyNameAsync("b");
+            await writer.WriteValueAsync(2);
+            await writer.WritePropertyNameAsync("c");
+            await writer.WriteValueAsync(3);
+            await writer.WritePropertyNameAsync("b");
+            await writer.WriteValueAsync(4);
+            o.AddFirst(new JProperty("external", 0));
+            await writer.WritePropertyNameAsync("b");
+            await writer.WriteValueAsync(5);
+            ((IList<JToken>)o).RemoveAt(0);
+            await writer.WritePropertyNameAsync("c");
+            await writer.WriteValueAsync(6);
+
+            CollectionAssert.AreEqual(new[] { "a", "b", "c" }, o.Properties().Select(p => p.Name));
+            Assert.AreEqual(5, (int)o["b"]);
+            Assert.AreEqual(6, (int)o["c"]);
+        }
+
+        [Test]
         public async Task DateTimeZoneHandlingAsync()
         {
             JTokenWriter writer = new JTokenWriter
@@ -384,6 +411,14 @@ namespace Newtonsoft.Json.Tests.Linq
             DateTime dt = (DateTime)value.Value;
 
             Assert.AreEqual(new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc), dt);
+        }
+
+        private sealed class NoPropertyIndexSearchJObject : JObject
+        {
+            internal override int IndexOfItem(JToken item)
+            {
+                throw new InvalidOperationException("Property replacement must not search for its index.");
+            }
         }
     }
 }

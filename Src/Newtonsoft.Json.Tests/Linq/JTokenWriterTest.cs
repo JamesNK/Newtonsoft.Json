@@ -378,6 +378,32 @@ namespace Newtonsoft.Json.Tests.Linq
         }
 
         [Test]
+        public void WriteDuplicatePropertyNameDoesNotSearchForPropertyIndex()
+        {
+            NoPropertyIndexSearchJObject o = new NoPropertyIndexSearchJObject();
+            JTokenWriter writer = new JTokenWriter(o);
+
+            writer.WritePropertyName("a");
+            writer.WriteValue(1);
+            writer.WritePropertyName("b");
+            writer.WriteValue(2);
+            writer.WritePropertyName("c");
+            writer.WriteValue(3);
+            writer.WritePropertyName("b");
+            writer.WriteValue(4);
+            o.AddFirst(new JProperty("external", 0));
+            writer.WritePropertyName("b");
+            writer.WriteValue(5);
+            ((IList<JToken>)o).RemoveAt(0);
+            writer.WritePropertyName("c");
+            writer.WriteValue(6);
+
+            CollectionAssert.AreEqual(new[] { "a", "b", "c" }, o.Properties().Select(p => p.Name));
+            Assert.AreEqual(5, (int)o["b"]);
+            Assert.AreEqual(6, (int)o["c"]);
+        }
+
+        [Test]
         public void DateTimeZoneHandling()
         {
             JTokenWriter writer = new JTokenWriter
@@ -414,6 +440,14 @@ namespace Newtonsoft.Json.Tests.Linq
             }
 
             Assert.AreEqual(@"[1,{""integer"":2147483647,""null-string"":null}]", token.ToString(Formatting.None));
+        }
+
+        private sealed class NoPropertyIndexSearchJObject : JObject
+        {
+            internal override int IndexOfItem(JToken item)
+            {
+                throw new InvalidOperationException("Property replacement must not search for its index.");
+            }
         }
     }
 }

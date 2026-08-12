@@ -797,6 +797,8 @@ namespace Newtonsoft.Json.Linq
         {
             ValidationUtils.ArgumentNotNull(r, nameof(r));
             IJsonLineInfo? lineInfo = r as IJsonLineInfo;
+            // Loading is iterative, so keep separate duplicate indexes for JObjects at different depths.
+            Dictionary<JObject, Dictionary<string, int>>? duplicatePropertyIndexes = null;
 
             JContainer? parent = this;
 
@@ -841,6 +843,11 @@ namespace Newtonsoft.Json.Linq
                         parent = o;
                         break;
                     case JsonToken.EndObject:
+                        // The index is only needed while its JObject is being loaded.
+                        if (parent is JObject parentObject)
+                        {
+                            duplicatePropertyIndexes?.Remove(parentObject);
+                        }
                         if (parent == this)
                         {
                             return;
@@ -891,7 +898,7 @@ namespace Newtonsoft.Json.Linq
                         parent.Add(v);
                         break;
                     case JsonToken.PropertyName:
-                        JProperty? property = ReadProperty(r, settings, lineInfo, parent);
+                        JProperty? property = ReadProperty(r, settings, lineInfo, parent, ref duplicatePropertyIndexes);
                         if (property != null)
                         {
                             parent = property;
@@ -907,7 +914,7 @@ namespace Newtonsoft.Json.Linq
             } while (r.Read());
         }
 
-        private static JProperty? ReadProperty(JsonReader r, JsonLoadSettings? settings, IJsonLineInfo? lineInfo, JContainer parent)
+        private static JProperty? ReadProperty(JsonReader r, JsonLoadSettings? settings, IJsonLineInfo? lineInfo, JContainer parent, ref Dictionary<JObject, Dictionary<string, int>>? duplicatePropertyIndexes)
         {
             DuplicatePropertyNameHandling duplicatePropertyNameHandling = settings?.DuplicatePropertyNameHandling ?? DuplicatePropertyNameHandling.Replace;
 
@@ -931,11 +938,32 @@ namespace Newtonsoft.Json.Linq
             // handle multiple properties with the same name in JSON
             if (existingPropertyWithName == null)
             {
+                // Keep an existing index current when a unique property is appended.
+                if (duplicatePropertyIndexes != null && duplicatePropertyIndexes.TryGetValue(parentObject, out Dictionary<string, int>? propertyIndexes))
+                {
+                    propertyIndexes[propertyName] = parentObject.Count;
+                }
+
                 parent.Add(property);
             }
             else
             {
-                existingPropertyWithName.Replace(property);
+                // Most objects don't contain duplicate names, so only create an index when one is encountered.
+                duplicatePropertyIndexes ??= new Dictionary<JObject, Dictionary<string, int>>();
+
+                if (!duplicatePropertyIndexes.TryGetValue(parentObject, out Dictionary<string, int>? propertyIndexes))
+                {
+                    propertyIndexes = new Dictionary<string, int>(StringComparer.Ordinal);
+                    int index = 0;
+                    foreach (JProperty existingProperty in parentObject.Properties())
+                    {
+                        propertyIndexes.Add(existingProperty.Name, index++);
+                    }
+                    duplicatePropertyIndexes.Add(parentObject, propertyIndexes);
+                }
+
+                // Replace by known position to avoid JProperty.Replace searching the property list.
+                parentObject.SetItem(propertyIndexes[propertyName], property);
             }
 
             return property;

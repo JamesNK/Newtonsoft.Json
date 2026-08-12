@@ -1658,6 +1658,62 @@ Parameter name: arrayIndex",
             Assert.AreEqual("Name2", value);
         }
 
+        [Test]
+        public void ParseMultipleProperties_ReplaceInterleavedAndNested()
+        {
+            string json = @"{
+        ""a"": 1,
+        ""b"": 2,
+        ""c"": 3,
+        ""b"": 4,
+        ""nested"": {
+          ""x"": 1,
+          ""y"": 2,
+          ""z"": 3,
+          ""y"": 4
+        },
+        ""c"": 5
+      }";
+
+            JObject o = JObject.Parse(json);
+
+            CollectionAssert.AreEqual(new[] { "a", "b", "c", "nested" }, o.Properties().Select(p => p.Name));
+            Assert.AreEqual(4, (int)o["b"]);
+            Assert.AreEqual(5, (int)o["c"]);
+            Assert.AreEqual(4, (int)o["nested"]["y"]);
+        }
+
+        [Test]
+        public void ParseMultipleProperties_DoesNotSearchForPropertyIndex()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"{
+        ""a"": 1,
+        ""b"": 2,
+        ""c"": 3,
+        ""b"": 4
+      }"));
+            Assert.IsTrue(reader.Read());
+
+            NoPropertyIndexSearchJObject o = new NoPropertyIndexSearchJObject();
+            o.ReadTokenFrom(reader, null);
+
+            Assert.AreEqual(4, (int)o["b"]);
+        }
+
+        [Test]
+        public void DeserializeMultipleProperties_ReplacesInOriginalPosition()
+        {
+            JObject o = JsonConvert.DeserializeObject<JObject>(@"{
+        ""a"": 1,
+        ""b"": 2,
+        ""c"": 3,
+        ""b"": 4
+      }");
+
+            CollectionAssert.AreEqual(new[] { "a", "b", "c" }, o.Properties().Select(p => p.Name));
+            Assert.AreEqual(4, (int)o["b"]);
+        }
+
 #if !(PORTABLE || DNXCORE50 || PORTABLE40) || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public void WriteObjectNullDBNullValue()
@@ -2139,6 +2195,14 @@ Parameter name: arrayIndex",
             Assert.AreEqual("name", a.Property("name", StringComparison.OrdinalIgnoreCase).Name);
             // Return exact match without ignoring case
             Assert.AreEqual("name", a.Property("name", StringComparison.Ordinal).Name);
+        }
+
+        private sealed class NoPropertyIndexSearchJObject : JObject
+        {
+            internal override int IndexOfItem(JToken item)
+            {
+                throw new InvalidOperationException("Property replacement must not search for its index.");
+            }
         }
     }
 }
