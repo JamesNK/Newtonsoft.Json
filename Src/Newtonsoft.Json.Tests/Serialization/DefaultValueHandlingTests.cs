@@ -73,7 +73,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             [DefaultValue(DefaultText)]
             [JsonProperty(PropertyName = "myText", DefaultValueHandling = DefaultValueHandling.Populate)]
-            public readonly string Text;
+            public string Text { get; }
 
             public DefaultValueWithConstructor([JsonProperty(PropertyName = "myText")]string text = DefaultText)
             {
@@ -86,6 +86,51 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             DefaultValueWithConstructor myObject = JsonConvert.DeserializeObject<DefaultValueWithConstructor>("{}");
             Assert.AreEqual(DefaultValueWithConstructor.DefaultText, myObject.Text);
+        }
+
+        private class DefaultValueWithUnmatchedConstructorParameter
+        {
+            public const string DefaultText = "...";
+
+            [DefaultValue(DefaultText)]
+            [JsonProperty(PropertyName = "myText", DefaultValueHandling = DefaultValueHandling.Populate)]
+            public string Text { get; }
+
+            public DefaultValueWithUnmatchedConstructorParameter(string text = DefaultText)
+            {
+                Text = text;
+            }
+        }
+
+        [Test]
+        public void DefaultValueWithUnmatchedConstructorParameterTest()
+        {
+            DefaultValueWithUnmatchedConstructorParameter myObject = JsonConvert.DeserializeObject<DefaultValueWithUnmatchedConstructorParameter>("{}");
+            Assert.IsNull(myObject.Text);
+        }
+
+        private class DefaultValueWithRenamedConstructorParameter
+        {
+            public const string DefaultText = "...";
+
+            [DefaultValue(DefaultText)]
+            [JsonProperty("renamedText", DefaultValueHandling = DefaultValueHandling.Populate)]
+            public string Text { get; }
+
+            public DefaultValueWithRenamedConstructorParameter(
+                [DefaultValue(DefaultText)]
+                [JsonProperty("renamedText", DefaultValueHandling = DefaultValueHandling.Populate)]
+                string text)
+            {
+                Text = text;
+            }
+        }
+
+        [Test]
+        public void DefaultValueWithRenamedConstructorParameterTest()
+        {
+            DefaultValueWithRenamedConstructorParameter myObject = JsonConvert.DeserializeObject<DefaultValueWithRenamedConstructorParameter>("{}");
+            Assert.AreEqual(DefaultValueWithRenamedConstructorParameter.DefaultText, myObject.Text);
         }
 
         public class MyClass

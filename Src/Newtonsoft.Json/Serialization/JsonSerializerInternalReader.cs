@@ -2057,7 +2057,8 @@ namespace Newtonsoft.Json.Serialization
                 JsonProperty? constructorProperty = context.ConstructorProperty;
                 if (constructorProperty == null && context.Property != null)
                 {
-                    constructorProperty = contract.CreatorParameters.ForgivingCaseSensitiveFind(p => p.PropertyName!, context.Property.UnderlyingName!);
+                    constructorProperty = contract.CreatorParameters.ForgivingCaseSensitiveFind(p => p.PropertyName!, context.Property.UnderlyingName!)
+                        ?? contract.CreatorParameters.ForgivingCaseSensitiveFind(p => p.PropertyName!, context.Property.PropertyName!);
                 }
 
                 if (constructorProperty != null && !constructorProperty.Ignored)
