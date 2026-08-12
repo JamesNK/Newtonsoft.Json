@@ -583,6 +583,12 @@ namespace Newtonsoft.Json.Bson
             }
 #pragma warning restore 612,618
 
+            long remainingLength = (long)_currentContext.Length - _currentContext.Position - 1;
+            if (dataLength < 0 || dataLength > remainingLength)
+            {
+                throw JsonReaderException.Create(this, "Unexpected length for BSON binary data: {0}.".FormatWith(CultureInfo.InvariantCulture, dataLength));
+            }
+
             return ReadBytes(dataLength);
         }
 
