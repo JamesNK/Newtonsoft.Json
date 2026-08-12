@@ -25,6 +25,7 @@
 
 #if HAVE_ENTITY_FRAMEWORK
 using System;
+using System.Collections.Generic;
 using Newtonsoft.Json.Serialization;
 using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
@@ -47,6 +48,38 @@ namespace Newtonsoft.Json.Converters
         private const string ValuePropertyName = "Value";
 
         private static ReflectionObject? _reflectionObject;
+
+        private static readonly Dictionary<string, Type> AllowedTypesByName = new Dictionary<string, Type>
+        {
+            { "System.Boolean", typeof(bool) },
+            { "System.Byte", typeof(byte) },
+            { "System.Byte[]", typeof(byte[]) },
+            { "System.DateTime", typeof(DateTime) },
+            { "System.DateTimeOffset", typeof(DateTimeOffset) },
+            { "System.Decimal", typeof(decimal) },
+            { "System.Double", typeof(double) },
+            { "System.Guid", typeof(Guid) },
+            { "System.Int16", typeof(short) },
+            { "System.Int32", typeof(int) },
+            { "System.Int64", typeof(long) },
+            { "System.SByte", typeof(sbyte) },
+            { "System.Single", typeof(float) },
+            { "System.String", typeof(string) },
+            { "System.TimeSpan", typeof(TimeSpan) },
+            { "System.UInt64", typeof(ulong) }
+        };
+
+        private static readonly Dictionary<Type, string> AllowedNamesByType = CreateAllowedNamesByType();
+
+        private static Dictionary<Type, string> CreateAllowedNamesByType()
+        {
+            Dictionary<Type, string> d = new Dictionary<Type, string>();
+            foreach (KeyValuePair<string, Type> pair in AllowedTypesByName)
+            {
+                d[pair.Value] = pair.Key;
+            }
+            return d;
+        }
 
         /// <summary>
         /// Writes the JSON representation of the object.
@@ -76,7 +109,18 @@ namespace Newtonsoft.Json.Converters
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(KeyPropertyName) : KeyPropertyName);
             writer.WriteValue(keyName);
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(TypePropertyName) : TypePropertyName);
-            writer.WriteValue(keyValueType?.FullName);
+            if (keyValueType != null)
+            {
+                if (!AllowedNamesByType.TryGetValue(keyValueType, out string? typeName))
+                {
+                    throw new JsonSerializationException("Type '{0}' is not a valid EntityKeyMember type.".FormatWith(CultureInfo.InvariantCulture, keyValueType));
+                }
+                writer.WriteValue(typeName);
+            }
+            else
+            {
+                writer.WriteNull();
+            }
 
             writer.WritePropertyName((resolver != null) ? resolver.GetResolvedPropertyName(ValuePropertyName) : ValuePropertyName);
 
@@ -132,7 +176,10 @@ namespace Newtonsoft.Json.Converters
             reader.ReadAndAssert();
             string? type = reader.Value?.ToString();
 
-            Type t = Type.GetType(type!)!;
+            if (!AllowedTypesByName.TryGetValue(type!, out Type? t))
+            {
+                throw new JsonSerializationException("Type '{0}' is not a valid EntityKeyMember type.".FormatWith(CultureInfo.InvariantCulture, type));
+            }
 
             ReadAndAssertProperty(reader, ValuePropertyName);
             reader.ReadAndAssert();
