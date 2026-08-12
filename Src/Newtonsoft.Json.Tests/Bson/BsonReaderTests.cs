@@ -528,6 +528,28 @@ namespace Newtonsoft.Json.Tests.Bson
         }
 
         [Test]
+        public void ReadBinaryWithNegativeLength()
+        {
+            byte[] data = HexToBytes("0C-00-00-00-05-00-FF-FF-FF-FF-00-00");
+            BsonReader reader = new BsonReader(new MemoryStream(data));
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Unexpected length for BSON binary data: -1. Path ''.");
+        }
+
+        [Test]
+        public void ReadBinaryWithLengthLargerThanContainer()
+        {
+            byte[] data = HexToBytes("0C-00-00-00-05-00-FF-FF-FF-7F-00-00");
+            BsonReader reader = new BsonReader(new MemoryStream(data));
+
+            Assert.IsTrue(reader.Read());
+            Assert.IsTrue(reader.Read());
+            ExceptionAssert.Throws<JsonReaderException>(() => reader.Read(), "Unexpected length for BSON binary data: 2147483647. Path ''.");
+        }
+
+        [Test]
         public void ReadOid()
         {
             byte[] data = HexToBytes("29000000075F6964004ABBED9D1D8B0F02180000010274657374000900000031323334C2A335360000");
