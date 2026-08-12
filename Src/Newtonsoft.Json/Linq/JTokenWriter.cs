@@ -24,6 +24,7 @@
 #endregion
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 #if HAVE_BIG_INTEGER
@@ -43,6 +44,8 @@ namespace Newtonsoft.Json.Linq
         // used when writer is writing single value and the value has no containing parent
         private JValue? _value;
         private JToken? _current;
+        // Content is written iteratively, so writing switches between JObjects at different depths.
+        private Dictionary<JObject, Dictionary<string, int>>? _duplicatePropertyIndexes;
 
         /// <summary>
         /// Gets the <see cref="JToken"/> at the writer's current position.
@@ -102,6 +105,7 @@ namespace Newtonsoft.Json.Linq
         public override void Close()
         {
             base.Close();
+            _duplicatePropertyIndexes = null;
         }
 
         /// <summary>
@@ -167,6 +171,11 @@ namespace Newtonsoft.Json.Linq
         /// <param name="token">The token.</param>
         protected override void WriteEnd(JsonToken token)
         {
+            if (token == JsonToken.EndObject && _parent is JObject parentObject)
+            {
+                _duplicatePropertyIndexes?.Remove(parentObject);
+            }
+
             RemoveParent();
         }
 
@@ -176,11 +185,53 @@ namespace Newtonsoft.Json.Linq
         /// <param name="name">The name of the property.</param>
         public override void WritePropertyName(string name)
         {
-            // avoid duplicate property name exception
-            // last property name wins
-            (_parent as JObject)?.Remove(name);
+            JProperty property = new JProperty(name);
+            if (_parent is JObject parentObject)
+            {
+                JProperty? existingProperty = parentObject.Property(name, StringComparison.Ordinal);
+                if (existingProperty != null)
+                {
+                    // Most objects don't contain duplicate names, so only create an index when one is encountered.
+                    _duplicatePropertyIndexes ??= new Dictionary<JObject, Dictionary<string, int>>();
+                    if (!_duplicatePropertyIndexes.TryGetValue(parentObject, out Dictionary<string, int>? propertyIndexes))
+                    {
+                        propertyIndexes = new Dictionary<string, int>(StringComparer.Ordinal);
+                        _duplicatePropertyIndexes.Add(parentObject, propertyIndexes);
+                    }
 
-            AddParent(new JProperty(name));
+                    // A container supplied to the writer can be modified between writes, invalidating cached indexes.
+                    if (!propertyIndexes.TryGetValue(name, out int propertyIndex)
+                        || propertyIndex >= parentObject.Count
+                        || !ReferenceEquals(parentObject.GetItem(propertyIndex), existingProperty))
+                    {
+                        propertyIndexes.Clear();
+                        int index = 0;
+                        foreach (JProperty childProperty in parentObject.Properties())
+                        {
+                            propertyIndexes.Add(childProperty.Name, index++);
+                        }
+                        propertyIndex = propertyIndexes[name];
+                    }
+
+                    parentObject.SetItem(propertyIndex, property);
+                    _parent = property;
+                    _current = property;
+                }
+                else
+                {
+                    // Keep an existing index current when a unique property is appended.
+                    if (_duplicatePropertyIndexes != null && _duplicatePropertyIndexes.TryGetValue(parentObject, out Dictionary<string, int>? propertyIndexes))
+                    {
+                        propertyIndexes[name] = parentObject.Count;
+                    }
+
+                    AddParent(property);
+                }
+            }
+            else
+            {
+                AddParent(property);
+            }
 
             // don't set state until after in case of an error
             // incorrect state will cause issues if writer is disposed when closing open properties
