@@ -716,6 +716,10 @@ namespace Newtonsoft.Json
 #if HAVE_BIG_INTEGER
                         value is BigInteger integer ? WriteValueAsync(integer, cancellationToken) :
 #endif
+#if HAVE_INT128
+                        value is Int128 i128 ? WriteValueAsync(i128, cancellationToken) :
+                        value is UInt128 ui128 ? WriteValueAsync(ui128, cancellationToken) :
+#endif
                         WriteValueAsync(Convert.ToInt64(value, CultureInfo.InvariantCulture), cancellationToken);
                 case JsonToken.Float:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
@@ -1411,6 +1415,8 @@ namespace Newtonsoft.Json
             return AsyncUtils.CompletedTask;
         }
 
+
+
         /// <summary>
         /// Asynchronously writes a <see cref="TimeSpan"/> value.
         /// </summary>
@@ -1774,6 +1780,20 @@ namespace Newtonsoft.Json
 
                         // this will call to WriteValueAsync(object)
                         return writer.WriteValueAsync(value == null ? (BigInteger?)null : (BigInteger)value, cancellationToken);
+#endif
+#if HAVE_INT128
+                    case PrimitiveTypeCode.Int128:
+                        // this will call to WriteValueAsync(object)
+                        return writer.WriteValueAsync((object)(Int128)value, cancellationToken);
+                    case PrimitiveTypeCode.Int128Nullable:
+                        // this will call to WriteValueAsync(object)
+                        return writer.WriteValueAsync((object)(value == null ? (Int128?)null : (Int128)value), cancellationToken);
+                    case PrimitiveTypeCode.UInt128:
+                        // this will call to WriteValueAsync(object)
+                        return writer.WriteValueAsync((object)(UInt128)value, cancellationToken);
+                    case PrimitiveTypeCode.UInt128Nullable:
+                        // this will call to WriteValueAsync(object)
+                        return writer.WriteValueAsync((object)(value == null ? (UInt128?)null : (UInt128)value), cancellationToken);
 #endif
                     case PrimitiveTypeCode.Uri:
                         return writer.WriteValueAsync((Uri)value, cancellationToken);

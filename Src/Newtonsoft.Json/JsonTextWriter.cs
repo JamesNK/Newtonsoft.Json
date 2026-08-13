@@ -397,6 +397,18 @@ namespace Newtonsoft.Json
                 InternalWriteValue(JsonToken.Integer);
                 WriteValueInternal(i.ToString(CultureInfo.InvariantCulture), JsonToken.String);
             }
+#if HAVE_INT128
+            else if (value is Int128 i128)
+            {
+                InternalWriteValue(JsonToken.Integer);
+                WriteValueInternal(i128.ToString(CultureInfo.InvariantCulture), JsonToken.Integer);
+            }
+            else if (value is UInt128 ui128)
+            {
+                InternalWriteValue(JsonToken.Integer);
+                WriteValueInternal(ui128.ToString(CultureInfo.InvariantCulture), JsonToken.Integer);
+            }
+#endif
             else
 #endif
             {
@@ -498,6 +510,8 @@ namespace Newtonsoft.Json
             InternalWriteValue(JsonToken.Integer);
             WriteIntegerValue(value, false);
         }
+
+
 
         /// <summary>
         /// Writes a <see cref="Single"/> value.

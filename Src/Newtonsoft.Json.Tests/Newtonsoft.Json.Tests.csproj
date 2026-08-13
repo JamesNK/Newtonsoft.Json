@@ -169,7 +169,7 @@
   <PropertyGroup Condition="'$(TargetFramework)'=='net8.0'">
     <AssemblyTitle>Json.NET Tests .NET 8.0</AssemblyTitle>
     <ReferringTargetFrameworkForProjectReferences>net8.0</ReferringTargetFrameworkForProjectReferences>
-    <DefineConstants>NET8_0;DNXCORE50;PORTABLE;HAVE_BENCHMARKS;HAVE_REGEX_TIMEOUTS;$(AdditionalConstants)</DefineConstants>
+    <DefineConstants>NET8_0;DNXCORE50;PORTABLE;HAVE_BENCHMARKS;HAVE_REGEX_TIMEOUTS;HAVE_INT128;$(AdditionalConstants)</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(TargetFramework)'=='netcoreapp3.1'">

@@ -648,6 +648,18 @@ namespace Newtonsoft.Json
             return WriteValueInternalAsync(JsonToken.String, JsonConvert.ToString(value), cancellationToken);
         }
 
+#if HAVE_INT128
+        internal Task DoWriteInt128ValueAsync(Int128 value, CancellationToken cancellationToken)
+        {
+            return WriteValueInternalAsync(JsonToken.Integer, value.ToString(CultureInfo.InvariantCulture), cancellationToken);
+        }
+
+        internal Task DoWriteUInt128ValueAsync(UInt128 value, CancellationToken cancellationToken)
+        {
+            return WriteValueInternalAsync(JsonToken.Integer, value.ToString(CultureInfo.InvariantCulture), cancellationToken);
+        }
+#endif
+
         /// <summary>
         /// Asynchronously writes a <see cref="Nullable{T}"/> of <see cref="char"/> value.
         /// </summary>
@@ -665,6 +677,8 @@ namespace Newtonsoft.Json
         {
             return value == null ? DoWriteNullAsync(cancellationToken) : DoWriteValueAsync(value.GetValueOrDefault(), cancellationToken);
         }
+
+
 
         /// <summary>
         /// Asynchronously writes a <see cref="DateTime"/> value.
@@ -996,6 +1010,16 @@ namespace Newtonsoft.Json
                 if (value is BigInteger i)
                 {
                     return WriteValueAsync(i, cancellationToken);
+                }
+#endif
+#if HAVE_INT128
+                if (value is Int128 i128)
+                {
+                    return DoWriteInt128ValueAsync(i128, cancellationToken);
+                }
+                if (value is UInt128 ui128)
+                {
+                    return DoWriteUInt128ValueAsync(ui128, cancellationToken);
                 }
 #endif
 

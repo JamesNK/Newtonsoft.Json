@@ -555,6 +555,17 @@ namespace Newtonsoft.Json
                     }
                     else
 #endif
+#if HAVE_INT128
+                    if (value is Int128 i128)
+                    {
+                        WriteValue(i128);
+                    }
+                    else if (value is UInt128 ui128)
+                    {
+                        WriteValue(ui128);
+                    }
+                    else
+#endif
                     {
                         WriteValue(Convert.ToInt64(value, CultureInfo.InvariantCulture));
                     }
@@ -1102,6 +1113,8 @@ namespace Newtonsoft.Json
             InternalWriteValue(JsonToken.String);
         }
 
+
+
         /// <summary>
         /// Writes a <see cref="Nullable{T}"/> of <see cref="Int32"/> value.
         /// </summary>
@@ -1380,6 +1393,8 @@ namespace Newtonsoft.Json
             }
         }
 
+
+
         /// <summary>
         /// Writes a <see cref="Byte"/>[] value.
         /// </summary>
@@ -1429,6 +1444,12 @@ namespace Newtonsoft.Json
                 // this is here because adding a WriteValue(BigInteger) to JsonWriter will
                 // mean the user has to add a reference to System.Numerics.dll
                 if (value is BigInteger)
+                {
+                    throw CreateUnsupportedTypeException(this, value);
+                }
+#endif
+#if HAVE_INT128
+                if (value is Int128 || value is UInt128)
                 {
                     throw CreateUnsupportedTypeException(this, value);
                 }
@@ -1627,6 +1648,27 @@ namespace Newtonsoft.Json
                     case PrimitiveTypeCode.BigIntegerNullable:
                         // this will call to WriteValue(object)
                         writer.WriteValue((value == null) ? (BigInteger?)null : (BigInteger)value);
+                        return;
+#endif
+#if HAVE_INT128
+                    case PrimitiveTypeCode.Int128:
+                        // this will call to WriteValue(object)
+                        writer.WriteValue((object)(Int128)value);
+                        return;
+
+                    case PrimitiveTypeCode.Int128Nullable:
+                        // this will call to WriteValue(object)
+                        writer.WriteValue((object)((value == null) ? (Int128?)null : (Int128)value));
+                        return;
+
+                    case PrimitiveTypeCode.UInt128:
+                        // this will call to WriteValue(object)
+                        writer.WriteValue((object)(UInt128)value);
+                        return;
+
+                    case PrimitiveTypeCode.UInt128Nullable:
+                        // this will call to WriteValue(object)
+                        writer.WriteValue((object)((value == null) ? (UInt128?)null : (UInt128)value));
                         return;
 #endif
                     case PrimitiveTypeCode.Uri:
