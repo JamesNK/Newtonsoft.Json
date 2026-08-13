@@ -56,24 +56,6 @@
     <Right>lib/net35/Newtonsoft.Json.dll</Right>
   </Suppression>
   <Suppression>
-    <DiagnosticId>CP0001</DiagnosticId>
-    <Target>T:Newtonsoft.Json.SerializationBinder</Target>
-    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0001</DiagnosticId>
-    <Target>T:Newtonsoft.Json.TraceLevel</Target>
-    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0001</DiagnosticId>
-    <Target>T:System.Runtime.Serialization.Formatters.FormatterAssemblyStyle</Target>
-    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
-  </Suppression>
-  <Suppression>
     <DiagnosticId>CP0002</DiagnosticId>
     <Target>M:Newtonsoft.Json.JsonConvert.get_DefaultSettings</Target>
     <Left>lib/net20/Newtonsoft.Json.dll</Left>
@@ -108,59 +90,5 @@
     <Target>M:Newtonsoft.Json.Serialization.JsonProperty.get_SetIsSpecified</Target>
     <Left>lib/net20/Newtonsoft.Json.dll</Left>
     <Right>lib/net35/Newtonsoft.Json.dll</Right>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:Newtonsoft.Json.JsonSerializer.get_Binder</Target>
-    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:Newtonsoft.Json.JsonSerializerSettings.get_Binder</Target>
-    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:Newtonsoft.Json.Serialization.ITraceWriter.get_LevelFilter</Target>
-    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:Newtonsoft.Json.Serialization.ITraceWriter.Trace(Newtonsoft.Json.TraceLevel,System.String,System.Exception)</Target>
-    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:Newtonsoft.Json.Serialization.MemoryTraceWriter.get_LevelFilter</Target>
-    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0002</DiagnosticId>
-    <Target>M:Newtonsoft.Json.Serialization.MemoryTraceWriter.Trace(Newtonsoft.Json.TraceLevel,System.String,System.Exception)</Target>
-    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0006</DiagnosticId>
-    <Target>M:Newtonsoft.Json.Serialization.ITraceWriter.Trace(System.Diagnostics.TraceLevel,System.String,System.Exception)</Target>
-    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0006</DiagnosticId>
-    <Target>P:Newtonsoft.Json.Serialization.ITraceWriter.LevelFilter</Target>
-    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
-  </Suppression>
-  <Suppression>
-    <DiagnosticId>CP0007</DiagnosticId>
-    <Target>T:Newtonsoft.Json.Serialization.DefaultSerializationBinder</Target>
-    <Left>lib/netstandard1.3/Newtonsoft.Json.dll</Left>
-    <Right>lib/netstandard2.0/Newtonsoft.Json.dll</Right>
   </Suppression>
 </Suppressions>

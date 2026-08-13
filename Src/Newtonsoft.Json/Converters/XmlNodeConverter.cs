@@ -1782,7 +1782,7 @@ namespace Newtonsoft.Json.Converters
 
 #endif
                     DateTime d = Convert.ToDateTime(reader.Value, CultureInfo.InvariantCulture);
-#if !PORTABLE || NETSTANDARD1_3
+#if !PORTABLE
                     return XmlConvert.ToString(d, DateTimeUtils.ToSerializationMode(d.Kind));
 #else
                     return d.ToString(DateTimeUtils.ToDateTimeFormat(d.Kind), CultureInfo.InvariantCulture);
