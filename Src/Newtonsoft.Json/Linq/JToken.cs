@@ -473,14 +473,12 @@ namespace Newtonsoft.Json.Linq
             return ToString(Formatting.Indented);
         }
 
-        // TODO: Make public in Newtonsoft.Json 14.0+
-        // See https://github.com/JamesNK/Newtonsoft.Json/issues/3084
         /// <summary>
         /// Returns the JSON for this token using the given formatting and converters.
         /// </summary>
         /// <param name="formatting">Indicates how the output should be formatted.</param>
         /// <returns>The JSON for this token using the given formatting and converters.</returns>
-        private string ToString(Formatting formatting)
+        public string ToString(Formatting formatting)
         {
             using (StringWriter sw = new StringWriter(CultureInfo.InvariantCulture))
             {
