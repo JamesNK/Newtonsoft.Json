@@ -40,6 +40,10 @@ namespace Newtonsoft.Json.Linq.JsonPath
                         }
                     }
                 }
+                else if (Name == JArray.LengthProperty && t is JArray arr)
+                {
+                    yield return arr.Count;
+                }
                 else
                 {
                     if (settings?.ErrorWhenNoMatch ?? false)
