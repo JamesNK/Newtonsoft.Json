@@ -648,7 +648,7 @@ Parameter name: index",
             Assert.AreEqual(true, ((IJsonLineInfo)a[2]).HasLineInfo());
         }
 
-#if NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER && !NETSTANDARD2_0
         [Test]
         public void Index_Get_Index()
         {

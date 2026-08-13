@@ -3,8 +3,6 @@
     <AutofacPackageVersion>4.6.2</AutofacPackageVersion>
     <BenchmarkDotNetPackageVersion>0.10.10</BenchmarkDotNetPackageVersion>
     <FSharpCorePackageVersion>4.2.3</FSharpCorePackageVersion>
-    <MicrosoftCodeAnalysisNetAnalyzersPackageVersion>8.0.0</MicrosoftCodeAnalysisNetAnalyzersPackageVersion>
-    <MicrosoftCSharpPackageVersion>4.3.0</MicrosoftCSharpPackageVersion>
     <MicrosoftSourceLinkGitHubPackageVersion>1.0.0</MicrosoftSourceLinkGitHubPackageVersion>
     <MicrosoftNETTestSdkPackageVersion>16.3.0</MicrosoftNETTestSdkPackageVersion>
     <MoqPackageVersion>4.8.1</MoqPackageVersion>
@@ -12,12 +10,6 @@
     <Nunit3TestAdapterPackageVersion>3.13.0</Nunit3TestAdapterPackageVersion>
     <SystemBuffersPackageVersion>4.4.0</SystemBuffersPackageVersion>
     <SystemCollectionsImmutablePackageVersion>1.4.0</SystemCollectionsImmutablePackageVersion>
-    <SystemComponentModelTypeConverterPackageVersion>4.3.0</SystemComponentModelTypeConverterPackageVersion>
-    <SystemObjectModelPackageVersion>4.3.0</SystemObjectModelPackageVersion>
-    <SystemRuntimeSerializationFormattersPackageVersion>4.3.0</SystemRuntimeSerializationFormattersPackageVersion>
-    <SystemRuntimeSerializationPrimitivesPackageVersion>4.3.0</SystemRuntimeSerializationPrimitivesPackageVersion>
-    <SystemRuntimeSerializationXmlPackageVersion>4.3.0</SystemRuntimeSerializationXmlPackageVersion>
-    <SystemXmlXmlDocumentPackageVersion>4.3.0</SystemXmlXmlDocumentPackageVersion>
     <SystemValueTuplePackageVersion>4.4.0</SystemValueTuplePackageVersion>
     <XunitPackageVersion>2.3.1</XunitPackageVersion>
     <XunitRunnerVisualStudioPackageVersion>2.3.1</XunitRunnerVisualStudioPackageVersion>

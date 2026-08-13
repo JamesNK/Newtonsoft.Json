@@ -1,5 +1,6 @@
-﻿Start-Transcript ($PSScriptRoot + '\Temp\runbuild.txt')
+﻿#Requires -Version 7.0
+#Requires -PSEdition Core
 
-$version = Get-Content "$PSScriptRoot\version.json" | Out-String | ConvertFrom-Json
+Start-Transcript ($PSScriptRoot + '\Temp\runbuild.txt')
 
-& $PSScriptRoot\runbuild.ps1 -properties @{"majorVersion"="$($version.Major).0"; "majorWithReleaseVersion"="$($version.Major).0.$($version.Release)"; "nugetPrerelease"=$version.Prerelease; "zipFileName"="Json$($version.Major)0r$($version.Release).zip"; "treatWarningsAsErrors"=$true}
+& $PSScriptRoot\runbuild.ps1 -properties @{"treatWarningsAsErrors"=$true}

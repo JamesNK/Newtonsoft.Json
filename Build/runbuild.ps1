@@ -1,4 +1,7 @@
-﻿param(
+﻿#Requires -Version 7.0
+#Requires -PSEdition Core
+
+param(
     [hashtable] $parameters = @{},
     [hashtable] $properties = @{}
 )

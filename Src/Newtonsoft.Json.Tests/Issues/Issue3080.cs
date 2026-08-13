@@ -1,4 +1,4 @@
-﻿#if NET8_0_OR_GREATER
+﻿#if NET8_0_OR_GREATER && !NETSTANDARD2_0
 using System.Linq;
 using Newtonsoft.Json.Linq;
 using System;

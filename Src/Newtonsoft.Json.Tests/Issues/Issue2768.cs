@@ -155,7 +155,7 @@ namespace Newtonsoft.Json.Tests.Issues
             Assert.IsFalse(reader.Read());
 
             // Boxed values will match or not depending on whether framework supports.
-#if NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER && !NETSTANDARD2_0
             Assert.IsTrue(object.ReferenceEquals(boxedDecimals[0], boxedDecimals[1]));
 #else
             Assert.IsFalse(object.ReferenceEquals(boxedDecimals[0], boxedDecimals[1]));

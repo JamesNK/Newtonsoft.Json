@@ -23,7 +23,7 @@
 // OTHER DEALINGS IN THE SOFTWARE.
 #endregion
 
-#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40) || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
+#if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40) || NETSTANDARD2_0 || NET6_0_OR_GREATER
 using System;
 using System.IO;
 using System.Text;
@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Tests.Issues
     [TestFixture]
     public class Issue2694 : TestFixtureBase
     {
-#if NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER && !NETSTANDARD2_0
         [Test]
         public async Task Test_Reader_DisposeAsync()
         {

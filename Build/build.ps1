@@ -1,8 +1,12 @@
-﻿properties {
-  $zipFileName = "Json130r5.zip"
-  $majorVersion = "13.0"
-  $majorWithReleaseVersion = "13.0.5"
-  $nugetPrerelease = $null
+﻿#Requires -Version 7.0
+#Requires -PSEdition Core
+
+properties {
+  $versionInfo = Get-Content "$PSScriptRoot\version.json" | Out-String | ConvertFrom-Json
+  $zipFileName = "Json$($versionInfo.Major)0r$($versionInfo.Release).zip"
+  $majorVersion = "$($versionInfo.Major).0"
+  $majorWithReleaseVersion = "$majorVersion.$($versionInfo.Release)"
+  $nugetPrerelease = $versionInfo.Prerelease
   $version = GetVersion $majorWithReleaseVersion
   $packageId = "Newtonsoft.Json"
   $signAssemblies = $false
@@ -13,8 +17,8 @@
   $treatWarningsAsErrors = $false
   $workingName = if ($workingName) {$workingName} else {"Working"}
   $assemblyVersion = if ($assemblyVersion) {$assemblyVersion} else {$majorVersion + '.0.0'}
-  $netCliChannel = "STS"
-  $netCliVersion = "9.0.300"
+  $netCliChannel = "LTS"
+  $netCliVersion = "10.0.300"
   $nugetUrl = "https://dist.nuget.org/win-x86-commandline/latest/nuget.exe"
   $ensureNetCliSdk = $true
 
@@ -32,10 +36,8 @@
   $nunitConsolePath = "$buildDir\Temp\NUnit.ConsoleRunner.$nunitConsoleVersion"
 
   $builds = @(
-    @{Framework = "net6.0"; TestsFunction = "NetCliTests"; TestFramework = "net6.0"; Enabled=$true},
-    @{Framework = "netstandard2.0"; TestsFunction = "NetCliTests"; TestFramework = "net5.0"; Enabled=$true},
-    @{Framework = "netstandard1.3"; TestsFunction = "NetCliTests"; TestFramework = "netcoreapp3.1"; Enabled=$true},
-    @{Framework = "netstandard1.0"; TestsFunction = "NetCliTests"; TestFramework = "netcoreapp2.1"; Enabled=$true},
+    @{Framework = "net6.0"; TestsFunction = "NetCliTests"; TestFramework = "net10.0"; Enabled=$true},
+    @{Framework = "netstandard2.0"; TestsFunction = "NetCliTests"; TestFramework = "net8.0"; Enabled=$true},
     @{Framework = "net45"; TestsFunction = "NUnitTests"; TestFramework = "net46"; NUnitFramework="net-4.0"; Enabled=$true},
     @{Framework = "net40"; TestsFunction = "NUnitTests"; NUnitFramework="net-4.0"; Enabled=$true},
     @{Framework = "net35"; TestsFunction = "NUnitTests"; NUnitFramework="net-2.0"; Enabled=$true},
@@ -76,11 +78,14 @@ task Build -depends Clean {
     EnsureDotNetCli
   }
   EnsureNuGetExists
-  EnsureNuGetPackage "vswhere" $vswherePath $vswhereVersion
   EnsureNuGetPackage "NUnit.ConsoleRunner" $nunitConsolePath $nunitConsoleVersion
 
-  $script:msBuildPath = GetMsBuildPath
-  Write-Host "MSBuild path $script:msBuildPath"
+  if ($buildDocumentation)
+  {
+    EnsureNuGetPackage "vswhere" $vswherePath $vswhereVersion
+    $script:msBuildPath = GetMsBuildPath
+    Write-Host "Documentation MSBuild path $script:msBuildPath"
+  }
 
   NetCliBuild
 }
@@ -152,20 +157,60 @@ task Test -depends Build {
 function NetCliBuild()
 {
   $projectPath = "$sourceDir\Newtonsoft.Json.slnx"
+  $originalLocation = Get-Location
   $libraryFrameworks = ($script:enabledBuilds | Select-Object @{Name="Framework";Expression={$_.Framework}} | select -expand Framework) -join ";"
   $testFrameworks = ($script:enabledBuilds | Select-Object @{Name="Resolved";Expression={if ($_.TestFramework -ne $null) { $_.TestFramework } else { $_.Framework }}} | select -expand Resolved) -join ";"
+  $previousLibraryFrameworks = $env:LibraryFrameworks
+  $previousTestFrameworks = $env:TestFrameworks
 
   $additionalConstants = switch($signAssemblies) { $true { "SIGNED" } default { "" } }
 
   Write-Host -ForegroundColor Green "Restoring packages for $libraryFrameworks in $projectPath"
   Write-Host
 
-  exec { & $script:msBuildPath "/t:restore" "/v:$msbuildVerbosity" "/p:Configuration=Release" "/p:LibraryFrameworks=`"$libraryFrameworks`"" "/p:TestFrameworks=`"$testFrameworks`"" "/m" $projectPath | Out-Default } "Error restoring $projectPath"
+  $restoreArguments = @(
+    "/t:restore",
+    "/v:$msbuildVerbosity",
+    "/p:Configuration=Release",
+    "/m"
+  )
 
-  Write-Host -ForegroundColor Green "Building $libraryFrameworks $assemblyVersion in $projectPath"
-  Write-Host
+  try
+  {
+    Set-Location $sourceDir
+    $env:LibraryFrameworks = $libraryFrameworks
+    $env:TestFrameworks = $testFrameworks
+    exec { & dotnet msbuild $projectPath @restoreArguments | Out-Default } "Error restoring $projectPath"
 
-  exec { & $script:msBuildPath "/t:build" "/v:$msbuildVerbosity" $projectPath "/p:Configuration=Release" "/p:LibraryFrameworks=`"$libraryFrameworks`"" "/p:TestFrameworks=`"$testFrameworks`"" "/p:AssemblyOriginatorKeyFile=$signKeyPath" "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:AdditionalConstants=$additionalConstants" "/p:GeneratePackageOnBuild=$buildNuGet" "/p:ContinuousIntegrationBuild=true" "/p:PackageId=$packageId" "/p:VersionPrefix=$majorWithReleaseVersion" "/p:VersionSuffix=$nugetPrerelease" "/p:AssemblyVersion=$assemblyVersion" "/p:FileVersion=$version" "/m" }
+    Write-Host -ForegroundColor Green "Building $libraryFrameworks $assemblyVersion in $projectPath"
+    Write-Host
+
+    $buildArguments = @(
+      "/t:build",
+      "/v:$msbuildVerbosity",
+      "/p:Configuration=Release",
+      "/p:AssemblyOriginatorKeyFile=$signKeyPath",
+      "/p:SignAssembly=$signAssemblies",
+      "/p:TreatWarningsAsErrors=$treatWarningsAsErrors",
+      "/p:AdditionalConstants=$additionalConstants",
+      "/p:GeneratePackageOnBuild=$buildNuGet",
+      "/p:ContinuousIntegrationBuild=true",
+      "/p:PackageId=$packageId",
+      "/p:VersionPrefix=$majorWithReleaseVersion",
+      "/p:VersionSuffix=$nugetPrerelease",
+      "/p:AssemblyVersion=$assemblyVersion",
+      "/p:FileVersion=$version",
+      "/m"
+    )
+
+    exec { & dotnet msbuild $projectPath @buildArguments | Out-Default }
+  }
+  finally
+  {
+    $env:LibraryFrameworks = $previousLibraryFrameworks
+    $env:TestFrameworks = $previousTestFrameworks
+    Set-Location $originalLocation
+  }
 }
 
 function EnsureDotnetCli()
@@ -179,9 +224,6 @@ function EnsureDotnetCli()
     -OutFile "$buildDir\Temp\dotnet-install.ps1"
 
   exec { & $buildDir\Temp\dotnet-install.ps1 -Channel $netCliChannel -Version $netCliVersion | Out-Default }
-  exec { & $buildDir\Temp\dotnet-install.ps1 -Channel $netCliChannel -Version '6.0.400' | Out-Default }
-  exec { & $buildDir\Temp\dotnet-install.ps1 -Channel $netCliChannel -Version '3.1.402' | Out-Default }
-  exec { & $buildDir\Temp\dotnet-install.ps1 -Channel $netCliChannel -Version '2.1.818' | Out-Default }
 }
 
 function EnsureNuGetExists()

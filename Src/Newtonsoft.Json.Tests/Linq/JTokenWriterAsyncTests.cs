@@ -27,7 +27,7 @@
 
 using System;
 using System.Collections.Generic;
-#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
+#if !PORTABLE || NETSTANDARD2_0 || NET6_0_OR_GREATER
 using System.Numerics;
 #endif
 using System.Text;
@@ -116,7 +116,7 @@ namespace Newtonsoft.Json.Tests.Linq
                 await jsonWriter.WriteValueAsync("DVD read/writer");
                 Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
 
-#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
+#if !PORTABLE || NETSTANDARD2_0 || NET6_0_OR_GREATER
                 await jsonWriter.WriteValueAsync(new BigInteger(123));
                 Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
 #endif
@@ -168,7 +168,7 @@ namespace Newtonsoft.Json.Tests.Linq
                 Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
                 Assert.AreEqual(a[a.Count - 1], jsonWriter.CurrentToken);
 
-#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
+#if !PORTABLE || NETSTANDARD2_0 || NET6_0_OR_GREATER
                 await jsonWriter.WriteValueAsync(new BigInteger(123));
                 Assert.AreEqual(WriteState.Array, jsonWriter.WriteState);
                 Assert.AreEqual(a[a.Count - 1], jsonWriter.CurrentToken);
@@ -201,7 +201,7 @@ namespace Newtonsoft.Json.Tests.Linq
   /*fail*/]", writer.Token.ToString());
         }
 
-#if !PORTABLE || NETSTANDARD1_3 || NETSTANDARD2_0 || NET6_0_OR_GREATER
+#if !PORTABLE || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public async Task WriteBigIntegerAsync()
         {
