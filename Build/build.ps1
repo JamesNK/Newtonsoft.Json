@@ -75,11 +75,14 @@ task Build -depends Clean {
     EnsureDotNetCli
   }
   EnsureNuGetExists
-  EnsureNuGetPackage "vswhere" $vswherePath $vswhereVersion
   EnsureNuGetPackage "NUnit.ConsoleRunner" $nunitConsolePath $nunitConsoleVersion
 
-  $script:msBuildPath = GetMsBuildPath
-  Write-Host "MSBuild path $script:msBuildPath"
+  if ($buildDocumentation)
+  {
+    EnsureNuGetPackage "vswhere" $vswherePath $vswhereVersion
+    $script:msBuildPath = GetMsBuildPath
+    Write-Host "Documentation MSBuild path $script:msBuildPath"
+  }
 
   NetCliBuild
 }
@@ -151,6 +154,7 @@ task Test -depends Build {
 function NetCliBuild()
 {
   $projectPath = "$sourceDir\Newtonsoft.Json.slnx"
+  $originalLocation = Get-Location
   $libraryFrameworks = ($script:enabledBuilds | Select-Object @{Name="Framework";Expression={$_.Framework}} | select -expand Framework) -join ";"
   $testFrameworks = ($script:enabledBuilds | Select-Object @{Name="Resolved";Expression={if ($_.TestFramework -ne $null) { $_.TestFramework } else { $_.Framework }}} | select -expand Resolved) -join ";"
 
@@ -159,12 +163,53 @@ function NetCliBuild()
   Write-Host -ForegroundColor Green "Restoring packages for $libraryFrameworks in $projectPath"
   Write-Host
 
-  exec { & $script:msBuildPath "/t:restore" "/v:$msbuildVerbosity" "/p:Configuration=Release" "/p:LibraryFrameworks=`"$libraryFrameworks`"" "/p:TestFrameworks=`"$testFrameworks`"" "/m" $projectPath | Out-Default } "Error restoring $projectPath"
+  $restoreArguments = @(
+    "msbuild",
+    $projectPath,
+    "/t:restore",
+    "/v:$msbuildVerbosity",
+    "/p:Configuration=Release",
+    "/p:LibraryFrameworks=`"$libraryFrameworks`"",
+    "/p:TestFrameworks=`"$testFrameworks`"",
+    "/m"
+  )
 
-  Write-Host -ForegroundColor Green "Building $libraryFrameworks $assemblyVersion in $projectPath"
-  Write-Host
+  try
+  {
+    Set-Location $sourceDir
+    exec { & dotnet @restoreArguments | Out-Default } "Error restoring $projectPath"
 
-  exec { & $script:msBuildPath "/t:build" "/v:$msbuildVerbosity" $projectPath "/p:Configuration=Release" "/p:LibraryFrameworks=`"$libraryFrameworks`"" "/p:TestFrameworks=`"$testFrameworks`"" "/p:AssemblyOriginatorKeyFile=$signKeyPath" "/p:SignAssembly=$signAssemblies" "/p:TreatWarningsAsErrors=$treatWarningsAsErrors" "/p:AdditionalConstants=$additionalConstants" "/p:GeneratePackageOnBuild=$buildNuGet" "/p:ContinuousIntegrationBuild=true" "/p:PackageId=$packageId" "/p:VersionPrefix=$majorWithReleaseVersion" "/p:VersionSuffix=$nugetPrerelease" "/p:AssemblyVersion=$assemblyVersion" "/p:FileVersion=$version" "/m" }
+    Write-Host -ForegroundColor Green "Building $libraryFrameworks $assemblyVersion in $projectPath"
+    Write-Host
+
+    $buildArguments = @(
+      "msbuild",
+      $projectPath,
+      "/t:build",
+      "/v:$msbuildVerbosity",
+      "/p:Configuration=Release",
+      "/p:LibraryFrameworks=`"$libraryFrameworks`"",
+      "/p:TestFrameworks=`"$testFrameworks`"",
+      "/p:AssemblyOriginatorKeyFile=$signKeyPath",
+      "/p:SignAssembly=$signAssemblies",
+      "/p:TreatWarningsAsErrors=$treatWarningsAsErrors",
+      "/p:AdditionalConstants=$additionalConstants",
+      "/p:GeneratePackageOnBuild=$buildNuGet",
+      "/p:ContinuousIntegrationBuild=true",
+      "/p:PackageId=$packageId",
+      "/p:VersionPrefix=$majorWithReleaseVersion",
+      "/p:VersionSuffix=$nugetPrerelease",
+      "/p:AssemblyVersion=$assemblyVersion",
+      "/p:FileVersion=$version",
+      "/m"
+    )
+
+    exec { & dotnet @buildArguments | Out-Default }
+  }
+  finally
+  {
+    Set-Location $originalLocation
+  }
 }
 
 function EnsureDotnetCli()
