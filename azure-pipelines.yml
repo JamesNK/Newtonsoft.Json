@@ -15,11 +15,11 @@ steps:
     version: '8.0.x'
     packageType: runtime
 
-- powershell: |
+- pwsh: |
     dotnet --info
   displayName: 'Dotnet installs'
 
-- powershell: |
+- pwsh: |
     $basePath = resolve-path .
     $keyPath = "$basePath\key.snk"
     $keyData = [System.Convert]::FromBase64String($Env:KeyData)
@@ -29,7 +29,7 @@ steps:
   displayName: 'Prepare signing key'
   condition: and(succeeded(), not(eq(variables['build.reason'], 'PullRequest')))
 
-- powershell: |
+- pwsh: |
     $basePath = resolve-path .
     $keyPath = "$basePath\key.snk"
     $sign = test-path $keyPath

@@ -1,4 +1,7 @@
-﻿properties {
+﻿#Requires -Version 7.0
+#Requires -PSEdition Core
+
+properties {
   $versionInfo = Get-Content "$PSScriptRoot\version.json" | Out-String | ConvertFrom-Json
   $zipFileName = "Json$($versionInfo.Major)0r$($versionInfo.Release).zip"
   $majorVersion = "$($versionInfo.Major).0"
@@ -157,8 +160,8 @@ function NetCliBuild()
   $originalLocation = Get-Location
   $libraryFrameworks = ($script:enabledBuilds | Select-Object @{Name="Framework";Expression={$_.Framework}} | select -expand Framework) -join ";"
   $testFrameworks = ($script:enabledBuilds | Select-Object @{Name="Resolved";Expression={if ($_.TestFramework -ne $null) { $_.TestFramework } else { $_.Framework }}} | select -expand Resolved) -join ";"
-  $libraryFrameworkArgument = '/p:LibraryFrameworks=\"{0}\"' -f $libraryFrameworks
-  $testFrameworkArgument = '/p:TestFrameworks=\"{0}\"' -f $testFrameworks
+  $previousLibraryFrameworks = $env:LibraryFrameworks
+  $previousTestFrameworks = $env:TestFrameworks
 
   $additionalConstants = switch($signAssemblies) { $true { "SIGNED" } default { "" } }
 
@@ -169,14 +172,14 @@ function NetCliBuild()
     "/t:restore",
     "/v:$msbuildVerbosity",
     "/p:Configuration=Release",
-    $libraryFrameworkArgument,
-    $testFrameworkArgument,
     "/m"
   )
 
   try
   {
     Set-Location $sourceDir
+    $env:LibraryFrameworks = $libraryFrameworks
+    $env:TestFrameworks = $testFrameworks
     exec { & dotnet msbuild $projectPath @restoreArguments | Out-Default } "Error restoring $projectPath"
 
     Write-Host -ForegroundColor Green "Building $libraryFrameworks $assemblyVersion in $projectPath"
@@ -186,8 +189,6 @@ function NetCliBuild()
       "/t:build",
       "/v:$msbuildVerbosity",
       "/p:Configuration=Release",
-      $libraryFrameworkArgument,
-      $testFrameworkArgument,
       "/p:AssemblyOriginatorKeyFile=$signKeyPath",
       "/p:SignAssembly=$signAssemblies",
       "/p:TreatWarningsAsErrors=$treatWarningsAsErrors",
@@ -206,6 +207,8 @@ function NetCliBuild()
   }
   finally
   {
+    $env:LibraryFrameworks = $previousLibraryFrameworks
+    $env:TestFrameworks = $previousTestFrameworks
     Set-Location $originalLocation
   }
 }
