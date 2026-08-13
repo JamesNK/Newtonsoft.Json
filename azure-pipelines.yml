@@ -15,26 +15,6 @@ steps:
     version: '8.0.x'
     packageType: runtime
 
-- task: UseDotNet@2
-  inputs:
-    version: '6.0.x'
-    packageType: runtime
-
-- task: UseDotNet@2
-  inputs:
-    version: '5.0.x'
-    packageType: runtime
-
-- task: UseDotNet@2
-  inputs:
-    version: '3.1.x'
-    packageType: runtime
-
-- task: UseDotNet@2
-  inputs:
-    version: '2.1.x'
-    packageType: runtime
-
 - powershell: |
     dotnet --info
   displayName: 'Dotnet installs'

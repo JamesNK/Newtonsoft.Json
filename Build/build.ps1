@@ -221,7 +221,6 @@ function EnsureDotnetCli()
     -OutFile "$buildDir\Temp\dotnet-install.ps1"
 
   exec { & $buildDir\Temp\dotnet-install.ps1 -Channel $netCliChannel -Version $netCliVersion | Out-Default }
-  exec { & $buildDir\Temp\dotnet-install.ps1 -Channel $netCliChannel -Version '6.0.400' | Out-Default }
 }
 
 function EnsureNuGetExists()
