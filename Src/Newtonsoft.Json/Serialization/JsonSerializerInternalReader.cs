@@ -754,6 +754,15 @@ namespace Newtonsoft.Json.Serialization
                         else if (string.Equals(propertyName, JsonTypeReflector.TypePropertyName, StringComparison.Ordinal))
                         {
                             reader.ReadAndAssert();
+                            if (reader.TokenType != JsonToken.String)
+                            {
+                                throw JsonSerializationException.Create(
+                                    reader,
+                                    "Error reading '$type' metadata property. Property must have a string value, got {0}.".FormatWith(
+                                        CultureInfo.InvariantCulture,
+                                        reader.TokenType));
+                            }
+
                             string qualifiedTypeName = reader.Value!.ToString()!;
 
                             ResolveTypeName(reader, ref objectType, ref contract, member, containerContract, containerMember, qualifiedTypeName);
