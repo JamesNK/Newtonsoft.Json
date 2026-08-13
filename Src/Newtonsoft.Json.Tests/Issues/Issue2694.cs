@@ -43,7 +43,7 @@ namespace Newtonsoft.Json.Tests.Issues
     [TestFixture]
     public class Issue2694 : TestFixtureBase
     {
-#if NET6_0_OR_GREATER
+#if NET6_0_OR_GREATER && !NETSTANDARD2_0
         [Test]
         public async Task Test_Reader_DisposeAsync()
         {

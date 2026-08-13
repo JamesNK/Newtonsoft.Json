@@ -33,8 +33,8 @@
   $nunitConsolePath = "$buildDir\Temp\NUnit.ConsoleRunner.$nunitConsoleVersion"
 
   $builds = @(
-    @{Framework = "net6.0"; TestsFunction = "NetCliTests"; TestFramework = "net6.0"; Enabled=$true},
-    @{Framework = "netstandard2.0"; TestsFunction = "NetCliTests"; TestFramework = "net6.0"; Enabled=$true},
+    @{Framework = "net6.0"; TestsFunction = "NetCliTests"; TestFramework = "net10.0"; Enabled=$true},
+    @{Framework = "netstandard2.0"; TestsFunction = "NetCliTests"; TestFramework = "net8.0"; Enabled=$true},
     @{Framework = "net45"; TestsFunction = "NUnitTests"; TestFramework = "net46"; NUnitFramework="net-4.0"; Enabled=$true},
     @{Framework = "net40"; TestsFunction = "NUnitTests"; NUnitFramework="net-4.0"; Enabled=$true},
     @{Framework = "net35"; TestsFunction = "NUnitTests"; NUnitFramework="net-2.0"; Enabled=$true},
@@ -144,20 +144,8 @@ task Package -depends Build {
 }
 
 task Test -depends Build {
-  $testedFrameworks = @{}
-
   foreach ($build in $script:enabledBuilds)
   {
-    $testFramework = if ($build.TestFramework -ne $null) { $build.TestFramework } else { $build.Framework }
-    $testKey = "$($build.TestsFunction):$testFramework"
-
-    if ($testedFrameworks.ContainsKey($testKey))
-    {
-      Write-Host "Skipping duplicate test run for $testFramework"
-      continue
-    }
-
-    $testedFrameworks[$testKey] = $true
     Write-Host "Calling $($build.TestsFunction)"
     & $build.TestsFunction $build
   }
@@ -169,9 +157,8 @@ function NetCliBuild()
   $originalLocation = Get-Location
   $libraryFrameworks = ($script:enabledBuilds | Select-Object @{Name="Framework";Expression={$_.Framework}} | select -expand Framework) -join ";"
   $testFrameworks = ($script:enabledBuilds | Select-Object @{Name="Resolved";Expression={if ($_.TestFramework -ne $null) { $_.TestFramework } else { $_.Framework }}} | select -expand Resolved) -join ";"
-  $restoreResponseFile = "$buildDir\Temp\restore.rsp"
-  $buildResponseFile = "$buildDir\Temp\build.rsp"
-  $utf8Encoding = New-Object System.Text.UTF8Encoding($false)
+  $libraryFrameworkArgument = '/p:LibraryFrameworks=\"{0}\"' -f $libraryFrameworks
+  $testFrameworkArgument = '/p:TestFrameworks=\"{0}\"' -f $testFrameworks
 
   $additionalConstants = switch($signAssemblies) { $true { "SIGNED" } default { "" } }
 
@@ -182,16 +169,15 @@ function NetCliBuild()
     "/t:restore",
     "/v:$msbuildVerbosity",
     "/p:Configuration=Release",
-    "/p:LibraryFrameworks=`"$libraryFrameworks`"",
-    "/p:TestFrameworks=`"$testFrameworks`"",
+    $libraryFrameworkArgument,
+    $testFrameworkArgument,
     "/m"
   )
 
   try
   {
     Set-Location $sourceDir
-    [System.IO.File]::WriteAllLines($restoreResponseFile, $restoreArguments, $utf8Encoding)
-    exec { & dotnet msbuild $projectPath "@$restoreResponseFile" | Out-Default } "Error restoring $projectPath"
+    exec { & dotnet msbuild $projectPath @restoreArguments | Out-Default } "Error restoring $projectPath"
 
     Write-Host -ForegroundColor Green "Building $libraryFrameworks $assemblyVersion in $projectPath"
     Write-Host
@@ -200,8 +186,8 @@ function NetCliBuild()
       "/t:build",
       "/v:$msbuildVerbosity",
       "/p:Configuration=Release",
-      "/p:LibraryFrameworks=`"$libraryFrameworks`"",
-      "/p:TestFrameworks=`"$testFrameworks`"",
+      $libraryFrameworkArgument,
+      $testFrameworkArgument,
       "/p:AssemblyOriginatorKeyFile=$signKeyPath",
       "/p:SignAssembly=$signAssemblies",
       "/p:TreatWarningsAsErrors=$treatWarningsAsErrors",
@@ -216,13 +202,10 @@ function NetCliBuild()
       "/m"
     )
 
-    [System.IO.File]::WriteAllLines($buildResponseFile, $buildArguments, $utf8Encoding)
-    exec { & dotnet msbuild $projectPath "@$buildResponseFile" | Out-Default }
+    exec { & dotnet msbuild $projectPath @buildArguments | Out-Default }
   }
   finally
   {
-    Remove-Item $restoreResponseFile -Force -ErrorAction SilentlyContinue
-    Remove-Item $buildResponseFile -Force -ErrorAction SilentlyContinue
     Set-Location $originalLocation
   }
 }
