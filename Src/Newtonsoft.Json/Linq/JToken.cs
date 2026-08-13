@@ -2393,7 +2393,19 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JToken"/>, or <c>null</c>.</returns>
         public JToken? SelectToken(string path)
         {
-            return SelectToken(path, settings: null);
+            return SelectToken(JPath.Compile(path));
+        }
+
+        /// <summary>
+        /// Selects a <see cref="JToken"/> using a JSONPath expression. Selects the token that matches the object path.
+        /// </summary>
+        /// <param name="jPath">
+        /// A <see cref="JPath"/> that contains a compiled JSONPath expression.
+        /// </param>
+        /// <returns>A <see cref="JToken"/>, or <c>null</c>.</returns>
+        public JToken? SelectToken(JPath jPath)
+        {
+            return SelectToken(jPath, settings: null);
         }
 
         /// <summary>
@@ -2406,11 +2418,24 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JToken"/>.</returns>
         public JToken? SelectToken(string path, bool errorWhenNoMatch)
         {
+            return SelectToken(JPath.Compile(path), errorWhenNoMatch);
+        }
+
+        /// <summary>
+        /// Selects a <see cref="JToken"/> using a JSONPath expression. Selects the token that matches the object path.
+        /// </summary>
+        /// <param name="jPath">
+        /// A <see cref="JPath"/> that contains a compiled JSONPath expression.
+        /// </param>
+        /// <param name="errorWhenNoMatch">A flag to indicate whether an error should be thrown if no tokens are found when evaluating part of the expression.</param>
+        /// <returns>A <see cref="JToken"/>.</returns>
+        public JToken? SelectToken(JPath jPath, bool errorWhenNoMatch)
+        {
             JsonSelectSettings? settings = errorWhenNoMatch
                 ? new JsonSelectSettings { ErrorWhenNoMatch = true }
                 : null;
 
-            return SelectToken(path, settings);
+            return SelectToken(jPath, settings);
         }
 
         /// <summary>
@@ -2423,10 +2448,21 @@ namespace Newtonsoft.Json.Linq
         /// <returns>A <see cref="JToken"/>.</returns>
         public JToken? SelectToken(string path, JsonSelectSettings? settings)
         {
-            JPath p = new JPath(path);
+            return SelectToken(JPath.Compile(path), settings);
+        }
 
+        /// <summary>
+        /// Selects a <see cref="JToken"/> using a JSONPath expression. Selects the token that matches the object path.
+        /// </summary>
+        /// <param name="jPath">
+        /// A <see cref="JPath"/> that contains compiled JSONPath expression.
+        /// </param>
+        /// <param name="settings">The <see cref="JsonSelectSettings"/> used to select tokens.</param>
+        /// <returns>A <see cref="JToken"/>.</returns>
+        public JToken? SelectToken(JPath jPath, JsonSelectSettings? settings)
+        {
             JToken? token = null;
-            foreach (JToken t in p.Evaluate(this, this, settings))
+            foreach (JToken t in jPath.Evaluate(this, this, settings))
             {
                 if (token != null)
                 {
@@ -2448,7 +2484,19 @@ namespace Newtonsoft.Json.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
         public IEnumerable<JToken> SelectTokens(string path)
         {
-            return SelectTokens(path, settings: null);
+            return SelectTokens(JPath.Compile(path));
+        }
+
+        /// <summary>
+        /// Selects a collection of elements using a JSONPath expression.
+        /// </summary>
+        /// <param name="jPath">
+        /// A <see cref="JPath"/> that contains a compiled JSONPath expression.
+        /// </param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
+        public IEnumerable<JToken> SelectTokens(JPath jPath)
+        {
+            return SelectTokens(jPath, settings: null);
         }
 
         /// <summary>
@@ -2461,11 +2509,24 @@ namespace Newtonsoft.Json.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
         public IEnumerable<JToken> SelectTokens(string path, bool errorWhenNoMatch)
         {
+            return SelectTokens(JPath.Compile(path), errorWhenNoMatch);
+        }
+
+        /// <summary>
+        /// Selects a collection of elements using a JSONPath expression.
+        /// </summary>
+        /// <param name="jPath">
+        /// A <see cref="JPath"/> that contains a JSONPath expression.
+        /// </param>
+        /// <param name="errorWhenNoMatch">A flag to indicate whether an error should be thrown if no tokens are found when evaluating part of the expression.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
+        public IEnumerable<JToken> SelectTokens(JPath jPath, bool errorWhenNoMatch)
+        {
             JsonSelectSettings? settings = errorWhenNoMatch
                 ? new JsonSelectSettings { ErrorWhenNoMatch = true }
                 : null;
 
-            return SelectTokens(path, settings);
+            return SelectTokens(jPath, settings);
         }
 
         /// <summary>
@@ -2478,8 +2539,20 @@ namespace Newtonsoft.Json.Linq
         /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
         public IEnumerable<JToken> SelectTokens(string path, JsonSelectSettings? settings)
         {
-            var p = new JPath(path);
-            return p.Evaluate(this, this, settings);
+            return SelectTokens(JPath.Compile(path), settings);
+        }
+
+        /// <summary>
+        /// Selects a collection of elements using a JSONPath expression.
+        /// </summary>
+        /// <param name="jPath">
+        /// A <see cref="JPath"/> that contains a compiled JSONPath expression.
+        /// </param>
+        /// <param name="settings">The <see cref="JsonSelectSettings"/> used to select tokens.</param>
+        /// <returns>An <see cref="IEnumerable{T}"/> of <see cref="JToken"/> that contains the selected elements.</returns>
+        public IEnumerable<JToken> SelectTokens(JPath jPath, JsonSelectSettings? settings)
+        {
+            return jPath.Evaluate(this, this, settings);
         }
 
 #if HAVE_DYNAMIC
