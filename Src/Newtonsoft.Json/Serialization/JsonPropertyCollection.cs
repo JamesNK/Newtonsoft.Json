@@ -187,5 +187,24 @@ namespace Newtonsoft.Json.Serialization
 
             return null;
         }
+
+        /// <summary>
+        /// Gets a property by underlying name. This makes a difference when using name-mapping attributes such as DataMember
+        /// </summary>
+        /// <param name="propertyName">The name of the property to get.</param>   
+        /// <returns>A matching property if found.</returns>
+        public JsonProperty? GetByUnderlyingName(string propertyName)
+        {
+            for (int i = 0; i < _list.Count; i++)
+            {
+                JsonProperty property = _list[i];
+                if (string.Equals(propertyName, property.UnderlyingName, StringComparison.OrdinalIgnoreCase))
+                {
+                    return property;
+                }
+            }
+
+            return null;
+        }
     }
 }
