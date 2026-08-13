@@ -778,7 +778,7 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(@"\/Date(253402300799999)\/", result.MsDateUtc);
 
             DateTime year2000local = new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Local);
-            string localToUtcDate = year2000local.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFFK");
+            string localToUtcDate = year2000local.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFFK", CultureInfo.InvariantCulture);
 
             result = TestDateTime("DateTime Local", year2000local);
             Assert.AreEqual("2000-01-01T01:01:01" + GetOffset(year2000local, DateFormatHandling.IsoDateFormat), result.IsoDateRoundtrip);
@@ -791,7 +791,7 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(@"\/Date(" + DateTimeUtils.ConvertDateTimeToJavaScriptTicks(year2000local) + @")\/", result.MsDateUtc);
 
             DateTime millisecondsLocal = new DateTime(2000, 1, 1, 1, 1, 1, 999, DateTimeKind.Local);
-            localToUtcDate = millisecondsLocal.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFFK");
+            localToUtcDate = millisecondsLocal.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFFK", CultureInfo.InvariantCulture);
 
             result = TestDateTime("DateTime Local with milliseconds", millisecondsLocal);
             Assert.AreEqual("2000-01-01T01:01:01.999" + GetOffset(millisecondsLocal, DateFormatHandling.IsoDateFormat), result.IsoDateRoundtrip);
@@ -804,7 +804,7 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(@"\/Date(" + DateTimeUtils.ConvertDateTimeToJavaScriptTicks(millisecondsLocal) + @")\/", result.MsDateUtc);
 
             DateTime ticksLocal = new DateTime(636556897826822481, DateTimeKind.Local);
-            localToUtcDate = ticksLocal.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFFK");
+            localToUtcDate = ticksLocal.ToUniversalTime().ToString("yyyy-MM-ddTHH:mm:ss.FFFFFFFK", CultureInfo.InvariantCulture);
 
             result = TestDateTime("DateTime Local with ticks", ticksLocal);
             Assert.AreEqual("2018-03-03T16:03:02.6822481" + GetOffset(ticksLocal, DateFormatHandling.IsoDateFormat), result.IsoDateRoundtrip);
@@ -829,7 +829,7 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(@"\/Date(" + DateTimeUtils.ConvertDateTimeToJavaScriptTicks(year2000Unspecified.ToLocalTime()) + @")\/", result.MsDateUtc);
 
             DateTime year2000Utc = new DateTime(2000, 1, 1, 1, 1, 1, DateTimeKind.Utc);
-            string utcTolocalDate = year2000Utc.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss");
+            string utcTolocalDate = year2000Utc.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
 
             result = TestDateTime("DateTime Utc", year2000Utc);
             Assert.AreEqual("2000-01-01T01:01:01Z", result.IsoDateRoundtrip);
@@ -842,7 +842,7 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(@"\/Date(946688461000)\/", result.MsDateUtc);
 
             DateTime unixEpoc = new DateTime(621355968000000000, DateTimeKind.Utc);
-            utcTolocalDate = unixEpoc.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss");
+            utcTolocalDate = unixEpoc.ToLocalTime().ToString("yyyy-MM-ddTHH:mm:ss", CultureInfo.InvariantCulture);
 
             result = TestDateTime("DateTime Unix Epoc", unixEpoc);
             Assert.AreEqual("1970-01-01T00:00:00Z", result.IsoDateRoundtrip);
