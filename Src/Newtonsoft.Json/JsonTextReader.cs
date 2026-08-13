@@ -473,6 +473,15 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Reads the next JSON token from the underlying <see cref="TextReader"/> as a <see cref="Nullable{T}"/> of <see cref="Int64"/>.
+        /// </summary>
+        /// <returns>A <see cref="Nullable{T}"/> of <see cref="Int64"/>. This method will return <c>null</c> at the end of an array.</returns>
+        public override long? ReadAsInt64()
+        {
+            return (long?)ReadNumberValue(ReadType.ReadAsInt64);
+        }
+
+        /// <summary>
         /// Reads the next JSON token from the underlying <see cref="TextReader"/> as a <see cref="Nullable{T}"/> of <see cref="DateTime"/>.
         /// </summary>
         /// <returns>A <see cref="Nullable{T}"/> of <see cref="DateTime"/>. This method will return <c>null</c> at the end of an array.</returns>
@@ -1022,6 +1031,8 @@ namespace Newtonsoft.Json
             {
                 case ReadType.ReadAsInt32:
                     return ReadInt32String(_stringReference.ToString());
+                case ReadType.ReadAsInt64:
+                    return ReadInt64String(_stringReference.ToString());
                 case ReadType.ReadAsDecimal:
                     return ReadDecimalString(_stringReference.ToString());
                 case ReadType.ReadAsDouble:
