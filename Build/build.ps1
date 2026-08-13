@@ -144,8 +144,20 @@ task Package -depends Build {
 }
 
 task Test -depends Build {
+  $testedFrameworks = @{}
+
   foreach ($build in $script:enabledBuilds)
   {
+    $testFramework = if ($build.TestFramework -ne $null) { $build.TestFramework } else { $build.Framework }
+    $testKey = "$($build.TestsFunction):$testFramework"
+
+    if ($testedFrameworks.ContainsKey($testKey))
+    {
+      Write-Host "Skipping duplicate test run for $testFramework"
+      continue
+    }
+
+    $testedFrameworks[$testKey] = $true
     Write-Host "Calling $($build.TestsFunction)"
     & $build.TestsFunction $build
   }
@@ -157,6 +169,9 @@ function NetCliBuild()
   $originalLocation = Get-Location
   $libraryFrameworks = ($script:enabledBuilds | Select-Object @{Name="Framework";Expression={$_.Framework}} | select -expand Framework) -join ";"
   $testFrameworks = ($script:enabledBuilds | Select-Object @{Name="Resolved";Expression={if ($_.TestFramework -ne $null) { $_.TestFramework } else { $_.Framework }}} | select -expand Resolved) -join ";"
+  $restoreResponseFile = "$buildDir\Temp\restore.rsp"
+  $buildResponseFile = "$buildDir\Temp\build.rsp"
+  $utf8Encoding = New-Object System.Text.UTF8Encoding($false)
 
   $additionalConstants = switch($signAssemblies) { $true { "SIGNED" } default { "" } }
 
@@ -164,8 +179,6 @@ function NetCliBuild()
   Write-Host
 
   $restoreArguments = @(
-    "msbuild",
-    $projectPath,
     "/t:restore",
     "/v:$msbuildVerbosity",
     "/p:Configuration=Release",
@@ -177,14 +190,13 @@ function NetCliBuild()
   try
   {
     Set-Location $sourceDir
-    exec { & dotnet @restoreArguments | Out-Default } "Error restoring $projectPath"
+    [System.IO.File]::WriteAllLines($restoreResponseFile, $restoreArguments, $utf8Encoding)
+    exec { & dotnet msbuild $projectPath "@$restoreResponseFile" | Out-Default } "Error restoring $projectPath"
 
     Write-Host -ForegroundColor Green "Building $libraryFrameworks $assemblyVersion in $projectPath"
     Write-Host
 
     $buildArguments = @(
-      "msbuild",
-      $projectPath,
       "/t:build",
       "/v:$msbuildVerbosity",
       "/p:Configuration=Release",
@@ -204,10 +216,13 @@ function NetCliBuild()
       "/m"
     )
 
-    exec { & dotnet @buildArguments | Out-Default }
+    [System.IO.File]::WriteAllLines($buildResponseFile, $buildArguments, $utf8Encoding)
+    exec { & dotnet msbuild $projectPath "@$buildResponseFile" | Out-Default }
   }
   finally
   {
+    Remove-Item $restoreResponseFile -Force -ErrorAction SilentlyContinue
+    Remove-Item $buildResponseFile -Force -ErrorAction SilentlyContinue
     Set-Location $originalLocation
   }
 }
