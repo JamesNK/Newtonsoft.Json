@@ -292,7 +292,7 @@ namespace Newtonsoft.Json
         /// <returns>A JSON string representation of the <see cref="Double"/>.</returns>
         public static string ToString(double value)
         {
-            return EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture));
+            return EnsureDecimalPlace(value, value.ToString("G17", CultureInfo.InvariantCulture));
         }
 
         internal static string ToString(double value, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
