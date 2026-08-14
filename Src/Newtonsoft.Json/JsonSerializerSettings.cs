@@ -55,6 +55,7 @@ namespace Newtonsoft.Json
         internal const TypeNameHandling DefaultTypeNameHandling = TypeNameHandling.None;
         internal const MetadataPropertyHandling DefaultMetadataPropertyHandling = MetadataPropertyHandling.Default;
         internal static readonly StreamingContext DefaultContext;
+        internal const PropertyCaseSensitivityHandling DefaultCaseSensitivityHandling = PropertyCaseSensitivityHandling.CaseInsensitive;
 
         internal const Formatting DefaultFormatting = Formatting.None;
         internal const DateFormatHandling DefaultDateFormatHandling = DateFormatHandling.IsoDateFormat;
@@ -93,6 +94,7 @@ namespace Newtonsoft.Json
         internal ConstructorHandling? _constructorHandling;
         internal TypeNameHandling? _typeNameHandling;
         internal MetadataPropertyHandling? _metadataPropertyHandling;
+        internal PropertyCaseSensitivityHandling? _caseSensitivityHandling;
 
         /// <summary>
         /// Gets or sets how reference loops (e.g. a class referencing itself) are handled.
@@ -422,6 +424,17 @@ namespace Newtonsoft.Json
         }
 
         /// <summary>
+        /// Gets or sets the case sensitivity settings used
+        /// when deserializing JSON property names.
+        /// The default value is <see cref="Json.PropertyCaseSensitivityHandling.CaseInsensitive" />.
+        /// </summary>
+        public PropertyCaseSensitivityHandling PropertyCaseSensitivityHandling
+        {
+            get => _caseSensitivityHandling ?? DefaultCaseSensitivityHandling;
+            set => _caseSensitivityHandling = value;
+        }
+
+        /// <summary>
         /// Gets or sets the culture used when reading JSON.
         /// The default value is <see cref="CultureInfo.InvariantCulture"/>.
         /// </summary>
@@ -496,6 +509,7 @@ namespace Newtonsoft.Json
             _referenceLoopHandling = original._referenceLoopHandling;
             _checkAdditionalContent = original._checkAdditionalContent;
             _stringEscapeHandling = original._stringEscapeHandling;
+            _caseSensitivityHandling = original._caseSensitivityHandling;
         }
     }
 }

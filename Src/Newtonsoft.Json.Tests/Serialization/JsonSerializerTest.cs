@@ -8180,6 +8180,9 @@ This is just junk, though.";
             Assert.AreEqual(settings.CheckAdditionalContent, clone.CheckAdditionalContent);
             Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.CheckAdditionalContent)));
 
+            Assert.AreEqual(settings.PropertyCaseSensitivityHandling, clone.PropertyCaseSensitivityHandling);
+            Assert.IsTrue(propertyNames.Remove(nameof(JsonSerializerSettings.PropertyCaseSensitivityHandling)));
+
             Assert.AreEqual(0, propertyNames.Count);
         }
 
