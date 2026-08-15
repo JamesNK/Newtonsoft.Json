@@ -463,57 +463,36 @@ namespace Newtonsoft.Json
 
             PrimitiveTypeCode typeCode = ConvertUtils.GetTypeCode(value.GetType());
 
-            switch (typeCode)
+            return typeCode switch
             {
-                case PrimitiveTypeCode.String:
-                    return ToString((string)value);
-                case PrimitiveTypeCode.Char:
-                    return ToString((char)value);
-                case PrimitiveTypeCode.Boolean:
-                    return ToString((bool)value);
-                case PrimitiveTypeCode.SByte:
-                    return ToString((sbyte)value);
-                case PrimitiveTypeCode.Int16:
-                    return ToString((short)value);
-                case PrimitiveTypeCode.UInt16:
-                    return ToString((ushort)value);
-                case PrimitiveTypeCode.Int32:
-                    return ToString((int)value);
-                case PrimitiveTypeCode.Byte:
-                    return ToString((byte)value);
-                case PrimitiveTypeCode.UInt32:
-                    return ToString((uint)value);
-                case PrimitiveTypeCode.Int64:
-                    return ToString((long)value);
-                case PrimitiveTypeCode.UInt64:
-                    return ToString((ulong)value);
-                case PrimitiveTypeCode.Single:
-                    return ToString((float)value);
-                case PrimitiveTypeCode.Double:
-                    return ToString((double)value);
-                case PrimitiveTypeCode.DateTime:
-                    return ToString((DateTime)value);
-                case PrimitiveTypeCode.Decimal:
-                    return ToString((decimal)value);
+                PrimitiveTypeCode.String => ToString((string)value),
+                PrimitiveTypeCode.Char => ToString((char)value),
+                PrimitiveTypeCode.Boolean => ToString((bool)value),
+                PrimitiveTypeCode.SByte => ToString((sbyte)value),
+                PrimitiveTypeCode.Int16 => ToString((short)value),
+                PrimitiveTypeCode.UInt16 => ToString((ushort)value),
+                PrimitiveTypeCode.Int32 => ToString((int)value),
+                PrimitiveTypeCode.Byte => ToString((byte)value),
+                PrimitiveTypeCode.UInt32 => ToString((uint)value),
+                PrimitiveTypeCode.Int64 => ToString((long)value),
+                PrimitiveTypeCode.UInt64 => ToString((ulong)value),
+                PrimitiveTypeCode.Single => ToString((float)value),
+                PrimitiveTypeCode.Double => ToString((double)value),
+                PrimitiveTypeCode.DateTime => ToString((DateTime)value),
+                PrimitiveTypeCode.Decimal => ToString((decimal)value),
 #if HAVE_DB_NULL_TYPE_CODE
-                case PrimitiveTypeCode.DBNull:
-                    return Null;
+                PrimitiveTypeCode.DBNull => Null,
 #endif
 #if HAVE_DATE_TIME_OFFSET
-                case PrimitiveTypeCode.DateTimeOffset:
-                    return ToString((DateTimeOffset)value);
+                PrimitiveTypeCode.DateTimeOffset => ToString((DateTimeOffset)value),
 #endif
-                case PrimitiveTypeCode.Guid:
-                    return ToString((Guid)value);
-                case PrimitiveTypeCode.Uri:
-                    return ToString((Uri)value);
-                case PrimitiveTypeCode.TimeSpan:
-                    return ToString((TimeSpan)value);
+                PrimitiveTypeCode.Guid => ToString((Guid)value),
+                PrimitiveTypeCode.Uri => ToString((Uri)value),
+                PrimitiveTypeCode.TimeSpan => ToString((TimeSpan)value),
 #if HAVE_BIG_INTEGER
-                case PrimitiveTypeCode.BigInteger:
-                    return ToStringInternal((BigInteger)value);
+                PrimitiveTypeCode.BigInteger => ToString((BigInteger)value),
 #endif
-            }
+            };
 
             throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
         }
@@ -559,7 +538,7 @@ namespace Newtonsoft.Json
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public static string SerializeObject(object? value, params JsonConverter[] converters)
         {
-            JsonSerializerSettings? settings = (converters != null && converters.Length > 0)
+            JsonSerializerSettings? settings = (converters?.Length > 0)
                 ? new JsonSerializerSettings { Converters = converters }
                 : null;
 
@@ -578,7 +557,7 @@ namespace Newtonsoft.Json
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public static string SerializeObject(object? value, Formatting formatting, params JsonConverter[] converters)
         {
-            JsonSerializerSettings? settings = (converters != null && converters.Length > 0)
+            JsonSerializerSettings? settings = (converters?.Length > 0)
                 ? new JsonSerializerSettings { Converters = converters }
                 : null;
 
@@ -833,7 +812,7 @@ namespace Newtonsoft.Json
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public static object? DeserializeObject(string value, Type type, params JsonConverter[] converters)
         {
-            JsonSerializerSettings? settings = (converters != null && converters.Length > 0)
+            JsonSerializerSettings? settings = (converters?.Length > 0)
                 ? new JsonSerializerSettings { Converters = converters }
                 : null;
 
@@ -904,7 +883,7 @@ namespace Newtonsoft.Json
             {
                 jsonSerializer.Populate(jsonReader, target);
 
-                if (settings != null && settings.CheckAdditionalContent)
+                if (settings?.CheckAdditionalContent)
                 {
                     while (jsonReader.Read())
                     {
@@ -1027,10 +1006,12 @@ namespace Newtonsoft.Json
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public static XmlDocument? DeserializeXmlNode(string value, string? deserializeRootElementName, bool writeArrayAttribute, bool encodeSpecialCharacters)
         {
-            XmlNodeConverter converter = new XmlNodeConverter();
-            converter.DeserializeRootElementName = deserializeRootElementName;
-            converter.WriteArrayAttribute = writeArrayAttribute;
-            converter.EncodeSpecialCharacters = encodeSpecialCharacters;
+            XmlNodeConverter converter = new XmlNodeConverter()
+            {
+                DeserializeRootElementName = deserializeRootElementName,
+                WriteArrayAttribute = writeArrayAttribute,
+                EncodeSpecialCharacters = encodeSpecialCharacters
+            };
 
             return (XmlDocument?)DeserializeObject(value, typeof(XmlDocument), converter);
         }
