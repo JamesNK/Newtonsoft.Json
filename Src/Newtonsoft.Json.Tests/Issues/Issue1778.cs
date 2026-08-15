@@ -60,7 +60,7 @@ namespace Newtonsoft.Json.Tests.Issues
 
             ExceptionAssert.Throws<JsonReaderException>(
                 () => reader.ReadAsDateTime(),
-                "Cannot read number value as type. Path 'enddate', line 1, position 13.");
+                "Cannot read number value (-1) as ReadAsDateTime type. Path 'enddate', line 1, position 13.");
         }
 
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
@@ -73,7 +73,7 @@ namespace Newtonsoft.Json.Tests.Issues
 
             await ExceptionAssert.ThrowsAsync<JsonReaderException>(
                 () => reader.ReadAsDateTimeAsync(),
-                "Cannot read number value as type. Path 'enddate', line 1, position 13.");
+                "Cannot read number value (-1) as ReadAsDateTime type. Path 'enddate', line 1, position 13.");
         }
 #endif
     }
