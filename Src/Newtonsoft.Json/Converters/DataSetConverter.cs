@@ -89,7 +89,8 @@ namespace Newtonsoft.Json.Converters
             DataSet ds = (objectType == typeof(DataSet))
                 ? new DataSet()
                 : (DataSet)Activator.CreateInstance(objectType)!;
-
+            ds.EnforceConstraints = false; // necessary in case the typed dataset contains foreign key constraints and the tables were serialized out of order
+            
             DataTableConverter converter = new DataTableConverter();
 
             reader.ReadAndAssert();
@@ -109,6 +110,9 @@ namespace Newtonsoft.Json.Converters
                 reader.ReadAndAssert();
             }
 
+             // once all tables are populated there should be no foreign key constraint violations so reset EnforceConstraints
+            ds.EnforceConstraints = true;
+            
             return ds;
         }
 
