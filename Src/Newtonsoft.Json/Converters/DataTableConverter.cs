@@ -195,7 +195,7 @@ namespace Newtonsoft.Json.Converters
                 }
                 else
                 {
-                    object columnValue = (reader.Value != null)
+                    object columnValue = (reader.Value != null) || (reader.TokenType == JsonToken.StartObject)
                         ? serializer.Deserialize(reader, column.DataType) ?? DBNull.Value
                         : DBNull.Value;
 
@@ -235,6 +235,9 @@ namespace Newtonsoft.Json.Converters
 
                     Type arrayType = GetColumnDataType(reader);
                     return arrayType.MakeArrayType();
+                case JsonToken.StartObject:
+                    // compound column type
+                    return typeof(JObject);
                 default:
                     throw JsonSerializationException.Create(reader, "Unexpected JSON token when reading DataTable: {0}".FormatWith(CultureInfo.InvariantCulture, tokenType));
             }
