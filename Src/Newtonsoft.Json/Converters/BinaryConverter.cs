@@ -137,9 +137,7 @@ namespace Newtonsoft.Json.Converters
                 throw JsonSerializationException.Create(reader, "Unexpected token parsing binary. Expected String or StartArray, got {0}.".FormatWith(CultureInfo.InvariantCulture, reader.TokenType));
             }
 
-            Type t = (ReflectionUtils.IsNullableType(objectType))
-                ? Nullable.GetUnderlyingType(objectType)!
-                : objectType;
+            Type t = ReflectionUtils.GetUnderlyingTypeIfNullable(objectType);
 
 #if HAVE_LINQ
             if (t.FullName == BinaryTypeName)

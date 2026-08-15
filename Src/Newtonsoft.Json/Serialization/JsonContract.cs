@@ -257,7 +257,7 @@ namespace Newtonsoft.Json.Serialization
 
             IsNullable = ReflectionUtils.IsNullable(underlyingType);
              
-            NonNullableUnderlyingType = (IsNullable && ReflectionUtils.IsNullableType(underlyingType)) ? Nullable.GetUnderlyingType(underlyingType)! : underlyingType;
+            NonNullableUnderlyingType =  ReflectionUtils.GetUnderlyingTypeIfNullable(underlyingType);
 
             _createdType = CreatedType = NonNullableUnderlyingType;
 
