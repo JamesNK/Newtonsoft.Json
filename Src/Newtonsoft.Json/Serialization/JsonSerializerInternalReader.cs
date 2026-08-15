@@ -793,6 +793,7 @@ namespace Newtonsoft.Json.Serialization
         {
             TypeNameHandling resolvedTypeNameHandling =
                 member?.TypeNameHandling
+                ?? contract?.TypeNameHandling
                 ?? containerContract?.ItemTypeNameHandling
                 ?? containerMember?.ItemTypeNameHandling
                 ?? Serializer._typeNameHandling;
