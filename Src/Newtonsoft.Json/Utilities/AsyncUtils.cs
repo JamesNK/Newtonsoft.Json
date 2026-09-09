@@ -25,6 +25,7 @@
 
 #if HAVE_ASYNC
 
+using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
@@ -92,7 +93,12 @@ namespace Newtonsoft.Json.Utilities
         public static Task<int> ReadAsync(this TextReader reader, char[] buffer, int index, int count, CancellationToken cancellationToken)
         {
             MiscellaneousUtils.Assert(reader != null);
-            return cancellationToken.IsCancellationRequested ? FromCanceled<int>(cancellationToken) : reader.ReadAsync(buffer, index, count);
+            return cancellationToken.IsCancellationRequested ? FromCanceled<int>(cancellationToken) :
+#if NET6_0_OR_GREATER
+                reader.ReadAsync(new Memory<char>(buffer, index, count), cancellationToken).AsTask();
+#else
+                reader.ReadAsync(buffer, index, count);
+#endif
         }
 
         public static bool IsCompletedSuccessfully(this Task task)
