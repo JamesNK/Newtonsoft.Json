@@ -502,6 +502,8 @@ namespace Newtonsoft.Json.Schema
                 case PrimitiveTypeCode.UInt32:
                 case PrimitiveTypeCode.Int64:
                 case PrimitiveTypeCode.UInt64:
+                case PrimitiveTypeCode.Int128:
+                case PrimitiveTypeCode.UInt128:
 #if HAVE_BIG_INTEGER
                 case PrimitiveTypeCode.BigInteger:
 #endif
@@ -509,6 +511,7 @@ namespace Newtonsoft.Json.Schema
                 case PrimitiveTypeCode.Single:
                 case PrimitiveTypeCode.Double:
                 case PrimitiveTypeCode.Decimal:
+                case PrimitiveTypeCode.Half:
                     return schemaType | JsonSchemaType.Float;
                 // convert to string?
                 case PrimitiveTypeCode.DateTime:

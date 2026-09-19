@@ -270,6 +270,13 @@ namespace Newtonsoft.Json
             return EnsureFloatFormat(value, EnsureDecimalPlace(value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar, nullable);
         }
 
+#if HAVE_HALF
+        internal static string ToString(Half value, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
+        {
+            return EnsureFloatFormat((double)value, EnsureDecimalPlace((double)value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar, nullable);
+        }
+#endif
+
         private static string EnsureFloatFormat(double value, string text, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
         {
             if (floatFormatHandling == FloatFormatHandling.Symbol || !(double.IsInfinity(value) || double.IsNaN(value)))
@@ -514,6 +521,18 @@ namespace Newtonsoft.Json
                     return ToStringInternal((BigInteger)value);
 #endif
             }
+#if HAVE_HALF
+            if (value is Half half)
+            {
+                return ToString(half, FloatFormatHandling.Symbol, '"', false);
+            }
+#endif
+#if HAVE_INT128
+            if (value is Int128 || value is UInt128)
+            {
+                return ((IFormattable)value).ToString(null, CultureInfo.InvariantCulture);
+            }
+#endif
 
             throw new ArgumentException("Unsupported type: {0}. Use the JsonSerializer class to get the object's JSON representation.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
         }

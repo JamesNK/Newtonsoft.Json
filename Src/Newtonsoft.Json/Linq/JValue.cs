@@ -254,6 +254,10 @@ namespace Newtonsoft.Json.Linq
 
         internal static int Compare(JTokenType valueType, object? objA, object? objB)
         {
+    #if HAVE_HALF
+            objA = ConvertUtils.NormalizeModernNumber(objA);
+            objB = ConvertUtils.NormalizeModernNumber(objB);
+    #endif
             if (objA == objB)
             {
                 return 0;
@@ -420,6 +424,10 @@ namespace Newtonsoft.Json.Linq
 #if HAVE_EXPRESSIONS
         private static bool Operation(ExpressionType operation, object? objA, object? objB, out object? result)
         {
+    #if HAVE_HALF
+            objA = ConvertUtils.NormalizeModernNumber(objA);
+            objB = ConvertUtils.NormalizeModernNumber(objB);
+    #endif
             if (objA is string || objB is string)
             {
                 if (operation == ExpressionType.Add || operation == ExpressionType.AddAssign)
@@ -673,6 +681,18 @@ namespace Newtonsoft.Json.Linq
             {
                 return JTokenType.TimeSpan;
             }
+#if HAVE_INT128
+            else if (value is Int128 || value is UInt128)
+            {
+                return JTokenType.Integer;
+            }
+#endif
+#if HAVE_HALF
+            else if (value is Half)
+            {
+                return JTokenType.Float;
+            }
+#endif
 
             throw new ArgumentException("Could not determine JSON object type for type {0}.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
         }
@@ -774,6 +794,12 @@ namespace Newtonsoft.Json.Linq
                         writer.WriteValue(integer);
                     }
 #endif
+#if HAVE_INT128
+                    else if (_value is Int128 || _value is UInt128)
+                    {
+                        writer.WriteValue(_value);
+                    }
+#endif
                     else
                     {
                         writer.WriteValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
@@ -792,6 +818,12 @@ namespace Newtonsoft.Json.Linq
                     {
                         writer.WriteValue(f);
                     }
+#if HAVE_HALF
+                    else if (_value is Half half)
+                    {
+                        writer.WriteHalf(half, false);
+                    }
+#endif
                     else
                     {
                         writer.WriteValue(Convert.ToDouble(_value, CultureInfo.InvariantCulture));

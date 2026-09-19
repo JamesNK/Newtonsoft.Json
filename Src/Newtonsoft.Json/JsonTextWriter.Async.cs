@@ -976,6 +976,15 @@ namespace Newtonsoft.Json
         }
 #endif
 
+#if HAVE_HALF
+        internal override Task WriteHalfAsync(Half value, bool nullable, CancellationToken cancellationToken)
+        {
+            return _safeAsync
+                ? WriteValueInternalAsync(JsonToken.Float, JsonConvert.ToString(value, FloatFormatHandling, QuoteChar, nullable), cancellationToken)
+                : base.WriteHalfAsync(value, nullable, cancellationToken);
+        }
+#endif
+
         /// <summary>
         /// Asynchronously writes a <see cref="object"/> value.
         /// </summary>

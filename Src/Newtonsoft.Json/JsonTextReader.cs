@@ -48,7 +48,8 @@ namespace Newtonsoft.Json
         ReadAsDateTimeOffset,
 #endif
         ReadAsDouble,
-        ReadAsBoolean
+        ReadAsBoolean,
+        ReadAsHalf
     }
 
     /// <summary>
@@ -196,6 +197,7 @@ namespace Newtonsoft.Json
                 case ReadType.ReadAsInt32:
                 case ReadType.ReadAsDecimal:
                 case ReadType.ReadAsBoolean:
+                case ReadType.ReadAsHalf:
                     // caller will convert result
                     break;
                 default:
@@ -1020,6 +1022,10 @@ namespace Newtonsoft.Json
         {
             switch (readType)
             {
+#if HAVE_HALF
+                case ReadType.ReadAsHalf:
+                    return ReadHalfString(_stringReference.ToString());
+#endif
                 case ReadType.ReadAsInt32:
                     return ReadInt32String(_stringReference.ToString());
                 case ReadType.ReadAsDecimal:
@@ -1059,6 +1065,13 @@ namespace Newtonsoft.Json
         {
             return (double?)ReadNumberValue(ReadType.ReadAsDouble);
         }
+
+#if HAVE_HALF
+        internal override void ReadHalf()
+        {
+            ReadNumberValue(ReadType.ReadAsHalf);
+        }
+#endif
 
         private void HandleNull()
         {
@@ -1995,6 +2008,22 @@ namespace Newtonsoft.Json
 
             switch (readType)
             {
+#if HAVE_HALF
+                case ReadType.ReadAsHalf:
+                    string halfText = _stringReference.ToString();
+                    try
+                    {
+                        numberValue = nonBase10
+                            ? (Half)Convert.ToInt64(halfText, halfText.StartsWith("0x", StringComparison.OrdinalIgnoreCase) ? 16 : 8)
+                            : Half.Parse(halfText, NumberStyles.Float, CultureInfo.InvariantCulture);
+                        numberType = JsonToken.Float;
+                    }
+                    catch (Exception ex)
+                    {
+                        throw ThrowReaderError("Input string '{0}' is not a valid Half.".FormatWith(CultureInfo.InvariantCulture, halfText), ex);
+                    }
+                    break;
+#endif
                 case ReadType.ReadAsString:
                     {
                         string number = _stringReference.ToString();
@@ -2516,6 +2545,11 @@ namespace Newtonsoft.Json
             {
                 switch (readType)
                 {
+#if HAVE_HALF
+                    case ReadType.ReadAsHalf:
+                        SetToken(JsonToken.Float, Half.NegativeInfinity);
+                        return Half.NegativeInfinity;
+#endif
                     case ReadType.Read:
                     case ReadType.ReadAsDouble:
                         if (_floatParseHandling == FloatParseHandling.Double)
@@ -2545,6 +2579,11 @@ namespace Newtonsoft.Json
             {
                 switch (readType)
                 {
+#if HAVE_HALF
+                    case ReadType.ReadAsHalf:
+                        SetToken(JsonToken.Float, Half.PositiveInfinity);
+                        return Half.PositiveInfinity;
+#endif
                     case ReadType.Read:
                     case ReadType.ReadAsDouble:
                         if (_floatParseHandling == FloatParseHandling.Double)
@@ -2575,6 +2614,11 @@ namespace Newtonsoft.Json
             {
                 switch (readType)
                 {
+#if HAVE_HALF
+                    case ReadType.ReadAsHalf:
+                        SetToken(JsonToken.Float, Half.NaN);
+                        return Half.NaN;
+#endif
                     case ReadType.Read:
                     case ReadType.ReadAsDouble:
                         if (_floatParseHandling == FloatParseHandling.Double)

@@ -404,6 +404,14 @@ namespace Newtonsoft.Json
             }
         }
 
+#if HAVE_HALF
+        internal override void WriteHalf(Half value, bool nullable)
+        {
+            InternalWriteValue(JsonToken.Float);
+            WriteValueInternal(JsonConvert.ToString(value, FloatFormatHandling, QuoteChar, nullable), JsonToken.Float);
+        }
+#endif
+
         /// <summary>
         /// Writes a null value.
         /// </summary>

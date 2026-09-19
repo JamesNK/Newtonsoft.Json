@@ -51,6 +51,18 @@ namespace Newtonsoft.Json
         }
 #endif
 
+#if HAVE_HALF
+        internal virtual Task WriteHalfAsync(Half value, bool nullable, CancellationToken cancellationToken)
+        {
+            if (cancellationToken.IsCancellationRequested)
+            {
+                return Task.FromCanceled(cancellationToken);
+            }
+            WriteHalf(value, nullable);
+            return AsyncUtils.CompletedTask;
+        }
+#endif
+
         internal Task AutoCompleteAsync(JsonToken tokenBeingWritten, CancellationToken cancellationToken)
         {
             State oldState = _currentState;
@@ -712,11 +724,19 @@ namespace Newtonsoft.Json
                     return WriteCommentAsync(value?.ToString(), cancellationToken);
                 case JsonToken.Integer:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
-                    return
 #if HAVE_BIG_INTEGER
-                        value is BigInteger integer ? WriteValueAsync(integer, cancellationToken) :
+                    if (value is BigInteger integer)
+                    {
+                        return WriteValueAsync(integer, cancellationToken);
+                    }
 #endif
-                        WriteValueAsync(Convert.ToInt64(value, CultureInfo.InvariantCulture), cancellationToken);
+#if HAVE_INT128
+                    if (value is Int128 || value is UInt128)
+                    {
+                        return WriteValueAsync(value, cancellationToken);
+                    }
+#endif
+                    return WriteValueAsync(Convert.ToInt64(value, CultureInfo.InvariantCulture), cancellationToken);
                 case JsonToken.Float:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
                     if (value is decimal dec)
@@ -733,6 +753,12 @@ namespace Newtonsoft.Json
                     {
                         return WriteValueAsync(f, cancellationToken);
                     }
+#if HAVE_HALF
+                    if (value is Half half)
+                    {
+                        return WriteHalfAsync(half, false, cancellationToken);
+                    }
+#endif
 
                     return WriteValueAsync(Convert.ToDouble(value, CultureInfo.InvariantCulture), cancellationToken);
                 case JsonToken.String:
@@ -1697,6 +1723,12 @@ namespace Newtonsoft.Json
             {
                 switch (typeCode)
                 {
+#if HAVE_HALF
+                    case PrimitiveTypeCode.Half:
+                    case PrimitiveTypeCode.HalfNullable:
+                        return value == null ? writer.WriteNullAsync(cancellationToken)
+                            : writer.WriteHalfAsync((Half)value, typeCode == PrimitiveTypeCode.HalfNullable, cancellationToken);
+#endif
                     case PrimitiveTypeCode.Char:
                         return writer.WriteValueAsync((char)value, cancellationToken);
                     case PrimitiveTypeCode.CharNullable:
@@ -1766,6 +1798,18 @@ namespace Newtonsoft.Json
                     case PrimitiveTypeCode.TimeSpanNullable:
                         return writer.WriteValueAsync(value == null ? (TimeSpan?)null : (TimeSpan)value, cancellationToken);
 #if HAVE_BIG_INTEGER
+#if HAVE_INT128
+                    case PrimitiveTypeCode.Int128:
+                    case PrimitiveTypeCode.Int128Nullable:
+                    case PrimitiveTypeCode.UInt128:
+                    case PrimitiveTypeCode.UInt128Nullable:
+                        if (writer is JsonTextWriter textWriter)
+                        {
+                            return value == null ? textWriter.WriteNullAsync(cancellationToken)
+                                : textWriter.WriteValueAsync((object)ConvertUtils.ToBigInteger(value), cancellationToken);
+                        }
+                        return writer.WriteValueAsync(value, cancellationToken);
+#endif
                     case PrimitiveTypeCode.BigInteger:
 
                         // this will call to WriteValueAsync(object)

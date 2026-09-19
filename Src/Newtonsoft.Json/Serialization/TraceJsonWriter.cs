@@ -332,6 +332,15 @@ namespace Newtonsoft.Json.Serialization
             }
             else
 #endif
+#if HAVE_INT128
+            if (value is Int128 || value is UInt128)
+            {
+                _textWriter.WriteValue(value);
+                _innerWriter.WriteValue(value);
+                InternalWriteValue(JsonToken.Integer);
+            }
+            else
+#endif
             {
                 _textWriter.WriteValue(value);
                 _innerWriter.WriteValue(value);
@@ -346,6 +355,15 @@ namespace Newtonsoft.Json.Serialization
                 }
             }
         }
+
+#if HAVE_HALF
+        internal override void WriteHalf(Half value, bool nullable)
+        {
+            _textWriter.WriteHalf(value, nullable);
+            _innerWriter.WriteHalf(value, nullable);
+            InternalWriteValue(JsonToken.Float);
+        }
+#endif
 
         public override void WriteValue(sbyte value)
         {

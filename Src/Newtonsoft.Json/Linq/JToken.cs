@@ -84,6 +84,7 @@ namespace Newtonsoft.Json.Linq
         [FeatureSwitchDefinition("Newtonsoft.Json.Linq.JToken.SerializationIsSupported")]
         [FeatureGuard(typeof(RequiresUnreferencedCodeAttribute))]
         [FeatureGuard(typeof(RequiresDynamicCodeAttribute))]
+        [UnconditionalSuppressMessage("Trimming", "IL4000", Justification = "This runtime feature switch allows applications to explicitly disable reflection-based serialization when trimming or using Native AOT.")]
         internal static bool SerializationIsSupported => AppContext.TryGetSwitch("Newtonsoft.Json.Linq.JToken.SerializationIsSupported", out bool isSupported) ? isSupported : true;
 
         internal const string SerializationNotSupportedMessage = "Newtonsoft.Json serialization is not compatible with trimming and has been disabled. Newtonsoft.Json.Linq.JToken.SerializationIsSupported is set to false.";
@@ -91,6 +92,7 @@ namespace Newtonsoft.Json.Linq
 #if HAVE_COMPONENT_MODEL
         [FeatureSwitchDefinition("Newtonsoft.Json.Linq.JToken.ComponentModelIsSupported")]
         [FeatureGuard(typeof(RequiresUnreferencedCodeAttribute))]
+        [UnconditionalSuppressMessage("Trimming", "IL4000", Justification = "This runtime feature switch allows applications to explicitly disable component model support when trimming.")]
         internal static bool ComponentModelIsSupported => AppContext.TryGetSwitch("Newtonsoft.Json.Linq.JToken.ComponentModelIsSupported", out bool isSupported) ? isSupported : true;
 
         internal const string ComponentModelNotSupportedMessage = "Newtonsoft.Json support for System.ComponentModel is not compatible with trimming and has been disabled. Newtonsoft.Json.Linq.JToken.ComponentModelIsSupported is set to false.";
@@ -100,6 +102,7 @@ namespace Newtonsoft.Json.Linq
         [FeatureSwitchDefinition("Newtonsoft.Json.Linq.JToken.DynamicIsSupported")]
         [FeatureGuard(typeof(RequiresUnreferencedCodeAttribute))]
         [FeatureGuard(typeof(RequiresDynamicCodeAttribute))]
+        [UnconditionalSuppressMessage("Trimming", "IL4000", Justification = "This runtime feature switch allows applications to explicitly disable dynamic support when trimming or using Native AOT.")]
         internal static bool DynamicIsSupported => AppContext.TryGetSwitch("Newtonsoft.Json.Linq.JToken.DynamicIsSupported", out bool isSupported) ? isSupported : true;
 
         internal const string DynamicNotSupportedMessage = "Newtonsoft.Json support for dynamic is not compatible with trimming and has been disabled. Newtonsoft.Json.Linq.JToken.DynamicIsSupported is set to false.";
@@ -526,6 +529,16 @@ namespace Newtonsoft.Json.Linq
 
             JValue? v = value as JValue;
 
+#if HAVE_HALF
+            if (v != null)
+            {
+                object? normalized = ConvertUtils.NormalizeModernNumber(v.Value);
+                if (!ReferenceEquals(normalized, v.Value))
+                {
+                    return new JValue(normalized);
+                }
+            }
+#endif
             return v;
         }
 

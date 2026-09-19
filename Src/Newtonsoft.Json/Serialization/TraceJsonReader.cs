@@ -61,6 +61,14 @@ namespace Newtonsoft.Json.Serialization
             return value;
         }
 
+#if HAVE_HALF
+        internal override void ReadHalf()
+        {
+            _innerReader.ReadHalf();
+            WriteCurrentToken();
+        }
+#endif
+
         public override int? ReadAsInt32()
         {
             int? value = _innerReader.ReadAsInt32();

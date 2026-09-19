@@ -977,6 +977,12 @@ namespace Newtonsoft.Json.Serialization
 
                 try
                 {
+#if HAVE_HALF
+                    if (value != null && ConvertUtils.TryConvertModernNumber(value, culture, contract.NonNullableUnderlyingType, out object? convertedNumber))
+                    {
+                        return convertedNumber;
+                    }
+#endif
                     if (contract.IsConvertable)
                     {
                         JsonPrimitiveContract primitiveContract = (JsonPrimitiveContract)contract;
