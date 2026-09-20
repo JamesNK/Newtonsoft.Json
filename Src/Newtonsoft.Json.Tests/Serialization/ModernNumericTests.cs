@@ -16,6 +16,149 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class ModernNumericTests
     {
         [Fact]
+        public void TypedReaderModernNumbers()
+        {
+            object[] values = { (Half)42,
+#if HAVE_INT128
+                (Int128)42, (UInt128)42,
+#endif
+            };
+            foreach (object value in values)
+            {
+                AssertTypedRead(value, reader => reader.ReadAsInt32(), 42, JsonToken.Integer);
+                AssertTypedRead(value, reader => reader.ReadAsDouble(), 42d, JsonToken.Float);
+                AssertTypedRead(value, reader => reader.ReadAsDecimal(), 42m, JsonToken.Float);
+                AssertTypedRead(value, reader => reader.ReadAsBoolean(), true, JsonToken.Boolean);
+
+                JObject token = JObject.FromObject(new { Integer = value, Double = value, Decimal = value, Boolean = value });
+                object originalValue = ((JValue)token["Integer"]).Value;
+                Assert.Equal(value, originalValue);
+                LegacyNumbers result = token.ToObject<LegacyNumbers>();
+                Assert.Equal(42, result.Integer);
+                Assert.Equal(42d, result.Double);
+                Assert.Equal(42m, result.Decimal);
+                Assert.True(result.Boolean);
+                Assert.Same(originalValue, ((JValue)token["Integer"]).Value);
+
+                JsonSerializer serializer = new JsonSerializer();
+                serializer.Converters.Add(new OriginalNumberConverter(value));
+                Assert.Equal(42d, new JValue(value).ToObject<double>(serializer));
+            }
+        }
+
+        [Fact]
+        public void TypedReaderHalfEdges()
+        {
+            foreach (Half value in new[] { (Half)1.5f, (Half)2.5f, (Half)(-1.5f), (Half)(-2.5f), Half.MaxValue, Half.Epsilon, (Half)0, BitConverter.Int16BitsToHalf(short.MinValue) })
+            {
+                AssertTypedRead(value, reader => reader.ReadAsInt32(), Convert.ToInt32((float)value), JsonToken.Integer);
+                AssertTypedRead(value, reader => reader.ReadAsDouble(), (double)value, JsonToken.Float);
+                AssertTypedRead(value, reader => reader.ReadAsDecimal(), Convert.ToDecimal((float)value), JsonToken.Float);
+                AssertTypedRead(value, reader => reader.ReadAsBoolean(), value != (Half)0, JsonToken.Boolean);
+            }
+            foreach (Half value in new[] { Half.NaN, Half.PositiveInfinity, Half.NegativeInfinity })
+            {
+                AssertTypedRead(value, reader => reader.ReadAsDouble(), (double)value, JsonToken.Float);
+                AssertTypedRead(value, reader => reader.ReadAsBoolean(), true, JsonToken.Boolean);
+                using (JsonReader reader = new JValue((object)value).CreateReader())
+                {
+                    Assert.IsType<OverflowException>(Assert.Throws<JsonReaderException>(() => reader.ReadAsInt32()).InnerException);
+                    Assert.Equal(value, reader.Value);
+                }
+                using (JsonReader reader = new JValue((object)value).CreateReader())
+                {
+                    Assert.IsType<OverflowException>(Assert.Throws<JsonReaderException>(() => reader.ReadAsDecimal()).InnerException);
+                    Assert.Equal(value, reader.Value);
+                }
+            }
+        }
+
+#if HAVE_INT128
+        [Fact]
+        public void TypedReaderIntegerEdges()
+        {
+            object[] values = { Int128.MinValue, Int128.MaxValue, UInt128.MaxValue, Int128.Zero, UInt128.Zero,
+                (Int128)int.MinValue, (UInt128)int.MaxValue, (Int128)int.MaxValue + 1, (Int128)decimal.MaxValue, (UInt128)decimal.MaxValue };
+            foreach (object value in values)
+            {
+                BigInteger integer = value is Int128 signed ? (BigInteger)signed : (BigInteger)(UInt128)value;
+                AssertTypedRead(value, reader => reader.ReadAsDouble(), (double)integer, JsonToken.Float);
+                AssertTypedRead(value, reader => reader.ReadAsBoolean(), integer != 0, JsonToken.Boolean);
+                if (integer >= int.MinValue && integer <= int.MaxValue)
+                {
+                    AssertTypedRead(value, reader => reader.ReadAsInt32(), (int)integer, JsonToken.Integer);
+                }
+                else
+                {
+                    using (JsonReader reader = new JValue(value).CreateReader())
+                    {
+                        Assert.Throws<OverflowException>(() => reader.ReadAsInt32());
+                        Assert.Same(value, reader.Value);
+                    }
+                }
+                if (integer >= (BigInteger)decimal.MinValue && integer <= (BigInteger)decimal.MaxValue)
+                {
+                    AssertTypedRead(value, reader => reader.ReadAsDecimal(), (decimal)integer, JsonToken.Float);
+                }
+                else
+                {
+                    using (JsonReader reader = new JValue(value).CreateReader())
+                    {
+                        Assert.Throws<OverflowException>(() => reader.ReadAsDecimal());
+                        Assert.Same(value, reader.Value);
+                    }
+                }
+            }
+        }
+#endif
+
+        private static void AssertTypedRead<T>(object value, Func<JsonReader, T?> read, T expected, JsonToken tokenType) where T : struct
+        {
+            JValue token = new JValue(value);
+            using (JsonReader reader = new JArray(token, JValue.CreateNull()).CreateReader())
+            {
+                Assert.True(reader.Read());
+                Assert.Equal(expected, read(reader).Value);
+                Assert.Equal(tokenType, reader.TokenType);
+                Assert.Equal(expected, Assert.IsType<T>(reader.Value));
+                Assert.Same(value, token.Value);
+                Assert.Null(read(reader));
+                Assert.Equal(JsonToken.Null, reader.TokenType);
+                Assert.Null(read(reader));
+                Assert.Equal(JsonToken.EndArray, reader.TokenType);
+                Assert.Null(read(reader));
+                Assert.Equal(JsonToken.None, reader.TokenType);
+            }
+        }
+
+        private sealed class LegacyNumbers
+        {
+            public int Integer { get; set; }
+            public double Double { get; set; }
+            public decimal Decimal { get; set; }
+            public bool Boolean { get; set; }
+        }
+
+        private sealed class OriginalNumberConverter : JsonConverter<double>
+        {
+            private readonly object _expectedValue;
+
+            public OriginalNumberConverter(object expectedValue)
+            {
+                _expectedValue = expectedValue;
+            }
+
+            public override void WriteJson(JsonWriter writer, double value, JsonSerializer serializer) => throw new NotSupportedException();
+
+            public override double ReadJson(JsonReader reader, Type objectType, double existingValue, bool hasExistingValue, JsonSerializer serializer)
+            {
+                Assert.Same(_expectedValue, reader.Value);
+                Assert.Equal(_expectedValue is Half ? JsonToken.Float : JsonToken.Integer, reader.TokenType);
+                return 42d;
+            }
+        }
+
+        [Fact]
         public async Task ConverterAndTokenEntryPoints()
         {
             JsonSerializerSettings settings = new JsonSerializerSettings();
