@@ -101,6 +101,33 @@ namespace Newtonsoft.Json.Tests.Linq
 
 #if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
+        public void BigIntegerHashCollisionsWithSmallIntegers()
+        {
+            object[] values =
+            {
+                sbyte.MinValue, (sbyte)1, byte.MaxValue, short.MinValue, (short)1, ushort.MaxValue,
+                (DayOfWeek)(-1), DayOfWeek.Monday, UnsignedHashEnum.MaxValue
+            };
+            JTokenEqualityComparer comparer = new JTokenEqualityComparer();
+            foreach (object value in values)
+            {
+                BigInteger integer = new BigInteger(Convert.ToDecimal(value, CultureInfo.InvariantCulture));
+                JValue actual = new JValue(value);
+                JValue equal = new JValue(integer);
+                JValue different = new JValue(integer + (BigInteger.One << 64));
+                Assert.AreEqual(different.GetHashCode(), actual.GetHashCode());
+                Assert.AreEqual(comparer.GetHashCode(different), comparer.GetHashCode(actual));
+
+                Dictionary<JToken, int> lookup = new Dictionary<JToken, int>(comparer) { { different, 0 } };
+                Assert.IsFalse(lookup.ContainsKey(actual));
+                Assert.IsFalse(actual.Equals(different));
+                lookup.Add(equal, 42);
+                Assert.AreEqual(42, lookup[actual]);
+                Assert.IsTrue(actual.Equals(equal));
+            }
+        }
+
+        [Test]
         public void BigIntegerHashesUseLow64Bits()
         {
             BigInteger[] numbers =

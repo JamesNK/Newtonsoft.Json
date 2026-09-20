@@ -347,7 +347,6 @@ namespace Newtonsoft.Json.Utilities
                 return new BigInteger(bytes);
             }
 
-#if HAVE_INT128
             if (value is short || value is ushort || value is byte || value is sbyte || value is bool || value is char)
             {
                 return new BigInteger(System.Convert.ToInt64(value, CultureInfo.InvariantCulture));
@@ -358,6 +357,7 @@ namespace Newtonsoft.Json.Utilities
                     ? new BigInteger(System.Convert.ToUInt64(value, CultureInfo.InvariantCulture))
                     : new BigInteger(System.Convert.ToInt64(value, CultureInfo.InvariantCulture));
             }
+#if HAVE_INT128
             if (value is Int128 signed)
             {
                 return (BigInteger)signed;
