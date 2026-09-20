@@ -65,6 +65,41 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsType<double>(((JValue)JToken.Parse("1.5")).Value);
         }
 
+        [Fact]
+        public void ReadHalfUnexpectedEndWithCustomReader()
+        {
+            using (UnexpectedEndReader reader = new UnexpectedEndReader())
+            {
+                JsonSerializationException exception = Assert.Throws<JsonSerializationException>(() => new JsonSerializer().Deserialize<Half[]>(reader));
+                Assert.Equal("Unexpected end when deserializing array. Path '[0]'.", exception.Message);
+                Assert.Equal(3, reader.ReadCalls);
+                Assert.Equal(JsonToken.None, reader.TokenType);
+            }
+        }
+
+        private sealed class UnexpectedEndReader : JsonReader
+        {
+            public int ReadCalls { get; private set; }
+
+            public override bool Read()
+            {
+                ReadCalls++;
+                switch (ReadCalls)
+                {
+                    case 1:
+                        SetToken(JsonToken.StartArray);
+                        return true;
+                    case 2:
+                        SetToken(JsonToken.Float, 1.0);
+                        return true;
+                    case 3:
+                        return false;
+                    default:
+                        throw new InvalidOperationException("Read called again after reaching the end.");
+                }
+            }
+        }
+
         private sealed class HalfConverter : JsonConverter<Half>
         {
             public override void WriteJson(JsonWriter writer, Half value, JsonSerializer serializer) => writer.WriteValue("half");

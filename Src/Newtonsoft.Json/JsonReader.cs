@@ -1183,7 +1183,8 @@ namespace Newtonsoft.Json
 #if HAVE_HALF
         internal virtual void ReadHalf()
         {
-            if (!ReadAndMoveToContent() || TokenType == JsonToken.Null || TokenType == JsonToken.EndArray)
+            JsonToken token = GetContentToken();
+            if (token == JsonToken.None || token == JsonToken.Null || token == JsonToken.EndArray)
             {
                 return;
             }
