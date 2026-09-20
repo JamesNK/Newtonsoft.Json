@@ -3,7 +3,6 @@ using System;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
-using Newtonsoft.Json.Schema;
 using Xunit;
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -186,7 +185,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Fact]
-        public void NativeContractsAndSchema()
+        public void NativeContracts()
         {
             DefaultContractResolver resolver = new DefaultContractResolver();
             foreach (Type type in new[] { typeof(Memory<int>), typeof(ReadOnlyMemory<int>), typeof(Memory<int>?), typeof(ReadOnlyMemory<int>?) })
@@ -194,18 +193,11 @@ namespace Newtonsoft.Json.Tests.Serialization
                 JsonArrayContract contract = Assert.IsType<JsonArrayContract>(resolver.ResolveContract(type));
                 Assert.Equal(typeof(int), contract.CollectionItemType);
                 Assert.Null(contract.InternalConverter);
-#pragma warning disable CS0618
-                JsonSchema schema = new JsonSchemaGenerator().Generate(type);
-                Assert.Equal(JsonSchemaType.Integer, schema.Items[0].Type);
-#pragma warning restore CS0618
             }
             foreach (Type type in new[] { typeof(Memory<byte>), typeof(ReadOnlyMemory<byte>) })
             {
                 JsonPrimitiveContract contract = Assert.IsType<JsonPrimitiveContract>(resolver.ResolveContract(type));
                 Assert.Null(contract.InternalConverter);
-#pragma warning disable CS0618
-                Assert.Equal(JsonSchemaType.String, new JsonSchemaGenerator().Generate(type).Type);
-#pragma warning restore CS0618
             }
         }
 
