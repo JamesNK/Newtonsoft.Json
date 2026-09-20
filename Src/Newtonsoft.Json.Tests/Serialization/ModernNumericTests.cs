@@ -16,6 +16,55 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class ModernNumericTests
     {
         [Fact]
+        public void AssignableModernNumbersPreserveValue()
+        {
+            object[] values = { (Half)42, Half.NaN, BitConverter.Int16BitsToHalf(short.MinValue),
+#if HAVE_INT128
+                (Int128)42, Int128.MinValue, Int128.MaxValue, (UInt128)42, UInt128.MaxValue,
+#endif
+            };
+            foreach (object value in values)
+            {
+                JValue token = new JValue(value);
+                Assert.Same(value, token.ToObject<object>());
+                Assert.Same(value, token.ToObject<ValueType>());
+                Assert.Same(value, token.ToObject<IComparable>());
+                Assert.Same(value, token.ToObject<IFormattable>());
+                Assert.Throws<JsonSerializationException>(() => token.ToObject<IDisposable>());
+                foreach (Type targetType in new[] { typeof(object), typeof(ValueType), typeof(IComparable), typeof(IFormattable) })
+                {
+                    Assert.Same(value, ConvertUtils.Convert(value, CultureInfo.InvariantCulture, targetType));
+                    Assert.Same(value, ConvertUtils.ConvertOrCast(value, CultureInfo.InvariantCulture, targetType));
+                }
+
+                JObject container = new JObject
+                {
+                    ["Object"] = new JValue(value),
+                    ["ValueType"] = new JValue(value),
+                    ["Comparable"] = new JValue(value),
+                    ["Formattable"] = new JValue(value)
+                };
+                AssignableNumbers result = container.ToObject<AssignableNumbers>();
+                Assert.Same(value, result.Object);
+                Assert.Same(value, result.ValueType);
+                Assert.Same(value, result.Comparable);
+                Assert.Same(value, result.Formattable);
+                Dictionary<string, object> dictionary = container.ToObject<Dictionary<string, object>>();
+                Assert.All(dictionary.Values, item => Assert.Same(value, item));
+                Assert.Same(value, new JArray(token).ToObject<object[]>()[0]);
+                Assert.Same(value, token.Value);
+            }
+        }
+
+        private sealed class AssignableNumbers
+        {
+            public object Object { get; set; }
+            public ValueType ValueType { get; set; }
+            public IComparable Comparable { get; set; }
+            public IFormattable Formattable { get; set; }
+        }
+
+        [Fact]
         public void BinaryNumberToHalfMidpoint()
         {
             object[] values = { 1.00048828125f, 1.00048828125d };

@@ -475,6 +475,12 @@ namespace Newtonsoft.Json.Utilities
             }
             if (initialValue is Int128 || initialValue is UInt128)
             {
+                if (targetType.IsInstanceOfType(initialValue))
+                {
+                    value = initialValue;
+                    return true;
+                }
+
                 BigInteger integer = ToBigInteger(initialValue);
                 value = targetType == typeof(BigInteger) ? integer
                     : targetType == typeof(string) ? integer.ToString(culture)
@@ -484,6 +490,12 @@ namespace Newtonsoft.Json.Utilities
 #endif
             if (initialValue is Half source)
             {
+                if (targetType.IsInstanceOfType(initialValue))
+                {
+                    value = initialValue;
+                    return true;
+                }
+
                 value = targetType == typeof(BigInteger) ? new BigInteger((float)source)
                     : targetType == typeof(string) ? source.ToString(null, culture)
                     : System.Convert.ChangeType((float)source, targetType, culture);
