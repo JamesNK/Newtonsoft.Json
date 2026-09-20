@@ -1258,12 +1258,11 @@ namespace Newtonsoft.Json.Serialization
             }
 #endif
 #if HAVE_MEMORY
-            if (MemoryConverter.IsMemoryType(t))
+            if (MemoryAdapter.IsMemoryType(t))
             {
-                JsonObjectContract contract = new JsonObjectContract(objectType);
-                InitializeContract(contract);
-                contract.InternalConverter = MemoryConverter.Instance;
-                return contract;
+                return t.GetGenericArguments()[0] == typeof(byte)
+                    ? CreatePrimitiveContract(objectType)
+                    : CreateArrayContract(objectType);
             }
 #endif
 

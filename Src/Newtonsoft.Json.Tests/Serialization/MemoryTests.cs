@@ -1,6 +1,8 @@
 #if HAVE_MEMORY
 using System;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json.Serialization;
+using Newtonsoft.Json.Schema;
 using Xunit;
 
 namespace Newtonsoft.Json.Tests.Serialization
@@ -50,6 +52,13 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<ReadOnlyMemory<byte>>("null"));
             Assert.Throws<FormatException>(() => JsonConvert.DeserializeObject<Memory<byte>>("\"!\""));
             Assert.Equal(new byte[] { 1, 2 }, JsonConvert.DeserializeObject<Memory<byte>>("[1,2]").ToArray());
+            Assert.Equal(new byte[] { 1, 2 }, JsonConvert.DeserializeObject<ReadOnlyMemory<byte>>("[1,2]").ToArray());
+            Assert.Empty(JsonConvert.DeserializeObject<Memory<byte>?>("\"\"").Value.ToArray());
+            Assert.Empty(JsonConvert.DeserializeObject<ReadOnlyMemory<byte>?>("\"\"").Value.ToArray());
+            Assert.Equal(new[] { 1, 2 }, JsonConvert.DeserializeObject<Memory<int>?>("[1,2]").Value.ToArray());
+            Assert.Equal(new[] { 1, 2 }, JsonConvert.DeserializeObject<ReadOnlyMemory<int>?>("[1,2]").Value.ToArray());
+            Assert.Throws<JsonReaderException>(() => JsonConvert.DeserializeObject<Memory<byte>>("[1,"));
+            Assert.Throws<JsonReaderException>(() => JsonConvert.DeserializeObject<Memory<byte>>("[true]"));
         }
 
         [Fact]
@@ -94,6 +103,253 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             [JsonConverter(typeof(ReadOnlyBufferConverter))]
             public ReadOnlyMemory<Element> ReadOnly { get; set; }
+        }
+
+        [Fact]
+        public void OneWayConverterPrecedence()
+        {
+            VerifyOneWayConverter<Memory<int>>(new[] { 1, 2 }, "[1,2]", result => Assert.Equal(new[] { 1, 2 }, result.ToArray()));
+            VerifyOneWayConverter<ReadOnlyMemory<int>>(new[] { 1, 2 }, "[1,2]", result => Assert.Equal(new[] { 1, 2 }, result.ToArray()));
+        }
+
+        [Fact]
+        public void ByteMemoryOneWayConverterPrecedence()
+        {
+            VerifyOneWayConverter<Memory<byte>>(new byte[] { 1, 2 }, "\"AQI=\"", result => Assert.Equal(new byte[] { 1, 2 }, result.ToArray()));
+            VerifyOneWayConverter<ReadOnlyMemory<byte>>(new byte[] { 1, 2 }, "\"AQI=\"", result => Assert.Equal(new byte[] { 1, 2 }, result.ToArray()));
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Converters.Add(new OneWayConverter<Memory<byte>>(default, false));
+            settings.Converters.Add(new OneWayConverter<ReadOnlyMemory<byte>>(default, false));
+            Assert.Equal(new byte[] { 1, 2 }, JsonConvert.DeserializeObject<Memory<byte>>("[1,2]", settings).ToArray());
+            Assert.Equal(new byte[] { 1, 2 }, JsonConvert.DeserializeObject<ReadOnlyMemory<byte>>("[1,2]", settings).ToArray());
+        }
+
+        private static void VerifyOneWayConverter<T>(T value, string json, Action<T> verify)
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Converters.Add(new OneWayConverter<T>(value, true));
+            Assert.Equal(json, JsonConvert.SerializeObject(value, settings));
+            verify(JsonConvert.DeserializeObject<T>("\"custom\"", settings));
+
+            settings.Converters.Clear();
+            settings.Converters.Add(new OneWayConverter<T>(value, false));
+            Assert.Equal("\"custom\"", JsonConvert.SerializeObject(value, settings));
+            verify(JsonConvert.DeserializeObject<T>(json, settings));
+        }
+
+        [Fact]
+        public void PropertyItemConverterPrecedence()
+        {
+            ItemConvertedBuffers buffers = new ItemConvertedBuffers
+            {
+                Mutable = new[] { new Element { Value = 3 } },
+                ReadOnly = new[] { new Element { Value = 5 } }
+            };
+            string json = "{\"Mutable\":[3],\"ReadOnly\":[5]}";
+            Assert.Equal(json, JsonConvert.SerializeObject(buffers));
+            ItemConvertedBuffers result = JsonConvert.DeserializeObject<ItemConvertedBuffers>(json);
+            Assert.Equal(3, result.Mutable.Span[0].Value);
+            Assert.Equal(5, result.ReadOnly.Span[0].Value);
+        }
+
+        [Fact]
+        public void NativeContractsAndSchema()
+        {
+            DefaultContractResolver resolver = new DefaultContractResolver();
+            foreach (Type type in new[] { typeof(Memory<int>), typeof(ReadOnlyMemory<int>), typeof(Memory<int>?), typeof(ReadOnlyMemory<int>?) })
+            {
+                JsonArrayContract contract = Assert.IsType<JsonArrayContract>(resolver.ResolveContract(type));
+                Assert.Equal(typeof(int), contract.CollectionItemType);
+                Assert.Null(contract.InternalConverter);
+#pragma warning disable CS0618
+                JsonSchema schema = new JsonSchemaGenerator().Generate(type);
+                Assert.Equal(JsonSchemaType.Integer, schema.Items[0].Type);
+#pragma warning restore CS0618
+            }
+            foreach (Type type in new[] { typeof(Memory<byte>), typeof(ReadOnlyMemory<byte>) })
+            {
+                JsonPrimitiveContract contract = Assert.IsType<JsonPrimitiveContract>(resolver.ResolveContract(type));
+                Assert.Null(contract.InternalConverter);
+#pragma warning disable CS0618
+                Assert.Equal(JsonSchemaType.String, new JsonSchemaGenerator().Generate(type).Type);
+#pragma warning restore CS0618
+            }
+        }
+
+        [Fact]
+        public void TypeMetadataRoundTrips()
+        {
+            object[] values = { new[] { 1, 2 }.AsMemory(), (ReadOnlyMemory<int>)new[] { 1, 2 }, new byte[] { 1, 2 }.AsMemory(), (ReadOnlyMemory<byte>)new byte[] { 1, 2 } };
+            foreach (object value in values)
+            {
+                foreach (MetadataPropertyHandling metadataHandling in new[] { MetadataPropertyHandling.Default, MetadataPropertyHandling.ReadAhead })
+                {
+                    JsonSerializerSettings settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.Auto, MetadataPropertyHandling = metadataHandling };
+                    string json = JsonConvert.SerializeObject(new ObjectBuffer { Value = value }, settings);
+                    ObjectBuffer result = JsonConvert.DeserializeObject<ObjectBuffer>(json, settings);
+                    Assert.Equal(value.GetType(), result.Value.GetType());
+                    Assert.Equal(JsonConvert.SerializeObject(value), JsonConvert.SerializeObject(result.Value));
+
+                    settings.TypeNameHandling = TypeNameHandling.All;
+                    json = JsonConvert.SerializeObject(value, settings);
+                    object root = JsonConvert.DeserializeObject(json, value.GetType(), settings);
+                    Assert.Equal(value.GetType(), root.GetType());
+                    Assert.Equal(JsonConvert.SerializeObject(value), JsonConvert.SerializeObject(root));
+                }
+            }
+        }
+
+        [Fact]
+        public void PropertyItemMetadataAndReferences()
+        {
+            Element element = new Element { Value = 3 };
+            ItemMetadataBuffers buffers = new ItemMetadataBuffers
+            {
+                Mutable = new object[] { element, element },
+                ReadOnly = new object[] { element }
+            };
+            string json = JsonConvert.SerializeObject(buffers);
+            ItemMetadataBuffers result = JsonConvert.DeserializeObject<ItemMetadataBuffers>(json);
+            Assert.Equal(3, Assert.IsType<Element>(result.Mutable.Span[0]).Value);
+            Assert.Same(result.Mutable.Span[0], result.Mutable.Span[1]);
+            Assert.Same(result.Mutable.Span[0], result.ReadOnly.Span[0]);
+        }
+
+        [Fact]
+        public void ItemErrorsAndPropertyPopulation()
+        {
+            int errors = 0;
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                Error = (sender, arguments) =>
+                {
+                    errors++;
+                    Assert.Equal("[1]", arguments.ErrorContext.Path);
+                    arguments.ErrorContext.Handled = true;
+                }
+            };
+            Assert.Equal(new[] { 1, 2 }, JsonConvert.DeserializeObject<Memory<int>>("[1,\"invalid\",2]", settings).ToArray());
+            Assert.Equal(new[] { 1, 2 }, JsonConvert.DeserializeObject<ReadOnlyMemory<int>>("[1,\"invalid\",2]", settings).ToArray());
+            Assert.Equal(2, errors);
+
+            ItemConvertedBuffers buffers = new ItemConvertedBuffers { Mutable = new[] { new Element { Value = 0 } } };
+            JsonConvert.PopulateObject("{\"Mutable\":[3],\"ReadOnly\":[5]}", buffers);
+            Assert.Equal(3, buffers.Mutable.Span[0].Value);
+            Assert.Equal(5, buffers.ReadOnly.Span[0].Value);
+
+            Memory<int> memory = new[] { 1, 2 };
+            ReadOnlyMemory<int> readOnly = memory;
+            JsonConvert.PopulateObject("[3,4]", memory);
+            JsonConvert.PopulateObject("[3,4]", readOnly);
+            Assert.Equal(new[] { 1, 2 }, memory.ToArray());
+        }
+
+        [Fact]
+        public void PropertyOneWayConverters()
+        {
+            OneWayBuffers buffers = new OneWayBuffers { Mutable = new[] { 1, 2 }, ReadOnly = new[] { 3, 4 } };
+            Assert.Equal("{\"Mutable\":\"custom\",\"ReadOnly\":[3,4]}", JsonConvert.SerializeObject(buffers));
+            OneWayBuffers result = JsonConvert.DeserializeObject<OneWayBuffers>("{\"Mutable\":[1,2],\"ReadOnly\":\"custom\"}");
+            Assert.Equal(new[] { 1, 2 }, result.Mutable.ToArray());
+            Assert.Empty(result.ReadOnly.ToArray());
+        }
+
+        [Fact]
+        public void ArrayContractCustomization()
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings { ContractResolver = new ItemConverterResolver() };
+            Assert.Equal("[3]", JsonConvert.SerializeObject(new[] { new Element { Value = 3 } }.AsMemory(), settings));
+            Assert.Equal(5, JsonConvert.DeserializeObject<ReadOnlyMemory<Element>>("[5]", settings).Span[0].Value);
+        }
+
+        private sealed class ItemConverterResolver : DefaultContractResolver
+        {
+            protected override JsonArrayContract CreateArrayContract(Type objectType)
+            {
+                JsonArrayContract contract = base.CreateArrayContract(objectType);
+                if (contract.CollectionItemType == typeof(Element))
+                {
+                    contract.ItemConverter = new ElementConverter();
+                }
+                return contract;
+            }
+        }
+
+        private sealed class OneWayBuffers
+        {
+            [JsonConverter(typeof(OneWayConverter<Memory<int>>), false)]
+            public Memory<int> Mutable { get; set; }
+
+            [JsonConverter(typeof(OneWayConverter<ReadOnlyMemory<int>>), true)]
+            public ReadOnlyMemory<int> ReadOnly { get; set; }
+        }
+
+        [Fact]
+        public void ArrayConvertersDoNotApplyToMemory()
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Converters.Add(new RejectArrayConverter());
+            Memory<byte> memory = new byte[] { 1, 2 };
+            Assert.Equal("\"AQI=\"", JsonConvert.SerializeObject(memory, settings));
+            Assert.Equal("\"AQI=\"", JsonConvert.SerializeObject((ReadOnlyMemory<byte>)memory, settings));
+            Assert.Equal(memory.ToArray(), JsonConvert.DeserializeObject<Memory<byte>>("\"AQI=\"", settings).ToArray());
+            Assert.Equal(memory.ToArray(), JsonConvert.DeserializeObject<ReadOnlyMemory<byte>>("[1,2]", settings).ToArray());
+            Assert.Equal("[1,2]", JsonConvert.SerializeObject(new[] { 1, 2 }.AsMemory(), settings));
+            Assert.Equal(new[] { 1, 2 }, JsonConvert.DeserializeObject<ReadOnlyMemory<int>>("[1,2]", settings).ToArray());
+            Assert.Throws<InvalidOperationException>(() => JsonConvert.SerializeObject(new byte[] { 1, 2 }, settings));
+        }
+
+        private sealed class ObjectBuffer
+        {
+            public object Value { get; set; }
+        }
+
+        private sealed class ItemMetadataBuffers
+        {
+            [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto, ItemIsReference = true)]
+            public Memory<object> Mutable { get; set; }
+
+            [JsonProperty(ItemTypeNameHandling = TypeNameHandling.Auto, ItemIsReference = true)]
+            public ReadOnlyMemory<object> ReadOnly { get; set; }
+        }
+
+        private sealed class RejectArrayConverter : JsonConverter
+        {
+            public override bool CanConvert(Type objectType) => objectType.IsArray;
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer) => throw new InvalidOperationException("Array converter invoked.");
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer) => throw new InvalidOperationException("Array converter invoked.");
+        }
+
+        private sealed class ItemConvertedBuffers
+        {
+            [JsonProperty(ItemConverterType = typeof(ElementConverter))]
+            public Memory<Element> Mutable { get; set; }
+
+            [JsonProperty(ItemConverterType = typeof(ElementConverter))]
+            public ReadOnlyMemory<Element> ReadOnly { get; set; }
+        }
+
+        private sealed class OneWayConverter<T> : JsonConverter<T>
+        {
+            private readonly T _value;
+            private readonly bool _canRead;
+
+            public OneWayConverter(bool canRead)
+                : this(default(T), canRead)
+            {
+            }
+
+            public OneWayConverter(T value, bool canRead)
+            {
+                _value = value;
+                _canRead = canRead;
+            }
+
+            public override bool CanRead => _canRead;
+            public override bool CanWrite => !_canRead;
+
+            public override void WriteJson(JsonWriter writer, T value, JsonSerializer serializer) => writer.WriteValue("custom");
+            public override T ReadJson(JsonReader reader, Type objectType, T existingValue, bool hasExistingValue, JsonSerializer serializer) => _value;
         }
 
         private sealed class Element

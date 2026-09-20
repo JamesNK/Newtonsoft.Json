@@ -85,6 +85,14 @@ namespace Newtonsoft.Json.Serialization
                 {
                     JsonArrayContract arrayContract = (JsonArrayContract)contract;
 
+#if HAVE_MEMORY
+                    if (arrayContract.MemoryAdapter != null)
+                    {
+                        reader.Skip();
+                        return;
+                    }
+#endif
+
                     PopulateList((arrayContract.ShouldCreateWrapper) ? arrayContract.CreateWrapper(target) : (IList)target, reader, arrayContract, null, null);
                 }
                 else
@@ -316,6 +324,12 @@ namespace Newtonsoft.Json.Serialization
                     case JsonToken.StartObject:
                         return CreateObject(reader, objectType, contract, member, containerContract, containerMember, existingValue);
                     case JsonToken.StartArray:
+#if HAVE_MEMORY
+                        if (contract is JsonPrimitiveContract arrayPrimitiveContract && arrayPrimitiveContract.IsByteMemory)
+                        {
+                            return EnsureType(reader, reader.ReadArrayIntoByteArray(), CultureInfo.InvariantCulture, contract, objectType);
+                        }
+#endif
                         return CreateList(reader, objectType, contract, member, existingValue, null);
                     case JsonToken.Integer:
                     case JsonToken.Float:
@@ -331,6 +345,12 @@ namespace Newtonsoft.Json.Serialization
                         {
                             return Convert.FromBase64String(s);
                         }
+#if HAVE_MEMORY
+                        if (contract is JsonPrimitiveContract stringPrimitiveContract && stringPrimitiveContract.IsByteMemory)
+                        {
+                            return EnsureType(reader, Convert.FromBase64String(s), CultureInfo.InvariantCulture, contract, objectType);
+                        }
+#endif
 
                         // convert empty string to null automatically for nullable types
                         if (CoerceEmptyStringToNull(objectType, contract, s))
@@ -1021,6 +1041,20 @@ namespace Newtonsoft.Json.Serialization
                         // this won't work when converting to a custom IConvertible
                         return Convert.ChangeType(value, contract.NonNullableUnderlyingType, culture);
                     }
+
+#if HAVE_MEMORY
+                    if (value is byte[] bytes)
+                    {
+                        if (contract.NonNullableUnderlyingType == typeof(Memory<byte>))
+                        {
+                            return new Memory<byte>(bytes);
+                        }
+                        if (contract.NonNullableUnderlyingType == typeof(ReadOnlyMemory<byte>))
+                        {
+                            return new ReadOnlyMemory<byte>(bytes);
+                        }
+                    }
+#endif
 
                     return ConvertUtils.ConvertOrCast(value, culture, contract.NonNullableUnderlyingType);
                 }

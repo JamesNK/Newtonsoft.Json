@@ -45,7 +45,8 @@
   </row>
   <row>
     <entry><para><legacyBold>Memory&lt;T&gt;, ReadOnlyMemory&lt;T&gt;</legacyBold></para></entry>
-    <entry><para>Array, or a base 64 encoded string when T is Byte. Only the selected memory slice is serialized. Supported by the .NET 6, .NET 8, and .NET 10 builds.</para></entry>
+    <entry><para>Array, or a base 64 encoded string when T is Byte. Only the selected memory slice is serialized. Supported by the .NET 6, .NET 8, and .NET 10 builds.</para>
+    <para>Non-byte memory supports collection item settings and converters. To customize a memory value, use a converter for its memory type; converters for array types do not apply.</para></entry>
   </row>
   <row>
     <entry><para><legacyBold>Object (more detail below)</legacyBold></para></entry>

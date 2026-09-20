@@ -321,7 +321,7 @@ namespace Newtonsoft.Json.Schema
                         JsonArrayAttribute arrayAttribute = JsonTypeReflector.GetCachedAttribute<JsonArrayAttribute>(type);
                         bool allowNullItem = (arrayAttribute == null || arrayAttribute.AllowNullItems);
 
-                        Type collectionItemType = ReflectionUtils.GetCollectionItemType(type);
+                        Type collectionItemType = ((JsonArrayContract)contract).CollectionItemType;
                         if (collectionItemType != null)
                         {
                             CurrentSchema.Items = new List<JsonSchema>();
