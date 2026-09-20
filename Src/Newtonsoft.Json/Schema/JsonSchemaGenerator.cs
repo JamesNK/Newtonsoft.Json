@@ -54,6 +54,9 @@ namespace Newtonsoft.Json.Schema
     [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
     public class JsonSchemaGenerator
     {
+        // New .NET types (Half, Int128, UInt128, Memory<T>, and ReadOnlyMemory<T>)
+        // are not supported by the obsolete schema generation code.
+
         /// <summary>
         /// Gets or sets how undefined schemas are handled by the serializer.
         /// </summary>
@@ -321,7 +324,7 @@ namespace Newtonsoft.Json.Schema
                         JsonArrayAttribute arrayAttribute = JsonTypeReflector.GetCachedAttribute<JsonArrayAttribute>(type);
                         bool allowNullItem = (arrayAttribute == null || arrayAttribute.AllowNullItems);
 
-                        Type collectionItemType = ((JsonArrayContract)contract).CollectionItemType;
+                        Type collectionItemType = ReflectionUtils.GetCollectionItemType(type);
                         if (collectionItemType != null)
                         {
                             CurrentSchema.Items = new List<JsonSchema>();
@@ -502,8 +505,6 @@ namespace Newtonsoft.Json.Schema
                 case PrimitiveTypeCode.UInt32:
                 case PrimitiveTypeCode.Int64:
                 case PrimitiveTypeCode.UInt64:
-                case PrimitiveTypeCode.Int128:
-                case PrimitiveTypeCode.UInt128:
 #if HAVE_BIG_INTEGER
                 case PrimitiveTypeCode.BigInteger:
 #endif
@@ -511,7 +512,6 @@ namespace Newtonsoft.Json.Schema
                 case PrimitiveTypeCode.Single:
                 case PrimitiveTypeCode.Double:
                 case PrimitiveTypeCode.Decimal:
-                case PrimitiveTypeCode.Half:
                     return schemaType | JsonSchemaType.Float;
                 // convert to string?
                 case PrimitiveTypeCode.DateTime:

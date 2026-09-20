@@ -176,7 +176,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
 
                 JValue expected = new JValue((object)number);
-                Assert.Equal(unchecked((int)(uint)(number & uint.MaxValue)), expected.GetHashCode());
+                Assert.Equal(((ulong)(number & ulong.MaxValue)).GetHashCode(), expected.GetHashCode());
                 foreach (object value in values)
                 {
                     JValue token = new JValue(value);
@@ -201,7 +201,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             BigInteger[] numbers =
             {
-                1, (BigInteger.One << 32) + 1, (BigInteger.One << 128) + 1,
+                1, (BigInteger.One << 64) + 1, (BigInteger.One << 128) + 1,
                 -(BigInteger.One << 256) + 1
             };
             JTokenEqualityComparer comparer = new JTokenEqualityComparer();

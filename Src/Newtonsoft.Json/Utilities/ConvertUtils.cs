@@ -444,34 +444,15 @@ namespace Newtonsoft.Json.Utilities
             targetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
             if (targetType == typeof(Half))
             {
-                if (initialValue is string text)
+                value = initialValue switch
                 {
-                    value = Half.Parse(text, NumberStyles.Float | NumberStyles.AllowThousands, culture);
-                }
-                else if (initialValue is Half)
-                {
-                    value = initialValue;
-                }
-                else if (initialValue is BigInteger integer)
-                {
-                    value = FromBigInteger(integer, targetType);
-                }
-                else if (initialValue is float single)
-                {
-                    value = (Half)single;
-                }
-                else if (initialValue is double doubleValue)
-                {
-                    value = (Half)doubleValue;
-                }
-                else if (initialValue is Enum)
-                {
-                    value = (Half)System.Convert.ToDouble(initialValue, culture);
-                }
-                else
-                {
-                    value = Half.Parse(System.Convert.ToString(initialValue, culture)!, NumberStyles.Float | NumberStyles.AllowThousands, culture);
-                }
+                    Half => initialValue,
+                    BigInteger integer => FromBigInteger(integer, targetType),
+                    float single => (Half)single,
+                    double doubleValue => (Half)doubleValue,
+                    Enum => (Half)System.Convert.ToDouble(initialValue, culture),
+                    _ => Half.Parse(System.Convert.ToString(initialValue, culture)!, NumberStyles.Float | NumberStyles.AllowThousands, culture)
+                };
                 return true;
             }
 #if HAVE_INT128

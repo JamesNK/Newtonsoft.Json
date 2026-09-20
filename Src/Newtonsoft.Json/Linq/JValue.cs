@@ -929,21 +929,31 @@ namespace Newtonsoft.Json.Linq
                 return 0;
             }
 
-#if HAVE_INT128
             if (_valueType == JTokenType.Integer)
             {
-                return _value switch
+                // Equal integers must hash identically across CLR types. Hashing the low 64 bits
+                // balances distribution for ordinary integers with implementation simplicity.
+                // Values that differ only above 64 bits still collide.
+                long value = _value switch
                 {
-                    BigInteger integer => int.CreateTruncating(integer),
-                    ulong unsigned => unchecked((int)unsigned),
-                    Enum enumeration when enumeration.GetTypeCode() == TypeCode.UInt64
-                        => unchecked((int)Convert.ToUInt64(enumeration, CultureInfo.InvariantCulture)),
-                    Int128 signed128 => unchecked((int)signed128),
-                    UInt128 unsigned128 => unchecked((int)unsigned128),
-                    _ => unchecked((int)Convert.ToInt64(_value, CultureInfo.InvariantCulture))
-                };
-            }
+#if HAVE_BIG_INTEGER
+#if NET7_0_OR_GREATER
+                    BigInteger integer => long.CreateTruncating(integer),
+#else
+                    BigInteger integer => unchecked((long)(ulong)(integer & ulong.MaxValue)),
 #endif
+#endif
+                    ulong unsigned => unchecked((long)unsigned),
+                    Enum enumeration when enumeration.GetTypeCode() == TypeCode.UInt64
+                        => unchecked((long)Convert.ToUInt64(enumeration, CultureInfo.InvariantCulture)),
+#if HAVE_INT128
+                    Int128 signed128 => unchecked((long)signed128),
+                    UInt128 unsigned128 => unchecked((long)unsigned128),
+#endif
+                    _ => Convert.ToInt64(_value, CultureInfo.InvariantCulture)
+                };
+                return value.GetHashCode();
+            }
 
             return _value.GetHashCode();
         }

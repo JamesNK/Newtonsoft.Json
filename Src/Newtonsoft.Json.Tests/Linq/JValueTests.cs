@@ -54,6 +54,78 @@ namespace Newtonsoft.Json.Tests.Linq
     public class JValueTests : TestFixtureBase
     {
         [Test]
+        public void IntegerHashesMatchAcrossTypes()
+        {
+            object[][] groups =
+            {
+                new object[] { -1L, (sbyte)-1, (short)-1, -1, (DayOfWeek)(-1) },
+                new object[] { 1L, (sbyte)1, (byte)1, (short)1, (ushort)1, 1, 1U, 1UL, DayOfWeek.Monday },
+                new object[] { (long)int.MinValue, int.MinValue },
+                new object[] { (long)uint.MaxValue, uint.MaxValue },
+                new object[] { long.MaxValue, (ulong)long.MaxValue },
+                new object[] { ulong.MaxValue, UnsignedHashEnum.MaxValue }
+            };
+            JTokenEqualityComparer comparer = new JTokenEqualityComparer();
+            foreach (object[] group in groups)
+            {
+                JValue expected = new JValue(group[0]);
+                Dictionary<JToken, int> lookup = new Dictionary<JToken, int>(comparer) { { expected, 42 } };
+                foreach (object value in group)
+                {
+                    JValue actual = new JValue(value);
+                    Assert.IsTrue(expected.Equals(actual));
+                    Assert.AreEqual(expected.GetHashCode(), actual.GetHashCode());
+                    Assert.AreEqual(comparer.GetHashCode(expected), comparer.GetHashCode(actual));
+                    Assert.AreEqual(42, lookup[actual]);
+                }
+            }
+        }
+
+        private enum UnsignedHashEnum : ulong { MaxValue = ulong.MaxValue }
+
+        [Test]
+        public void IntegerHashesUseUpper32Bits()
+        {
+            Dictionary<int, long> hashes = new Dictionary<int, long>();
+            Dictionary<int, long> deepHashes = new Dictionary<int, long>();
+            JTokenEqualityComparer comparer = new JTokenEqualityComparer();
+            for (int index = 0; index < 4000; index++)
+            {
+                long number = (long)index << 32;
+                JValue token = new JValue(number);
+                Assert.AreEqual(number.GetHashCode(), token.GetHashCode());
+                hashes.Add(token.GetHashCode(), number);
+                deepHashes.Add(comparer.GetHashCode(token), number);
+            }
+        }
+
+#if !(NET20 || NET35 || PORTABLE || PORTABLE40) || NETSTANDARD2_0 || NET6_0_OR_GREATER
+        [Test]
+        public void BigIntegerHashesUseLow64Bits()
+        {
+            BigInteger[] numbers =
+            {
+                long.MinValue, (BigInteger)long.MinValue - 1, -1, 0, 1,
+                long.MaxValue, (BigInteger)long.MaxValue + 1, ulong.MaxValue, (BigInteger)ulong.MaxValue + 1,
+                (BigInteger.One << 128) + (BigInteger.One << 32) + 1, -(BigInteger.One << 256) - 1
+            };
+            JTokenEqualityComparer comparer = new JTokenEqualityComparer();
+            foreach (BigInteger number in numbers)
+            {
+                JValue expected = new JValue((ulong)(number & ulong.MaxValue));
+                JValue actual = new JValue(number);
+                Assert.AreEqual(expected.GetHashCode(), actual.GetHashCode());
+                Assert.AreEqual(comparer.GetHashCode(expected), comparer.GetHashCode(actual));
+                if (number >= long.MinValue && number <= long.MaxValue)
+                {
+                    Assert.IsTrue(actual.Equals(new JValue((long)number)));
+                    Assert.AreEqual(new JValue((long)number).GetHashCode(), actual.GetHashCode());
+                }
+            }
+        }
+#endif
+
+        [Test]
         public void UndefinedTests()
         {
             JValue v = JValue.CreateUndefined();
