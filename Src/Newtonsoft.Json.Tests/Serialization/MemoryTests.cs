@@ -61,6 +61,49 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.Throws<JsonReaderException>(() => JsonConvert.DeserializeObject<Memory<byte>>("[true]"));
         }
 
+        [Fact]
+        public void RequiredNullableByteMemoryRoundTrips()
+        {
+            RequiredByteBuffers buffers = new RequiredByteBuffers
+            {
+                AlwaysMutable = Memory<byte>.Empty,
+                AlwaysReadOnly = ReadOnlyMemory<byte>.Empty,
+                DisallowNullMutable = Memory<byte>.Empty,
+                DisallowNullReadOnly = ReadOnlyMemory<byte>.Empty
+            };
+            string json = JsonConvert.SerializeObject(buffers);
+            Assert.Equal("{\"AlwaysMutable\":\"\",\"AlwaysReadOnly\":\"\",\"DisallowNullMutable\":\"\",\"DisallowNullReadOnly\":\"\"}", json);
+
+            RequiredByteBuffers result = JsonConvert.DeserializeObject<RequiredByteBuffers>(json);
+            Assert.Empty(result.AlwaysMutable.Value.ToArray());
+            Assert.Empty(result.AlwaysReadOnly.Value.ToArray());
+            Assert.Empty(result.DisallowNullMutable.Value.ToArray());
+            Assert.Empty(result.DisallowNullReadOnly.Value.ToArray());
+
+            foreach (string propertyName in new[] { nameof(RequiredByteBuffers.AlwaysMutable), nameof(RequiredByteBuffers.AlwaysReadOnly), nameof(RequiredByteBuffers.DisallowNullMutable), nameof(RequiredByteBuffers.DisallowNullReadOnly) })
+            {
+                JObject invalid = JObject.Parse(json);
+                invalid[propertyName] = JValue.CreateNull();
+                JsonSerializationException exception = Assert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<RequiredByteBuffers>(invalid.ToString(Formatting.None)));
+                Assert.Contains("Required property '" + propertyName + "'", exception.Message);
+            }
+        }
+
+        private sealed class RequiredByteBuffers
+        {
+            [JsonProperty(Required = Required.Always)]
+            public Memory<byte>? AlwaysMutable { get; set; }
+
+            [JsonProperty(Required = Required.Always)]
+            public ReadOnlyMemory<byte>? AlwaysReadOnly { get; set; }
+
+            [JsonProperty(Required = Required.DisallowNull)]
+            public Memory<byte>? DisallowNullMutable { get; set; }
+
+            [JsonProperty(Required = Required.DisallowNull)]
+            public ReadOnlyMemory<byte>? DisallowNullReadOnly { get; set; }
+        }
+
 #if HAVE_INT128
         [Fact]
         public async Task ModernIntegerByteBuffers()

@@ -388,7 +388,18 @@ namespace Newtonsoft.Json.Serialization
 
         private static bool CoerceEmptyStringToNull(Type? objectType, JsonContract? contract, string s)
         {
-            return StringUtils.IsNullOrEmpty(s) && objectType != null && objectType != typeof(string) && objectType != typeof(object) && contract != null && contract.IsNullable;
+            if (StringUtils.IsNullOrEmpty(s) && objectType != null && objectType != typeof(string) && objectType != typeof(object) && contract != null && contract.IsNullable)
+            {
+#if HAVE_MEMORY
+                if (contract is JsonPrimitiveContract primitiveContract && primitiveContract.IsByteMemory)
+                {
+                    return false;
+                }
+#endif
+                return true;
+            }
+
+            return false;
         }
 
         internal string GetExpectedDescription(JsonContract contract)
