@@ -981,7 +981,9 @@ namespace Newtonsoft.Json
         {
             return _safeAsync
                 ? WriteValueInternalAsync(JsonToken.Float, JsonConvert.ToString(value, FloatFormatHandling, QuoteChar, nullable), cancellationToken)
-                : base.WriteHalfAsync(value, nullable, cancellationToken);
+                : nullable
+                    ? WriteValueAsync((float?)value, cancellationToken)
+                    : WriteValueAsync((float)value, cancellationToken);
         }
 #endif
 

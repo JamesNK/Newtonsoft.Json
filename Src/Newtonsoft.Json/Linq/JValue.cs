@@ -866,7 +866,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override int GetDeepHashCode()
         {
-            int valueHashCode = (_value != null) ? _value.GetHashCode() : 0;
+            int valueHashCode = GetValueHashCode();
 
             // GetHashCode on an enum boxes so cast to int
             return ((int)_valueType).GetHashCode() ^ valueHashCode;
@@ -919,10 +919,25 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public override int GetHashCode()
         {
+            return GetValueHashCode();
+        }
+
+        private int GetValueHashCode()
+        {
             if (_value == null)
             {
                 return 0;
             }
+
+#if HAVE_INT128
+            if (_valueType == JTokenType.Integer)
+            {
+                BigInteger integer = _value is Enum
+                    ? new BigInteger(Convert.ToDecimal(_value, CultureInfo.InvariantCulture))
+                    : ConvertUtils.ToBigInteger(_value);
+                return integer.GetHashCode();
+            }
+#endif
 
             return _value.GetHashCode();
         }

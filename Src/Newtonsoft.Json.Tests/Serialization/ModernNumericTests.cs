@@ -15,6 +15,195 @@ namespace Newtonsoft.Json.Tests.Serialization
 {
     public class ModernNumericTests
     {
+#if HAVE_INT128
+        [Fact]
+        public void IntegerHashesMatchEquality()
+        {
+            BigInteger[] numbers =
+            {
+                (BigInteger)Int128.MinValue, (BigInteger)Int128.MinValue - 1,
+                long.MinValue, (BigInteger)long.MinValue - 1, int.MinValue, (BigInteger)int.MinValue - 1,
+                short.MinValue, sbyte.MinValue, -1, 0, 1, sbyte.MaxValue, byte.MaxValue,
+                short.MaxValue, ushort.MaxValue, int.MaxValue, (BigInteger)int.MaxValue + 1,
+                uint.MaxValue, long.MaxValue, (BigInteger)long.MaxValue + 1, ulong.MaxValue,
+                (BigInteger)ulong.MaxValue + 1, (BigInteger)Int128.MaxValue,
+                (BigInteger)Int128.MaxValue + 1, (BigInteger)UInt128.MaxValue, (BigInteger)UInt128.MaxValue + 1
+            };
+            foreach (BigInteger number in numbers)
+            {
+                List<object> values = new List<object> { number };
+                if (number >= sbyte.MinValue && number <= sbyte.MaxValue)
+                {
+                    values.Add((sbyte)number);
+                }
+                if (number >= byte.MinValue && number <= byte.MaxValue)
+                {
+                    values.Add((byte)number);
+                }
+                if (number >= short.MinValue && number <= short.MaxValue)
+                {
+                    values.Add((short)number);
+                }
+                if (number >= ushort.MinValue && number <= ushort.MaxValue)
+                {
+                    values.Add((ushort)number);
+                }
+                if (number >= int.MinValue && number <= int.MaxValue)
+                {
+                    values.Add((int)number);
+                }
+                if (number >= uint.MinValue && number <= uint.MaxValue)
+                {
+                    values.Add((uint)number);
+                }
+                if (number >= long.MinValue && number <= long.MaxValue)
+                {
+                    values.Add((long)number);
+                }
+                if (number >= ulong.MinValue && number <= ulong.MaxValue)
+                {
+                    values.Add((ulong)number);
+                }
+                if (number >= (BigInteger)Int128.MinValue && number <= (BigInteger)Int128.MaxValue)
+                {
+                    values.Add((Int128)number);
+                }
+                if (number >= (BigInteger)UInt128.MinValue && number <= (BigInteger)UInt128.MaxValue)
+                {
+                    values.Add((UInt128)number);
+                }
+
+                JValue expected = new JValue((object)number);
+                foreach (object value in values)
+                {
+                    JValue token = new JValue(value);
+                    Assert.True(expected.Equals(token));
+                    Assert.True(token.Equals(expected));
+                    Assert.Equal(expected.GetHashCode(), token.GetHashCode());
+                    Assert.False(new HashSet<JValue> { expected }.Add(token));
+                    Assert.False(new HashSet<JValue> { token }.Add(expected));
+                    Assert.Same(value, token.Value);
+
+                    AssertTokenHashLookup(expected, token);
+                    AssertTokenHashLookup(new JArray(expected), new JArray(token));
+                    AssertTokenHashLookup(new JObject { ["Value"] = expected }, new JObject { ["Value"] = token });
+                }
+            }
+
+            Assert.Equal(new JValue((object)1).GetHashCode(), new JValue((object)DayOfWeek.Monday).GetHashCode());
+        }
+
+        private static void AssertTokenHashLookup(JToken expected, JToken actual)
+        {
+            JTokenEqualityComparer comparer = new JTokenEqualityComparer();
+            Assert.True(comparer.Equals(expected, actual));
+            Assert.Equal(comparer.GetHashCode(expected), comparer.GetHashCode(actual));
+            Assert.False(new HashSet<JToken>(comparer) { expected }.Add(actual));
+            Assert.False(new HashSet<JToken>(comparer) { actual }.Add(expected));
+            Dictionary<JToken, int> dictionary = new Dictionary<JToken, int>(comparer) { [expected] = 42 };
+            Assert.Equal(42, dictionary[actual]);
+        }
+#endif
+
+        [Fact]
+        public void HalfWriterOverrides()
+        {
+            StringWriter output = new StringWriter(CultureInfo.InvariantCulture);
+            using (RedactingFloatWriter writer = new RedactingFloatWriter(output))
+            {
+                writer.WriteStartArray();
+                writer.WriteValue((object)(Half)1.5);
+                new JValue((object)(Half)1.5).WriteTo(writer);
+                new JsonSerializer().Serialize(writer, new NullableHalf { Value = (Half)1.5 });
+                writer.WriteEndArray();
+                Assert.Equal(2, writer.ValueCalls);
+                Assert.Equal(1, writer.NullableCalls);
+            }
+            Assert.Equal("[0.0,0.0,{\"Value\":0.0}]", output.ToString());
+        }
+
+        [Fact]
+        public async Task HalfWriterOverridesAsync()
+        {
+            foreach (bool asyncOverrides in new[] { false, true })
+            {
+                StringWriter output = new StringWriter(CultureInfo.InvariantCulture);
+                using (JsonTextWriter writer = asyncOverrides
+                    ? (JsonTextWriter)new AsyncRedactingFloatWriter(output)
+                    : new RedactingFloatWriter(output))
+                {
+                    await writer.WriteStartArrayAsync();
+                    await new JValue((object)(Half)1.5).WriteToAsync(writer);
+                    await writer.WriteHalfAsync((Half)1.5, true, CancellationToken.None);
+                    await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
+                        new JValue((object)(Half)1.5).WriteToAsync(writer, new CancellationToken(true), Array.Empty<JsonConverter>()));
+                    await writer.WriteEndArrayAsync();
+                    if (writer is AsyncRedactingFloatWriter asyncWriter)
+                    {
+                        Assert.Equal(1, asyncWriter.ValueCalls);
+                        Assert.Equal(1, asyncWriter.NullableCalls);
+                    }
+                    else
+                    {
+                        RedactingFloatWriter syncWriter = (RedactingFloatWriter)writer;
+                        Assert.Equal(1, syncWriter.ValueCalls);
+                        Assert.Equal(1, syncWriter.NullableCalls);
+                    }
+                }
+                Assert.Equal("[0.0,0.0]", output.ToString());
+            }
+        }
+
+        private sealed class RedactingFloatWriter : JsonTextWriter
+        {
+            public int ValueCalls { get; private set; }
+            public int NullableCalls { get; private set; }
+
+            public RedactingFloatWriter(TextWriter writer) : base(writer)
+            {
+            }
+
+            public override void WriteValue(float value)
+            {
+                ValueCalls++;
+                base.WriteValue(0f);
+            }
+
+            public override void WriteValue(float? value)
+            {
+                NullableCalls++;
+                base.WriteValue((float?)0f);
+            }
+        }
+
+        private sealed class AsyncRedactingFloatWriter : JsonTextWriter
+        {
+            public int ValueCalls { get; private set; }
+            public int NullableCalls { get; private set; }
+
+            public AsyncRedactingFloatWriter(TextWriter writer) : base(writer)
+            {
+            }
+
+            public override Task WriteValueAsync(float value, CancellationToken cancellationToken = default)
+            {
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    ValueCalls++;
+                }
+                return base.WriteValueAsync(0f, cancellationToken);
+            }
+
+            public override Task WriteValueAsync(float? value, CancellationToken cancellationToken = default)
+            {
+                if (!cancellationToken.IsCancellationRequested)
+                {
+                    NullableCalls++;
+                }
+                return base.WriteValueAsync((float?)0f, cancellationToken);
+            }
+        }
+
         [Fact]
         public void AssignableModernNumbersPreserveValue()
         {

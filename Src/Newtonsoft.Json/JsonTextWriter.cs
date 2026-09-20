@@ -407,6 +407,12 @@ namespace Newtonsoft.Json
 #if HAVE_HALF
         internal override void WriteHalf(Half value, bool nullable)
         {
+            if (GetType() != typeof(JsonTextWriter))
+            {
+                base.WriteHalf(value, nullable);
+                return;
+            }
+
             InternalWriteValue(JsonToken.Float);
             WriteValueInternal(JsonConvert.ToString(value, FloatFormatHandling, QuoteChar, nullable), JsonToken.Float);
         }
