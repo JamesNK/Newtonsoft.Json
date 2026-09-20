@@ -16,6 +16,70 @@ namespace Newtonsoft.Json.Tests.Serialization
     public class ModernNumericTests
     {
         [Fact]
+        public void BinaryNumberToHalfMidpoint()
+        {
+            object[] values = { 1.00048828125f, 1.00048828125d };
+            foreach (object value in values)
+            {
+                JValue token = new JValue(value);
+                Assert.Equal((Half)1, token.Value<Half>());
+                Assert.Equal((Half)1, token.ToObject<Half>());
+                Assert.Equal((Half)1, token.ToObject<Half?>().Value);
+                NullableHalf result = new JObject { ["Value"] = token }.ToObject<NullableHalf>();
+                Assert.Equal((Half)1, result.Value.Value);
+                Assert.Same(value, token.Value);
+            }
+        }
+
+        [Fact]
+        public void BinaryNumberToHalfEdges()
+        {
+            const float singleMidpoint = 1.00048828125f;
+            foreach (float value in new[]
+            {
+                singleMidpoint, MathF.BitDecrement(singleMidpoint), MathF.BitIncrement(singleMidpoint),
+                -singleMidpoint, -MathF.BitDecrement(singleMidpoint), -MathF.BitIncrement(singleMidpoint),
+                1.00146484375f, 0f, BitConverter.Int32BitsToSingle(int.MinValue), float.Epsilon,
+                (float)Half.Epsilon, (float)Half.Epsilon / 2, 65519f, 65520f,
+                float.MinValue, float.MaxValue, float.NaN, float.PositiveInfinity, float.NegativeInfinity
+            })
+            {
+                AssertBinaryNumberToHalf(value, (Half)value);
+            }
+
+            const double doubleMidpoint = 1.00048828125d;
+            foreach (double value in new[]
+            {
+                doubleMidpoint, Math.BitDecrement(doubleMidpoint), Math.BitIncrement(doubleMidpoint),
+                -doubleMidpoint, -Math.BitDecrement(doubleMidpoint), -Math.BitIncrement(doubleMidpoint),
+                1.00146484375d, 0d, BitConverter.Int64BitsToDouble(long.MinValue), double.Epsilon,
+                (double)Half.Epsilon, (double)Half.Epsilon / 2, 65519d, 65520d,
+                double.MinValue, double.MaxValue, double.NaN, double.PositiveInfinity, double.NegativeInfinity
+            })
+            {
+                AssertBinaryNumberToHalf(value, (Half)value);
+            }
+        }
+
+        private static void AssertBinaryNumberToHalf(object value, Half expected)
+        {
+            short expectedBits = BitConverter.HalfToInt16Bits(expected);
+            JValue token = new JValue(value);
+            Assert.Equal(expectedBits, BitConverter.HalfToInt16Bits(token.Value<Half>()));
+            Assert.Equal(expectedBits, BitConverter.HalfToInt16Bits(token.ToObject<Half>()));
+            Assert.Equal(expectedBits, BitConverter.HalfToInt16Bits(token.ToObject<Half?>().Value));
+            foreach (CultureInfo culture in new[] { CultureInfo.InvariantCulture, CultureInfo.GetCultureInfo("fr-FR") })
+            {
+                Assert.Equal(expectedBits, BitConverter.HalfToInt16Bits((Half)ConvertUtils.Convert(value, culture, typeof(Half))));
+                Assert.Equal(expectedBits, BitConverter.HalfToInt16Bits((Half)ConvertUtils.ConvertOrCast(value, culture, typeof(Half?))));
+                JsonSerializer serializer = new JsonSerializer { Culture = culture };
+                NullableHalf result = new JObject { ["Value"] = token }.ToObject<NullableHalf>(serializer);
+                Assert.Equal(expectedBits, BitConverter.HalfToInt16Bits(result.Value.Value));
+            }
+            Assert.Same(value, token.Value);
+        }
+
+        [Fact]
         public void TypedReaderModernNumbers()
         {
             object[] values = { (Half)42,

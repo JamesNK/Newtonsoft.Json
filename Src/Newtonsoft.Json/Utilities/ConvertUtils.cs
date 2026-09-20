@@ -450,6 +450,14 @@ namespace Newtonsoft.Json.Utilities
                 {
                     value = FromBigInteger(integer, targetType);
                 }
+                else if (initialValue is float single)
+                {
+                    value = (Half)single;
+                }
+                else if (initialValue is double doubleValue)
+                {
+                    value = (Half)doubleValue;
+                }
                 else
                 {
                     value = Half.Parse(System.Convert.ToString(initialValue, culture)!, NumberStyles.Float | NumberStyles.AllowThousands, culture);
