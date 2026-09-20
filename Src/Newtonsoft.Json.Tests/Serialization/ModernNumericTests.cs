@@ -17,6 +17,107 @@ namespace Newtonsoft.Json.Tests.Serialization
     {
 #if HAVE_INT128
         [Fact]
+        public void ModernIntegerEnums()
+        {
+            Enum[] values =
+            {
+                (SignedByteEnum)sbyte.MinValue, (ByteEnum)byte.MaxValue,
+                (ShortEnum)short.MinValue, (UnsignedShortEnum)ushort.MaxValue,
+                (DayOfWeek)int.MinValue, (UnsignedIntEnum)uint.MaxValue,
+                (SignedEnum)long.MinValue, (UnsignedEnum)ulong.MaxValue,
+                DayOfWeek.Monday, (UnsignedEnum)3
+            };
+            foreach (Enum value in values)
+            {
+                BigInteger number = new BigInteger(Convert.ToDecimal(value, CultureInfo.InvariantCulture));
+                JValue enumToken = new JValue(value);
+                Assert.Equal((Int128)number, enumToken.ToObject<Int128>());
+                Assert.Equal((Int128)number, enumToken.Value<Int128>());
+                Assert.Equal((Int128)number, ConvertUtils.Convert(value, CultureInfo.InvariantCulture, typeof(Int128)));
+                Assert.Equal((Half)Convert.ToDouble(value), enumToken.ToObject<Half>());
+                if (number.Sign >= 0)
+                {
+                    Assert.Equal((UInt128)number, enumToken.ToObject<UInt128>());
+                }
+                else
+                {
+                    Assert.Throws<JsonSerializationException>(() => enumToken.ToObject<UInt128>());
+                }
+
+                object[] numbers = number.Sign >= 0
+                    ? new object[] { (Int128)number, (UInt128)number }
+                    : new object[] { (Int128)number };
+                foreach (object modern in numbers)
+                {
+                    JValue token = new JValue(modern);
+                    Assert.Throws<ArgumentException>(() => token.ToObject(value.GetType()));
+                    Assert.Throws<JsonSerializationException>(() => token.ToObject(value.GetType(), new JsonSerializer()));
+                    Assert.Throws<InvalidOperationException>(() => ConvertUtils.Convert(modern, CultureInfo.InvariantCulture, value.GetType()));
+                    Assert.Throws<InvalidOperationException>(() => ConvertUtils.ConvertOrCast(modern, CultureInfo.InvariantCulture, value.GetType()));
+                    Assert.True(enumToken.Equals(token));
+                    Assert.True(token.Equals(enumToken));
+                    AssertTokenHashLookup(enumToken, token);
+                }
+            }
+
+            JValue unsigned = new JValue((object)(UInt128)ulong.MaxValue);
+            Assert.Throws<ArgumentException>(() => unsigned.ToObject<UnsignedEnum?>());
+            Assert.Throws<InvalidOperationException>(() => unsigned.Value<UnsignedEnum?>());
+            Assert.Throws<JsonSerializationException>(() => new JObject { ["Value"] = unsigned }.ToObject<EnumContainer>());
+            Assert.Throws<ArgumentException>(() => new JValue((object)UInt128.MaxValue).ToObject<UnsignedEnum>());
+            Assert.Throws<ArgumentException>(() => new JValue((object)(Int128)(-1)).ToObject<UnsignedEnum>());
+            Assert.Throws<ArgumentException>(() => new JValue((object)(Int128)256).ToObject<ByteEnum>());
+            Assert.Throws<JsonSerializationException>(() => new JValue((object)UInt128.MaxValue).ToObject<UnsignedEnum>(new JsonSerializer()));
+        }
+
+        private enum SignedByteEnum : sbyte { Zero }
+        private enum ByteEnum : byte { Zero }
+        private enum ShortEnum : short { Zero }
+        private enum UnsignedShortEnum : ushort { Zero }
+        private enum UnsignedIntEnum : uint { Zero }
+        private enum SignedEnum : long { Zero }
+        [Flags]
+        private enum UnsignedEnum : ulong { Zero }
+
+        private sealed class EnumContainer
+        {
+            public UnsignedEnum? Value { get; set; }
+        }
+
+        [Fact]
+        public void IntegerHashingDoesNotAllocate()
+        {
+            object[] values =
+            {
+                (sbyte)-1, (byte)1, (short)-1, (ushort)1, -1, uint.MaxValue,
+                2147483648L, long.MinValue, long.MaxValue, ulong.MaxValue,
+                Int128.MinValue, Int128.MaxValue, UInt128.MaxValue,
+                (BigInteger)long.MinValue, (BigInteger)long.MaxValue,
+                (BigInteger)Int128.MinValue, (BigInteger)Int128.MaxValue, (BigInteger)UInt128.MaxValue,
+                (BigInteger)Int128.MinValue - 1, (BigInteger)UInt128.MaxValue + 1,
+                (BigInteger.One << 256) + 1, -(BigInteger.One << 256) - 1
+            };
+            foreach (object value in values)
+            {
+                JValue token = new JValue(value);
+                JTokenEqualityComparer comparer = new JTokenEqualityComparer();
+                for (int iteration = 0; iteration < 1000; iteration++)
+                {
+                    token.GetHashCode();
+                    comparer.GetHashCode(token);
+                }
+                long before = GC.GetAllocatedBytesForCurrentThread();
+                for (int iteration = 0; iteration < 1000; iteration++)
+                {
+                    token.GetHashCode();
+                    comparer.GetHashCode(token);
+                }
+                long allocated = GC.GetAllocatedBytesForCurrentThread() - before;
+                Assert.True(allocated == 0, value.GetType() + " " + value + ": " + allocated + " bytes");
+            }
+        }
+
+        [Fact]
         public void IntegerHashesMatchEquality()
         {
             BigInteger[] numbers =
@@ -27,7 +128,8 @@ namespace Newtonsoft.Json.Tests.Serialization
                 short.MaxValue, ushort.MaxValue, int.MaxValue, (BigInteger)int.MaxValue + 1,
                 uint.MaxValue, long.MaxValue, (BigInteger)long.MaxValue + 1, ulong.MaxValue,
                 (BigInteger)ulong.MaxValue + 1, (BigInteger)Int128.MaxValue,
-                (BigInteger)Int128.MaxValue + 1, (BigInteger)UInt128.MaxValue, (BigInteger)UInt128.MaxValue + 1
+                (BigInteger)Int128.MaxValue + 1, (BigInteger)UInt128.MaxValue, (BigInteger)UInt128.MaxValue + 1,
+                (BigInteger.One << 256) + 1, -(BigInteger.One << 256) - 1
             };
             foreach (BigInteger number in numbers)
             {
@@ -74,6 +176,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
 
                 JValue expected = new JValue((object)number);
+                Assert.Equal(unchecked((int)(uint)(number & uint.MaxValue)), expected.GetHashCode());
                 foreach (object value in values)
                 {
                     JValue token = new JValue(value);
@@ -91,6 +194,34 @@ namespace Newtonsoft.Json.Tests.Serialization
             }
 
             Assert.Equal(new JValue((object)1).GetHashCode(), new JValue((object)DayOfWeek.Monday).GetHashCode());
+        }
+
+        [Fact]
+        public void IntegerHashCollisionsPreserveDistinctValues()
+        {
+            BigInteger[] numbers =
+            {
+                1, (BigInteger.One << 32) + 1, (BigInteger.One << 128) + 1,
+                -(BigInteger.One << 256) + 1
+            };
+            JTokenEqualityComparer comparer = new JTokenEqualityComparer();
+            HashSet<JValue> values = new HashSet<JValue>();
+            HashSet<JToken> tokens = new HashSet<JToken>(comparer);
+            Dictionary<JToken, BigInteger> dictionary = new Dictionary<JToken, BigInteger>(comparer);
+            foreach (BigInteger number in numbers)
+            {
+                JValue token = new JValue((object)number);
+                Assert.Equal(1, token.GetHashCode());
+                Assert.True(values.Add(token));
+                Assert.True(tokens.Add(token));
+                dictionary.Add(token, number);
+            }
+            foreach (BigInteger number in numbers)
+            {
+                Assert.Equal(number, dictionary[new JValue((object)number)]);
+            }
+            Assert.False(values.Add(new JValue((object)(Int128)1)));
+            Assert.False(tokens.Add(new JValue((object)(UInt128)1)));
         }
 
         private static void AssertTokenHashLookup(JToken expected, JToken actual)
@@ -115,11 +246,15 @@ namespace Newtonsoft.Json.Tests.Serialization
                 writer.WriteValue((object)(Half)1.5);
                 new JValue((object)(Half)1.5).WriteTo(writer);
                 new JsonSerializer().Serialize(writer, new NullableHalf { Value = (Half)1.5 });
+                object value = (Half)1.5;
+                writer.WriteToken(JsonToken.Float, value);
+                Assert.Same(value, writer.Value);
                 writer.WriteEndArray();
-                Assert.Equal(2, writer.ValueCalls);
-                Assert.Equal(1, writer.NullableCalls);
+                Assert.Equal(4, writer.ObjectCalls);
+                Assert.Equal(4, writer.ValueCalls);
+                Assert.Equal(0, writer.NullableCalls);
             }
-            Assert.Equal("[0.0,0.0,{\"Value\":0.0}]", output.ToString());
+            Assert.Equal("[0.0,0.0,{\"Value\":0.0},0.0]", output.ToString());
         }
 
         [Fact]
@@ -134,33 +269,93 @@ namespace Newtonsoft.Json.Tests.Serialization
                 {
                     await writer.WriteStartArrayAsync();
                     await new JValue((object)(Half)1.5).WriteToAsync(writer);
-                    await writer.WriteHalfAsync((Half)1.5, true, CancellationToken.None);
+                    await writer.WriteValueAsync((object)(Half?)1.5, CancellationToken.None);
                     await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
                         new JValue((object)(Half)1.5).WriteToAsync(writer, new CancellationToken(true), Array.Empty<JsonConverter>()));
                     await writer.WriteEndArrayAsync();
                     if (writer is AsyncRedactingFloatWriter asyncWriter)
                     {
-                        Assert.Equal(1, asyncWriter.ValueCalls);
-                        Assert.Equal(1, asyncWriter.NullableCalls);
+                        Assert.Equal(2, asyncWriter.ValueCalls);
+                        Assert.Equal(0, asyncWriter.NullableCalls);
                     }
                     else
                     {
                         RedactingFloatWriter syncWriter = (RedactingFloatWriter)writer;
-                        Assert.Equal(1, syncWriter.ValueCalls);
-                        Assert.Equal(1, syncWriter.NullableCalls);
+                        Assert.Equal(2, syncWriter.ValueCalls);
+                        Assert.Equal(0, syncWriter.NullableCalls);
                     }
                 }
                 Assert.Equal("[0.0,0.0]", output.ToString());
             }
         }
 
+        [Fact]
+        public async Task HalfAsyncOnlyWriter()
+        {
+            using (CancellationTokenSource source = new CancellationTokenSource())
+            using (AsyncOnlyObjectWriter writer = new AsyncOnlyObjectWriter())
+            {
+                object value = (Half)1.5;
+                await new JValue(value).WriteToAsync(writer, source.Token);
+                Assert.Same(value, writer.Value);
+                Assert.Equal(source.Token, writer.CancellationToken);
+                await writer.WriteTokenAsync(JsonToken.Float, value, source.Token);
+                Assert.Same(value, writer.Value);
+                Assert.Equal(source.Token, writer.CancellationToken);
+                source.Cancel();
+                await Assert.ThrowsAnyAsync<OperationCanceledException>(() => new JValue(value).WriteToAsync(writer, source.Token));
+                Assert.Equal(2, writer.Calls);
+            }
+            using (JTokenWriter writer = new JTokenWriter())
+            {
+                await new JValue((object)(Half)1.5).WriteToAsync(writer);
+                Assert.Equal((Half)1.5, Assert.IsType<Half>(((JValue)writer.Token).Value));
+            }
+            using (JTokenWriter writer = new JTokenWriter())
+            {
+                await Assert.ThrowsAnyAsync<OperationCanceledException>(() => writer.WriteValueAsync((object)(Half)3, new CancellationToken(true)));
+                Assert.Null(writer.Token);
+            }
+        }
+
+        private sealed class AsyncOnlyObjectWriter : JsonWriter
+        {
+            public object Value { get; private set; }
+            public int Calls { get; private set; }
+            public CancellationToken CancellationToken { get; private set; }
+
+            public override void Flush() { }
+            public override void WriteValue(object value) => throw new InvalidOperationException("Synchronous write.");
+
+            public override Task WriteValueAsync(object value, CancellationToken cancellationToken = default)
+            {
+                if (cancellationToken.IsCancellationRequested)
+                {
+                    return Task.FromCanceled(cancellationToken);
+                }
+                Calls++;
+                Value = value;
+                CancellationToken = cancellationToken;
+                return Task.CompletedTask;
+            }
+        }
+
         private sealed class RedactingFloatWriter : JsonTextWriter
         {
+            public object Value { get; private set; }
+            public int ObjectCalls { get; private set; }
             public int ValueCalls { get; private set; }
             public int NullableCalls { get; private set; }
 
             public RedactingFloatWriter(TextWriter writer) : base(writer)
             {
+            }
+
+            public override void WriteValue(object value)
+            {
+                ObjectCalls++;
+                Value = value;
+                base.WriteValue(value);
             }
 
             public override void WriteValue(float value)
@@ -572,16 +767,21 @@ namespace Newtonsoft.Json.Tests.Serialization
 #endif
             foreach (FloatFormatHandling handling in new[] { FloatFormatHandling.String, FloatFormatHandling.Symbol, FloatFormatHandling.DefaultValue })
             {
-                JsonSerializerSettings settings = new JsonSerializerSettings { FloatFormatHandling = handling, TraceWriter = new MemoryTraceWriter() };
-                string expected = handling == FloatFormatHandling.String ? "\"Infinity\"" : handling == FloatFormatHandling.Symbol ? "Infinity" : "0.0";
-                Assert.Equal(expected, JsonConvert.SerializeObject(Half.PositiveInfinity, settings));
-                Assert.Equal("{\"Value\":" + (handling == FloatFormatHandling.DefaultValue ? "null" : expected) + "}", JsonConvert.SerializeObject(new NullableHalf { Value = Half.PositiveInfinity }, settings));
-                StringWriter output = new StringWriter();
-                using (JsonTextWriter writer = new JsonTextWriter(output) { FloatFormatHandling = handling, QuoteChar = '\'' })
+                foreach (Half value in new[] { Half.NaN, Half.PositiveInfinity, Half.NegativeInfinity })
                 {
-                    await writer.WriteValueAsync((object)Half.PositiveInfinity);
+                    JsonSerializerSettings settings = new JsonSerializerSettings { FloatFormatHandling = handling, TraceWriter = new MemoryTraceWriter() };
+                    string text = value.ToString(CultureInfo.InvariantCulture);
+                    string expected = handling == FloatFormatHandling.Symbol ? text : "\"" + text + "\"";
+                    Assert.Equal(expected, JsonConvert.SerializeObject(value, settings));
+                    Assert.Equal("{\"Value\":" + expected + "}", JsonConvert.SerializeObject(new NullableHalf { Value = value }, settings));
+                    Assert.Equal("{\"Value\":null}", JsonConvert.SerializeObject(new NullableHalf(), settings));
+                    StringWriter output = new StringWriter();
+                    using (JsonTextWriter writer = new JsonTextWriter(output) { FloatFormatHandling = handling, QuoteChar = '\'' })
+                    {
+                        await writer.WriteValueAsync((object)value);
+                    }
+                    Assert.Equal(expected.Replace('"', '\''), output.ToString());
                 }
-                Assert.Equal(expected.Replace('"', '\''), output.ToString());
             }
         }
 

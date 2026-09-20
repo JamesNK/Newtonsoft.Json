@@ -714,14 +714,14 @@ namespace Newtonsoft.Json.Serialization
         {
             object underlyingList = values is IWrappedCollection wrappedCollection ? wrappedCollection.UnderlyingCollection : values;
 
+            OnSerializing(writer, contract, underlyingList);
+
 #if HAVE_MEMORY
             if (contract.MemoryAdapter != null)
             {
-                values = contract.MemoryAdapter.ToArray(values);
+                values = contract.MemoryAdapter.GetEnumerable(values);
             }
 #endif
-
-            OnSerializing(writer, contract, underlyingList);
 
             _serializeStack.Add(underlyingList);
 

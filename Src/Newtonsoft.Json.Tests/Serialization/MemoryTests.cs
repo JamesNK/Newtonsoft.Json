@@ -1,5 +1,6 @@
 #if HAVE_MEMORY
 using System;
+using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Schema;
@@ -60,6 +61,38 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.Throws<JsonReaderException>(() => JsonConvert.DeserializeObject<Memory<byte>>("[1,"));
             Assert.Throws<JsonReaderException>(() => JsonConvert.DeserializeObject<Memory<byte>>("[true]"));
         }
+
+#if HAVE_INT128
+        [Fact]
+        public async Task ModernIntegerByteBuffers()
+        {
+            JArray array = new JArray(new JValue((object)Int128.Zero), new JValue((object)(UInt128)1), new JValue((object)(Int128)255));
+            byte[] expected = { 0, 1, 255 };
+            Assert.Equal(expected, array.ToObject<byte[]>());
+            Assert.Equal(expected, array.ToObject<Memory<byte>>().ToArray());
+            Assert.Equal(expected, array.ToObject<ReadOnlyMemory<byte>>().ToArray());
+            using (JsonReader reader = array.CreateReader())
+            {
+                Assert.Equal(expected, reader.ReadAsBytes());
+            }
+            using (JsonReader reader = array.CreateReader())
+            {
+                Assert.Equal(expected, await reader.ReadAsBytesAsync());
+            }
+            using (JsonReader reader = array.CreateReader())
+            {
+                Assert.True(await reader.ReadAsync());
+                Assert.Equal(expected, await reader.ReadArrayIntoByteArrayAsync(default));
+            }
+            foreach (object value in new object[] { (Int128)(-1), (Int128)256, (UInt128)256, Int128.MinValue, UInt128.MaxValue })
+            {
+                JArray invalid = new JArray(new JValue(value));
+                Assert.Throws<InvalidOperationException>(() => invalid.ToObject<byte[]>());
+                Assert.Throws<InvalidOperationException>(() => invalid.ToObject<Memory<byte>>());
+                Assert.Throws<InvalidOperationException>(() => invalid.ToObject<ReadOnlyMemory<byte>>());
+            }
+        }
+#endif
 
         [Fact]
         public void ConverterPrecedence()
@@ -260,6 +293,71 @@ namespace Newtonsoft.Json.Tests.Serialization
             JsonSerializerSettings settings = new JsonSerializerSettings { ContractResolver = new ItemConverterResolver() };
             Assert.Equal("[3]", JsonConvert.SerializeObject(new[] { new Element { Value = 3 } }.AsMemory(), settings));
             Assert.Equal(5, JsonConvert.DeserializeObject<ReadOnlyMemory<Element>>("[5]", settings).Span[0].Value);
+        }
+
+        [Fact]
+        public void ArrayContractCallbacksUseCurrentMemory()
+        {
+            foreach (bool readOnly in new[] { false, true })
+            {
+                int[] values = { 0, 1, 2, 3 };
+                Memory<int> slice = values.AsMemory(1, 2);
+                object memory = readOnly ? (object)(ReadOnlyMemory<int>)slice : slice;
+                CallbackResolver resolver = new CallbackResolver(memory, values);
+                JsonSerializerSettings settings = new JsonSerializerSettings { ContractResolver = resolver };
+                Assert.Equal("[4,5]", JsonConvert.SerializeObject(memory, settings));
+                Assert.True(resolver.Serialized);
+                Assert.Equal(new[] { 0, 4, 5, 3 }, values);
+            }
+        }
+
+        private sealed class CallbackResolver : DefaultContractResolver
+        {
+            private readonly object _memory;
+            private readonly int[] _values;
+            public bool Serialized { get; private set; }
+
+            public CallbackResolver(object memory, int[] values)
+            {
+                _memory = memory;
+                _values = values;
+            }
+
+            protected override JsonArrayContract CreateArrayContract(Type objectType)
+            {
+                JsonArrayContract contract = base.CreateArrayContract(objectType);
+                contract.OnSerializingCallbacks.Add((value, context) =>
+                {
+                    Assert.Same(_memory, value);
+                    _values[1] = 4;
+                });
+                contract.ItemConverter = new UpdatingItemConverter(_values);
+                contract.OnSerializedCallbacks.Add((value, context) =>
+                {
+                    Assert.Same(_memory, value);
+                    Serialized = true;
+                });
+                return contract;
+            }
+        }
+
+        private sealed class UpdatingItemConverter : JsonConverter<int>
+        {
+            private readonly int[] _values;
+
+            public UpdatingItemConverter(int[] values)
+            {
+                _values = values;
+            }
+
+            public override void WriteJson(JsonWriter writer, int value, JsonSerializer serializer)
+            {
+                _values[2] = 5;
+                writer.WriteValue(value);
+            }
+
+            public override int ReadJson(JsonReader reader, Type objectType, int existingValue, bool hasExistingValue, JsonSerializer serializer)
+                => throw new NotSupportedException();
         }
 
         private sealed class ItemConverterResolver : DefaultContractResolver

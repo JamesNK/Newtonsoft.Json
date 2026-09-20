@@ -341,6 +341,15 @@ namespace Newtonsoft.Json.Serialization
             }
             else
 #endif
+#if HAVE_HALF
+            if (value is Half)
+            {
+                _textWriter.WriteValue(value);
+                _innerWriter.WriteValue(value);
+                InternalWriteValue(JsonToken.Float);
+            }
+            else
+#endif
             {
                 _textWriter.WriteValue(value);
                 _innerWriter.WriteValue(value);
@@ -355,15 +364,6 @@ namespace Newtonsoft.Json.Serialization
                 }
             }
         }
-
-#if HAVE_HALF
-        internal override void WriteHalf(Half value, bool nullable)
-        {
-            _textWriter.WriteHalf(value, nullable);
-            _innerWriter.WriteHalf(value, nullable);
-            InternalWriteValue(JsonToken.Float);
-        }
-#endif
 
         public override void WriteValue(sbyte value)
         {

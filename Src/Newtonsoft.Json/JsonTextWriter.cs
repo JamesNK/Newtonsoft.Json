@@ -399,24 +399,18 @@ namespace Newtonsoft.Json
             }
             else
 #endif
+#if HAVE_HALF
+            if (value is Half half && GetType() == typeof(JsonTextWriter))
+            {
+                InternalWriteValue(JsonToken.Float);
+                WriteValueInternal(JsonConvert.ToString(half, FloatFormatHandling, QuoteChar), JsonToken.Float);
+            }
+            else
+#endif
             {
                 base.WriteValue(value);
             }
         }
-
-#if HAVE_HALF
-        internal override void WriteHalf(Half value, bool nullable)
-        {
-            if (GetType() != typeof(JsonTextWriter))
-            {
-                base.WriteHalf(value, nullable);
-                return;
-            }
-
-            InternalWriteValue(JsonToken.Float);
-            WriteValueInternal(JsonConvert.ToString(value, FloatFormatHandling, QuoteChar, nullable), JsonToken.Float);
-        }
-#endif
 
         /// <summary>
         /// Writes a null value.

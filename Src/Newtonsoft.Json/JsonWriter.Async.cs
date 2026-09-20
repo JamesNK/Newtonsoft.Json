@@ -51,18 +51,6 @@ namespace Newtonsoft.Json
         }
 #endif
 
-#if HAVE_HALF
-        internal virtual Task WriteHalfAsync(Half value, bool nullable, CancellationToken cancellationToken)
-        {
-            if (cancellationToken.IsCancellationRequested)
-            {
-                return Task.FromCanceled(cancellationToken);
-            }
-            WriteHalf(value, nullable);
-            return AsyncUtils.CompletedTask;
-        }
-#endif
-
         internal Task AutoCompleteAsync(JsonToken tokenBeingWritten, CancellationToken cancellationToken)
         {
             State oldState = _currentState;
@@ -754,9 +742,9 @@ namespace Newtonsoft.Json
                         return WriteValueAsync(f, cancellationToken);
                     }
 #if HAVE_HALF
-                    if (value is Half half)
+                    if (value is Half)
                     {
-                        return WriteHalfAsync(half, false, cancellationToken);
+                        return WriteValueAsync(value, cancellationToken);
                     }
 #endif
 
@@ -1726,8 +1714,7 @@ namespace Newtonsoft.Json
 #if HAVE_HALF
                     case PrimitiveTypeCode.Half:
                     case PrimitiveTypeCode.HalfNullable:
-                        return value == null ? writer.WriteNullAsync(cancellationToken)
-                            : writer.WriteHalfAsync((Half)value, typeCode == PrimitiveTypeCode.HalfNullable, cancellationToken);
+                        return writer.WriteValueAsync(value, cancellationToken);
 #endif
                     case PrimitiveTypeCode.Char:
                         return writer.WriteValueAsync((char)value, cancellationToken);

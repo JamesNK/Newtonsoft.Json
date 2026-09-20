@@ -976,17 +976,6 @@ namespace Newtonsoft.Json
         }
 #endif
 
-#if HAVE_HALF
-        internal override Task WriteHalfAsync(Half value, bool nullable, CancellationToken cancellationToken)
-        {
-            return _safeAsync
-                ? WriteValueInternalAsync(JsonToken.Float, JsonConvert.ToString(value, FloatFormatHandling, QuoteChar, nullable), cancellationToken)
-                : nullable
-                    ? WriteValueAsync((float?)value, cancellationToken)
-                    : WriteValueAsync((float)value, cancellationToken);
-        }
-#endif
-
         /// <summary>
         /// Asynchronously writes a <see cref="object"/> value.
         /// </summary>
@@ -1009,10 +998,22 @@ namespace Newtonsoft.Json
                     return WriteValueAsync(i, cancellationToken);
                 }
 #endif
+#if HAVE_HALF
+                if (value is Half half)
+                {
+                    return WriteValueInternalAsync(JsonToken.Float, JsonConvert.ToString(half, FloatFormatHandling, QuoteChar), cancellationToken);
+                }
+#endif
 
                 return WriteValueAsync(this, ConvertUtils.GetTypeCode(value.GetType()), value, cancellationToken);
             }
 
+#if HAVE_HALF
+            if (value is Half source)
+            {
+                return WriteValueAsync((float)source, cancellationToken);
+            }
+#endif
             return base.WriteValueAsync(value, cancellationToken);
         }
 

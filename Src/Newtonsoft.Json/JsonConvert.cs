@@ -271,9 +271,10 @@ namespace Newtonsoft.Json
         }
 
 #if HAVE_HALF
-        internal static string ToString(Half value, FloatFormatHandling floatFormatHandling, char quoteChar, bool nullable)
+        internal static string ToString(Half value, FloatFormatHandling floatFormatHandling, char quoteChar)
         {
-            return EnsureFloatFormat((double)value, EnsureDecimalPlace((double)value, value.ToString("R", CultureInfo.InvariantCulture)), floatFormatHandling, quoteChar, nullable);
+            return EnsureFloatFormat((double)value, EnsureDecimalPlace((double)value, value.ToString("R", CultureInfo.InvariantCulture)),
+                floatFormatHandling == FloatFormatHandling.DefaultValue ? FloatFormatHandling.String : floatFormatHandling, quoteChar, false);
         }
 #endif
 
@@ -524,7 +525,7 @@ namespace Newtonsoft.Json
 #if HAVE_HALF
             if (value is Half half)
             {
-                return ToString(half, FloatFormatHandling.Symbol, '"', false);
+                return ToString(half, FloatFormatHandling.Symbol, '"');
             }
 #endif
 #if HAVE_INT128

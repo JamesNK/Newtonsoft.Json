@@ -23,14 +23,22 @@ namespace Newtonsoft.Json.Utilities
             return adapter;
         }
 
-        internal abstract Array ToArray(object value);
+        internal abstract IEnumerable GetEnumerable(object value);
         internal abstract object FromList(IList values);
 
         private sealed class TypedMemoryAdapter<T> : MemoryAdapter
         {
-            internal override Array ToArray(object value)
+            internal override IEnumerable GetEnumerable(object value)
             {
-                return value is Memory<T> memory ? memory.ToArray() : ((ReadOnlyMemory<T>)value).ToArray();
+                return Enumerate(value is Memory<T> memory ? memory : (ReadOnlyMemory<T>)value);
+            }
+
+            private static IEnumerable Enumerate(ReadOnlyMemory<T> memory)
+            {
+                for (int index = 0; index < memory.Length; index++)
+                {
+                    yield return memory.Span[index];
+                }
             }
 
             internal override object FromList(IList values)

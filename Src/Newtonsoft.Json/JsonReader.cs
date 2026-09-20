@@ -606,7 +606,14 @@ namespace Newtonsoft.Json
                 case JsonToken.None:
                     throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
                 case JsonToken.Integer:
-                    buffer.Add(Convert.ToByte(Value, CultureInfo.InvariantCulture));
+                    object? value = Value;
+#if HAVE_INT128
+                    if (value is Int128 || value is UInt128)
+                    {
+                        ConvertUtils.TryConvertModernNumber(value, CultureInfo.InvariantCulture, typeof(byte), out value);
+                    }
+#endif
+                    buffer.Add(Convert.ToByte(value, CultureInfo.InvariantCulture));
                     return false;
                 case JsonToken.EndArray:
                     return true;

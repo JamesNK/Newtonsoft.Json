@@ -117,9 +117,9 @@ namespace Newtonsoft.Json.Linq
                         return writer.WriteValueAsync(f, cancellationToken);
                     }
 #if HAVE_HALF
-                    if (_value is Half half)
+                    if (_value is Half)
                     {
-                        return writer.WriteHalfAsync(half, false, cancellationToken);
+                        return writer.WriteValueAsync(_value, cancellationToken);
                     }
 #endif
 

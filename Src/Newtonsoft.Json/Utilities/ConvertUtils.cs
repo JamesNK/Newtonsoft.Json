@@ -352,6 +352,12 @@ namespace Newtonsoft.Json.Utilities
             {
                 return new BigInteger(System.Convert.ToInt64(value, CultureInfo.InvariantCulture));
             }
+            if (value is Enum enumeration)
+            {
+                return enumeration.GetTypeCode() == TypeCode.UInt64
+                    ? new BigInteger(System.Convert.ToUInt64(value, CultureInfo.InvariantCulture))
+                    : new BigInteger(System.Convert.ToInt64(value, CultureInfo.InvariantCulture));
+            }
             if (value is Int128 signed)
             {
                 return (BigInteger)signed;
@@ -457,6 +463,10 @@ namespace Newtonsoft.Json.Utilities
                 else if (initialValue is double doubleValue)
                 {
                     value = (Half)doubleValue;
+                }
+                else if (initialValue is Enum)
+                {
+                    value = (Half)System.Convert.ToDouble(initialValue, culture);
                 }
                 else
                 {

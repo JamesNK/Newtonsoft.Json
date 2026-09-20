@@ -579,9 +579,9 @@ namespace Newtonsoft.Json
                         WriteValue(floatValue);
                     }
 #if HAVE_HALF
-                    else if (value is Half half)
+                    else if (value is Half)
                     {
-                        WriteHalf(half, false);
+                        WriteValue(value);
                     }
 #endif
                     else
@@ -1451,25 +1451,18 @@ namespace Newtonsoft.Json
                     return;
                 }
 #endif
+#if HAVE_HALF
+                if (value is Half half)
+                {
+                    WriteValue((float)half);
+                    return;
+                }
+#endif
 
                 WriteValue(this, ConvertUtils.GetTypeCode(value.GetType()), value);
             }
         }
         #endregion
-
-#if HAVE_HALF
-        internal virtual void WriteHalf(Half value, bool nullable)
-        {
-            if (nullable)
-            {
-                WriteValue((float?)(float)value);
-            }
-            else
-            {
-                WriteValue((float)value);
-            }
-        }
-#endif
 
         /// <summary>
         /// Writes a comment <c>/*...*/</c> containing the specified text.
@@ -1516,14 +1509,7 @@ namespace Newtonsoft.Json
 #if HAVE_HALF
                     case PrimitiveTypeCode.Half:
                     case PrimitiveTypeCode.HalfNullable:
-                        if (value == null)
-                        {
-                            writer.WriteNull();
-                        }
-                        else
-                        {
-                            writer.WriteHalf((Half)value, typeCode == PrimitiveTypeCode.HalfNullable);
-                        }
+                        writer.WriteValue(value);
                         return;
 #endif
 #if HAVE_INT128

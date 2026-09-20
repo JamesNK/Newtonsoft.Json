@@ -819,9 +819,9 @@ namespace Newtonsoft.Json.Linq
                         writer.WriteValue(f);
                     }
 #if HAVE_HALF
-                    else if (_value is Half half)
+                    else if (_value is Half)
                     {
-                        writer.WriteHalf(half, false);
+                        writer.WriteValue(_value);
                     }
 #endif
                     else
@@ -932,10 +932,16 @@ namespace Newtonsoft.Json.Linq
 #if HAVE_INT128
             if (_valueType == JTokenType.Integer)
             {
-                BigInteger integer = _value is Enum
-                    ? new BigInteger(Convert.ToDecimal(_value, CultureInfo.InvariantCulture))
-                    : ConvertUtils.ToBigInteger(_value);
-                return integer.GetHashCode();
+                return _value switch
+                {
+                    BigInteger integer => int.CreateTruncating(integer),
+                    ulong unsigned => unchecked((int)unsigned),
+                    Enum enumeration when enumeration.GetTypeCode() == TypeCode.UInt64
+                        => unchecked((int)Convert.ToUInt64(enumeration, CultureInfo.InvariantCulture)),
+                    Int128 signed128 => unchecked((int)signed128),
+                    UInt128 unsigned128 => unchecked((int)unsigned128),
+                    _ => unchecked((int)Convert.ToInt64(_value, CultureInfo.InvariantCulture))
+                };
             }
 #endif
 
