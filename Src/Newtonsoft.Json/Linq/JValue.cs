@@ -955,6 +955,17 @@ namespace Newtonsoft.Json.Linq
                 return value.GetHashCode();
             }
 
+            if (_valueType == JTokenType.Float)
+            {
+#if HAVE_HALF
+                if (_value is Half half)
+                {
+                    return ((double)half).GetHashCode();
+                }
+#endif
+                return Convert.ToDouble(_value, CultureInfo.InvariantCulture).GetHashCode();
+            }
+
             return _value.GetHashCode();
         }
 

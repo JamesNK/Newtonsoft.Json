@@ -84,6 +84,53 @@ namespace Newtonsoft.Json.Tests.Linq
         private enum UnsignedHashEnum : ulong { MaxValue = ulong.MaxValue }
 
         [Test]
+        public void FloatHashesMatchAcrossTypes()
+        {
+            List<object[]> groups = new List<object[]>
+            {
+                new object[] { 0d, -0d, 0f, -0f, 0m },
+                new object[] { 1d, 1f, 1m },
+                new object[] { 1.5d, 1.5f, 1.5m },
+                new object[] { -1.5d, -1.5f, -1.5m },
+                new object[] { (double)float.Epsilon, float.Epsilon },
+                new object[] { double.NaN, float.NaN },
+                new object[] { double.PositiveInfinity, float.PositiveInfinity },
+                new object[] { double.NegativeInfinity, float.NegativeInfinity }
+            };
+#if HAVE_HALF
+            groups.Add(new object[] { (Half)0, BitConverter.Int16BitsToHalf(short.MinValue), 0f, 0d, 0m });
+            groups.Add(new object[] { (Half)1.5f, 1.5f, 1.5d, 1.5m });
+            foreach (Half value in new[] { (Half)1, (Half)(-1.5f), (Half)0.1f, Half.Epsilon, -Half.Epsilon, Half.MinValue, Half.MaxValue, Half.NaN, BitConverter.Int16BitsToHalf(0x7fff), Half.PositiveInfinity, Half.NegativeInfinity })
+            {
+                groups.Add(new object[] { value, (float)value, (double)value });
+            }
+#endif
+            JTokenEqualityComparer comparer = new JTokenEqualityComparer();
+            foreach (object[] group in groups)
+            {
+                foreach (object expectedValue in group)
+                {
+                    JValue expected = new JValue(expectedValue);
+                    Dictionary<JValue, int> values = new Dictionary<JValue, int> { { expected, 42 } };
+                    Dictionary<JToken, int> lookup = new Dictionary<JToken, int>(comparer) { { expected, 42 } };
+                    Dictionary<JToken, int> arrayLookup = new Dictionary<JToken, int>(comparer) { { new JArray(expected), 42 } };
+                    Dictionary<JToken, int> objectLookup = new Dictionary<JToken, int>(comparer) { { new JObject(new JProperty("Value", expected)), 42 } };
+                    foreach (object value in group)
+                    {
+                        JValue actual = new JValue(value);
+                        Assert.IsTrue(expected.Equals(actual));
+                        Assert.AreEqual(expected.GetHashCode(), actual.GetHashCode());
+                        Assert.AreEqual(comparer.GetHashCode(expected), comparer.GetHashCode(actual));
+                        Assert.AreEqual(42, values[actual]);
+                        Assert.AreEqual(42, lookup[actual]);
+                        Assert.AreEqual(42, arrayLookup[new JArray(actual)]);
+                        Assert.AreEqual(42, objectLookup[new JObject(new JProperty("Value", actual))]);
+                    }
+                }
+            }
+        }
+
+        [Test]
         public void IntegerHashesUseUpper32Bits()
         {
             Dictionary<int, long> hashes = new Dictionary<int, long>();
