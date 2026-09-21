@@ -291,7 +291,7 @@ namespace Newtonsoft.Json.Linq
 #pragma warning restore CS8653 // A default expression introduces a null value for a type parameter.
                     }
 
-                    targetType = Nullable.GetUnderlyingType(targetType)!;
+                    targetType = ReflectionUtils.GetUnderlyingTypeIfNullable(targetType);
                 }
 
 #if HAVE_HALF
