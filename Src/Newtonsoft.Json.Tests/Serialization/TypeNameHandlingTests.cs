@@ -728,8 +728,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = "{\"$type\":null,\"Name\":\"test\"}";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(json));
+            AssertInvalidTypeProperty(json);
         }
 
         [Test]
@@ -737,8 +736,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = "{\"$type\":[\"foo\"],\"Name\":\"test\"}";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(json));
+            AssertInvalidTypeProperty(json);
         }
 
         [Test]
@@ -746,8 +744,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = "{\"$type\":{},\"Name\":\"test\"}";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(json));
+            AssertInvalidTypeProperty(json);
         }
 
         [Test]
@@ -755,8 +752,19 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             string json = "{\"$type\":42,\"Name\":\"test\"}";
 
-            ExceptionAssert.Throws<JsonSerializationException>(() =>
-                JsonConvert.DeserializeObject<Dictionary<string, object>>(json));
+            AssertInvalidTypeProperty(json);
+        }
+
+        private static void AssertInvalidTypeProperty(string json)
+        {
+            foreach (MetadataPropertyHandling metadataPropertyHandling in new[] { MetadataPropertyHandling.Default, MetadataPropertyHandling.ReadAhead })
+            {
+                ExceptionAssert.Throws<JsonSerializationException>(() =>
+                    JsonConvert.DeserializeObject<Dictionary<string, object>>(json, new JsonSerializerSettings
+                    {
+                        MetadataPropertyHandling = metadataPropertyHandling
+                    }));
+            }
         }
 
         [Test]
