@@ -287,6 +287,72 @@
 
       </content>
     </section>
+
+    <section address="Unions">
+      <title>Union Types</title>
+      <content>
+        <para>C# union types marked with <codeInline>System.Runtime.CompilerServices.UnionAttribute</codeInline>
+        are serialized as their contained value, without a wrapper. For example, an <codeInline>int</codeInline>
+        or <codeInline>string</codeInline> union is written as <codeInline>42</codeInline> or <codeInline>"hello"</codeInline>.
+        This matches the default union representation in System.Text.Json.</para>
+        <para>The attribute is recognized by name, including when it is supplied by an application targeting
+        an older framework. Implementing <codeInline>IUnion</codeInline> alone does not enable union serialization.
+        Cases are discovered from public single-parameter constructors.</para>
+
+        <para><legacyBold>Serialization</legacyBold></para>
+        <list class="bullet">
+          <listItem><para>The contained value is serialized using its runtime type, following normal Json.NET behavior.
+          Unlike System.Text.Json's declared-case serialization, derived-type members are included by default.</para></listItem>
+          <listItem><para>Serialization uses public <codeInline>TryGetValue(out T)</codeInline> methods when available,
+          otherwise the public <codeInline>object Value</codeInline> property.</para></listItem>
+          <listItem><para>A default union with no value is written as <codeInline>null</codeInline>.</para></listItem>
+        </list>
+
+        <para><legacyBold>Deserialization</legacyBold></para>
+        <para>Deserialization selects a case by JSON value kind: object, array, string, number, or boolean.</para>
+        <list class="bullet">
+          <listItem><para>If multiple cases accept the same kind, deserialization throws
+          <codeInline>JsonSerializationException</codeInline>. Object properties are not inspected to guess the case.</para></listItem>
+          <listItem><para>Deserializing <codeInline>null</codeInline> uses a nullable case constructor when available,
+          otherwise the default union value.</para></listItem>
+          <listItem><para>Custom case converters that support reading are conservatively treated as accepting any kind.
+          When the selected converter has <codeInline>CanRead</codeInline> set to <codeInline>false</codeInline>,
+          the case's normal contract determines its kind. A custom converter for the union can override this behavior.</para></listItem>
+          <listItem><para>The strings <codeInline>"NaN"</codeInline>, <codeInline>"Infinity"</codeInline>, and
+          <codeInline>"-Infinity"</codeInline> also match <codeInline>float</codeInline> and <codeInline>double</codeInline>
+          cases, including their nullable equivalents. These values are ambiguous if another case accepts the same string,
+          such as a <codeInline>string</codeInline> case. Other quoted numbers are not matched to numeric cases.</para></listItem>
+        </list>
+
+        <para><legacyBold>Serializer Settings</legacyBold></para>
+        <list class="bullet">
+          <listItem>
+            <para><legacyBold>Decimal precision:</legacyBold> Union deserialization buffers JSON before selecting a case.
+            By default, floating-point numbers are read as <codeInline>double</codeInline> values, which can lose precision
+            or cause conversion errors for <codeInline>decimal</codeInline> cases and decimal members in their payloads.</para>
+            <para>When deserializing these unions, set <codeInline>JsonSerializerSettings.FloatParseHandling</codeInline>
+            to <codeInline>FloatParseHandling.Decimal</codeInline> to preserve decimal precision. This setting applies to
+            the entire deserialization operation and limits JSON floating-point numbers to the range supported by
+            <codeInline>decimal</codeInline>.</para>
+          </listItem>
+          <listItem><para><legacyBold>Date parsing:</legacyBold> Union deserialization respects
+          <codeInline>DateParseHandling</codeInline>. Unlike System.Text.Json, Json.NET parses date-formatted strings as dates
+          by default. Set <codeInline>DateParseHandling</codeInline> to <codeInline>None</codeInline> to preserve the original
+          text of date-formatted string cases.</para></listItem>
+          <listItem>
+            <para><legacyBold>Type names:</legacyBold> The serializer's global <codeInline>TypeNameHandling</codeInline>
+            setting can disambiguate object and collection cases using the existing <codeInline>$type</codeInline> and
+            <codeInline>$values</codeInline> metadata. Property-level <codeInline>TypeNameHandling</codeInline> and
+            <codeInline>ItemTypeNameHandling</codeInline> overrides are not passed to the union converter.</para>
+            <para><codeInline>TypeNameHandling.Auto</codeInline> writes the contained type, not the union type. The target
+            union type must therefore be known when deserializing. Ordinary scalar values are not given type metadata,
+            so unions such as <codeInline>int</codeInline> or <codeInline>long</codeInline> remain ambiguous.</para>
+            <para>As recommended by the <codeInline>TypeNameHandling</codeInline> documentation, validate incoming type names
+            with a custom <codeInline>SerializationBinder</codeInline> when reading external JSON.</para>
+          </listItem>
+        </list>
+      </content>
+    </section>
     
       </sections>
     </section>
