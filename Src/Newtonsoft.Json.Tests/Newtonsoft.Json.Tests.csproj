@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <TargetFrameworks Condition="'$(TestFrameworks)'==''">net46;net40;net35;net20;net8.0;net10.0</TargetFrameworks>
     <TargetFrameworks Condition="'$(TestFrameworks)'!=''">$(TestFrameworks)</TargetFrameworks>
@@ -41,6 +41,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <ProjectReference Include="..\Newtonsoft.Json\Newtonsoft.Json.csproj" />
+    <PackageDownload Include="Newtonsoft.Json" Version="[13.0.1]" />
   </ItemGroup>
   
   <ItemGroup Condition="'$(TargetFramework)'=='net46'">
