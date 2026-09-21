@@ -622,6 +622,12 @@ namespace Newtonsoft.Json.Serialization
                 }
 #if HAVE_DYNAMIC
                 case JsonContractType.Dynamic:
+#if HAVE_APPCONTEXT
+                    if (!JToken.DynamicIsSupported)
+                    {
+                        throw new NotSupportedException(JToken.DynamicNotSupportedMessage);
+                    }
+#endif
                     JsonDynamicContract dynamicContract = (JsonDynamicContract)contract;
                     return CreateDynamic(reader, dynamicContract, member, id);
 #endif

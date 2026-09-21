@@ -1254,6 +1254,12 @@ namespace Newtonsoft.Json.Serialization
 #if HAVE_DYNAMIC
             if (typeof(IDynamicMetaObjectProvider).IsAssignableFrom(t))
             {
+#if HAVE_APPCONTEXT
+                if (!JToken.DynamicIsSupported)
+                {
+                    throw new NotSupportedException(JToken.DynamicNotSupportedMessage);
+                }
+#endif
                 return CreateDynamicContract(objectType);
             }
 #endif
