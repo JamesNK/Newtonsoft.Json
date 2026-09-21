@@ -1008,12 +1008,6 @@ namespace Newtonsoft.Json
                 return WriteValueAsync(this, ConvertUtils.GetTypeCode(value.GetType()), value, cancellationToken);
             }
 
-#if HAVE_HALF
-            if (value is Half source)
-            {
-                return WriteValueAsync((float)source, cancellationToken);
-            }
-#endif
             return base.WriteValueAsync(value, cancellationToken);
         }
 

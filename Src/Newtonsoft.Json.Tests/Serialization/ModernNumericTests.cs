@@ -272,20 +272,73 @@ namespace Newtonsoft.Json.Tests.Serialization
                     await writer.WriteValueAsync((object)(Half?)1.5, CancellationToken.None);
                     await Assert.ThrowsAnyAsync<OperationCanceledException>(() =>
                         new JValue((object)(Half)1.5).WriteToAsync(writer, new CancellationToken(true), Array.Empty<JsonConverter>()));
+                    await writer.WriteValueAsync((object)1.5f);
+                    await writer.WriteValueAsync(1.5f);
                     await writer.WriteEndArrayAsync();
                     if (writer is AsyncRedactingFloatWriter asyncWriter)
                     {
-                        Assert.Equal(2, asyncWriter.ValueCalls);
+                        Assert.Equal(1, asyncWriter.ValueCalls);
                         Assert.Equal(0, asyncWriter.NullableCalls);
                     }
                     else
                     {
                         RedactingFloatWriter syncWriter = (RedactingFloatWriter)writer;
-                        Assert.Equal(2, syncWriter.ValueCalls);
+                        Assert.Equal(3, syncWriter.ObjectCalls);
+                        Assert.Equal(4, syncWriter.ValueCalls);
                         Assert.Equal(0, syncWriter.NullableCalls);
                     }
                 }
-                Assert.Equal("[0.0,0.0]", output.ToString());
+                Assert.Equal(asyncOverrides ? "[1.5,1.5,1.5,0.0]" : "[0.0,0.0,0.0,0.0]", output.ToString());
+            }
+        }
+
+        [Fact]
+        public async Task HalfObjectWriterOverridesAsync()
+        {
+            Func<JsonWriter, object, CancellationToken, Task>[] writes =
+            {
+                (writer, value, token) => writer.WriteValueAsync(value, token),
+                (writer, value, token) => new JValue(value).WriteToAsync(writer, token),
+                (writer, value, token) => writer.WriteTokenAsync(JsonToken.Float, value, token)
+            };
+            foreach (Func<JsonWriter, object, CancellationToken, Task> write in writes)
+            {
+                StringWriter output = new StringWriter(CultureInfo.InvariantCulture);
+                using (RedactingObjectWriter writer = new RedactingObjectWriter(output))
+                {
+                    object value = (Half)1.5;
+                    CancellationToken canceled = new CancellationToken(true);
+                    OperationCanceledException exception = await Assert.ThrowsAnyAsync<OperationCanceledException>(() => write(writer, value, canceled));
+                    Assert.Equal(canceled, exception.CancellationToken);
+                    Assert.Equal(0, writer.Calls);
+                    Assert.Equal(string.Empty, output.ToString());
+                    Assert.Equal(WriteState.Start, writer.WriteState);
+
+                    await writer.WriteStartArrayAsync();
+                    writer.WriteValue(value);
+                    await write(writer, value, CancellationToken.None);
+                    Assert.Equal(2, writer.Calls);
+                    Assert.Same(value, writer.Value);
+                    await writer.WriteEndArrayAsync();
+                }
+                Assert.Equal("[\"redacted\",\"redacted\"]", output.ToString());
+            }
+        }
+
+        private sealed class RedactingObjectWriter : JsonTextWriter
+        {
+            public int Calls { get; private set; }
+            public object Value { get; private set; }
+
+            public RedactingObjectWriter(TextWriter writer) : base(writer)
+            {
+            }
+
+            public override void WriteValue(object value)
+            {
+                Calls++;
+                Value = value;
+                base.WriteValue("redacted");
             }
         }
 
