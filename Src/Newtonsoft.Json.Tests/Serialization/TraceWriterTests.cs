@@ -33,7 +33,7 @@ using System.Threading.Tasks;
 #endif
 
 namespace Newtonsoft.Json.Tests.Serialization
-{ 
+{
     public class Staff
     {
         public string Name { get; set; }
@@ -356,7 +356,7 @@ Newtonsoft.Json Error: 0 : Error!
             // 2012-11-11T12:08:42.797 Info Started serializing System.Collections.Generic.List`1[System.String]. Path 'Roles'.
             // 2012-11-11T12:08:42.798 Info Finished serializing System.Collections.Generic.List`1[System.String]. Path 'Roles'.
             // 2012-11-11T12:08:42.799 Info Finished serializing Newtonsoft.Json.Tests.Serialization.Staff. Path ''.
-            // 2013-05-19T00:07:24.360 Verbose Deserialized JSON: 
+            // 2013-05-19T00:07:24.360 Verbose Deserialized JSON:
             // {
             //   "Name": "Arnie Admin",
             //   "StartDate": new Date(
@@ -917,7 +917,7 @@ Newtonsoft.Json Error: 0 : Error!
                 });
 
             Assert.AreEqual("Started deserializing Newtonsoft.Json.Tests.TestObjects.Organization.Person. Path 'MissingMemberProperty', line 1, position 25.", traceWriter.TraceRecords[0].Message);
-            Assert.AreEqual("Could not find member 'MissingMemberProperty' on Newtonsoft.Json.Tests.TestObjects.Organization.Person. Path 'MissingMemberProperty', line 1, position 25.", traceWriter.TraceRecords[1].Message);
+            Assert.AreEqual("The JSON property 'MissingMemberProperty' does not exist on Newtonsoft.Json.Tests.TestObjects.Organization.Person. Path 'MissingMemberProperty', line 1, position 25.", traceWriter.TraceRecords[1].Message);
             Assert.IsTrue(traceWriter.TraceRecords[2].Message.StartsWith("Finished deserializing Newtonsoft.Json.Tests.TestObjects.Organization.Person. Path ''"));
         }
 
@@ -945,7 +945,7 @@ Newtonsoft.Json Error: 0 : Error!
             });
 
             Assert.AreEqual("Deserializing Newtonsoft.Json.Tests.TestObjects.VersionOld using creator with parameters: Major, Minor, Build, Revision. Path 'Major', line 2, position 10.", traceWriter.TraceRecords[0].Message);
-            Assert.AreEqual("Could not find member 'MissingMemberProperty' on Newtonsoft.Json.Tests.TestObjects.VersionOld. Path 'MissingMemberProperty', line 8, position 31.", traceWriter.TraceRecords[1].Message);
+            Assert.AreEqual("The JSON property 'MissingMemberProperty' does not exist on Newtonsoft.Json.Tests.TestObjects.VersionOld. Path 'MissingMemberProperty', line 8, position 31.", traceWriter.TraceRecords[1].Message);
             Assert.IsTrue(traceWriter.TraceRecords[2].Message.StartsWith("Started deserializing Newtonsoft.Json.Tests.TestObjects.VersionOld. Path ''"));
             Assert.IsTrue(traceWriter.TraceRecords[3].Message.StartsWith("Finished deserializing Newtonsoft.Json.Tests.TestObjects.VersionOld. Path ''"));
         }
