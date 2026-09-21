@@ -34,6 +34,22 @@ namespace Newtonsoft.Json.Converters
     /// </summary>
     public class VersionConverter : JsonConverter
     {
+        private const int MaxVersionFieldCount = 4;
+        private const int MinVersionFieldCount = 0;
+        private int _versionFieldCount;
+
+        /// <summary>
+        /// Gets or sets the version field count used when converting a version to JSON.
+        /// </summary>
+        /// <value>The version field count used when converting a version to JSON.</value>
+        public int VersionFieldCount
+        {
+            get => _versionFieldCount;
+            set => _versionFieldCount = value < MinVersionFieldCount
+                ? MinVersionFieldCount
+                : value > MaxVersionFieldCount ? MaxVersionFieldCount : value;
+        }
+
         /// <summary>
         /// Writes the JSON representation of the object.
         /// </summary>
@@ -46,9 +62,13 @@ namespace Newtonsoft.Json.Converters
             {
                 writer.WriteNull();
             }
-            else if (value is Version)
+            else if (value is Version version)
             {
-                writer.WriteValue(value.ToString());
+                string text = VersionFieldCount > MinVersionFieldCount && VersionFieldCount <= version.Build
+                    ? version.ToString(VersionFieldCount)
+                    : version.ToString();
+
+                writer.WriteValue(text);
             }
             else
             {
