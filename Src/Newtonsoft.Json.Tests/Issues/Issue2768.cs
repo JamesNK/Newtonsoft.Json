@@ -163,13 +163,23 @@ namespace Newtonsoft.Json.Tests.Issues
         }
 
         [Test]
+        public void Test_Deserialize_Double_Positive()
+        {
+            double d = JsonConvert.DeserializeObject<double>("0.0");
+
+            Assert.AreEqual(0L, BitConverter.DoubleToInt64Bits(d));
+        }
+
+        [Test]
         public void Test_Deserialize_Double_Negative()
         {
             double d = JsonConvert.DeserializeObject<double>("-0.0");
 
 #if NETCOREAPP3_1_OR_GREATER
+            Assert.AreEqual(long.MinValue, BitConverter.DoubleToInt64Bits(d));
             Assert.AreEqual("-0", d.ToString());
 #else
+            Assert.AreEqual(0L, BitConverter.DoubleToInt64Bits(d));
             Assert.AreEqual("0", d.ToString());
 #endif
         }
@@ -180,8 +190,10 @@ namespace Newtonsoft.Json.Tests.Issues
             double d = JsonConvert.DeserializeObject<double>("-0");
 
 #if NETCOREAPP3_1_OR_GREATER
+            Assert.AreEqual(long.MinValue, BitConverter.DoubleToInt64Bits(d));
             Assert.AreEqual("-0", d.ToString());
 #else
+            Assert.AreEqual(0L, BitConverter.DoubleToInt64Bits(d));
             Assert.AreEqual("0", d.ToString());
 #endif
         }
@@ -190,6 +202,8 @@ namespace Newtonsoft.Json.Tests.Issues
         public void JValueDouble_ToString()
         {
             var d = new JValue(-0.0d);
+
+            Assert.AreEqual(long.MinValue, BitConverter.DoubleToInt64Bits((double)d.Value));
 
 #if NETCOREAPP3_1_OR_GREATER
             Assert.AreEqual("-0", d.ToString());
