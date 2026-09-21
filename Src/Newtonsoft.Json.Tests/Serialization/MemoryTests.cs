@@ -80,12 +80,17 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.Empty(result.DisallowNullMutable.Value.ToArray());
             Assert.Empty(result.DisallowNullReadOnly.Value.ToArray());
 
-            foreach (string propertyName in new[] { nameof(RequiredByteBuffers.AlwaysMutable), nameof(RequiredByteBuffers.AlwaysReadOnly), nameof(RequiredByteBuffers.DisallowNullMutable), nameof(RequiredByteBuffers.DisallowNullReadOnly) })
+            AssertNullValueError(json, nameof(RequiredByteBuffers.AlwaysMutable), "Required property 'AlwaysMutable' expects a value but got null.");
+            AssertNullValueError(json, nameof(RequiredByteBuffers.AlwaysReadOnly), "Required property 'AlwaysReadOnly' expects a value but got null.");
+            AssertNullValueError(json, nameof(RequiredByteBuffers.DisallowNullMutable), "Property 'DisallowNullMutable' expects a non-null value.");
+            AssertNullValueError(json, nameof(RequiredByteBuffers.DisallowNullReadOnly), "Property 'DisallowNullReadOnly' expects a non-null value.");
+
+            static void AssertNullValueError(string json, string propertyName, string expectedMessage)
             {
                 JObject invalid = JObject.Parse(json);
                 invalid[propertyName] = JValue.CreateNull();
                 JsonSerializationException exception = Assert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<RequiredByteBuffers>(invalid.ToString(Formatting.None)));
-                Assert.Contains("Required property '" + propertyName + "'", exception.Message);
+                Assert.Contains(expectedMessage, exception.Message);
             }
         }
 
