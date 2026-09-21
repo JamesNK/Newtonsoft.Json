@@ -31,6 +31,7 @@ using System.Runtime.Serialization;
 using System.Runtime.Serialization.Json;
 #endif
 using System.Text;
+using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
 #if DNXCORE50
 using Xunit;
@@ -131,6 +132,31 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             DefaultValueWithRenamedConstructorParameter myObject = JsonConvert.DeserializeObject<DefaultValueWithRenamedConstructorParameter>("{}");
             Assert.AreEqual(DefaultValueWithRenamedConstructorParameter.DefaultText, myObject.Text);
+        }
+
+        [JsonObject(NamingStrategyType = typeof(SnakeCaseNamingStrategy), NamingStrategyParameters = new object[] { false, true })]
+        private class DefaultValueWithRenamedConstructorParameterAndNamingStrategy
+        {
+            public const string DefaultText = "...";
+
+            [DefaultValue(DefaultText)]
+            [JsonProperty("RenamedText", DefaultValueHandling = DefaultValueHandling.Populate)]
+            public string Text { get; }
+
+            public DefaultValueWithRenamedConstructorParameterAndNamingStrategy([JsonProperty("RenamedText")] string text)
+            {
+                Text = text;
+            }
+        }
+
+        [Test]
+        public void DefaultValueWithRenamedConstructorParameterAndNamingStrategyTest()
+        {
+            DefaultValueWithRenamedConstructorParameterAndNamingStrategy defaultObject = JsonConvert.DeserializeObject<DefaultValueWithRenamedConstructorParameterAndNamingStrategy>("{}");
+            Assert.AreEqual(DefaultValueWithRenamedConstructorParameterAndNamingStrategy.DefaultText, defaultObject.Text);
+
+            DefaultValueWithRenamedConstructorParameterAndNamingStrategy populatedObject = JsonConvert.DeserializeObject<DefaultValueWithRenamedConstructorParameterAndNamingStrategy>("{\"renamed_text\":\"value\"}");
+            Assert.AreEqual("value", populatedObject.Text);
         }
 
         public class MyClass
