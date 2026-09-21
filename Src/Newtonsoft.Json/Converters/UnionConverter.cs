@@ -98,12 +98,14 @@ namespace Newtonsoft.Json.Converters
             List<UnionCase> orderedCases = new List<UnionCase>();
             while (cases.Count > 0)
             {
+                UnionCase nextCase = cases[0];
                 foreach (UnionCase candidate in cases)
                 {
                     bool hasDerivedCase = false;
                     foreach (UnionCase other in cases)
                     {
-                        if (candidate != other && candidate.Type != other.Type && IsAssignableCase(candidate.Type, other.Type))
+                        if (candidate != other && candidate.Type != other.Type &&
+                            IsAssignableCase(candidate.Type, other.Type) && !IsAssignableCase(other.Type, candidate.Type))
                         {
                             hasDerivedCase = true;
                             break;
@@ -112,11 +114,13 @@ namespace Newtonsoft.Json.Converters
 
                     if (!hasDerivedCase)
                     {
-                        orderedCases.Add(candidate);
-                        cases.Remove(candidate);
+                        nextCase = candidate;
                         break;
                     }
                 }
+
+                orderedCases.Add(nextCase);
+                cases.Remove(nextCase);
             }
 
             foreach (MethodInfo method in type.GetMethods(BindingFlags.Public | BindingFlags.Instance))

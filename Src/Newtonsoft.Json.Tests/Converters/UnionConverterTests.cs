@@ -314,6 +314,19 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void MutuallyAssignableArrayCases()
+        {
+            Assert.IsNull(JsonConvert.DeserializeObject<Pair<int[], uint[]>>("null").Value);
+            Assert.IsNull(JsonConvert.DeserializeObject<Pair<uint[], int[]>>("null").Value);
+            Assert.AreEqual("[1,2]", JsonConvert.SerializeObject(new Pair<int[], uint[]>(new int[] { 1, 2 })));
+            Assert.AreEqual("[1,2]", JsonConvert.SerializeObject(new Pair<int[], uint[]>(new uint[] { 1, 2 })));
+            Assert.AreEqual("[1,2]", JsonConvert.SerializeObject(new Pair<uint[], int[]>(new int[] { 1, 2 })));
+            Assert.AreEqual("[1,2]", JsonConvert.SerializeObject(new Pair<uint[], int[]>(new uint[] { 1, 2 })));
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Pair<int[], uint[]>>("[1,2]"));
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Pair<uint[], int[]>>("[1,2]"));
+        }
+
+        [Test]
         public void NumberAmbiguityWithTypeNameHandling()
         {
             foreach (TypeNameHandling mode in new[] { TypeNameHandling.None, TypeNameHandling.Auto, TypeNameHandling.All, TypeNameHandling.Objects, TypeNameHandling.Arrays })
