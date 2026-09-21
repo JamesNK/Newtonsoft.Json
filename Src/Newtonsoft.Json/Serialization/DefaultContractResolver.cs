@@ -91,6 +91,7 @@ namespace Newtonsoft.Json.Serialization
             new DataSetConverter(),
             new DataTableConverter(),
 #endif
+            new UnionConverter(),
 #if HAVE_FSHARP_TYPES
             new DiscriminatedUnionConverter(),
 #endif
