@@ -25,16 +25,9 @@
 
 #if HAVE_BENCHMARKS
 
-using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Xml;
 using BenchmarkDotNet.Attributes;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Tests.TestObjects;
 
 namespace Newtonsoft.Json.Tests.Benchmarks
@@ -42,6 +35,9 @@ namespace Newtonsoft.Json.Tests.Benchmarks
     public class SerializeBenchmarks
     {
         private static readonly IList<RootObject> LargeCollection;
+        private static readonly MemoryStream ReusedMemoryStream = new();
+        private static readonly StreamWriter JsonFile = new(ReusedMemoryStream);
+        private static readonly JsonSerializer Serializer = new() { Formatting = Formatting.Indented };
 
         static SerializeBenchmarks()
         {
@@ -53,12 +49,8 @@ namespace Newtonsoft.Json.Tests.Benchmarks
         [Benchmark]
         public void SerializeLargeJsonFile()
         {
-            using (StreamWriter file = System.IO.File.CreateText(TestFixtureBase.ResolvePath("largewrite.json")))
-            {
-                JsonSerializer serializer = new JsonSerializer();
-                serializer.Formatting = Formatting.Indented;
-                serializer.Serialize(file, LargeCollection);
-            }
+            ReusedMemoryStream.Seek(0, SeekOrigin.Begin);
+            Serializer.Serialize(JsonFile, LargeCollection);
         }
     }
 }

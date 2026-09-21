@@ -24,10 +24,11 @@
 #endregion
 
 using System;
+using System.Runtime.InteropServices;
 
 namespace Newtonsoft.Json.Utilities
 {
-    internal enum ParserTimeZone
+    internal enum ParserTimeZone : byte
     {
         Unspecified = 0,
         Utc = 1,
@@ -35,6 +36,7 @@ namespace Newtonsoft.Json.Utilities
         LocalEastOfUtc = 3
     }
 
+    [StructLayout(LayoutKind.Auto)]
     internal struct DateTimeParser
     {
         static DateTimeParser()
@@ -56,15 +58,15 @@ namespace Newtonsoft.Json.Utilities
             Lz_zz = "-zz".Length;
         }
 
-        public int Year;
-        public int Month;
-        public int Day;
-        public int Hour;
-        public int Minute;
-        public int Second;
+        public ushort Year;
+        public byte Month;
+        public byte Day;
+        public byte Hour;
+        public byte Minute;
+        public byte Second;
         public int Fraction;
-        public int ZoneHour;
-        public int ZoneMinute;
+        public byte ZoneHour;
+        public byte ZoneMinute;
         public ParserTimeZone Zone;
 
         private char[] _text;
@@ -130,7 +132,7 @@ namespace Newtonsoft.Json.Utilities
                   && ParseChar(start + LzHH_mm, ':')
                   && Parse2Digit(start + LzHH_mm_, out Second)
                   && Second < 60
-                  && (Hour != 24 || (Minute == 0 && Second == 0)))) // hour can be 24 if minute/second is zero)
+                  && ((Minute == 0 && Second == 0) || Hour != 24))) // hour can be 24 if minute/second is zero)
             {
                 return false;
             }
@@ -231,7 +233,7 @@ namespace Newtonsoft.Json.Utilities
             return (start == _end);
         }
 
-        private bool Parse4Digit(int start, out int num)
+        private bool Parse4Digit(int start, out ushort num)
         {
             if (start + 3 < _end)
             {
@@ -244,7 +246,7 @@ namespace Newtonsoft.Json.Utilities
                     && 0 <= digit3 && digit3 < 10
                     && 0 <= digit4 && digit4 < 10)
                 {
-                    num = (((((digit1 * 10) + digit2) * 10) + digit3) * 10) + digit4;
+                    num = (ushort)((((((digit1 * 10) + digit2) * 10) + digit3) * 10) + digit4);
                     return true;
                 }
             }
@@ -252,16 +254,17 @@ namespace Newtonsoft.Json.Utilities
             return false;
         }
 
-        private bool Parse2Digit(int start, out int num)
+        private bool Parse2Digit(int start, out byte num)
         {
-            if (start + 1 < _end)
+            int end = start + 1;
+            if (end < _end)
             {
                 int digit1 = _text[start] - '0';
-                int digit2 = _text[start + 1] - '0';
+                int digit2 = _text[end] - '0';
                 if (0 <= digit1 && digit1 < 10
                     && 0 <= digit2 && digit2 < 10)
                 {
-                    num = (digit1 * 10) + digit2;
+                    num = (byte)((digit1 * 10) + digit2);
                     return true;
                 }
             }
