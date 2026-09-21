@@ -306,6 +306,51 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreEqual(5.0, r.length);
             Assert.AreEqual(10.0, r.width);
         }
+
+        [Test]
+        public void SerializeUnionWithTypeNameHandlingAll()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+            };
+
+            string json = JsonConvert.SerializeObject(Shape.NewRectangle(10.0, 5.0), settings);
+            Assert.IsTrue(json.Contains("\"$type\":\"Newtonsoft.Json.Tests.TestObjects.GeometricForms.Shape, Newtonsoft.Json.Tests"));
+            Assert.IsTrue(json.Contains("\"Case\":\"Rectangle\""));
+            Assert.IsTrue(json.Contains("\"Fields\":[10.0,5.0]"));
+
+            Shape c = JsonConvert.DeserializeObject<Shape>(json);
+            Assert.AreEqual(true, c.IsRectangle);
+
+            Shape.Rectangle r = (Shape.Rectangle)c;
+
+            Assert.AreEqual(5.0, r.length);
+            Assert.AreEqual(10.0, r.width);
+        }
+
+        [Test]
+        public void DeserializeUnionWithTypeNameHandlingAll_UsesTypeFromTypeName()
+        {
+            var settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All,
+                TypeNameAssemblyFormatHandling = TypeNameAssemblyFormatHandling.Simple
+            };
+
+            // Serialize a Rectangle
+            Shape original = Shape.NewRectangle(10.0, 5.0);
+            string json = JsonConvert.SerializeObject(original, settings);
+
+            // Deserialize as object, not Shape
+            object deserialized = JsonConvert.DeserializeObject(json, settings);
+
+            Assert.IsInstanceOf(typeof(Shape.Rectangle), deserialized);
+            var rect = (Shape.Rectangle)deserialized;
+            Assert.AreEqual(10.0, rect.width);
+            Assert.AreEqual(5.0, rect.length);
+        }
     }
 }
 
