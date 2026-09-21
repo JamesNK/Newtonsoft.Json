@@ -61,9 +61,6 @@ namespace Newtonsoft.Json.Converters
 
         private static readonly ThreadSafeStore<Type, Union> UnionCache = new ThreadSafeStore<Type, Union>(CreateUnion);
 
-        [ThreadStatic]
-        private static List<JsonWriter>? _writeStack;
-
         private static Union CreateUnion(Type type)
         {
             PropertyInfo? property = type.GetProperty("Value", BindingFlags.Public | BindingFlags.Instance);
@@ -273,30 +270,7 @@ namespace Newtonsoft.Json.Converters
             }
             else
             {
-                List<JsonWriter> writeStack = _writeStack ?? (_writeStack = new List<JsonWriter>());
-                int depth = 0;
-                foreach (JsonWriter activeWriter in writeStack)
-                {
-                    if (ReferenceEquals(activeWriter, writer))
-                    {
-                        depth++;
-                    }
-                }
-
-                if (depth >= (serializer.MaxDepth ?? 64))
-                {
-                    throw JsonSerializationException.Create(null, writer.Path, "Union nesting exceeds the maximum depth.", null);
-                }
-
-                writeStack.Add(writer);
-                try
-                {
-                    serializer.Serialize(writer, caseValue, unionType);
-                }
-                finally
-                {
-                    writeStack.RemoveAt(writeStack.Count - 1);
-                }
+                serializer.Serialize(writer, caseValue, unionType);
             }
         }
 
@@ -462,6 +436,10 @@ namespace Newtonsoft.Json.Converters
         {
             JsonContract contract = serializer.ContractResolver.ResolveContract(type);
             JsonConverter? converter = contract.Converter ?? JsonSerializer.GetMatchingConverter(serializer.Converters, type) ?? contract.InternalConverter;
+            if (converter != null && !converter.CanRead)
+            {
+                converter = null;
+            }
             if (converter is UnionConverter)
             {
                 return ValueShape.None;

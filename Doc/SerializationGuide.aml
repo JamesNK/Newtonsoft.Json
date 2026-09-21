@@ -152,8 +152,9 @@
         otherwise the default union value.</para>
         <para>Deserialization selects a case by JSON value kind: object, array, string, number, or boolean.
         If multiple cases accept the same kind, deserialization throws JsonSerializationException. Object
-        properties are not inspected to guess the case. Custom case converters are conservatively treated
-        as accepting any kind; a custom converter for the union can override this behavior.</para>
+        properties are not inspected to guess the case. Custom case converters that support reading are
+        conservatively treated as accepting any kind. When the selected converter has CanRead set to false,
+        the case's normal contract determines its kind. A custom converter for the union can override this behavior.</para>
         <para>The strings "NaN", "Infinity", and "-Infinity" also match float and double cases, including
         their nullable equivalents. These values are ambiguous if another case accepts the same string,
         such as a string case. Other quoted numbers are not matched to numeric cases.</para>

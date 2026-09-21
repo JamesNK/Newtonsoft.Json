@@ -166,6 +166,8 @@ namespace Newtonsoft.Json.Tests.Converters
             Recursive cyclic = new Recursive(true);
             cyclic.Value = cyclic;
             ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.SerializeObject(cyclic));
+            cyclic.Value = new Recursive(cyclic);
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.SerializeObject(cyclic, new JsonSerializerSettings { MaxDepth = null }));
         }
 
         public class MemberMetadata
@@ -530,6 +532,43 @@ namespace Newtonsoft.Json.Tests.Converters
             ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Pair<Payload, bool>>("true", settings));
         }
 
+        public class WriteOnlyPayloadConverter : PayloadConverter
+        {
+            public override bool CanRead => false;
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                throw new InvalidOperationException("Write-only converter must not be used for reading.");
+            }
+        }
+
+        [JsonConverter(typeof(WriteOnlyPayloadConverter))]
+        public class WriteOnlyPayload : Payload
+        {
+        }
+
+        [Test]
+        public void WriteOnlySettingsCaseConverterUsesContractShape()
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            settings.Converters.Add(new WriteOnlyPayloadConverter());
+            settings.Converters.Add(new PayloadConverter());
+
+            Assert.AreEqual(true, JsonConvert.DeserializeObject<Pair<Payload, bool>>("true", settings).Value);
+            Assert.AreEqual("test", ((Payload)JsonConvert.DeserializeObject<Pair<Payload, bool>>("{\"Name\":\"test\"}", settings).Value).Name);
+            Assert.AreEqual("text", JsonConvert.DeserializeObject<Pair<Payload, string>>("\"text\"", settings).Value);
+            Assert.AreEqual("\"test\"", JsonConvert.SerializeObject(new Pair<Payload, bool>(new Payload { Name = "test" }), settings));
+        }
+
+        [Test]
+        public void WriteOnlyAttributeCaseConverterUsesContractShape()
+        {
+            Assert.AreEqual(true, JsonConvert.DeserializeObject<Pair<WriteOnlyPayload, bool>>("true").Value);
+            Assert.AreEqual("test", ((WriteOnlyPayload)JsonConvert.DeserializeObject<Pair<WriteOnlyPayload, bool>>("{\"Name\":\"test\"}").Value).Name);
+            Assert.AreEqual("text", JsonConvert.DeserializeObject<Pair<WriteOnlyPayload, string>>("\"text\"").Value);
+            Assert.AreEqual("\"test\"", JsonConvert.SerializeObject(new Pair<WriteOnlyPayload, bool>(new WriteOnlyPayload { Name = "test" })));
+        }
+
         [JsonConverter(typeof(AttributedPayloadConverter))]
         public class AttributedPayload : Payload
         {
@@ -640,28 +679,18 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
-        public void ExcessiveUnionDepthIsRejected()
+        public void SerializationAllowsDeepUnionNesting()
         {
             Recursive value = new Recursive(true);
-            for (int depth = 0; depth < 10; depth++)
+            for (int depth = 0; depth < 70; depth++)
             {
                 value = new Recursive(value);
             }
-            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.SerializeObject(value, new JsonSerializerSettings { MaxDepth = 4 }));
-        }
 
-        [Test]
-        public void UnionDepthIsResetAfterFailure()
-        {
-            UnionConverter converter = new UnionConverter();
-            JsonSerializer serializer = new JsonSerializer { MaxDepth = 1 };
-            using (StringWriter text = new StringWriter())
-            using (JsonTextWriter writer = new JsonTextWriter(text))
-            {
-                ExceptionAssert.Throws<JsonSerializationException>(() => converter.WriteJson(writer, new Recursive(new Recursive(true)), serializer));
-                converter.WriteJson(writer, new Recursive(true), serializer);
-                Assert.AreEqual("true", text.ToString());
-            }
+            Assert.AreEqual("true", JsonConvert.SerializeObject(value));
+            Assert.AreEqual("true", JsonConvert.SerializeObject(value, new JsonSerializerSettings { MaxDepth = null }));
+            Assert.AreEqual("[true,true]", JsonConvert.SerializeObject(new[] { value, value }, new JsonSerializerSettings { MaxDepth = null }));
+            Assert.AreEqual("true", JsonConvert.SerializeObject(value, new JsonSerializerSettings { MaxDepth = 1 }));
         }
     }
 }
