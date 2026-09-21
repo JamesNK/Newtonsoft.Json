@@ -683,10 +683,10 @@ namespace Newtonsoft.Json.Serialization
                 JToken? typeToken = current[JsonTypeReflector.TypePropertyName];
                 if (typeToken != null)
                 {
-                    string? qualifiedTypeName = (string?)typeToken;
                     JsonReader typeTokenReader = typeToken.CreateReader();
                     typeTokenReader.ReadAndAssert();
-                    ResolveTypeName(typeTokenReader, ref objectType, ref contract, member, containerContract, containerMember, qualifiedTypeName!);
+                    string qualifiedTypeName = GetQualifiedTypeName(typeTokenReader);
+                    ResolveTypeName(typeTokenReader, ref objectType, ref contract, member, containerContract, containerMember, qualifiedTypeName);
 
                     JToken? valueToken = current[JsonTypeReflector.ValuePropertyName];
                     if (valueToken != null)
@@ -785,7 +785,7 @@ namespace Newtonsoft.Json.Serialization
                         else if (string.Equals(propertyName, JsonTypeReflector.TypePropertyName, StringComparison.Ordinal))
                         {
                             reader.ReadAndAssert();
-                            string qualifiedTypeName = reader.Value!.ToString()!;
+                            string qualifiedTypeName = GetQualifiedTypeName(reader);
 
                             ResolveTypeName(reader, ref objectType, ref contract, member, containerContract, containerMember, qualifiedTypeName);
 
@@ -818,6 +818,20 @@ namespace Newtonsoft.Json.Serialization
                 }
             }
             return false;
+        }
+
+        private static string GetQualifiedTypeName(JsonReader reader)
+        {
+            if (reader.TokenType != JsonToken.String)
+            {
+                throw JsonSerializationException.Create(
+                    reader,
+                    "Error reading '$type' metadata property. Property must have a string value, got {0}.".FormatWith(
+                        CultureInfo.InvariantCulture,
+                        reader.TokenType));
+            }
+
+            return reader.Value!.ToString()!;
         }
 
         private void ResolveTypeName(JsonReader reader, ref Type? objectType, ref JsonContract? contract, JsonProperty? member, JsonContainerContract? containerContract, JsonProperty? containerMember, string qualifiedTypeName)
