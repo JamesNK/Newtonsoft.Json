@@ -1705,6 +1705,39 @@ third line", jsonTextReader.Value);
             Assert.IsTrue(reader.ReadAsStringAsync(token).IsCanceled);
         }
 
+#if NET6_0_OR_GREATER && !NETSTANDARD2_0
+        private sealed class CancelableTextReader : TextReader
+        {
+            public bool ReadStarted { get; private set; }
+
+            public override async ValueTask<int> ReadAsync(Memory<char> buffer, CancellationToken cancellationToken = default)
+            {
+                ReadStarted = true;
+                await Task.Delay(Timeout.Infinite, cancellationToken);
+                return 0;
+            }
+        }
+
+        [Test]
+        public async Task ReadAsync_CancelledAfterReadStarted_Cancels()
+        {
+            using (CancellationTokenSource source = new CancellationTokenSource())
+            {
+                CancelableTextReader textReader = new CancelableTextReader();
+                JsonTextReader reader = new JsonTextReader(textReader);
+
+                Task<bool> readTask = reader.ReadAsync(source.Token);
+                Assert.IsTrue(textReader.ReadStarted);
+
+                source.Cancel();
+
+                OperationCanceledException exception = await ExceptionAssert.ThrowsAsync<OperationCanceledException>(() => readTask);
+                Assert.AreEqual(source.Token, exception.CancellationToken);
+                Assert.IsTrue(readTask.IsCanceled);
+            }
+        }
+#endif
+
         private class NoOverridesDerivedJsonTextAsync : JsonTextReader
         {
             public NoOverridesDerivedJsonTextAsync()
