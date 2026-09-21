@@ -365,5 +365,131 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
                 Assert.AreEqual(JsonToken.EndArray, jsonReader.TokenType);
             }
         }
+
+        [Test]
+        public void PreserveNumberText_Float_ReturnsRawText()
+        {
+            const string testJson = "[1.5, 42, 3.14]";
+            using JsonTextReader reader = new JsonTextReader(new StringReader(testJson));
+            reader.PreserveNumberText = true;
+
+            reader.Read(); // [
+
+            reader.Read(); // 1.5
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.AreEqual("1.5", reader.NumberText);
+
+            reader.Read(); // 42
+            Assert.AreEqual(JsonToken.Integer, reader.TokenType);
+            Assert.AreEqual("42", reader.NumberText);
+
+            reader.Read(); // 3.14
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.AreEqual("3.14", reader.NumberText);
+
+            reader.Read(); // ]
+            Assert.AreEqual(JsonToken.EndArray, reader.TokenType);
+            Assert.IsNull(reader.NumberText);
+        }
+
+        [Test]
+        public void PreserveNumberText_NegativeDoubleMaxValue_RawTextExact()
+        {
+            const string testJson = "[-1.7976931348623157E+308]";
+            using JsonTextReader reader = new JsonTextReader(new StringReader(testJson));
+            reader.PreserveNumberText = true;
+
+            reader.Read(); // [
+            reader.Read(); // -1.7976931348623157E+308
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.AreEqual("-1.7976931348623157E+308", reader.NumberText);
+            Assert.AreEqual(-double.MaxValue, (double)reader.Value!);
+        }
+
+        [Test]
+        public void PreserveNumberText_Disabled_NumberTextIsNull()
+        {
+            const string testJson = "[1.5]";
+            using JsonTextReader reader = new JsonTextReader(new StringReader(testJson));
+
+            reader.Read(); // [
+            reader.Read(); // 1.5
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.IsNull(reader.NumberText);
+        }
+
+        [Test]
+        public void PreserveNumberText_DoubleMaxValue_RawTextExact()
+        {
+            string doubleMax = double.MaxValue.ToString("R", CultureInfo.InvariantCulture);
+            string testJson = "[" + doubleMax + "]";
+            using JsonTextReader reader = new JsonTextReader(new StringReader(testJson));
+            reader.PreserveNumberText = true;
+
+            reader.Read();
+            reader.Read();
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.AreEqual(doubleMax, reader.NumberText);
+        }
+
+        [Test]
+        public void OnNumberParsed_Override_CanChangeParsedValue()
+        {
+            // Verify that a subclass can intercept number tokens and replace the value
+            string testJson = "[1.7976931348623157E+308]"; // double.MaxValue — overflows decimal
+            using SmartNumberReader reader = new SmartNumberReader(new StringReader(testJson));
+
+            reader.Read(); // [
+            reader.Read(); // number
+
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.IsInstanceOf(typeof(double), reader.Value);
+            Assert.AreEqual(double.MaxValue, (double)reader.Value!);
+        }
+
+        [Test]
+        public void OnNumberParsed_Override_HighPrecisionDecimal_PreservesExactValue()
+        {
+            // 29 significant digits — exact as decimal, lossy as double (~15-16 sig figs)
+            const string rawDecimal = "1.23456789012345678901234567890";
+            const string testJson = "[" + rawDecimal + "]";
+            using SmartNumberReader reader = new SmartNumberReader(new StringReader(testJson));
+
+            reader.Read(); // [
+            reader.Read(); // number
+
+            // Default FloatParseHandling.Double would lose precision; SmartNumberReader picks decimal
+            Assert.AreEqual(JsonToken.Float, reader.TokenType);
+            Assert.IsInstanceOf(typeof(decimal), reader.Value);
+            Assert.AreEqual(decimal.Parse(rawDecimal, CultureInfo.InvariantCulture), (decimal)reader.Value!);
+        }
+
+        // Minimal subclass demonstrating Option C: override OnNumberParsed to pick the
+        // best .NET numeric type for each float token based on the raw source text.
+        private sealed class SmartNumberReader : JsonTextReader
+        {
+            public SmartNumberReader(TextReader reader) : base(reader)
+            {
+                PreserveNumberText = true;
+            }
+
+            protected override void OnNumberParsed(string rawText, ref JsonToken tokenType, ref object value)
+            {
+                if (tokenType != JsonToken.Float)
+                {
+                    return;
+                }
+
+                // Try decimal first (higher precision), fall back to double for out-of-range values.
+                if (decimal.TryParse(rawText, NumberStyles.Float, CultureInfo.InvariantCulture, out decimal d))
+                {
+                    value = d;
+                }
+                else if (double.TryParse(rawText, NumberStyles.Float, CultureInfo.InvariantCulture, out double dbl))
+                {
+                    value = dbl;
+                }
+            }
+        }
     }
 }
