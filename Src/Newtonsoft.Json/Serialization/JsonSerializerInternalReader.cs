@@ -1026,6 +1026,11 @@ namespace Newtonsoft.Json.Serialization
                     return null;
                 }
 
+                if (value == null && Serializer.NullValueHandling == NullValueHandling.Ignore)
+                {
+                    return Activator.CreateInstance(targetType);
+                }
+
                 try
                 {
 #if HAVE_HALF
