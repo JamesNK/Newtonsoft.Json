@@ -373,10 +373,12 @@ namespace Newtonsoft.Json.Converters
                 }
             }
 
+            string? stringValue = token.Type == JTokenType.String ? (string?)token : null;
+            bool isNonFiniteString = stringValue == JsonConvert.NaN || stringValue == JsonConvert.PositiveInfinity || stringValue == JsonConvert.NegativeInfinity;
             UnionCase? match = null;
             foreach (UnionCase unionCase in union.Cases)
             {
-                ValueShape caseShape = GetCaseShape(unionCase.Type, serializer);
+                ValueShape caseShape = GetCaseShape(unionCase.Type, serializer, isNonFiniteString);
                 if (shape != ValueShape.None && (caseShape == shape || caseShape == ValueShape.Any))
                 {
                     if (match != null)
@@ -456,7 +458,7 @@ namespace Newtonsoft.Json.Converters
             }
         }
 
-        private static ValueShape GetCaseShape(Type type, JsonSerializer serializer)
+        private static ValueShape GetCaseShape(Type type, JsonSerializer serializer, bool isNonFiniteString)
         {
             JsonContract contract = serializer.ContractResolver.ResolveContract(type);
             JsonConverter? converter = contract.Converter ?? JsonSerializer.GetMatchingConverter(serializer.Converters, type) ?? contract.InternalConverter;
@@ -483,6 +485,8 @@ namespace Newtonsoft.Json.Converters
                     switch (code)
                     {
                         case PrimitiveTypeCode.Boolean: return ValueShape.Boolean;
+                        case PrimitiveTypeCode.Single:
+                        case PrimitiveTypeCode.Double: return isNonFiniteString ? ValueShape.String : ValueShape.Number;
                         case PrimitiveTypeCode.Char:
                         case PrimitiveTypeCode.DateTime:
                         case PrimitiveTypeCode.DateTimeOffset:

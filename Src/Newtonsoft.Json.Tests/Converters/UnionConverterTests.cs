@@ -314,6 +314,50 @@ namespace Newtonsoft.Json.Tests.Converters
         }
 
         [Test]
+        public void FloatingPointSpecialValuesRoundTrip()
+        {
+            foreach (FloatFormatHandling handling in new[] { FloatFormatHandling.String, FloatFormatHandling.Symbol })
+            {
+                JsonSerializerSettings settings = new JsonSerializerSettings { FloatFormatHandling = handling };
+                foreach (double value in new[] { double.NaN, double.PositiveInfinity, double.NegativeInfinity, 1.5 })
+                {
+                    string json = JsonConvert.SerializeObject(value, settings);
+                    Assert.AreEqual(json, JsonConvert.SerializeObject(new Pair<double, bool>(value), settings));
+                    Assert.AreEqual(value, JsonConvert.DeserializeObject<Pair<double, bool>>(json, settings).Value);
+                    Assert.AreEqual(json, JsonConvert.SerializeObject(new Pair<double?, bool>((double?)value), settings));
+                    Assert.AreEqual(value, JsonConvert.DeserializeObject<Pair<double?, bool>>(json, settings).Value);
+
+                    float singleValue = (float)value;
+                    json = JsonConvert.SerializeObject(singleValue, settings);
+                    Assert.AreEqual(json, JsonConvert.SerializeObject(new Pair<float, bool>(singleValue), settings));
+                    Assert.AreEqual(singleValue, JsonConvert.DeserializeObject<Pair<float, bool>>(json, settings).Value);
+                    Assert.AreEqual(json, JsonConvert.SerializeObject(new Pair<float?, bool>((float?)singleValue), settings));
+                    Assert.AreEqual(singleValue, JsonConvert.DeserializeObject<Pair<float?, bool>>(json, settings).Value);
+                }
+            }
+        }
+
+        [Test]
+        public void FloatingPointSpecialStringsSelectOnlyMatchingCases()
+        {
+            foreach (string value in new[] { "NaN", "Infinity", "-Infinity" })
+            {
+                string json = "\"" + value + "\"";
+                Assert.AreEqual(JsonConvert.DeserializeObject<double>(json), JsonConvert.DeserializeObject<Pair<double, int>>(json).Value);
+                Assert.AreEqual(value, JsonConvert.DeserializeObject<Pair<int, string>>(json).Value);
+                ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Pair<double, string>>(json));
+                ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Pair<string, double>>(json));
+                ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Pair<float?, string>>(json));
+                ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Pair<float, double>>(json));
+                ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Pair<decimal, bool>>(json));
+            }
+
+            Assert.AreEqual("hello", JsonConvert.DeserializeObject<Pair<double, string>>("\"hello\"").Value);
+            Assert.AreEqual("1.5", JsonConvert.DeserializeObject<Pair<double, string>>("\"1.5\"").Value);
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Pair<double, bool>>("\"1.5\""));
+        }
+
+        [Test]
         public void MutuallyAssignableArrayCases()
         {
             Assert.IsNull(JsonConvert.DeserializeObject<Pair<int[], uint[]>>("null").Value);

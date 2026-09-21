@@ -154,6 +154,9 @@
         If multiple cases accept the same kind, deserialization throws JsonSerializationException. Object
         properties are not inspected to guess the case. Custom case converters are conservatively treated
         as accepting any kind; a custom converter for the union can override this behavior.</para>
+        <para>The strings "NaN", "Infinity", and "-Infinity" also match float and double cases, including
+        their nullable equivalents. These values are ambiguous if another case accepts the same string,
+        such as a string case. Other quoted numbers are not matched to numeric cases.</para>
         <para>Union deserialization respects DateParseHandling. Unlike System.Text.Json, Json.NET parses
         date-formatted strings as dates by default. Set DateParseHandling to None to preserve the original
         text of date-formatted string cases.</para>
