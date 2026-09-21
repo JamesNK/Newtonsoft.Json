@@ -420,15 +420,21 @@ namespace Newtonsoft.Json.Converters
         {
             switch (tokenType)
             {
-                case JTokenType.Object: return ValueShape.Object;
-                case JTokenType.Array: return ValueShape.Array;
+                case JTokenType.Object:
+                    return ValueShape.Object;
+                case JTokenType.Array:
+                    return ValueShape.Array;
                 case JTokenType.String:
                 case JTokenType.Date:
-                case JTokenType.Bytes: return ValueShape.String;
+                case JTokenType.Bytes:
+                    return ValueShape.String;
                 case JTokenType.Integer:
-                case JTokenType.Float: return ValueShape.Number;
-                case JTokenType.Boolean: return ValueShape.Boolean;
-                default: return ValueShape.None;
+                case JTokenType.Float:
+                    return ValueShape.Number;
+                case JTokenType.Boolean:
+                    return ValueShape.Boolean;
+                default:
+                    return ValueShape.None;
             }
         }
 
@@ -451,20 +457,26 @@ namespace Newtonsoft.Json.Converters
 
             switch (contract.ContractType)
             {
-                case JsonContractType.Array: return ValueShape.Array;
+                case JsonContractType.Array:
+                    return ValueShape.Array;
                 case JsonContractType.Object:
                 case JsonContractType.Dictionary:
                 case JsonContractType.Dynamic:
-                case JsonContractType.Serializable: return ValueShape.Object;
-                case JsonContractType.String: return ValueShape.String;
-                case JsonContractType.Linq: return ValueShape.Any;
+                case JsonContractType.Serializable:
+                    return ValueShape.Object;
+                case JsonContractType.String:
+                    return ValueShape.String;
+                case JsonContractType.Linq:
+                    return ValueShape.Any;
                 case JsonContractType.Primitive:
                     PrimitiveTypeCode code = ConvertUtils.GetTypeCode(contract.NonNullableUnderlyingType);
                     switch (code)
                     {
-                        case PrimitiveTypeCode.Boolean: return ValueShape.Boolean;
+                        case PrimitiveTypeCode.Boolean:
+                            return ValueShape.Boolean;
                         case PrimitiveTypeCode.Single:
-                        case PrimitiveTypeCode.Double: return isNonFiniteString ? ValueShape.String : ValueShape.Number;
+                        case PrimitiveTypeCode.Double:
+                            return isNonFiniteString ? ValueShape.String : ValueShape.Number;
                         case PrimitiveTypeCode.Char:
                         case PrimitiveTypeCode.DateTime:
                         case PrimitiveTypeCode.DateTimeOffset:
@@ -472,12 +484,16 @@ namespace Newtonsoft.Json.Converters
                         case PrimitiveTypeCode.TimeSpan:
                         case PrimitiveTypeCode.Uri:
                         case PrimitiveTypeCode.String:
-                        case PrimitiveTypeCode.Bytes: return ValueShape.String;
+                        case PrimitiveTypeCode.Bytes:
+                            return ValueShape.String;
                         case PrimitiveTypeCode.Empty:
-                        case PrimitiveTypeCode.DBNull: return ValueShape.None;
-                        default: return ValueShape.Number;
+                        case PrimitiveTypeCode.DBNull:
+                            return ValueShape.None;
+                        default:
+                            return ValueShape.Number;
                     }
-                default: return ValueShape.Any;
+                default:
+                    return ValueShape.Any;
             }
         }
     }
