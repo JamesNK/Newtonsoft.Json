@@ -332,6 +332,24 @@ namespace Newtonsoft.Json.Serialization
             }
             else
 #endif
+#if HAVE_INT128
+            if (value is Int128 || value is UInt128)
+            {
+                _textWriter.WriteValue(value);
+                _innerWriter.WriteValue(value);
+                InternalWriteValue(JsonToken.Integer);
+            }
+            else
+#endif
+#if HAVE_HALF
+            if (value is Half)
+            {
+                _textWriter.WriteValue(value);
+                _innerWriter.WriteValue(value);
+                InternalWriteValue(JsonToken.Float);
+            }
+            else
+#endif
             {
                 _textWriter.WriteValue(value);
                 _innerWriter.WriteValue(value);

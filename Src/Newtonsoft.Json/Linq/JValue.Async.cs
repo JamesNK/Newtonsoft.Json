@@ -93,6 +93,12 @@ namespace Newtonsoft.Json.Linq
                         return writer.WriteValueAsync(integer, cancellationToken);
                     }
 #endif
+#if HAVE_INT128
+                    if (_value is Int128 || _value is UInt128)
+                    {
+                        return writer.WriteValueAsync(_value, cancellationToken);
+                    }
+#endif
 
                     return writer.WriteValueAsync(Convert.ToInt64(_value, CultureInfo.InvariantCulture), cancellationToken);
                 case JTokenType.Float:
@@ -110,6 +116,12 @@ namespace Newtonsoft.Json.Linq
                     {
                         return writer.WriteValueAsync(f, cancellationToken);
                     }
+#if HAVE_HALF
+                    if (_value is Half)
+                    {
+                        return writer.WriteValueAsync(_value, cancellationToken);
+                    }
+#endif
 
                     return writer.WriteValueAsync(Convert.ToDouble(_value, CultureInfo.InvariantCulture), cancellationToken);
                 case JTokenType.String:

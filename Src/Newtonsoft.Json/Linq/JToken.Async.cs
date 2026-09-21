@@ -73,7 +73,7 @@ namespace Newtonsoft.Json.Linq
         [UnconditionalSuppressMessage("AOT", "IL3050", Justification = "WriteToAsync without converters is safe.")]
         public Task WriteToAsync(JsonWriter writer, CancellationToken cancellationToken)
         {
-            return WriteToAsync(writer, default, CollectionUtils.ArrayEmpty<JsonConverter>());
+            return WriteToAsync(writer, cancellationToken, CollectionUtils.ArrayEmpty<JsonConverter>());
         }
 
         /// <summary>

@@ -71,6 +71,10 @@ namespace Newtonsoft.Json.Serialization
         internal bool ShouldCreateWrapper { get; }
         internal bool CanDeserialize { get; private set; }
 
+    #if HAVE_MEMORY
+        internal MemoryAdapter? MemoryAdapter { get; }
+    #endif
+
         private readonly ConstructorInfo? _parameterizedConstructor;
 
         private ObjectConstructor<object>? _parameterizedCreator;
@@ -239,6 +243,16 @@ namespace Newtonsoft.Json.Serialization
                     canDeserialize = HasParameterizedCreatorInternal;
                 }
             }
+#if HAVE_MEMORY
+            else if (MemoryAdapter.IsMemoryType(NonNullableUnderlyingType))
+            {
+                CollectionItemType = NonNullableUnderlyingType.GetGenericArguments()[0];
+                MemoryAdapter = MemoryAdapter.Create(NonNullableUnderlyingType);
+                _parameterizedCreator = arguments => MemoryAdapter.FromList((IList)arguments[0]!);
+                IsReadOnlyOrFixedSize = true;
+                canDeserialize = true;
+            }
+#endif
             else
             {
                 // types that implement IEnumerable and nothing else

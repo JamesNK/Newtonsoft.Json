@@ -294,6 +294,12 @@ namespace Newtonsoft.Json.Linq
                     targetType = Nullable.GetUnderlyingType(targetType)!;
                 }
 
+#if HAVE_HALF
+                if (value.Value != null && ConvertUtils.TryConvertModernNumber(value.Value, CultureInfo.InvariantCulture, targetType, out object? converted))
+                {
+                    return (U?)converted;
+                }
+#endif
                 return (U?)System.Convert.ChangeType(value.Value, targetType, CultureInfo.InvariantCulture);
             }
         }

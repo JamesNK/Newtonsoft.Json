@@ -1257,6 +1257,14 @@ namespace Newtonsoft.Json.Serialization
                 return CreatePrimitiveContract(t);
             }
 #endif
+#if HAVE_MEMORY
+            if (MemoryAdapter.IsMemoryType(t))
+            {
+                return t.GetGenericArguments()[0] == typeof(byte)
+                    ? CreatePrimitiveContract(objectType)
+                    : CreateArrayContract(objectType);
+            }
+#endif
 
             return CreateObjectContract(objectType);
         }

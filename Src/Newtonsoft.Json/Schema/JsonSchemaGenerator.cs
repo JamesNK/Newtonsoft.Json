@@ -54,6 +54,9 @@ namespace Newtonsoft.Json.Schema
     [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
     public class JsonSchemaGenerator
     {
+        // New .NET types (Half, Int128, UInt128, Memory<T>, and ReadOnlyMemory<T>)
+        // are not supported by the obsolete schema generation code.
+
         /// <summary>
         /// Gets or sets how undefined schemas are handled by the serializer.
         /// </summary>

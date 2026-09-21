@@ -36,8 +36,10 @@ properties {
   $nunitConsolePath = "$buildDir\Temp\NUnit.ConsoleRunner.$nunitConsoleVersion"
 
   $builds = @(
-    @{Framework = "net6.0"; TestsFunction = "NetCliTests"; TestFramework = "net10.0"; Enabled=$true},
-    @{Framework = "netstandard2.0"; TestsFunction = "NetCliTests"; TestFramework = "net8.0"; Enabled=$true},
+    @{Framework = "net10.0"; TestsFunction = "NetCliTests"; Enabled=$true},
+    @{Framework = "net8.0"; TestsFunction = "NetCliTests"; Enabled=$true},
+    @{Framework = "net6.0"; TestsFunction = "NetCliTests"; TestFramework = "net10.0"; TestLibraryFramework = "net6.0"; Enabled=$true},
+    @{Framework = "netstandard2.0"; TestsFunction = "NetCliTests"; TestFramework = "net8.0"; TestLibraryFramework = "netstandard2.0"; Enabled=$true},
     @{Framework = "net45"; TestsFunction = "NUnitTests"; TestFramework = "net46"; NUnitFramework="net-4.0"; Enabled=$true},
     @{Framework = "net40"; TestsFunction = "NUnitTests"; NUnitFramework="net-4.0"; Enabled=$true},
     @{Framework = "net35"; TestsFunction = "NUnitTests"; NUnitFramework="net-2.0"; Enabled=$true},
@@ -159,7 +161,7 @@ function NetCliBuild()
   $projectPath = "$sourceDir\Newtonsoft.Json.slnx"
   $originalLocation = Get-Location
   $libraryFrameworks = ($script:enabledBuilds | Select-Object @{Name="Framework";Expression={$_.Framework}} | select -expand Framework) -join ";"
-  $testFrameworks = ($script:enabledBuilds | Select-Object @{Name="Resolved";Expression={if ($_.TestFramework -ne $null) { $_.TestFramework } else { $_.Framework }}} | select -expand Resolved) -join ";"
+  $testFrameworks = ($script:enabledBuilds | Select-Object @{Name="Resolved";Expression={if ($_.TestFramework -ne $null) { $_.TestFramework } else { $_.Framework }}} | select -expand Resolved -Unique) -join ";"
   $previousLibraryFrameworks = $env:LibraryFrameworks
   $previousTestFrameworks = $env:TestFrameworks
 
@@ -279,12 +281,34 @@ function NetCliTests($build)
 
     exec { dotnet --version | Out-Default }
 
-    Write-Host -ForegroundColor Green "Running tests for $testDir"
+    Write-Host -ForegroundColor Green "Running tests for $testDir against $($build.Framework)"
     Write-Host "Location: $location"
     Write-Host "Project path: $projectPath"
     Write-Host
 
-    exec { dotnet test $projectPath -f $testDir -c Release -l trx --results-directory $workingDir --no-restore --no-build | Out-Default }
+    $testArguments = @(
+      "-f", $testDir,
+      "-c", "Release",
+      "-l", "trx;LogFileName=$testDir-$($build.Framework).trx",
+      "--results-directory", $workingDir
+    )
+    if ($build.TestLibraryFramework)
+    {
+      $additionalConstants = switch($signAssemblies) { $true { "SIGNED" } default { "" } }
+      $testArguments += @(
+        "-p:TestLibraryFramework=$($build.TestLibraryFramework)",
+        "-p:BuildProjectReferences=false",
+        "-p:SignAssembly=$signAssemblies",
+        "-p:AssemblyOriginatorKeyFile=$signKeyPath",
+        "-p:AdditionalConstants=$additionalConstants",
+        "-p:TreatWarningsAsErrors=$treatWarningsAsErrors"
+      )
+    }
+    else
+    {
+      $testArguments += "--no-restore", "--no-build"
+    }
+    exec { dotnet test $projectPath @testArguments | Out-Default }
   }
   finally
   {

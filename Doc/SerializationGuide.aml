@@ -44,6 +44,11 @@
     <entry><para>Object (dictionary name/values only, properties on the dictionary will not be serialized)</para></entry>
   </row>
   <row>
+    <entry><para><legacyBold>Memory&lt;T&gt;, ReadOnlyMemory&lt;T&gt;</legacyBold></para></entry>
+    <entry><para>Array, or a base 64 encoded string when T is Byte. Only the selected memory slice is serialized. Supported by the .NET 6, .NET 8, and .NET 10 builds.</para>
+    <para>Non-byte memory supports collection item settings and converters. To customize a memory value, use a converter for its memory type; converters for array types do not apply.</para></entry>
+  </row>
+  <row>
     <entry><para><legacyBold>Object (more detail below)</legacyBold></para></entry>
     <entry><para>Object</para></entry>
   </row>
@@ -72,7 +77,8 @@
 <para><legacyBold>UInt32</legacyBold></para>
 <para><legacyBold>Int32</legacyBold></para>
 <para><legacyBold>UInt64</legacyBold></para>
-<para><legacyBold>Int64</legacyBold></para></entry>
+<para><legacyBold>Int64</legacyBold></para>
+<para><legacyBold>Int128, UInt128</legacyBold> (.NET 8 or later)</para></entry>
     <entry><para>Integer</para></entry>
   </row>
   <row>
@@ -80,6 +86,7 @@
     <para><legacyBold>Float</legacyBold></para>
     <para><legacyBold>Double</legacyBold></para>
     <para><legacyBold>Decimal</legacyBold></para>
+    <para><legacyBold>Half</legacyBold> (.NET 6 or later)</para>
     </entry>
     <entry><para>Float</para></entry>
   </row>

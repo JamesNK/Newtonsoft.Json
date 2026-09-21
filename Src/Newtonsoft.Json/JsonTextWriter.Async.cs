@@ -998,6 +998,12 @@ namespace Newtonsoft.Json
                     return WriteValueAsync(i, cancellationToken);
                 }
 #endif
+#if HAVE_HALF
+                if (value is Half half)
+                {
+                    return WriteValueInternalAsync(JsonToken.Float, JsonConvert.ToString(half, FloatFormatHandling, QuoteChar), cancellationToken);
+                }
+#endif
 
                 return WriteValueAsync(this, ConvertUtils.GetTypeCode(value.GetType()), value, cancellationToken);
             }

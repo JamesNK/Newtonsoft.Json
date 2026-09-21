@@ -280,12 +280,26 @@ namespace Newtonsoft.Json.Linq
             {
                 InternalWriteValue(JsonToken.Integer);
                 AddRawValue(value, JTokenType.Integer, JsonToken.Integer);
+                return;
             }
-            else
 #endif
+#if HAVE_INT128
+            if (value is Int128 || value is UInt128)
             {
-                base.WriteValue(value);
+                InternalWriteValue(JsonToken.Integer);
+                AddRawValue(value, JTokenType.Integer, JsonToken.Integer);
+                return;
             }
+#endif
+#if HAVE_HALF
+            if (value is Half)
+            {
+                InternalWriteValue(JsonToken.Float);
+                AddRawValue(value, JTokenType.Float, JsonToken.Float);
+                return;
+            }
+#endif
+            base.WriteValue(value);
         }
 
         /// <summary>

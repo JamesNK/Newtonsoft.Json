@@ -56,6 +56,7 @@ namespace Newtonsoft.Json
     [Obsolete("JSON Schema validation has been moved to its own package. See https://www.newtonsoft.com/jsonschema for more details.")]
     public class JsonValidatingReader : JsonReader, IJsonLineInfo
     {
+        // New numeric types (Half, Int128, and UInt128) are not supported by the obsolete schema validation types.
         private class SchemaScope
         {
             private readonly JTokenType _tokenType;

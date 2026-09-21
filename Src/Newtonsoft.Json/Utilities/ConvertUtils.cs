@@ -91,7 +91,13 @@ namespace Newtonsoft.Json.Utilities
         Uri = 38,
         String = 39,
         Bytes = 40,
-        DBNull = 41
+        DBNull = 41,
+        Half = 42,
+        HalfNullable = 43,
+        Int128 = 44,
+        Int128Nullable = 45,
+        UInt128 = 46,
+        UInt128Nullable = 47
     }
 
     internal class TypeInformation
@@ -143,6 +149,16 @@ namespace Newtonsoft.Json.Utilities
                 { typeof(float?), PrimitiveTypeCode.SingleNullable },
                 { typeof(double), PrimitiveTypeCode.Double },
                 { typeof(double?), PrimitiveTypeCode.DoubleNullable },
+#if HAVE_HALF
+                { typeof(Half), PrimitiveTypeCode.Half },
+                { typeof(Half?), PrimitiveTypeCode.HalfNullable },
+#endif
+#if HAVE_INT128
+                { typeof(Int128), PrimitiveTypeCode.Int128 },
+                { typeof(Int128?), PrimitiveTypeCode.Int128Nullable },
+                { typeof(UInt128), PrimitiveTypeCode.UInt128 },
+                { typeof(UInt128?), PrimitiveTypeCode.UInt128Nullable },
+#endif
                 { typeof(DateTime), PrimitiveTypeCode.DateTime },
                 { typeof(DateTime?), PrimitiveTypeCode.DateTimeNullable },
 #if HAVE_DATE_TIME_OFFSET
@@ -331,6 +347,33 @@ namespace Newtonsoft.Json.Utilities
                 return new BigInteger(bytes);
             }
 
+            if (value is short || value is ushort || value is byte || value is sbyte || value is bool || value is char)
+            {
+                return new BigInteger(System.Convert.ToInt64(value, CultureInfo.InvariantCulture));
+            }
+            if (value is Enum enumeration)
+            {
+                return enumeration.GetTypeCode() == TypeCode.UInt64
+                    ? new BigInteger(System.Convert.ToUInt64(value, CultureInfo.InvariantCulture))
+                    : new BigInteger(System.Convert.ToInt64(value, CultureInfo.InvariantCulture));
+            }
+#if HAVE_INT128
+            if (value is Int128 signed)
+            {
+                return (BigInteger)signed;
+            }
+            if (value is UInt128 unsigned)
+            {
+                return (BigInteger)unsigned;
+            }
+#endif
+#if HAVE_HALF
+            if (value is Half half)
+            {
+                return new BigInteger((float)half);
+            }
+#endif
+
             throw new InvalidCastException("Cannot convert {0} to BigInteger.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
         }
 
@@ -356,6 +399,22 @@ namespace Newtonsoft.Json.Utilities
             {
                 return i != 0;
             }
+#if HAVE_INT128
+            if (targetType == typeof(Int128))
+            {
+                return checked((Int128)i);
+            }
+            if (targetType == typeof(UInt128))
+            {
+                return checked((UInt128)i);
+            }
+#endif
+#if HAVE_HALF
+            if (targetType == typeof(Half))
+            {
+                return Half.Parse(i.ToString(CultureInfo.InvariantCulture), CultureInfo.InvariantCulture);
+            }
+#endif
 
             try
             {
@@ -365,6 +424,76 @@ namespace Newtonsoft.Json.Utilities
             {
                 throw new InvalidOperationException("Can not convert from BigInteger to {0}.".FormatWith(CultureInfo.InvariantCulture, targetType), ex);
             }
+        }
+#endif
+
+#if HAVE_HALF
+        internal static object? NormalizeModernNumber(object? value)
+        {
+#if HAVE_INT128
+            if (value is Int128 || value is UInt128)
+            {
+                return ToBigInteger(value);
+            }
+#endif
+            return value is Half half ? (object)(float)half : value;
+        }
+
+        internal static bool TryConvertModernNumber(object initialValue, CultureInfo culture, Type targetType, out object? value)
+        {
+            targetType = Nullable.GetUnderlyingType(targetType) ?? targetType;
+            if (targetType == typeof(Half))
+            {
+                value = initialValue switch
+                {
+                    Half => initialValue,
+                    BigInteger integer => FromBigInteger(integer, targetType),
+                    float single => (Half)single,
+                    double doubleValue => (Half)doubleValue,
+                    Enum => (Half)System.Convert.ToDouble(initialValue, culture),
+                    _ => Half.Parse(System.Convert.ToString(initialValue, culture)!, NumberStyles.Float | NumberStyles.AllowThousands, culture)
+                };
+                return true;
+            }
+#if HAVE_INT128
+            if (targetType == typeof(Int128) || targetType == typeof(UInt128))
+            {
+                BigInteger integer = initialValue is string text
+                    ? BigInteger.Parse(text, NumberStyles.Integer, culture)
+                    : ToBigInteger(initialValue);
+                value = FromBigInteger(integer, targetType);
+                return true;
+            }
+            if (initialValue is Int128 || initialValue is UInt128)
+            {
+                if (targetType.IsInstanceOfType(initialValue))
+                {
+                    value = initialValue;
+                    return true;
+                }
+
+                BigInteger integer = ToBigInteger(initialValue);
+                value = targetType == typeof(BigInteger) ? integer
+                    : targetType == typeof(string) ? integer.ToString(culture)
+                    : FromBigInteger(integer, targetType);
+                return true;
+            }
+#endif
+            if (initialValue is Half source)
+            {
+                if (targetType.IsInstanceOfType(initialValue))
+                {
+                    value = initialValue;
+                    return true;
+                }
+
+                value = targetType == typeof(BigInteger) ? new BigInteger((float)source)
+                    : targetType == typeof(string) ? source.ToString(null, culture)
+                    : System.Convert.ChangeType((float)source, targetType, culture);
+                return true;
+            }
+            value = null;
+            return false;
         }
 #endif
 
@@ -438,6 +567,13 @@ namespace Newtonsoft.Json.Utilities
                 value = initialValue;
                 return ConvertResult.Success;
             }
+
+#if HAVE_HALF
+            if (TryConvertModernNumber(initialValue, culture, targetType, out value))
+            {
+                return ConvertResult.Success;
+            }
+#endif
 
             // use Convert.ChangeType if both types are IConvertible
             if (IsConvertible(initialValue.GetType()) && IsConvertible(targetType))
@@ -615,6 +751,14 @@ namespace Newtonsoft.Json.Utilities
                 return null;
             }
 
+#if HAVE_HALF
+            if (initialValue != null && !targetType.IsInstanceOfType(initialValue)
+                && TryConvertModernNumber(initialValue, culture, targetType, out object? modernNumber))
+            {
+                return modernNumber;
+            }
+#endif
+
             if (TryConvert(initialValue, culture, targetType, out object? convertedValue))
             {
                 return convertedValue;
@@ -685,6 +829,8 @@ namespace Newtonsoft.Json.Utilities
                 case PrimitiveTypeCode.UInt32:
                 case PrimitiveTypeCode.Int64:
                 case PrimitiveTypeCode.UInt64:
+                case PrimitiveTypeCode.Int128:
+                case PrimitiveTypeCode.UInt128:
                     return true;
                 default:
                     return false;

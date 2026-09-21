@@ -37,6 +37,10 @@ namespace Newtonsoft.Json.Serialization
     {
         internal PrimitiveTypeCode TypeCode { get; set; }
 
+#if HAVE_MEMORY
+        internal bool IsByteMemory { get; }
+#endif
+
         /// <summary>
         /// Initializes a new instance of the <see cref="JsonPrimitiveContract"/> class.
         /// </summary>
@@ -54,10 +58,20 @@ namespace Newtonsoft.Json.Serialization
             {
                 InternalReadType = readType;
             }
+#if HAVE_MEMORY
+            if (NonNullableUnderlyingType == typeof(Memory<byte>) || NonNullableUnderlyingType == typeof(ReadOnlyMemory<byte>))
+            {
+                IsByteMemory = true;
+                TypeCode = PrimitiveTypeCode.Bytes;
+            }
+#endif
         }
 
         private static readonly Dictionary<Type, ReadType> ReadTypeMap = new Dictionary<Type, ReadType>
         {
+    #if HAVE_HALF
+            [typeof(Half)] = ReadType.ReadAsDouble,
+    #endif
             [typeof(byte[])] = ReadType.ReadAsBytes,
             [typeof(byte)] = ReadType.ReadAsInt32,
             [typeof(short)] = ReadType.ReadAsInt32,

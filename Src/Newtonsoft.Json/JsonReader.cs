@@ -417,6 +417,9 @@ namespace Newtonsoft.Json
                         return i;
                     }
 
+#if HAVE_HALF
+                    v = ConvertUtils.NormalizeModernNumber(v)!;
+#endif
 #if HAVE_BIG_INTEGER
                     if (v is BigInteger value)
                     {
@@ -603,7 +606,14 @@ namespace Newtonsoft.Json
                 case JsonToken.None:
                     throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
                 case JsonToken.Integer:
-                    buffer.Add(Convert.ToByte(Value, CultureInfo.InvariantCulture));
+                    object? value = Value;
+#if HAVE_INT128
+                    if (value is Int128 || value is UInt128)
+                    {
+                        ConvertUtils.TryConvertModernNumber(value, CultureInfo.InvariantCulture, typeof(byte), out value);
+                    }
+#endif
+                    buffer.Add(Convert.ToByte(value, CultureInfo.InvariantCulture));
                     return false;
                 case JsonToken.EndArray:
                     return true;
@@ -636,6 +646,9 @@ namespace Newtonsoft.Json
                         return d;
                     }
 
+#if HAVE_HALF
+                    v = ConvertUtils.NormalizeModernNumber(v)!;
+#endif
 #if HAVE_BIG_INTEGER
                     if (v is BigInteger value)
                     {
@@ -694,15 +707,19 @@ namespace Newtonsoft.Json
                 case JsonToken.Integer:
                 case JsonToken.Float:
                     bool b;
+                    object? value = Value;
+#if HAVE_HALF
+                    value = ConvertUtils.NormalizeModernNumber(value);
+#endif
 #if HAVE_BIG_INTEGER
-                    if (Value is BigInteger integer)
+                    if (value is BigInteger integer)
                     {
                         b = integer != 0;
                     }
                     else
 #endif
                     {
-                        b = Convert.ToBoolean(Value, CultureInfo.InvariantCulture);
+                        b = Convert.ToBoolean(value, CultureInfo.InvariantCulture);
                     }
 
                     SetToken(JsonToken.Boolean, b, false);
@@ -759,6 +776,9 @@ namespace Newtonsoft.Json
                         return d;
                     }
 
+#if HAVE_HALF
+                    v = ConvertUtils.NormalizeModernNumber(v)!;
+#endif
 #if HAVE_BIG_INTEGER
                     if (v is BigInteger value)
                     {

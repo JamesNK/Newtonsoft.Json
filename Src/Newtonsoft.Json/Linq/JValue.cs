@@ -254,6 +254,10 @@ namespace Newtonsoft.Json.Linq
 
         internal static int Compare(JTokenType valueType, object? objA, object? objB)
         {
+    #if HAVE_HALF
+            objA = ConvertUtils.NormalizeModernNumber(objA);
+            objB = ConvertUtils.NormalizeModernNumber(objB);
+    #endif
             if (objA == objB)
             {
                 return 0;
@@ -420,6 +424,10 @@ namespace Newtonsoft.Json.Linq
 #if HAVE_EXPRESSIONS
         private static bool Operation(ExpressionType operation, object? objA, object? objB, out object? result)
         {
+    #if HAVE_HALF
+            objA = ConvertUtils.NormalizeModernNumber(objA);
+            objB = ConvertUtils.NormalizeModernNumber(objB);
+    #endif
             if (objA is string || objB is string)
             {
                 if (operation == ExpressionType.Add || operation == ExpressionType.AddAssign)
@@ -673,6 +681,18 @@ namespace Newtonsoft.Json.Linq
             {
                 return JTokenType.TimeSpan;
             }
+#if HAVE_INT128
+            else if (value is Int128 || value is UInt128)
+            {
+                return JTokenType.Integer;
+            }
+#endif
+#if HAVE_HALF
+            else if (value is Half)
+            {
+                return JTokenType.Float;
+            }
+#endif
 
             throw new ArgumentException("Could not determine JSON object type for type {0}.".FormatWith(CultureInfo.InvariantCulture, value.GetType()));
         }
@@ -774,6 +794,12 @@ namespace Newtonsoft.Json.Linq
                         writer.WriteValue(integer);
                     }
 #endif
+#if HAVE_INT128
+                    else if (_value is Int128 || _value is UInt128)
+                    {
+                        writer.WriteValue(_value);
+                    }
+#endif
                     else
                     {
                         writer.WriteValue(Convert.ToInt64(_value, CultureInfo.InvariantCulture));
@@ -792,6 +818,12 @@ namespace Newtonsoft.Json.Linq
                     {
                         writer.WriteValue(f);
                     }
+#if HAVE_HALF
+                    else if (_value is Half)
+                    {
+                        writer.WriteValue(_value);
+                    }
+#endif
                     else
                     {
                         writer.WriteValue(Convert.ToDouble(_value, CultureInfo.InvariantCulture));
@@ -834,7 +866,7 @@ namespace Newtonsoft.Json.Linq
 
         internal override int GetDeepHashCode()
         {
-            int valueHashCode = (_value != null) ? _value.GetHashCode() : 0;
+            int valueHashCode = GetValueHashCode();
 
             // GetHashCode on an enum boxes so cast to int
             return ((int)_valueType).GetHashCode() ^ valueHashCode;
@@ -887,9 +919,51 @@ namespace Newtonsoft.Json.Linq
         /// </returns>
         public override int GetHashCode()
         {
+            return GetValueHashCode();
+        }
+
+        private int GetValueHashCode()
+        {
             if (_value == null)
             {
                 return 0;
+            }
+
+            if (_valueType == JTokenType.Integer)
+            {
+                // Equal integers must hash identically across CLR types. Hashing the low 64 bits
+                // balances distribution for ordinary integers with implementation simplicity.
+                // Values that differ only above 64 bits still collide.
+                long value = _value switch
+                {
+#if HAVE_BIG_INTEGER
+#if NET7_0_OR_GREATER
+                    BigInteger integer => long.CreateTruncating(integer),
+#else
+                    BigInteger integer => unchecked((long)(ulong)(integer & ulong.MaxValue)),
+#endif
+#endif
+                    ulong unsigned => unchecked((long)unsigned),
+                    Enum enumeration when enumeration.GetTypeCode() == TypeCode.UInt64
+                        => unchecked((long)Convert.ToUInt64(enumeration, CultureInfo.InvariantCulture)),
+#if HAVE_INT128
+                    Int128 signed128 => unchecked((long)signed128),
+                    UInt128 unsigned128 => unchecked((long)unsigned128),
+#endif
+                    _ => Convert.ToInt64(_value, CultureInfo.InvariantCulture)
+                };
+                return value.GetHashCode();
+            }
+
+            if (_valueType == JTokenType.Float)
+            {
+#if HAVE_HALF
+                if (_value is Half half)
+                {
+                    return ((double)half).GetHashCode();
+                }
+#endif
+                return Convert.ToDouble(_value, CultureInfo.InvariantCulture).GetHashCode();
             }
 
             return _value.GetHashCode();

@@ -1,4 +1,9 @@
 <Project>
+  <PropertyGroup Condition="'$(MSBuildProjectName)'=='Newtonsoft.Json.Tests' and '$(TestLibraryFramework)'!=''">
+    <BaseIntermediateOutputPath>obj\$(TestLibraryFramework)\</BaseIntermediateOutputPath>
+    <BaseOutputPath>bin\$(TestLibraryFramework)\</BaseOutputPath>
+    <DefaultItemExcludes>$(DefaultItemExcludes);obj\**;bin\**</DefaultItemExcludes>
+  </PropertyGroup>
   <PropertyGroup>
     <AutofacPackageVersion>4.6.2</AutofacPackageVersion>
     <BenchmarkDotNetPackageVersion>0.10.10</BenchmarkDotNetPackageVersion>

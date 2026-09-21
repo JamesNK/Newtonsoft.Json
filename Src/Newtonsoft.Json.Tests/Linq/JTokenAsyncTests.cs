@@ -26,6 +26,7 @@
 #if !(NET20 || NET35 || NET40 || PORTABLE40)
 
 using System;
+using System.Threading;
 using System.Threading.Tasks;
 #if DNXCORE50
 using Xunit;
@@ -44,6 +45,47 @@ namespace Newtonsoft.Json.Tests.Linq
     [TestFixture]
     public class JTokenAsyncTests : TestFixtureBase
     {
+        [Test]
+        public async Task WriteToAsyncCancellationToken()
+        {
+            JToken[] tokens =
+            {
+                new JValue(1),
+                new JArray(1, 2),
+                new JObject(new JProperty("Value", 1)),
+                new JConstructor("Date", 1)
+            };
+            using (CancellationTokenSource source = new CancellationTokenSource())
+            {
+                source.Cancel();
+                foreach (JToken token in tokens)
+                {
+                    StringWriter output = new StringWriter();
+                    using (JsonTextWriter writer = new JsonTextWriter(output))
+                    {
+                        Task writeTask = token.WriteToAsync(writer, source.Token);
+                        try
+                        {
+                            await writeTask;
+                        }
+                        catch (OperationCanceledException exception)
+                        {
+                            Assert.AreEqual(source.Token, exception.CancellationToken);
+                        }
+                        Assert.IsTrue(writeTask.IsCanceled);
+                        Assert.AreEqual(string.Empty, output.ToString());
+                    }
+
+                    output = new StringWriter();
+                    using (JsonTextWriter writer = new JsonTextWriter(output))
+                    {
+                        await token.WriteToAsync(writer, CancellationToken.None);
+                        Assert.AreEqual(token.ToString(Formatting.None), output.ToString());
+                    }
+                }
+            }
+        }
+
         [Test]
         public async Task ReadFromAsync()
         {

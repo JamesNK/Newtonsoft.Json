@@ -137,6 +137,12 @@ namespace Newtonsoft.Json.Serialization
         {
             if (contract.TypeCode == PrimitiveTypeCode.Bytes)
             {
+#if HAVE_MEMORY
+                if (contract.IsByteMemory)
+                {
+                    value = value is Memory<byte> memory ? memory.ToArray() : ((ReadOnlyMemory<byte>)value).ToArray();
+                }
+#endif
                 // if type name handling is enabled then wrap the base64 byte string in an object with the type name
                 bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Objects, contract, member, containerContract, containerProperty);
                 if (includeTypeDetails)
@@ -190,7 +196,7 @@ namespace Newtonsoft.Json.Serialization
                     JsonArrayContract arrayContract = (JsonArrayContract)valueContract;
                     if (!arrayContract.IsMultidimensionalArray)
                     {
-                        SerializeList(writer, (IEnumerable)value, arrayContract, member, containerContract, containerProperty);
+                        SerializeList(writer, value, arrayContract, member, containerContract, containerProperty);
                     }
                     else
                     {
@@ -704,11 +710,18 @@ namespace Newtonsoft.Json.Serialization
 
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
-        private void SerializeList(JsonWriter writer, IEnumerable values, JsonArrayContract contract, JsonProperty? member, JsonContainerContract? collectionContract, JsonProperty? containerProperty)
+        private void SerializeList(JsonWriter writer, object values, JsonArrayContract contract, JsonProperty? member, JsonContainerContract? collectionContract, JsonProperty? containerProperty)
         {
             object underlyingList = values is IWrappedCollection wrappedCollection ? wrappedCollection.UnderlyingCollection : values;
 
             OnSerializing(writer, contract, underlyingList);
+
+#if HAVE_MEMORY
+            if (contract.MemoryAdapter != null)
+            {
+                values = contract.MemoryAdapter.GetEnumerable(values);
+            }
+#endif
 
             _serializeStack.Add(underlyingList);
 
@@ -720,7 +733,7 @@ namespace Newtonsoft.Json.Serialization
 
             int index = 0;
             // note that an error in the IEnumerable won't be caught
-            foreach (object value in values)
+            foreach (object value in (IEnumerable)values)
             {
                 try
                 {

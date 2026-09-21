@@ -552,12 +552,17 @@ namespace Newtonsoft.Json
                     if (value is BigInteger integer)
                     {
                         WriteValue(integer);
+                        break;
                     }
-                    else
 #endif
+#if HAVE_INT128
+                    if (value is Int128 || value is UInt128)
                     {
-                        WriteValue(Convert.ToInt64(value, CultureInfo.InvariantCulture));
+                        WriteValue(value);
+                        break;
                     }
+#endif
+                    WriteValue(Convert.ToInt64(value, CultureInfo.InvariantCulture));
                     break;
                 case JsonToken.Float:
                     ValidationUtils.ArgumentNotNull(value, nameof(value));
@@ -573,6 +578,12 @@ namespace Newtonsoft.Json
                     {
                         WriteValue(floatValue);
                     }
+#if HAVE_HALF
+                    else if (value is Half)
+                    {
+                        WriteValue(value);
+                    }
+#endif
                     else
                     {
                         WriteValue(Convert.ToDouble(value, CultureInfo.InvariantCulture));
@@ -1433,6 +1444,20 @@ namespace Newtonsoft.Json
                     throw CreateUnsupportedTypeException(this, value);
                 }
 #endif
+#if HAVE_INT128
+                if (value is Int128 || value is UInt128)
+                {
+                    WriteValue((object)ConvertUtils.ToBigInteger(value));
+                    return;
+                }
+#endif
+#if HAVE_HALF
+                if (value is Half half)
+                {
+                    WriteValue((float)half);
+                    return;
+                }
+#endif
 
                 WriteValue(this, ConvertUtils.GetTypeCode(value.GetType()), value);
             }
@@ -1481,6 +1506,20 @@ namespace Newtonsoft.Json
             {
                 switch (typeCode)
                 {
+#if HAVE_HALF
+                    case PrimitiveTypeCode.Half:
+                    case PrimitiveTypeCode.HalfNullable:
+                        writer.WriteValue(value);
+                        return;
+#endif
+#if HAVE_INT128
+                    case PrimitiveTypeCode.Int128:
+                    case PrimitiveTypeCode.Int128Nullable:
+                    case PrimitiveTypeCode.UInt128:
+                    case PrimitiveTypeCode.UInt128Nullable:
+                        writer.WriteValue(value);
+                        return;
+#endif
                     case PrimitiveTypeCode.Char:
                         writer.WriteValue((char)value);
                         return;
