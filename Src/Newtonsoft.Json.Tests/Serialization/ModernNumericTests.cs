@@ -880,17 +880,75 @@ namespace Newtonsoft.Json.Tests.Serialization
         }
 
         [Fact]
-        public void ReadHalfPrecisely()
+        public void ReadHalfAsDouble()
         {
             string number = "1.00048828125000000000001";
-            Half expected = Half.Parse(number, CultureInfo.InvariantCulture);
+            Half expected = (Half)double.Parse(number, CultureInfo.InvariantCulture);
+            Assert.Equal((Half)1, expected);
+            Assert.NotEqual(Half.Parse(number, CultureInfo.InvariantCulture), expected);
             Assert.Equal(expected, JsonConvert.DeserializeObject<Half>(number));
+            Assert.Equal(expected, JsonConvert.DeserializeObject<Half>("\"" + number + "\""));
             Assert.Equal(expected, JsonConvert.DeserializeObject<Half[]>("[/*number*/" + number + "]")[0]);
+            Assert.Equal(expected, JsonConvert.DeserializeObject<NullableHalf>("{\"Value\":" + number + "}").Value.Value);
             JsonSerializerSettings settings = new JsonSerializerSettings { TraceWriter = new MemoryTraceWriter(), Culture = CultureInfo.GetCultureInfo("fr-FR") };
             Assert.Equal(expected, JsonConvert.DeserializeObject<Half>(number, settings));
             Assert.Equal((Half)1.5f, JsonConvert.DeserializeObject<Half>("\"1,5\"", settings));
             Assert.Null(JsonConvert.DeserializeObject<Half?>("null"));
             Assert.Throws<JsonReaderException>(() => JsonConvert.DeserializeObject<Half>("true"));
+        }
+
+        [Fact]
+        public void ReadHalfWithDecimalFloatParsing()
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings { FloatParseHandling = FloatParseHandling.Decimal };
+            Assert.Equal((Half)1.5, JsonConvert.DeserializeObject<Half>("1.5", settings));
+            Assert.Equal(Half.PositiveInfinity, JsonConvert.DeserializeObject<Half>("1e100", settings));
+            foreach (string text in new[] { "NaN", "Infinity", "-Infinity" })
+            {
+                Assert.Throws<JsonReaderException>(() => JsonConvert.DeserializeObject<Half>(text, settings));
+                Half expected = (Half)double.Parse(text, CultureInfo.InvariantCulture);
+                Assert.Equal(expected, JsonConvert.DeserializeObject<Half>("\"" + text + "\"", settings));
+            }
+        }
+
+        [Fact]
+        public void HalfReaderOverrides()
+        {
+            foreach (bool trace in new[] { false, true })
+            {
+                using (ReplacingDoubleReader reader = new ReplacingDoubleReader(new StringReader("1.5")))
+                {
+                    JsonSerializer serializer = new JsonSerializer();
+                    if (trace)
+                    {
+                        serializer.TraceWriter = new MemoryTraceWriter();
+                    }
+                    Assert.Equal((Half)2.5, serializer.Deserialize<Half?>(reader).Value);
+                    Assert.Equal(1, reader.Calls);
+                    Assert.Equal(2.5, Assert.IsType<double>(reader.Value));
+                }
+            }
+        }
+
+        private sealed class ReplacingDoubleReader : JsonTextReader
+        {
+            public int Calls { get; private set; }
+
+            public ReplacingDoubleReader(TextReader reader) : base(reader)
+            {
+            }
+
+            public override double? ReadAsDouble()
+            {
+                Calls++;
+                double? value = base.ReadAsDouble();
+                if (value != null)
+                {
+                    value = 2.5;
+                    SetToken(JsonToken.Float, value, false);
+                }
+                return value;
+            }
         }
 
         [Fact]

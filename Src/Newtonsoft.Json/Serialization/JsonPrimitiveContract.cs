@@ -70,7 +70,7 @@ namespace Newtonsoft.Json.Serialization
         private static readonly Dictionary<Type, ReadType> ReadTypeMap = new Dictionary<Type, ReadType>
         {
     #if HAVE_HALF
-            [typeof(Half)] = ReadType.ReadAsHalf,
+            [typeof(Half)] = ReadType.ReadAsDouble,
     #endif
             [typeof(byte[])] = ReadType.ReadAsBytes,
             [typeof(byte)] = ReadType.ReadAsInt32,

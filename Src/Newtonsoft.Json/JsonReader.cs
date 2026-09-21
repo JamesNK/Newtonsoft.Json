@@ -1200,45 +1200,6 @@ namespace Newtonsoft.Json
             }
         }
 
-#if HAVE_HALF
-        internal virtual void ReadHalf()
-        {
-            JsonToken token = GetContentToken();
-            if (token == JsonToken.None || token == JsonToken.Null || token == JsonToken.EndArray)
-            {
-                return;
-            }
-            if (TokenType == JsonToken.String)
-            {
-                ReadHalfString((string?)Value);
-                return;
-            }
-            if ((TokenType == JsonToken.Integer || TokenType == JsonToken.Float) && Value != null)
-            {
-                ConvertUtils.TryConvertModernNumber(Value, Culture, typeof(Half), out object? half);
-                SetToken(JsonToken.Float, half, false);
-                return;
-            }
-            throw JsonReaderException.Create(this, "Error reading Half. Unexpected token: {0}.".FormatWith(CultureInfo.InvariantCulture, TokenType));
-        }
-
-        internal Half? ReadHalfString(string? text)
-        {
-            if (string.IsNullOrEmpty(text))
-            {
-                SetToken(JsonToken.Null, null, false);
-                return null;
-            }
-            if (Half.TryParse(text, NumberStyles.Float | NumberStyles.AllowThousands, Culture, out Half half))
-            {
-                SetToken(JsonToken.Float, half, false);
-                return half;
-            }
-            SetToken(JsonToken.String, text, false);
-            throw JsonReaderException.Create(this, "Could not convert string to Half: {0}.".FormatWith(CultureInfo.InvariantCulture, text));
-        }
-#endif
-
         internal bool ReadForType(JsonContract? contract, bool hasConverter)
         {
             // don't read properties with converters as a specific value
@@ -1252,11 +1213,6 @@ namespace Newtonsoft.Json
 
             switch (t)
             {
-#if HAVE_HALF
-                case ReadType.ReadAsHalf:
-                    ReadHalf();
-                    break;
-#endif
                 case ReadType.Read:
                     return ReadAndMoveToContent();
                 case ReadType.ReadAsInt32:
