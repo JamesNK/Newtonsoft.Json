@@ -78,7 +78,7 @@
 <para><legacyBold>Int32</legacyBold></para>
 <para><legacyBold>UInt64</legacyBold></para>
 <para><legacyBold>Int64</legacyBold></para>
-<para><legacyBold>Int128, UInt128</legacyBold> (.NET 8 and .NET 10 builds)</para></entry>
+<para><legacyBold>Int128, UInt128</legacyBold> (.NET 8 or later)</para></entry>
     <entry><para>Integer</para></entry>
   </row>
   <row>
@@ -86,7 +86,7 @@
     <para><legacyBold>Float</legacyBold></para>
     <para><legacyBold>Double</legacyBold></para>
     <para><legacyBold>Decimal</legacyBold></para>
-    <para><legacyBold>Half</legacyBold> (.NET 6, .NET 8, and .NET 10 builds)</para>
+    <para><legacyBold>Half</legacyBold> (.NET 6 or later)</para>
     </entry>
     <entry><para>Float</para></entry>
   </row>
