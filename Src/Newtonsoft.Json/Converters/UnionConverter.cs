@@ -321,6 +321,7 @@ namespace Newtonsoft.Json.Converters
             }
 
             JToken token = JToken.ReadFrom(reader);
+            ValueShape shape = GetTokenShape(token.Type);
 
             if (token is JObject jsonObject && serializer.MetadataPropertyHandling != MetadataPropertyHandling.Ignore)
             {
@@ -365,9 +366,13 @@ namespace Newtonsoft.Json.Converters
 
                     return referenceCase.Constructor(referencedValue);
                 }
+
+                if (GetMetadataProperty(jsonObject, JsonTypeReflector.ArrayValuesPropertyName, serializer.MetadataPropertyHandling)?.Type == JTokenType.Array)
+                {
+                    shape = ValueShape.Array;
+                }
             }
 
-            ValueShape shape = GetTokenShape(token.Type);
             UnionCase? match = null;
             foreach (UnionCase unionCase in union.Cases)
             {

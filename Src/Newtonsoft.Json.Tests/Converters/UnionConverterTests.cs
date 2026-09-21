@@ -408,6 +408,63 @@ namespace Newtonsoft.Json.Tests.Converters
             Assert.AreSame(result[0].Value, result[1].Value);
         }
 
+        [Test]
+        public void PreservesContainedCollectionReferencesWithoutTypeNames()
+        {
+            foreach (PreserveReferencesHandling references in new[] { PreserveReferencesHandling.Arrays, PreserveReferencesHandling.All })
+            {
+                foreach (MetadataPropertyHandling metadata in new[] { MetadataPropertyHandling.Default, MetadataPropertyHandling.ReadAhead })
+                {
+                    JsonSerializerSettings settings = new JsonSerializerSettings
+                    {
+                        PreserveReferencesHandling = references,
+                        MetadataPropertyHandling = metadata
+                    };
+                    List<int> payload = new List<int> { 1, 2 };
+                    string json = JsonConvert.SerializeObject(new Pair<List<int>, bool>(payload), settings);
+                    Assert.AreEqual("{\"$id\":\"1\",\"$values\":[1,2]}", json);
+                    Pair<List<int>, bool> result = JsonConvert.DeserializeObject<Pair<List<int>, bool>>(json, settings);
+                    CollectionAssert.AreEqual(payload, (List<int>)result.Value);
+
+                    List<Pair<List<int>, Payload>> values = new List<Pair<List<int>, Payload>>
+                    {
+                        new Pair<List<int>, Payload>(payload),
+                        new Pair<List<int>, Payload>(payload)
+                    };
+                    json = JsonConvert.SerializeObject(values, settings);
+                    Assert.IsTrue(json.Contains("\"$ref\""));
+                    Assert.IsFalse(json.Contains("\"$type\""));
+                    List<Pair<List<int>, Payload>> results = JsonConvert.DeserializeObject<List<Pair<List<int>, Payload>>>(json, settings);
+                    CollectionAssert.AreEqual(payload, (List<int>)results[0].Value);
+                    Assert.AreSame(results[0].Value, results[1].Value);
+                }
+            }
+        }
+
+        [Test]
+        public void CollectionMetadataOrderingAndIgnore()
+        {
+            const string leadingJson = "{\"$id\":\"1\",\"$values\":[1,2]}";
+            const string trailingJson = "{\"Name\":\"test\",\"$id\":\"1\",\"$values\":[1,2]}";
+            JsonSerializerSettings settings = new JsonSerializerSettings();
+            Pair<List<int>, Dictionary<string, object>> result = JsonConvert.DeserializeObject<Pair<List<int>, Dictionary<string, object>>>(trailingJson, settings);
+            Assert.AreEqual("test", ((Dictionary<string, object>)result.Value)["Name"]);
+            Assert.IsTrue(((Dictionary<string, object>)result.Value).ContainsKey("$values"));
+
+            settings.MetadataPropertyHandling = MetadataPropertyHandling.ReadAhead;
+            result = JsonConvert.DeserializeObject<Pair<List<int>, Dictionary<string, object>>>(trailingJson, settings);
+            CollectionAssert.AreEqual(new int[] { 1, 2 }, (List<int>)result.Value);
+
+            settings.MetadataPropertyHandling = MetadataPropertyHandling.Ignore;
+            result = JsonConvert.DeserializeObject<Pair<List<int>, Dictionary<string, object>>>(leadingJson, settings);
+            Assert.AreEqual("1", ((Dictionary<string, object>)result.Value)["$id"]);
+            Assert.IsTrue(((Dictionary<string, object>)result.Value).ContainsKey("$values"));
+
+            settings.MetadataPropertyHandling = MetadataPropertyHandling.Default;
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Arrays>(leadingJson, settings));
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<Pair<List<int>, bool>>("{\"$values\":true}", settings));
+        }
+
         public class PayloadConverter : JsonConverter
         {
             public override bool CanConvert(Type objectType) { return objectType == typeof(Payload); }
