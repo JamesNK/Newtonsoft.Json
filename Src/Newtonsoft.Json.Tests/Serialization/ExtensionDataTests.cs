@@ -1086,5 +1086,76 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.AreEqual("foo", (string)deserialize.ExtensionData["Foo"]["$values"][0]);
             Assert.AreEqual("bar", (string)deserialize.ExtensionData["Foo"]["$values"][1]);
         }
+
+
+        public class ExtensionDataWithOrder
+        {
+            [JsonExtensionData]
+            [JsonProperty(Order = 1)]
+            public IDictionary<string, JToken> BasicInfo { get; set; } = new Dictionary<string, JToken>();
+
+            [JsonProperty(Order = 3)]
+            public JobProfile JobProfile { get; set; }
+
+            [JsonProperty(Order = 2)]
+            public Address Address { get; set; }
+        }
+
+        public class Address
+        {
+            public string State;
+            public string City;
+        }
+
+        public class JobProfile
+        {
+            public string CompanyName;
+            public string Location;
+            [JsonExtensionData]
+            public IDictionary<string, JToken> OtherInformation { get; set; } = new Dictionary<string, JToken>();
+        }
+
+        [Test]
+        public void SerializeExtensionDataWithOrder()
+        {
+
+            ExtensionDataWithOrder extensionDataWithOrder = new ExtensionDataWithOrder();
+            extensionDataWithOrder.BasicInfo.Add("FirstName", "John");
+            extensionDataWithOrder.BasicInfo.Add("LastName", "Doe");
+            extensionDataWithOrder.Address = new Address
+            {
+                State = "Gujarat",
+                City = "Vadodara"
+            };
+            extensionDataWithOrder.JobProfile = new JobProfile
+            {
+                CompanyName = "Microsoft",
+                Location = "India"
+            };
+            extensionDataWithOrder.JobProfile.OtherInformation.Add("ZipCode", "12345");
+            extensionDataWithOrder.JobProfile.OtherInformation.Add("Mob", "8888888888");
+
+            JsonSerializerSettings JsonSerializerSettings = new JsonSerializerSettings
+            {
+                Formatting = Formatting.Indented
+            };
+
+            var json = Newtonsoft.Json.JsonConvert.SerializeObject(extensionDataWithOrder, JsonSerializerSettings);
+
+            Assert.AreEqual(@"{
+  ""FirstName"": ""John"",
+  ""LastName"": ""Doe"",
+  ""Address"": {
+    ""State"": ""Gujarat"",
+    ""City"": ""Vadodara""
+  },
+  ""JobProfile"": {
+    ""CompanyName"": ""Microsoft"",
+    ""Location"": ""India"",
+    ""ZipCode"": ""12345"",
+    ""Mob"": ""8888888888""
+  }
+}", json);
+        }
     }
 }
