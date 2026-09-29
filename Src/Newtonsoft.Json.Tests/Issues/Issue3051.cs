@@ -91,6 +91,7 @@ namespace Newtonsoft.Json.Tests.Issues
             Assert.AreEqual(recordPre.RecordIdentifiers.Single(), postValue);
         }
 
+#if !NET20
         [Test]
         //https://github.com/JamesNK/Newtonsoft.Json/issues/3051
         public void DateTimeOffset_InObjectTypedListProperty_RoundTripsWithTypeNameHandlingAll()
@@ -116,10 +117,43 @@ namespace Newtonsoft.Json.Tests.Issues
             Assert.AreEqual(typeof(DateTimeOffset), postValue.GetType());
             Assert.AreEqual(dateTimeOffset, postValue);
         }
+#endif
+
+        // The exact shape from the issue; IReadOnlyList<T> does not exist before .NET 4.5.
+#if !(NET20 || NET35 || NET40)
+        [Test]
+        //https://github.com/JamesNK/Newtonsoft.Json/issues/3051
+        public void Guid_InObjectTypedReadOnlyListProperty_RoundTripsWithTypeNameHandlingAll()
+        {
+            JsonSerializerSettings settings = new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.All
+            };
+
+            ReadOnlyRecord recordPre = new ReadOnlyRecord
+            {
+                RecordIdentifiers = new List<object> { Guid.NewGuid() }
+            };
+
+            string json = JsonConvert.SerializeObject(recordPre, settings);
+
+            ReadOnlyRecord recordPost = JsonConvert.DeserializeObject<ReadOnlyRecord>(json, settings);
+
+            object postValue = recordPost.RecordIdentifiers.Single();
+
+            Assert.AreEqual(typeof(Guid), postValue.GetType());
+            Assert.AreEqual(recordPre.RecordIdentifiers.Single(), postValue);
+        }
+
+        public class ReadOnlyRecord
+        {
+            public IReadOnlyList<object> RecordIdentifiers { get; set; }
+        }
+#endif
 
         public class Record
         {
-            public IReadOnlyList<object> RecordIdentifiers { get; set; }
+            public IList<object> RecordIdentifiers { get; set; }
         }
     }
 }
