@@ -135,6 +135,8 @@ namespace Newtonsoft.Json.Serialization
 
         private void SerializePrimitive(JsonWriter writer, object value, JsonPrimitiveContract contract, JsonProperty? member, JsonContainerContract? containerContract, JsonProperty? containerProperty)
         {
+            bool includeTypeDetails;
+
             if (contract.TypeCode == PrimitiveTypeCode.Bytes)
             {
 #if HAVE_MEMORY
@@ -144,21 +146,83 @@ namespace Newtonsoft.Json.Serialization
                 }
 #endif
                 // if type name handling is enabled then wrap the base64 byte string in an object with the type name
-                bool includeTypeDetails = ShouldWriteType(TypeNameHandling.Objects, contract, member, containerContract, containerProperty);
-                if (includeTypeDetails)
-                {
-                    writer.WriteStartObject();
-                    WriteTypeProperty(writer, contract.CreatedType);
-                    writer.WritePropertyName(JsonTypeReflector.ValuePropertyName, false);
+                includeTypeDetails = ShouldWriteType(TypeNameHandling.Objects, contract, member, containerContract, containerProperty);
+            }
+            else if (IsAmbiguousWithoutTypeHint(contract.TypeCode))
+            {
+                // Guid/TimeSpan/Uri are written as a plain JSON string, and DateTimeOffset as a value
+                // the reader auto-detects; none carry any marker of their .NET type. Deserializing one
+                // of these back into a position that isn't already pinned to that exact type (e.g. an
+                // "object"-typed property/dictionary value/collection item, or a TypeNameHandling.Auto
+                // mismatch) can't tell it apart from a plain string (or, for DateTimeOffset, silently
+                // reconstructs a DateTime instead, discarding the offset). Only wrap the value with its
+                // type name when the declared type at this position genuinely leaves that ambiguous;
+                // when the position is already declared as this exact type (e.g. a Dictionary<string,
+                // Guid> value) the plain form round-trips correctly on its own and wrapping would just
+                // be noise.
+                includeTypeDetails =
+                    ShouldWriteType(TypeNameHandling.Objects, contract, member, containerContract, containerProperty) &&
+                    !DeclaredTypeMatchesContract(contract, member, containerContract);
+            }
+            else
+            {
+                includeTypeDetails = false;
+            }
 
-                    JsonWriter.WriteValue(writer, contract.TypeCode, value);
+            if (includeTypeDetails)
+            {
+                writer.WriteStartObject();
+                WriteTypeProperty(writer, contract.CreatedType);
+                writer.WritePropertyName(JsonTypeReflector.ValuePropertyName, false);
 
-                    writer.WriteEndObject();
-                    return;
-                }
+                JsonWriter.WriteValue(writer, contract.TypeCode, value);
+
+                writer.WriteEndObject();
+                return;
             }
 
             JsonWriter.WriteValue(writer, contract.TypeCode, value);
+        }
+
+        private static bool IsAmbiguousWithoutTypeHint(PrimitiveTypeCode typeCode)
+        {
+            switch (typeCode)
+            {
+                case PrimitiveTypeCode.Guid:
+                case PrimitiveTypeCode.TimeSpan:
+                case PrimitiveTypeCode.Uri:
+                case PrimitiveTypeCode.DateTimeOffset:
+                    return true;
+                default:
+                    return false;
+            }
+        }
+
+        // Mirrors the type-match half of ShouldWriteType's TypeNameHandling.Auto check: true when the
+        // declared type at this position (the member's property type, the container's item type, or -
+        // failing those - the root type) is already exactly this contract's type, so no $type hint is
+        // needed to reconstruct it. Unlike ShouldWriteType, this is evaluated unconditionally (not only
+        // when TypeNameHandling.Auto is set) because it answers a narrower question: not "did the user
+        // ask for type names here" but "would omitting one actually lose information".
+        private bool DeclaredTypeMatchesContract(JsonContract contract, JsonProperty? member, JsonContainerContract? containerContract)
+        {
+            if (member != null)
+            {
+                return contract.NonNullableUnderlyingType == member.PropertyContract?.CreatedType;
+            }
+
+            if (containerContract != null)
+            {
+                return containerContract.ItemContract != null && contract.NonNullableUnderlyingType == containerContract.ItemContract.CreatedType;
+            }
+
+            if (_rootType != null && _serializeStack.Count == _rootLevel)
+            {
+                JsonContract rootContract = Serializer._contractResolver.ResolveContract(_rootType);
+                return contract.NonNullableUnderlyingType == rootContract.CreatedType;
+            }
+
+            return false;
         }
 
         [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
