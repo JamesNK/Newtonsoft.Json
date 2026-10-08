@@ -860,16 +860,21 @@ namespace Newtonsoft.Json.Converters
                     }
                     else
                     {
+                        bool namespaceAdded = false;
                         _attributes = new List<IXmlNode>();
                         foreach (XAttribute attribute in Element.Attributes())
                         {
+                            if (attribute.Name == "xmlns")
+                            {
+                                namespaceAdded = true;
+                            }
                             _attributes.Add(new XAttributeWrapper(attribute));
                         }
 
                         // ensure elements created with a namespace but no namespace attribute are converted correctly
                         // e.g. new XElement("{http://example.com}MyElement");
                         string namespaceUri = NamespaceUri!;
-                        if (HasImplicitNamespaceAttribute(namespaceUri))
+                        if (!namespaceAdded && HasImplicitNamespaceAttribute(namespaceUri))
                         {
                             _attributes.Insert(0, new XAttributeWrapper(new XAttribute("xmlns", namespaceUri)));
                         }
@@ -886,24 +891,11 @@ namespace Newtonsoft.Json.Converters
             {
                 if (StringUtils.IsNullOrEmpty(GetPrefixOfNamespace(namespaceUri)))
                 {
-                    bool namespaceDeclared = false;
-
-                    if (Element.HasAttributes)
-                    {
-                        foreach (XAttribute attribute in Element.Attributes())
-                        {
-                            if (attribute.Name.LocalName == "xmlns" && StringUtils.IsNullOrEmpty(attribute.Name.NamespaceName) && attribute.Value == namespaceUri)
-                            {
-                                namespaceDeclared = true;
-                            }
-                        }
-                    }
-
-                    if (!namespaceDeclared)
-                    {
-                        return true;
-                    }
+                    return true;
                 }
+            } else if (ParentNode?.NamespaceUri != null && ParentNode?.NamespaceUri != namespaceUri)
+            {
+                return true;
             }
 
             return false;
