@@ -52,6 +52,7 @@ namespace Newtonsoft.Json.Serialization
         private Type? _rootType;
         private int _rootLevel;
         private readonly List<object> _serializeStack = new List<object>();
+        private Dictionary<Type, string>? _simpleTypeNames;
 
         public JsonSerializerInternalWriter(JsonSerializer serializer)
             : base(serializer)
@@ -133,6 +134,8 @@ namespace Newtonsoft.Json.Serialization
             return Serializer._contractResolver.ResolveContract(value.GetType());
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private void SerializePrimitive(JsonWriter writer, object value, JsonPrimitiveContract contract, JsonProperty? member, JsonContainerContract? containerContract, JsonProperty? containerProperty)
         {
             if (contract.TypeCode == PrimitiveTypeCode.Bytes)
@@ -614,6 +617,8 @@ namespace Newtonsoft.Json.Serialization
             return false;
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private void WriteObjectStart(JsonWriter writer, object value, JsonContract contract, JsonProperty? member, JsonContainerContract? collectionContract, JsonProperty? containerProperty)
         {
             writer.WriteStartObject();
@@ -653,9 +658,11 @@ namespace Newtonsoft.Json.Serialization
             writer.WriteValue(reference);
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private void WriteTypeProperty(JsonWriter writer, Type type)
         {
-            string typeName = ReflectionUtils.GetTypeName(type, Serializer._typeNameAssemblyFormatHandling, Serializer._serializationBinder);
+            string typeName = GetTypeName(type);
 
             if (TraceWriter != null && TraceWriter.LevelFilter >= TraceLevel.Verbose)
             {
@@ -664,6 +671,33 @@ namespace Newtonsoft.Json.Serialization
 
             writer.WritePropertyName(JsonTypeReflector.TypePropertyName, false);
             writer.WriteValue(typeName);
+        }
+
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
+        private string GetTypeName(Type type)
+        {
+            // Custom binders and Type implementations can return a different name for each write.
+            if (Serializer._typeNameAssemblyFormatHandling != TypeNameAssemblyFormatHandling.Simple
+                || !ReferenceEquals(Serializer._serializationBinder, DefaultSerializationBinder.Instance)
+                || type.GetType() != typeof(object).GetType())
+            {
+                return ReflectionUtils.GetTypeName(type, Serializer._typeNameAssemblyFormatHandling, Serializer._serializationBinder);
+            }
+
+            if (_simpleTypeNames != null && _simpleTypeNames.TryGetValue(type, out string? typeName))
+            {
+                return typeName;
+            }
+
+            typeName = ReflectionUtils.GetTypeName(type, Serializer._typeNameAssemblyFormatHandling, Serializer._serializationBinder);
+            if (_simpleTypeNames == null)
+            {
+                _simpleTypeNames = new Dictionary<Type, string>();
+            }
+
+            _simpleTypeNames.Add(type, typeName);
+            return typeName;
         }
 
         private bool HasFlag(DefaultValueHandling value, DefaultValueHandling flag)
@@ -867,6 +901,8 @@ namespace Newtonsoft.Json.Serialization
             writer.WriteEndArray();
         }
 
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         private bool WriteStartArray(JsonWriter writer, object values, JsonArrayContract contract, JsonProperty? member, JsonContainerContract? containerContract, JsonProperty? containerProperty)
         {
             bool isReference = ResolveIsReference(contract, member, containerContract, containerProperty) ?? HasFlag(Serializer._preserveReferencesHandling, PreserveReferencesHandling.Arrays);
