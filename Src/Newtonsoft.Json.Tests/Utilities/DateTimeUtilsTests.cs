@@ -189,6 +189,17 @@ namespace Newtonsoft.Json.Tests.Utilities
         }
 
         [Test]
+        public void TryParseInvalidMSDateTimeOffset()
+        {
+            // an invalid value must not throw in any local time zone
+            StringReference reference = CreateStringReference(@"/Date(abc)/");
+
+            DateTimeOffset d;
+            Assert.IsFalse(DateTimeUtils.TryParseDateTimeOffset(reference, null, CultureInfo.InvariantCulture, out d));
+            Assert.AreEqual(default(DateTimeOffset), d);
+        }
+
+        [Test]
         public void NewDateTimeOffsetParse()
         {
             AssertNewDateTimeOffsetParseEqual("0001-01-01T00:00:00");
