@@ -334,7 +334,15 @@ namespace Newtonsoft.Json.Converters
         public IXmlNode AppendChild(IXmlNode newChild)
         {
             XmlNodeWrapper xmlNodeWrapper = (XmlNodeWrapper)newChild;
-            _node.AppendChild(xmlNodeWrapper._node);
+            if (xmlNodeWrapper._node.NodeType == XmlNodeType.XmlDeclaration)
+            {
+                // the xml declaration must be the first node in the document
+                _node.PrependChild(xmlNodeWrapper._node);
+            }
+            else
+            {
+                _node.AppendChild(xmlNodeWrapper._node);
+            }
             _childNodes = null;
             _attributes = null;
 
@@ -2091,12 +2099,14 @@ namespace Newtonsoft.Json.Converters
                 switch (reader.TokenType)
                 {
                     case JsonToken.PropertyName:
-                        if (currentNode.NodeType == XmlNodeType.Document && document.DocumentElement != null)
+                        string propertyName = reader.Value!.ToString()!;
+
+                        // the xml declaration and processing instructions are allowed alongside the root element
+                        if (currentNode.NodeType == XmlNodeType.Document && document.DocumentElement != null && (EncodeSpecialCharacters || !propertyName.StartsWith('?')))
                         {
                             throw JsonSerializationException.Create(reader, "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifying a DeserializeRootElementName.");
                         }
 
-                        string propertyName = reader.Value!.ToString()!;
                         reader.ReadAndAssert();
 
                         if (reader.TokenType == JsonToken.StartArray)
