@@ -287,7 +287,7 @@ namespace Newtonsoft.Json.Linq
 #endif
                     if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
                     {
-                        return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
+                        return ConvertUtils.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(ConvertUtils.ToDecimal(objB, CultureInfo.InvariantCulture));
                     }
                     else if (objA is float || objB is float || objA is double || objB is double)
                     {
@@ -312,7 +312,7 @@ namespace Newtonsoft.Json.Linq
 #endif
                     if (objA is ulong || objB is ulong || objA is decimal || objB is decimal)
                     {
-                        return Convert.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(Convert.ToDecimal(objB, CultureInfo.InvariantCulture));
+                        return ConvertUtils.ToDecimal(objA, CultureInfo.InvariantCulture).CompareTo(ConvertUtils.ToDecimal(objB, CultureInfo.InvariantCulture));
                     }
                     return CompareFloat(objA, objB);
                     }
@@ -481,8 +481,8 @@ namespace Newtonsoft.Json.Linq
                         return true;
                     }
 
-                    decimal d1 = Convert.ToDecimal(objA, CultureInfo.InvariantCulture);
-                    decimal d2 = Convert.ToDecimal(objB, CultureInfo.InvariantCulture);
+                    decimal d1 = ConvertUtils.ToDecimal(objA, CultureInfo.InvariantCulture);
+                    decimal d2 = ConvertUtils.ToDecimal(objB, CultureInfo.InvariantCulture);
 
                     switch (operation)
                     {

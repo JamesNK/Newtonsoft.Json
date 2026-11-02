@@ -466,7 +466,7 @@ namespace Newtonsoft.Json.Bson
 
                     if (_floatParseHandling == FloatParseHandling.Decimal)
                     {
-                        SetToken(JsonToken.Float, Convert.ToDecimal(d, CultureInfo.InvariantCulture));
+                        SetToken(JsonToken.Float, ConvertUtils.ToDecimal(d));
                     }
                     else
                     {

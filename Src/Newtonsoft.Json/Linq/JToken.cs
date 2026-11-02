@@ -752,12 +752,7 @@ namespace Newtonsoft.Json.Linq
             }
 #endif
 
-            if (v.Value is double doubleValue)
-            {
-                return decimal.Parse(doubleValue.ToString("G15", CultureInfo.InvariantCulture), NumberStyles.Float, CultureInfo.InvariantCulture);
-            }
-
-            return (v.Value != null) ? (decimal?)Convert.ToDecimal(v.Value, CultureInfo.InvariantCulture) : null;
+            return (v.Value != null) ? (decimal?)ConvertUtils.ToDecimal(v.Value, CultureInfo.InvariantCulture) : null;
         }
 
         /// <summary>
@@ -1198,12 +1193,7 @@ namespace Newtonsoft.Json.Linq
             }
 #endif
 
-            if (v.Value is double doubleValue)
-            {
-                return decimal.Parse(doubleValue.ToString("G15", CultureInfo.InvariantCulture), NumberStyles.Float, CultureInfo.InvariantCulture);
-            }
-
-            return Convert.ToDecimal(v.Value, CultureInfo.InvariantCulture);
+            return ConvertUtils.ToDecimal(v.Value, CultureInfo.InvariantCulture);
         }
 
         /// <summary>

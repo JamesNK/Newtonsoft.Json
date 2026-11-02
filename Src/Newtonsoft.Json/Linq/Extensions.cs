@@ -294,6 +294,11 @@ namespace Newtonsoft.Json.Linq
                     targetType = Nullable.GetUnderlyingType(targetType)!;
                 }
 
+                if (targetType == typeof(decimal) && (value.Value is double || value.Value is float))
+                {
+                    return (U?)(object)ConvertUtils.ToDecimal(value.Value, CultureInfo.InvariantCulture);
+                }
+
 #if HAVE_HALF
                 if (value.Value != null && ConvertUtils.TryConvertModernNumber(value.Value, CultureInfo.InvariantCulture, targetType, out object? converted))
                 {
