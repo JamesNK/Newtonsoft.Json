@@ -603,7 +603,8 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 AssertTypedRead(value, reader => reader.ReadAsInt32(), Convert.ToInt32((float)value), JsonToken.Integer);
                 AssertTypedRead(value, reader => reader.ReadAsDouble(), (double)value, JsonToken.Float);
-                AssertTypedRead(value, reader => reader.ReadAsDecimal(), Convert.ToDecimal((float)value), JsonToken.Float);
+                decimal expectedDecimal = decimal.Parse(((float)value).ToString("G7", CultureInfo.InvariantCulture), NumberStyles.Float, CultureInfo.InvariantCulture);
+                AssertTypedRead(value, reader => reader.ReadAsDecimal(), expectedDecimal, JsonToken.Float);
                 AssertTypedRead(value, reader => reader.ReadAsBoolean(), value != (Half)0, JsonToken.Boolean);
             }
             foreach (Half value in new[] { Half.NaN, Half.PositiveInfinity, Half.NegativeInfinity })

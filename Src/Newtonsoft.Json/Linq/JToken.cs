@@ -752,7 +752,7 @@ namespace Newtonsoft.Json.Linq
             }
 #endif
 
-            return (v.Value != null) ? (decimal?)Convert.ToDecimal(v.Value, CultureInfo.InvariantCulture) : null;
+            return (v.Value != null) ? (decimal?)ConvertUtils.ToDecimal(v.Value, CultureInfo.InvariantCulture) : null;
         }
 
         /// <summary>
@@ -1193,7 +1193,7 @@ namespace Newtonsoft.Json.Linq
             }
 #endif
 
-            return Convert.ToDecimal(v.Value, CultureInfo.InvariantCulture);
+            return ConvertUtils.ToDecimal(v.Value, CultureInfo.InvariantCulture);
         }
 
         /// <summary>

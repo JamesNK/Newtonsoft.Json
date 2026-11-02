@@ -497,6 +497,56 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
+        // 2^96, the smallest magnitude outside the range of decimal.
+        private const double DecimalOverflowThreshold = 79228162514264337593543950336d;
+
+        // .NET 11 converts double and float to their exact binary value (0.1 becomes 0.1000000000000000055511151231).
+        // On those runtimes, round to 15 and 7 significant digits as earlier runtimes did.
+        private static readonly bool ExactDoubleToDecimal = System.Convert.ToDecimal(0.1d) != 0.1m;
+        private static readonly bool ExactSingleToDecimal = System.Convert.ToDecimal(0.1f) != 0.1m;
+
+        public static decimal ToDecimal(object? value, IFormatProvider provider)
+        {
+            if (value is double d)
+            {
+                return ToDecimal(d);
+            }
+            if (value is float f)
+            {
+                return ToDecimal(f);
+            }
+
+            return System.Convert.ToDecimal(value, provider);
+        }
+
+        public static decimal ToDecimal(double value)
+        {
+            if (!ExactDoubleToDecimal || double.IsNaN(value) || double.IsInfinity(value) || Math.Abs(value) >= DecimalOverflowThreshold)
+            {
+                return System.Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+            }
+
+            return ParseRoundedDecimal(value.ToString("G15", CultureInfo.InvariantCulture));
+        }
+
+        public static decimal ToDecimal(float value)
+        {
+            if (!ExactSingleToDecimal || float.IsNaN(value) || float.IsInfinity(value) || Math.Abs(value) >= DecimalOverflowThreshold)
+            {
+                return System.Convert.ToDecimal(value, CultureInfo.InvariantCulture);
+            }
+
+            return ParseRoundedDecimal(value.ToString("G7", CultureInfo.InvariantCulture));
+        }
+
+        private static decimal ParseRoundedDecimal(string s)
+        {
+            decimal d = decimal.Parse(s, NumberStyles.Float, CultureInfo.InvariantCulture);
+
+            // Remove trailing zeros, e.g. 1E-30 parses as 0.0000000000000000000000000000.
+            return d / 1.0000000000000000000000000000m;
+        }
+
 #region TryConvert
         internal enum ConvertResult
         {
@@ -574,6 +624,12 @@ namespace Newtonsoft.Json.Utilities
                 return ConvertResult.Success;
             }
 #endif
+
+            if (targetType == typeof(decimal) && (initialValue is double || initialValue is float))
+            {
+                value = ToDecimal(initialValue, culture);
+                return ConvertResult.Success;
+            }
 
             // use Convert.ChangeType if both types are IConvertible
             if (IsConvertible(initialValue.GetType()) && IsConvertible(targetType))

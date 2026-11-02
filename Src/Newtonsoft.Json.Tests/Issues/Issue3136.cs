@@ -1,0 +1,132 @@
+﻿#region License
+// Copyright (c) 2007 James Newton-King
+//
+// Permission is hereby granted, free of charge, to any person
+// obtaining a copy of this software and associated documentation
+// files (the "Software"), to deal in the Software without
+// restriction, including without limitation the rights to use,
+// copy, modify, merge, publish, distribute, sublicense, and/or sell
+// copies of the Software, and to permit persons to whom the
+// Software is furnished to do so, subject to the following
+// conditions:
+//
+// The above copyright notice and this permission notice shall be
+// included in all copies or substantial portions of the Software.
+//
+// THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+// EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+// OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+// NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+// HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+// WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+// FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+// OTHER DEALINGS IN THE SOFTWARE.
+#endregion
+
+using System;
+using System.Globalization;
+using Newtonsoft.Json.Linq;
+#if DNXCORE50
+using Xunit;
+using Test = Xunit.FactAttribute;
+using Assert = Newtonsoft.Json.Tests.XUnitAssert;
+#else
+using NUnit.Framework;
+#endif
+
+namespace Newtonsoft.Json.Tests.Issues
+{
+    [TestFixture]
+    public class Issue3136 : TestFixtureBase
+    {
+        [Test]
+        public void ToObject_DoubleValue_ReturnsDecimalWrittenInJson()
+        {
+            JToken token = JObject.Parse(@"{""rate"":0.1}")["rate"];
+
+            Assert.AreEqual(0.1m, token.ToObject<decimal>());
+            Assert.AreEqual(0.1m, token.ToObject<decimal?>());
+        }
+
+        [Test]
+        public void ToObject_ObjectWithDecimalProperty_ReturnsDecimalWrittenInJson()
+        {
+            JObject o = JObject.Parse(@"{""Rate"":2.675}");
+
+            Assert.AreEqual(2.675m, o.ToObject<Rated>().Rate);
+        }
+
+        [Test]
+        public void ExplicitConversion_DoubleValue_ReturnsDecimalWrittenInJson()
+        {
+            JToken token = JObject.Parse(@"{""rate"":1E-7}")["rate"];
+
+            Assert.AreEqual(0.0000001m, (decimal)token);
+            Assert.AreEqual(0.0000001m, (decimal?)token);
+        }
+
+        [Test]
+        public void Value_DoubleValue_ReturnsDecimalWrittenInJson()
+        {
+            JObject o = JObject.Parse(@"{""rate"":0.1}");
+
+            Assert.AreEqual(0.1m, o.Value<decimal>("rate"));
+            Assert.AreEqual(0.1m, o.Value<decimal?>("rate"));
+            Assert.AreEqual(0.1m, o["rate"].Value<decimal>());
+        }
+
+#if !(NET35 || NET20)
+        [Test]
+        public void Dynamic_DoubleValue_ReturnsDecimalWrittenInJson()
+        {
+            dynamic o = JObject.Parse(@"{""rate"":0.1}");
+
+            decimal rate = o.rate;
+            Assert.AreEqual(0.1m, rate);
+
+            JValue sum = o.rate + 0.2m;
+            Assert.AreEqual(0.3m, sum.Value);
+        }
+#endif
+
+        [Test]
+        public void DeepEquals_DoubleAndDecimal_AreEqual()
+        {
+            Assert.IsTrue(JToken.DeepEquals(new JValue(0.1d), new JValue(0.1m)));
+            Assert.AreEqual(0, new JValue(0.1d).CompareTo(new JValue(0.1m)));
+        }
+
+        [Test]
+        public void ExplicitConversion_SingleValue_RoundsToSevenSignificantDigits()
+        {
+            Assert.AreEqual(0.1m, (decimal)new JValue(0.1f));
+        }
+
+        [Test]
+        public void ExplicitConversion_ComputedDouble_RoundsToFifteenSignificantDigits()
+        {
+            Assert.AreEqual(0.3m, (decimal)new JValue(0.1d + 0.2d));
+            Assert.AreEqual(1m, (decimal)new JValue(1.0000000000000002d));
+        }
+
+        [Test]
+        public void ExplicitConversion_TinyDouble_HasNoTrailingZeros()
+        {
+            Assert.AreEqual("0", ((decimal)new JValue(1E-30d)).ToString(CultureInfo.InvariantCulture));
+            Assert.AreEqual("0.0000000000000000000000000001", ((decimal)new JValue(1E-28d)).ToString(CultureInfo.InvariantCulture));
+        }
+
+        [Test]
+        public void ExplicitConversion_DoubleOutsideDecimalRange_Throws()
+        {
+            ExceptionAssert.Throws<OverflowException>(() => { decimal _ = (decimal)new JValue(double.MaxValue); });
+            ExceptionAssert.Throws<OverflowException>(() => { decimal _ = (decimal)new JValue(Math.Pow(2, 96)); });
+            ExceptionAssert.Throws<OverflowException>(() => { decimal _ = (decimal)new JValue(double.NaN); });
+        }
+
+        public class Rated
+        {
+            public decimal Rate { get; set; }
+        }
+    }
+}

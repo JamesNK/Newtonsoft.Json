@@ -789,7 +789,7 @@ namespace Newtonsoft.Json
                     {
                         try
                         {
-                            d = Convert.ToDecimal(v, CultureInfo.InvariantCulture);
+                            d = ConvertUtils.ToDecimal(v, CultureInfo.InvariantCulture);
                         }
                         catch (Exception ex)
                         {
