@@ -497,26 +497,14 @@ namespace Newtonsoft.Json.Utilities
         }
 #endif
 
-        // 2^96, the first double/float magnitude outside the range of decimal.
+        // 2^96, the smallest magnitude outside the range of decimal.
         private const double DecimalOverflowThreshold = 79228162514264337593543950336d;
 
-        // True on runtimes where Convert.ToDecimal returns the exact binary value of a double/float (.NET 11 and later).
-        // Evaluated at run time on purpose: a constant conversion could be folded by the compiler.
+        // .NET 11 converts double and float to their exact binary value (0.1 becomes 0.1000000000000000055511151231).
+        // On those runtimes, round to 15 and 7 significant digits as earlier runtimes did.
         private static readonly bool ExactDoubleToDecimal = System.Convert.ToDecimal(0.1d) != 0.1m;
         private static readonly bool ExactSingleToDecimal = System.Convert.ToDecimal(0.1f) != 0.1m;
 
-        /// <summary>
-        /// Converts a value to <see cref="decimal"/>, rounding <see cref="double"/> and <see cref="float"/> values
-        /// to 15 and 7 significant digits respectively.
-        /// </summary>
-        /// <remarks>
-        /// Before .NET 11, <see cref="System.Convert.ToDecimal(double)"/> rounded to 15 significant digits (7 for float),
-        /// so a JSON number such as 0.1 held in a double converted to 0.1m. .NET 11 returns the exact binary value
-        /// instead (0.1000000000000000055511151231m). On those runtimes the value is rounded the same way here;
-        /// on earlier runtimes Convert.ToDecimal is used unchanged.
-        /// NaN, infinity and values outside the decimal range always go through Convert.ToDecimal and throw
-        /// <see cref="OverflowException"/> as before.
-        /// </remarks>
         public static decimal ToDecimal(object? value, IFormatProvider provider)
         {
             if (value is double d)
@@ -555,8 +543,7 @@ namespace Newtonsoft.Json.Utilities
         {
             decimal d = decimal.Parse(s, NumberStyles.Float, CultureInfo.InvariantCulture);
 
-            // Values smaller than 1E-13 can parse with trailing zeros, e.g. 1E-30 parses as 0.0000000000000000000000000000.
-            // Dividing by one removes them, matching the result of the previous Convert.ToDecimal.
+            // Remove trailing zeros, e.g. 1E-30 parses as 0.0000000000000000000000000000.
             return d / 1.0000000000000000000000000000m;
         }
 
