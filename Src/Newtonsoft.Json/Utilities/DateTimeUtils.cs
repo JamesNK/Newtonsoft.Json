@@ -564,7 +564,7 @@ namespace Newtonsoft.Json.Utilities
         {
             if (!TryParseMicrosoftDate(text, out long ticks, out TimeSpan offset, out _))
             {
-                dt = default(DateTime);
+                dt = default;
                 return false;
             }
 
