@@ -1546,6 +1546,30 @@ namespace Newtonsoft.Json.Tests.Converters
                 () => { JsonConvert.DeserializeXmlNode(json); },
                 "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifying a DeserializeRootElementName. Path 'photos', line 1, position 26.");
         }
+
+        [Test]
+        public void DeclarationAfterRootPropertyXmlDocument()
+        {
+            string json = @"{""root"":"""",""?xml"":{""@version"":""1.0"",""@encoding"":""UTF-8""}}";
+
+            XmlDocument newDoc = JsonConvert.DeserializeXmlNode(json);
+
+            Assert.AreEqual(@"<?xml version=""1.0"" encoding=""UTF-8""?><root></root>", newDoc.OuterXml);
+        }
+
+        [Test]
+        public void ProcessingInstructionAfterRootXmlDocument()
+        {
+            XmlDocument doc = new XmlDocument();
+            doc.LoadXml(@"<?xml version=""1.0""?><root /><?pi data?>");
+
+            string json = JsonConvert.SerializeXmlNode(doc);
+            Assert.AreEqual(@"{""?xml"":{""@version"":""1.0""},""root"":null,""?pi"":""data""}", json);
+
+            XmlDocument newDoc = JsonConvert.DeserializeXmlNode(json);
+
+            Assert.AreEqual(doc.OuterXml, newDoc.OuterXml);
+        }
 #endif
 
 #if !NET20
@@ -1557,6 +1581,32 @@ namespace Newtonsoft.Json.Tests.Converters
             ExceptionAssert.Throws<JsonSerializationException>(
                 () => { JsonConvert.DeserializeXNode(json); },
                 "JSON root object has multiple properties. The root object must have a single property in order to create a valid XML document. Consider specifying a DeserializeRootElementName. Path 'photos', line 1, position 26.");
+        }
+
+        [Test]
+        public void DeclarationAfterRootPropertyXDocument()
+        {
+            string json = @"{""root"":"""",""?xml"":{""@version"":""1.0"",""@encoding"":""UTF-8""}}";
+
+            XDocument newDoc = JsonConvert.DeserializeXNode(json);
+
+            Assert.AreEqual("1.0", newDoc.Declaration.Version);
+            Assert.AreEqual("UTF-8", newDoc.Declaration.Encoding);
+            Assert.AreEqual(@"<root></root>", newDoc.ToString(SaveOptions.DisableFormatting));
+        }
+
+        [Test]
+        public void ProcessingInstructionAfterRootXDocument()
+        {
+            XDocument doc = XDocument.Parse(@"<?xml version=""1.0""?><root /><?pi data?>");
+
+            string json = JsonConvert.SerializeXNode(doc);
+            Assert.AreEqual(@"{""?xml"":{""@version"":""1.0""},""root"":null,""?pi"":""data""}", json);
+
+            XDocument newDoc = JsonConvert.DeserializeXNode(json);
+
+            Assert.AreEqual("1.0", newDoc.Declaration.Version);
+            Assert.AreEqual(doc.ToString(SaveOptions.DisableFormatting), newDoc.ToString(SaveOptions.DisableFormatting));
         }
 #endif
 
