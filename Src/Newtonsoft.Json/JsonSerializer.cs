@@ -85,6 +85,8 @@ namespace Newtonsoft.Json
         /// </summary>
         public virtual event EventHandler<ErrorEventArgs>? Error;
 
+        internal bool HasErrorHandler => Error != null;
+
         /// <summary>
         /// Gets or sets the <see cref="IReferenceResolver"/> used by the serializer when resolving references.
         /// </summary>

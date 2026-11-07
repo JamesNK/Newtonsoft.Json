@@ -55,6 +55,13 @@
         will be raised twice, once against the object and then again on the collection.
         This will let you handle an error either where it occurred or on one of its
         parents.</para>
+
+        <para>During deserialization, container error handling is skipped when there are
+        no Error event subscribers, OnError callbacks, or trace writer. This avoids
+        rethrowing an unhandled exception at every container level when there is no error
+        observer. Registered error observers retain the existing error-handling behavior.
+        Their callbacks run in catch blocks, after cleanup in the protected operation,
+        rather than in exception filters.</para>
         
 <code lang="cs" source="..\Src\Newtonsoft.Json.Tests\Documentation\SerializationTests.cs" region="SerializationErrorHandlingWithParent" title="Parent Error Handling" />      
 

@@ -28,6 +28,13 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.Serialization;
 using System.Text;
+#if !(NET20 || NET35 || PORTABLE40)
+using System.Dynamic;
+#endif
+#if !(NET20 || NET35)
+using System.Runtime.ExceptionServices;
+using System.Threading;
+#endif
 using Newtonsoft.Json.Converters;
 using Newtonsoft.Json.Serialization;
 using Newtonsoft.Json.Tests.TestObjects;
@@ -52,6 +59,444 @@ namespace Newtonsoft.Json.Tests.Serialization
     [TestFixture]
     public class SerializationErrorHandlingTests : TestFixtureBase
     {
+#if !(NET20 || NET35)
+        [Test]
+        public void DeserializationErrorsDoNotRedispatchPerContainer()
+        {
+            string json = string.Concat(Enumerable.Repeat("{\"Child\":", 9)) + "null" + new string('}', 9);
+
+            foreach (bool populate in new[] { false, true })
+            {
+                foreach (bool log in new[] { false, true })
+                {
+                    int notifications = 0;
+                    int callbacks = 0;
+                    int threadId = Thread.CurrentThread.ManagedThreadId;
+                    EventHandler<FirstChanceExceptionEventArgs> handler = (sender, args) =>
+                    {
+                        if (Thread.CurrentThread.ManagedThreadId == threadId && args.Exception is JsonReaderException)
+                        {
+                            notifications++;
+                        }
+                    };
+                    JsonSerializerSettings settings = new JsonSerializerSettings { MaxDepth = 8 };
+                    if (log)
+                    {
+                        settings.Error = (sender, args) => callbacks++;
+                    }
+
+                    AppDomain.CurrentDomain.FirstChanceException += handler;
+                    try
+                    {
+                        ExceptionAssert.Throws<JsonReaderException>(() =>
+                        {
+                            if (populate)
+                            {
+                                JsonConvert.PopulateObject(json, new ErrorUnwindNode(), settings);
+                            }
+                            else
+                            {
+                                JsonConvert.DeserializeObject<ErrorUnwindNode>(json, settings);
+                            }
+                        });
+                    }
+                    finally
+                    {
+                        AppDomain.CurrentDomain.FirstChanceException -= handler;
+                    }
+
+                    Assert.AreEqual(2, notifications);
+                    Assert.AreEqual(log ? (populate ? 8 : 9) : 0, callbacks);
+                }
+            }
+        }
+#endif
+
+        [Test]
+        public void DeserializationContainerErrorsKeepOriginalContext()
+        {
+            string[] json = { "{\"Child\":{\"Child\":1}}", "[[1]]", "{\"x\":{\"x\":1}}", "[[{\"Child\":1}]]" };
+            Type[] types = { typeof(ErrorUnwindNode), typeof(List<List<ErrorUnwindNode>>), typeof(ErrorUnwindDictionary), typeof(ErrorUnwindNode[,]) };
+
+            for (int i = 0; i < types.Length; i++)
+            {
+                List<ErrorEventArgs> errors = new List<ErrorEventArgs>();
+                MemoryTraceWriter trace = new MemoryTraceWriter { LevelFilter = TraceLevel.Error };
+                JsonException error = ExceptionAssert.Throws<JsonException>(() => JsonConvert.DeserializeObject(json[i], types[i], new JsonSerializerSettings
+                {
+                    TraceWriter = trace,
+                    Error = (sender, args) => errors.Add(args)
+                }));
+
+                Assert.AreEqual(3, errors.Count);
+                Assert.IsNotNull(errors[0].CurrentObject);
+                Assert.IsNull(errors[2].CurrentObject);
+                foreach (ErrorEventArgs args in errors)
+                {
+                    Assert.AreSame(errors[0].ErrorContext, args.ErrorContext);
+                    Assert.AreSame(errors[0].CurrentObject, args.ErrorContext.OriginalObject);
+                    Assert.AreSame(error, args.ErrorContext.Error);
+                }
+                Assert.AreEqual(1, trace.GetTraceMessages().Count());
+            }
+        }
+
+        [Test]
+        public void ParentErrorHandlerResumesWithoutCompletingFailedChild()
+        {
+            ErrorUnwindNode child = new ErrorUnwindNode();
+            ErrorUnwindNode root = new ErrorUnwindNode { Child = child };
+            root.ChildSetCount = 0;
+            List<string> callbacks = new List<string>();
+            child.ErrorCallback = context => callbacks.Add("child attribute");
+            root.ErrorCallback = context =>
+            {
+                callbacks.Add("parent attribute");
+                context.Handled = true;
+            };
+
+            JsonConvert.PopulateObject("{\"Child\":{\"Child\":1},\"Value\":2}", root, new JsonSerializerSettings
+            {
+                Error = (sender, args) =>
+                {
+                    Assert.AreSame(child, args.CurrentObject);
+                    callbacks.Add("child event");
+                }
+            });
+
+            CollectionAssert.AreEqual(new[] { "child attribute", "child event", "parent attribute" }, callbacks);
+            Assert.AreSame(child, root.Child);
+            Assert.AreEqual(0, child.ChildSetCount);
+            Assert.AreEqual(0, root.ChildSetCount);
+            Assert.IsFalse(child.Deserialized);
+            Assert.IsTrue(root.Deserialized);
+            Assert.AreEqual(2, root.Value);
+        }
+
+        [Test]
+        public void UnhandledErrorDoesNotCompleteParents()
+        {
+            ErrorUnwindNode child = new ErrorUnwindNode();
+            ErrorUnwindNode root = new ErrorUnwindNode { Child = child };
+            root.ChildSetCount = 0;
+
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.PopulateObject("{\"Child\":{\"Child\":1},\"Value\":2}", root));
+
+            Assert.AreSame(child, root.Child);
+            Assert.AreEqual(0, child.ChildSetCount);
+            Assert.AreEqual(0, root.ChildSetCount);
+            Assert.IsFalse(child.Deserialized);
+            Assert.IsFalse(root.Deserialized);
+            Assert.AreEqual(0, root.Value);
+        }
+
+        [Test]
+        public void UnhandledErrorDoesNotAddFailedCollectionItems()
+        {
+            List<List<ErrorUnwindNode>> root = new List<List<ErrorUnwindNode>>();
+            List<object> objects = new List<object>();
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.PopulateObject("[[{\"Child\":1}]]", root, new JsonSerializerSettings
+            {
+                Error = (sender, args) => objects.Add(args.CurrentObject)
+            }));
+
+            Assert.AreEqual(3, objects.Count);
+            Assert.IsFalse(((ErrorUnwindNode)objects[0]).Deserialized);
+            Assert.AreEqual(0, ((List<ErrorUnwindNode>)objects[1]).Count);
+            Assert.AreSame(root, objects[2]);
+            Assert.AreEqual(0, root.Count);
+        }
+
+        [Test]
+        public void UnhandledErrorDoesNotInvokeParameterizedCreators()
+        {
+            string[] json = { "{\"Child\":{\"Child\":1}}", "[{\"Child\":1}]", "{\"x\":{\"Child\":1}}" };
+            Type[] types = { typeof(FailedObjectCreator), typeof(FailedCollectionCreator), typeof(FailedDictionaryCreator) };
+            for (int i = 0; i < types.Length; i++)
+            {
+                JsonSerializationException error = ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject(json[i], types[i]));
+                Assert.IsTrue(error.Message.StartsWith("Error converting value 1", StringComparison.Ordinal));
+            }
+        }
+
+        [Test]
+        public void UnhandledErrorDoesNotSetExtensionData()
+        {
+            ErrorUnwindExtensionData root = new ErrorUnwindExtensionData();
+            string json = "{\"extra\":{\"$type\":" + JsonConvert.ToString(typeof(ErrorUnwindNode).AssemblyQualifiedName) + ",\"Child\":1}}";
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.PopulateObject(json, root, new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Auto
+            }));
+
+            Assert.AreEqual(0, root.Values.Count);
+        }
+
+        [Test]
+        public void ConverterCanCatchAndWrapPendingError()
+        {
+            foreach (bool populate in new[] { false, true })
+            {
+                ErrorUnwindConverter converter = new ErrorUnwindConverter { Populate = populate };
+                bool observedCleanup = false;
+                bool reentered = false;
+                JsonSerializationException error = ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<ErrorUnwindConverted>("{\"Child\":{\"Child\":1}}", new JsonSerializerSettings
+                {
+                    Converters = { converter },
+                    Error = (sender, args) =>
+                    {
+                        if (!reentered)
+                        {
+                            reentered = true;
+                            using (JsonReader reader = new JsonTextReader(new StringReader("{\"Value\":3}")))
+                            {
+                                Assert.AreEqual(3, converter.Serializer.Deserialize<ErrorUnwindNode>(reader).Value);
+                            }
+                        }
+                        if (args.ErrorContext.Error.Message == "Wrapped error.")
+                        {
+                            observedCleanup = converter.CleanupCompleted;
+                        }
+                    }
+                }));
+
+                Assert.AreEqual("Wrapped error.", error.Message);
+                Assert.AreSame(converter.NestedError, error.InnerException);
+                Assert.IsTrue(reentered);
+                Assert.IsTrue(observedCleanup);
+                Assert.IsTrue(converter.ReusedSerializer);
+#if !(NET20 || NET35 || NET40)
+                Assert.IsTrue(error.InnerException.StackTrace.Contains("EnsureType"));
+#endif
+            }
+        }
+
+        [Test]
+        public void ParentCanHandleRequiredPropertyError()
+        {
+            RequiredErrorUnwindNode failedChild = null;
+            RequiredErrorUnwindNode root = JsonConvert.DeserializeObject<RequiredErrorUnwindNode>("{\"Child\":{},\"Name\":\"ok\"}", new JsonSerializerSettings
+            {
+                Error = (sender, args) =>
+                {
+                    if (failedChild == null)
+                    {
+                        failedChild = (RequiredErrorUnwindNode)args.CurrentObject;
+                    }
+                    else
+                    {
+                        args.ErrorContext.Handled = true;
+                    }
+                }
+            });
+
+            Assert.AreEqual("ok", root.Name);
+            Assert.IsNull(root.Child);
+            Assert.IsTrue(root.Deserialized);
+            Assert.IsNotNull(failedChild);
+            Assert.IsFalse(failedChild.Deserialized);
+        }
+
+#if !(NET20 || NET35 || PORTABLE40)
+        [Test]
+        public void DynamicParentCanHandlePendingError()
+        {
+            ErrorUnwindDynamic root = JsonConvert.DeserializeObject<ErrorUnwindDynamic>("{\"Child\":{\"Child\":1},\"Value\":2}", new JsonSerializerSettings
+            {
+                Error = (sender, args) => args.ErrorContext.Handled = args.CurrentObject is ErrorUnwindDynamic
+            });
+
+            Assert.IsNull(root.Child);
+            Assert.AreEqual(2, root.Value);
+        }
+#endif
+
+#if !(PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
+        [Test]
+        public void SerializableConstructorCanCatchPendingError()
+        {
+            ErrorUnwindSerializable value = JsonConvert.DeserializeObject<ErrorUnwindSerializable>("{\"Child\":{\"Child\":1},\"Valid\":{\"Value\":3}}");
+
+            Assert.IsNotNull(value.NestedError);
+            Assert.IsTrue(value.NestedError.Message.StartsWith("Error converting value 1", StringComparison.Ordinal));
+            Assert.AreEqual(3, value.Value);
+        }
+#endif
+
+        public class ErrorUnwindNode
+        {
+            private ErrorUnwindNode _child;
+
+            public ErrorUnwindNode Child
+            {
+                get => _child;
+                set
+                {
+                    ChildSetCount++;
+                    _child = value;
+                }
+            }
+
+            public int Value { get; set; }
+            [JsonIgnore]
+            public int ChildSetCount { get; set; }
+            [JsonIgnore]
+            public bool Deserialized { get; set; }
+            [JsonIgnore]
+            public Action<ErrorContext> ErrorCallback { get; set; }
+
+            [OnError]
+            private void OnError(StreamingContext context, ErrorContext error)
+            {
+                ErrorCallback?.Invoke(error);
+            }
+
+            [OnDeserialized]
+            private void OnDeserialized(StreamingContext context)
+            {
+                Deserialized = true;
+            }
+        }
+
+        public class ErrorUnwindDictionary : Dictionary<string, ErrorUnwindDictionary>
+        {
+        }
+
+        public class RequiredErrorUnwindNode
+        {
+            public RequiredErrorUnwindNode Child { get; set; }
+            [JsonProperty(Required = Required.Always)]
+            public string Name { get; set; }
+            [JsonIgnore]
+            public bool Deserialized { get; set; }
+
+            [OnDeserialized]
+            private void OnDeserialized(StreamingContext context)
+            {
+                Deserialized = true;
+            }
+        }
+
+#if !(NET20 || NET35 || PORTABLE40)
+        public class ErrorUnwindDynamic : DynamicObject
+        {
+            public ErrorUnwindNode Child { get; set; }
+            public int Value { get; set; }
+        }
+#endif
+
+#if !(PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
+        [Serializable]
+        public class ErrorUnwindSerializable : ISerializable
+        {
+            public JsonException NestedError { get; private set; }
+            public int Value { get; private set; }
+
+            private ErrorUnwindSerializable(SerializationInfo info, StreamingContext context)
+            {
+                try
+                {
+                    info.GetValue("Child", typeof(ErrorUnwindNode));
+                    throw new InvalidOperationException("Expected a deserialization error.");
+                }
+                catch (JsonException ex)
+                {
+                    NestedError = ex;
+                    Value = ((ErrorUnwindNode)info.GetValue("Valid", typeof(ErrorUnwindNode))).Value;
+                }
+            }
+
+            public void GetObjectData(SerializationInfo info, StreamingContext context)
+            {
+                throw new NotSupportedException();
+            }
+        }
+#endif
+
+        public class FailedObjectCreator
+        {
+            [JsonConstructor]
+            public FailedObjectCreator(ErrorUnwindNode child)
+            {
+                throw new InvalidOperationException("Constructor must not run after an unhandled error.");
+            }
+        }
+
+        public class FailedCollectionCreator : List<ErrorUnwindNode>
+        {
+            public FailedCollectionCreator(IEnumerable<ErrorUnwindNode> values)
+            {
+                throw new InvalidOperationException("Constructor must not run after an unhandled error.");
+            }
+        }
+
+        public class FailedDictionaryCreator : Dictionary<string, ErrorUnwindNode>
+        {
+            public FailedDictionaryCreator(IDictionary<string, ErrorUnwindNode> values)
+            {
+                throw new InvalidOperationException("Constructor must not run after an unhandled error.");
+            }
+        }
+
+        public class ErrorUnwindExtensionData
+        {
+            [JsonExtensionData]
+            public IDictionary<string, object> Values { get; } = new Dictionary<string, object>();
+        }
+
+        public class ErrorUnwindConverted
+        {
+        }
+
+        public class ErrorUnwindConverter : JsonConverter
+        {
+            public bool Populate { get; set; }
+            public bool CleanupCompleted { get; set; }
+            public bool ReusedSerializer { get; set; }
+            public Exception NestedError { get; set; }
+            public JsonSerializer Serializer { get; set; }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(ErrorUnwindConverted);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                Serializer = serializer;
+                try
+                {
+                    if (Populate)
+                    {
+                        serializer.Populate(reader, new ErrorUnwindNode());
+                    }
+                    else
+                    {
+                        serializer.Deserialize<ErrorUnwindNode>(reader);
+                    }
+                    throw new InvalidOperationException("Expected a deserialization error.");
+                }
+                catch (JsonException ex)
+                {
+                    NestedError = ex;
+                    using (JsonReader validReader = new JsonTextReader(new StringReader("{\"Value\":3}")))
+                    {
+                        ReusedSerializer = serializer.Deserialize<ErrorUnwindNode>(validReader).Value == 3;
+                    }
+                    throw new JsonSerializationException("Wrapped error.", ex);
+                }
+                finally
+                {
+                    CleanupCompleted = true;
+                }
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotSupportedException();
+            }
+        }
+
         [Test]
         public void ErrorHandlingMetadata()
         {
