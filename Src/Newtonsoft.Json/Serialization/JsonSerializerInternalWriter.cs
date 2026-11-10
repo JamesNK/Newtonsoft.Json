@@ -510,7 +510,7 @@ namespace Newtonsoft.Json.Serialization
                     property.WritePropertyName(writer);
                     SerializeValue(writer, memberValue, memberContract, property, contract, member);
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (HasErrorObservers(contract))
                 {
                     if (IsErrorHandled(value, contract, property.PropertyName, null, writer.ContainerPath, ex))
                     {
@@ -757,7 +757,7 @@ namespace Newtonsoft.Json.Serialization
                         }
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (HasErrorObservers(contract))
                 {
                     if (IsErrorHandled(underlyingList, contract, index, null, writer.ContainerPath, ex))
                     {
@@ -846,7 +846,7 @@ namespace Newtonsoft.Json.Serialization
                             }
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (HasErrorObservers(contract))
                     {
                         if (IsErrorHandled(values, contract, i, null, writer.ContainerPath, ex))
                         {
@@ -978,7 +978,7 @@ namespace Newtonsoft.Json.Serialization
                         property.WritePropertyName(writer);
                         SerializeValue(writer, memberValue, memberContract, property, contract, member);
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (HasErrorObservers(contract))
                     {
                         if (IsErrorHandled(value, contract, property.PropertyName, null, writer.ContainerPath, ex))
                         {
@@ -1015,7 +1015,7 @@ namespace Newtonsoft.Json.Serialization
                             SerializeValue(writer, memberValue, valueContract, null, contract, member);
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (HasErrorObservers(contract))
                     {
                         if (IsErrorHandled(value, contract, memberName, null, writer.ContainerPath, ex))
                         {
@@ -1157,7 +1157,7 @@ namespace Newtonsoft.Json.Serialization
                             SerializeValue(writer, value, valueContract, null, contract, member);
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (HasErrorObservers(contract))
                     {
                         if (IsErrorHandled(underlyingDictionary, contract, propertyName, null, writer.ContainerPath, ex))
                         {

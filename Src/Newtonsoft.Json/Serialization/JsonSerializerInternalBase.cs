@@ -91,6 +91,12 @@ namespace Newtonsoft.Json.Serialization
             return resolvedNullValueHandling;
         }
 
+        protected bool HasErrorObservers(JsonContract? contract)
+        {
+            // Filters must not invoke callbacks, including a trace writer's LevelFilter getter.
+            return Serializer.HasErrorHandler || contract?.HasOnErrorCallbacks == true || TraceWriter != null;
+        }
+
         private ErrorContext GetErrorContext(object? currentObject, object? member, string path, Exception error)
         {
             if (_currentErrorContext == null)

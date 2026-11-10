@@ -158,7 +158,190 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             Assert.AreEqual(2, notifications);
         }
+
+        [Test]
+        public void SerializationErrorsDoNotRedispatchWithoutObservers()
+        {
+            ErrorUnwindNode value = new ErrorUnwindNode();
+            for (int i = 1; i < 8; i++)
+            {
+                value = new ErrorUnwindNode { Child = value };
+            }
+
+            foreach (string observer in new[] { "none", "log", "callback", "emptyCallbacks", "traceOff", "traceError" })
+            {
+                int notifications = 0;
+                int callbacks = 0;
+                int threadId = Thread.CurrentThread.ManagedThreadId;
+                EventHandler<FirstChanceExceptionEventArgs> handler = (sender, args) =>
+                {
+                    if (Thread.CurrentThread.ManagedThreadId == threadId && args.Exception is JsonSerializationException)
+                    {
+                        notifications++;
+                    }
+                };
+                ErrorUnwindValueConverter converter = new ErrorUnwindValueConverter();
+                JsonSerializerSettings settings = new JsonSerializerSettings { Converters = { converter } };
+                MemoryTraceWriter trace = null;
+                if (observer == "log")
+                {
+                    settings.Error = (sender, args) => callbacks++;
+                }
+                else if (observer == "callback" || observer == "emptyCallbacks")
+                {
+                    DefaultContractResolver resolver = new DefaultContractResolver();
+                    IList<SerializationErrorCallback> errorCallbacks = resolver.ResolveContract(typeof(ErrorUnwindNode)).OnErrorCallbacks;
+                    if (observer == "callback")
+                    {
+                        errorCallbacks.Add((obj, context, error) => callbacks++);
+                    }
+                    settings.ContractResolver = resolver;
+                }
+                else if (observer == "traceOff" || observer == "traceError")
+                {
+                    trace = new MemoryTraceWriter { LevelFilter = observer == "traceOff" ? TraceLevel.Off : TraceLevel.Error };
+                    settings.TraceWriter = trace;
+                }
+
+                AppDomain.CurrentDomain.FirstChanceException += handler;
+                try
+                {
+                    ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.SerializeObject(value, settings));
+                }
+                finally
+                {
+                    AppDomain.CurrentDomain.FirstChanceException -= handler;
+                }
+
+                bool observed = observer != "none" && observer != "emptyCallbacks";
+                Assert.AreEqual(observed ? 10 : 2, notifications);
+                Assert.AreEqual(observer == "log" ? 9 : (observer == "callback" ? 8 : 0), callbacks);
+                Assert.IsTrue(converter.CleanupCompleted);
+                if (trace != null)
+                {
+                    Assert.AreEqual(observer == "traceError" ? 1 : 0, trace.GetTraceMessages().Count());
+                }
+            }
+        }
+
+        [Test]
+        public void SerializationContainerErrorsDoNotRedispatchWithoutObservers()
+        {
+            List<object> values = new List<object>
+            {
+                new ErrorUnwindGetter(),
+                new List<ErrorUnwindGetter> { new ErrorUnwindGetter() },
+                new Dictionary<string, ErrorUnwindGetter> { { "x", new ErrorUnwindGetter() } },
+                new ErrorUnwindGetter[,] { { new ErrorUnwindGetter() } }
+            };
+#if !(NET20 || NET35 || PORTABLE40)
+            values.Add(new ErrorUnwindWriterDynamic { StaticValue = new ErrorUnwindGetter() });
+            values.Add(new ErrorUnwindWriterDynamic { DynamicValue = new ErrorUnwindGetter() });
 #endif
+
+            foreach (object value in values)
+            {
+                foreach (string observer in new[] { "none", "log", "trace" })
+                {
+                    int notifications = 0;
+                    int threadId = Thread.CurrentThread.ManagedThreadId;
+                    EventHandler<FirstChanceExceptionEventArgs> handler = (sender, args) =>
+                    {
+                        if (Thread.CurrentThread.ManagedThreadId == threadId && args.Exception is JsonSerializationException)
+                        {
+                            notifications++;
+                        }
+                    };
+                    List<ErrorEventArgs> errors = new List<ErrorEventArgs>();
+                    MemoryTraceWriter trace = new MemoryTraceWriter { LevelFilter = TraceLevel.Error };
+                    JsonSerializerSettings settings = new JsonSerializerSettings();
+                    if (observer != "none")
+                    {
+                        settings.TraceWriter = trace;
+                    }
+                    if (observer == "log")
+                    {
+                        settings.Error = (sender, args) => errors.Add(args);
+                    }
+
+                    JsonSerializationException error;
+                    AppDomain.CurrentDomain.FirstChanceException += handler;
+                    try
+                    {
+                        error = ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.SerializeObject(value, settings));
+                    }
+                    finally
+                    {
+                        AppDomain.CurrentDomain.FirstChanceException -= handler;
+                    }
+
+                    int catches = value is ErrorUnwindGetter ? 2 : 3;
+                    Assert.AreEqual(observer == "none" ? 2 : catches + 1, notifications);
+                    Assert.AreEqual(observer == "log" ? catches : 0, errors.Count);
+                    foreach (ErrorEventArgs args in errors)
+                    {
+                        Assert.AreSame(errors[0].ErrorContext, args.ErrorContext);
+                        Assert.AreSame(errors[0].CurrentObject, args.ErrorContext.OriginalObject);
+                        Assert.AreSame(error, args.ErrorContext.Error);
+                    }
+                    string[] messages = trace.GetTraceMessages().ToArray();
+                    Assert.AreEqual(observer == "none" ? 0 : 1, messages.Length);
+                    if (messages.Length != 0)
+                    {
+                        Assert.IsTrue(messages[0].Contains("Error serializing " + typeof(ErrorUnwindGetter).FullName + "."));
+                    }
+                }
+            }
+        }
+#endif
+
+        [Test]
+        public void SerializationErrorObserversRunAfterConverterCleanup()
+        {
+            foreach (bool callback in new[] { false, true })
+            {
+                ErrorUnwindValueConverter converter = new ErrorUnwindValueConverter();
+                ErrorUnwindCallbackNode value = new ErrorUnwindCallbackNode();
+                JsonSerializerSettings settings = new JsonSerializerSettings { Converters = { converter } };
+                int errors = 0;
+                Action<ErrorContext> handleError = error =>
+                {
+                    errors++;
+                    Assert.IsTrue(converter.CleanupCompleted);
+                    Assert.AreSame(value, error.OriginalObject);
+                    error.Handled = true;
+                };
+                if (callback)
+                {
+                    value.ErrorCallback = handleError;
+                }
+                else
+                {
+                    settings.Error = (sender, args) => handleError(args.ErrorContext);
+                }
+
+                string json = JsonConvert.SerializeObject(value, settings);
+
+                Assert.AreEqual("{\"Child\":null,\"Value\":null}", json);
+                Assert.AreEqual(1, errors);
+            }
+        }
+
+        [Test]
+        public void SerializationTraceLevelFilterIsNotEvaluatedBeforeConverterCleanup()
+        {
+            ErrorUnwindValueConverter converter = new ErrorUnwindValueConverter();
+            ErrorUnwindTraceWriter trace = new ErrorUnwindTraceWriter(converter);
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.SerializeObject(new ErrorUnwindNode(), new JsonSerializerSettings
+            {
+                Converters = { converter },
+                TraceWriter = trace
+            }));
+
+            Assert.IsTrue(converter.CleanupCompleted);
+            Assert.IsFalse(trace.ReadBeforeCleanup);
+            Assert.AreEqual(1, trace.Errors);
+        }
 
         [Test]
         public void DeserializationContainerErrorsKeepOriginalContext()
@@ -499,6 +682,11 @@ namespace Newtonsoft.Json.Tests.Serialization
             public ErrorUnwindNode Child { get; set; }
         }
 
+        public class ErrorUnwindGetter
+        {
+            public int Value => throw new ErrorObserverException();
+        }
+
         public class ErrorUnwindDictionary : Dictionary<string, ErrorUnwindDictionary>
         {
         }
@@ -523,6 +711,26 @@ namespace Newtonsoft.Json.Tests.Serialization
         {
             public ErrorUnwindNode Child { get; set; }
             public int Value { get; set; }
+        }
+
+        public class ErrorUnwindWriterDynamic : DynamicObject
+        {
+            [JsonProperty]
+            public object StaticValue { get; set; }
+
+            [JsonIgnore]
+            public object DynamicValue { get; set; }
+
+            public override IEnumerable<string> GetDynamicMemberNames()
+            {
+                return new[] { "Member" };
+            }
+
+            public override bool TryGetMember(GetMemberBinder binder, out object result)
+            {
+                result = DynamicValue;
+                return binder.Name == "Member";
+            }
         }
 #endif
 
@@ -664,6 +872,16 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
+                return Fail();
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                Fail();
+            }
+
+            private object Fail()
+            {
                 FailureStarted = true;
                 try
                 {
@@ -675,10 +893,6 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
             }
 
-            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-            {
-                throw new NotSupportedException();
-            }
         }
 
         public class ErrorUnwindTraceWriter : ITraceWriter

@@ -144,12 +144,6 @@ namespace Newtonsoft.Json.Serialization
             return GetContract(type);
         }
 
-        private bool HasErrorObservers(JsonContract? contract)
-        {
-            // Filters must not invoke callbacks, including a trace writer's LevelFilter getter.
-            return Serializer.HasErrorHandler || contract?.HasOnErrorCallbacks == true || TraceWriter != null;
-        }
-
         private JsonContract GetContract(Type type)
         {
             return Serializer._contractResolver.ResolveContract(type);
