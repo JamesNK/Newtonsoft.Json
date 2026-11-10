@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -783,6 +783,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Array element value is outside the valid byte range (0-255). Path '[0]', line 1, position 3.");
         }
 
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public void ReadAsBytesIntegerArrayWithBigIntegerValueTooLarge()
         {
@@ -790,6 +791,7 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
 
             ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Array element value is outside the valid byte range (0-255). Path '[0]', line 1, position 27.");
         }
+#endif
 
         [Test]
         public void ReadAsBytesIntegerArrayWithBoundaryValues()
