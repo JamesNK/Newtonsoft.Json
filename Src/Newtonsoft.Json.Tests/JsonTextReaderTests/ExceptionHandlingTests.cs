@@ -768,6 +768,38 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
         }
 
         [Test]
+        public void ReadAsBytesIntegerArrayWithValueTooLarge()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"[99999]"));
+
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Array element value is outside the valid byte range (0-255). Path '[0]', line 1, position 6.");
+        }
+
+        [Test]
+        public void ReadAsBytesIntegerArrayWithNegativeValue()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"[-1]"));
+
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Array element value is outside the valid byte range (0-255). Path '[0]', line 1, position 3.");
+        }
+
+        [Test]
+        public void ReadAsBytesIntegerArrayWithBigIntegerValueTooLarge()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"[99999999999999999999999999]"));
+
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Array element value is outside the valid byte range (0-255). Path '[0]', line 1, position 27.");
+        }
+
+        [Test]
+        public void ReadAsBytesIntegerArrayWithBoundaryValues()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"[0,255]"));
+
+            CollectionAssert.AreEquivalent(new byte[] { 0, 255 }, reader.ReadAsBytes());
+        }
+
+        [Test]
         public void ReadAsBytesBadContent()
         {
             JsonTextReader reader = new JsonTextReader(new StringReader(@"new Date()"));

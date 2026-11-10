@@ -613,7 +613,20 @@ namespace Newtonsoft.Json
                         ConvertUtils.TryConvertModernNumber(value, CultureInfo.InvariantCulture, typeof(byte), out value);
                     }
 #endif
-                    buffer.Add(Convert.ToByte(value, CultureInfo.InvariantCulture));
+                    try
+                    {
+#if HAVE_BIG_INTEGER
+                        if (value is BigInteger bigInteger)
+                        {
+                            value = (byte)bigInteger;
+                        }
+#endif
+                        buffer.Add(Convert.ToByte(value, CultureInfo.InvariantCulture));
+                    }
+                    catch (OverflowException ex)
+                    {
+                        throw JsonReaderException.Create(this, "Array element value is outside the valid byte range (0-255).", ex);
+                    }
                     return false;
                 case JsonToken.EndArray:
                     return true;
