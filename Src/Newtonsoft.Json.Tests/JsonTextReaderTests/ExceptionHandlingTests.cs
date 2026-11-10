@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -765,6 +765,40 @@ namespace Newtonsoft.Json.Tests.JsonTextReaderTests
             JsonTextReader reader = new JsonTextReader(new StringReader(@"[1.0]"));
 
             ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Unexpected token when reading bytes: Float. Path '[0]', line 1, position 4.");
+        }
+
+        [Test]
+        public void ReadAsBytesIntegerArrayWithValueTooLarge()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"[99999]"));
+
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Array element value is outside the valid byte range (0-255). Path '[0]', line 1, position 6.");
+        }
+
+        [Test]
+        public void ReadAsBytesIntegerArrayWithNegativeValue()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"[-1]"));
+
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Array element value is outside the valid byte range (0-255). Path '[0]', line 1, position 3.");
+        }
+
+#if !(NET20 || NET35 || PORTABLE40 || PORTABLE) || NETSTANDARD2_0 || NET6_0_OR_GREATER
+        [Test]
+        public void ReadAsBytesIntegerArrayWithBigIntegerValueTooLarge()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"[99999999999999999999999999]"));
+
+            ExceptionAssert.Throws<JsonReaderException>(() => { reader.ReadAsBytes(); }, "Array element value is outside the valid byte range (0-255). Path '[0]', line 1, position 27.");
+        }
+#endif
+
+        [Test]
+        public void ReadAsBytesIntegerArrayWithBoundaryValues()
+        {
+            JsonTextReader reader = new JsonTextReader(new StringReader(@"[0,255]"));
+
+            CollectionAssert.AreEquivalent(new byte[] { 0, 255 }, reader.ReadAsBytes());
         }
 
         [Test]
