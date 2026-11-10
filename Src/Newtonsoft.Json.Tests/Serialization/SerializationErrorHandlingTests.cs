@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -122,7 +122,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                     }
 
                     bool observed = observer != "none" && observer != "emptyCallbacks";
-                    Assert.AreEqual(observed ? (populate ? 9 : 10) : (populate ? 1 : 2), notifications);
+                    Assert.AreEqual(observed ? (populate ? 9 : 10) : (populate ? 2 : 3), notifications);
                     Assert.AreEqual(observer == "log" ? (populate ? 8 : 9) : (observer == "callback" ? 8 : 0), callbacks);
                     if (trace != null)
                     {
@@ -156,7 +156,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 AppDomain.CurrentDomain.FirstChanceException -= handler;
             }
 
-            Assert.AreEqual(2, notifications);
+            Assert.AreEqual(3, notifications);
         }
 
         [Test]
@@ -214,7 +214,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                 }
 
                 bool observed = observer != "none" && observer != "emptyCallbacks";
-                Assert.AreEqual(observed ? 10 : 2, notifications);
+                Assert.AreEqual(observed ? 10 : 3, notifications);
                 Assert.AreEqual(observer == "log" ? 9 : (observer == "callback" ? 8 : 0), callbacks);
                 Assert.IsTrue(converter.CleanupCompleted);
                 if (trace != null)
@@ -276,7 +276,7 @@ namespace Newtonsoft.Json.Tests.Serialization
                     }
 
                     int catches = value is ErrorUnwindGetter ? 2 : 3;
-                    Assert.AreEqual(observer == "none" ? 2 : catches + 1, notifications);
+                    Assert.AreEqual(observer == "none" ? 3 : catches + 1, notifications);
                     Assert.AreEqual(observer == "log" ? catches : 0, errors.Count);
                     foreach (ErrorEventArgs args in errors)
                     {
@@ -369,6 +369,62 @@ namespace Newtonsoft.Json.Tests.Serialization
                     Assert.AreSame(error, args.ErrorContext.Error);
                 }
                 Assert.AreEqual(1, trace.GetTraceMessages().Count());
+            }
+        }
+
+        [Test]
+        public void ParentOnlyCallbackKeepsDeserializationErrorOrigin()
+        {
+            AssertParentOnlyCallbackDeserializes<ErrorUnwindNode>("{\"Child\":{\"Value\":\"bad\"},\"After\":2}", "Value");
+            AssertParentOnlyCallbackDeserializes<List<int>>("{\"Child\":[\"bad\"],\"After\":2}", 0);
+            AssertParentOnlyCallbackDeserializes<Dictionary<string, int>>("{\"Child\":{\"x\":\"bad\"},\"After\":2}", "x");
+            AssertParentOnlyCallbackDeserializes<RequiredErrorUnwindNode>("{\"Child\":{},\"After\":2}", "Name");
+        }
+
+        private static void AssertParentOnlyCallbackDeserializes<T>(string json, object member)
+        {
+            foreach (bool populate in new[] { false, true })
+            {
+                ParentOnlyErrorNode<T> parent;
+                if (populate)
+                {
+                    parent = new ParentOnlyErrorNode<T>();
+                    JsonConvert.PopulateObject(json, parent);
+                }
+                else
+                {
+                    parent = JsonConvert.DeserializeObject<ParentOnlyErrorNode<T>>(json);
+                }
+
+                Assert.IsNotNull(parent.Error);
+                Assert.AreEqual(typeof(T), parent.Error.OriginalObject.GetType());
+                Assert.AreEqual(member, parent.Error.Member);
+                Assert.AreEqual(2, parent.After);
+            }
+        }
+
+        [Test]
+        public void ParentOnlyCallbackKeepsSerializationErrorOrigin()
+        {
+            ErrorUnwindGetter child = new ErrorUnwindGetter();
+            object[] values =
+            {
+                child,
+                new List<ErrorUnwindGetter> { child },
+                new Dictionary<string, ErrorUnwindGetter> { { "x", child } },
+                new ErrorUnwindGetter[,] { { child } }
+            };
+
+            foreach (object value in values)
+            {
+                ParentOnlyErrorNode<object> parent = new ParentOnlyErrorNode<object> { Child = value, After = 2 };
+
+                string json = JsonConvert.SerializeObject(parent);
+
+                Assert.IsNotNull(parent.Error);
+                Assert.AreSame(child, parent.Error.OriginalObject);
+                Assert.AreEqual("Value", parent.Error.Member);
+                Assert.AreEqual(2, (int)JObject.Parse(json)["After"]);
             }
         }
 
@@ -471,14 +527,29 @@ namespace Newtonsoft.Json.Tests.Serialization
                 ErrorUnwindConverter converter = new ErrorUnwindConverter { Populate = populate };
                 bool observedCleanup = false;
                 bool reentered = false;
+                ErrorContext firstContext = null;
                 JsonSerializerSettings settings = new JsonSerializerSettings { Converters = { converter } };
                 if (!populate)
                 {
                     settings.Error = (sender, args) =>
                     {
+                        if (firstContext == null)
+                        {
+                            firstContext = args.ErrorContext;
+                        }
+                        if (ReferenceEquals(args.ErrorContext.Error, firstContext.Error))
+                        {
+                            Assert.AreSame(firstContext, args.ErrorContext);
+                        }
                         if (!reentered)
                         {
                             reentered = true;
+                            using (JsonReader reader = new JsonTextReader(new StringReader("{\"Value\":4}")))
+                            {
+                                ErrorUnwindNode value = new ErrorUnwindNode();
+                                converter.Serializer.Populate(reader, value);
+                                Assert.AreEqual(4, value.Value);
+                            }
                             using (JsonReader reader = new JsonTextReader(new StringReader("{\"Value\":3}")))
                             {
                                 Assert.AreEqual(3, converter.Serializer.Deserialize<ErrorUnwindNode>(reader).Value);
@@ -516,6 +587,22 @@ namespace Newtonsoft.Json.Tests.Serialization
             Assert.IsNotNull(value);
             Assert.AreEqual(2, errors);
             Assert.IsNotNull(converter.NestedError);
+            Assert.IsTrue(converter.CleanupCompleted);
+            Assert.IsTrue(converter.ReusedSerializer);
+        }
+
+        [Test]
+        public void ConverterCanWrapPopulateErrorWithObservers()
+        {
+            ErrorUnwindConverter converter = new ErrorUnwindConverter { Populate = true };
+            JsonSerializationException error = ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<ErrorUnwindConverted>("{\"Child\":{\"Child\":1}}", new JsonSerializerSettings
+            {
+                Converters = { converter },
+                Error = (sender, args) => { }
+            }));
+
+            Assert.AreEqual("Wrapped error.", error.Message);
+            Assert.AreSame(converter.NestedError, error.InnerException);
             Assert.IsTrue(converter.CleanupCompleted);
             Assert.IsTrue(converter.ReusedSerializer);
         }
@@ -680,6 +767,21 @@ namespace Newtonsoft.Json.Tests.Serialization
         public class ErrorUnwindContainer
         {
             public ErrorUnwindNode Child { get; set; }
+        }
+
+        public class ParentOnlyErrorNode<T>
+        {
+            public T Child { get; set; }
+            public int After { get; set; }
+            [JsonIgnore]
+            public ErrorContext Error { get; private set; }
+
+            [OnError]
+            private void OnError(StreamingContext context, ErrorContext error)
+            {
+                Error = error;
+                error.Handled = !ReferenceEquals(error.OriginalObject, this) && error.OriginalObject is T;
+            }
         }
 
         public class ErrorUnwindGetter
