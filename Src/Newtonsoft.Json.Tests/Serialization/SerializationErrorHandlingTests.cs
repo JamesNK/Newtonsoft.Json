@@ -67,7 +67,7 @@ namespace Newtonsoft.Json.Tests.Serialization
 
             foreach (bool populate in new[] { false, true })
             {
-                foreach (bool log in new[] { false, true })
+                foreach (string observer in new[] { "none", "log", "callback", "emptyCallbacks", "traceOff", "traceError" })
                 {
                     int notifications = 0;
                     int callbacks = 0;
@@ -80,9 +80,25 @@ namespace Newtonsoft.Json.Tests.Serialization
                         }
                     };
                     JsonSerializerSettings settings = new JsonSerializerSettings { MaxDepth = 8 };
-                    if (log)
+                    MemoryTraceWriter trace = null;
+                    if (observer == "log")
                     {
                         settings.Error = (sender, args) => callbacks++;
+                    }
+                    else if (observer == "callback" || observer == "emptyCallbacks")
+                    {
+                        DefaultContractResolver resolver = new DefaultContractResolver();
+                        IList<SerializationErrorCallback> errorCallbacks = resolver.ResolveContract(typeof(ErrorUnwindNode)).OnErrorCallbacks;
+                        if (observer == "callback")
+                        {
+                            errorCallbacks.Add((obj, context, error) => callbacks++);
+                        }
+                        settings.ContractResolver = resolver;
+                    }
+                    else if (observer == "traceOff" || observer == "traceError")
+                    {
+                        trace = new MemoryTraceWriter { LevelFilter = observer == "traceOff" ? TraceLevel.Off : TraceLevel.Error };
+                        settings.TraceWriter = trace;
                     }
 
                     AppDomain.CurrentDomain.FirstChanceException += handler;
@@ -105,10 +121,42 @@ namespace Newtonsoft.Json.Tests.Serialization
                         AppDomain.CurrentDomain.FirstChanceException -= handler;
                     }
 
-                    Assert.AreEqual(2, notifications);
-                    Assert.AreEqual(log ? (populate ? 8 : 9) : 0, callbacks);
+                    bool observed = observer != "none" && observer != "emptyCallbacks";
+                    Assert.AreEqual(observed ? (populate ? 9 : 10) : (populate ? 1 : 2), notifications);
+                    Assert.AreEqual(observer == "log" ? (populate ? 8 : 9) : (observer == "callback" ? 8 : 0), callbacks);
+                    if (trace != null)
+                    {
+                        Assert.AreEqual(observer == "traceError" ? 1 : 0, trace.GetTraceMessages().Count());
+                    }
                 }
             }
+        }
+
+        [Test]
+        public void UnobservedMultidimensionalArrayErrorDoesNotRedispatchPerContainer()
+        {
+            string json = "[[" + string.Concat(Enumerable.Repeat("{\"Child\":", 9)) + "null" + new string('}', 9) + "]]";
+            int notifications = 0;
+            int threadId = Thread.CurrentThread.ManagedThreadId;
+            EventHandler<FirstChanceExceptionEventArgs> handler = (sender, args) =>
+            {
+                if (Thread.CurrentThread.ManagedThreadId == threadId && args.Exception is JsonReaderException)
+                {
+                    notifications++;
+                }
+            };
+
+            AppDomain.CurrentDomain.FirstChanceException += handler;
+            try
+            {
+                ExceptionAssert.Throws<JsonReaderException>(() => JsonConvert.DeserializeObject<ErrorUnwindNode[,]>(json, new JsonSerializerSettings { MaxDepth = 8 }));
+            }
+            finally
+            {
+                AppDomain.CurrentDomain.FirstChanceException -= handler;
+            }
+
+            Assert.AreEqual(2, notifications);
         }
 #endif
 
@@ -144,8 +192,8 @@ namespace Newtonsoft.Json.Tests.Serialization
         [Test]
         public void ParentErrorHandlerResumesWithoutCompletingFailedChild()
         {
-            ErrorUnwindNode child = new ErrorUnwindNode();
-            ErrorUnwindNode root = new ErrorUnwindNode { Child = child };
+            ErrorUnwindCallbackNode child = new ErrorUnwindCallbackNode();
+            ErrorUnwindCallbackNode root = new ErrorUnwindCallbackNode { Child = child };
             root.ChildSetCount = 0;
             List<string> callbacks = new List<string>();
             child.ErrorCallback = context => callbacks.Add("child attribute");
@@ -240,10 +288,10 @@ namespace Newtonsoft.Json.Tests.Serialization
                 ErrorUnwindConverter converter = new ErrorUnwindConverter { Populate = populate };
                 bool observedCleanup = false;
                 bool reentered = false;
-                JsonSerializationException error = ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<ErrorUnwindConverted>("{\"Child\":{\"Child\":1}}", new JsonSerializerSettings
+                JsonSerializerSettings settings = new JsonSerializerSettings { Converters = { converter } };
+                if (!populate)
                 {
-                    Converters = { converter },
-                    Error = (sender, args) =>
+                    settings.Error = (sender, args) =>
                     {
                         if (!reentered)
                         {
@@ -257,18 +305,103 @@ namespace Newtonsoft.Json.Tests.Serialization
                         {
                             observedCleanup = converter.CleanupCompleted;
                         }
-                    }
-                }));
+                    };
+                }
+                JsonSerializationException error = ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<ErrorUnwindConverted>("{\"Child\":{\"Child\":1}}", settings));
 
                 Assert.AreEqual("Wrapped error.", error.Message);
                 Assert.AreSame(converter.NestedError, error.InnerException);
-                Assert.IsTrue(reentered);
-                Assert.IsTrue(observedCleanup);
+                Assert.AreEqual(!populate, reentered);
+                Assert.AreEqual(!populate, observedCleanup);
+                Assert.IsTrue(converter.CleanupCompleted);
                 Assert.IsTrue(converter.ReusedSerializer);
-#if !(NET20 || NET35 || NET40)
                 Assert.IsTrue(error.InnerException.StackTrace.Contains("EnsureType"));
-#endif
             }
+        }
+
+        [Test]
+        public void ConverterCanCatchPopulateErrorWithObservers()
+        {
+            ErrorUnwindConverter converter = new ErrorUnwindConverter { Populate = true, WrapError = false };
+            int errors = 0;
+            ErrorUnwindConverted value = JsonConvert.DeserializeObject<ErrorUnwindConverted>("{\"Child\":{\"Child\":1}}", new JsonSerializerSettings
+            {
+                Converters = { converter },
+                Error = (sender, args) => errors++
+            });
+
+            Assert.IsNotNull(value);
+            Assert.AreEqual(2, errors);
+            Assert.IsNotNull(converter.NestedError);
+            Assert.IsTrue(converter.CleanupCompleted);
+            Assert.IsTrue(converter.ReusedSerializer);
+        }
+
+        [Test]
+        public void TraceOnlyErrorPreservesInnermostContract()
+        {
+            MemoryTraceWriter trace = new MemoryTraceWriter { LevelFilter = TraceLevel.Error };
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.DeserializeObject<ErrorUnwindContainer>("{\"Child\":{\"Child\":1}}", new JsonSerializerSettings
+            {
+                TraceWriter = trace
+            }));
+
+            string[] messages = trace.GetTraceMessages().ToArray();
+            Assert.AreEqual(1, messages.Length);
+            Assert.IsTrue(messages[0].Contains("Error deserializing " + typeof(ErrorUnwindNode).FullName + "."));
+            Assert.IsFalse(messages[0].Contains("Error deserializing " + typeof(ErrorUnwindContainer).FullName + "."));
+        }
+
+        [Test]
+        public void ErrorEventExceptionPropagatesAfterConverterCleanup()
+        {
+            ErrorUnwindValueConverter converter = new ErrorUnwindValueConverter();
+            ErrorObserverException failure = new ErrorObserverException();
+            ErrorObserverException error = ExceptionAssert.Throws<ErrorObserverException>(() => JsonConvert.PopulateObject("{\"Value\":1}", new ErrorUnwindNode(), new JsonSerializerSettings
+            {
+                Converters = { converter },
+                Error = (sender, args) =>
+                {
+                    Assert.IsTrue(converter.CleanupCompleted);
+                    throw failure;
+                }
+            }));
+
+            Assert.AreSame(failure, error);
+        }
+
+        [Test]
+        public void TraceLevelFilterIsNotEvaluatedBeforeConverterCleanup()
+        {
+            ErrorUnwindValueConverter converter = new ErrorUnwindValueConverter();
+            ErrorUnwindTraceWriter trace = new ErrorUnwindTraceWriter(converter);
+            ExceptionAssert.Throws<JsonSerializationException>(() => JsonConvert.PopulateObject("{\"Value\":1}", new ErrorUnwindNode(), new JsonSerializerSettings
+            {
+                Converters = { converter },
+                TraceWriter = trace
+            }));
+
+            Assert.IsTrue(converter.CleanupCompleted);
+            Assert.IsFalse(trace.ReadBeforeCleanup);
+            Assert.AreEqual(1, trace.Errors);
+        }
+
+        [Test]
+        public void TraceWriterExceptionPropagatesAfterConverterCleanup()
+        {
+            ErrorUnwindValueConverter converter = new ErrorUnwindValueConverter();
+            ErrorObserverException failure = new ErrorObserverException();
+            ErrorUnwindTraceWriter trace = new ErrorUnwindTraceWriter(converter) { Failure = failure };
+            ErrorObserverException error = ExceptionAssert.Throws<ErrorObserverException>(() => JsonConvert.PopulateObject("{\"Value\":1}", new ErrorUnwindNode(), new JsonSerializerSettings
+            {
+                Converters = { converter },
+                TraceWriter = trace
+            }));
+
+            Assert.AreSame(failure, error);
+            Assert.IsTrue(converter.CleanupCompleted);
+            Assert.IsFalse(trace.ReadBeforeCleanup);
+            Assert.AreEqual(1, trace.Errors);
         }
 
         [Test]
@@ -342,6 +475,15 @@ namespace Newtonsoft.Json.Tests.Serialization
             public int ChildSetCount { get; set; }
             [JsonIgnore]
             public bool Deserialized { get; set; }
+            [OnDeserialized]
+            private void OnDeserialized(StreamingContext context)
+            {
+                Deserialized = true;
+            }
+        }
+
+        public class ErrorUnwindCallbackNode : ErrorUnwindNode
+        {
             [JsonIgnore]
             public Action<ErrorContext> ErrorCallback { get; set; }
 
@@ -350,12 +492,11 @@ namespace Newtonsoft.Json.Tests.Serialization
             {
                 ErrorCallback?.Invoke(error);
             }
+        }
 
-            [OnDeserialized]
-            private void OnDeserialized(StreamingContext context)
-            {
-                Deserialized = true;
-            }
+        public class ErrorUnwindContainer
+        {
+            public ErrorUnwindNode Child { get; set; }
         }
 
         public class ErrorUnwindDictionary : Dictionary<string, ErrorUnwindDictionary>
@@ -451,6 +592,7 @@ namespace Newtonsoft.Json.Tests.Serialization
         public class ErrorUnwindConverter : JsonConverter
         {
             public bool Populate { get; set; }
+            public bool WrapError { get; set; } = true;
             public bool CleanupCompleted { get; set; }
             public bool ReusedSerializer { get; set; }
             public Exception NestedError { get; set; }
@@ -464,6 +606,7 @@ namespace Newtonsoft.Json.Tests.Serialization
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
                 Serializer = serializer;
+                int initialDepth = reader.Depth;
                 try
                 {
                     if (Populate)
@@ -483,7 +626,15 @@ namespace Newtonsoft.Json.Tests.Serialization
                     {
                         ReusedSerializer = serializer.Deserialize<ErrorUnwindNode>(validReader).Value == 3;
                     }
-                    throw new JsonSerializationException("Wrapped error.", ex);
+                    if (WrapError)
+                    {
+                        throw new JsonSerializationException("Wrapped error.", ex);
+                    }
+                    while (reader.Depth > initialDepth)
+                    {
+                        reader.ReadAndAssert();
+                    }
+                    return new ErrorUnwindConverted();
                 }
                 finally
                 {
@@ -494,6 +645,75 @@ namespace Newtonsoft.Json.Tests.Serialization
             public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
             {
                 throw new NotSupportedException();
+            }
+        }
+
+        public class ErrorObserverException : Exception
+        {
+        }
+
+        public class ErrorUnwindValueConverter : JsonConverter
+        {
+            public bool FailureStarted { get; private set; }
+            public bool CleanupCompleted { get; private set; }
+
+            public override bool CanConvert(Type objectType)
+            {
+                return objectType == typeof(int);
+            }
+
+            public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
+            {
+                FailureStarted = true;
+                try
+                {
+                    throw new JsonSerializationException("Converter error.");
+                }
+                finally
+                {
+                    CleanupCompleted = true;
+                }
+            }
+
+            public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
+            {
+                throw new NotSupportedException();
+            }
+        }
+
+        public class ErrorUnwindTraceWriter : ITraceWriter
+        {
+            private readonly ErrorUnwindValueConverter _converter;
+
+            public ErrorUnwindTraceWriter(ErrorUnwindValueConverter converter)
+            {
+                _converter = converter;
+            }
+
+            public bool ReadBeforeCleanup { get; private set; }
+            public int Errors { get; private set; }
+            public Exception Failure { get; set; }
+
+            public TraceLevel LevelFilter
+            {
+                get
+                {
+                    if (_converter.FailureStarted && !_converter.CleanupCompleted)
+                    {
+                        ReadBeforeCleanup = true;
+                        throw new ErrorObserverException();
+                    }
+                    return TraceLevel.Error;
+                }
+            }
+
+            public void Trace(TraceLevel level, string message, Exception ex)
+            {
+                Errors++;
+                if (Failure != null)
+                {
+                    throw Failure;
+                }
             }
         }
 
