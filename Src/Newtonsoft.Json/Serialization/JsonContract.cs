@@ -213,6 +213,8 @@ namespace Newtonsoft.Json.Serialization
             }
         }
 
+        internal bool HasOnErrorCallbacks => _onErrorCallbacks != null && _onErrorCallbacks.Count > 0;
+
         /// <summary>
         /// Gets or sets all method called when an error is thrown during the serialization of the object.
         /// </summary>

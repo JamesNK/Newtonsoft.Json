@@ -1,4 +1,4 @@
-﻿#region License
+#region License
 // Copyright (c) 2007 James Newton-King
 //
 // Permission is hereby granted, free of charge, to any person
@@ -89,6 +89,19 @@ namespace Newtonsoft.Json.Serialization
                 ?? Serializer._nullValueHandling;
 
             return resolvedNullValueHandling;
+        }
+
+        protected bool ShouldCatchError(JsonContract? contract)
+        {
+            // The first catch records the origin for observers on ancestor contracts.
+            // Filters must not invoke callbacks, including a trace writer's LevelFilter getter.
+            return _currentErrorContext == null || Serializer.HasErrorHandler || contract?.HasOnErrorCallbacks == true || TraceWriter != null;
+        }
+
+        protected ErrorContext? CurrentErrorContext
+        {
+            get => _currentErrorContext;
+            set => _currentErrorContext = value;
         }
 
         private ErrorContext GetErrorContext(object? currentObject, object? member, string path, Exception error)

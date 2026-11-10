@@ -68,6 +68,22 @@ namespace Newtonsoft.Json.Serialization
         [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
         public void Populate(JsonReader reader, object target)
         {
+            // Preserve an outer error context when reentering from an error handler.
+            ErrorContext? errorContext = CurrentErrorContext;
+            try
+            {
+                PopulateInternal(reader, target);
+            }
+            finally
+            {
+                CurrentErrorContext = errorContext;
+            }
+        }
+
+        [RequiresUnreferencedCode(MiscellaneousUtils.TrimWarning)]
+        [RequiresDynamicCode(MiscellaneousUtils.AotWarning)]
+        private void PopulateInternal(JsonReader reader, object target)
+        {
             ValidationUtils.ArgumentNotNull(target, nameof(target));
 
             Type objectType = target.GetType();
@@ -1538,7 +1554,7 @@ namespace Newtonsoft.Json.Serialization
 
                             dictionary[keyValue] = itemValue;
                         }
-                        catch (Exception ex)
+                        catch (Exception ex) when (ShouldCatchError(contract))
                         {
                             if (IsErrorHandled(underlyingDictionary, contract, keyValue, reader as IJsonLineInfo, reader.Path, ex))
                             {
@@ -1631,7 +1647,7 @@ namespace Newtonsoft.Json.Serialization
                             break;
                         }
                     }
-                    catch (Exception ex)
+                    catch (Exception ex) when (ShouldCatchError(contract))
                     {
                         JsonPosition errorPosition = reader.GetPosition(initialDepth);
 
@@ -1708,7 +1724,7 @@ namespace Newtonsoft.Json.Serialization
             {
                 throw JsonSerializationException.Create(reader, message);
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ShouldCatchError(contract))
             {
                 if (IsErrorHandled(currentObject, contract, null, reader as IJsonLineInfo, reader.Path, ex))
                 {
@@ -1788,7 +1804,7 @@ namespace Newtonsoft.Json.Serialization
                         break;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ShouldCatchError(contract))
                 {
                     JsonPosition errorPosition = reader.GetPosition(initialDepth);
 
@@ -2009,7 +2025,7 @@ namespace Newtonsoft.Json.Serialization
                                 contract.TrySetMember(newObject, memberName, value);
                             }
                         }
-                        catch (Exception ex)
+                        catch (Exception ex) when (ShouldCatchError(contract))
                         {
                             if (IsErrorHandled(newObject, contract, memberName, reader as IJsonLineInfo, reader.Path, ex))
                             {
@@ -2549,7 +2565,7 @@ namespace Newtonsoft.Json.Serialization
                                 }
                             }
                         }
-                        catch (Exception ex)
+                        catch (Exception ex) when (ShouldCatchError(contract))
                         {
                             if (IsErrorHandled(newObject, contract, propertyName, reader as IJsonLineInfo, reader.Path, ex))
                             {
@@ -2709,7 +2725,7 @@ namespace Newtonsoft.Json.Serialization
                             break;
                     }
                 }
-                catch (Exception ex)
+                catch (Exception ex) when (ShouldCatchError(contract))
                 {
                     if (IsErrorHandled(newObject, contract, property.PropertyName, reader as IJsonLineInfo, reader.Path, ex))
                     {
