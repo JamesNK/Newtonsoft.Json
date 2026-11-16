@@ -134,9 +134,9 @@ namespace Newtonsoft.Json.Tests.Serialization
             foreach (object value in new object[] { (Int128)(-1), (Int128)256, (UInt128)256, Int128.MinValue, UInt128.MaxValue })
             {
                 JArray invalid = new JArray(new JValue(value));
-                Assert.Throws<InvalidOperationException>(() => invalid.ToObject<byte[]>());
-                Assert.Throws<InvalidOperationException>(() => invalid.ToObject<Memory<byte>>());
-                Assert.Throws<InvalidOperationException>(() => invalid.ToObject<ReadOnlyMemory<byte>>());
+                Assert.Throws<JsonReaderException>(() => invalid.ToObject<byte[]>());
+                Assert.Throws<JsonReaderException>(() => invalid.ToObject<Memory<byte>>());
+                Assert.Throws<JsonReaderException>(() => invalid.ToObject<ReadOnlyMemory<byte>>());
             }
         }
 #endif
