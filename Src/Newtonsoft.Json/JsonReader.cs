@@ -607,14 +607,14 @@ namespace Newtonsoft.Json
                     throw JsonReaderException.Create(this, "Unexpected end when reading bytes.");
                 case JsonToken.Integer:
                     object? value = Value;
-#if HAVE_INT128
-                    if (value is Int128 || value is UInt128)
-                    {
-                        ConvertUtils.TryConvertModernNumber(value, CultureInfo.InvariantCulture, typeof(byte), out value);
-                    }
-#endif
                     try
                     {
+#if HAVE_INT128
+                        if (value is Int128 || value is UInt128)
+                        {
+                            ConvertUtils.TryConvertModernNumber(value, CultureInfo.InvariantCulture, typeof(byte), out value);
+                        }
+#endif
 #if HAVE_BIG_INTEGER
                         if (value is BigInteger bigInteger)
                         {
@@ -623,7 +623,7 @@ namespace Newtonsoft.Json
 #endif
                         buffer.Add(Convert.ToByte(value, CultureInfo.InvariantCulture));
                     }
-                    catch (OverflowException ex)
+                    catch (Exception ex) when (ex is OverflowException || ex.InnerException is OverflowException)
                     {
                         throw JsonReaderException.Create(this, "Array element value is outside the valid byte range (0-255).", ex);
                     }
