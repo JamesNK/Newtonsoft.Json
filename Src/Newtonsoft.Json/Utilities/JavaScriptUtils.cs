@@ -66,12 +66,14 @@ namespace Newtonsoft.Json.Utilities
                 return new char[size];
             }
 
+            char[] newBuffer = bufferPool.Rent(size);
+
             if (buffer != null)
             {
                 bufferPool.Return(buffer);
             }
 
-            return bufferPool.Rent(size);
+            return newBuffer;
         }
     }
 
