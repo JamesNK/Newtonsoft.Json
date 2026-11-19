@@ -136,6 +136,84 @@ namespace Newtonsoft.Json.Tests
             Assert.AreEqual(1, arrayPool.FreeArrays.Count);
         }
 
+        private class ThrowingArrayPool : IArrayPool<char>
+        {
+            public bool ThrowOnNextRent { get; set; }
+            public List<char[]> RentedArrays { get; } = new List<char[]>();
+            public List<char[]> ReturnedArrays { get; } = new List<char[]>();
+
+            public char[] Rent(int minimumLength)
+            {
+                if (ThrowOnNextRent)
+                {
+                    ThrowOnNextRent = false;
+                    throw new OutOfMemoryException();
+                }
+
+                char[] array = new char[minimumLength];
+                RentedArrays.Add(array);
+                return array;
+            }
+
+            public void Return(char[] array)
+            {
+                if (array != null)
+                {
+                    ReturnedArrays.Add(array);
+                }
+            }
+        }
+
+        [Test]
+        public void BufferTest_RentThrowsDoesNotDoubleReturn()
+        {
+            ThrowingArrayPool arrayPool = new ThrowingArrayPool();
+
+            ExceptionAssert.Throws<OutOfMemoryException>(() =>
+            {
+                using (JsonTextWriter writer = new JsonTextWriter(new StringWriter(CultureInfo.InvariantCulture)))
+                {
+                    writer.ArrayPool = arrayPool;
+
+                    // Rent initial write buffer.
+                    writer.WriteValue("\"ab");
+
+                    // Trigger EnsureBufferSize to grow the write buffer and fail in Rent.
+                    arrayPool.ThrowOnNextRent = true;
+                    writer.WriteValue("\"" + new string('a', 100));
+                }
+            });
+
+            Assert.AreEqual(1, arrayPool.RentedArrays.Count);
+            Assert.AreEqual(1, arrayPool.ReturnedArrays.Count);
+            Assert.AreSame(arrayPool.RentedArrays[0], arrayPool.ReturnedArrays[0]);
+        }
+
+        [Test]
+        public void BufferTest_RentThrowsOnLeadingUnescapedCharsDoesNotDoubleReturn()
+        {
+            ThrowingArrayPool arrayPool = new ThrowingArrayPool();
+
+            ExceptionAssert.Throws<OutOfMemoryException>(() =>
+            {
+                using (JsonTextWriter writer = new JsonTextWriter(new StringWriter(CultureInfo.InvariantCulture)))
+                {
+                    writer.ArrayPool = arrayPool;
+
+                    // Rent initial write buffer.
+                    writer.WriteValue("\"ab");
+
+                    // Trigger EnsureBufferSize on leading unescaped chars and fail in Rent.
+                    arrayPool.ThrowOnNextRent = true;
+                    writer.WriteValue(new string('a', 100) + "\"");
+                }
+            });
+
+            Assert.AreEqual(1, arrayPool.RentedArrays.Count);
+            Assert.AreEqual(1, arrayPool.ReturnedArrays.Count);
+            Assert.AreSame(arrayPool.RentedArrays[0], arrayPool.ReturnedArrays[0]);
+        }
+
 #if !(NET20 || NET35 || NET40 || PORTABLE || PORTABLE40 || DNXCORE50) || NETSTANDARD2_0 || NET6_0_OR_GREATER
         [Test]
         public void BufferErroringWithInvalidSize()
