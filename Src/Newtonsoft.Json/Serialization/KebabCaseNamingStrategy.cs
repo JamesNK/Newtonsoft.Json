@@ -33,6 +33,12 @@ namespace Newtonsoft.Json.Serialization
     public class KebabCaseNamingStrategy : NamingStrategy
     {
         /// <summary>
+        /// A flag indicating whether or not numbers should be treated as words when inserting separators.
+        /// Defaults to <c>false</c>
+        /// </summary>
+        public bool NumbersAsWords { get; set; }
+
+        /// <summary>
         /// Initializes a new instance of the <see cref="KebabCaseNamingStrategy"/> class.
         /// </summary>
         /// <param name="processDictionaryKeys">
@@ -70,6 +76,29 @@ namespace Newtonsoft.Json.Serialization
         /// <summary>
         /// Initializes a new instance of the <see cref="KebabCaseNamingStrategy"/> class.
         /// </summary>
+        /// <param name="processDictionaryKeys">
+        /// A flag indicating whether dictionary keys should be processed.
+        /// </param>
+        /// <param name="overrideSpecifiedNames">
+        /// A flag indicating whether explicitly specified property names should be processed,
+        /// e.g. a property name customized with a <see cref="JsonPropertyAttribute"/>.
+        /// </param>
+        /// <param name="processExtensionDataNames">
+        /// A flag indicating whether extension data names should be processed.
+        /// </param>
+        /// <param name="numbersAsWords">
+        /// A flag indicating whether numbers should be treated as words when inserting separators
+        /// </param>
+        public KebabCaseNamingStrategy(bool processDictionaryKeys, bool overrideSpecifiedNames, bool processExtensionDataNames, bool numbersAsWords)
+            : this(processDictionaryKeys, overrideSpecifiedNames)
+        {
+            NumbersAsWords = numbersAsWords;
+            ProcessExtensionDataNames = processExtensionDataNames;
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="KebabCaseNamingStrategy"/> class.
+        /// </summary>
         public KebabCaseNamingStrategy()
         {
         }
@@ -79,6 +108,6 @@ namespace Newtonsoft.Json.Serialization
         /// </summary>
         /// <param name="name">The property name to resolve.</param>
         /// <returns>The resolved property name.</returns>
-        protected override string ResolvePropertyName(string name) => StringUtils.ToKebabCase(name);
+        protected override string ResolvePropertyName(string name) => StringUtils.ToKebabCase(name, NumbersAsWords);
     }
 }
