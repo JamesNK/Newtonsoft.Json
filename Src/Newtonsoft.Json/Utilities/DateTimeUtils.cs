@@ -302,7 +302,14 @@ namespace Newtonsoft.Json.Utilities
                     offset = new TimeSpan(dateTimeParser.ZoneHour, dateTimeParser.ZoneMinute, 0);
                     break;
                 default:
+#if NET20
+                    // TimeZoneInfo.GetUtcOffset doesn't care about DateTime.Kind but TimeZone.GetUtcOffset cares,
+                    // so in order to keep the logic consistent, it pass in `default`(with Unspecified kind) instead of `d` here.
+                 
+                    offset = TimeZone.CurrentTimeZone.GetUtcOffset(default);
+#else
                     offset = TimeZoneInfo.Local.GetUtcOffset(d);
+#endif
                     break;
             }
 

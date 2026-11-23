@@ -4176,11 +4176,7 @@ Path '', line 1, position 1.");
 
             DateTimeOffset dateTimeOffset = new DateTimeOffset(2000, 12, 20, 22, 59, 59, TimeSpan.FromHours(2));
             string dateTimeOffsetText;
-#if !NET20
             dateTimeOffsetText = @"2000-12-20T22:59:59+02:00";
-#else
-            dateTimeOffsetText = @"12/20/2000 22:59:59 +02:00";
-#endif
 
             ISerializableTestObject o = new ISerializableTestObject("String!", int.MinValue, dateTimeOffset, person);
 
@@ -4230,11 +4226,7 @@ Path '', line 1, position 1.");
 
             DateTimeOffset dateTimeOffset = new DateTimeOffset(2000, 12, 20, 22, 59, 59, TimeSpan.FromHours(2));
             string dateTimeOffsetText;
-#if !NET20
             dateTimeOffsetText = @"\/Date(977345999000+0200)\/";
-#else
-            dateTimeOffsetText = @"12/20/2000 22:59:59 +02:00";
-#endif
 
             ISerializableTestObject o = new ISerializableTestObject("String!", int.MinValue, dateTimeOffset, person);
 
