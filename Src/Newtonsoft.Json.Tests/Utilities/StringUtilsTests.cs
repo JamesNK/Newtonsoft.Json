@@ -61,13 +61,15 @@ namespace Newtonsoft.Json.Tests.Utilities
             Assert.AreEqual("snA__ kEcAsE", StringUtils.ToCamelCase("SnA__ kEcAsE"));
             Assert.AreEqual("already_snake_case_ ", StringUtils.ToCamelCase("already_snake_case_ "));
             Assert.AreEqual("isJSONProperty", StringUtils.ToCamelCase("IsJSONProperty"));
-            Assert.AreEqual("shoutinG_CASE", StringUtils.ToCamelCase("SHOUTING_CASE"));
+            Assert.AreEqual("shouting_CASE", StringUtils.ToCamelCase("SHOUTING_CASE"));
+            Assert.AreEqual("shouting CASE", StringUtils.ToCamelCase("SHOUTING CASE"));
             Assert.AreEqual("9999-12-31T23:59:59.9999999Z", StringUtils.ToCamelCase("9999-12-31T23:59:59.9999999Z"));
             Assert.AreEqual("hi!! This is text. Time to test.", StringUtils.ToCamelCase("Hi!! This is text. Time to test."));
             Assert.AreEqual("building", StringUtils.ToCamelCase("BUILDING"));
             Assert.AreEqual("building Property", StringUtils.ToCamelCase("BUILDING Property"));
             Assert.AreEqual("building Property", StringUtils.ToCamelCase("Building Property"));
             Assert.AreEqual("building PROPERTY", StringUtils.ToCamelCase("BUILDING PROPERTY"));
+            Assert.AreEqual("text1", StringUtils.ToCamelCase("TEXT1"));
         }
 
         [Test]
