@@ -97,8 +97,13 @@ namespace Newtonsoft.Json.Utilities
             LocalBuilder localConvertible = generator.DeclareLocal(typeof(IConvertible));
             LocalBuilder localObject = generator.DeclareLocal(typeof(object));
 
-            OpCode variableAddressOpCode = args.Length < 256 ? OpCodes.Ldloca_S : OpCodes.Ldloca;
-            OpCode variableLoadOpCode = args.Length < 256 ? OpCodes.Ldloc_S : OpCodes.Ldloc;
+            // localConvertible and localObject occupy local indexes 0 and 1, and at most one
+            // additional local is declared for each parameter. Short-form opcodes can only
+            // address local indexes up to 255, so fall back to their long-form counterparts
+            // when the parameter locals could exceed that limit.
+            OpCode variableAddressOpCode = args.Length < 255 ? OpCodes.Ldloca_S : OpCodes.Ldloca;
+            OpCode variableLoadOpCode = args.Length < 255 ? OpCodes.Ldloc_S : OpCodes.Ldloc;
+            OpCode variableStoreOpCode = args.Length < 255 ? OpCodes.Stloc_S : OpCodes.Stloc;
 
             for (int i = 0; i < args.Length; i++)
             {
@@ -133,7 +138,7 @@ namespace Newtonsoft.Json.Utilities
                             generator.MarkLabel(skipSettingDefault);
                             generator.PushArrayInstance(argsIndex, i);
                             generator.UnboxIfNeeded(parameterType);
-                            generator.Emit(OpCodes.Stloc_S, localVariable);
+                            generator.Emit(variableStoreOpCode, localVariable);
 
                             // parameter finished, we out!
                             generator.MarkLabel(finishedProcessingParameter);
@@ -141,7 +146,7 @@ namespace Newtonsoft.Json.Utilities
                         else
                         {
                             generator.UnboxIfNeeded(parameterType);
-                            generator.Emit(OpCodes.Stloc_S, localVariable);
+                            generator.Emit(variableStoreOpCode, localVariable);
                         }
                     }
 
